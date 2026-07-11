@@ -31,162 +31,170 @@ class _DiscountSetterWidgetState
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    return SubWrapper(
-      isVisible:
-          !SalesAuthAction().applyDiscountAction(
-            context: context,
-          ),
-      mainWidget: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () {
-                    setDiscountAction(
-                      context,
-                      widget.discountPercentController,
-                      widget.addListener,
-                      widget.removeListener,
-                    );
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal: 10,
-                    ),
-                    child: Row(
-                      spacing: 5,
-                      children: [
-                        Text(
-                          style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          returnSalesProvider()
-                                          .currentCart()
-                                          .discount !=
-                                      null ||
-                                  returnSalesProvider()
-                                          .currentCart()
-                                          .fixedDiscount !=
-                                      null
-                              ? 'Cancel'
-                              : 'Add Discount:',
-                        ),
-                        Visibility(
-                          visible:
-                              returnSalesProvider()
-                                      .currentCart()
-                                      .discount !=
-                                  null ||
-                              returnSalesProvider()
-                                      .currentCart()
-                                      .fixedDiscount !=
-                                  null,
-                          child: Container(
-                            padding: EdgeInsets.fromLTRB(
-                              7,
-                              3,
-                              4,
-                              3,
+    return Visibility(
+      visible: authorization(
+        authorized: Authorizations().salesDiscount,
+      ),
+      child: SubWrapper(
+        isVisible:
+            !SalesAuthAction().applyDiscountAction(
+              context: context,
+            ),
+        mainWidget: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {
+                      setDiscountAction(
+                        context,
+                        widget.discountPercentController,
+                        widget.addListener,
+                        widget.removeListener,
+                      );
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 10,
+                      ),
+                      child: Row(
+                        spacing: 5,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
                             ),
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(2),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
+                            returnSalesProvider()
+                                            .currentCart()
+                                            .discount !=
+                                        null ||
+                                    returnSalesProvider()
+                                            .currentCart()
+                                            .fixedDiscount !=
+                                        null
+                                ? 'Cancel'
+                                : 'Add Discount:',
+                          ),
+                          Visibility(
+                            visible:
+                                returnSalesProvider()
+                                        .currentCart()
+                                        .discount !=
+                                    null ||
+                                returnSalesProvider()
+                                        .currentCart()
+                                        .fixedDiscount !=
+                                    null,
+                            child: Container(
+                              padding: EdgeInsets.fromLTRB(
+                                7,
+                                3,
+                                4,
+                                3,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      2,
+                                    ),
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color:
+                                        const Color.fromARGB(
+                                          17,
+                                          0,
+                                          0,
+                                          0,
+                                        ),
+                                    blurRadius: 5,
+                                    spreadRadius: 2,
+                                  ),
+                                ],
+                              ),
+                              child: Text(
+                                style: TextStyle(
+                                  fontWeight:
+                                      FontWeight.bold,
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b3
+                                          .fontSize,
                                   color:
-                                      const Color.fromARGB(
-                                        17,
-                                        0,
-                                        0,
-                                        0,
-                                      ),
-                                  blurRadius: 5,
-                                  spreadRadius: 2,
+                                      theme
+                                          .lightModeColor
+                                          .secColor200,
                                 ),
-                              ],
-                            ),
-                            child: Text(
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
-                                color:
-                                    theme
-                                        .lightModeColor
-                                        .secColor200,
+                                '${returnSalesProviderContext(context).currentCart().discount?.toStringAsFixed(0) ?? formatCompactMoney(context: context, amount: returnSalesProviderContext(context).currentCart().fixedDiscount)}${returnSalesProviderContext(context).currentCart().discount != null ? '%' : ''}',
                               ),
-                              '${returnSalesProviderContext(context).currentCart().discount?.toStringAsFixed(0) ?? formatCompactMoney(context: context, amount: returnSalesProviderContext(context).currentCart().fixedDiscount)}${returnSalesProviderContext(context).currentCart().discount != null ? '%' : ''}',
                             ),
                           ),
-                        ),
-                        Stack(
-                          children: [
-                            Visibility(
-                              visible:
-                                  returnSalesProvider()
-                                      .currentCart()
-                                      .discount ==
-                                  null,
-                              child: Icon(
-                                size: 18,
-                                color:
-                                    theme
-                                        .lightModeColor
-                                        .secColor200,
-                                Icons.discount_outlined,
+                          Stack(
+                            children: [
+                              Visibility(
+                                visible:
+                                    returnSalesProvider()
+                                        .currentCart()
+                                        .discount ==
+                                    null,
+                                child: Icon(
+                                  size: 18,
+                                  color:
+                                      theme
+                                          .lightModeColor
+                                          .secColor200,
+                                  Icons.discount_outlined,
+                                ),
                               ),
-                            ),
-                            Visibility(
-                              visible:
-                                  returnSalesProvider()
-                                      .currentCart()
-                                      .discount !=
-                                  null,
-                              child: Icon(
-                                size: 20,
-                                color:
-                                    theme
-                                        .lightModeColor
-                                        .secColor200,
-                                Icons.clear,
+                              Visibility(
+                                visible:
+                                    returnSalesProvider()
+                                        .currentCart()
+                                        .discount !=
+                                    null,
+                                child: Icon(
+                                  size: 20,
+                                  color:
+                                      theme
+                                          .lightModeColor
+                                          .secColor200,
+                                  Icons.clear,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          Visibility(
-            visible:
-                returnSalesProvider()
-                    .currentCart()
-                    .isSettingDiscountOpen,
-            child: DiscountSetterBody(
-              addListener: widget.addListener,
-              removeListener: widget.removeListener,
-              isGeneral: false,
-              discountPercentController:
-                  widget.discountPercentController,
+              ],
             ),
-          ),
-        ],
+            Visibility(
+              visible:
+                  returnSalesProvider()
+                      .currentCart()
+                      .isSettingDiscountOpen,
+              child: DiscountSetterBody(
+                addListener: widget.addListener,
+                removeListener: widget.removeListener,
+                isGeneral: false,
+                discountPercentController:
+                    widget.discountPercentController,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

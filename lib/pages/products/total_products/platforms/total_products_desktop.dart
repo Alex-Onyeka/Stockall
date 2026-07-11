@@ -1113,8 +1113,8 @@ class _TotalProductsDesktopState
                                                                           ),
                                                                           Visibility(
                                                                             visible:
-                                                                                returnShopProvider().userShop()?.manageDepartments !=
-                                                                                null,
+                                                                                returnShopProvider().userShop()?.manageDepartments ==
+                                                                                true,
                                                                             child: ProductsFilterButton(
                                                                               length:
                                                                                   filterProducts().length,
@@ -1296,8 +1296,8 @@ class _TotalProductsDesktopState
                                                                     ),
                                                                     Visibility(
                                                                       visible:
-                                                                          returnShopProvider().userShop()?.manageDepartments !=
-                                                                          null,
+                                                                          returnShopProvider().userShop()?.manageDepartments ==
+                                                                          true,
                                                                       child: ProductsFilterButton(
                                                                         length:
                                                                             filterProducts().length,

@@ -975,8 +975,8 @@ class _TotalProductsMobileState
                                                       ),
                                                       Visibility(
                                                         visible:
-                                                            returnShopProvider().userShop()?.manageDepartments !=
-                                                            null,
+                                                            returnShopProvider().userShop()?.manageDepartments ==
+                                                            true,
                                                         child: ProductsFilterButton(
                                                           length:
                                                               filterProducts().length,

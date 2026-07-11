@@ -1980,7 +1980,6 @@ class _MakeSalesDesktopState
                                           visible:
                                               showBottomPanel,
                                           child: CustomBottomPanel(
-                                            // products: products,
                                             searchController:
                                                 widget
                                                     .searchController,
@@ -2980,27 +2979,8 @@ class _MakeSalesDesktopState
                                       addListener: () {
                                         returnSalesProvider()
                                             .requestFocusScanBarcode();
-                                        // returnSalesProvider()
-                                        //     .addListenerScanBarcode();
                                       },
-                                      removeListener: () {
-                                        // var number = 2;
-                                        // for (
-                                        //   var i = 0;
-                                        //   i < number;
-                                        //   i++
-                                        // ) {
-                                        //   if (returnSalesProvider()
-                                        //       .scanBarcodeCartPageNode
-                                        //       .hasFocus) {
-                                        //     returnSalesProvider()
-                                        //         .removeListenerScanBarcode();
-                                        //   }
-                                        //   print(
-                                        //     "${returnSalesProvider().scanBarcodeCartPageNode.hasFocus} Beans",
-                                        //   );
-                                        // }
-                                      },
+                                      removeListener: () {},
                                     ),
                                     SizedBox(height: 10),
                                     MainButtonP(
