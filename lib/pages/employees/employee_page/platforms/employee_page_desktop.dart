@@ -874,7 +874,10 @@ class _DetailsPageContainerState
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Visibility(
-                visible: true,
+                visible: authorization(
+                  authorized:
+                      Authorizations().deleteEmployee,
+                ),
                 child: CustomerActionButton(
                   icon: Icons.delete_outline_rounded,
                   color:
@@ -888,13 +891,19 @@ class _DetailsPageContainerState
                   theme: widget.theme,
                 ),
               ),
-              CustomerActionButton(
-                svg: editIconSvg,
-                color: Colors.grey,
-                iconSize: 15,
-                text: 'Edit',
-                action: widget.editAction,
-                theme: widget.theme,
+              Visibility(
+                visible: authorization(
+                  authorized:
+                      Authorizations().updateEmployee,
+                ),
+                child: CustomerActionButton(
+                  svg: editIconSvg,
+                  color: Colors.grey,
+                  iconSize: 15,
+                  text: 'Edit',
+                  action: widget.editAction,
+                  theme: widget.theme,
+                ),
               ),
             ],
           ),

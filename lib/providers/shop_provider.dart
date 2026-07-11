@@ -82,6 +82,7 @@ class ShopProvider extends ChangeNotifier {
                 '',
           );
         }
+        shop.isHeadQuarters = true;
         await supabase
             .from('shops')
             .insert(shop.toJson())
@@ -121,6 +122,7 @@ class ShopProvider extends ChangeNotifier {
                 '',
           );
           shop.userId = userShops.first.userId;
+          shop.isHeadQuarters = false;
         }
         await supabase
             .from('shops')
@@ -362,59 +364,70 @@ class ShopProvider extends ChangeNotifier {
 
     try {
       if (isOnline) {
-        var user =
-            await supabase
-                .from('users')
-                .select()
-                .eq(
-                  'user_id',
-                  AuthService().currentUser ?? '',
-                )
-                .maybeSingle();
+        List<dynamic> response = [];
 
-        if (user != null) {
-          var tempUser = TempUserClass.fromJson(user);
-
-          List<dynamic> response = [];
-
-          if (authorization(
-            authorized: Authorizations().viewAllShops,
-          )) {
+        if (authorization(
+          authorized: Authorizations().viewAllShops,
+        )) {
+          if (currentUser().role == 'Owner') {
             response = await supabase
                 .from('shops')
                 .select()
-                .eq('user_id', tempUser.userId ?? '')
+                .eq('user_id', currentUser().userId ?? '')
                 .eq('is_allowed_by_subscription', true);
           } else {
-            response = await supabase
-                .from('shops')
-                .select()
-                .contains('employees', [
-                  AuthService().currentUser ?? '',
-                ])
-                .eq('is_allowed_by_subscription', true);
+            List<Map<String, dynamic>> tempBeans =
+                await supabase
+                    .from('shops')
+                    .select()
+                    .contains('employees', [
+                      AuthService().currentUser ?? '',
+                    ])
+                    .eq('is_allowed_by_subscription', true)
+                    .limit(1);
+            if (tempBeans.isNotEmpty) {
+              var newTemp = TempShopClass.fromJson(
+                tempBeans.first,
+              );
+              response = await supabase
+                  .from('shops')
+                  .select()
+                  .eq('user_id', newTemp.userId)
+                  .eq('is_allowed_by_subscription', true);
+            } else {
+              return [];
+            }
           }
-
-          if (response.isEmpty) {
-            return [];
-          }
-
-          final shops =
-              response
-                  .map((res) => TempShopClass.fromJson(res))
-                  .toList();
-
-          shops.sort((a, b) {
-            final aHQ = a.isHeadQuarters ?? false;
-            final bHQ = b.isHeadQuarters ?? false;
-            return (bHQ ? 1 : 0).compareTo(aHQ ? 1 : 0);
-          });
-
-          await ShopFunc().insertShops(shops);
-
-          setShops(shops);
-          notifyListeners();
+        } else {
+          response = await supabase
+              .from('shops')
+              .select()
+              .contains('employees', [
+                AuthService().currentUser ?? '',
+              ])
+              .eq('is_allowed_by_subscription', true);
         }
+
+        if (response.isEmpty) {
+          return [];
+        }
+
+        final shops =
+            response
+                .map((res) => TempShopClass.fromJson(res))
+                .toList();
+
+        shops.sort((a, b) {
+          final aHQ = a.isHeadQuarters ?? false;
+          final bHQ = b.isHeadQuarters ?? false;
+          return (bHQ ? 1 : 0).compareTo(aHQ ? 1 : 0);
+        });
+
+        await ShopFunc().insertShops(shops);
+
+        setShops(shops);
+        notifyListeners();
+
         var res =
             await supabase
                 .from('users')
