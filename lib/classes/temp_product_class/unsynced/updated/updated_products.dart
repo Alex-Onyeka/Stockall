@@ -5,7 +5,13 @@ part 'updated_products.g.dart';
 @HiveType(typeId: 11)
 class UpdatedProducts extends HiveObject {
   @HiveField(0)
-  TempProductClass product;
+  final TempProductClass product;
 
-  UpdatedProducts({required this.product});
+  @HiveField(1)
+  final bool includeQuantity;
+
+  UpdatedProducts({
+    required this.product,
+    required this.includeQuantity,
+  });
 }

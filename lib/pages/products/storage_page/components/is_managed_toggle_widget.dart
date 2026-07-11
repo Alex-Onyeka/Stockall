@@ -45,6 +45,7 @@ class _IsManagedToggleWidgetState
                       isLoading = true;
                     });
                     await dataProvider.updateProduct(
+                      includeQuantity: false,
                       isIncrement: null,
                       isQuantityUpdate: false,
                       quantityChange: null,

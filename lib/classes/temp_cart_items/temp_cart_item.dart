@@ -71,7 +71,7 @@ class TempCartItem extends HiveObject {
   });
 
   Map<String, dynamic> toJson() => {
-    'item': item.toJson(),
+    'item': item.toJson(isIncludeQuantity: true),
     'item_uuid': itemUuid,
     'discount': discount,
     'fixed_discount': fixedDiscount,

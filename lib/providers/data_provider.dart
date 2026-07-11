@@ -135,7 +135,10 @@ class DataProvider extends ChangeNotifier {
 
     await ProductsFunc().createProduct(product);
     await CreatedProductFunc().createProduct(
-      CreatedProducts(product: product),
+      CreatedProducts(
+        product: product,
+        includeQuantity: true,
+      ),
     );
     await returnEventsLogProvider().createLog(
       returnEventsLogProvider().productAdapter(product, 1),
@@ -150,9 +153,7 @@ class DataProvider extends ChangeNotifier {
     clearFields();
   }
 
-  Future<void> createProductsSync(
-    // BuildContext context,
-  ) async {
+  Future<void> createProductsSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
@@ -160,18 +161,17 @@ class DataProvider extends ChangeNotifier {
           isOnline) {
         final tempProducts =
             CreatedProductFunc().getProducts().toList();
-        // final payload =
-        //     tempProducts
-        //         .map((p) => p.product.toJson())
-        //         .toList();
-
         int count = 0;
         for (var item in tempProducts) {
           try {
             // Insert all at once
             await supabase
                 .from('products')
-                .insert(item.product.toJson())
+                .insert(
+                  item.product.toJson(
+                    isIncludeQuantity: item.includeQuantity,
+                  ),
+                )
                 .select();
             count++;
             await CreatedProductFunc().deleteProduct(
@@ -286,7 +286,12 @@ class DataProvider extends ChangeNotifier {
             try {
               await supabase
                   .from('products')
-                  .insert(localProduct.toJson());
+                  .insert(
+                    localProduct.toJson(
+                      isIncludeQuantity:
+                          updated.includeQuantity,
+                    ),
+                  );
               print(
                 'Inserted product with uuid ${localProduct.uuid}',
               );
@@ -331,7 +336,12 @@ class DataProvider extends ChangeNotifier {
               try {
                 await supabase
                     .from('products')
-                    .update(localProduct.toJson())
+                    .update(
+                      localProduct.toJson(
+                        isIncludeQuantity:
+                            updated.includeQuantity,
+                      ),
+                    )
                     .eq('uuid', localProduct.uuid!);
                 print(
                   'Updated product with uuid ${localProduct.uuid}',
@@ -1287,6 +1297,7 @@ class DataProvider extends ChangeNotifier {
   Future<TempProductClass?> updateProduct({
     required TempProductClass product,
     required bool isQuantityUpdate,
+    required bool includeQuantity,
     required double? quantityChange,
     required bool? isIncrement,
     TempProductClass? oldProduct,
@@ -1309,11 +1320,17 @@ class DataProvider extends ChangeNotifier {
           if (containsCreated.isEmpty) {
             await UpdatedProductsFunc()
                 .createUpdatedProduct(
-                  UpdatedProducts(product: product),
+                  UpdatedProducts(
+                    product: product,
+                    includeQuantity: includeQuantity,
+                  ),
                 );
           } else {
             await CreatedProductFunc().updateProduct(
-              CreatedProducts(product: product),
+              CreatedProducts(
+                product: product,
+                includeQuantity: includeQuantity,
+              ),
             );
           }
           await returnEventsLogProvider().createLog(
@@ -2070,26 +2087,7 @@ class DataProvider extends ChangeNotifier {
   }
 
   Future<int> duplicateSelectedProducts() async {
-    // bool isOnline = await ConnectivityProvider().isOnline();
     try {
-      // if (isOnline) {
-      //   var productUuids =
-      //       selectedProducts.map((pr) => pr.uuid!).toList();
-      //   await supabase.rpc(
-      //     'duplicate_products',
-      //     params: {'product_uuids': productUuids},
-      //   );
-      //   print("Products Duplicated Successful Online");
-      //   for (var pr in selectedProducts) {
-      //     await returnEventsLogProvider().createLog(
-      //       returnEventsLogProvider().productAdapter(pr, 1),
-      //     );
-      //   }
-
-      //   await getProducts(shopId());
-      //   toggleIsSelectProduct(false);
-      //   return 1;
-      // } else {
       for (var pr in selectedProducts) {
         final random = Random();
         final number = random.nextInt(50);
@@ -2103,7 +2101,10 @@ class DataProvider extends ChangeNotifier {
         await ProductsFunc().createProduct(newProduct);
 
         await CreatedProductFunc().createProduct(
-          CreatedProducts(product: newProduct),
+          CreatedProducts(
+            product: newProduct,
+            includeQuantity: true,
+          ),
         );
 
         await returnEventsLogProvider().createLog(
@@ -2127,40 +2128,7 @@ class DataProvider extends ChangeNotifier {
   }
 
   Future<int> generateStorageSelectedProducts() async {
-    // bool isOnline = await ConnectivityProvider().isOnline();
     try {
-      // if (isOnline) {
-      //   List<StorageProductInput> temp =
-      //       selectedProducts
-      //           .map(
-      //             (pr) => StorageProductInput(
-      //               name: pr.name,
-      //               productUuid: pr.uuid!,
-      //               shopId: pr.shopId,
-      //               groupUnit: pr.groupUnit,
-      //               singleUnit: pr.unit,
-      //             ),
-      //           )
-      //           .toList();
-      //   List<Map<String, dynamic>> payload =
-      //       temp.map((pr) => pr.toJson()).toList();
-      //   await supabase.rpc(
-      //     'insert_storage_products_bulk',
-      //     params: {'products': payload},
-      //   );
-      //   print(
-      //     "Storage Products Generation Successful Online",
-      //   );
-      //   // for (var pr in selectedProducts) {
-      //   //   await returnEventsLogProvider().createLog(
-      //   //     returnEventsLogProvider().productAdapter(pr, 1),
-      //   //   );
-      //   // }
-
-      //   await getProducts(shopId());
-      //   toggleIsSelectProduct(false);
-      //   return 1;
-      // } else {
       for (var pr in selectedProducts) {
         var newUuid = uuidGen();
         await returnStorageProductProvider()
@@ -2183,6 +2151,7 @@ class DataProvider extends ChangeNotifier {
         var product = pr.copyWith(storageUuid: newUuid);
 
         await updateProduct(
+          includeQuantity: true,
           product: product,
           isMultipleUpdate: true,
           isIncrement: null,

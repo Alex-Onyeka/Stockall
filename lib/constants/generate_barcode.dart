@@ -614,6 +614,7 @@ Future<bool> generateBarcodeAndPrint(
                   print("✅✅✅❌$newShit");
 
                   await returnData().updateProduct(
+                    includeQuantity: false,
                     product: pr.product,
                     isIncrement: null,
                     isQuantityUpdate: false,

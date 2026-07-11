@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_product_class/unsynced/quantity_update/quantity_update.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/classes/temp_storage_product/unsynced/created_storage_products/created_storage_products.dart';
 import 'package:stockall/classes/temp_storage_product/unsynced/deleted_storage_products/deleted_storage_product.dart';
@@ -483,45 +482,43 @@ class StorageProductProvider extends ChangeNotifier {
       var res = await StorageProductsFunc()
           .updateStorageProduct(product);
       if (res == 1) {
-        if (isQuantityUpdate == false) {
-          List<CreatedStorageProducts> containsCreated =
-              CreatedStorageProductsFunc()
-                  .getStorageProducts()
-                  .where(
-                    (createdProduct) =>
-                        createdProduct
-                            .storageProduct
-                            .uuid ==
-                        product.uuid,
-                  )
-                  .toList();
-          if (containsCreated.isEmpty) {
-            await UpdatedStorageProductsFunc()
-                .createUpdatedStorageProduct(
-                  UpdatedStorageProduct(
-                    updatedStorageProduct: product,
-                  ),
-                );
-          } else {
-            await CreatedStorageProductsFunc()
-                .updateCreatedStorageProduct(
-                  CreatedStorageProducts(
-                    storageProduct: product,
-                  ),
-                );
-          }
+        // if (isQuantityUpdate == false) {
+        List<CreatedStorageProducts> containsCreated =
+            CreatedStorageProductsFunc()
+                .getStorageProducts()
+                .where(
+                  (createdProduct) =>
+                      createdProduct.storageProduct.uuid ==
+                      product.uuid,
+                )
+                .toList();
+        if (containsCreated.isEmpty) {
+          await UpdatedStorageProductsFunc()
+              .createUpdatedStorageProduct(
+                UpdatedStorageProduct(
+                  updatedStorageProduct: product,
+                ),
+              );
         } else {
-          QuantityUpdate quantityUpdate = QuantityUpdate(
-            isStorage: true,
-            quantity: (quantityChange ?? 0).abs(),
-            productUuid: product.uuid!,
-            isIncrement: isIncrement ?? true,
-          );
-          await returnQuantityUpdateProvider()
-              .createQuantityUpdate(
-                quantityUpdate: quantityUpdate,
+          await CreatedStorageProductsFunc()
+              .updateCreatedStorageProduct(
+                CreatedStorageProducts(
+                  storageProduct: product,
+                ),
               );
         }
+        // } else {
+        //   QuantityUpdate quantityUpdate = QuantityUpdate(
+        //     isStorage: true,
+        //     quantity: (quantityChange ?? 0).abs(),
+        //     productUuid: product.uuid!,
+        //     isIncrement: isIncrement ?? true,
+        //   );
+        //   await returnQuantityUpdateProvider()
+        //       .createQuantityUpdate(
+        //         quantityUpdate: quantityUpdate,
+        //       );
+        // }
         await getStorageProductsOffline(
           returnShopProvider().userShop()!.shopId!,
         );

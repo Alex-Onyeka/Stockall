@@ -206,44 +206,86 @@ class TempProductClass {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'shop_id': shopId,
-      'brand': brand,
-      // 'category': category,
-      'barcode': barcode,
-      'unit': unit,
-      'is_refundable': isRefundable,
-      'color': color,
-      'size_type': sizeType,
-      'size': size,
-      'cost_price': costPrice,
-      'selling_price': sellingPrice,
-      'discount': discount,
-      'starting_date':
-          startDate?.toIso8601String().split('T').first,
-      'ending_date':
-          endDate?.toIso8601String().split('T').first,
-      'expiry_date':
-          expiryDate?.toIso8601String().split('T').first,
-      'quantity': quantity,
-      'set_custom_price': setCustomPrice,
-      'department_uuid': departmentUuid,
-      'department_name': departmentName,
-      'low_qtty': lowQtty,
-      'is_managed': isManaged,
-      'updated_at': updatedAt?.toIso8601String(),
-      'uuid': uuid,
-      'total_qtty_in_storage': totalQttyInStorage,
-      'total_qtty_in_storage_double':
-          totalQttyInStorageDouble,
-      'group_unit': groupUnit,
-      'qtty_per_group': qttyPerGroup,
-      'category_uuid': categoryUuid,
-      'whole_sale_price': wholeSalePrice,
-      'storage_uuid': storageUuid,
-    };
+  Map<String, dynamic> toJson({
+    required bool isIncludeQuantity,
+  }) {
+    if (isIncludeQuantity) {
+      return {
+        'name': name,
+        'shop_id': shopId,
+        'brand': brand,
+        // 'category': category,
+        'barcode': barcode,
+        'unit': unit,
+        'is_refundable': isRefundable,
+        'color': color,
+        'size_type': sizeType,
+        'size': size,
+        'cost_price': costPrice,
+        'selling_price': sellingPrice,
+        'discount': discount,
+        'starting_date':
+            startDate?.toIso8601String().split('T').first,
+        'ending_date':
+            endDate?.toIso8601String().split('T').first,
+        'expiry_date':
+            expiryDate?.toIso8601String().split('T').first,
+        'quantity': quantity,
+        'set_custom_price': setCustomPrice,
+        'department_uuid': departmentUuid,
+        'department_name': departmentName,
+        'low_qtty': lowQtty,
+        'is_managed': isManaged,
+        'updated_at': updatedAt?.toIso8601String(),
+        'uuid': uuid,
+        'total_qtty_in_storage': totalQttyInStorage,
+        'total_qtty_in_storage_double':
+            totalQttyInStorageDouble,
+        'group_unit': groupUnit,
+        'qtty_per_group': qttyPerGroup,
+        'category_uuid': categoryUuid,
+        'whole_sale_price': wholeSalePrice,
+        'storage_uuid': storageUuid,
+      };
+    } else {
+      return {
+        'name': name,
+        'shop_id': shopId,
+        'brand': brand,
+        // 'category': category,
+        'barcode': barcode,
+        'unit': unit,
+        'is_refundable': isRefundable,
+        'color': color,
+        'size_type': sizeType,
+        'size': size,
+        'cost_price': costPrice,
+        'selling_price': sellingPrice,
+        'discount': discount,
+        'starting_date':
+            startDate?.toIso8601String().split('T').first,
+        'ending_date':
+            endDate?.toIso8601String().split('T').first,
+        'expiry_date':
+            expiryDate?.toIso8601String().split('T').first,
+        // 'quantity': quantity,
+        'set_custom_price': setCustomPrice,
+        'department_uuid': departmentUuid,
+        'department_name': departmentName,
+        'low_qtty': lowQtty,
+        'is_managed': isManaged,
+        'updated_at': updatedAt?.toIso8601String(),
+        'uuid': uuid,
+        'total_qtty_in_storage': totalQttyInStorage,
+        'total_qtty_in_storage_double':
+            totalQttyInStorageDouble,
+        'group_unit': groupUnit,
+        'qtty_per_group': qttyPerGroup,
+        'category_uuid': categoryUuid,
+        'whole_sale_price': wholeSalePrice,
+        'storage_uuid': storageUuid,
+      };
+    }
   }
 
   TempProductClass copyWith({

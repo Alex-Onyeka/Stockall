@@ -18,15 +18,18 @@ class CreatedProductsAdapter extends TypeAdapter<CreatedProducts> {
     };
     return CreatedProducts(
       product: fields[0] as TempProductClass,
+      includeQuantity: fields[1] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, CreatedProducts obj) {
     writer
-      ..writeByte(1)
+      ..writeByte(2)
       ..writeByte(0)
-      ..write(obj.product);
+      ..write(obj.product)
+      ..writeByte(1)
+      ..write(obj.includeQuantity);
   }
 
   @override

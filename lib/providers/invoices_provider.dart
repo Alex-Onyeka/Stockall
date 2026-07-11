@@ -1170,7 +1170,6 @@ class InvoicesProvider extends ChangeNotifier {
         }
 
         print('$count items added successfully ✅');
-        print('Unsynced Invoices Cleared');
         print('Mounted, refreshing Invoices ✅');
         await loadInvoices(
           returnShopProvider().userShop()!.shopId!,
@@ -1196,9 +1195,7 @@ class InvoicesProvider extends ChangeNotifier {
   //
   //
 
-  Future<void> deleteInvoicesSync(
-    // BuildContext context,
-  ) async {
+  Future<void> deleteInvoicesSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
@@ -1212,7 +1209,7 @@ class InvoicesProvider extends ChangeNotifier {
         for (var inv in tempInvoice) {
           try {
             await supabase.rpc(
-              'delete_invoice_and_update_inventory_new',
+              'delete_invoice_without_updating_inventory',
               params: {
                 'target_invoice_uuid': inv.invoiceUuid,
               },

@@ -562,6 +562,8 @@ class _ProductDetailsMobileState
                                                                           },
                                                                         );
                                                                         await dataProvider.updateProduct(
+                                                                          includeQuantity:
+                                                                              false,
                                                                           isIncrement:
                                                                               null,
                                                                           isQuantityUpdate:
@@ -1080,6 +1082,8 @@ class _ProductDetailsMobileState
                                                               true;
                                                         });
                                                         await dataProvider.updateProduct(
+                                                          includeQuantity:
+                                                              false,
                                                           isIncrement:
                                                               null,
                                                           isQuantityUpdate:

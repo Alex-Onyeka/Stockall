@@ -645,6 +645,8 @@ class _ProductDetailsDesktopState
                                                                                                 },
                                                                                               );
                                                                                               await dataProvider.updateProduct(
+                                                                                                includeQuantity:
+                                                                                                    false,
                                                                                                 isIncrement:
                                                                                                     null,
                                                                                                 isQuantityUpdate:
@@ -980,6 +982,8 @@ class _ProductDetailsDesktopState
                                                                     },
                                                                   );
                                                                   await dataProvider.updateProduct(
+                                                                    includeQuantity:
+                                                                        false,
                                                                     isIncrement:
                                                                         null,
                                                                     isQuantityUpdate:

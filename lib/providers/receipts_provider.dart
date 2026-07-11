@@ -542,7 +542,7 @@ class ReceiptsProvider extends ChangeNotifier {
 
         for (var rec in tempReceipts) {
           await supabase.rpc(
-            'delete_receipt_and_update_inventory_new',
+            'delete_receipt_without_updating_inventory',
             params: {
               'target_receipt_uuid': rec.receiptUuid,
             },

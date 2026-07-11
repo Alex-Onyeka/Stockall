@@ -118,6 +118,7 @@ class ProductRecordFunc {
                     : (product.quantity ?? 0) +
                         record.quantity;
             await returnData().updateProduct(
+              includeQuantity: false,
               isMultipleUpdate: true,
               product: product,
               isQuantityUpdate: true,
@@ -223,6 +224,7 @@ class ProductRecordFunc {
                     : (product.quantity ?? 0) +
                         record.quantity;
             await returnData().updateProduct(
+              includeQuantity: false,
               isMultipleUpdate: true,
               product: product,
               isQuantityUpdate: true,

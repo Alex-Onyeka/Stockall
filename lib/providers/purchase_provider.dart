@@ -9,8 +9,6 @@ import 'package:stockall/classes/temp_purchase/unsynced/created_purchases/create
 import 'package:stockall/classes/temp_purchase/unsynced/deleted_purchase/deleted_purchases.dart';
 import 'package:stockall/classes/temp_purchase/unsynced/updated/updated_purchases.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
-import 'package:stockall/classes/temp_storage_product/unsynced/created_storage_products/created_storage_products.dart';
-import 'package:stockall/classes/temp_storage_product/unsynced/updated/updated_storage_product.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/item_purchase_func.dart%20copy/item_purchase_func.dart';
@@ -20,9 +18,6 @@ import 'package:stockall/local_database/purchases/purchase_func.dart';
 import 'package:stockall/local_database/purchases/unsync_funcs/created/created_purchases_func.dart';
 import 'package:stockall/local_database/purchases/unsync_funcs/deleted/deleted_purchases_func.dart';
 import 'package:stockall/local_database/purchases/unsync_funcs/updated/updated_purchases_func.dart';
-import 'package:stockall/local_database/storage_product/storage_products_func.dart';
-import 'package:stockall/local_database/storage_product/unsync_funcs/created/created_storage_products_func.dart';
-import 'package:stockall/local_database/storage_product/unsync_funcs/updated/updated_storage_products_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/error_log_provider.dart';
@@ -465,6 +460,7 @@ class PurchaseProvider extends ChangeNotifier {
                       : rec.quantity ?? 0);
 
               await returnData().updateProduct(
+                includeQuantity: false,
                 product: newPro,
                 isQuantityUpdate: true,
                 quantityChange:
@@ -924,6 +920,7 @@ class PurchaseProvider extends ChangeNotifier {
           newPr.updatedAt = DateTime.now();
 
           await returnData().updateProduct(
+            includeQuantity: false,
             isIncrement:
                 (newPr.quantity ?? 0) >
                 (product.quantity ?? 0),

@@ -1088,6 +1088,8 @@ class _StorageQuantityUpdateWidgetState
                                   newPr != null) {
                                 await returnData()
                                     .updateProduct(
+                                      includeQuantity:
+                                          false,
                                       isIncrement:
                                           newQuantity >
                                           oldQuantity,
@@ -1453,6 +1455,8 @@ class _ManageProductsStorageState
                                         widget.productUuid;
                                     await returnData()
                                         .updateProduct(
+                                          includeQuantity:
+                                              false,
                                           isIncrement: null,
                                           isQuantityUpdate:
                                               false,
@@ -1479,6 +1483,8 @@ class _ManageProductsStorageState
                                         null;
                                     await returnData()
                                         .updateProduct(
+                                          includeQuantity:
+                                              false,
                                           isIncrement: null,
                                           isQuantityUpdate:
                                               false,

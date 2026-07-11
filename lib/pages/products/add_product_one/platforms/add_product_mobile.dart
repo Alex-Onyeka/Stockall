@@ -285,6 +285,7 @@ class _AddProductMobileState
             });
 
             var res = await provider.updateProduct(
+              includeQuantity: false,
               isIncrement: null,
               isQuantityUpdate: false,
               quantityChange: null,

@@ -546,10 +546,12 @@ class _UpdateItemQuantityWidgetState
                                               0);
 
                                       await dataProvider.updateProduct(
+                                        includeQuantity:
+                                            true,
                                         isIncrement:
                                             isIncrement,
                                         isQuantityUpdate:
-                                            true,
+                                            false,
                                         quantityChange:
                                             (setQuantity() -
                                                     (widget.product.quantity ??

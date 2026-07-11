@@ -99,7 +99,7 @@ class TempStorageProducts {
       'shop_id': shopId,
       'name': name,
       'description': desc,
-      // 'quantity': quantity,
+      'quantity': quantity,
       'single_unit': unit,
       'group_unit': groupUnit,
       'updated_at': updatedAt?.toIso8601String(),

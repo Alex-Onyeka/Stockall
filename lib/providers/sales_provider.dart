@@ -1248,6 +1248,7 @@ class SalesProvider extends ChangeNotifier {
                     (cartItem.getItem()!.quantity ?? 0) -
                     cartItem.getRealQuantity();
                 await returnData().updateProduct(
+                  includeQuantity: false,
                   product: cartItem.getItem()!,
                   isQuantityUpdate: true,
                   quantityChange:
@@ -1553,6 +1554,7 @@ class SalesProvider extends ChangeNotifier {
                     (cartItem.getItem()!.quantity ?? 0) -
                     cartItem.getRealQuantity();
                 await returnData().updateProduct(
+                  includeQuantity: false,
                   product: cartItem.getItem()!,
                   isQuantityUpdate: true,
                   quantityChange:

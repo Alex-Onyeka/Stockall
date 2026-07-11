@@ -7,5 +7,11 @@ class CreatedProducts extends HiveObject {
   @HiveField(0)
   final TempProductClass product;
 
-  CreatedProducts({required this.product});
+  @HiveField(1)
+  final bool includeQuantity;
+
+  CreatedProducts({
+    required this.product,
+    required this.includeQuantity,
+  });
 }

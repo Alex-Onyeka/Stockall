@@ -49,6 +49,27 @@ class QuantityUpdateFunc {
     return quantityUpdateBox.values.toList();
   }
 
+  // Future<int> createQuantityUpdate(
+  //   QuantityUpdate quantityUpdate,
+  // ) async {
+  //   try {
+  //     await quantityUpdateBox.put(
+  //       quantityUpdate.uuid,
+  //       quantityUpdate,
+  //     );
+
+  //     print(
+  //       'Offline Quantity Update inserted successfully ✅',
+  //     );
+  //     return 1;
+  //   } catch (e) {
+  //     print(
+  //       'Offline Quantity Update insertion failed ❌: $e',
+  //     );
+  //     return 0;
+  //   }
+  // }
+
   Future<int> createQuantityUpdate(
     QuantityUpdate quantityUpdate,
   ) async {

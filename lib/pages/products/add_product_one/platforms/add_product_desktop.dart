@@ -283,6 +283,7 @@ class _AddProductDesktopState
             });
 
             var res = await provider.updateProduct(
+              includeQuantity: false,
               isIncrement: null,
               isQuantityUpdate: false,
               quantityChange: null,
