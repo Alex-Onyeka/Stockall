@@ -6,20 +6,20 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/local_database/products/unsync_funcs/quantity_update/quantity_update_func.dart';
 import 'package:stockall/main.dart';
 
-class QuantityUpdatesMobile extends StatefulWidget {
+class ItemHistoryMobile extends StatefulWidget {
   final String? productUuid;
-  const QuantityUpdatesMobile({
+  const ItemHistoryMobile({
     super.key,
     required this.productUuid,
   });
 
   @override
-  State<QuantityUpdatesMobile> createState() =>
-      _QuantityUpdatesMobileState();
+  State<ItemHistoryMobile> createState() =>
+      ItemHistoryMobileState();
 }
 
-class _QuantityUpdatesMobileState
-    extends State<QuantityUpdatesMobile> {
+class ItemHistoryMobileState
+    extends State<ItemHistoryMobile> {
   late Future<TempProductClass> productFuture;
 
   bool isLoading = false;

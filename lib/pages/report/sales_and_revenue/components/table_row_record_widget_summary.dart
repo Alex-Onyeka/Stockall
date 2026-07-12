@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/pages/report/general_report/class/general_report_class.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -61,9 +62,6 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
               padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
                 border: Border(
-                  // right: BorderSide(
-                  //   color: Colors.grey,
-                  // ),
                   left: BorderSide(color: Colors.grey),
                 ),
               ),
@@ -171,65 +169,81 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(
-            flex: 5,
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  right: BorderSide(color: Colors.grey),
-                  left: BorderSide(color: Colors.grey),
+          Visibility(
+            visible: authorization(
+              authorized: Authorizations().manageCostPrice,
+            ),
+            child: Expanded(
+              flex: 5,
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: BorderSide(color: Colors.grey),
+                    left: BorderSide(color: Colors.grey),
+                  ),
                 ),
-              ),
-              padding: EdgeInsets.all(5),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b3.fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        formatMoneyBig(
-                          amount: record.costPrice,
-                          context: context,
+                padding: EdgeInsets.all(5),
+                child: Center(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          formatMoneyBig(
+                            amount: record.costPrice,
+                            context: context,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-          Expanded(
-            flex: 5,
-            child: Container(
-              // height: double.infinity,
-              padding: EdgeInsets.all(5),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b3.fontSize,
-                          fontWeight: FontWeight.bold,
-                          color:
-                              (record.profit()) >= 0
-                                  ? null
-                                  : const Color.fromARGB(
-                                    255,
-                                    218,
-                                    86,
-                                    76,
-                                  ),
+          Visibility(
+            visible: authorization(
+              authorized: Authorizations().manageCostPrice,
+            ),
+            child: Expanded(
+              flex: 5,
+              child: Container(
+                // height: double.infinity,
+                padding: EdgeInsets.all(5),
+                child: Center(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                            color:
+                                (record.profit()) >= 0
+                                    ? null
+                                    : const Color.fromARGB(
+                                      255,
+                                      218,
+                                      86,
+                                      76,
+                                    ),
+                          ),
+                          "${(record.profit()) >= 0 ? '+' : ''}${formatMoneyBig(amount: record.profit(), context: context)}",
                         ),
-                        "${(record.profit()) >= 0 ? '+' : ''}${formatMoneyBig(amount: record.profit(), context: context)}",
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

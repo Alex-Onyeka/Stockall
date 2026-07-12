@@ -5,6 +5,7 @@ import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
+import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_main_cart/temp_main_cart.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
@@ -1247,7 +1248,19 @@ class SalesProvider extends ChangeNotifier {
                 cartItem.getItem()!.quantity =
                     (cartItem.getItem()!.quantity ?? 0) -
                     cartItem.getRealQuantity();
+                ItemHistory itemHistory = ItemHistory(
+                  shopId: shopId,
+                  title: 'Item Sold',
+                  quantityChange:
+                      -cartItem.getRealQuantity(),
+                  newValue:
+                      cartItem
+                          .getItem()!
+                          .quantity
+                          .toString(),
+                );
                 await returnData().updateProduct(
+                  itemHistory: itemHistory,
                   includeQuantity: false,
                   product: cartItem.getItem()!,
                   isQuantityUpdate: true,
@@ -1553,7 +1566,19 @@ class SalesProvider extends ChangeNotifier {
                 cartItem.getItem()!.quantity =
                     (cartItem.getItem()!.quantity ?? 0) -
                     cartItem.getRealQuantity();
+                ItemHistory itemHistory = ItemHistory(
+                  shopId: shopId,
+                  title: 'Item Sold',
+                  quantityChange:
+                      -cartItem.getRealQuantity(),
+                  newValue:
+                      cartItem
+                          .getItem()!
+                          .quantity
+                          .toString(),
+                );
                 await returnData().updateProduct(
+                  itemHistory: itemHistory,
                   includeQuantity: false,
                   product: cartItem.getItem()!,
                   isQuantityUpdate: true,

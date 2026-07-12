@@ -295,10 +295,6 @@ class _AddEmployeeDesktopState
                                               currentSelected =
                                                   index;
                                             });
-                                            print(index);
-                                            print(
-                                              employee.role,
-                                            );
                                           },
                                           authorizations:
                                               employee

@@ -8,6 +8,7 @@ import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/profile/change_email/enter_new_email/enter_new_email.dart';
@@ -227,6 +228,82 @@ class ProfilePageDesktopState
                                       .secColor200,
                             ),
                             user.email,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 5,
+                            ),
+                            child: Ink(
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      4,
+                                    ),
+                                border: Border.all(
+                                  color:
+                                      Colors.grey.shade400,
+                                ),
+                                color: Colors.grey.shade100,
+                              ),
+                              child: InkWell(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      4,
+                                    ),
+                                onTap: () {
+                                  copyToClipboard(
+                                    context: context,
+                                    text:
+                                        user.userId ??
+                                        'No Text',
+                                  );
+                                },
+                                child: Container(
+                                  padding:
+                                      EdgeInsets.symmetric(
+                                        vertical: 3,
+                                        horizontal: 6,
+                                      ),
+                                  child: Row(
+                                    mainAxisSize:
+                                        MainAxisSize.min,
+                                    spacing: 5,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment
+                                            .center,
+                                    children: [
+                                      Flexible(
+                                        child: Text(
+                                          style: TextStyle(
+                                            fontWeight:
+                                                FontWeight
+                                                    .normal,
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                          ),
+                                          user.userId ??
+                                              'User Id',
+                                        ),
+                                      ),
+                                      Icon(
+                                        size: 16,
+                                        color:
+                                            theme
+                                                .lightModeColor
+                                                .secColor200,
+                                        Icons.copy,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),

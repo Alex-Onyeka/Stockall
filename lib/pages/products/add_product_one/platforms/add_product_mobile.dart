@@ -285,6 +285,7 @@ class _AddProductMobileState
             });
 
             var res = await provider.updateProduct(
+              itemHistory: null,
               includeQuantity: false,
               isIncrement: null,
               isQuantityUpdate: false,
@@ -605,56 +606,38 @@ class _AddProductMobileState
                               ),
                               SizedBox(height: 10),
                               Row(
-                                spacing: 10,
                                 children: [
-                                  Expanded(
-                                    child: MoneyTextfield(
-                                      onChanged: (value) {
-                                        // if (value.isEmpty) {
-                                        //   cost = 0;
-                                        // } else {
-                                        //   setState(() {
-                                        //     cost = double.parse(
-                                        //       widget
-                                        //           .costController
-                                        //           .text
-                                        //           .replaceAll(
-                                        //             ',',
-                                        //             '',
-                                        //           ),
-                                        //     );
-                                        //   });
-                                        // }
-                                      },
-                                      theme: theme,
-                                      hint:
-                                          'Enter Real Cost',
-                                      title:
-                                          'Cost - Price (Optional)',
-                                      controller:
-                                          widget
-                                              .costController,
+                                  Visibility(
+                                    visible: authorization(
+                                      authorized:
+                                          Authorizations()
+                                              .manageCostPrice,
+                                    ),
+                                    child: Expanded(
+                                      child: MoneyTextfield(
+                                        theme: theme,
+                                        hint:
+                                            'Enter Real Cost',
+                                        title:
+                                            'Cost - Price (Optional)',
+                                        controller:
+                                            widget
+                                                .costController,
+                                      ),
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible: authorization(
+                                      authorized:
+                                          Authorizations()
+                                              .manageCostPrice,
+                                    ),
+                                    child: SizedBox(
+                                      width: 10,
                                     ),
                                   ),
                                   Expanded(
                                     child: MoneyTextfield(
-                                      onChanged: (value) {
-                                        // if (value.isEmpty) {
-                                        //   selling = 0;
-                                        // } else {
-                                        //   setState(() {
-                                        //     selling = double.parse(
-                                        //       widget
-                                        //           .sellingController
-                                        //           .text
-                                        //           .replaceAll(
-                                        //             ',',
-                                        //             '',
-                                        //           ),
-                                        //     );
-                                        //   });
-                                        // }
-                                      },
                                       theme: theme,
                                       hint:
                                           'Enter Sale Price',

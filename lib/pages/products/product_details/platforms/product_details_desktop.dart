@@ -15,7 +15,6 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/barcode_printing_page/barcode_printing_page.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/update_item_quantity.dart';
-import 'package:stockall/pages/products/quantity_update_page/quantity_update_page.dart';
 import 'package:stockall/providers/data_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -129,127 +128,127 @@ class _ProductDetailsDesktopState
                       appBar: appBar(
                         context: context,
                         title: 'Item Details',
-                        widget: Visibility(
-                          visible: !isStoreKeeper(),
-                          child: InkWell(
-                            onTap: () {
-                              // var safeContext = context;
-                              // showDialog(
-                              //   context: safeContext,
-                              //   builder: (context) {
-                              //     return ConfirmationAlert(
-                              //       theme: widget.theme,
-                              //       message:
-                              //           'This item is going to be added to your cart. Are you sure you want to proceed with this action?',
-                              //       title:
-                              //           'Add Item to Cart',
-                              //       action: () async {
-                              //         Navigator.of(
-                              //           safeContext,
-                              //         ).pop();
-                              //         var res = await returnSalesProvider()
-                              //             .addItemToCart(
-                              //               isEdit: false,
-                              //               context:
-                              //                   context,
-                              //               newItem: TempCartItem(
-                              //                 uuid:
-                              //                     uuidGen(),
-                              //                 itemUuid:
-                              //                     product
-                              //                         .uuid,
-                              //                 isVoid: false,
-                              //                 qttyPerGroup:
-                              //                     null,
-                              //                 useGroupQuantity:
-                              //                     false,
-                              //                 useWholeSalePrice:
-                              //                     false,
-                              //                 setCustomPrice:
-                              //                     false,
-                              //                 item: product,
-                              //                 quantity: 1,
-                              //                 discount:
-                              //                     null,
-                              //                 addToStock:
-                              //                     false,
-                              //                 setTotalPrice:
-                              //                     false,
-                              //               ),
-                              //               isCustomEdit:
-                              //                   false,
-                              //             );
-                              //         if (res ==
-                              //             "Quantity Limit Exceeded") {
-                              //           return;
-                              //         }
-                              //         Navigator.push(
-                              //           context,
-                              //           MaterialPageRoute(
-                              //             builder: (
-                              //               context,
-                              //             ) {
-                              //               return MakeSalesPage(
-                              //                 isMain: true,
-                              //                 // product: product,
-                              //               );
-                              //             },
-                              //           ),
-                              //         );
-                              //       },
-                              //     );
-                              //   },
-                              // );
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return QuantityUpdatesPage(
-                                      productUuid:
-                                          widget
-                                              .productUuid,
-                                    );
-                                  },
-                                ),
-                              );
-                            },
-                            child: Container(
-                              margin: EdgeInsets.only(
-                                right: 5,
-                              ),
-                              padding: EdgeInsets.only(
-                                right: 15,
-                                left: 15,
-                                top: 5,
-                                bottom: 5,
-                              ),
-                              decoration: BoxDecoration(),
-                              child: Row(
-                                spacing: 3,
-                                children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontWeight:
-                                          FontWeight.bold,
-                                      fontSize:
-                                          widget
-                                              .theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
-                                    ),
-                                    'Add to Cart',
-                                  ),
-                                  Icon(
-                                    size: 17,
-                                    Icons
-                                        .shopping_cart_outlined,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
+                        // widget: Visibility(
+                        //   visible: !isStoreKeeper(),
+                        //   child: InkWell(
+                        //     onTap: () {
+                        //       // var safeContext = context;
+                        //       // showDialog(
+                        //       //   context: safeContext,
+                        //       //   builder: (context) {
+                        //       //     return ConfirmationAlert(
+                        //       //       theme: widget.theme,
+                        //       //       message:
+                        //       //           'This item is going to be added to your cart. Are you sure you want to proceed with this action?',
+                        //       //       title:
+                        //       //           'Add Item to Cart',
+                        //       //       action: () async {
+                        //       //         Navigator.of(
+                        //       //           safeContext,
+                        //       //         ).pop();
+                        //       //         var res = await returnSalesProvider()
+                        //       //             .addItemToCart(
+                        //       //               isEdit: false,
+                        //       //               context:
+                        //       //                   context,
+                        //       //               newItem: TempCartItem(
+                        //       //                 uuid:
+                        //       //                     uuidGen(),
+                        //       //                 itemUuid:
+                        //       //                     product
+                        //       //                         .uuid,
+                        //       //                 isVoid: false,
+                        //       //                 qttyPerGroup:
+                        //       //                     null,
+                        //       //                 useGroupQuantity:
+                        //       //                     false,
+                        //       //                 useWholeSalePrice:
+                        //       //                     false,
+                        //       //                 setCustomPrice:
+                        //       //                     false,
+                        //       //                 item: product,
+                        //       //                 quantity: 1,
+                        //       //                 discount:
+                        //       //                     null,
+                        //       //                 addToStock:
+                        //       //                     false,
+                        //       //                 setTotalPrice:
+                        //       //                     false,
+                        //       //               ),
+                        //       //               isCustomEdit:
+                        //       //                   false,
+                        //       //             );
+                        //       //         if (res ==
+                        //       //             "Quantity Limit Exceeded") {
+                        //       //           return;
+                        //       //         }
+                        //       //         Navigator.push(
+                        //       //           context,
+                        //       //           MaterialPageRoute(
+                        //       //             builder: (
+                        //       //               context,
+                        //       //             ) {
+                        //       //               return MakeSalesPage(
+                        //       //                 isMain: true,
+                        //       //                 // product: product,
+                        //       //               );
+                        //       //             },
+                        //       //           ),
+                        //       //         );
+                        //       //       },
+                        //       //     );
+                        //       //   },
+                        //       // );
+                        //       Navigator.push(
+                        //         context,
+                        //         MaterialPageRoute(
+                        //           builder: (context) {
+                        //             return ItemHistoryPage(
+                        //               productUuid:
+                        //                   widget
+                        //                       .productUuid,
+                        //             );
+                        //           },
+                        //         ),
+                        //       );
+                        //     },
+                        //     child: Container(
+                        //       margin: EdgeInsets.only(
+                        //         right: 5,
+                        //       ),
+                        //       padding: EdgeInsets.only(
+                        //         right: 15,
+                        //         left: 15,
+                        //         top: 5,
+                        //         bottom: 5,
+                        //       ),
+                        //       decoration: BoxDecoration(),
+                        //       child: Row(
+                        //         spacing: 3,
+                        //         children: [
+                        //           Text(
+                        //             style: TextStyle(
+                        //               fontWeight:
+                        //                   FontWeight.bold,
+                        //               fontSize:
+                        //                   widget
+                        //                       .theme
+                        //                       .mobileTexts
+                        //                       .b2
+                        //                       .fontSize,
+                        //             ),
+                        //             'View History',
+                        //           ),
+                        //           Icon(
+                        //             size: 17,
+                        //             Icons
+                        //                 .receipt_long_rounded,
+                        //           ),
+                        //         ],
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                       ),
                       body: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -317,33 +316,48 @@ class _ProductDetailsDesktopState
                                             spacing: 10,
                                             children: [
                                               Row(
-                                                spacing: 10,
                                                 mainAxisAlignment:
                                                     MainAxisAlignment
                                                         .center,
                                                 children: [
-                                                  Expanded(
-                                                    child: TabContainer(
-                                                      isMoney:
-                                                          true,
-                                                      text:
-                                                          'Cost Price',
-                                                      price:
-                                                          product.costPrice,
-                                                      theme:
-                                                          widget.theme,
-                                                      backGround: const Color.fromARGB(
-                                                        11,
-                                                        15,
-                                                        4,
-                                                        114,
+                                                  Visibility(
+                                                    visible: authorization(
+                                                      authorized:
+                                                          Authorizations().manageCostPrice,
+                                                    ),
+                                                    child: Expanded(
+                                                      child: TabContainer(
+                                                        isMoney:
+                                                            true,
+                                                        text:
+                                                            'Cost Price',
+                                                        price:
+                                                            product.costPrice,
+                                                        theme:
+                                                            widget.theme,
+                                                        backGround: const Color.fromARGB(
+                                                          11,
+                                                          15,
+                                                          4,
+                                                          114,
+                                                        ),
+                                                        border: const Color.fromARGB(
+                                                          32,
+                                                          45,
+                                                          3,
+                                                          255,
+                                                        ),
                                                       ),
-                                                      border: const Color.fromARGB(
-                                                        32,
-                                                        45,
-                                                        3,
-                                                        255,
-                                                      ),
+                                                    ),
+                                                  ),
+                                                  Visibility(
+                                                    visible: authorization(
+                                                      authorized:
+                                                          Authorizations().manageCostPrice,
+                                                    ),
+                                                    child: SizedBox(
+                                                      width:
+                                                          10,
                                                     ),
                                                   ),
                                                   Expanded(
@@ -567,18 +581,32 @@ class _ProductDetailsDesktopState
                                                                                       15,
                                                                                 ),
                                                                                 Column(
-                                                                                  spacing:
-                                                                                      20,
                                                                                   children: [
-                                                                                    MoneyTextfield(
-                                                                                      title:
-                                                                                          'Cost Price',
-                                                                                      hint:
-                                                                                          'Enter Cost Price',
-                                                                                      controller:
-                                                                                          costController,
-                                                                                      theme:
-                                                                                          widget.theme,
+                                                                                    Visibility(
+                                                                                      visible: authorization(
+                                                                                        authorized:
+                                                                                            Authorizations().manageCostPrice,
+                                                                                      ),
+                                                                                      child: MoneyTextfield(
+                                                                                        title:
+                                                                                            'Cost Price',
+                                                                                        hint:
+                                                                                            'Enter Cost Price',
+                                                                                        controller:
+                                                                                            costController,
+                                                                                        theme:
+                                                                                            widget.theme,
+                                                                                      ),
+                                                                                    ),
+                                                                                    Visibility(
+                                                                                      visible: authorization(
+                                                                                        authorized:
+                                                                                            Authorizations().manageCostPrice,
+                                                                                      ),
+                                                                                      child: SizedBox(
+                                                                                        height:
+                                                                                            20,
+                                                                                      ),
                                                                                     ),
                                                                                     MoneyTextfield(
                                                                                       title:
@@ -645,6 +673,8 @@ class _ProductDetailsDesktopState
                                                                                                 },
                                                                                               );
                                                                                               await dataProvider.updateProduct(
+                                                                                                itemHistory:
+                                                                                                    null,
                                                                                                 includeQuantity:
                                                                                                     false,
                                                                                                 isIncrement:
@@ -982,6 +1012,8 @@ class _ProductDetailsDesktopState
                                                                     },
                                                                   );
                                                                   await dataProvider.updateProduct(
+                                                                    itemHistory:
+                                                                        null,
                                                                     includeQuantity:
                                                                         false,
                                                                     isIncrement:

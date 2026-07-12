@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_departments_class/department_class.dart';
 import 'package:stockall/classes/temp_inventory_updates/temp_inventory_update_class.dart';
+import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -1086,8 +1087,22 @@ class _StorageQuantityUpdateWidgetState
 
                               if ((currentIndex != 2) &&
                                   newPr != null) {
+                                ItemHistory
+                                itemHistory = ItemHistory(
+                                  shopId: shopId(),
+                                  title:
+                                      'Item Quantity ${(newQuantity > oldQuantity) ? "Increased" : 'Reduced'}',
+                                  quantityChange:
+                                      newQuantity -
+                                      oldQuantity,
+                                  newValue:
+                                      newPr.quantity
+                                          ?.toString(),
+                                );
                                 await returnData()
                                     .updateProduct(
+                                      itemHistory:
+                                          itemHistory,
                                       includeQuantity:
                                           false,
                                       isIncrement:
@@ -1455,6 +1470,7 @@ class _ManageProductsStorageState
                                         widget.productUuid;
                                     await returnData()
                                         .updateProduct(
+                                          itemHistory: null,
                                           includeQuantity:
                                               false,
                                           isIncrement: null,
@@ -1481,8 +1497,10 @@ class _ManageProductsStorageState
                                         pr.copyWith();
                                     newPr.storageUuid =
                                         null;
+
                                     await returnData()
                                         .updateProduct(
+                                          itemHistory: null,
                                           includeQuantity:
                                               false,
                                           isIncrement: null,

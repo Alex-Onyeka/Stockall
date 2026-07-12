@@ -283,6 +283,7 @@ class _AddProductDesktopState
             });
 
             var res = await provider.updateProduct(
+              itemHistory: null,
               includeQuantity: false,
               isIncrement: null,
               isQuantityUpdate: false,
@@ -641,33 +642,50 @@ class _AddProductDesktopState
                                   Column(
                                     children: [
                                       Row(
-                                        spacing: 10,
                                         children: [
-                                          Expanded(
-                                            child: MoneyTextfield(
-                                              focusNode:
-                                                  costFieldNode,
-                                              onSubmitted: (
-                                                value,
-                                              ) {
-                                                FocusScope.of(
-                                                  context,
-                                                ).requestFocus(
-                                                  sellingFieldNode,
-                                                );
-                                              },
-                                              onChanged:
-                                                  (
-                                                    value,
-                                                  ) {},
-                                              theme: theme,
-                                              hint:
-                                                  'Enter Real Cost',
-                                              title:
-                                                  'Cost - Price (Optional)',
-                                              controller:
-                                                  widget
-                                                      .costController,
+                                          Visibility(
+                                            visible: authorization(
+                                              authorized:
+                                                  Authorizations()
+                                                      .manageCostPrice,
+                                            ),
+                                            child: Expanded(
+                                              child: MoneyTextfield(
+                                                focusNode:
+                                                    costFieldNode,
+                                                onSubmitted: (
+                                                  value,
+                                                ) {
+                                                  FocusScope.of(
+                                                    context,
+                                                  ).requestFocus(
+                                                    sellingFieldNode,
+                                                  );
+                                                },
+                                                onChanged:
+                                                    (
+                                                      value,
+                                                    ) {},
+                                                theme:
+                                                    theme,
+                                                hint:
+                                                    'Enter Real Cost',
+                                                title:
+                                                    'Cost - Price (Optional)',
+                                                controller:
+                                                    widget
+                                                        .costController,
+                                              ),
+                                            ),
+                                          ),
+                                          Visibility(
+                                            visible: authorization(
+                                              authorized:
+                                                  Authorizations()
+                                                      .manageCostPrice,
+                                            ),
+                                            child: SizedBox(
+                                              width: 10,
                                             ),
                                           ),
                                           Expanded(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_inventory_updates/temp_inventory_update_class.dart';
+import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_item_purchase_record/temp_item_purchase_record.dart';
 import 'package:stockall/classes/temp_item_purchase_record/unsynced/created_item_records/created_item_records.dart';
 import 'package:stockall/classes/temp_item_purchase_record/unsynced/deleted_item_records/deleted_item_records.dart';
@@ -257,7 +258,6 @@ class PurchaseProvider extends ChangeNotifier {
     bool createUpdate,
   ) async {
     print('Deleting Purchase');
-    // bool isOnline = await connectivity.isOnline();
     List<TempItemPurchaseRecord> records =
         itemPurchaseRecords
             .where(
@@ -265,24 +265,6 @@ class PurchaseProvider extends ChangeNotifier {
             )
             .toList();
     try {
-      // if (isOnline) {
-      //   print('Deleting Purchase Online');
-      //   await supabase
-      //       .from(tableName)
-      //       .delete()
-      //       .eq('uuid', purchase.uuid!);
-      //   print('Finished Deleting Purchase Online');
-      //   var containsUpdate = UpdatedPurchasesFunc()
-      //       .getPurchaseIds()
-      //       .where(
-      //         (purch) =>
-      //             purch.purchase.uuid == purchase.uuid,
-      //       );
-      //   if (containsUpdate.isNotEmpty) {
-      //     await UpdatedPurchasesFunc()
-      //         .deleteUpdatedPurchase(purchase.uuid!);
-      //   }
-      // } else {
       print('Deleting Purchase Offline');
       await PurchaseFunc().deletePurchase(purchase.uuid!);
       var containsCreated =
@@ -361,40 +343,6 @@ class PurchaseProvider extends ChangeNotifier {
                               : rec.quantity,
                       isIncrement: false,
                     );
-                // if (res == 1) {
-                //   List<CreatedStorageProducts>
-                //   containsCreated =
-                //       CreatedStorageProductsFunc()
-                //           .getStorageProducts()
-                //           .where(
-                //             (createdProduct) =>
-                //                 createdProduct
-                //                     .storageProduct
-                //                     .uuid ==
-                //                 product.uuid,
-                //           )
-                //           .toList();
-                //   if (containsCreated.isEmpty) {
-                //     await UpdatedStorageProductsFunc()
-                //         .createUpdatedStorageProduct(
-                //           UpdatedStorageProduct(
-                //             updatedStorageProduct: product,
-                //           ),
-                //         );
-                //   } else {
-                //     await CreatedStorageProductsFunc()
-                //         .updateCreatedStorageProduct(
-                //           CreatedStorageProducts(
-                //             storageProduct: product,
-                //           ),
-                //         );
-                //   }
-                // }
-                // }
-
-                // print(
-                //   'Storage Product Updated Successfully',
-                // );
                 try {
                   if (createUpdate) {
                     var newUpdate =
@@ -459,7 +407,17 @@ class PurchaseProvider extends ChangeNotifier {
                           (rec.qttyPerGroup ?? 1))
                       : rec.quantity ?? 0);
 
+              ItemHistory itemHistory = ItemHistory(
+                shopId: shopId(),
+                title: 'Purchased item Returned',
+                quantityChange:
+                    -(newPro.quantity ?? 0) -
+                    (rec.quantity ?? 0),
+                newValue: newPro.quantity?.toString(),
+              );
+
               await returnData().updateProduct(
+                itemHistory: itemHistory,
                 includeQuantity: false,
                 product: newPro,
                 isQuantityUpdate: true,
@@ -704,114 +662,7 @@ class PurchaseProvider extends ChangeNotifier {
   Future<void> createItemPurchaseRecord(
     List<TempItemPurchaseRecord> records,
   ) async {
-    // bool isOnline = await connectivity.isOnline();
     try {
-      // final dataToInsert =
-      //     records.map((e) => e.toJson()).toList();
-      // if (isOnline) {
-      //   await supabase
-      //       .from('item_purchase_records')
-      //       .upsert(dataToInsert, onConflict: 'uuid');
-      //   await ItemPurchaseFunc()
-      //       .insertSalesItemPurchaseRecords(records);
-      //   for (var item in records) {
-      //     if (returnShopProvider()
-      //             .userShop()
-      //             ?.manageInventoryStorage ==
-      //         true) {
-      //       var storageProduct =
-      //           returnStorageProductProvider()
-      //               .storageProductListMain
-      //               .firstWhere(
-      //                 (prod) =>
-      //                     prod.uuid == item.storageItemId,
-      //               );
-
-      //       var newPr = storageProduct.copyWith();
-      //       newPr.quantity =
-      //           item.isGroup == true
-      //               ? (newPr.quantity ?? 0) +
-      //                   ((item.quantity ?? 0) *
-      //                       (newPr.qttyPerGroup ?? 1))
-      //               : (newPr.quantity ?? 0) +
-      //                   (item.quantity ?? 0);
-
-      //       newPr.updatedAt = DateTime.now();
-
-      //       await returnStorageProductProvider()
-      //           .updateProduct(product: newPr);
-      //       try {
-      //         var newUpdate = TempInventoryUpdateClass(
-      //           shopId: shopId(),
-      //           title: 'Stock In',
-      //           createdAt: DateTime.now(),
-      //           departmentName:
-      //               returnDepartmentProvider()
-      //                   .currentDepartment()
-      //                   ?.name,
-      //           departmentUuid:
-      //               returnDepartmentProvider()
-      //                   .currentDepartment()
-      //                   ?.uuid,
-      //           departmentNameTwo: null,
-      //           departmentUuidTwo: null,
-      //           itemName: newPr.name,
-      //           itemUuid: newPr.uuid,
-      //           staffId: currentUser().userId,
-      //           staffName: currentUser().name,
-      //           staffIdTwo: null,
-      //           staffNameTwo: null,
-      //           oldValue:
-      //               ((newPr.quantity ?? 0) -
-      //                       (item.isGroup == true
-      //                           ? ((item.quantity ?? 0) *
-      //                               (newPr.qttyPerGroup ??
-      //                                   1))
-      //                           : (item.quantity ?? 0)))
-      //                   .toString(),
-      //           newValue: newPr.quantity.toString(),
-      //           uuid: uuidGen(),
-      //           itemTwoOldValue: null,
-      //           itemTwoNewValue: null,
-      //           itemTwoUuid: null,
-      //         );
-
-      //         await returnInventoryUpdatesProvider()
-      //             .createInventoryUpdate(newUpdate);
-      //       } catch (e) {
-      //         print(
-      //           '❌❌Error Creating Inventory Update: ${e.toString()}',
-      //         );
-      //       }
-      //     } else {
-      //       var product = returnData().productListMain
-      //           .firstWhere(
-      //             (prod) => prod.uuid == item.itemId,
-      //           );
-
-      //       var newPr = product.copyWith();
-      //       newPr.quantity =
-      //           item.isGroup == true
-      //               ? (newPr.quantity ?? 0) +
-      //                   ((item.quantity ?? 0) *
-      //                       (newPr.qttyPerGroup ?? 1))
-      //               : (newPr.quantity ?? 0) +
-      //                   (item.quantity ?? 0);
-      //       newPr.updatedAt = DateTime.now();
-
-      //       await returnData().updateProduct(
-      //         isIncrement:
-      //             (newPr.quantity ?? 0) >
-      //             (product.quantity ?? 0),
-      //         isQuantityUpdate: true,
-      //         quantityChange:
-      //             (newPr.quantity ?? 0) -
-      //             (product.quantity ?? 0),
-      //         product: newPr,
-      //       );
-      //     }
-      //   }
-      // } else {
       var newRecords =
           records.map((rec) {
             rec.createdAt = DateTime.now();
@@ -918,8 +769,17 @@ class PurchaseProvider extends ChangeNotifier {
                   : (newPr.quantity ?? 0) +
                       (item.quantity ?? 0);
           newPr.updatedAt = DateTime.now();
+          ItemHistory itemHistory = ItemHistory(
+            shopId: shopId(),
+            title: 'Item Purchased',
+            quantityChange:
+                -(newPr.quantity ?? 0) -
+                (product.quantity ?? 0),
+            newValue: newPr.quantity?.toString(),
+          );
 
           await returnData().updateProduct(
+            itemHistory: itemHistory,
             includeQuantity: false,
             isIncrement:
                 (newPr.quantity ?? 0) >

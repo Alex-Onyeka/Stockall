@@ -17,9 +17,30 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/services.dart'
+    show rootBundle, Clipboard, ClipboardData;
 import 'dart:io';
 import 'package:file_saver/file_saver.dart';
+
+Future<void> copyToClipboard({
+  required BuildContext context,
+  required String text,
+  String message = 'Copied to clipboard',
+}) async {
+  await Clipboard.setData(ClipboardData(text: text));
+
+  if (!context.mounted) return;
+
+  ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+}
 
 void openWhatsApp() async {
   final phone = '2347048507587'; // your number
@@ -140,6 +161,12 @@ class Authorizations {
       'Set Custom Receipt Created Date';
   String toggleTrackCart = 'Toggle Track Cart';
   String manageAccessPin = 'Manage Access Pin';
+  String manageCostPrice = 'Manage Cost Price';
+  String viewGeneralReport = 'View General Report';
+  String viewItemsReport = 'View Items Report';
+  String viewSalesAndRevenueReport =
+      'View Sales And Revenue Report';
+  String managePurchases = 'Manage Purchases';
 }
 
 bool authorization({required String authorized}) {

@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stockall/classes/temp_categories/category_class.dart';
+import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/created_products/created_products.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/deleted_products/deleted_products.dart';
@@ -34,6 +35,8 @@ import 'package:stockall/local_database/inventory_updates/unsync_funcs/created_i
 import 'package:stockall/local_database/invoices/unsync_funcs/created/created_invoices_func.dart';
 import 'package:stockall/local_database/invoices/unsync_funcs/deleted/deleted_invoices_func.dart';
 import 'package:stockall/local_database/invoices/unsync_funcs/updated/updated_invoices_func.dart';
+import 'package:stockall/local_database/item_history/item_histories_func.dart';
+import 'package:stockall/local_database/item_history/unsync_funcs/created_item_histories_func.dart';
 import 'package:stockall/local_database/item_purchase_func.dart%20copy/unsync_funcs/created/created_item_purchase_func.dart';
 import 'package:stockall/local_database/item_purchase_func.dart%20copy/unsync_funcs/deleted/deleted_item_purchase_func.dart';
 import 'package:stockall/local_database/main_receipt/unsync_funcs/created/created_receipts_func.dart';
@@ -500,6 +503,7 @@ class DataProvider extends ChangeNotifier {
     await DeletedInvoicesFunc().clearDeletedInvoices();
     await UpdatedInvoicesFunc()
         .clearupdatedInvoiceUpdatedInvoices();
+    await ItemHistoriesFunc().clearItemHistories();
     notifyListeners();
   }
 
@@ -920,6 +924,15 @@ class DataProvider extends ChangeNotifier {
             print('Finished Syncing Deleted Waybills');
             setSyncProgress(44);
           }
+          if (CreatedItemHistoriesFunc()
+                  .getCreatedItemHistoriess()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnItemHistoryProvider()
+                .itemHistoriesSync();
+            print('Finished Syncing Item Histories');
+            setSyncProgress(45);
+          }
           if (CreatedErrorLogFunc()
                   .getCreatedErrorLogs()
                   .isNotEmpty &&
@@ -1058,7 +1071,10 @@ class DataProvider extends ChangeNotifier {
               .isEmpty &&
           CreatedWaybillsFunc().getWaybills().isEmpty &&
           UpdatedWaybillsFunc().getWaybillIds().isEmpty &&
-          DeletedWaybillsFunc().getWaybillIds().isEmpty) {
+          DeletedWaybillsFunc().getWaybillIds().isEmpty &&
+          CreatedItemHistoriesFunc()
+              .getCreatedItemHistoriess()
+              .isEmpty) {
         return 1;
       } else {
         return 0;
@@ -1250,8 +1266,11 @@ class DataProvider extends ChangeNotifier {
           true) {
         await returnStorageProductProvider()
             .getStorageProducts(shopId);
-        // await returnInventoryUpdatesProvider()
-        //     .getInventoryUpdates();
+      }
+      if (ItemsAuthAction().trackItemHistoryAction(
+        context: null,
+      )) {
+        returnItemHistoryProvider().getItemHistories();
       }
 
       await ProductsFunc().insertAllProducts(
@@ -1300,6 +1319,7 @@ class DataProvider extends ChangeNotifier {
     required bool includeQuantity,
     required double? quantityChange,
     required bool? isIncrement,
+    required ItemHistory? itemHistory,
     TempProductClass? oldProduct,
     bool? isMultipleUpdate,
   }) async {
@@ -1350,6 +1370,13 @@ class DataProvider extends ChangeNotifier {
               .createQuantityUpdate(
                 quantityUpdate: quantityUpdate,
               );
+        }
+        if ((isQuantityUpdate || includeQuantity) &&
+            itemHistory != null) {
+          itemHistory.itemName = product.name;
+          itemHistory.itemUuid = product.uuid;
+          await returnItemHistoryProvider()
+              .createItemHistory(itemHistory);
         }
         await getProductsOffline(
           returnShopProvider().userShop()!.shopId!,
@@ -2151,6 +2178,7 @@ class DataProvider extends ChangeNotifier {
         var product = pr.copyWith(storageUuid: newUuid);
 
         await updateProduct(
+          itemHistory: null,
           includeQuantity: true,
           product: product,
           isMultipleUpdate: true,

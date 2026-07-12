@@ -1516,7 +1516,14 @@ class _SummaryTableHeadingBarState
             child: Container(
               decoration: BoxDecoration(
                 border: Border(
-                  // right: BorderSide(color: Colors.grey),
+                  right:
+                      authorization(
+                            authorized:
+                                Authorizations()
+                                    .manageCostPrice,
+                          )
+                          ? BorderSide(color: Colors.grey)
+                          : BorderSide.none,
                   left: BorderSide(color: Colors.grey),
                 ),
               ),
@@ -1549,7 +1556,12 @@ class _SummaryTableHeadingBarState
             ),
           ),
           Visibility(
-            visible: widget.product.isNotEmpty,
+            visible:
+                widget.product.isNotEmpty &&
+                authorization(
+                  authorized:
+                      Authorizations().manageCostPrice,
+                ),
             child: Expanded(
               flex: 5,
               child: Container(
@@ -1591,78 +1603,6 @@ class _SummaryTableHeadingBarState
               ),
             ),
           ),
-          // Visibility(
-          //   visible: widget.product.isNotEmpty,
-          //   child: Expanded(
-          //     flex: 3,
-          //     child: Container(
-          //       padding: EdgeInsets.symmetric(
-          //         horizontal: 5,
-          //         vertical: 10,
-          //       ),
-          //       child: Center(
-          //         child: Row(
-          //           children: [
-          //             Flexible(
-          //               child: Text(
-          //                 style: TextStyle(
-          //                   fontSize:
-          //                       widget
-          //                           .theme
-          //                           .mobileTexts
-          //                           .b3
-          //                           .fontSize,
-          //                   fontWeight: FontWeight.bold,
-          //                 ),
-          //                 widget.isHeading ? 'Barcode' : '',
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // Visibility(
-          //   visible: widget.product.isNotEmpty,
-          //   child: Expanded(
-          //     flex: 4,
-          //     child: Container(
-          //       decoration: BoxDecoration(
-          //         border: Border(
-          //           right: BorderSide(color: Colors.grey),
-          //           left: BorderSide(color: Colors.grey),
-          //         ),
-          //       ),
-          //       padding: EdgeInsets.symmetric(
-          //         horizontal: 5,
-          //         vertical: 10,
-          //       ),
-          //       child: Center(
-          //         child: Row(
-          //           children: [
-          //             Flexible(
-          //               child: Text(
-          //                 style: TextStyle(
-          //                   fontSize:
-          //                       widget
-          //                           .theme
-          //                           .mobileTexts
-          //                           .b3
-          //                           .fontSize,
-          //                   fontWeight: FontWeight.bold,
-          //                 ),
-          //                 widget.isHeading
-          //                     ? 'Qtty Alert'
-          //                     : '',
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
           Visibility(
             visible: widget.product.isNotEmpty,
             child: Expanded(
@@ -1810,82 +1750,6 @@ class _SummaryTableHeadingBarState
               ),
             ),
           ),
-          // Visibility(
-          //   visible: false,
-          //   // widget.product.isNotEmpty,
-          //   child: Expanded(
-          //     flex: 5,
-          //     child: Container(
-          //       padding: EdgeInsets.symmetric(
-          //         horizontal: 5,
-          //         vertical: 10,
-          //       ),
-          //       child: Center(
-          //         child: Row(
-          //           children: [
-          //             Flexible(
-          //               child: Text(
-          //                 style: TextStyle(
-          //                   fontSize:
-          //                       widget
-          //                           .theme
-          //                           .mobileTexts
-          //                           .b3
-          //                           .fontSize,
-          //                   fontWeight: FontWeight.bold,
-          //                 ),
-          //                 widget.isHeading
-          //                     ? 'Discount Start'
-          //                     : '',
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // Visibility(
-          //   visible: false,
-          //   // widget.product.isNotEmpty,
-          //   child: Expanded(
-          //     flex: 5,
-          //     child: Container(
-          //       decoration: BoxDecoration(
-          //         border: Border(
-          //           right: BorderSide(color: Colors.grey),
-          //           left: BorderSide(color: Colors.grey),
-          //         ),
-          //       ),
-          //       padding: EdgeInsets.symmetric(
-          //         horizontal: 5,
-          //         vertical: 10,
-          //       ),
-          //       child: Center(
-          //         child: Row(
-          //           children: [
-          //             Flexible(
-          //               child: Text(
-          //                 style: TextStyle(
-          //                   fontSize:
-          //                       widget
-          //                           .theme
-          //                           .mobileTexts
-          //                           .b3
-          //                           .fontSize,
-          //                   fontWeight: FontWeight.bold,
-          //                 ),
-          //                 widget.isHeading
-          //                     ? 'Discount End'
-          //                     : '',
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
           Visibility(
             visible: widget.product.isNotEmpty,
             child: Expanded(
@@ -2101,7 +1965,14 @@ class _TableRowRecordWidgetState
             child: Container(
               decoration: BoxDecoration(
                 border: Border(
-                  // right: BorderSide(color: Colors.grey),
+                  right:
+                      authorization(
+                            authorized:
+                                Authorizations()
+                                    .manageCostPrice,
+                          )
+                          ? BorderSide(color: Colors.grey)
+                          : BorderSide.none,
                   left: BorderSide(color: Colors.grey),
                 ),
               ),
@@ -2137,104 +2008,47 @@ class _TableRowRecordWidgetState
               ),
             ),
           ),
-          Expanded(
-            flex: 5,
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  right: BorderSide(color: Colors.grey),
-                  left: BorderSide(color: Colors.grey),
+          Visibility(
+            visible: authorization(
+              authorized: Authorizations().manageCostPrice,
+            ),
+            child: Expanded(
+              flex: 5,
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: BorderSide(color: Colors.grey),
+                    left: BorderSide(color: Colors.grey),
+                  ),
                 ),
-              ),
-              padding: EdgeInsets.all(5),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        formatMoneyBig(
-                          amount: widget.product.costPrice,
-                          context: context,
+                padding: EdgeInsets.all(5),
+                child: Center(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          style: TextStyle(
+                            fontSize:
+                                widget
+                                    .theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          formatMoneyBig(
+                            amount:
+                                widget.product.costPrice,
+                            context: context,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-          // Expanded(
-          //   flex: 3,
-          //   child: Container(
-          //     padding: EdgeInsets.all(5),
-          //     child: Center(
-          //       child: Row(
-          //         children: [
-          //           Flexible(
-          //             child: Text(
-          //               style: TextStyle(
-          //                 fontSize:
-          //                     widget
-          //                         .theme
-          //                         .mobileTexts
-          //                         .b3
-          //                         .fontSize,
-          //                 fontWeight: FontWeight.bold,
-          //               ),
-
-          //               widget.product.barcode != null
-          //                   ? 'true'
-          //                   : 'false',
-          //             ),
-          //           ),
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // Expanded(
-          //   flex: 4,
-          //   child: Container(
-          //     decoration: BoxDecoration(
-          //       border: Border(
-          //         right: BorderSide(color: Colors.grey),
-          //         left: BorderSide(color: Colors.grey),
-          //       ),
-          //     ),
-          //     padding: EdgeInsets.all(5),
-          //     child: Center(
-          //       child: Row(
-          //         children: [
-          //           Flexible(
-          //             child: Text(
-          //               style: TextStyle(
-          //                 fontSize:
-          //                     widget
-          //                         .theme
-          //                         .mobileTexts
-          //                         .b3
-          //                         .fontSize,
-          //                 fontWeight: FontWeight.bold,
-          //               ),
-
-          //               (widget.product.lowQtty ?? 0)
-          //                   .toString(),
-          //             ),
-          //           ),
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          // ),
           Expanded(
             flex: 3,
             child: Container(
@@ -2348,110 +2162,6 @@ class _TableRowRecordWidgetState
               ),
             ),
           ),
-          // Expanded(
-          //   flex: 3,
-          //   child: Container(
-          //     decoration: BoxDecoration(
-          //       border: Border(
-          //         right: BorderSide(color: Colors.grey),
-          //         left: BorderSide(color: Colors.grey),
-          //       ),
-          //     ),
-          //     padding: EdgeInsets.all(5),
-          //     child: Center(
-          //       child: Row(
-          //         children: [
-          //           Flexible(
-          //             child: Text(
-          //               style: TextStyle(
-          //                 fontSize:
-          //                     widget
-          //                         .theme
-          //                         .mobileTexts
-          //                         .b3
-          //                         .fontSize,
-          //                 fontWeight: FontWeight.bold,
-          //               ),
-
-          //               (widget.product.discount ?? 0)
-          //                   .toString(),
-          //             ),
-          //           ),
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // Expanded(
-          //   flex: 5,
-          //   child: Container(
-          //     padding: EdgeInsets.all(5),
-          //     child: Center(
-          //       child: Row(
-          //         children: [
-          //           Flexible(
-          //             child: Text(
-          //               style: TextStyle(
-          //                 fontSize:
-          //                     widget
-          //                         .theme
-          //                         .mobileTexts
-          //                         .b3
-          //                         .fontSize,
-          //                 fontWeight: FontWeight.bold,
-          //               ),
-
-          //               widget.product.discount != null
-          //                   ? formatDateWithoutYear(
-          //                     widget.product.startDate ??
-          //                         DateTime.now(),
-          //                   )
-          //                   : 'Not Set',
-          //             ),
-          //           ),
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // Expanded(
-          //   flex: 5,
-          //   child: Container(
-          //     decoration: BoxDecoration(
-          //       border: Border(
-          //         right: BorderSide(color: Colors.grey),
-          //         left: BorderSide(color: Colors.grey),
-          //       ),
-          //     ),
-          //     padding: EdgeInsets.all(5),
-          //     child: Center(
-          //       child: Row(
-          //         children: [
-          //           Flexible(
-          //             child: Text(
-          //               style: TextStyle(
-          //                 fontSize:
-          //                     widget
-          //                         .theme
-          //                         .mobileTexts
-          //                         .b3
-          //                         .fontSize,
-          //                 fontWeight: FontWeight.bold,
-          //               ),
-
-          //               widget.product.discount != null
-          //                   ? formatDateWithoutYear(
-          //                     widget.product.endDate ??
-          //                         DateTime.now(),
-          //                   )
-          //                   : 'Not Set',
-          //             ),
-          //           ),
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          // ),
           Expanded(
             flex: 5,
             child: Container(

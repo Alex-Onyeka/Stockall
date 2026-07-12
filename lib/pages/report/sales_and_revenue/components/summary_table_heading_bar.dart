@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class SummaryTableHeadingBar extends StatefulWidget {
@@ -117,9 +118,6 @@ class _SummaryTableHeadingBarState
               ),
               decoration: BoxDecoration(
                 border: Border(
-                  // right: BorderSide(
-                  //   color: Colors.grey,
-                  // ),
                   left: BorderSide(color: Colors.grey),
                 ),
               ),
@@ -264,7 +262,12 @@ class _SummaryTableHeadingBarState
             ),
           ),
           Visibility(
-            visible: widget.salesRecords.isNotEmpty,
+            visible:
+                widget.salesRecords.isNotEmpty &&
+                authorization(
+                  authorized:
+                      Authorizations().manageCostPrice,
+                ),
             child: Expanded(
               flex: 5,
               child: Container(
@@ -307,7 +310,12 @@ class _SummaryTableHeadingBarState
             ),
           ),
           Visibility(
-            visible: widget.salesRecords.isNotEmpty,
+            visible:
+                widget.salesRecords.isNotEmpty &&
+                authorization(
+                  authorized:
+                      Authorizations().manageCostPrice,
+                ),
             child: Expanded(
               flex: 5,
               child: Container(

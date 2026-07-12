@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/report_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
@@ -55,12 +56,17 @@ class ReportMobile extends StatelessWidget {
                         ),
                       ],
                     ),
-                    SizedBox(height: 15),
+                    SizedBox(height: 10),
                     Column(
-                      spacing: 10,
                       children: [
                         Visibility(
-                          visible: !isStoreKeeper(),
+                          visible:
+                              !isStoreKeeper() &&
+                              authorization(
+                                authorized:
+                                    Authorizations()
+                                        .viewGeneralReport,
+                              ),
                           child: ReportListTile(
                             isActive: true,
                             theme: theme,
@@ -80,7 +86,13 @@ class ReportMobile extends StatelessWidget {
                           ),
                         ),
                         Visibility(
-                          visible: !isStoreKeeper(),
+                          visible:
+                              !isStoreKeeper() &&
+                              authorization(
+                                authorized:
+                                    Authorizations()
+                                        .viewSalesAndRevenueReport,
+                              ),
                           child: ReportListTile(
                             isActive: true,
                             theme: theme,
@@ -99,22 +111,29 @@ class ReportMobile extends StatelessWidget {
                             title: 'Sales and Revenue',
                           ),
                         ),
-                        ReportListTile(
-                          isActive: true,
-                          theme: theme,
-                          action: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return ProductReportPage();
-                                },
-                              ),
-                            );
-                          },
-                          subText:
-                              'View a Summary of your Stock and Inventory',
-                          title: 'Items Report',
+                        Visibility(
+                          visible: authorization(
+                            authorized:
+                                Authorizations()
+                                    .viewItemsReport,
+                          ),
+                          child: ReportListTile(
+                            isActive: true,
+                            theme: theme,
+                            action: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return ProductReportPage();
+                                  },
+                                ),
+                              );
+                            },
+                            subText:
+                                'View a Summary of your Stock and Inventory',
+                            title: 'Items Report',
+                          ),
                         ),
                         Visibility(
                           visible: !isStoreKeeper(),
@@ -239,79 +258,82 @@ class ReportListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Ink(
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color:
-                isActive
-                    ? const Color.fromARGB(22, 0, 0, 0)
-                    : Colors.transparent,
-            blurRadius: 10,
-          ),
-        ],
-        borderRadius: BorderRadius.circular(5),
-        color: Colors.white,
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(5),
-        onTap: action,
-        child: Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: 15,
-            vertical: 20,
-          ),
-          child: Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
-            children: [
-              Flexible(
-                child: Row(
-                  spacing: 10,
-                  children: [
-                    SvgPicture.asset(receiptIconSvg),
-                    Flexible(
-                      child: Column(
-                        spacing: 5,
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b2
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      child: Ink(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color:
+                  isActive
+                      ? const Color.fromARGB(22, 0, 0, 0)
+                      : Colors.transparent,
+              blurRadius: 10,
+            ),
+          ],
+          borderRadius: BorderRadius.circular(5),
+          color: Colors.white,
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(5),
+          onTap: action,
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: 15,
+              vertical: 20,
+            ),
+            child: Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: Row(
+                    spacing: 10,
+                    children: [
+                      SvgPicture.asset(receiptIconSvg),
+                      Flexible(
+                        child: Column(
+                          spacing: 5,
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b2
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              title,
                             ),
-                            title,
-                          ),
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                              color: Colors.grey,
-                              // fontWeight:
-                              //     FontWeight.bold,
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                                color: Colors.grey,
+                                // fontWeight:
+                                //     FontWeight.bold,
+                              ),
+                              subText,
                             ),
-                            subText,
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Icon(
-                color: Colors.grey.shade400,
-                size: 20,
-                Icons.arrow_forward_ios_rounded,
-              ),
-            ],
+                Icon(
+                  color: Colors.grey.shade400,
+                  size: 20,
+                  Icons.arrow_forward_ios_rounded,
+                ),
+              ],
+            ),
           ),
         ),
       ),

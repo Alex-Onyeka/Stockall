@@ -31,6 +31,7 @@ import 'package:stockall/providers/expenses_provider.dart';
 import 'package:stockall/providers/inventory_updates_provider.dart';
 import 'package:stockall/providers/invoices_provider.dart';
 import 'package:stockall/providers/country_provider.dart';
+import 'package:stockall/providers/item_history_provider.dart';
 import 'package:stockall/providers/multi_display_provider.dart';
 import 'package:stockall/providers/nav_provider.dart';
 import 'package:stockall/providers/notifications_provider.dart';
@@ -579,6 +580,16 @@ QuantityUpdateProvider returnQuantityUpdateProvider({
   }
 }
 
+ItemHistoryProvider returnItemHistoryProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return ItemHistoryProvider();
+  } else {
+    return Provider.of<ItemHistoryProvider>(context);
+  }
+}
+
 Widget colorWidget(
   Widget widget,
   bool isPrimary,
@@ -737,6 +748,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => QuantityUpdateProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ItemHistoryProvider(),
         ),
       ],
       child: MaterialApp(

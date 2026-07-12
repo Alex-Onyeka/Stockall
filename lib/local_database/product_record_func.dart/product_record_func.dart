@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/created/created_records_func.dart';
@@ -117,7 +118,18 @@ class ProductRecordFunc {
                             (record.qttyPerGroup ?? 1))
                     : (product.quantity ?? 0) +
                         record.quantity;
+            ItemHistory itemHistory = ItemHistory(
+              shopId: shopId(),
+              title: 'Item Purchased',
+              quantityChange:
+                  record.useGroupQuantity == true
+                      ? (record.quantity *
+                          (record.qttyPerGroup ?? 1))
+                      : record.quantity,
+              newValue: product.quantity?.toString(),
+            );
             await returnData().updateProduct(
+              itemHistory: itemHistory,
               includeQuantity: false,
               isMultipleUpdate: true,
               product: product,
@@ -223,7 +235,18 @@ class ProductRecordFunc {
                             (record.qttyPerGroup ?? 1))
                     : (product.quantity ?? 0) +
                         record.quantity;
+            ItemHistory itemHistory = ItemHistory(
+              shopId: shopId(),
+              title: 'Item Purchased',
+              quantityChange:
+                  record.useGroupQuantity == true
+                      ? (record.quantity *
+                          (record.qttyPerGroup ?? 1))
+                      : record.quantity,
+              newValue: product.quantity?.toString(),
+            );
             await returnData().updateProduct(
+              itemHistory: itemHistory,
               includeQuantity: false,
               isMultipleUpdate: true,
               product: product,

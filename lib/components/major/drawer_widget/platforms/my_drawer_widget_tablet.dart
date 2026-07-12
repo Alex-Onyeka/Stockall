@@ -290,7 +290,13 @@ class _MyDrawerWidgetTabletState
                                 ),
                               ),
                               Visibility(
-                                visible: !isStoreKeeper(),
+                                visible:
+                                    !isStoreKeeper() &&
+                                    authorization(
+                                      authorized:
+                                          Authorizations()
+                                              .managePurchases,
+                                    ),
                                 child: NavListTileDesktopAlt(
                                   itemIndex: 5,
                                   height: 14,

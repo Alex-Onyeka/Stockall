@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
@@ -544,8 +545,25 @@ class _UpdateItemQuantityWidgetState
                                                   .product
                                                   .quantity ??
                                               0);
+                                      ItemHistory
+                                      itemHistory = ItemHistory(
+                                        shopId: shopId(),
+                                        title:
+                                            'Item Quantity ${isIncrement ? "Increased" : 'Reduced'}',
+                                        quantityChange:
+                                            (setQuantity() -
+                                                (widget
+                                                        .product
+                                                        .quantity ??
+                                                    0)),
+                                        newValue:
+                                            setQuantity()
+                                                .toString(),
+                                      );
 
                                       await dataProvider.updateProduct(
+                                        itemHistory:
+                                            itemHistory,
                                         includeQuantity:
                                             true,
                                         isIncrement:

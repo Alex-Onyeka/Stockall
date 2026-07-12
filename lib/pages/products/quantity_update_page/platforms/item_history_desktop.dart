@@ -1,27 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
-import 'package:stockall/classes/temp_product_class/unsynced/quantity_update/quantity_update.dart';
-import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
-import 'package:stockall/local_database/products/unsync_funcs/quantity_update/quantity_update_func.dart';
 import 'package:stockall/main.dart';
 
-class QuantityUpdatesDesktop extends StatefulWidget {
+class ItemHistoryDesktop extends StatefulWidget {
   final String? productUuid;
-  const QuantityUpdatesDesktop({
-    super.key,
-    this.productUuid,
-  });
+  const ItemHistoryDesktop({super.key, this.productUuid});
 
   @override
-  State<QuantityUpdatesDesktop> createState() =>
-      _QuantityUpdatesDesktopState();
+  State<ItemHistoryDesktop> createState() =>
+      _ItemHistoryDesktopState();
 }
 
-class _QuantityUpdatesDesktopState
-    extends State<QuantityUpdatesDesktop> {
+class _ItemHistoryDesktopState
+    extends State<ItemHistoryDesktop> {
   late Future<TempProductClass> productFuture;
 
   bool isLoading = false;
@@ -43,35 +38,17 @@ class _QuantityUpdatesDesktopState
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context, listen: false);
-    List<QuantityUpdate>? quantityUpdates =
-        QuantityUpdateFunc()
-            .getQuantitiesUpdate()
+    List<ItemHistory>? itemHistories =
+        returnItemHistoryProvider()
+            .returnItemHistories()
             .where(
-              (update) =>
+              (history) =>
                   widget.productUuid != null
-                      ? (update.productUuid ==
+                      ? (history.itemUuid ==
                           widget.productUuid)
                       : true,
             )
             .toList();
-    // if (quantityUpdates.isEmpty) {
-    //   return Scaffold(
-    //     body: Center(
-    //       child: Column(
-    //         mainAxisSize: MainAxisSize.min,
-    //         children: [
-    //           Text('No Update Found'),
-    //           MaterialButton(
-    //             onPressed: () {
-    //               Navigator.of(context).pop();
-    //             },
-    //             child: Text('Go Back'),
-    //           ),
-    //         ],
-    //       ),
-    //     ),
-    //   );
-    // } else {
     return Scaffold(
       key: _scaffoldKey,
       body: Row(
@@ -114,27 +91,12 @@ class _QuantityUpdatesDesktopState
                       context: context,
                       title: 'Item Details',
                       widget: Visibility(
-                        visible: !isStoreKeeper(),
+                        visible: authorization(
+                          authorized:
+                              Authorizations().viewDate,
+                        ),
                         child: InkWell(
-                          onTap: () {
-                            var safeContext = context;
-                            showDialog(
-                              context: safeContext,
-                              builder: (context) {
-                                return ConfirmationAlert(
-                                  theme: theme,
-                                  message:
-                                      'This item is going to be added to your cart. Are you sure you want to proceed with this action?',
-                                  title: 'Add Item to Cart',
-                                  action: () async {
-                                    Navigator.of(
-                                      safeContext,
-                                    ).pop();
-                                  },
-                                );
-                              },
-                            );
-                          },
+                          onTap: () {},
                           child: Container(
                             margin: EdgeInsets.only(
                               right: 5,
@@ -159,12 +121,11 @@ class _QuantityUpdatesDesktopState
                                             .b2
                                             .fontSize,
                                   ),
-                                  'Add to Cart',
+                                  'Set Date',
                                 ),
                                 Icon(
                                   size: 17,
-                                  Icons
-                                      .shopping_cart_outlined,
+                                  Icons.calendar_month,
                                 ),
                               ],
                             ),
@@ -178,7 +139,7 @@ class _QuantityUpdatesDesktopState
                       ),
                       child: Builder(
                         builder: (context) {
-                          if (quantityUpdates.isEmpty) {
+                          if (itemHistories.isEmpty) {
                             return Center(
                               child: Column(
                                 mainAxisSize:
@@ -199,7 +160,7 @@ class _QuantityUpdatesDesktopState
                           } else {
                             return Column(
                               children:
-                                  quantityUpdates
+                                  itemHistories
                                       .map(
                                         (item) => Container(
                                           margin:
@@ -238,7 +199,7 @@ class _QuantityUpdatesDesktopState
                                                       FontWeight
                                                           .bold,
                                                 ),
-                                                "${item.productUuid} | ${item.quantity} | ${item.isIncrement}",
+                                                "${item.itemName} | ${item.title} | ${item.quantityChange} | ${item.newValue}",
                                               ),
                                             ],
                                           ),

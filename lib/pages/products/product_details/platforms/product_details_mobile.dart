@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
@@ -15,7 +14,6 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/update_item_quantity.dart';
 import 'package:stockall/pages/products/product_details/platforms/product_details_desktop.dart';
-import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/providers/data_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -93,100 +91,100 @@ class _ProductDetailsMobileState
             appBar: appBar(
               context: context,
               title: 'Details',
-              widget: Visibility(
-                visible: !isStoreKeeper(),
-                child: InkWell(
-                  onTap: () {
-                    var safeContext = context;
-                    showDialog(
-                      context: safeContext,
-                      builder: (context) {
-                        return ConfirmationAlert(
-                          theme: widget.theme,
-                          message:
-                              'This item is going to be added to your cart. Are you sure you want to proceed with this action?',
-                          title: 'Add Item to Cart',
-                          action: () async {
-                            Navigator.of(safeContext).pop();
-                            var res =
-                                await returnSalesProvider()
-                                    .addItemToCart(
-                                      isEdit: false,
-                                      context: context,
-                                      newItem: TempCartItem(
-                                        uuid: uuidGen(),
-                                        itemUuid:
-                                            product.uuid,
-                                        isVoid: false,
-                                        qttyPerGroup: null,
-                                        useGroupQuantity:
-                                            false,
-                                        useWholeSalePrice:
-                                            false,
-                                        setCustomPrice:
-                                            false,
-                                        item: product,
-                                        quantity: 1,
-                                        discount: null,
-                                        addToStock: false,
-                                        setTotalPrice:
-                                            false,
-                                      ),
-                                      isCustomEdit: false,
-                                    );
-                            if (res ==
-                                "Quantity Limit Exceeded") {
-                              return;
-                            }
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return MakeSalesPage(
-                                    isMain: true,
-                                    // product: product,
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    );
-                  },
-                  child: Container(
-                    margin: EdgeInsets.only(right: 5),
-                    padding: EdgeInsets.only(
-                      right: 15,
-                      left: 15,
-                      top: 5,
-                      bottom: 5,
-                    ),
-                    decoration: BoxDecoration(),
-                    child: Row(
-                      spacing: 3,
-                      children: [
-                        Text(
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b2
-                                    .fontSize,
-                          ),
-                          'Sell Item',
-                        ),
-                        Icon(
-                          size: 16,
-                          Icons.shopping_cart_outlined,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+              // widget: Visibility(
+              //   visible: !isStoreKeeper(),
+              //   child: InkWell(
+              //     onTap: () {
+              //       var safeContext = context;
+              //       showDialog(
+              //         context: safeContext,
+              //         builder: (context) {
+              //           return ConfirmationAlert(
+              //             theme: widget.theme,
+              //             message:
+              //                 'This item is going to be added to your cart. Are you sure you want to proceed with this action?',
+              //             title: 'Add Item to Cart',
+              //             action: () async {
+              //               Navigator.of(safeContext).pop();
+              //               var res =
+              //                   await returnSalesProvider()
+              //                       .addItemToCart(
+              //                         isEdit: false,
+              //                         context: context,
+              //                         newItem: TempCartItem(
+              //                           uuid: uuidGen(),
+              //                           itemUuid:
+              //                               product.uuid,
+              //                           isVoid: false,
+              //                           qttyPerGroup: null,
+              //                           useGroupQuantity:
+              //                               false,
+              //                           useWholeSalePrice:
+              //                               false,
+              //                           setCustomPrice:
+              //                               false,
+              //                           item: product,
+              //                           quantity: 1,
+              //                           discount: null,
+              //                           addToStock: false,
+              //                           setTotalPrice:
+              //                               false,
+              //                         ),
+              //                         isCustomEdit: false,
+              //                       );
+              //               if (res ==
+              //                   "Quantity Limit Exceeded") {
+              //                 return;
+              //               }
+              //               Navigator.push(
+              //                 context,
+              //                 MaterialPageRoute(
+              //                   builder: (context) {
+              //                     return MakeSalesPage(
+              //                       isMain: true,
+              //                       // product: product,
+              //                     );
+              //                   },
+              //                 ),
+              //               );
+              //             },
+              //           );
+              //         },
+              //       );
+              //     },
+              //     child: Container(
+              //       margin: EdgeInsets.only(right: 5),
+              //       padding: EdgeInsets.only(
+              //         right: 15,
+              //         left: 15,
+              //         top: 5,
+              //         bottom: 5,
+              //       ),
+              //       decoration: BoxDecoration(),
+              //       child: Row(
+              //         spacing: 3,
+              //         children: [
+              //           Text(
+              //             style: TextStyle(
+              //               fontWeight: FontWeight.bold,
+              //               fontSize:
+              //                   widget
+              //                       .theme
+              //                       .mobileTexts
+              //                       .b2
+              //                       .fontSize,
+              //             ),
+              //             'Sell Item',
+              //           ),
+              //           Icon(
+              //             size: 16,
+              //             Icons.shopping_cart_outlined,
+              //           ),
+              //         ],
+              //       ),
+              //     ),
+              //   ),
+              // ),
             ),
             body: Padding(
               padding: const EdgeInsets.symmetric(
@@ -243,32 +241,49 @@ class _ProductDetailsMobileState
                           Column(
                             children: [
                               Row(
-                                spacing: 10,
                                 mainAxisAlignment:
                                     MainAxisAlignment
                                         .center,
                                 children: [
-                                  Expanded(
-                                    child: TabContainerMobile(
-                                      isMoney: true,
-                                      text: 'Cost Price',
-                                      price:
-                                          product.costPrice,
-                                      theme: widget.theme,
-                                      backGround:
-                                          const Color.fromARGB(
-                                            11,
-                                            15,
-                                            4,
-                                            114,
-                                          ),
-                                      border:
-                                          const Color.fromARGB(
-                                            32,
-                                            45,
-                                            3,
-                                            255,
-                                          ),
+                                  Visibility(
+                                    visible: authorization(
+                                      authorized:
+                                          Authorizations()
+                                              .manageCostPrice,
+                                    ),
+                                    child: Expanded(
+                                      child: TabContainerMobile(
+                                        isMoney: true,
+                                        text: 'Cost Price',
+                                        price:
+                                            product
+                                                .costPrice,
+                                        theme: widget.theme,
+                                        backGround:
+                                            const Color.fromARGB(
+                                              11,
+                                              15,
+                                              4,
+                                              114,
+                                            ),
+                                        border:
+                                            const Color.fromARGB(
+                                              32,
+                                              45,
+                                              3,
+                                              255,
+                                            ),
+                                      ),
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible: authorization(
+                                      authorized:
+                                          Authorizations()
+                                              .manageCostPrice,
+                                    ),
+                                    child: SizedBox(
+                                      width: 10,
                                     ),
                                   ),
                                   Expanded(
@@ -483,18 +498,32 @@ class _ProductDetailsMobileState
                                                                 15,
                                                           ),
                                                           Column(
-                                                            spacing:
-                                                                20,
                                                             children: [
-                                                              MoneyTextfield(
-                                                                title:
-                                                                    'Cost Price',
-                                                                hint:
-                                                                    'Enter Cost Price',
-                                                                controller:
-                                                                    costController,
-                                                                theme:
-                                                                    widget.theme,
+                                                              Visibility(
+                                                                visible: authorization(
+                                                                  authorized:
+                                                                      Authorizations().manageCostPrice,
+                                                                ),
+                                                                child: MoneyTextfield(
+                                                                  title:
+                                                                      'Cost Price',
+                                                                  hint:
+                                                                      'Enter Cost Price',
+                                                                  controller:
+                                                                      costController,
+                                                                  theme:
+                                                                      widget.theme,
+                                                                ),
+                                                              ),
+                                                              Visibility(
+                                                                visible: authorization(
+                                                                  authorized:
+                                                                      Authorizations().manageCostPrice,
+                                                                ),
+                                                                child: SizedBox(
+                                                                  height:
+                                                                      20,
+                                                                ),
                                                               ),
                                                               MoneyTextfield(
                                                                 title:
@@ -562,6 +591,8 @@ class _ProductDetailsMobileState
                                                                           },
                                                                         );
                                                                         await dataProvider.updateProduct(
+                                                                          itemHistory:
+                                                                              null,
                                                                           includeQuantity:
                                                                               false,
                                                                           isIncrement:
@@ -1082,6 +1113,8 @@ class _ProductDetailsMobileState
                                                               true;
                                                         });
                                                         await dataProvider.updateProduct(
+                                                          itemHistory:
+                                                              null,
                                                           includeQuantity:
                                                               false,
                                                           isIncrement:

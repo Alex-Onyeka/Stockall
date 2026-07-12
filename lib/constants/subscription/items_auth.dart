@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/providers/subscription_provider.dart';
 
 class ItemsAuth {
   final int numberOfItems;
@@ -12,6 +13,7 @@ class ItemsAuth {
   final bool manageInventoryStorage;
   final bool useGroupUnit;
   final bool setWholeSale;
+  final bool trackItemHistory;
 
   ItemsAuth({
     required this.numberOfItems,
@@ -23,6 +25,7 @@ class ItemsAuth {
     required this.manageInventoryStorage,
     required this.useGroupUnit,
     required this.setWholeSale,
+    required this.trackItemHistory,
   });
 }
 
@@ -83,6 +86,35 @@ class ItemsAuthAction {
     } else {
       if (action != null) {
         showUnauthorizedDialog(context);
+        if (failAction != null) {
+          failAction();
+        }
+      }
+      return false;
+    }
+    // }
+  }
+
+  bool trackItemHistoryAction({
+    required BuildContext? context,
+    Function()? action,
+    Function()? failAction,
+  }) {
+    var plan = SubscriptionProvider().subscription?.plan;
+    if (plan == null) {
+      return false;
+    }
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .itemsAuth
+        .trackItemHistory) {
+      action == null ? {} : action();
+      return true;
+    } else {
+      if (action != null) {
+        if (context != null) {
+          showUnauthorizedDialog(context);
+        }
         if (failAction != null) {
           failAction();
         }

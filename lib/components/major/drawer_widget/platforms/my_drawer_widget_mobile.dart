@@ -184,7 +184,13 @@ class _MyDrawerWidgetMobileState
                               ),
                             ),
                             Visibility(
-                              visible: !isStoreKeeper(),
+                              visible:
+                                  !isStoreKeeper() &&
+                                  authorization(
+                                    authorized:
+                                        Authorizations()
+                                            .managePurchases,
+                                  ),
                               child: NavListTileAlt(
                                 height: 14,
                                 action: () {
