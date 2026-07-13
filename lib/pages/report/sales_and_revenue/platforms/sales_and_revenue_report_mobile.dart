@@ -1064,7 +1064,7 @@ class _SummaryTableHeadingBarState
           Visibility(
             visible:
                 widget.salesRecords.isNotEmpty &&
-                !authorization(
+                authorization(
                   authorized:
                       Authorizations().manageCostPrice,
                 ),
@@ -1112,7 +1112,7 @@ class _SummaryTableHeadingBarState
           Visibility(
             visible:
                 widget.salesRecords.isNotEmpty &&
-                !authorization(
+                authorization(
                   authorized:
                       Authorizations().manageCostPrice,
                 ),
@@ -1293,11 +1293,9 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
             ),
           ),
           Visibility(
-            visible:
-                !authorization(
-                  authorized:
-                      Authorizations().manageCostPrice,
-                ),
+            visible: authorization(
+              authorized: Authorizations().manageCostPrice,
+            ),
             child: Expanded(
               flex: 5,
               child: Container(
@@ -1334,11 +1332,9 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
             ),
           ),
           Visibility(
-            visible:
-                !authorization(
-                  authorized:
-                      Authorizations().manageCostPrice,
-                ),
+            visible: authorization(
+              authorized: Authorizations().manageCostPrice,
+            ),
             child: Expanded(
               flex: 5,
               child: Container(
@@ -1546,11 +1542,9 @@ class _TableRowRecordWidgetState
             ),
           ),
           Visibility(
-            visible:
-                !authorization(
-                  authorized:
-                      Authorizations().manageCostPrice,
-                ),
+            visible: authorization(
+              authorized: Authorizations().manageCostPrice,
+            ),
             child: Expanded(
               flex: 5,
               child: Container(
@@ -1590,11 +1584,9 @@ class _TableRowRecordWidgetState
             ),
           ),
           Visibility(
-            visible:
-                !authorization(
-                  authorized:
-                      Authorizations().manageCostPrice,
-                ),
+            visible: authorization(
+              authorized: Authorizations().manageCostPrice,
+            ),
             child: Expanded(
               flex: 5,
               child: Container(

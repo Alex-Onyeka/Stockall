@@ -766,38 +766,53 @@ class ProductReportDesktopState
                                                 height: 8,
                                               ),
                                               Row(
-                                                spacing: 10,
                                                 mainAxisAlignment:
                                                     MainAxisAlignment
                                                         .center,
                                                 children: [
-                                                  Expanded(
-                                                    child: TabContainer(
-                                                      priceTextSize:
-                                                          theme.mobileTexts.h3.fontSize,
-                                                      isMoney:
-                                                          true,
-                                                      text:
-                                                          'Total Cost Value',
-                                                      price:
-                                                          returnData(
-                                                            context:
-                                                                context,
-                                                          ).getTotalCostPrice(),
-                                                      theme:
-                                                          theme,
-                                                      backGround: const Color.fromARGB(
-                                                        11,
-                                                        15,
-                                                        4,
-                                                        114,
+                                                  Visibility(
+                                                    visible: authorization(
+                                                      authorized:
+                                                          Authorizations().manageCostPrice,
+                                                    ),
+                                                    child: Expanded(
+                                                      child: TabContainer(
+                                                        priceTextSize:
+                                                            theme.mobileTexts.h3.fontSize,
+                                                        isMoney:
+                                                            true,
+                                                        text:
+                                                            'Total Cost Value',
+                                                        price:
+                                                            returnData(
+                                                              context:
+                                                                  context,
+                                                            ).getTotalCostPrice(),
+                                                        theme:
+                                                            theme,
+                                                        backGround: const Color.fromARGB(
+                                                          11,
+                                                          15,
+                                                          4,
+                                                          114,
+                                                        ),
+                                                        border: const Color.fromARGB(
+                                                          32,
+                                                          45,
+                                                          3,
+                                                          255,
+                                                        ),
                                                       ),
-                                                      border: const Color.fromARGB(
-                                                        32,
-                                                        45,
-                                                        3,
-                                                        255,
-                                                      ),
+                                                    ),
+                                                  ),
+                                                  Visibility(
+                                                    visible: authorization(
+                                                      authorized:
+                                                          Authorizations().manageCostPrice,
+                                                    ),
+                                                    child: SizedBox(
+                                                      width:
+                                                          10,
                                                     ),
                                                   ),
                                                   Expanded(
