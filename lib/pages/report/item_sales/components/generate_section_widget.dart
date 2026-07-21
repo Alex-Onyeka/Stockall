@@ -41,6 +41,7 @@ class GenerateSectionWidget extends StatelessWidget {
               title,
             ),
             widget,
+            SizedBox(height: 5),
           ],
         ),
       ),

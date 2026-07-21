@@ -11,21 +11,22 @@ class MultiDisplayProvider extends ChangeNotifier {
   factory MultiDisplayProvider() => _instance;
   MultiDisplayProvider._internal();
   Future<bool> isAllowed() async {
-    if (returnShopProvider().isDesktop() &&
-        currentUser().role != 'Store Keeper') {
-      var screen = await getAltDisplay();
-      if (screen == null) {
-        return false;
-      }
-      for (var win in windows) {
-        await win.controller.setFrame(
-          screen.visiblePosition! & screen.visibleSize!,
-        );
-      }
-      return true;
-    } else {
-      return false;
-    }
+    // if (returnShopProvider().isDesktop() &&
+    //     currentUser().role != 'Store Keeper') {
+    //   var screen = await getAltDisplay();
+    //   if (screen == null) {
+    //     return false;
+    //   }
+    //   for (var win in windows) {
+    //     await win.controller.setFrame(
+    //       screen.visiblePosition! & screen.visibleSize!,
+    //     );
+    //   }
+    //   return true;
+    // } else {
+    //   return false;
+    // }
+    return false;
   }
 
   List<WindowInfo> windows = [];
@@ -48,36 +49,38 @@ class MultiDisplayProvider extends ChangeNotifier {
 
   Display? altDisplay;
   Future<Display?> getAltDisplay() async {
-    var displays = await screenRetriever.getAllDisplays();
-    if (displays.length > 1) {
-      altDisplay = displays[1];
-      notifyListeners();
-      return displays[1];
-    } else {
-      altDisplay = null;
-      notifyListeners();
-      return null;
-    }
+    // var displays = await screenRetriever.getAllDisplays();
+    // if (displays.length > 1) {
+    //   altDisplay = displays[1];
+    //   notifyListeners();
+    //   return displays[1];
+    // } else {
+    //   altDisplay = null;
+    //   notifyListeners();
+    //   return null;
+    // }
+    return null;
   }
 
   bool checkIfWindowExists(String cartId) {
-    if (returnShopProvider().isDesktop()) {
-      try {
-        var displayId =
-            windows
-                .firstWhere((win) => win.id == cartId)
-                .controller
-                .windowId;
-        return displayIds.contains(displayId);
-      } catch (e) {
-        print(
-          'Error Occured Checking if Window Exists: ${e.toString()}',
-        );
-        return true;
-      }
-    } else {
-      return true;
-    }
+    // if (returnShopProvider().isDesktop()) {
+    //   try {
+    //     var displayId =
+    //         windows
+    //             .firstWhere((win) => win.id == cartId)
+    //             .controller
+    //             .windowId;
+    //     return displayIds.contains(displayId);
+    //   } catch (e) {
+    //     print(
+    //       'Error Occured Checking if Window Exists: ${e.toString()}',
+    //     );
+    //     return true;
+    //   }
+    // } else {
+    //   return true;
+    // }
+    return true;
   }
 
   Future<void> createWindow({

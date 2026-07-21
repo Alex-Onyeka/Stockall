@@ -44,7 +44,7 @@ class _CustomerReportDesktopState
             .toList();
 
     return DesktopCenterContainer(
-      width: screenWidth(context) - 50,
+      width: double.infinity,
       mainWidget: Scaffold(
         appBar: appBar(
           context: context,

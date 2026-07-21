@@ -175,3 +175,81 @@ class TempInvoice extends HiveObject {
     };
   }
 }
+
+class StaffGroupInvoices {
+  final String? staffUuid;
+  final String? staffName;
+  int number;
+  double totalBalance;
+  double totalPaid;
+  double totalOriginalCost;
+  double totalRevenue;
+
+  StaffGroupInvoices({
+    required this.staffUuid,
+    required this.staffName,
+    required this.number,
+    required this.totalBalance,
+    required this.totalPaid,
+    required this.totalOriginalCost,
+    required this.totalRevenue,
+  });
+}
+
+class CustomerGroupInvoices {
+  final String? customerUuid;
+  final String? customerName;
+  int number;
+  double totalBalance;
+  double totalPaid;
+  double totalOriginalCost;
+  double totalRevenue;
+
+  CustomerGroupInvoices({
+    required this.customerUuid,
+    required this.customerName,
+    required this.number,
+    required this.totalBalance,
+    required this.totalPaid,
+    required this.totalOriginalCost,
+    required this.totalRevenue,
+  });
+}
+
+class ChannelGroupInvoices {
+  final String paymentMethod;
+  int number;
+  double totalBalance;
+  double totalPaid;
+  double totalOriginalCost;
+  double totalRevenue;
+
+  ChannelGroupInvoices({
+    required this.paymentMethod,
+    required this.number,
+    required this.totalBalance,
+    required this.totalPaid,
+    required this.totalOriginalCost,
+    required this.totalRevenue,
+  });
+}
+
+class DepartmentGroupInvoices {
+  final String departmentUuid;
+  final String? departmentName;
+  int number;
+  double totalBalance;
+  double totalPaid;
+  double totalOriginalCost;
+  double totalRevenue;
+
+  DepartmentGroupInvoices({
+    required this.departmentUuid,
+    required this.departmentName,
+    required this.number,
+    required this.totalBalance,
+    required this.totalPaid,
+    required this.totalOriginalCost,
+    required this.totalRevenue,
+  });
+}

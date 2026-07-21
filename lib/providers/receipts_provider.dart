@@ -1,4 +1,6 @@
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_main_receipt/unsynced/created_receipts/created_receipts.dart';
 import 'package:stockall/classes/temp_main_receipt/unsynced/deleted_customers/deleted_receipts.dart';
@@ -16,6 +18,8 @@ import 'package:stockall/local_database/product_record_func.dart/product_record_
 import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/created/created_records_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/general_report/class/general_report_class.dart';
+import 'package:stockall/pages/report/receipt_sales_report/platforms/receipt_sales_report_desktop.dart';
+import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -666,8 +670,8 @@ class ReceiptsProvider extends ChangeNotifier {
             return CreatedRecords(record: r);
           }).toList();
       await CreatedRecordsFunc().insertAllRecords(cRecords);
+      await loadProductSalesRecordOffline(shopId());
       print('Finished Creating Product Sales Offline');
-      // }
     } catch (e) {
       print('Error ${e.toString()}');
     }
@@ -1038,6 +1042,131 @@ class ReceiptsProvider extends ChangeNotifier {
     } else {
       return returnReceiptsBasedOnPaymentMethod().toList();
     }
+  }
+
+  List<StaffGroupReceipts> groupReceiptsByStaff() {
+    final Map<String?, StaffGroupReceipts> grouped = {};
+
+    for (final receipt in returnOwnReceiptsByDayOrWeek()) {
+      final String? staffUuid = receipt.staffId;
+
+      if (!grouped.containsKey(staffUuid)) {
+        grouped[staffUuid] = StaffGroupReceipts(
+          staffUuid: staffUuid ?? '',
+          staffName:
+              staffUuid == null
+                  ? null
+                  : receipt.staffName ?? '',
+          number: 0,
+          totalBalance: 0,
+          totalOriginalCost: 0,
+          totalRevenue: 0,
+        );
+      }
+
+      final group = grouped[staffUuid]!;
+
+      group.number++;
+      group.totalBalance += receipt.balance ?? 0;
+      group.totalOriginalCost += receipt.originalCost ?? 0;
+      group.totalRevenue += receipt.cashAlt + receipt.bank;
+    }
+
+    return grouped.values.toList();
+  }
+
+  List<CustomerGroupReceipts> groupReceiptsByCustomer() {
+    final Map<String?, CustomerGroupReceipts> grouped = {};
+
+    for (final receipt in returnOwnReceiptsByDayOrWeek()) {
+      final String? customerUuid = receipt.customerUuid;
+
+      if (!grouped.containsKey(customerUuid)) {
+        grouped[customerUuid] = CustomerGroupReceipts(
+          customerUuid: customerUuid ?? '',
+          customerName:
+              customerUuid == null
+                  ? null
+                  : receipt.customerName ?? '',
+          number: 0,
+          totalBalance: 0,
+          totalOriginalCost: 0,
+          totalRevenue: 0,
+        );
+      }
+
+      final group = grouped[customerUuid]!;
+
+      group.number++;
+      group.totalBalance += receipt.balance ?? 0;
+      group.totalOriginalCost += receipt.originalCost ?? 0;
+      group.totalRevenue += receipt.cashAlt + receipt.bank;
+    }
+
+    return grouped.values.toList();
+  }
+
+  List<ChannelGroupReceipts>
+  groupReceiptsByPaymentChannel() {
+    final Map<String, ChannelGroupReceipts> grouped = {};
+
+    for (final receipt in returnOwnReceiptsByDayOrWeek()) {
+      final paymentMethod = receipt.paymentMethod;
+
+      if (!grouped.containsKey(paymentMethod)) {
+        grouped[paymentMethod] = ChannelGroupReceipts(
+          paymentMethod: paymentMethod,
+          number: 0,
+          totalBalance: 0,
+          totalOriginalCost: 0,
+          totalRevenue: 0,
+        );
+      }
+
+      final group = grouped[paymentMethod]!;
+
+      group.number++;
+      group.totalBalance += receipt.balance ?? 0;
+      group.totalOriginalCost += receipt.originalCost ?? 0;
+      group.totalRevenue += receipt.cashAlt + receipt.bank;
+    }
+
+    var res = grouped.values.toList();
+    return res;
+  }
+
+  List<DepartmentGroupReceipts>
+  groupReceiptsByDepartment() {
+    final Map<String?, DepartmentGroupReceipts> grouped =
+        {};
+
+    for (final receipt in returnOwnReceiptsByDayOrWeek()) {
+      final String? departmentUuid =
+          receipt.departmentUuidNew;
+
+      if (!grouped.containsKey(departmentUuid)) {
+        grouped[departmentUuid] = DepartmentGroupReceipts(
+          departmentUuid: departmentUuid ?? '',
+          departmentName:
+              departmentUuid == null
+                  ? null
+                  : receipt.departmentName ?? '',
+          number: 0,
+          totalBalance: 0,
+          totalOriginalCost: 0,
+          totalRevenue: 0,
+        );
+      }
+
+      final group = grouped[departmentUuid]!;
+
+      group.number++;
+      group.totalBalance += receipt.balance ?? 0;
+      group.totalOriginalCost += receipt.originalCost ?? 0;
+      group.totalRevenue += receipt.cashAlt + receipt.bank;
+    }
+
+    return grouped.values.toList();
   }
 
   List<TempProductSaleRecord>
@@ -1746,6 +1875,33 @@ class ReceiptsProvider extends ChangeNotifier {
   //
   //
   //
+
+  double getTotalSalesRevenueNoDepartment() {
+    return returnProductsRecordByDayOrWeek()
+        .where(
+          (item) =>
+              item.departmentUuid == null &&
+              item.invoiceUuid == null,
+        )
+        .map((item) => item.revenue)
+        .toList()
+        .fold(0, (first, second) => first + second);
+  }
+
+  //
+  //
+  //
+  //
+  double getTotalSalesRevenueVoid() {
+    return returnProductsRecordByDayOrWeekVoid()
+        .map((item) => item.revenue)
+        .toList()
+        .fold(0, (first, second) => first + second);
+  }
+
+  //
+  //
+  //
   //
   //
   //
@@ -1804,5 +1960,839 @@ class ReceiptsProvider extends ChangeNotifier {
     result.sort((a, b) => b.quantity.compareTo(a.quantity));
 
     return result;
+  }
+
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+
+  int sortColumnIndex = 0;
+  bool sortAscending = true;
+
+  List<DataColumn> _headingTotal({
+    required BuildContext context,
+  }) {
+    return [
+      DataColumn2(label: HeadingTextWidget(title: '#Id')),
+      DataColumn2(
+        size: ColumnSize.L,
+
+        label: HeadingTextWidget(title: 'Staff'),
+      ),
+      DataColumn2(
+        size: ColumnSize.L,
+
+        label: HeadingTextWidget(title: 'Customer'),
+      ),
+      DataColumn2(
+        size: ColumnSize.S,
+        label: HeadingTextWidget(title: 'Channel'),
+      ),
+      DataColumn2(label: HeadingTextWidget(title: 'Date')),
+      DataColumn2(label: HeadingTextWidget(title: 'Time')),
+      DataColumn2(
+        size: ColumnSize.S,
+        label: HeadingTextWidget(title: 'Discount'),
+      ),
+      DataColumn2(
+        size: ColumnSize.S,
+        label: HeadingTextWidget(title: 'VAT'),
+      ),
+      DataColumn2(
+        label: HeadingTextWidget(title: 'Balance'),
+      ),
+      DataColumn2(
+        label: HeadingTextWidget(title: 'Sub-Total'),
+      ),
+      DataColumn2(
+        label: HeadingTextWidget(title: 'Revenue'),
+      ),
+    ];
+  }
+
+  List<DataColumn> _headingStaffs() {
+    return [
+      DataColumn2(
+        size: ColumnSize.L,
+
+        label: HeadingTextWidget(title: 'Staff'),
+      ),
+      DataColumn2(
+        size: ColumnSize.S,
+        label: HeadingTextWidget(title: 'Quantity'),
+      ),
+      DataColumn2(
+        size: ColumnSize.M,
+        label: HeadingTextWidget(title: 'Balance'),
+      ),
+      DataColumn2(
+        label: HeadingTextWidget(title: 'Sub-Total'),
+      ),
+      DataColumn2(
+        label: HeadingTextWidget(title: 'Revenue'),
+      ),
+    ];
+  }
+
+  List<DataColumn> _headingCustomers() {
+    return [
+      DataColumn2(
+        size: ColumnSize.L,
+
+        label: HeadingTextWidget(title: 'Customer'),
+      ),
+      DataColumn2(
+        size: ColumnSize.S,
+        label: HeadingTextWidget(title: 'Quantity'),
+      ),
+      DataColumn2(
+        size: ColumnSize.M,
+        label: HeadingTextWidget(title: 'Balance'),
+      ),
+      DataColumn2(
+        label: HeadingTextWidget(title: 'Sub-Total'),
+      ),
+      DataColumn2(
+        label: HeadingTextWidget(title: 'Revenue'),
+      ),
+    ];
+  }
+
+  List<DataColumn> _headingChannel() {
+    return [
+      DataColumn2(
+        size: ColumnSize.L,
+        label: HeadingTextWidget(title: 'Channel'),
+      ),
+      DataColumn2(
+        size: ColumnSize.S,
+        label: HeadingTextWidget(title: 'Quantity'),
+      ),
+      DataColumn2(
+        size: ColumnSize.M,
+        label: HeadingTextWidget(title: 'Balance'),
+      ),
+      DataColumn2(
+        label: HeadingTextWidget(title: 'Sub-Total'),
+      ),
+      DataColumn2(
+        label: HeadingTextWidget(title: 'Revenue'),
+      ),
+    ];
+  }
+
+  List<DataColumn> _headingDepartments() {
+    return [
+      DataColumn2(
+        size: ColumnSize.L,
+        label: HeadingTextWidget(title: 'Department'),
+      ),
+      DataColumn2(
+        size: ColumnSize.S,
+        label: HeadingTextWidget(title: 'Quantity'),
+      ),
+      DataColumn2(
+        size: ColumnSize.M,
+        label: HeadingTextWidget(title: 'Balance'),
+      ),
+      DataColumn2(
+        label: HeadingTextWidget(title: 'Sub-Total'),
+      ),
+      DataColumn2(
+        label: HeadingTextWidget(title: 'Revenue'),
+      ),
+    ];
+  }
+
+  double rowTotalTotalBalance() {
+    return returnOwnReceiptsByDayOrWeek()
+        .map((item) => (item.balance ?? 0))
+        .toList()
+        .fold(0, (p, n) => p + n);
+  }
+
+  double rowTotalTotalCostPrice() {
+    return returnOwnReceiptsByDayOrWeek()
+        .map((item) => (item.originalCost ?? 0))
+        .toList()
+        .fold(0, (p, n) => p + n);
+  }
+
+  double rowTotalTotalRevenue() {
+    return returnOwnReceiptsByDayOrWeek()
+        .map((item) => (item.cashAlt + item.bank))
+        .toList()
+        .fold(0, (p, n) => p + n);
+  }
+
+  List<DataRow> _rowTotal({required BuildContext context}) {
+    return [
+      ...returnOwnReceiptsByDayOrWeek().toList().map((
+        item,
+      ) {
+        return DataRow2(
+          specificRowHeight:
+              (item.staffName ?? '').length > 18 ||
+                      (item.customerName ?? '').length > 18
+                  ? 40
+                  : 30,
+          cells: [
+            DataCell(
+              Text(
+                "#${item.barcode ?? returnOnlyDigits(item.uuid ?? '')}",
+              ),
+            ),
+            DataCell(Text(item.staffName ?? 'Not Set')),
+            DataCell(Text(item.customerName ?? 'Not Set')),
+            DataCell(Text(item.paymentMethod)),
+            DataCell(Text(formatDateTime(item.createdAt))),
+            DataCell(Text(formatTime(item.createdAt))),
+            DataCell(
+              Text(
+                "${item.generalDiscount != null ? "" : '${shop(context)?.currency}'}${formatLargeNumberDouble(item.fixedDiscount ?? item.generalDiscount ?? 0)}${item.generalDiscount != null ? "%" : ''}",
+              ),
+            ),
+            DataCell(
+              Text(
+                "${formatLargeNumberDouble(item.vat ?? 0)}%",
+              ),
+            ),
+            DataCell(
+              Text(
+                formatMoneyBig(
+                  amount: item.balance ?? 0,
+                  context: context,
+                ),
+              ),
+            ),
+            DataCell(
+              Text(
+                formatMoneyBig(
+                  amount: item.originalCost ?? 0,
+                  context: context,
+                ),
+              ),
+            ),
+            DataCell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return ReceiptPage(
+                        response: CheckoutResponse(
+                          resUuid: item.uuid!,
+                          isReceipt: true,
+                        ),
+                        isMain: false,
+                      );
+                    },
+                  ),
+                );
+              },
+              Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
+                spacing: 5,
+                children: [
+                  Text(
+                    formatMoneyBig(
+                      amount: item.bank + item.cashAlt,
+                      context: context,
+                    ),
+                  ),
+                  Icon(
+                    size: 14,
+                    color: Colors.grey.shade500,
+                    Icons.arrow_forward_ios_rounded,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      }),
+      DataRow2(
+        specificRowHeight: 40,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          color: Colors.grey.shade300,
+        ),
+        cells: [
+          DataCell(
+            Text(style: TextStyle(fontSize: 14), 'TOTAL'),
+          ),
+          DataCell(Text('')),
+          DataCell(Text('')),
+          DataCell(Text('')),
+          DataCell(Text('')),
+          DataCell(Text('')),
+          DataCell(Text("")),
+          DataCell(Text("")),
+          DataCell(
+            Text(
+              style: TextStyle(fontSize: 14),
+              formatMoneyBig(
+                amount: rowTotalTotalBalance(),
+                context: context,
+              ),
+            ),
+          ),
+          DataCell(
+            Text(
+              style: TextStyle(fontSize: 14),
+              formatMoneyBig(
+                amount: rowTotalTotalCostPrice(),
+                context: context,
+              ),
+            ),
+          ),
+          DataCell(
+            Text(
+              style: TextStyle(fontSize: 16),
+              formatMoneyBig(
+                amount: rowTotalTotalRevenue(),
+                context: context,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ];
+  }
+
+  rowStaffsTotalQuantity() {
+    return groupReceiptsByStaff()
+        .map((item) => item.number)
+        .toList()
+        .fold(0, (p, n) => p + n);
+  }
+
+  rowStaffsTotalBalance() {
+    return groupReceiptsByStaff()
+        .map((item) => item.totalBalance)
+        .toList()
+        .fold<double>(0, (p, n) => p + n);
+  }
+
+  rowStaffsTotalCostPrice() {
+    return groupReceiptsByStaff()
+        .map((item) => item.totalOriginalCost)
+        .toList()
+        .fold<double>(0, (p, n) => p + n);
+  }
+
+  rowStaffsTotalRevenue() {
+    return groupReceiptsByStaff()
+        .map((item) => item.totalRevenue)
+        .toList()
+        .fold<double>(0, (p, n) => p + n);
+  }
+
+  List<DataRow> _rowStaffs({
+    required BuildContext context,
+  }) {
+    return [
+      ...groupReceiptsByStaff().map((item) {
+        return DataRow2(
+          specificRowHeight:
+              (item.staffName ?? '').length > 15 ? 40 : 30,
+          cells: [
+            DataCell(Text(item.staffName ?? 'Not Set')),
+            DataCell(
+              Text(formatLargeNumberDouble(item.number)),
+            ),
+            DataCell(
+              Text(
+                formatMoneyBig(
+                  amount: item.totalBalance,
+                  context: context,
+                ),
+              ),
+            ),
+            DataCell(
+              Text(
+                formatMoneyBig(
+                  amount: item.totalOriginalCost,
+                  context: context,
+                ),
+              ),
+            ),
+            DataCell(
+              Text(
+                formatMoneyBig(
+                  amount: item.totalRevenue,
+                  context: context,
+                ),
+              ),
+            ),
+          ],
+        );
+      }),
+      DataRow2(
+        specificRowHeight: 40,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          color: Colors.grey.shade300,
+        ),
+        cells: [
+          DataCell(
+            Text(style: TextStyle(fontSize: 14), 'TOTAL'),
+          ),
+          DataCell(
+            Text(
+              style: TextStyle(fontSize: 14),
+              formatLargeNumberDouble(
+                rowStaffsTotalQuantity(),
+              ),
+            ),
+          ),
+          DataCell(
+            Text(
+              style: TextStyle(fontSize: 14),
+              formatMoneyBig(
+                amount: rowStaffsTotalBalance(),
+                context: context,
+              ),
+            ),
+          ),
+          DataCell(
+            Text(
+              style: TextStyle(fontSize: 14),
+              formatMoneyBig(
+                amount: rowStaffsTotalCostPrice(),
+                context: context,
+              ),
+            ),
+          ),
+          DataCell(
+            Text(
+              style: TextStyle(fontSize: 14),
+              formatMoneyBig(
+                amount: rowStaffsTotalRevenue(),
+                context: context,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ];
+  }
+
+  rowCustomersTotalQuantity() {
+    return groupReceiptsByCustomer()
+        .map((item) => item.number)
+        .toList()
+        .fold(0, (p, n) => p + n);
+  }
+
+  rowCustomersTotalBalance() {
+    return groupReceiptsByCustomer()
+        .map((item) => item.totalBalance)
+        .toList()
+        .fold<double>(0, (p, n) => p + n);
+  }
+
+  rowCustomersTotalCostPrice() {
+    return groupReceiptsByCustomer()
+        .map((item) => item.totalOriginalCost)
+        .toList()
+        .fold<double>(0, (p, n) => p + n);
+  }
+
+  rowCustomersTotalRevenue() {
+    return groupReceiptsByCustomer()
+        .map((item) => item.totalRevenue)
+        .toList()
+        .fold<double>(0, (p, n) => p + n);
+  }
+
+  List<DataRow> _rowCustomers({
+    required BuildContext context,
+  }) {
+    return [
+      ...groupReceiptsByCustomer().map((item) {
+        return DataRow2(
+          specificRowHeight:
+              (item.customerName ?? '').length > 15
+                  ? 40
+                  : 30,
+          cells: [
+            DataCell(Text(item.customerName ?? 'Not Set')),
+            DataCell(
+              Text(formatLargeNumberDouble(item.number)),
+            ),
+            DataCell(
+              Text(
+                formatMoneyBig(
+                  amount: item.totalBalance,
+                  context: context,
+                ),
+              ),
+            ),
+            DataCell(
+              Text(
+                formatMoneyBig(
+                  amount: item.totalOriginalCost,
+                  context: context,
+                ),
+              ),
+            ),
+            DataCell(
+              Text(
+                formatMoneyBig(
+                  amount: item.totalRevenue,
+                  context: context,
+                ),
+              ),
+            ),
+          ],
+        );
+      }),
+      DataRow2(
+        specificRowHeight: 40,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          color: Colors.grey.shade300,
+        ),
+        cells: [
+          DataCell(
+            Text(style: TextStyle(fontSize: 14), 'TOTAL'),
+          ),
+          DataCell(
+            Text(
+              style: TextStyle(fontSize: 14),
+              formatLargeNumberDouble(
+                rowCustomersTotalQuantity(),
+              ),
+            ),
+          ),
+          DataCell(
+            Text(
+              style: TextStyle(fontSize: 14),
+              formatMoneyBig(
+                amount: rowCustomersTotalBalance(),
+                context: context,
+              ),
+            ),
+          ),
+          DataCell(
+            Text(
+              style: TextStyle(fontSize: 14),
+              formatMoneyBig(
+                amount: rowCustomersTotalCostPrice(),
+                context: context,
+              ),
+            ),
+          ),
+          DataCell(
+            Text(
+              style: TextStyle(fontSize: 16),
+              formatMoneyBig(
+                amount: rowCustomersTotalRevenue(),
+                context: context,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ];
+  }
+
+  rowChannelTotalQuantity() {
+    return groupReceiptsByPaymentChannel()
+        .map((item) => item.number)
+        .toList()
+        .fold(0, (p, n) => p + n);
+  }
+
+  rowChannelTotalBalance() {
+    return groupReceiptsByPaymentChannel()
+        .map((item) => item.totalBalance)
+        .toList()
+        .fold<double>(0, (p, n) => p + n);
+  }
+
+  rowChannelTotalCostPrice() {
+    return groupReceiptsByPaymentChannel()
+        .map((item) => item.totalOriginalCost)
+        .toList()
+        .fold<double>(0, (p, n) => p + n);
+  }
+
+  rowChannelTotalRevenue() {
+    return groupReceiptsByPaymentChannel()
+        .map((item) => item.totalRevenue)
+        .toList()
+        .fold<double>(0, (p, n) => p + n);
+  }
+
+  List<DataRow> _rowChannel({
+    required BuildContext context,
+  }) {
+    return [
+      ...groupReceiptsByPaymentChannel().map((item) {
+        return DataRow2(
+          specificRowHeight: 30,
+          cells: [
+            DataCell(Text(item.paymentMethod)),
+            DataCell(
+              Text(formatLargeNumberDouble(item.number)),
+            ),
+            DataCell(
+              Text(
+                formatMoneyBig(
+                  amount: item.totalBalance,
+                  context: context,
+                ),
+              ),
+            ),
+            DataCell(
+              Text(
+                formatMoneyBig(
+                  amount: item.totalOriginalCost,
+                  context: context,
+                ),
+              ),
+            ),
+            DataCell(
+              Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
+                spacing: 5,
+                children: [
+                  Text(
+                    formatMoneyBig(
+                      amount: item.totalRevenue,
+                      context: context,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      }),
+      DataRow2(
+        specificRowHeight: 40,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          color: Colors.grey.shade300,
+        ),
+        cells: [
+          DataCell(
+            Text(style: TextStyle(fontSize: 14), 'TOTAL'),
+          ),
+          DataCell(
+            Text(
+              style: TextStyle(fontSize: 14),
+              formatLargeNumberDouble(
+                rowChannelTotalQuantity(),
+              ),
+            ),
+          ),
+          DataCell(
+            Text(
+              style: TextStyle(fontSize: 14),
+              formatMoneyBig(
+                amount: rowChannelTotalBalance(),
+                context: context,
+              ),
+            ),
+          ),
+          DataCell(
+            Text(
+              style: TextStyle(fontSize: 14),
+              formatMoneyBig(
+                amount: rowChannelTotalCostPrice(),
+                context: context,
+              ),
+            ),
+          ),
+          DataCell(
+            Text(
+              style: TextStyle(fontSize: 16),
+              formatMoneyBig(
+                amount: rowChannelTotalRevenue(),
+                context: context,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ];
+  }
+
+  rowDepartmentsTotalQuantity() {
+    return groupReceiptsByDepartment()
+        .map((item) => item.number)
+        .toList()
+        .fold(0, (p, n) => p + n);
+  }
+
+  rowDepartmentsTotalBalance() {
+    return groupReceiptsByDepartment()
+        .map((item) => item.totalBalance)
+        .toList()
+        .fold<double>(0, (p, n) => p + n);
+  }
+
+  rowDepartmentsTotalCostPrice() {
+    return groupReceiptsByDepartment()
+        .map((item) => item.totalOriginalCost)
+        .toList()
+        .fold<double>(0, (p, n) => p + n);
+  }
+
+  rowDepartmentsTotalRevenue() {
+    return groupReceiptsByDepartment()
+        .map((item) => item.totalRevenue)
+        .toList()
+        .fold<double>(0, (p, n) => p + n);
+  }
+
+  List<DataRow> _rowDepartment({
+    required BuildContext context,
+  }) {
+    return [
+      ...groupReceiptsByDepartment().map((item) {
+        return DataRow2(
+          specificRowHeight: 30,
+          cells: [
+            DataCell(
+              Text(item.departmentName ?? 'Not Set'),
+            ),
+            DataCell(
+              Text(formatLargeNumberDouble(item.number)),
+            ),
+            DataCell(
+              Text(
+                formatMoneyBig(
+                  amount: item.totalBalance,
+                  context: context,
+                ),
+              ),
+            ),
+            DataCell(
+              Text(
+                formatMoneyBig(
+                  amount: item.totalOriginalCost,
+                  context: context,
+                ),
+              ),
+            ),
+            DataCell(
+              Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
+                spacing: 5,
+                children: [
+                  Text(
+                    formatMoneyBig(
+                      amount: item.totalRevenue,
+                      context: context,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      }),
+      DataRow2(
+        specificRowHeight: 40,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          color: Colors.grey.shade300,
+        ),
+        cells: [
+          DataCell(
+            Text(style: TextStyle(fontSize: 14), 'TOTAL'),
+          ),
+          DataCell(
+            Text(
+              style: TextStyle(fontSize: 14),
+              formatLargeNumberDouble(
+                rowDepartmentsTotalQuantity(),
+              ),
+            ),
+          ),
+          DataCell(
+            Text(
+              style: TextStyle(fontSize: 14),
+              formatMoneyBig(
+                amount: rowDepartmentsTotalBalance(),
+                context: context,
+              ),
+            ),
+          ),
+          DataCell(
+            Text(
+              style: TextStyle(fontSize: 14),
+              formatMoneyBig(
+                amount: rowDepartmentsTotalCostPrice(),
+                context: context,
+              ),
+            ),
+          ),
+          DataCell(
+            Text(
+              style: TextStyle(fontSize: 16),
+              formatMoneyBig(
+                amount: rowDepartmentsTotalRevenue(),
+                context: context,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ];
+  }
+
+  List<DataRow> row({
+    required int sortIndex,
+    required BuildContext context,
+  }) {
+    if (sortIndex == 1) {
+      return _rowTotal(context: context);
+    } else if (sortIndex == 2) {
+      return _rowStaffs(context: context);
+    } else if (sortIndex == 3) {
+      return _rowCustomers(context: context);
+    } else if (sortIndex == 4) {
+      return _rowChannel(context: context);
+    } else {
+      return _rowDepartment(context: context);
+    }
+  }
+
+  List<DataColumn> heading({
+    required int sortIndex,
+    required BuildContext context,
+  }) {
+    if (sortIndex == 1) {
+      return _headingTotal(context: context);
+    } else if (sortIndex == 2) {
+      return _headingStaffs();
+    } else if (sortIndex == 3) {
+      return _headingCustomers();
+    } else if (sortIndex == 4) {
+      return _headingChannel();
+    } else {
+      return _headingDepartments();
+    }
   }
 }

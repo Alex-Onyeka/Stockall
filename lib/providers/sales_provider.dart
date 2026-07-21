@@ -905,90 +905,10 @@ class SalesProvider extends ChangeNotifier {
 
   String? customerName() {
     return currentCart().selectedCustomerName;
-    // if (currentCart().invoiceUuidEdit != null) {
-    //   return currentCart().selectedCustomerName ??
-    //       (CustomersProvider()
-    //               .customersMain()
-    //               .where(
-    //                 (cust) =>
-    //                     cust.uuid ==
-    //                     currentCart().selectedCustomer,
-    //               )
-    //               .isNotEmpty
-    //           ? CustomersProvider()
-    //               .customersMain()
-    //               .where(
-    //                 (cust) =>
-    //                     cust.uuid ==
-    //                     currentCart().selectedCustomer,
-    //               )
-    //               .first
-    //               .name
-    //           : null);
-    // } else {
-    //   return CustomersProvider()
-    //           .customersMain()
-    //           .where(
-    //             (cust) =>
-    //                 cust.uuid ==
-    //                 currentCart().selectedCustomer,
-    //           )
-    //           .isNotEmpty
-    //       ? CustomersProvider()
-    //           .customersMain()
-    //           .where(
-    //             (cust) =>
-    //                 cust.uuid ==
-    //                 currentCart().selectedCustomer,
-    //           )
-    //           .first
-    //           .name
-    //       : null;
-    // }
   }
 
   String? customerUuid() {
     return currentCart().selectedCustomer;
-    // if (currentCart().invoiceUuidEdit != null) {
-    //   return currentCart().selectedCustomer ??
-    //       (CustomersProvider()
-    //               .customersMain()
-    //               .where(
-    //                 (cust) =>
-    //                     cust.uuid ==
-    //                     currentCart().selectedCustomer,
-    //               )
-    //               .isNotEmpty
-    //           ? CustomersProvider()
-    //               .customersMain()
-    //               .where(
-    //                 (cust) =>
-    //                     cust.uuid ==
-    //                     currentCart().selectedCustomer,
-    //               )
-    //               .first
-    //               .uuid
-    //           : null);
-    // } else {
-    //   return CustomersProvider()
-    //           .customersMain()
-    //           .where(
-    //             (cust) =>
-    //                 cust.uuid ==
-    //                 currentCart().selectedCustomer,
-    //           )
-    //           .isNotEmpty
-    //       ? CustomersProvider()
-    //           .customersMain()
-    //           .where(
-    //             (cust) =>
-    //                 cust.uuid ==
-    //                 currentCart().selectedCustomer,
-    //           )
-    //           .first
-    //           .uuid
-    //       : null;
-    // }
   }
 
   String? departmentName() {
@@ -1481,11 +1401,9 @@ class SalesProvider extends ChangeNotifier {
       print('Checkout Started');
 
       try {
-        final receiptRes = await returnReceiptProvider(
-          // ignore: use_build_context_synchronously
-          context,
-          listen: false,
-        ).createReceipt(receipt);
+        final receiptRes =
+            await returnReceiptProviderSingle()
+                .createReceipt(receipt);
         print('Receipt Created');
 
         final receiptId = receiptRes!.id;

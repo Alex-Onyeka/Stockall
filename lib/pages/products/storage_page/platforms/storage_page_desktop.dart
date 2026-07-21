@@ -160,7 +160,7 @@ class StoragePageDesktopState
     return Stack(
       children: [
         DesktopCenterContainer(
-          width: screenWidth(context) - 50,
+          width: double.infinity,
           mainWidget: Scaffold(
             appBar: appBar(
               backAction: () {

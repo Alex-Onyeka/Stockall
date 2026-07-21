@@ -679,70 +679,20 @@ class _TotalProductsMobileState
                                                           title:
                                                               'Duplicate',
                                                           action: () {
-                                                            if (returnData().selectedProducts.isNotEmpty) {
-                                                              showDialog(
-                                                                context:
-                                                                    context,
-                                                                builder: (
-                                                                  confirmContext,
-                                                                ) {
-                                                                  return ConfirmationAlert(
-                                                                    theme:
-                                                                        theme,
-                                                                    message:
-                                                                        'You are about to Duplicate all the selected items. Please not that this action can not be reversed. Are you sure you want to proceed?',
-                                                                    title:
-                                                                        'Duplicate Selected Items',
-                                                                    action: () async {
-                                                                      Navigator.of(
-                                                                        confirmContext,
-                                                                      ).pop();
-                                                                      setState(
-                                                                        () {
-                                                                          isDeleteLoading =
-                                                                              true;
-                                                                        },
-                                                                      );
-                                                                      var res =
-                                                                          await returnData().duplicateSelectedProducts();
-                                                                      if (res ==
-                                                                          0) {
-                                                                        setState(
-                                                                          () {
-                                                                            isDeleteLoading =
-                                                                                false;
-                                                                          },
-                                                                        );
-                                                                        showDialog(
-                                                                          // ignore: use_build_context_synchronously
-                                                                          context:
-                                                                              context,
-                                                                          builder: (
-                                                                            context,
-                                                                          ) {
-                                                                            return InfoAlert(
-                                                                              theme:
-                                                                                  theme,
-                                                                              message:
-                                                                                  'An error occoured while Duplicating selected products. Please try again.',
-                                                                              title:
-                                                                                  'An Error Occured',
-                                                                            );
-                                                                          },
-                                                                        );
-                                                                      } else {
-                                                                        setState(
-                                                                          () {
-                                                                            isDeleteLoading =
-                                                                                false;
-                                                                          },
-                                                                        );
-                                                                      }
-                                                                    },
-                                                                  );
-                                                                },
-                                                              );
-                                                            }
+                                                            duplicateItemsAction(
+                                                              context:
+                                                                  context,
+                                                              loadingAction: (
+                                                                value,
+                                                              ) {
+                                                                setState(
+                                                                  () {
+                                                                    isDeleteLoading =
+                                                                        value;
+                                                                  },
+                                                                );
+                                                              },
+                                                            );
                                                           },
                                                           icon:
                                                               Icons.control_point_duplicate_rounded,

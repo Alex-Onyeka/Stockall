@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stockall/classes/temp_categories/category_class.dart';
@@ -388,60 +386,6 @@ class DataProvider extends ChangeNotifier {
       );
     }
   }
-
-  //
-  //
-  //
-  //
-  //
-  //
-  // Future<void> salesProductsSync() async {
-  //   try {
-  //     bool isOnline = await connectivity.isOnline();
-  //     print(
-  //       SalesProductFunc().getProducts().length.toString(),
-  //     );
-
-  //     if (SalesProductFunc().getProducts().isNotEmpty &&
-  //         isOnline) {
-  //       final salesProducts =
-  //           SalesProductFunc().getProducts();
-
-  //       for (final salesProduct in salesProducts) {
-  //         await supabase.rpc(
-  //           'decrement_product_quantity_during_sync_double',
-  //           params: {
-  //             'p_uuid': salesProduct.productUuid,
-  //             'p_qty': salesProduct.quantity,
-  //           },
-  //         );
-
-  //         print(
-  //           'Decremented ${salesProduct.quantity} from product ${salesProduct.productUuid}',
-  //         );
-
-  //         await SalesProductFunc().deleteProduct(
-  //           salesProduct.productUuid,
-  //         );
-
-  //         print('Mounted, refreshing products ✅');
-  //         await getProducts(
-  //           returnShopProvider().userShop()!.shopId!,
-  //         );
-
-  //         clearFields();
-  //       }
-  //     }
-  //   } catch (e) {
-  //     print(
-  //       'Batch update Sold Items Quantity failed ❌: $e',
-  //     );
-  //     await createErrorLog(
-  //       error:
-  //           'Batch update Sold Items Quantity failed ❌: $e',
-  //     );
-  //   }
-  // }
 
   //
   //
@@ -2073,26 +2017,7 @@ class DataProvider extends ChangeNotifier {
   }
 
   Future<int> deleteSelectedProducts() async {
-    // bool isOnline = await ConnectivityProvider().isOnline();
     try {
-      // if (isOnline) {
-      //   var productUuids =
-      //       selectedProducts.map((pr) => pr.uuid!).toList();
-      //   await supabase.rpc(
-      //     'delete_products_by_uuids',
-      //     params: {'product_uuids': productUuids},
-      //   );
-      //   print("Products Delete Successful Online");
-      //   for (var pr in selectedProducts) {
-      //     await returnEventsLogProvider().createLog(
-      //       returnEventsLogProvider().productAdapter(pr, 3),
-      //     );
-      //   }
-
-      //   await getProducts(shopId());
-      //   toggleIsSelectProduct(false);
-      //   return 1;
-      // } else {
       for (var pr in ProductsFunc().getProducts().where(
         (prr) => selectedProducts.contains(prr),
       )) {
@@ -2104,7 +2029,6 @@ class DataProvider extends ChangeNotifier {
       toggleIsSelectProduct(false);
       syncData();
       return 1;
-      // }
     } catch (e) {
       print(
         "Error Deleting Multiple Products: ${e.toString()}",
@@ -2116,12 +2040,9 @@ class DataProvider extends ChangeNotifier {
   Future<int> duplicateSelectedProducts() async {
     try {
       for (var pr in selectedProducts) {
-        final random = Random();
-        final number = random.nextInt(50);
-
         final newProduct = pr.copyWith(
           uuid: uuidGen(),
-          name: '${pr.name} Copy $number',
+          name: '${pr.name} Copy ${randomCode()}',
           createdAt: DateTime.now(),
         );
 
@@ -2149,6 +2070,89 @@ class DataProvider extends ChangeNotifier {
     } catch (e) {
       print(
         "Error Duplicating Multiple Products: ${e.toString()}",
+      );
+      return 0;
+    }
+  }
+
+  Future<int> duplicateSelectedProductsForShops() async {
+    try {
+      for (var pr in selectedProducts) {
+        for (var shop
+            in returnShopProvider().multipleSelectedShops) {
+          final newProduct = pr.copyWith(
+            brand: null,
+            category: null,
+            categoryUuid: null,
+            departmentName: null,
+            departmentUuid: null,
+            storageUuid: null,
+            uuid: uuidGen(),
+            shopId: shop.shopId,
+            name: '${pr.name} ${randomCode()}',
+            createdAt: DateTime.now(),
+          );
+
+          await supabase
+              .from('products')
+              .insert(
+                newProduct.toJson(isIncludeQuantity: true),
+              );
+        }
+      }
+      await getProductsOffline(shopId());
+      toggleIsSelectProduct(false);
+      returnShopProvider().clearMulitpleSelectedShops();
+      syncData();
+      return 1;
+    } catch (e) {
+      print(
+        "Error Duplicating Multiple Products To Selected Shops: ${e.toString()}",
+      );
+      return 0;
+    }
+  }
+
+  Future<int>
+  duplicateSelectedProductsForDepartments() async {
+    try {
+      for (var pr in selectedProducts) {
+        for (var depart
+            in returnDepartmentProvider()
+                .multipleSelectedDepartments) {
+          final newProduct = pr.copyWith(
+            uuid: uuidGen(),
+            departmentUuid: depart.uuid,
+            departmentName: depart.name,
+            name: '${pr.name} ${randomCode()}',
+            createdAt: DateTime.now(),
+          );
+
+          await ProductsFunc().createProduct(newProduct);
+
+          await CreatedProductFunc().createProduct(
+            CreatedProducts(
+              product: newProduct,
+              includeQuantity: true,
+            ),
+          );
+
+          await returnEventsLogProvider().createLog(
+            returnEventsLogProvider().productAdapter(
+              newProduct,
+              1,
+            ),
+          );
+        }
+      }
+      toggleIsSelectProduct(false);
+      returnDepartmentProvider()
+          .clearMulitpleSelectedDepartments();
+      syncData();
+      return 1;
+    } catch (e) {
+      print(
+        "Error Duplicating Multiple Products To Selected Departments: ${e.toString()}",
       );
       return 0;
     }

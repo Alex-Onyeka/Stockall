@@ -34,20 +34,21 @@ class DesktopCenterContainer extends StatelessWidget {
               Center(
                 child: Container(
                   margin: EdgeInsets.symmetric(
-                    vertical: 20,
+                    vertical: 10,
+                    horizontal: 10,
                   ),
                   width: width ?? 550,
                   padding: EdgeInsets.symmetric(
-                    horizontal: 15,
-                    vertical: 15,
+                    horizontal: 10,
+                    vertical: 10,
                   ),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(10),
                     color: Colors.white,
                     boxShadow: [
                       BoxShadow(
                         color: const Color.fromARGB(
-                          46,
+                          20,
                           0,
                           0,
                           0,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_permission/temp_permission_class.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
@@ -261,7 +262,8 @@ class _AddEmployeeMobileState
                                         context,
                                         index,
                                       ) {
-                                        var employee =
+                                        PermissionModel
+                                        employee =
                                             returnShopProvider(
                                                       context:
                                                           context,

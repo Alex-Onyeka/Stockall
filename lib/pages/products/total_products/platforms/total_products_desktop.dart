@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/floating_action_butto.dart';
+import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/text_fields/text_field_barcode.dart';
@@ -10,6 +12,7 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
+import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
@@ -43,14 +46,10 @@ class _TotalProductsDesktopState
 
   void clearState() {
     setState(() {
-      // searchResult = null;
       searchController.clear();
-      // productsResult.clear();
     });
   }
 
-  // List<TempProductClass> productsResult = [];
-  // String? searchResult;
   bool isFocus = false;
   TextEditingController searchController =
       TextEditingController();
@@ -177,97 +176,11 @@ class _TotalProductsDesktopState
 
     return Scaffold(
       key: _scaffoldKey,
-      // drawer: MyDrawerWidgetDesktopMain(
-      //   action: () {
-      //     var safeContext = context;
-      //     showDialog(
-      //       context: context,
-      //       builder: (context) {
-      //         return ConfirmationAlert(
-      //           theme: theme,
-      //           message: 'You are about to Logout',
-      //           title: 'Are you Sure?',
-      //           action: () async {
-      //             Navigator.of(context).pop();
-      //             setState(() {
-      //               isLoading = true;
-      //             });
-      //             if (safeContext.mounted) {
-      //               var res = await AuthService().signOut(
-      //                 context: safeContext,
-      //                 allowLogout: false,
-      //               );
-      //               if (res == 0 && safeContext.mounted) {
-      //                 setState(() {
-      //                   isLoading = false;
-      //                 });
-      //               }
-      //             }
-      //           },
-      //         );
-      //       },
-      //     );
-      //   },
-      //   theme: theme,
-      //   notifications:
-      //       returnNotificationProvider(
-      //             context,
-      //           ).notifications().isEmpty
-      //           ? []
-      //           : returnNotificationProvider(
-      //             context,
-      //           ).notifications(),
-      //   globalKey: _scaffoldKey,
-      // ),
       body: Stack(
         children: [
           Row(
             spacing: 15,
             children: [
-              // MyDrawerWidget(
-              //   globalKey: _scaffoldKey,
-              //   action: () {
-              //     var safeContext = context;
-              //     showDialog(
-              //       context: context,
-              //       builder: (context) {
-              //         return ConfirmationAlert(
-              //           theme: theme,
-              //           message: 'You are about to Logout',
-              //           title: 'Are you Sure?',
-              //           action: () async {
-              //             Navigator.of(context).pop();
-              //             setState(() {
-              //               isLoading = true;
-              //             });
-              //             if (safeContext.mounted) {
-              //               var res = await AuthService()
-              //                   .signOut(
-              //                     context: safeContext,
-              //                     allowLogout: false,
-              //                   );
-              //               if (res == 0 &&
-              //                   safeContext.mounted) {
-              //                 setState(() {
-              //                   isLoading = false;
-              //                 });
-              //               }
-              //             }
-              //           },
-              //         );
-              //       },
-              //     );
-              //   },
-              //   theme: theme,
-              //   notifications:
-              //       returnNotificationProvider(
-              //             context,
-              //           ).notifications().isEmpty
-              //           ? []
-              //           : returnNotificationProvider(
-              //             context,
-              //           ).notifications(),
-              // ),
               Container(
                 width:
                     screenWidth(context) < tabletScreenSmall
@@ -814,70 +727,20 @@ class _TotalProductsDesktopState
                                                                   title:
                                                                       'Duplicate',
                                                                   action: () {
-                                                                    if (returnData().selectedProducts.isNotEmpty) {
-                                                                      showDialog(
-                                                                        context:
-                                                                            context,
-                                                                        builder: (
-                                                                          confirmContext,
-                                                                        ) {
-                                                                          return ConfirmationAlert(
-                                                                            theme:
-                                                                                theme,
-                                                                            message:
-                                                                                'You are about to Duplicate all the selected items. Please not that this action can not be reversed. Are you sure you want to proceed?',
-                                                                            title:
-                                                                                'Duplicate Selected Items',
-                                                                            action: () async {
-                                                                              Navigator.of(
-                                                                                confirmContext,
-                                                                              ).pop();
-                                                                              setState(
-                                                                                () {
-                                                                                  isDeleteLoading =
-                                                                                      true;
-                                                                                },
-                                                                              );
-                                                                              var res =
-                                                                                  await returnData().duplicateSelectedProducts();
-                                                                              if (res ==
-                                                                                  0) {
-                                                                                setState(
-                                                                                  () {
-                                                                                    isDeleteLoading =
-                                                                                        false;
-                                                                                  },
-                                                                                );
-                                                                                showDialog(
-                                                                                  // ignore: use_build_context_synchronously
-                                                                                  context:
-                                                                                      context,
-                                                                                  builder: (
-                                                                                    context,
-                                                                                  ) {
-                                                                                    return InfoAlert(
-                                                                                      theme:
-                                                                                          theme,
-                                                                                      message:
-                                                                                          'An error occoured while Duplicating selected products. Please try again.',
-                                                                                      title:
-                                                                                          'An Error Occured',
-                                                                                    );
-                                                                                  },
-                                                                                );
-                                                                              } else {
-                                                                                setState(
-                                                                                  () {
-                                                                                    isDeleteLoading =
-                                                                                        false;
-                                                                                  },
-                                                                                );
-                                                                              }
-                                                                            },
-                                                                          );
-                                                                        },
-                                                                      );
-                                                                    }
+                                                                    duplicateItemsAction(
+                                                                      context:
+                                                                          context,
+                                                                      loadingAction: (
+                                                                        value,
+                                                                      ) {
+                                                                        setState(
+                                                                          () {
+                                                                            isDeleteLoading =
+                                                                                value;
+                                                                          },
+                                                                        );
+                                                                      },
+                                                                    );
                                                                   },
                                                                   icon:
                                                                       Icons.control_point_duplicate_rounded,
@@ -1672,6 +1535,535 @@ class _TotalProductsDesktopState
       ),
     );
   }
+}
+
+void duplicateItemsAction({
+  required BuildContext context,
+  required Function(bool value) loadingAction,
+}) {
+  var theme = returnTheme(context, listen: false);
+  if (returnData().selectedProducts.isNotEmpty) {
+    showDialog(
+      context: context,
+      builder: (firstContext) {
+        return DialogTemplate(
+          theme: theme,
+          message: 'Select the action you want to Perform',
+          title: 'Select',
+          action: () {},
+          showBottomActionButtons: false,
+          widget: Column(
+            spacing: 5,
+            children: [
+              MainButtonTransparent(
+                themeProvider: theme,
+                constraints: BoxConstraints(),
+                text: 'Create Copy',
+                action: () {
+                  showDialog(
+                    context: context,
+                    builder: (confirmContext) {
+                      return ConfirmationAlert(
+                        theme: theme,
+                        message:
+                            'You are about to Duplicate all the selected items. Please not that this action can not be reversed. Are you sure you want to proceed?',
+                        title: 'Duplicate Selected Items',
+                        action: () async {
+                          Navigator.of(
+                            confirmContext,
+                          ).pop();
+                          Navigator.of(firstContext).pop();
+                          loadingAction(true);
+                          var res =
+                              await returnData()
+                                  .duplicateSelectedProducts();
+                          if (res == 0) {
+                            loadingAction(false);
+                            showDialog(
+                              // ignore: use_build_context_synchronously
+                              context: context,
+                              builder: (context) {
+                                return InfoAlert(
+                                  theme: theme,
+                                  message:
+                                      'An error occoured while Duplicating selected products. Please try again.',
+                                  title: 'An Error Occured',
+                                );
+                              },
+                            );
+                          } else {
+                            loadingAction(false);
+                          }
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
+              Visibility(
+                visible:
+                    returnShopProvider()
+                        .userShop()
+                        ?.manageDepartments ==
+                    true,
+                child: MainButtonTransparent(
+                  themeProvider: theme,
+                  constraints: BoxConstraints(),
+                  text: 'Copy To Department(s)',
+                  action: () {
+                    selectDepartmentProducts(
+                      context: context,
+                      loadingAction: (value) {
+                        loadingAction(value);
+                      },
+                    );
+                  },
+                ),
+              ),
+              Visibility(
+                visible:
+                    returnShopProvider().userShops.length >
+                    1,
+                child: MainButtonTransparent(
+                  themeProvider: theme,
+                  constraints: BoxConstraints(),
+                  text: 'Copy To Store Branch(s)',
+                  action: () {
+                    bool isOnline =
+                        returnConnectivityProvider()
+                            .isConnected;
+                    if (!isOnline) {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return InfoAlert(
+                            theme: theme,
+                            message:
+                                'You Can Only Copy Items Into Other Stores When you have Internet Connection. Please turn on your internet connection and try again.',
+                            title: 'No Internet Connection',
+                          );
+                        },
+                      );
+                    } else {
+                      selectShopsProducts(
+                        context: context,
+                        loadingAction: (value) {
+                          loadingAction(value);
+                        },
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+void selectDepartmentProducts({
+  required BuildContext context,
+  required Function(bool value) loadingAction,
+}) {
+  var theme = returnTheme(context, listen: false);
+  GeneralSettingsAuthAction().manageDeparmtmentsAction(
+    context: context,
+    action: () {
+      showDialog(
+        context: context,
+        builder: (firstContext) {
+          return StatefulBuilder(
+            builder: (secondContext, setState) {
+              return DialogTemplate(
+                theme: theme,
+                message:
+                    'Select Department(s) From the List Below',
+                title: 'Select Department(s)',
+                action: () {
+                  showDialog(
+                    context: context,
+                    builder: (confirmContext) {
+                      return ConfirmationAlert(
+                        theme: theme,
+                        message:
+                            'You are about to Copy all the selected items Into these Selected Departments. Please note that this action can not be reversed. Are you sure you want to proceed?',
+                        title:
+                            'Copy Items Into Departments',
+                        action: () async {
+                          loadingAction(true);
+                          var res =
+                              await returnData()
+                                  .duplicateSelectedProductsForDepartments();
+                          Navigator.of(
+                            // ignore: use_build_context_synchronously
+                            secondContext,
+                          ).pop();
+                          // ignore: use_build_context_synchronously
+                          Navigator.of(firstContext).pop();
+                          Navigator.of(
+                            // ignore: use_build_context_synchronously
+                            confirmContext,
+                          ).pop();
+                          if (res == 0) {
+                            loadingAction(false);
+                            showDialog(
+                              // ignore: use_build_context_synchronously
+                              context: context,
+                              builder: (context) {
+                                return InfoAlert(
+                                  theme: theme,
+                                  message:
+                                      'An error occoured while Duplicating selected products. Please try again.',
+                                  title: 'An Error Occured',
+                                );
+                              },
+                            );
+                          } else {
+                            loadingAction(false);
+                          }
+                        },
+                      );
+                    },
+                  );
+                },
+                widget: SizedBox(
+                  height: screenHeight(context) - 300,
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0,
+                        vertical: 15,
+                      ),
+                      child: Builder(
+                        builder: (context) {
+                          if (returnDepartmentProvider()
+                              .departments
+                              .where(
+                                (dept) =>
+                                    dept.uuid !=
+                                    returnDepartmentProvider()
+                                        .currentDepartment()
+                                        ?.uuid,
+                              )
+                              .isEmpty) {
+                            return SizedBox(
+                              height: 400,
+                              child: EmptyWidgetDisplayOnly(
+                                title:
+                                    'No Department Found',
+                                subText:
+                                    'You have not been added to any departments.',
+                                theme: theme,
+                                height: 30,
+                                altAction: () async {
+                                  await returnDepartmentProvider()
+                                      .getDepartments();
+                                  setState(() {});
+                                },
+                                altActionText: 'Refresh',
+                                icon: Icons.clear,
+                              ),
+                            );
+                          } else {
+                            return Column(
+                              spacing: 5,
+                              children:
+                                  returnDepartmentProvider(
+                                        context: context,
+                                      ).departments
+                                      .where(
+                                        (dept) =>
+                                            dept.uuid !=
+                                            returnDepartmentProvider()
+                                                .currentDepartment()
+                                                ?.uuid,
+                                      )
+                                      .map(
+                                        (dept) => Material(
+                                          color:
+                                              Colors
+                                                  .transparent,
+                                          child: InkWell(
+                                            onTap: () {
+                                              returnDepartmentProvider()
+                                                  .selectMultipleDepartments(
+                                                    dept,
+                                                  );
+                                            },
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical:
+                                                        9.0,
+                                                    horizontal:
+                                                        12,
+                                                  ),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          theme.mobileTexts.b3.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    dept.name,
+                                                  ),
+                                                  Container(
+                                                    padding:
+                                                        EdgeInsets.all(
+                                                          2,
+                                                        ),
+                                                    decoration: BoxDecoration(
+                                                      shape:
+                                                          BoxShape.circle,
+                                                      border: Border.all(
+                                                        color:
+                                                            Colors.grey,
+                                                      ),
+                                                    ),
+                                                    child: Container(
+                                                      padding:
+                                                          EdgeInsets.all(
+                                                            5,
+                                                          ),
+                                                      decoration: BoxDecoration(
+                                                        shape:
+                                                            BoxShape.circle,
+                                                        color:
+                                                            returnDepartmentProvider().multipleSelectedDepartments.contains(
+                                                                  dept,
+                                                                )
+                                                                ? theme.lightModeColor.prColor250
+                                                                : Colors.transparent,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ).then((_) {
+        returnDepartmentProvider()
+            .clearMulitpleSelectedDepartments();
+      });
+    },
+  );
+}
+
+void selectShopsProducts({
+  required BuildContext context,
+  required Function(bool value) loadingAction,
+}) {
+  var theme = returnTheme(context, listen: false);
+  showDialog(
+    context: context,
+    builder: (firstContext) {
+      return StatefulBuilder(
+        builder: (secondContext, setState) {
+          return DialogTemplate(
+            theme: theme,
+            message: 'Select Shops(s) From the List Below',
+            title: 'Select Shops(s)',
+            cancelAction: () {
+              Navigator.of(context).pop();
+              returnShopProvider()
+                  .clearMulitpleSelectedShops();
+            },
+            action: () {
+              showDialog(
+                context: context,
+                builder: (confirmContext) {
+                  return ConfirmationAlert(
+                    theme: theme,
+                    message:
+                        'You are about to Copy all the selected items Into these Selected Shops. Please note that this action can not be reversed. Are you sure you want to proceed?',
+                    title: 'Copy Items Into Shops',
+                    action: () async {
+                      loadingAction(true);
+                      Navigator.of(secondContext).pop();
+                      Navigator.of(firstContext).pop();
+                      Navigator.of(confirmContext).pop();
+                      var res =
+                          await returnData()
+                              .duplicateSelectedProductsForShops();
+                      if (res == 0) {
+                        loadingAction(false);
+                        showDialog(
+                          // ignore: use_build_context_synchronously
+                          context: context,
+                          builder: (context) {
+                            return InfoAlert(
+                              theme: theme,
+                              message:
+                                  'An error occoured while Duplicating selected products. Please try again.',
+                              title: 'An Error Occured',
+                            );
+                          },
+                        );
+                      } else {
+                        loadingAction(false);
+                      }
+                    },
+                  );
+                },
+              );
+            },
+            widget: SizedBox(
+              height: screenHeight(context) - 300,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0,
+                    vertical: 15,
+                  ),
+                  child: Builder(
+                    builder: (context) {
+                      if (returnShopProvider().userShops
+                          .where(
+                            (shop) =>
+                                shop.shopId !=
+                                returnShopProvider()
+                                    .userShop()
+                                    ?.shopId,
+                          )
+                          .isEmpty) {
+                        return SizedBox(
+                          height: 400,
+                          child: EmptyWidgetDisplayOnly(
+                            title: 'No Shop Found',
+                            subText:
+                                'No Shop Branches Was Found.',
+                            theme: theme,
+                            height: 30,
+                            altAction: () async {
+                              await returnShopProvider()
+                                  .getUserShops();
+                              setState(() {});
+                            },
+                            altActionText: 'Refresh',
+                            icon: Icons.clear,
+                          ),
+                        );
+                      } else {
+                        return Column(
+                          spacing: 5,
+                          children:
+                              returnShopProvider(
+                                    context: context,
+                                  ).userShops
+                                  .where(
+                                    (shop) =>
+                                        shop.shopId !=
+                                        returnShopProvider()
+                                            .userShop()
+                                            ?.shopId,
+                                  )
+                                  .map(
+                                    (shop) => Material(
+                                      color:
+                                          Colors
+                                              .transparent,
+                                      child: InkWell(
+                                        onTap: () {
+                                          returnShopProvider()
+                                              .selectMultipleShop(
+                                                shop,
+                                              );
+                                        },
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.symmetric(
+                                                vertical:
+                                                    9.0,
+                                                horizontal:
+                                                    12,
+                                              ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .spaceBetween,
+                                            children: [
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b3
+                                                          .fontSize,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                ),
+                                                shop.name,
+                                              ),
+                                              Container(
+                                                padding:
+                                                    EdgeInsets.all(
+                                                      2,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  shape:
+                                                      BoxShape
+                                                          .circle,
+                                                  border: Border.all(
+                                                    color:
+                                                        Colors.grey,
+                                                  ),
+                                                ),
+                                                child: Container(
+                                                  padding:
+                                                      EdgeInsets.all(
+                                                        5,
+                                                      ),
+                                                  decoration: BoxDecoration(
+                                                    shape:
+                                                        BoxShape.circle,
+                                                    color:
+                                                        returnShopProvider().multipleSelectedShops.contains(shop)
+                                                            ? theme.lightModeColor.prColor250
+                                                            : Colors.transparent,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
 }
 
 class ProductSelectionActionButton extends StatelessWidget {

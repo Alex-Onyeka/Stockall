@@ -4,6 +4,7 @@ import 'package:stockall/components/buttons/floating_action_butto.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/add_customer/add_customer.dart';
@@ -57,23 +58,30 @@ class _CustomerListMobileState
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return Scaffold(
-      floatingActionButton: FloatingActionButtonMain(
-        theme: theme,
-        action: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return AddCustomer();
-              },
-            ),
-          ).then((_) {
-            setState(() {});
-          });
-        },
-        color:
-            returnTheme(context).lightModeColor.prColor300,
-        text: 'Add Customer',
+      floatingActionButton: Visibility(
+        visible: authorization(
+          authorized: Authorizations().addCustomer,
+        ),
+        child: FloatingActionButtonMain(
+          theme: theme,
+          action: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return AddCustomer();
+                },
+              ),
+            ).then((_) {
+              setState(() {});
+            });
+          },
+          color:
+              returnTheme(
+                context,
+              ).lightModeColor.prColor300,
+          text: 'Add Customer',
+        ),
       ),
       appBar: AppBar(
         toolbarHeight: 60,

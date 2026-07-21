@@ -8,6 +8,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/constants/invoice_print_and_download.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
@@ -462,7 +463,12 @@ class _InvoicePageDesktopState
                                             .checkoutResponse
                                             .resUuid,
                                   )
-                                  .isEmpty,
+                                  .isEmpty &&
+                              authorization(
+                                authorized:
+                                    Authorizations()
+                                        .updateInvoice,
+                              ),
                           child: ActionButtonSmall(
                             action: () {
                               showDialog(
@@ -492,82 +498,92 @@ class _InvoicePageDesktopState
                             text: 'Edit',
                           ),
                         ),
-                        ActionButtonSmall(
-                          isLoading: isDeleteLoading,
-                          action: () {
-                            showDialog(
-                              context: context,
-                              builder: (confirmDialog) {
-                                return ConfirmationAlert(
-                                  theme: theme,
-                                  message:
-                                      'You are about to delete this Invoice, are you sure you want to proceed?',
-                                  title: 'Delete Invoice?',
-                                  action: () async {
-                                    Navigator.of(
-                                      confirmDialog,
-                                    ).pop();
-                                    setState(() {
-                                      isDeleteLoading =
-                                          true;
-                                    });
-                                    var res = await returnInvoicesProvider()
-                                        .deleteInvoice(
-                                          invoice,
-                                          saleRecords
-                                                  .isNotEmpty
-                                              ? saleRecords
-                                                  .map(
-                                                    (rec) =>
-                                                        rec.productName,
-                                                  )
-                                                  .toList()
-                                              : [],
-                                        );
-                                    await actionResultDialog(
-                                      // ignore: use_build_context_synchronously
-                                      context: context,
-                                      message:
-                                          res == 1
-                                              ? 'Deleted Successfully'
-                                              : 'Failed',
-                                      isSuccess:
-                                          res == 1
-                                              ? true
-                                              : false,
-                                    );
-                                    setState(() {
-                                      isDeleteLoading =
-                                          false;
-                                    });
-                                    if (res == 1 &&
-                                        context.mounted) {
-                                      if (Navigator.of(
-                                        context,
-                                      ).canPop()) {
-                                        Navigator.of(
+                        Visibility(
+                          visible: authorization(
+                            authorized:
+                                Authorizations()
+                                    .deleteInvoice,
+                          ),
+                          child: ActionButtonSmall(
+                            isLoading: isDeleteLoading,
+                            action: () {
+                              showDialog(
+                                context: context,
+                                builder: (confirmDialog) {
+                                  return ConfirmationAlert(
+                                    theme: theme,
+                                    message:
+                                        'You are about to delete this Invoice, are you sure you want to proceed?',
+                                    title:
+                                        'Delete Invoice?',
+                                    action: () async {
+                                      Navigator.of(
+                                        confirmDialog,
+                                      ).pop();
+                                      setState(() {
+                                        isDeleteLoading =
+                                            true;
+                                      });
+                                      var res = await returnInvoicesProvider()
+                                          .deleteInvoice(
+                                            invoice,
+                                            saleRecords
+                                                    .isNotEmpty
+                                                ? saleRecords
+                                                    .map(
+                                                      (
+                                                        rec,
+                                                      ) =>
+                                                          rec.productName,
+                                                    )
+                                                    .toList()
+                                                : [],
+                                          );
+                                      await actionResultDialog(
+                                        // ignore: use_build_context_synchronously
+                                        context: context,
+                                        message:
+                                            res == 1
+                                                ? 'Deleted Successfully'
+                                                : 'Failed',
+                                        isSuccess:
+                                            res == 1
+                                                ? true
+                                                : false,
+                                      );
+                                      setState(() {
+                                        isDeleteLoading =
+                                            false;
+                                      });
+                                      if (res == 1 &&
+                                          context.mounted) {
+                                        if (Navigator.of(
                                           context,
-                                        ).pop();
-                                      } else {
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (
-                                              context,
-                                            ) {
-                                              return InvoiceListPage();
-                                            },
-                                          ),
-                                        );
+                                        ).canPop()) {
+                                          Navigator.of(
+                                            context,
+                                          ).pop();
+                                        } else {
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return InvoiceListPage();
+                                              },
+                                            ),
+                                          );
+                                        }
                                       }
-                                    }
-                                  },
-                                );
-                              },
-                            );
-                          },
-                          text: 'Delete',
-                          textColor: Colors.red.shade300,
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                            text: 'Delete',
+                            textColor: Colors.red.shade300,
+                          ),
                         ),
                       ],
                     ),

@@ -15,7 +15,7 @@ PreferredSizeWidget appBar({
   var theme = returnTheme(context);
   return AppBar(
     scrolledUnderElevation: 0,
-    toolbarHeight: 60,
+    toolbarHeight: 50,
     leading: Opacity(
       opacity: turnOff == null || turnOff == false ? 1 : 0,
       child: IconButton(

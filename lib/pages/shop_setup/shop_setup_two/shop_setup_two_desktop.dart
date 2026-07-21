@@ -539,23 +539,6 @@ class _ShopSetupTwoDesktopState
                                   constraints:
                                       BoxConstraints(),
                                 ),
-                                // Visibility(
-                                //   visible:
-                                //       widget.shop != null,
-                                //   child:
-                                //       MainButtonTransparent(
-                                //         themeProvider:
-                                //             theme,
-                                //         action: () {
-                                //           Navigator.of(
-                                //             context,
-                                //           ).pop();
-                                //         },
-                                //         text: 'Cancel',
-                                //         constraints:
-                                //             BoxConstraints(),
-                                //       ),
-                                // ),
                               ],
                             ),
                             SizedBox(height: 40),

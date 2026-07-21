@@ -1,8 +1,17 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:uuid/uuid.dart';
+
+String randomCode({int? length}) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  final random = Random();
+
+  return "#${String.fromCharCodes(Iterable.generate(length ?? 4, (_) => chars.codeUnitAt(random.nextInt(chars.length))))}";
+}
 
 DateTime resolveBusinessDate(DateTime now) {
   final shop = returnShopProvider().userShop();
@@ -84,13 +93,17 @@ String formatLargeNumber(String numberString) {
 }
 
 String formatLargeNumberDouble(num number) {
-  final formatter = NumberFormat('#,###.###');
+  final formatter = NumberFormat('#,###.#');
   return addZeroAfterDecimalPoint(formatter.format(number));
 }
 
 String formatLargeNumberDoubleWidgetDecimal(num number) {
   final formatter = NumberFormat('#,##0.0');
   return formatter.format(number);
+}
+
+String formatDateWithTime(DateTime date) {
+  return "${formatDateTime(date)} | ${formatTime(date)}";
 }
 
 String formatDateTime(DateTime date) {

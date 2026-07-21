@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+// import 'package:path/path.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
@@ -9,6 +10,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/play_sounds.dart';
+import 'package:stockall/constants/products_report_print_and_download.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/platforms/product_details_desktop.dart';
@@ -165,7 +167,7 @@ class ProductReportDesktopState
     return Stack(
       children: [
         DesktopCenterContainer(
-          width: screenWidth(context) - 50,
+          width: double.infinity,
           mainWidget: Scaffold(
             appBar: appBar(
               context: context,
@@ -1070,6 +1072,72 @@ class ProductReportDesktopState
                         mainAxisAlignment:
                             MainAxisAlignment.end,
                         children: [
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius:
+                                  BorderRadius.circular(5),
+                              onTap: () {
+                                returnData()
+                                    .unFocusSearchNode();
+                                returnData()
+                                    .removeSearchNodeListener();
+                                showDialog(
+                                  context: context,
+                                  builder: (
+                                    confirmContext,
+                                  ) {
+                                    return ConfirmationAlert(
+                                      theme: theme,
+                                      message:
+                                          'You are about to print this records. Are you sure you want to Proceed?',
+                                      title:
+                                          'Print Records',
+                                      action: () {
+                                        Navigator.of(
+                                          confirmContext,
+                                        ).pop();
+                                        generateAndPreviewProductReportPdfRoll(
+                                          context: context,
+                                        );
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                              child: Padding(
+                                padding:
+                                    EdgeInsetsGeometry.symmetric(
+                                      vertical: 10,
+                                      horizontal: 12,
+                                    ),
+                                child: Row(
+                                  spacing: 5,
+                                  mainAxisSize:
+                                      MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      size: 16,
+                                      Icons.print,
+                                    ),
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      'Print Records',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 5),
                           SizedBox(
                             height: 30,
                             width: 200,

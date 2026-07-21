@@ -2440,18 +2440,6 @@ class _ReceiptDetailsContainerState
                                       );
                                       // }
                                     } else {
-                                      // startReceiptPrintAction(
-                                      //   context:
-                                      //       safeContext,
-                                      //   receipt:
-                                      //       widget
-                                      //           .mainReceipt,
-                                      //   records: records,
-
-                                      //   shop:
-                                      //       returnShopProvider()
-                                      //           .userShop()!,
-                                      // );
                                       await generateAndPreviewPdfRoll(
                                         printerType:
                                             widget

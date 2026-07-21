@@ -164,9 +164,16 @@ class Authorizations {
   String manageCostPrice = 'Manage Cost Price';
   String viewGeneralReport = 'View General Report';
   String viewItemsReport = 'View Items Report';
-  String viewSalesAndRevenueReport =
-      'View Sales And Revenue Report';
+  String viewReceiptSalesReport =
+      'View Receipt Sales Report';
+  String viewInvoiceSalesReport =
+      'View Invoice Sales Report';
+  // String viewSalesAndRevenueReport =
+  //     'View Sales And Revenue Report';
+  String viewItemSalesReport = 'View Item Sales Report';
   String managePurchases = 'Manage Purchases';
+  String updateInvoice = 'Update Invoice';
+  String deleteInvoice = 'Delete Invoice';
 }
 
 bool authorization({required String authorized}) {

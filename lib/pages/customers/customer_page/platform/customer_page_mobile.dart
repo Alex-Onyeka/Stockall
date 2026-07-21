@@ -5,6 +5,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/add_customer/add_customer.dart';
 import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
@@ -191,7 +192,7 @@ class DetailsPageContainer extends StatelessWidget {
                     Expanded(
                       child: TabBarTabButton(
                         index: 1,
-                        text: 'Purchases',
+                        text: 'Transactions',
                         theme: theme,
                         action: () {
                           Navigator.push(
@@ -223,64 +224,78 @@ class DetailsPageContainer extends StatelessWidget {
             spacing: 15,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CustomerActionButton(
-                icon: Icons.delete_outline_rounded,
-                color: theme.lightModeColor.errorColor200,
-                iconSize: 18,
-                text: 'Delete',
-                action: () {
-                  final safeContext = context;
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return ConfirmationAlert(
-                        theme: theme,
-                        message:
-                            'You are about to delete your customer, are you sure you want to proceed?',
-                        title: 'Are you sure?',
-                        action: () async {
-                          if (safeContext.mounted) {
-                            Navigator.of(safeContext).pop();
-                          }
-                          returnCustomers(
-                            context,
-                            listen: false,
-                          ).deleteCustomerMain(
-                            customer,
-                            context,
-                          );
-                          await Future.delayed(
-                            Duration(microseconds: 500),
-                            () {},
-                          );
-                          if (context.mounted) {
-                            Navigator.of(context).pop();
-                          }
-                        },
-                      );
-                    },
-                  );
-                },
-                theme: theme,
-              ),
-              CustomerActionButton(
-                svg: editIconSvg,
-                color: Colors.grey,
-                iconSize: 15,
-                text: 'Edit',
-                action: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
+              Visibility(
+                visible: authorization(
+                  authorized:
+                      Authorizations().deleteCustomer,
+                ),
+                child: CustomerActionButton(
+                  icon: Icons.delete_outline_rounded,
+                  color: theme.lightModeColor.errorColor200,
+                  iconSize: 18,
+                  text: 'Delete',
+                  action: () {
+                    final safeContext = context;
+                    showDialog(
+                      context: context,
                       builder: (context) {
-                        return AddCustomer(
-                          customer: customer,
+                        return ConfirmationAlert(
+                          theme: theme,
+                          message:
+                              'You are about to delete your customer, are you sure you want to proceed?',
+                          title: 'Are you sure?',
+                          action: () async {
+                            if (safeContext.mounted) {
+                              Navigator.of(
+                                safeContext,
+                              ).pop();
+                            }
+                            returnCustomers(
+                              context,
+                              listen: false,
+                            ).deleteCustomerMain(
+                              customer,
+                              context,
+                            );
+                            await Future.delayed(
+                              Duration(microseconds: 500),
+                              () {},
+                            );
+                            if (context.mounted) {
+                              Navigator.of(context).pop();
+                            }
+                          },
                         );
                       },
-                    ),
-                  );
-                },
-                theme: theme,
+                    );
+                  },
+                  theme: theme,
+                ),
+              ),
+              Visibility(
+                visible: authorization(
+                  authorized:
+                      Authorizations().updateCustomer,
+                ),
+                child: CustomerActionButton(
+                  svg: editIconSvg,
+                  color: Colors.grey,
+                  iconSize: 15,
+                  text: 'Edit',
+                  action: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return AddCustomer(
+                            customer: customer,
+                          );
+                        },
+                      ),
+                    );
+                  },
+                  theme: theme,
+                ),
               ),
             ],
           ),

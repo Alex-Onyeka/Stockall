@@ -18,7 +18,8 @@ Future<dynamic> mainDatePicker({
       return DialogTemplate(
         theme: theme,
         showBottomActionButtons: false,
-        message: 'Select to view single date a date range',
+        message:
+            'Select to view A Single Date or A Date Range',
         title: 'Select Date',
         topRightWidget: IconButton(
           onPressed: () {

@@ -8,6 +8,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/constants/invoice_print_and_download.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
@@ -268,7 +269,12 @@ class _InvoicePageMobileState
                                                   .checkoutResponse
                                                   .resUuid,
                                         )
-                                        .isEmpty,
+                                        .isEmpty &&
+                                    authorization(
+                                      authorized:
+                                          Authorizations()
+                                              .updateInvoice,
+                                    ),
                                 height: 35,
                                 onTap: () {
                                   showDialog(
@@ -484,6 +490,11 @@ class _InvoicePageMobileState
                                 ),
                               ),
                               PopupMenuItem(
+                                enabled: authorization(
+                                  authorized:
+                                      Authorizations()
+                                          .deleteInvoice,
+                                ),
                                 height: 35,
                                 onTap: () {
                                   showDialog(

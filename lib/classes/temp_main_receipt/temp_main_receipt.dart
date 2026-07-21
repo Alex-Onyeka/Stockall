@@ -240,3 +240,73 @@ class TempMainReceipt extends HiveObject {
     );
   }
 }
+
+class StaffGroupReceipts {
+  final String? staffUuid;
+  final String? staffName;
+  int number;
+  double totalBalance;
+  double totalOriginalCost;
+  double totalRevenue;
+
+  StaffGroupReceipts({
+    required this.staffUuid,
+    required this.staffName,
+    required this.number,
+    required this.totalBalance,
+    required this.totalOriginalCost,
+    required this.totalRevenue,
+  });
+}
+
+class CustomerGroupReceipts {
+  final String? customerUuid;
+  final String? customerName;
+  int number;
+  double totalBalance;
+  double totalOriginalCost;
+  double totalRevenue;
+
+  CustomerGroupReceipts({
+    required this.customerUuid,
+    required this.customerName,
+    required this.number,
+    required this.totalBalance,
+    required this.totalOriginalCost,
+    required this.totalRevenue,
+  });
+}
+
+class ChannelGroupReceipts {
+  final String paymentMethod;
+  int number;
+  double totalBalance;
+  double totalOriginalCost;
+  double totalRevenue;
+
+  ChannelGroupReceipts({
+    required this.paymentMethod,
+    required this.number,
+    required this.totalBalance,
+    required this.totalOriginalCost,
+    required this.totalRevenue,
+  });
+}
+
+class DepartmentGroupReceipts {
+  final String departmentUuid;
+  final String? departmentName;
+  int number;
+  double totalBalance;
+  double totalOriginalCost;
+  double totalRevenue;
+
+  DepartmentGroupReceipts({
+    required this.departmentUuid,
+    required this.departmentName,
+    required this.number,
+    required this.totalBalance,
+    required this.totalOriginalCost,
+    required this.totalRevenue,
+  });
+}

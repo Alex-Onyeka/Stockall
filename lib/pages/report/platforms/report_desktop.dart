@@ -14,9 +14,10 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/customer_report/customer_report_page.dart';
 import 'package:stockall/pages/report/error_log/error_log.dart';
 import 'package:stockall/pages/report/events_log/events_log.dart';
-import 'package:stockall/pages/report/general_report/general_report_page.dart';
+import 'package:stockall/pages/report/invoice_sales_report/invoice_sales_report.dart';
+import 'package:stockall/pages/report/item_sales/item_sales_report.dart';
 import 'package:stockall/pages/report/product_report/product_report_page.dart';
-import 'package:stockall/pages/report/sales_and_revenue/sales_and_revenue_report.dart';
+import 'package:stockall/pages/report/receipt_sales_report/receipt_sales_report.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -174,13 +175,42 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                   SizedBox(height: 10),
                                   Column(
                                     children: [
+                                      // Visibility(
+                                      //   visible:
+                                      //       !isStoreKeeper() &&
+                                      //       authorization(
+                                      //         authorized:
+                                      //             Authorizations()
+                                      //                 .viewGeneralReport,
+                                      //       ),
+                                      //   child: ReportListTile(
+                                      //     isActive: true,
+                                      //     theme: theme,
+                                      //     action: () {
+                                      //       Navigator.push(
+                                      //         context,
+                                      //         MaterialPageRoute(
+                                      //           builder: (
+                                      //             context,
+                                      //           ) {
+                                      //             return GeneralReportPage();
+                                      //           },
+                                      //         ),
+                                      //       );
+                                      //     },
+                                      //     subText:
+                                      //         'View a Summary of your business Report',
+                                      //     title:
+                                      //         'General Overview',
+                                      //   ),
+                                      // ),
                                       Visibility(
                                         visible:
                                             !isStoreKeeper() &&
                                             authorization(
                                               authorized:
                                                   Authorizations()
-                                                      .viewGeneralReport,
+                                                      .viewReceiptSalesReport,
                                             ),
                                         child: ReportListTile(
                                           isActive: true,
@@ -192,15 +222,15 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                                 builder: (
                                                   context,
                                                 ) {
-                                                  return GeneralReportPage();
+                                                  return ReceiptSalesReport();
                                                 },
                                               ),
                                             );
                                           },
                                           subText:
-                                              'View a Summary of your business Report',
+                                              'View a breakdown of your Receipt Sales, revenue and Profit',
                                           title:
-                                              'General Overview',
+                                              'Receipt Sales Report',
                                         ),
                                       ),
                                       Visibility(
@@ -209,7 +239,7 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                             authorization(
                                               authorized:
                                                   Authorizations()
-                                                      .viewSalesAndRevenueReport,
+                                                      .viewInvoiceSalesReport,
                                             ),
                                         child: ReportListTile(
                                           isActive: true,
@@ -221,15 +251,44 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                                 builder: (
                                                   context,
                                                 ) {
-                                                  return SalesAndRevenueReport();
+                                                  return InvoiceSalesReport();
                                                 },
                                               ),
                                             );
                                           },
                                           subText:
-                                              'View a breakdown of your Sales, revenue and Profit',
+                                              'View a breakdown of your Invoice Sales, revenue and Profit',
                                           title:
-                                              'Sales and Revenue',
+                                              'Invoice Sales Report',
+                                        ),
+                                      ),
+                                      Visibility(
+                                        visible:
+                                            !isStoreKeeper() &&
+                                            authorization(
+                                              authorized:
+                                                  Authorizations()
+                                                      .viewItemSalesReport,
+                                            ),
+                                        child: ReportListTile(
+                                          isActive: true,
+                                          theme: theme,
+                                          action: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return ItemSalesReport();
+                                                },
+                                              ),
+                                            );
+                                          },
+                                          subText:
+                                              'View a breakdown of your Items Sales, revenue and Profit',
+                                          title:
+                                              'Item Sales Report',
                                         ),
                                       ),
                                       Visibility(

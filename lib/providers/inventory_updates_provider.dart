@@ -120,11 +120,11 @@ class InventoryUpdatesProvider with ChangeNotifier {
           .where(
             (update) =>
                 ((!update.createdAt!.isBefore(
-                  fourAm(rangeStartDate!),
-                )) &&
-                (!update.createdAt!.isAfter(
-                  fourAmNextDay(rangeEndDate!),
-                ))),
+                      fourAm(rangeStartDate!),
+                    )) &&
+                    (!update.createdAt!.isAfter(
+                      fourAmNextDay(rangeEndDate!),
+                    ))),
           )
           .toList();
     }
@@ -148,11 +148,13 @@ class InventoryUpdatesProvider with ChangeNotifier {
           notifyListeners();
           return [];
         }
-        inventoryUpdates = res
-            .map(
-              (m) => TempInventoryUpdateClass.fromJson(m),
-            )
-            .toList();
+        inventoryUpdates =
+            res
+                .map(
+                  (m) =>
+                      TempInventoryUpdateClass.fromJson(m),
+                )
+                .toList();
         await InventoryUpdatesFunc()
             .insertAllInventoryUpdates(inventoryUpdates);
         print(
@@ -168,8 +170,8 @@ class InventoryUpdatesProvider with ChangeNotifier {
         return [];
       }
     } else {
-      inventoryUpdates = InventoryUpdatesFunc()
-          .getInventoryUpdatess();
+      inventoryUpdates =
+          InventoryUpdatesFunc().getInventoryUpdatess();
       print(
         'Inventory Updates Gotten Successfully Offline',
       );
@@ -180,8 +182,8 @@ class InventoryUpdatesProvider with ChangeNotifier {
 
   Future<List<TempInventoryUpdateClass>>
   getInventoryUpdatesOffline() async {
-    inventoryUpdates = InventoryUpdatesFunc()
-        .getInventoryUpdatess();
+    inventoryUpdates =
+        InventoryUpdatesFunc().getInventoryUpdatess();
     print('Inventory Updates Gotten Successfully Offline');
     notifyListeners();
     return inventoryUpdates;
@@ -194,40 +196,8 @@ class InventoryUpdatesProvider with ChangeNotifier {
             .userShop()
             ?.manageInventoryStorage ==
         true) {
-      // bool isOnline =
-      //     await ConnectivityProvider().isOnline();
       inventoryUpdate.uuid = uuidGen();
       inventoryUpdate.createdAt ??= DateTime.now();
-      // if (isOnline) {
-      //   try {
-      //     Map<String, dynamic>? res =
-      //         await client
-      //             .from(tableName)
-      //             .insert(inventoryUpdate.toJson())
-      //             .select()
-      //             .maybeSingle();
-      //     if (res == null) {
-      //       print('Inventory Updating Failed');
-      //       return 0;
-      //     }
-      //     inventoryUpdates.add(
-      //       TempInventoryUpdateClass.fromJson(res),
-      //     );
-      //     await InventoryUpdatesFunc()
-      //         .createInventoryUpdates(
-      //           TempInventoryUpdateClass.fromJson(res),
-      //         );
-      //     notifyListeners();
-      //     // await getInventoryUpdates();
-      //     print(
-      //       '✅✅ Inventory Updating Successfully Online',
-      //     );
-      //     return 1;
-      //   } catch (e) {
-      //     print('Creating Online Failed: ${e.toString()}');
-      //     return 0;
-      //   }
-      // } else {
       try {
         await InventoryUpdatesFunc().createInventoryUpdates(
           inventoryUpdate,
@@ -238,14 +208,13 @@ class InventoryUpdatesProvider with ChangeNotifier {
                 inventoryUpdate: inventoryUpdate,
               ),
             );
-        // await getInventoryUpdates();
+        await getInventoryUpdatesOffline();
         syncData();
         return 1;
       } catch (e) {
         print('Offline Creating Failed: ${e.toString()}');
         return 0;
       }
-      // }
     } else {
       return 0;
     }
@@ -253,8 +222,8 @@ class InventoryUpdatesProvider with ChangeNotifier {
 
   Future<void> inventoryUpdatesSync() async {
     try {
-      bool isOnline = await ConnectivityProvider()
-          .isOnline();
+      bool isOnline =
+          await ConnectivityProvider().isOnline();
       if (CreatedInventoryUpdatesFunc()
               .getCreatedInventoryUpdatess()
               .isNotEmpty &&
@@ -270,15 +239,17 @@ class InventoryUpdatesProvider with ChangeNotifier {
               inventoryUpdate.inventoryUpdate.createdAt!;
           return inventoryUpdate;
         });
-        final payload = newInventoryUpdates
-            .map((p) => p.inventoryUpdate.toJson())
-            .toList();
+        final payload =
+            newInventoryUpdates
+                .map((p) => p.inventoryUpdate.toJson())
+                .toList();
 
         // Insert all at once
-        final data = await client
-            .from(tableName)
-            .insert(payload)
-            .select();
+        final data =
+            await client
+                .from(tableName)
+                .insert(payload)
+                .select();
 
         print(
           '${data.length} Inventory Update items added successfully ✅',
@@ -298,17 +269,17 @@ class InventoryUpdatesProvider with ChangeNotifier {
     }
   }
 
-  List<TempInventoryUpdateClass> testInventoryUpdates = [
-    TempInventoryUpdateClass(
-      newValue: '45000',
-      oldValue: '50000',
-      title: 'Item Quantity Updated',
-      uuid: uuidGen(),
-      shopId: 12,
-      createdAt: DateTime.now(),
-      itemName: 'A new Item is Created',
-      staffName: 'Alex Onyeka',
-      itemTwoUuid: '',
-    ),
-  ];
+  // List<TempInventoryUpdateClass> testInventoryUpdates = [
+  //   TempInventoryUpdateClass(
+  //     newValue: '45000',
+  //     oldValue: '50000',
+  //     title: 'Item Quantity Updated',
+  //     uuid: uuidGen(),
+  //     shopId: 12,
+  //     createdAt: DateTime.now(),
+  //     itemName: 'A new Item is Created',
+  //     staffName: 'Alex Onyeka',
+  //     itemTwoUuid: '',
+  //   ),
+  // ];
 }

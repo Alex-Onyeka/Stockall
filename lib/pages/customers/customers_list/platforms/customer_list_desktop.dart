@@ -166,27 +166,32 @@ class _CustomerListDesktopState
               Expanded(
                 child: DesktopPageContainer(
                   widget: Scaffold(
-                    floatingActionButton:
-                        FloatingActionButtonMain(
-                          theme: theme,
-                          action: () {
-                            Navigator.push(
+                    floatingActionButton: Visibility(
+                      visible: authorization(
+                        authorized:
+                            Authorizations().addCustomer,
+                      ),
+                      child: FloatingActionButtonMain(
+                        theme: theme,
+                        action: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return AddCustomer();
+                              },
+                            ),
+                          ).then((_) {
+                            setState(() {});
+                          });
+                        },
+                        color:
+                            returnTheme(
                               context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return AddCustomer();
-                                },
-                              ),
-                            ).then((_) {
-                              setState(() {});
-                            });
-                          },
-                          color:
-                              returnTheme(
-                                context,
-                              ).lightModeColor.prColor300,
-                          text: 'Add Customer',
-                        ),
+                            ).lightModeColor.prColor300,
+                        text: 'Add Customer',
+                      ),
+                    ),
                     appBar: AppBar(
                       toolbarHeight: 60,
                       leading: Opacity(
