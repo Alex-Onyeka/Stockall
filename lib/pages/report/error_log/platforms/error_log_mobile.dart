@@ -29,6 +29,7 @@ class _ErrorLogMobileState extends State<ErrorLogMobile> {
       appBar: AppBar(
         toolbarHeight: 60,
         leading: IconButton(
+          mouseCursor: SystemMouseCursors.click,
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -92,6 +93,7 @@ class _ErrorLogMobileState extends State<ErrorLogMobile> {
                           : 'All Logs',
                     ),
                     InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       onTap: () {
                         returnErrorLogProvider().dateSet ==
                                     null &&

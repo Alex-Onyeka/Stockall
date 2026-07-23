@@ -218,6 +218,8 @@ class _QuantityEditWidgetState
                           Material(
                             color: Colors.transparent,
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onTap: () {
                                 node.requestFocus();
                                 setState(() {
@@ -282,6 +284,8 @@ class _QuantityEditWidgetState
                           Material(
                             color: Colors.transparent,
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onTap: () {
                                 node.requestFocus();
                                 setState(() {
@@ -734,6 +738,7 @@ class _QuantityEditWidgetState
                   spacing: 2,
                   children: [
                     InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       onTap: () {
                         returnData().unFocusSearchNode();
                         returnData()
@@ -766,6 +771,7 @@ class _QuantityEditWidgetState
               Visibility(
                 visible: errorUpdating,
                 child: InkWell(
+                  mouseCursor: SystemMouseCursors.click,
                   onTap: () {
                     returnData().unFocusSearchNode();
                     returnData().removeSearchNodeListener();

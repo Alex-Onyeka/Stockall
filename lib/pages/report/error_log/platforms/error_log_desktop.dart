@@ -150,6 +150,8 @@ class _ErrorLogDesktopState extends State<ErrorLogDesktop> {
                       context: context,
                       title: 'Error Logs',
                       widget: InkWell(
+                        mouseCursor:
+                            SystemMouseCursors.click,
                         onTap: () async {
                           await returnErrorLogProvider()
                               .getErrorLogs();
@@ -226,6 +228,9 @@ class _ErrorLogDesktopState extends State<ErrorLogDesktop> {
                                       : 'All Logs',
                                 ),
                                 InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onTap: () {
                                     returnErrorLogProvider()
                                                     .dateSet ==

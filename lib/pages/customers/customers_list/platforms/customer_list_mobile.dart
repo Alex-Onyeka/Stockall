@@ -86,6 +86,7 @@ class _CustomerListMobileState
       appBar: AppBar(
         toolbarHeight: 60,
         leading: IconButton(
+          mouseCursor: SystemMouseCursors.click,
           onPressed: () {
             Navigator.of(context).pop();
           },

@@ -736,6 +736,9 @@ Future<dynamic> settingsGenerateProductBarcode(
                                           right: 8.0,
                                         ),
                                     child: IconButton(
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
                                       onPressed: () {
                                         Navigator.of(
                                           context,
@@ -780,6 +783,9 @@ Future<dynamic> settingsGenerateProductBarcode(
                                             ),
                                       ),
                                       child: InkWell(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
                                         onTap: () {
                                           if (returnData()
                                               .barcodeGenerationList
@@ -919,6 +925,8 @@ Future<dynamic> settingsGenerateProductBarcode(
                                                       Colors
                                                           .transparent,
                                                   child: InkWell(
+                                                    mouseCursor:
+                                                        SystemMouseCursors.click,
                                                     onTap: () {
                                                       var dataP =
                                                           returnData();

@@ -31,6 +31,7 @@ class CustomersMainTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           child: InkWell(
+            mouseCursor: SystemMouseCursors.click,
             onTap: action,
             borderRadius: BorderRadius.circular(10),
             child: Container(

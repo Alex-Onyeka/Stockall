@@ -111,7 +111,7 @@
 //                   padding: const EdgeInsets.symmetric(
 //                     vertical: 10.0,
 //                   ),
-//                   child: InkWell(
+//                   child: InkWell( mouseCursor: SystemMouseCursors.click,
 //                     borderRadius: BorderRadius.circular(10),
 //                     onTap: () {
 //                       resetToToday();
@@ -195,7 +195,7 @@
 //                                         : Colors.white,
 //                               ),
 //                             ),
-//                             child: InkWell(
+//                             child: InkWell( mouseCursor: SystemMouseCursors.click,
 //                               borderRadius:
 //                                   BorderRadius.circular(20),
 //                               onTap: () {
@@ -273,7 +273,7 @@
 //                           color: Colors.grey.shade200,
 //                         ),
 //                       ),
-//                       child: InkWell(
+//                       child: InkWell( mouseCursor: SystemMouseCursors.click,
 //                         onTap: () {
 //                           widget.actionWeek!(start, end);
 //                         },

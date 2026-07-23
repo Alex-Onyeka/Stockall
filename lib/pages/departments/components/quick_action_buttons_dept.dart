@@ -19,6 +19,7 @@ class QuickActionButtonsDept extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           onTap: action,
           borderRadius: BorderRadius.circular(5),
           child: Container(

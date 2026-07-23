@@ -543,6 +543,8 @@ class _ProductPageDesktopState
                                                     'Items',
                                                   ),
                                                   MaterialButton(
+                                                    mouseCursor:
+                                                        SystemMouseCursors.click,
                                                     onPressed: () {
                                                       // var safeContext =
                                                       //     context;
@@ -721,7 +723,7 @@ class _ProductPageDesktopState
                       //                           ? '(${productsResult.length})'
                       //                           : '(${(products.where((product) => product.name.toLowerCase().contains(searchController.text.toLowerCase()) || (product.barcode != null && product.barcode!.toLowerCase().contains(searchController.text.toLowerCase()))).length)})'}',
                       //                     ),
-                      //                     IconButton(
+                      //                     IconButton(mouseCursor: SystemMouseCursors.click,
                       //                       onPressed: () {
                       //                         clearState();
                       //                       },

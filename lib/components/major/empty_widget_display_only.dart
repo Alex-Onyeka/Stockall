@@ -97,6 +97,7 @@ class EmptyWidgetDisplayOnly extends StatelessWidget {
                 children: [
                   SizedBox(height: 10),
                   InkWell(
+                    mouseCursor: SystemMouseCursors.click,
                     onTap: () {
                       altAction!();
                     },

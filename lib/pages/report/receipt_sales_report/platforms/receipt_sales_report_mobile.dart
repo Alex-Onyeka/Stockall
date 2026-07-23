@@ -273,6 +273,8 @@ class _ReceiptSalesReportMobileState
                             MainAxisAlignment.end,
                         children: [
                           MaterialButton(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             onPressed: () {
                               if (returnReceiptProvider(
                                         context,

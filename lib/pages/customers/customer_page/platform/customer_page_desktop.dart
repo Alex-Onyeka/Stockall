@@ -509,6 +509,7 @@ class CustomerActionButton extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
         onTap: action,
         borderRadius: BorderRadius.circular(5),
         child: Container(
@@ -635,6 +636,7 @@ class TabBarTabButton extends StatelessWidget {
           ),
         ),
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           onTap: () {
             action!();
           },

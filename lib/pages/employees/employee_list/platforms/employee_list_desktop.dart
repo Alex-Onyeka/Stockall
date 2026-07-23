@@ -199,6 +199,8 @@ class _EmployeeListDesktopState
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             borderRadius:
                                 BorderRadius.circular(10),
                             onTap: () async {
@@ -261,12 +263,11 @@ class _EmployeeListDesktopState
                             builder: (context) {
                               if (employees.isEmpty) {
                                 return EmptyWidgetDisplay(
-                                  title:
-                                      'Empty Employee List',
+                                  title: 'Empty Staff List',
                                   subText:
-                                      'You Have not Created Any Employee Yet.',
+                                      'You Have not Created Any Staff Yet.',
                                   buttonText:
-                                      'Create Employee',
+                                      'Create Staff',
                                   svg: productIconSvg,
                                   theme: theme,
                                   height: 30,

@@ -281,8 +281,7 @@ class _ReceiptSalesReportDesktopState
                 color: Colors.white,
               ),
               child: Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   // Row(
                   //   children: [
@@ -305,58 +304,59 @@ class _ReceiptSalesReportDesktopState
                   //     ),
                   //   ],
                   // ),
-                  Visibility(
-                    visible:
-                        returnReceiptProvider(context)
-                                .row(
-                                  context: context,
-                                  sortIndex: sortIndex,
-                                )
-                                .length >
-                            1 &&
-                        sortIndex == 1,
-                    child: Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.end,
-                      children: [
-                        InkWell(
-                          onTap: () {},
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 10,
-                            ),
-                            child: Row(
-                              spacing: 5,
-                              children: [
-                                Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade700,
-                                    fontWeight:
-                                        FontWeight.bold,
-                                  ),
-                                  'Generate',
-                                ),
-                                Icon(
-                                  size: 20,
-                                  color: Colors.grey,
-                                  Icons.print,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
+                  // Visibility(
+                  //   visible:
+                  //       returnReceiptProvider(context)
+                  //               .row(
+                  //                 context: context,
+                  //                 sortIndex: sortIndex,
+                  //               )
+                  //               .length >
+                  //           1 &&
+                  //       sortIndex == 1,
+                  //   child: Row(
+                  //     mainAxisAlignment:
+                  //         MainAxisAlignment.end,
+                  //     children: [
+                  //       InkWell(
+                  //         mouseCursor:
+                  //             SystemMouseCursors.click,
+                  //         onTap: () {},
+                  //         child: Container(
+                  //           padding: EdgeInsets.symmetric(
+                  //             horizontal: 10,
+                  //           ),
+                  //           child: Row(
+                  //             spacing: 5,
+                  //             children: [
+                  //               Text(
+                  //                 style: TextStyle(
+                  //                   fontSize:
+                  //                       theme
+                  //                           .mobileTexts
+                  //                           .b3
+                  //                           .fontSize,
+                  //                   color:
+                  //                       Colors
+                  //                           .grey
+                  //                           .shade700,
+                  //                   fontWeight:
+                  //                       FontWeight.bold,
+                  //                 ),
+                  //                 'Generate',
+                  //               ),
+                  //               Icon(
+                  //                 size: 20,
+                  //                 color: Colors.grey,
+                  //                 Icons.print,
+                  //               ),
+                  //             ],
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                   Visibility(
                     visible: authorization(
                       authorized: Authorizations().viewDate,
@@ -366,6 +366,8 @@ class _ReceiptSalesReportDesktopState
                           MainAxisAlignment.end,
                       children: [
                         MaterialButton(
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onPressed: () {
                             if (returnReceiptProvider(
                                       context,

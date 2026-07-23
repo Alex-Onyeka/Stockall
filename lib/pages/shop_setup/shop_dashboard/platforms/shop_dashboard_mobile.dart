@@ -50,6 +50,8 @@ class _ShopDashboardMobileState
                     Opacity(
                       opacity: 0,
                       child: IconButton(
+                        mouseCursor:
+                            SystemMouseCursors.click,
                         onPressed: () {},
                         icon: Icon(size: 18, Icons.refresh),
                       ),
@@ -86,6 +88,8 @@ class _ShopDashboardMobileState
                           );
                         } else {
                           return IconButton(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             onPressed: () {
                               returnShopDashboardProvider()
                                   .fetchAllData();

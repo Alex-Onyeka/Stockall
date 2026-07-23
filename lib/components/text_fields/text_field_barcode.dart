@@ -92,6 +92,7 @@ class _TextFieldBarcodeState
                 borderRadius: BorderRadius.circular(30),
               ),
               child: InkWell(
+                mouseCursor: SystemMouseCursors.click,
                 borderRadius: BorderRadius.circular(30),
                 onTap: () {
                   if (widget

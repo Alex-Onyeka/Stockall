@@ -267,6 +267,9 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
                                         alignment:
                                             Alignment(0, 1),
                                         child: InkWell(
+                                          mouseCursor:
+                                              SystemMouseCursors
+                                                  .click,
                                           onTap: () {
                                             returnExpensesProvider(
                                               context,
@@ -421,6 +424,9 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
                                             'All Expenses',
                                           ),
                                           MaterialButton(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onPressed: () {
                                               Navigator.push(
                                                 context,

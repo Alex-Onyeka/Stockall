@@ -152,6 +152,8 @@ class _EventsLogDesktopState
                       context: context,
                       title: 'Event Logs',
                       widget: InkWell(
+                        mouseCursor:
+                            SystemMouseCursors.click,
                         onTap: () async {
                           await returnEventsLogProvider()
                               .getEventLogs();
@@ -228,6 +230,9 @@ class _EventsLogDesktopState
                                       : 'All Logs',
                                 ),
                                 InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onTap: () {
                                     returnEventsLogProvider()
                                                     .dateSet ==
@@ -437,6 +442,7 @@ class _LogWidgetState extends State<LogWidget> {
           color: Colors.white,
         ),
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           borderRadius: BorderRadius.circular(2),
           onTap: () {
             setState(() {

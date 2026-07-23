@@ -127,6 +127,8 @@ class AuthLandingTablet extends StatelessWidget {
                           ),
                           SizedBox(height: 20),
                           InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             onTap: () {
                               Navigator.push(
                                 context,

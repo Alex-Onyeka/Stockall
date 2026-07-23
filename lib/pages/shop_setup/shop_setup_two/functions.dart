@@ -126,6 +126,9 @@ void selectCurrency(
                                       ],
                                     ),
                                     InkWell(
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
                                       onTap: () {
                                         Navigator.of(
                                           context,
@@ -449,6 +452,9 @@ void selectCountry({
                                         ],
                                       ),
                                       InkWell(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
                                         onTap: () {
                                           Navigator.of(
                                             context,
@@ -702,6 +708,7 @@ void setCity({
                   spacing: 5,
                   children: [
                     MaterialButton(
+                      mouseCursor: SystemMouseCursors.click,
                       onPressed: () {
                         Navigator.of(context).pop();
                         controller.clear();
@@ -862,6 +869,9 @@ void selectState({
                                         ],
                                       ),
                                       InkWell(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
                                         onTap: () {
                                           Navigator.of(
                                             context,
@@ -923,6 +933,9 @@ void selectState({
                                 MainAxisAlignment.end,
                             children: [
                               InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onTap: () {
                                   setCity(
                                     updateAction: () {
@@ -1307,6 +1320,9 @@ void selectCity({
                                         ],
                                       ),
                                       InkWell(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
                                         onTap: () {
                                           Navigator.of(
                                             context,
@@ -1369,6 +1385,9 @@ void selectCity({
                                 MainAxisAlignment.end,
                             children: [
                               InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onTap: () {
                                   setCity(
                                     updateAction: () {

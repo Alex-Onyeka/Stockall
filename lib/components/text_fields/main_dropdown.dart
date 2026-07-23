@@ -30,6 +30,7 @@ class MainDropdown extends StatelessWidget {
           title,
         ),
         InkWell(
+          mouseCursor: SystemMouseCursors.click,
           onTap: onTap,
           child: TextFormField(
             enabled: false,

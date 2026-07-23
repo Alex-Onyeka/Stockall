@@ -201,6 +201,8 @@ class _CustomerListDesktopState
                                 ? 0
                                 : 1,
                         child: IconButton(
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onPressed: () {
                             widget.isSales == null &&
                                     widget.isWaybill == null
@@ -251,6 +253,8 @@ class _CustomerListDesktopState
                           child: Material(
                             color: Colors.transparent,
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               borderRadius:
                                   BorderRadius.circular(10),
                               onTap: () async {

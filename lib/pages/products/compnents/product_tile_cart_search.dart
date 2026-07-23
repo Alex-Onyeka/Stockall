@@ -53,6 +53,7 @@ class _ProductTileCartSearchState
           elevation: 0,
           color: Colors.white,
           child: InkWell(
+            mouseCursor: SystemMouseCursors.click,
             borderRadius: BorderRadius.circular(5),
             onTap: widget.action,
             child: Container(
@@ -161,6 +162,8 @@ class _ProductTileCartSearchState
                               ),
                             ),
                             IconButton(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onPressed: widget.action,
                               icon: Icon(Icons.add),
                             ),

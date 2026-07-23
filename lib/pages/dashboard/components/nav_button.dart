@@ -23,6 +23,7 @@ class NavButton extends StatelessWidget {
       color: Colors.transparent,
       child: Ink(
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           onTap: () {
             Provider.of<NavProvider>(
               context,

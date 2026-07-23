@@ -117,6 +117,7 @@ class _FaqTabContainerState extends State<FaqTabContainer> {
           Material(
             type: MaterialType.transparency,
             child: InkWell(
+              mouseCursor: SystemMouseCursors.click,
               onTap: () {
                 setState(() {
                   isOpen = !isOpen;

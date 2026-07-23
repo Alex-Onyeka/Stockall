@@ -48,6 +48,7 @@ class _ExpensesTileState extends State<ExpensesTile> {
           color: Colors.white,
         ),
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           borderRadius: BorderRadius.circular(5),
           onTap: widget.action,
           child: Container(

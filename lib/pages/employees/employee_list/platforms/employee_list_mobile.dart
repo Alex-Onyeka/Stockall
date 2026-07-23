@@ -81,6 +81,7 @@ class _EmployeeListMobileState
       appBar: AppBar(
         toolbarHeight: 60,
         leading: IconButton(
+          mouseCursor: SystemMouseCursors.click,
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -131,10 +132,10 @@ class _EmployeeListMobileState
               builder: (context) {
                 if (employees.isEmpty) {
                   return EmptyWidgetDisplay(
-                    title: 'Empty Employee List',
+                    title: 'Empty Staff List',
                     subText:
-                        'You Have not Created Any Employee Yet.',
-                    buttonText: 'Create Employee',
+                        'You Have not Created Any Staff Yet.',
+                    buttonText: 'Create Staff',
                     svg: productIconSvg,
                     theme: theme,
                     height: 30,

@@ -369,6 +369,9 @@ class _ItemSalesReportDesktopState
                                   MainAxisAlignment.end,
                               children: [
                                 InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onTap: () {
                                     generatePrintAction(
                                       context,
@@ -426,6 +429,9 @@ class _ItemSalesReportDesktopState
                                   MainAxisAlignment.end,
                               children: [
                                 MaterialButton(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onPressed: () {
                                     if (returnReceiptProvider(
                                               context,

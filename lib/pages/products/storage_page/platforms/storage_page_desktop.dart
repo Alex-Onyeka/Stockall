@@ -190,6 +190,7 @@ class StoragePageDesktopState
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       borderRadius: BorderRadius.circular(
                         10,
                       ),
@@ -979,6 +980,9 @@ class StoragePageDesktopState
                                         Opacity(
                                           opacity: 0,
                                           child: IconButton(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onPressed:
                                                 () {},
                                             icon: Icon(
@@ -1000,6 +1004,9 @@ class StoragePageDesktopState
                                           'Update Summary',
                                         ),
                                         IconButton(
+                                          mouseCursor:
+                                              SystemMouseCursors
+                                                  .click,
                                           onPressed: () {
                                             setState(() {
                                               viewUpdateSummary =
@@ -1203,6 +1210,9 @@ class StoragePageDesktopState
                             child: Material(
                               color: Colors.transparent,
                               child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 borderRadius:
                                     BorderRadius.circular(
                                       3,
@@ -1273,6 +1283,8 @@ class StoragePageDesktopState
                           Visibility(
                             visible: sortIndex == 3,
                             child: IconButton(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onPressed: () {
                                 setState(() {
                                   viewUpdateSummary =
@@ -1341,6 +1353,9 @@ class StoragePageDesktopState
                               ),
                               decoration: InputDecoration(
                                 suffixIcon: InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onTap: () {
                                     if (searchController
                                         .text
@@ -1413,6 +1428,9 @@ class StoragePageDesktopState
                                 spacing: 0,
                                 children: [
                                   IconButton(
+                                    mouseCursor:
+                                        SystemMouseCursors
+                                            .click,
                                     onPressed: () {
                                       if (start != 0) {
                                         navigate(
@@ -1489,6 +1507,9 @@ class StoragePageDesktopState
                                     ],
                                   ),
                                   IconButton(
+                                    mouseCursor:
+                                        SystemMouseCursors
+                                            .click,
                                     onPressed: () {
                                       if (end !=
                                           returnStorageProductProvider()
@@ -1539,6 +1560,9 @@ class StoragePageDesktopState
                                     MainAxisAlignment.end,
                                 children: [
                                   InkWell(
+                                    mouseCursor:
+                                        SystemMouseCursors
+                                            .click,
                                     onTap: () {
                                       returnInventoryUpdatesProvider()
                                                       .dateSet ==

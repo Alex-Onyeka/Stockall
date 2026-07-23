@@ -88,6 +88,9 @@ class _WaybillPageMobileState
                               type:
                                   MaterialType.transparency,
                               child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onTap: () {
                                   if (Navigator.canPop(
                                     context,
@@ -297,6 +300,9 @@ class _WaybillPageMobileState
                               type:
                                   MaterialType.transparency,
                               child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onTap: () {
                                   if (Navigator.canPop(
                                     context,
@@ -1556,7 +1562,7 @@ class _WaybillPageMobileState
                                               // Row(
                                               //   spacing: 5,
                                               //   children: [
-                                              //     InkWell(
+                                              //     InkWell( mouseCursor: SystemMouseCursors.click,
                                               //       onTap: () {
                                               //         selectPayment(
                                               //           value:
@@ -1617,7 +1623,7 @@ class _WaybillPageMobileState
                                               //         ),
                                               //       ),
                                               //     ),
-                                              //     InkWell(
+                                              //     InkWell( mouseCursor: SystemMouseCursors.click,
                                               //       onTap: () {
                                               //         selectPayment(
                                               //           value:
@@ -1758,7 +1764,7 @@ class _WaybillPageMobileState
                                           //           gradient:
                                           //               theme.lightModeColor.prGradient,
                                           //         ),
-                                          //         child: InkWell(
+                                          //         child: InkWell( mouseCursor: SystemMouseCursors.click,
                                           //           onTap: () {
                                           //             if (paymentController.text.isNotEmpty &&
                                           //                 paymentController.text !=

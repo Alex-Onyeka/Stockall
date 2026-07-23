@@ -89,6 +89,7 @@ class _GeneralReportMobileState
         toolbarHeight: 50,
         scrolledUnderElevation: 0,
         leading: IconButton(
+          mouseCursor: SystemMouseCursors.click,
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -146,6 +147,8 @@ class _GeneralReportMobileState
                           MainAxisAlignment.end,
                       children: [
                         InkWell(
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onTap: () {
                             var safeContext = context;
                             showDialog(
@@ -220,6 +223,8 @@ class _GeneralReportMobileState
                           MainAxisAlignment.end,
                       children: [
                         MaterialButton(
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onPressed: () {
                             if (returnReceiptProvider(
                                       context,

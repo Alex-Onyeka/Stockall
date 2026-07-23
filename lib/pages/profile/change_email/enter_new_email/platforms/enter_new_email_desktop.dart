@@ -251,6 +251,8 @@ class EnterNewEmailDesktopState
                             ),
                             SizedBox(height: 20),
                             InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onTap: () {
                                 Navigator.of(context).pop();
                               },

@@ -83,6 +83,8 @@ class _SettingsPageDesktopState
                                   .spaceBetween,
                           children: [
                             InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onTap: () {
                                 Navigator.of(context).pop();
                               },
@@ -575,6 +577,8 @@ class _SettingsPageDesktopState
                                                                             color:
                                                                                 Colors.transparent,
                                                                             child: InkWell(
+                                                                              mouseCursor:
+                                                                                  SystemMouseCursors.click,
                                                                               onTap: () {
                                                                                 if (returnDepartmentProvider().departments.length >
                                                                                     1) {

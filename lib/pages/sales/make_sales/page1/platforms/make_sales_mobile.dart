@@ -362,6 +362,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       'Add Item to your Stock?',
                                     ),
                                     InkWell(
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
                                       onTap: () {
                                         var salesProvider =
                                             returnSalesProvider();
@@ -491,6 +494,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                 .shade100,
                                       ),
                                       child: InkWell(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
                                         borderRadius:
                                             BorderRadius.circular(
                                               5,
@@ -539,6 +545,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                 .shade100,
                                       ),
                                       child: InkWell(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
                                         borderRadius:
                                             BorderRadius.circular(
                                               5,
@@ -573,6 +582,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                 spacing: 5,
                                 children: [
                                   MaterialButton(
+                                    mouseCursor:
+                                        SystemMouseCursors
+                                            .click,
                                     onPressed: () {
                                       Navigator.of(
                                         context,
@@ -963,7 +975,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
         canPop: false,
         child: Scaffold(
           // appBar: AppBar(
-          //   title: InkWell(
+          //   title: InkWell( mouseCursor: SystemMouseCursors.click,
           //     onTap: () {
           //       Navigator.of(context).pop();
           //     },
@@ -1000,6 +1012,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                         context,
                       ).currentCart().cartItems.isNotEmpty,
                   child: InkWell(
+                    mouseCursor: SystemMouseCursors.click,
                     onTap: () {
                       showDialog(
                         context: context,
@@ -1091,6 +1104,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                         context,
                       ).currentCart().cartItems.isEmpty,
                   child: InkWell(
+                    mouseCursor: SystemMouseCursors.click,
                     onTap: () async {
                       if (returnSalesProvider()
                           .currentCart()
@@ -2085,6 +2099,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                       Colors
                                                           .transparent,
                                                   child: InkWell(
+                                                    mouseCursor:
+                                                        SystemMouseCursors.click,
                                                     onTap: () async {
                                                       SalesAuthAction().useBarcodeAction(
                                                         context:
@@ -2278,6 +2294,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                         ),
                                                       ),
                                                       child: InkWell(
+                                                        mouseCursor:
+                                                            SystemMouseCursors.click,
                                                         onTap: () {
                                                           showGeneralDialog(
                                                             context:
@@ -2363,6 +2381,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                         ),
                                                       ),
                                                       child: InkWell(
+                                                        mouseCursor:
+                                                            SystemMouseCursors.click,
                                                         onTap: () {
                                                           returnSalesProvider().toggleAddToStock(
                                                             false,
@@ -2746,6 +2766,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                         ],
                       ),
                       child: InkWell(
+                        mouseCursor:
+                            SystemMouseCursors.click,
                         borderRadius: BorderRadius.circular(
                           15,
                         ),
@@ -2843,6 +2865,7 @@ class _SubStaffToggleButtonMobileState
             borderRadius: BorderRadius.circular(5),
           ),
           child: InkWell(
+            mouseCursor: SystemMouseCursors.click,
             borderRadius: BorderRadius.circular(8),
             onTap: () {
               returnSalesProvider()
@@ -2935,6 +2958,7 @@ class EmptyCartBottomWidget extends StatelessWidget {
                     ),
                   ),
                   child: InkWell(
+                    mouseCursor: SystemMouseCursors.click,
                     onTap: action,
                     child: Container(
                       padding: EdgeInsets.symmetric(

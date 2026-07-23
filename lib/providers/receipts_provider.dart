@@ -1072,7 +1072,14 @@ class ReceiptsProvider extends ChangeNotifier {
       group.totalRevenue += receipt.cashAlt + receipt.bank;
     }
 
-    return grouped.values.toList();
+    var res = grouped.values.toList();
+    res.sort(
+      (a, b) => ((a.staffName ?? 'Not Set').toLowerCase())
+          .compareTo(
+            (b.staffName ?? 'Not Set').toLowerCase(),
+          ),
+    );
+    return res;
   }
 
   List<CustomerGroupReceipts> groupReceiptsByCustomer() {
@@ -1103,7 +1110,15 @@ class ReceiptsProvider extends ChangeNotifier {
       group.totalRevenue += receipt.cashAlt + receipt.bank;
     }
 
-    return grouped.values.toList();
+    var res = grouped.values.toList();
+    res.sort(
+      (a, b) =>
+          ((a.customerName ?? 'Not Set').toLowerCase())
+              .compareTo(
+                (b.customerName ?? 'Not Set').toLowerCase(),
+              ),
+    );
+    return res;
   }
 
   List<ChannelGroupReceipts>
@@ -1166,7 +1181,15 @@ class ReceiptsProvider extends ChangeNotifier {
       group.totalRevenue += receipt.cashAlt + receipt.bank;
     }
 
-    return grouped.values.toList();
+    var res = grouped.values.toList();
+    res.sort(
+      (a, b) => ((a.departmentName ?? 'Not Set')
+              .toLowerCase())
+          .compareTo(
+            (b.departmentName ?? 'Not Set').toLowerCase(),
+          ),
+    );
+    return res;
   }
 
   List<TempProductSaleRecord>

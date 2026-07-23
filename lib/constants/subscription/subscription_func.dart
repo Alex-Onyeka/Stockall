@@ -564,6 +564,7 @@ class SubscribeAlertDialog extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     IconButton(
+                      mouseCursor: SystemMouseCursors.click,
                       onPressed: () {
                         Navigator.of(context).pop();
                       },

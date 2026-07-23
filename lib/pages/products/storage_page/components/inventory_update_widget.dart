@@ -71,6 +71,7 @@ class _InventoryUpdateWidgetState
           color: Colors.white,
         ),
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           borderRadius: BorderRadius.circular(2),
           onTap: () {
             setState(() {
@@ -689,6 +690,9 @@ class _InventoryUpdateWidgetState
                                         MaterialType
                                             .transparency,
                                     child: InkWell(
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
                                       onTap: () {
                                         Navigator.push(
                                           context,

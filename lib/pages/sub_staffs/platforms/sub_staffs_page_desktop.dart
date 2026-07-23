@@ -39,6 +39,7 @@ class _SubStaffsPageDesktopState
               Material(
                 color: Colors.transparent,
                 child: InkWell(
+                  mouseCursor: SystemMouseCursors.click,
                   onTap: () {
                     Navigator.of(context).pop();
                   },
@@ -60,6 +61,7 @@ class _SubStaffsPageDesktopState
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
+                    mouseCursor: SystemMouseCursors.click,
                     onTap: () {
                       returnSubStaffProvider()
                           .getSubStaffs();
@@ -117,6 +119,7 @@ class _SubStaffsPageDesktopState
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       onTap: () {
                         returnSubStaffProvider()
                             .getSubStaffs();
@@ -142,6 +145,7 @@ class _SubStaffsPageDesktopState
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       onTap: () {
                         SalesAuthAction().allowBulkSaleAction(
                           context: context,

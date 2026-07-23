@@ -442,9 +442,9 @@ class _AddEmployeeDesktopState
                                                   theme:
                                                       theme,
                                                   message:
-                                                      'Employee Id is invalid.',
+                                                      'Staff Id is invalid.',
                                                   title:
-                                                      'Invalid Employee Id.',
+                                                      'Invalid Staff Id.',
                                                   action: () {
                                                     Navigator.of(
                                                       context,
@@ -554,12 +554,12 @@ class _AddEmployeeDesktopState
                                                         message:
                                                             res ==
                                                                     '121'
-                                                                ? 'Employee Id is invalid.'
+                                                                ? 'Staff Id is invalid.'
                                                                 : 'User is not found in the database.',
                                                         title:
                                                             res ==
                                                                     '121'
-                                                                ? 'Invalid Employee Id.'
+                                                                ? 'Invalid Staff Id.'
                                                                 : 'User not Found.',
                                                         action: () {
                                                           Navigator.of(
@@ -769,6 +769,7 @@ class _AddEmployeeDesktopState
           visible: isLoading,
           child: Material(
             child: InkWell(
+              mouseCursor: SystemMouseCursors.click,
               onTap: () {
                 setState(() {
                   isLoading = false;
@@ -789,7 +790,7 @@ class _AddEmployeeDesktopState
           ).showSuccess(
             widget.employee != null
                 ? 'Updated Successfully'
-                : 'Employee Added Successfully',
+                : 'Staff Added Successfully',
           ),
         ),
       ],
@@ -822,6 +823,7 @@ class EmployeeListTile extends StatelessWidget {
       child: Ink(
         color: Colors.white,
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           onTap: () {
             action();
             FocusManager.instance.primaryFocus?.unfocus();

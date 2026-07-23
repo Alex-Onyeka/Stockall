@@ -328,6 +328,8 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                               ),
                             ),
                             MaterialButton(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onPressed: () {
                                 Navigator.push(
                                   context,

@@ -285,6 +285,7 @@ class _LoginDesktopState extends State<LoginDesktop> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       onTap: () {
                         Navigator.push(
                           context,

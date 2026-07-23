@@ -38,6 +38,7 @@ class FloatingActionButtonMain extends StatelessWidget {
             color: Colors.white,
           ),
           child: InkWell(
+            mouseCursor: SystemMouseCursors.click,
             borderRadius: BorderRadius.circular(15),
             onTap: action,
             child: Container(

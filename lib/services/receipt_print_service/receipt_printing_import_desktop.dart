@@ -67,6 +67,7 @@ Future<bool> printerSelectionDialog({
         action: () {},
         showBottomActionButtons: false,
         topRightWidget: IconButton(
+          mouseCursor: SystemMouseCursors.click,
           onPressed: () {
             Navigator.of(context).pop(false);
           },
@@ -202,6 +203,7 @@ class PaperSizeSelectionWidget extends StatelessWidget {
           ),
         ),
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           onTap: () {
             var currentPrinter =
                 returnShopProvider().getReceiptPrinter();
@@ -264,6 +266,7 @@ class PrinterListTileWidget extends StatelessWidget {
             border: Border.all(color: Colors.grey.shade300),
           ),
           child: InkWell(
+            mouseCursor: SystemMouseCursors.click,
             onTap: () {
               if (!isSelected) {
                 var currentPrinter =

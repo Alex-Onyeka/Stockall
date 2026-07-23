@@ -59,6 +59,7 @@ class _ProductTileMainState extends State<ProductTileMain> {
               elevation: 0,
               color: Colors.white,
               child: InkWell(
+                mouseCursor: SystemMouseCursors.click,
                 borderRadius: BorderRadius.circular(5),
                 onTap: widget.action,
                 onLongPress: widget.longPress,

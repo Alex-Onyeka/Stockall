@@ -25,6 +25,7 @@ class MainButtonP extends StatelessWidget {
           borderRadius: BorderRadius.circular(5),
         ),
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           onTap: () {
             action!();
             FocusManager.instance.primaryFocus?.unfocus();

@@ -71,6 +71,7 @@ class _CategoryListTileWidgetState
           // ],
         ),
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           onTap: () {
             Navigator.push(
               context,
@@ -182,6 +183,9 @@ class _CategoryListTileWidgetState
                                         MaterialType
                                             .transparency,
                                     child: InkWell(
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
                                       borderRadius:
                                           BorderRadius.circular(
                                             10,
@@ -270,6 +274,9 @@ class _CategoryListTileWidgetState
                               type:
                                   MaterialType.transparency,
                               child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 borderRadius:
                                     BorderRadius.circular(
                                       10,

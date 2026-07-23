@@ -94,6 +94,8 @@ class _CartQueueMobileState extends State<CartQueueMobile> {
                         ),
                       ),
                       child: InkWell(
+                        mouseCursor:
+                            SystemMouseCursors.click,
                         borderRadius: BorderRadius.circular(
                           3,
                         ),
@@ -273,6 +275,9 @@ class _CartQueueMobileState extends State<CartQueueMobile> {
                                               .secColor200,
                                     ),
                                     child: InkWell(
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
                                       onTap: () {
                                         if (!returnSalesProvider()
                                             .currentCart()
@@ -404,6 +409,7 @@ class _CartQueueMobileState extends State<CartQueueMobile> {
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: InkWell(
+                    mouseCursor: SystemMouseCursors.click,
                     onTap: () {
                       returnSalesProvider().addNewCart(
                         context,

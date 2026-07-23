@@ -62,6 +62,8 @@ class DepartmentsDashboardMobileState
                     Opacity(
                       opacity: 0,
                       child: IconButton(
+                        mouseCursor:
+                            SystemMouseCursors.click,
                         onPressed: () {},
                         icon: Icon(size: 18, Icons.refresh),
                       ),
@@ -98,6 +100,8 @@ class DepartmentsDashboardMobileState
                           );
                         } else {
                           return IconButton(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             onPressed: () {
                               returnDepartmentsDashboardProvider()
                                   .fetchAllData();

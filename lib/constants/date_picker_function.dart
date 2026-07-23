@@ -22,6 +22,7 @@ Future<dynamic> mainDatePicker({
             'Select to view A Single Date or A Date Range',
         title: 'Select Date',
         topRightWidget: IconButton(
+          mouseCursor: SystemMouseCursors.click,
           onPressed: () {
             Navigator.of(dateContext).pop();
           },
@@ -87,6 +88,8 @@ Future<dynamic> mainDatePicker({
                             }
                           },
                           topRightWidget: IconButton(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             onPressed: () {
                               Navigator.of(
                                 rangeDialog,
@@ -113,6 +116,9 @@ Future<dynamic> mainDatePicker({
                                     color:
                                         Colors.transparent,
                                     child: InkWell(
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
                                       borderRadius:
                                           BorderRadius.circular(
                                             5,
@@ -176,6 +182,9 @@ Future<dynamic> mainDatePicker({
                                     color:
                                         Colors.transparent,
                                     child: InkWell(
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
                                       borderRadius:
                                           BorderRadius.circular(
                                             5,

@@ -1361,7 +1361,14 @@ class InvoicesProvider extends ChangeNotifier {
       group.totalRevenue += invoice.cashAlt + invoice.bank;
     }
 
-    return grouped.values.toList();
+    var res = grouped.values.toList();
+    res.sort(
+      (a, b) => ((a.staffName ?? 'Not Set').toLowerCase())
+          .compareTo(
+            (b.staffName ?? 'Not Set').toLowerCase(),
+          ),
+    );
+    return res;
   }
 
   List<CustomerGroupInvoices> groupInvoicesByCustomer() {
@@ -1394,7 +1401,15 @@ class InvoicesProvider extends ChangeNotifier {
       group.totalRevenue += invoice.cashAlt + invoice.bank;
     }
 
-    return grouped.values.toList();
+    var res = grouped.values.toList();
+    res.sort(
+      (a, b) =>
+          ((a.customerName ?? 'Not Set').toLowerCase())
+              .compareTo(
+                (b.customerName ?? 'Not Set').toLowerCase(),
+              ),
+    );
+    return res;
   }
 
   List<ChannelGroupInvoices>
@@ -1461,7 +1476,15 @@ class InvoicesProvider extends ChangeNotifier {
       group.totalRevenue += invoice.cashAlt + invoice.bank;
     }
 
-    return grouped.values.toList();
+    var res = grouped.values.toList();
+    res.sort(
+      (a, b) => ((a.departmentName ?? 'Not Set')
+              .toLowerCase())
+          .compareTo(
+            (b.departmentName ?? 'Not Set').toLowerCase(),
+          ),
+    );
+    return res;
   }
 
   int sortColumnIndex = 0;

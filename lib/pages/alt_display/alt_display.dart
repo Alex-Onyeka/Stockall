@@ -951,6 +951,9 @@ class _CartItemAltState extends State<CartItemAlt> {
                                 color: Colors.grey.shade100,
                               ),
                               child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 borderRadius:
                                     BorderRadius.circular(
                                       5,

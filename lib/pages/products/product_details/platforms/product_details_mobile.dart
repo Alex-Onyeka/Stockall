@@ -93,7 +93,7 @@ class _ProductDetailsMobileState
               title: 'Details',
               // widget: Visibility(
               //   visible: !isStoreKeeper(),
-              //   child: InkWell(
+              //   child: InkWell( mouseCursor: SystemMouseCursors.click,
               //     onTap: () {
               //       var safeContext = context;
               //       showDialog(
@@ -443,6 +443,8 @@ class _ProductDetailsMobileState
                                                                 opacity:
                                                                     0,
                                                                 child: IconButton(
+                                                                  mouseCursor:
+                                                                      SystemMouseCursors.click,
                                                                   onPressed:
                                                                       () {},
                                                                   icon: Icon(
@@ -479,6 +481,8 @@ class _ProductDetailsMobileState
                                                                     );
                                                                   } else {
                                                                     return IconButton(
+                                                                      mouseCursor:
+                                                                          SystemMouseCursors.click,
                                                                       onPressed: () {
                                                                         Navigator.of(
                                                                           context,
@@ -1077,6 +1081,9 @@ class _ProductDetailsMobileState
                                         'Manage this Item?',
                                       ),
                                       InkWell(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
                                         onTap: () {
                                           ItemsAuthAction().allowStockallToManageItemAction(
                                             context:
@@ -1686,6 +1693,7 @@ class EditButton extends StatelessWidget {
         border: Border.all(color: Colors.grey.shade300),
       ),
       child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
         onTap: action,
         borderRadius: BorderRadius.circular(5),
         child: Container(

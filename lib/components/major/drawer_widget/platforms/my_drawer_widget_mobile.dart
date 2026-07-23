@@ -231,7 +231,7 @@ class _MyDrawerWidgetMobileState
                                     ),
                                   );
                                 },
-                                title: 'Employees',
+                                title: 'Staffs',
                                 svg: employeesIconSvg,
                               ),
                             ),
@@ -308,6 +308,9 @@ class _MyDrawerWidgetMobileState
                             Visibility(
                               visible: !isStoreKeeper(),
                               child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onTap: () {
                                   Navigator.of(
                                     context,
@@ -379,6 +382,9 @@ class _MyDrawerWidgetMobileState
                                               Clip.none,
                                           children: [
                                             InkWell(
+                                              mouseCursor:
+                                                  SystemMouseCursors
+                                                      .click,
                                               onTap: () {
                                                 // Provider.of<CompProvider>(
                                                 //   context,
@@ -677,7 +683,7 @@ class _MyDrawerWidgetMobileState
 //   @override
 //   Widget build(BuildContext context) {
 //     var theme = returnTheme(context);
-//     return InkWell(
+//     return InkWell( mouseCursor: SystemMouseCursors.click,
 //       onTap: () {
 //         returnNavProvider(
 //           context,
@@ -828,6 +834,7 @@ class NavListTileAlt extends StatelessWidget {
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return InkWell(
+      mouseCursor: SystemMouseCursors.click,
       onTap: () {
         Navigator.of(context).pop();
         action!();

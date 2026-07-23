@@ -60,6 +60,7 @@ class _TotalExpensesMobileState
         appBar: AppBar(
           toolbarHeight: 60,
           leading: IconButton(
+            mouseCursor: SystemMouseCursors.click,
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -181,6 +182,9 @@ class _TotalExpensesMobileState
                                       MainAxisAlignment.end,
                                   children: [
                                     MaterialButton(
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
                                       onPressed: () {
                                         if (returnExpensesProvider(
                                                   context,

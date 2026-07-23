@@ -104,6 +104,9 @@ class TopBanner extends StatelessWidget {
                                 child: Material(
                                   color: Colors.transparent,
                                   child: InkWell(
+                                    mouseCursor:
+                                        SystemMouseCursors
+                                            .click,
                                     borderRadius:
                                         BorderRadius.circular(
                                           10,
@@ -214,6 +217,7 @@ class TopBanner extends StatelessWidget {
           child: Material(
             type: MaterialType.transparency,
             child: InkWell(
+              mouseCursor: SystemMouseCursors.click,
               onTap: altAction,
               child: Padding(
                 padding: const EdgeInsets.symmetric(

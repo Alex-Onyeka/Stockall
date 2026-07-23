@@ -190,6 +190,8 @@ class _SupplierListDesktopState
                                 ? 0
                                 : 1,
                         child: IconButton(
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onPressed: () {
                             widget.isPurchase == null
                                 ? {}
@@ -238,6 +240,8 @@ class _SupplierListDesktopState
                           child: Material(
                             color: Colors.transparent,
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               borderRadius:
                                   BorderRadius.circular(10),
                               onTap: () async {

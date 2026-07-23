@@ -2258,6 +2258,7 @@ class _ProductBarcodeCounterState
                   color: Colors.grey.shade300,
                 ),
                 child: InkWell(
+                  mouseCursor: SystemMouseCursors.click,
                   borderRadius: BorderRadius.circular(2),
                   onTap: () {
                     editNumberLocal(true);
@@ -2343,6 +2344,7 @@ class _ProductBarcodeCounterState
                   color: Colors.grey.shade300,
                 ),
                 child: InkWell(
+                  mouseCursor: SystemMouseCursors.click,
                   borderRadius: BorderRadius.circular(2),
                   onTap: () {
                     editNumberLocal(false);

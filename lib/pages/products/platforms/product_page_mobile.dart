@@ -459,6 +459,9 @@ class _ProductPageMobileState
                                         'Items',
                                       ),
                                       MaterialButton(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
                                         onPressed: () {
                                           Navigator.push(
                                             context,
@@ -617,7 +620,7 @@ class _ProductPageMobileState
           //                           ? '(${productsResult.length})'
           //                           : '(${(products.where((product) => product.name.toLowerCase().contains(searchController.text.toLowerCase()) || (product.barcode != null && product.barcode!.toLowerCase().contains(searchController.text.toLowerCase()))).length)})'}',
           //                     ),
-          //                     IconButton(
+          //                     IconButton(mouseCursor: SystemMouseCursors.click,
           //                       onPressed: () {
           //                         clearState();
           //                       },

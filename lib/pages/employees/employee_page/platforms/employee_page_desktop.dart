@@ -120,7 +120,7 @@ class _EmployeePageDesktopState
                           isMain: false,
                           subTitle:
                               'Full Details about employee',
-                          title: 'Employee Details',
+                          title: 'Staffs Details',
                           theme: theme,
                           bottomSpace: 100,
                           topSpace: 30,
@@ -161,17 +161,19 @@ class _EmployeePageDesktopState
                                         action: () {},
                                         showBottomActionButtons:
                                             false,
-                                        topRightWidget:
-                                            IconButton(
-                                              onPressed: () {
-                                                Navigator.of(
-                                                  editDialoge,
-                                                ).pop();
-                                              },
-                                              icon: Icon(
-                                                Icons.clear,
-                                              ),
-                                            ),
+                                        topRightWidget: IconButton(
+                                          mouseCursor:
+                                              SystemMouseCursors
+                                                  .click,
+                                          onPressed: () {
+                                            Navigator.of(
+                                              editDialoge,
+                                            ).pop();
+                                          },
+                                          icon: Icon(
+                                            Icons.clear,
+                                          ),
+                                        ),
                                         widget: Column(
                                           mainAxisSize:
                                               MainAxisSize
@@ -373,6 +375,8 @@ class _EmployeePageDesktopState
                                                                                 color:
                                                                                     Colors.transparent,
                                                                                 child: InkWell(
+                                                                                  mouseCursor:
+                                                                                      SystemMouseCursors.click,
                                                                                   onTap: () {
                                                                                     setState(
                                                                                       () {
@@ -803,7 +807,7 @@ class _DetailsPageContainerState
                                   .lightModeColor
                                   .secColor200,
                         ),
-                        'Employee',
+                        'Staff',
                       ),
                     ),
                   ),
@@ -1090,6 +1094,7 @@ class CustomerActionButton extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
         onTap: action,
         borderRadius: BorderRadius.circular(5),
         child: Container(
@@ -1216,6 +1221,7 @@ class TabBarTabButton extends StatelessWidget {
           ),
         ),
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           onTap: () {
             action!();
           },

@@ -128,6 +128,8 @@ class _ShopDashboardDesktopState
                           Opacity(
                             opacity: 0,
                             child: IconButton(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onPressed: () {},
                               icon: Icon(
                                 size: 18,
@@ -170,6 +172,9 @@ class _ShopDashboardDesktopState
                                 );
                               } else {
                                 return IconButton(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onPressed: () {
                                     returnShopDashboardProvider()
                                         .fetchAllData();

@@ -268,6 +268,8 @@ class _InvoiceSalesReportMobileState
                             MainAxisAlignment.end,
                         children: [
                           MaterialButton(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             onPressed: () {
                               if (returnInvoicesProvider()
                                           .dateSet !=

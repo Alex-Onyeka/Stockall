@@ -110,6 +110,7 @@ class EmptyWidgetDisplay extends StatelessWidget {
                   children: [
                     SizedBox(height: 10),
                     InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       onTap: () {
                         altAction!();
                       },
@@ -150,6 +151,7 @@ class EmptyWidgetDisplay extends StatelessWidget {
                   children: [
                     SizedBox(height: 10),
                     InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       onTap: () {
                         AuthService().signOut(
                           context: context,

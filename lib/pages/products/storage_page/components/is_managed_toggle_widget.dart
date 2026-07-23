@@ -24,6 +24,7 @@ class _IsManagedToggleWidgetState
   Widget build(BuildContext context) {
     var theme = returnTheme(context, listen: false);
     return InkWell(
+      mouseCursor: SystemMouseCursors.click,
       onTap: () {
         ItemsAuthAction().allowStockallToManageItemAction(
           context: context,

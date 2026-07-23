@@ -65,6 +65,7 @@ class _CartQueueDesktopState
                   borderRadius: BorderRadius.circular(3),
                 ),
                 child: InkWell(
+                  mouseCursor: SystemMouseCursors.click,
                   borderRadius: BorderRadius.circular(3),
                   onTap: () {
                     returnSalesProvider().selectCart(
@@ -232,6 +233,9 @@ class _CartQueueDesktopState
                                         .secColor200,
                               ),
                               child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onTap: () {
                                   if (!returnSalesProvider()
                                       .currentCart()

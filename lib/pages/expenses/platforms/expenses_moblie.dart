@@ -134,6 +134,8 @@ class _ExpensesMoblieState extends State<ExpensesMoblie> {
                         return Align(
                           alignment: Alignment(0, 1),
                           child: InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             onTap: () {
                               returnExpensesProvider(
                                 context,
@@ -257,6 +259,8 @@ class _ExpensesMoblieState extends State<ExpensesMoblie> {
                               'All Expenses',
                             ),
                             MaterialButton(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onPressed: () {
                                 Navigator.push(
                                   context,

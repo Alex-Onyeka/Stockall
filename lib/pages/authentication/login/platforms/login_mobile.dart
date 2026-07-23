@@ -181,6 +181,7 @@ class _LoginMobileState extends State<LoginMobile> {
             scrolledUnderElevation: 0,
             backgroundColor: Colors.white,
             leading: InkWell(
+              mouseCursor: SystemMouseCursors.click,
               onTap: () {
                 if (Navigator.canPop(context)) {
                   Navigator.pop(context);
@@ -330,6 +331,8 @@ class _LoginMobileState extends State<LoginMobile> {
                             MainAxisAlignment.end,
                         children: [
                           InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             onTap: () {
                               Navigator.push(
                                 context,

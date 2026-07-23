@@ -780,6 +780,7 @@ class NotifSwitchTab extends StatelessWidget {
           ),
         ),
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           borderRadius: BorderRadius.circular(8),
           onTap: action,
           child: Stack(
@@ -881,6 +882,7 @@ class _NotificatonTileMainState
         ),
       ),
       child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
         onTap: () {
           if (context.mounted &&
               widget.notif.productUuid != null) {
@@ -1104,6 +1106,7 @@ class _NotificatonTileMainState
                     SizedBox(height: 5),
                     Divider(),
                     InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       onTap: widget.action,
                       child: Padding(
                         padding: const EdgeInsets.only(

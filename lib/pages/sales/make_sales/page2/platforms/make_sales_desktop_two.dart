@@ -197,6 +197,9 @@ class _MakeSalesDesktopTwoState
                                               'Is this Sale On Credit (Invoice?',
                                             ),
                                             InkWell(
+                                              mouseCursor:
+                                                  SystemMouseCursors
+                                                      .click,
                                               onTap: () async {
                                                 if (returnSalesProvider()
                                                     .currentCart()
@@ -632,6 +635,9 @@ class _MakeSalesDesktopTwoState
                                                     ),
                                               ),
                                               child: InkWell(
+                                                mouseCursor:
+                                                    SystemMouseCursors
+                                                        .click,
                                                 onTap: () {
                                                   returnSalesProvider().addNewCart(
                                                     context,

@@ -106,7 +106,7 @@
 //     //             borderRadius: BorderRadius.circular(10),
 //     //             elevation: 0,
 //     //             color: Colors.white,
-//     //             child: InkWell(
+//     //             child: InkWell( mouseCursor: SystemMouseCursors.click,
 //     //               borderRadius: BorderRadius.circular(10),
 //     //               onTap: () {
 //     //                 Navigator.push(
@@ -193,7 +193,7 @@
 //     //                                   ),
 //     //                                 ],
 //     //                               ),
-//     //                               IconButton(
+//     //                               IconButton(mouseCursor: SystemMouseCursors.click,
 //     //                                 onPressed: () {
 //     //                                   Navigator.push(
 //     //                                     context,

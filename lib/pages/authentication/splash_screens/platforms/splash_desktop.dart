@@ -198,6 +198,8 @@ class _SplashDesktopState extends State<SplashDesktop> {
                             ),
                             SizedBox(height: 10),
                             InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onTap: () {
                                 Navigator.pushReplacement(
                                   context,

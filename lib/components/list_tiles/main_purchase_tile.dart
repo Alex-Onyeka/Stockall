@@ -104,6 +104,7 @@ class _MainPurchaseTileMobileState
           color: Colors.white,
         ),
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           borderRadius: BorderRadius.circular(5),
           onTap: widget.action,
           child: Container(
@@ -383,6 +384,7 @@ class _MainPurchaseTileDesktopState
           color: Colors.white,
         ),
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           borderRadius: BorderRadius.circular(5),
           onTap: widget.action,
           child: Container(

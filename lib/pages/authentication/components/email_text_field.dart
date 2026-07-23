@@ -65,6 +65,7 @@ class _EmailTextFieldState extends State<EmailTextField> {
             suffixIcon: Visibility(
               visible: !widget.isEmail,
               child: InkWell(
+                mouseCursor: SystemMouseCursors.click,
                 onTap: () {
                   setState(() {
                     hidden = !hidden;

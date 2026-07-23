@@ -434,6 +434,9 @@ class _MakeSalesDesktopState
                                                 .shade100,
                                       ),
                                       child: InkWell(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
                                         borderRadius:
                                             BorderRadius.circular(
                                               5,
@@ -482,6 +485,9 @@ class _MakeSalesDesktopState
                                                 .shade100,
                                       ),
                                       child: InkWell(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
                                         borderRadius:
                                             BorderRadius.circular(
                                               5,
@@ -516,6 +522,9 @@ class _MakeSalesDesktopState
                                 spacing: 5,
                                 children: [
                                   MaterialButton(
+                                    mouseCursor:
+                                        SystemMouseCursors
+                                            .click,
                                     onPressed: () {
                                       Navigator.of(
                                         context,
@@ -1070,6 +1079,9 @@ class _MakeSalesDesktopState
                                               .cartItems
                                               .isNotEmpty,
                                       child: InkWell(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
                                         onTap: () {
                                           showDialog(
                                             context:
@@ -1178,6 +1190,9 @@ class _MakeSalesDesktopState
                                               .cartItems
                                               .isEmpty,
                                       child: InkWell(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
                                         onTap: () async {
                                           if (returnSalesProvider()
                                               .currentCart()
@@ -2038,6 +2053,9 @@ class _MakeSalesDesktopState
                                                   ],
                                                 ),
                                                 child: InkWell(
+                                                  mouseCursor:
+                                                      SystemMouseCursors
+                                                          .click,
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                         15,
@@ -2179,6 +2197,8 @@ class _MakeSalesDesktopState
                                                         ),
                                                   ),
                                                   child: InkWell(
+                                                    mouseCursor:
+                                                        SystemMouseCursors.click,
                                                     onTap: () async {
                                                       await returnSalesProvider().addNewCart(
                                                         context,
@@ -2292,6 +2312,9 @@ class _MakeSalesDesktopState
                                                         .prColor300,
                                               ),
                                               child: InkWell(
+                                                mouseCursor:
+                                                    SystemMouseCursors
+                                                        .click,
                                                 onTap: () async {
                                                   // returnSalesProvider()
                                                   //     .removeListenerScanBarcode();
@@ -2367,6 +2390,9 @@ class _MakeSalesDesktopState
                                                 ),
                                               ),
                                               child: InkWell(
+                                                mouseCursor:
+                                                    SystemMouseCursors
+                                                        .click,
                                                 onTap: () {
                                                   SalesAuthAction().printReceiptAction(
                                                     context:
@@ -2500,6 +2526,9 @@ class _MakeSalesDesktopState
                                                   ),
                                                 ),
                                                 child: InkWell(
+                                                  mouseCursor:
+                                                      SystemMouseCursors
+                                                          .click,
                                                   onTap: () {
                                                     if (returnSalesProvider()
                                                         .currentCart()
@@ -3154,6 +3183,8 @@ class _BarcodeAndSearchTextFieldState
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             borderRadius:
                                 BorderRadius.circular(10),
                             onTap: () {
@@ -3213,6 +3244,9 @@ class _BarcodeAndSearchTextFieldState
                                             .grey
                                             .shade100,
                                     child: InkWell(
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
                                       onTap: () {
                                         selectProductSales(
                                           isEdit: false,
@@ -3396,6 +3430,7 @@ class _DocketListTileWidgetState
     return Material(
       color: Colors.transparent,
       child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
         onTap: () {
           setState(() {
             if (widget.list.contains(newItem)) {
@@ -3446,6 +3481,7 @@ class _DocketListTileWidgetState
                       color: Colors.grey.shade200,
                     ),
                     child: InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       borderRadius: BorderRadius.circular(
                         3,
                       ),
@@ -3532,6 +3568,7 @@ class _DocketListTileWidgetState
                       color: Colors.grey.shade200,
                     ),
                     child: InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       borderRadius: BorderRadius.circular(
                         3,
                       ),
@@ -3646,6 +3683,7 @@ class _SubStaffSelectionWidgetState
               child: Column(
                 children: [
                   InkWell(
+                    mouseCursor: SystemMouseCursors.click,
                     onTap: () {
                       setState(() {
                         isOpen = !isOpen;
@@ -3685,6 +3723,9 @@ class _SubStaffSelectionWidgetState
                             spacing: 3,
                             children: [
                               InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onTap: () {
                                   returnSalesProvider()
                                       .addNewMainCart(
@@ -3758,6 +3799,9 @@ class _SubStaffSelectionWidgetState
                                         ).mainCartQueue
                                         .map(
                                           (cart) => InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () {
                                               returnSalesProvider()
                                                   .selectMainCart(
@@ -3823,6 +3867,8 @@ class _SubStaffSelectionWidgetState
                                                               cart.subStaff !=
                                                                   null,
                                                           child: IconButton(
+                                                            mouseCursor:
+                                                                SystemMouseCursors.click,
                                                             onPressed: () {
                                                               if (cart.subStaff ==
                                                                   null) {
@@ -3940,6 +3986,8 @@ class _SubStaffSelectionWidgetState
                                                               cart.subStaff ==
                                                               null,
                                                           child: InkWell(
+                                                            mouseCursor:
+                                                                SystemMouseCursors.click,
                                                             onTap: () {
                                                               showDialog(
                                                                 context:
@@ -3958,6 +4006,8 @@ class _SubStaffSelectionWidgetState
                                                                                 ) >
                                                                                 mobileScreen
                                                                             ? IconButton(
+                                                                              mouseCursor:
+                                                                                  SystemMouseCursors.click,
                                                                               onPressed: () {
                                                                                 returnSubStaffProvider().getSubStaffs();
                                                                               },
@@ -4084,6 +4134,7 @@ class ProjectDisplayWidget extends StatelessWidget {
                     color: theme.lightModeColor.prColor300,
                   ),
                   child: InkWell(
+                    mouseCursor: SystemMouseCursors.click,
                     borderRadius: BorderRadius.circular(3),
                     onTap: () async {
                       returnSalesProvider().createWindow();

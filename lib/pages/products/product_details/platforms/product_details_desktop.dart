@@ -130,7 +130,7 @@ class _ProductDetailsDesktopState
                         title: 'Item Details',
                         // widget: Visibility(
                         //   visible: !isStoreKeeper(),
-                        //   child: InkWell(
+                        //   child: InkWell( mouseCursor: SystemMouseCursors.click,
                         //     onTap: () {
                         //       // var safeContext = context;
                         //       // showDialog(
@@ -392,28 +392,38 @@ class _ProductDetailsDesktopState
                                                         )?.wholeSale ==
                                                         true,
                                                     child: Expanded(
-                                                      child: TabContainer(
-                                                        isMoney:
-                                                            true,
-                                                        text:
-                                                            'Whole Sale Price',
-                                                        price:
-                                                            product.wholeSalePrice ??
-                                                            0,
-                                                        theme:
-                                                            widget.theme,
-                                                        backGround: const Color.fromARGB(
-                                                          24,
-                                                          135,
-                                                          235,
-                                                          3,
-                                                        ),
-                                                        border: const Color.fromARGB(
-                                                          73,
-                                                          106,
-                                                          232,
-                                                          3,
-                                                        ),
+                                                      child: Row(
+                                                        children: [
+                                                          SizedBox(
+                                                            width:
+                                                                10,
+                                                          ),
+                                                          Expanded(
+                                                            child: TabContainer(
+                                                              isMoney:
+                                                                  true,
+                                                              text:
+                                                                  'Whole Sale Price',
+                                                              price:
+                                                                  product.wholeSalePrice ??
+                                                                  0,
+                                                              theme:
+                                                                  widget.theme,
+                                                              backGround: const Color.fromARGB(
+                                                                24,
+                                                                135,
+                                                                235,
+                                                                3,
+                                                              ),
+                                                              border: const Color.fromARGB(
+                                                                73,
+                                                                106,
+                                                                232,
+                                                                3,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
                                                       ),
                                                     ),
                                                   ),
@@ -526,6 +536,8 @@ class _ProductDetailsDesktopState
                                                                                       opacity:
                                                                                           0,
                                                                                       child: IconButton(
+                                                                                        mouseCursor:
+                                                                                            SystemMouseCursors.click,
                                                                                         onPressed:
                                                                                             () {},
                                                                                         icon: Icon(
@@ -562,6 +574,8 @@ class _ProductDetailsDesktopState
                                                                                           );
                                                                                         } else {
                                                                                           return IconButton(
+                                                                                            mouseCursor:
+                                                                                                SystemMouseCursors.click,
                                                                                             onPressed: () {
                                                                                               Navigator.of(
                                                                                                 context,
@@ -975,6 +989,9 @@ class _ProductDetailsDesktopState
                                                   'Manage this Item?',
                                                 ),
                                                 InkWell(
+                                                  mouseCursor:
+                                                      SystemMouseCursors
+                                                          .click,
                                                   onTap: () {
                                                     ItemsAuthAction().allowStockallToManageItemAction(
                                                       context:
@@ -1894,6 +1911,7 @@ class _BottomInfoSectionState
                       ),
                     ),
                     child: InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       borderRadius: BorderRadius.circular(
                         3,
                       ),
@@ -1926,6 +1944,7 @@ class _BottomInfoSectionState
               Visibility(
                 visible: widget.setBarcodeAction == null,
                 child: InkWell(
+                  mouseCursor: SystemMouseCursors.click,
                   onTap: () {
                     widget.onClick != null
                         ? widget.onClick!()
@@ -1997,6 +2016,7 @@ class EditButton extends StatelessWidget {
         border: Border.all(color: Colors.grey.shade300),
       ),
       child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
         onTap: action,
         borderRadius: BorderRadius.circular(5),
         child: Container(

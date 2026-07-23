@@ -168,6 +168,8 @@ class _InvoicePageDesktopState
                       spacing: 10,
                       children: [
                         InkWell(
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onTap: () {
                             if (Navigator.canPop(context)) {
                               Navigator.pop(context);
@@ -1562,6 +1564,9 @@ class _InvoicePageDesktopState
                                       spacing: 5,
                                       children: [
                                         InkWell(
+                                          mouseCursor:
+                                              SystemMouseCursors
+                                                  .click,
                                           onTap: () {
                                             selectPayment(
                                               1,
@@ -1621,6 +1626,9 @@ class _InvoicePageDesktopState
                                           ),
                                         ),
                                         InkWell(
+                                          mouseCursor:
+                                              SystemMouseCursors
+                                                  .click,
                                           onTap: () {
                                             selectPayment(
                                               2,
@@ -1767,6 +1775,9 @@ class _InvoicePageDesktopState
                                                   .prGradient,
                                         ),
                                         child: InkWell(
+                                          mouseCursor:
+                                              SystemMouseCursors
+                                                  .click,
                                           onTap: () {
                                             print(
                                               invoice
@@ -2083,6 +2094,9 @@ class _InvoicePageDesktopState
                                                 (
                                                   receipt,
                                                 ) => InkWell(
+                                                  mouseCursor:
+                                                      SystemMouseCursors
+                                                          .click,
                                                   onTap: () {
                                                     Navigator.push(
                                                       context,
@@ -2257,6 +2271,7 @@ class ActionButtonSmall extends StatelessWidget {
     return Material(
       type: MaterialType.transparency,
       child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
         onTap: action,
         borderRadius: BorderRadius.circular(3),
         child: Container(

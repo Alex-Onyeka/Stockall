@@ -158,6 +158,8 @@ class _InvoicePageMobileState
                           Material(
                             type: MaterialType.transparency,
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onTap: () {
                                 if (Navigator.canPop(
                                   context,
@@ -1540,6 +1542,9 @@ class _InvoicePageMobileState
                                               spacing: 5,
                                               children: [
                                                 InkWell(
+                                                  mouseCursor:
+                                                      SystemMouseCursors
+                                                          .click,
                                                   onTap: () {
                                                     selectPayment(
                                                       1,
@@ -1598,6 +1603,9 @@ class _InvoicePageMobileState
                                                   ),
                                                 ),
                                                 InkWell(
+                                                  mouseCursor:
+                                                      SystemMouseCursors
+                                                          .click,
                                                   onTap: () {
                                                     selectPayment(
                                                       2,
@@ -1744,6 +1752,9 @@ class _InvoicePageMobileState
                                                           .prGradient,
                                                 ),
                                                 child: InkWell(
+                                                  mouseCursor:
+                                                      SystemMouseCursors
+                                                          .click,
                                                   onTap: () {
                                                     if (paymentController.text.isNotEmpty &&
                                                         paymentController.text !=
@@ -2053,6 +2064,8 @@ class _InvoicePageMobileState
                                                         (
                                                           receipt,
                                                         ) => InkWell(
+                                                          mouseCursor:
+                                                              SystemMouseCursors.click,
                                                           onTap: () {
                                                             Navigator.push(
                                                               context,

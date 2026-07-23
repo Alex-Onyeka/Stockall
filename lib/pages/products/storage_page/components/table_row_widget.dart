@@ -26,6 +26,7 @@ class _TableRowRecordWidgetState
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      mouseCursor: SystemMouseCursors.click,
       onTap: () {
         if (screenWidth(context) > mobileScreen) {
           returnData().unFocusSearchNode();

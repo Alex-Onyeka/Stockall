@@ -95,6 +95,8 @@ class _SelectSubStaffListWidgetState
                             vertical: 2,
                           ),
                           child: InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             onTap: () {
                               returnSalesProvider()
                                   .selectSubStaff(

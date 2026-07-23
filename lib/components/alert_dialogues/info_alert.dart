@@ -130,6 +130,7 @@ class InfoAlert extends StatelessWidget {
                       color: Colors.grey.shade200,
                     ),
                     child: InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       onTap: () {
                         Navigator.of(context).pop();
                         if (action != null) {

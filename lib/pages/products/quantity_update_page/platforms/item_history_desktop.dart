@@ -96,6 +96,8 @@ class _ItemHistoryDesktopState
                               Authorizations().viewDate,
                         ),
                         child: InkWell(
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onTap: () {},
                           child: Container(
                             margin: EdgeInsets.only(
@@ -147,6 +149,9 @@ class _ItemHistoryDesktopState
                                 children: [
                                   Text('No Update Found'),
                                   MaterialButton(
+                                    mouseCursor:
+                                        SystemMouseCursors
+                                            .click,
                                     onPressed: () {
                                       Navigator.of(
                                         context,

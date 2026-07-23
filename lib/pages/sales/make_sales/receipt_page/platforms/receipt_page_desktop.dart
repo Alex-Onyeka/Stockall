@@ -111,7 +111,7 @@ class _ReceiptPageDesktopState
                       Align(
                         alignment: Alignment(0.95, -0.95),
                         child:
-                        // InkWell(
+                        // InkWell( mouseCursor: SystemMouseCursors.click,
                         //   onTap: () {
                         //     printerSelectionDialog(
                         //       context: context,
@@ -2562,6 +2562,7 @@ class BottomActionButton extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           onTap: action,
           borderRadius: BorderRadius.circular(5),
           child: Container(

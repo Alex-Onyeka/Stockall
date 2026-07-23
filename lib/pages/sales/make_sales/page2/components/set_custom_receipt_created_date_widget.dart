@@ -51,6 +51,8 @@ class SetCustomReceiptCreatedDateWidget
                             ),
                           ),
                           child: InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             onTap: () async {
                               var date =
                                   await myDatePickerAction(
@@ -177,6 +179,9 @@ class SetCustomReceiptCreatedDateWidget
                               child: Material(
                                 color: Colors.transparent,
                                 child: InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   borderRadius:
                                       BorderRadius.circular(
                                         5,
@@ -225,6 +230,8 @@ class SetCustomReceiptCreatedDateWidget
                             ),
                           ),
                           child: InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             onTap: () async {
                               var date =
                                   await myTimePickerAction(
@@ -351,6 +358,9 @@ class SetCustomReceiptCreatedDateWidget
                               child: Material(
                                 color: Colors.transparent,
                                 child: InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   borderRadius:
                                       BorderRadius.circular(
                                         5,

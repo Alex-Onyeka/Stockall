@@ -61,6 +61,7 @@ class ItemHistoryMobileState
             children: [
               Text('No Update Found'),
               MaterialButton(
+                mouseCursor: SystemMouseCursors.click,
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -80,6 +81,7 @@ class ItemHistoryMobileState
               widget: Visibility(
                 visible: !isStoreKeeper(),
                 child: InkWell(
+                  mouseCursor: SystemMouseCursors.click,
                   onTap: () {
                     var safeContext = context;
                     showDialog(

@@ -920,6 +920,9 @@ class _StoragePageMobileState
                                       Opacity(
                                         opacity: 0,
                                         child: IconButton(
+                                          mouseCursor:
+                                              SystemMouseCursors
+                                                  .click,
                                           onPressed: () {},
                                           icon: Icon(
                                             Icons.clear,
@@ -940,6 +943,9 @@ class _StoragePageMobileState
                                         'Update Summary',
                                       ),
                                       IconButton(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
                                         onPressed: () {
                                           setState(() {
                                             viewUpdateSummary =
@@ -1140,6 +1146,8 @@ class _StoragePageMobileState
                           child: Material(
                             color: Colors.transparent,
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               borderRadius:
                                   BorderRadius.circular(3),
                               onTap: () {
@@ -1205,6 +1213,8 @@ class _StoragePageMobileState
                         Visibility(
                           visible: sortIndex == 3,
                           child: IconButton(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             onPressed: () {
                               setState(() {
                                 viewUpdateSummary =
@@ -1245,6 +1255,9 @@ class _StoragePageMobileState
                             style: TextStyle(fontSize: 12),
                             decoration: InputDecoration(
                               suffixIcon: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onTap: () {
                                   if (searchController
                                       .text
@@ -1312,6 +1325,9 @@ class _StoragePageMobileState
                               spacing: 0,
                               children: [
                                 IconButton(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onPressed: () {
                                     if (start != 0) {
                                       navigate(
@@ -1382,6 +1398,9 @@ class _StoragePageMobileState
                                   ],
                                 ),
                                 IconButton(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onPressed: () {
                                     if (end !=
                                         returnStorageProductProvider()
@@ -1437,6 +1456,9 @@ class _StoragePageMobileState
                                     MainAxisAlignment.end,
                                 children: [
                                   InkWell(
+                                    mouseCursor:
+                                        SystemMouseCursors
+                                            .click,
                                     onTap: () {
                                       returnInventoryUpdatesProvider()
                                                       .dateSet ==
@@ -1615,6 +1637,7 @@ class _InventoryUpdateWidgetMobileState
           color: Colors.white,
         ),
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           borderRadius: BorderRadius.circular(2),
           onTap: () {
             setState(() {
@@ -1722,6 +1745,7 @@ class _InventoryUpdateWidgetMobileState
                 Visibility(
                   visible: isOpen,
                   child: InkWell(
+                    mouseCursor: SystemMouseCursors.click,
                     onTap: () {
                       Navigator.push(
                         context,

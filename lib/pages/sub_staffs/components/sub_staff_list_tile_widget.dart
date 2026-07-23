@@ -55,6 +55,7 @@ class _SubStaffListTileWidgetState
               color: Colors.white,
             ),
             child: InkWell(
+              mouseCursor: SystemMouseCursors.click,
               borderRadius: BorderRadius.circular(8),
               onTap: () {
                 Navigator.push(
@@ -162,6 +163,9 @@ class _SubStaffListTileWidgetState
                                     MaterialType
                                         .transparency,
                                 child: InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   borderRadius:
                                       BorderRadius.circular(
                                         10,
@@ -248,6 +252,8 @@ class _SubStaffListTileWidgetState
                         Material(
                           type: MaterialType.transparency,
                           child: InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             borderRadius:
                                 BorderRadius.circular(10),
                             onTap: () {

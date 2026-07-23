@@ -192,6 +192,9 @@ class _CreatePurchaseDesktopState
                               spacing: 5,
                               children: [
                                 InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onTap: () {
                                     setStatee(() {
                                       paymentSelected = 1;
@@ -269,6 +272,9 @@ class _CreatePurchaseDesktopState
                                   ),
                                 ),
                                 InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onTap: () {
                                     setStatee(() {
                                       paymentSelected = 2;
@@ -449,6 +455,7 @@ class _CreatePurchaseDesktopState
                 ),
                 actions: [
                   InkWell(
+                    mouseCursor: SystemMouseCursors.click,
                     onTap: () {
                       selectProductsForPurchaseBottomSheet(
                         priceController:
@@ -502,6 +509,8 @@ class _CreatePurchaseDesktopState
                           0,
                         ),
                         child: InkWell(
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onTap: () {
                             Navigator.push(
                               context,
@@ -554,6 +563,9 @@ class _CreatePurchaseDesktopState
                                       'Select Supplier',
                                 ),
                                 InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onTap: () {
                                     if (returnPurchaseActionProvider()
                                             .tempSupplier !=
@@ -764,6 +776,8 @@ class _CreatePurchaseDesktopState
                                                             color:
                                                                 Colors.transparent,
                                                             child: InkWell(
+                                                              mouseCursor:
+                                                                  SystemMouseCursors.click,
                                                               onTap: () {
                                                                 selectProductPurchase(
                                                                   closeAction:
@@ -799,6 +813,8 @@ class _CreatePurchaseDesktopState
                                                             color:
                                                                 Colors.transparent,
                                                             child: InkWell(
+                                                              mouseCursor:
+                                                                  SystemMouseCursors.click,
                                                               onTap: () {
                                                                 showDialog(
                                                                   context:
@@ -897,6 +913,9 @@ class _CreatePurchaseDesktopState
                                               Colors
                                                   .transparent,
                                           child: InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () {
                                               widget
                                                       .priceController
@@ -1013,6 +1032,9 @@ class _CreatePurchaseDesktopState
                                                 Colors
                                                     .transparent,
                                             child: InkWell(
+                                              mouseCursor:
+                                                  SystemMouseCursors
+                                                      .click,
                                               onTap: () {
                                                 showDialog(
                                                   context:

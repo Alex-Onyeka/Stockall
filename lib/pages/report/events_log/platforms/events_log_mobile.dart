@@ -29,6 +29,7 @@ class _EventsLogMobileState extends State<EventsLogMobile> {
       appBar: AppBar(
         toolbarHeight: 60,
         leading: IconButton(
+          mouseCursor: SystemMouseCursors.click,
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -92,6 +93,7 @@ class _EventsLogMobileState extends State<EventsLogMobile> {
                           : 'All Logs',
                     ),
                     InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       onTap: () {
                         returnEventsLogProvider().dateSet ==
                                     null &&
@@ -287,6 +289,7 @@ class _LogWidgetMobileState extends State<LogWidgetMobile> {
           color: Colors.white,
         ),
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           borderRadius: BorderRadius.circular(2),
           onTap: () {
             setState(() {

@@ -99,6 +99,9 @@ class _WaybillListDesktopState
                             child: Material(
                               color: Colors.transparent,
                               child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 borderRadius:
                                     BorderRadius.circular(
                                       10,
@@ -418,6 +421,9 @@ class _WaybillListDesktopState
                                                   .viewDate,
                                         ),
                                         child: MaterialButton(
+                                          mouseCursor:
+                                              SystemMouseCursors
+                                                  .click,
                                           onPressed: () {
                                             if (returnWaybillProvider()
                                                         .dateSet !=

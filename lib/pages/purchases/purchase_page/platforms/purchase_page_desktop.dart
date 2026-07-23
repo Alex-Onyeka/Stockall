@@ -120,6 +120,8 @@ class _PurchasePageDesktopState
                         spacing: 10,
                         children: [
                           InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             onTap: () {
                               if (Navigator.canPop(
                                 context,
@@ -259,6 +261,8 @@ class _PurchasePageDesktopState
                         spacing: 10,
                         children: [
                           InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             onTap: () {
                               if (Navigator.canPop(
                                 context,
@@ -1464,6 +1468,9 @@ class _PurchasePageDesktopState
                                         spacing: 5,
                                         children: [
                                           InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () {
                                               selectPayment(
                                                 value: 1,
@@ -1525,6 +1532,9 @@ class _PurchasePageDesktopState
                                             ),
                                           ),
                                           InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () {
                                               selectPayment(
                                                 value: 2,
@@ -1671,6 +1681,9 @@ class _PurchasePageDesktopState
                                                     .prGradient,
                                           ),
                                           child: InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () {
                                               if (paymentController
                                                       .text
@@ -2047,6 +2060,7 @@ class _PurchasePaymentWidgetState
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return InkWell(
+      mouseCursor: SystemMouseCursors.click,
       onTap: () {
         setState(() {
           isOpen = !isOpen;
@@ -2432,6 +2446,7 @@ class PurchasePaymentButtonWidget extends StatelessWidget {
           horizontal: 3.0,
         ),
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           onTap: action,
           child: Padding(
             padding: EdgeInsetsGeometry.symmetric(
@@ -2496,6 +2511,7 @@ class ActionButtonSmall extends StatelessWidget {
     return Material(
       type: MaterialType.transparency,
       child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
         onTap: action,
         borderRadius: BorderRadius.circular(3),
         child: Container(

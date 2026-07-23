@@ -121,6 +121,9 @@ class _PurchasePageMobileState
                               type:
                                   MaterialType.transparency,
                               child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onTap: () {
                                   if (Navigator.canPop(
                                     context,
@@ -330,6 +333,9 @@ class _PurchasePageMobileState
                               type:
                                   MaterialType.transparency,
                               child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onTap: () {
                                   if (Navigator.canPop(
                                     context,
@@ -1587,6 +1593,8 @@ class _PurchasePageMobileState
                                                 spacing: 5,
                                                 children: [
                                                   InkWell(
+                                                    mouseCursor:
+                                                        SystemMouseCursors.click,
                                                     onTap: () {
                                                       selectPayment(
                                                         value:
@@ -1648,6 +1656,8 @@ class _PurchasePageMobileState
                                                     ),
                                                   ),
                                                   InkWell(
+                                                    mouseCursor:
+                                                        SystemMouseCursors.click,
                                                     onTap: () {
                                                       selectPayment(
                                                         value:
@@ -1789,6 +1799,8 @@ class _PurchasePageMobileState
                                                         theme.lightModeColor.prGradient,
                                                   ),
                                                   child: InkWell(
+                                                    mouseCursor:
+                                                        SystemMouseCursors.click,
                                                     onTap: () {
                                                       if (paymentController.text.isNotEmpty &&
                                                           paymentController.text !=

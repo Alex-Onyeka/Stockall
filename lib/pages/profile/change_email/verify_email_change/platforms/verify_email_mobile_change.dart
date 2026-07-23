@@ -221,6 +221,9 @@ class _VerifyEmailMobileChangeState
                               child: Material(
                                 color: Colors.transparent,
                                 child: InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onTap: () async {
                                     if (time < 20) {
                                       setState(() {

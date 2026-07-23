@@ -227,8 +227,7 @@ class _EmpAuthState extends State<EmpAuth> {
                                             theme: theme,
                                             icon:
                                                 employeesIconSvg,
-                                            title:
-                                                'Employees',
+                                            title: 'Staffs',
                                             action: () {},
                                           ),
                                           ButtonTab(
@@ -289,8 +288,7 @@ class _EmpAuthState extends State<EmpAuth> {
                                             theme: theme,
                                             icon:
                                                 employeesIconSvg,
-                                            title:
-                                                'Employees',
+                                            title: 'Staffs',
                                             action: () {},
                                           ),
                                         ],
@@ -401,6 +399,9 @@ class _EmpAuthState extends State<EmpAuth> {
                                               Colors
                                                   .transparent,
                                           child: InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () {
                                               setState(() {
                                                 isPassword =
@@ -465,6 +466,9 @@ class _EmpAuthState extends State<EmpAuth> {
                                               Colors
                                                   .transparent,
                                           child: InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () {
                                               setState(() {
                                                 isPassword =
@@ -1099,6 +1103,9 @@ class _EmpAuthState extends State<EmpAuth> {
                                           Colors
                                               .transparent,
                                       child: InkWell(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
                                         onTap: () async {
                                           var safeContext =
                                               context;
@@ -1199,6 +1206,9 @@ class _EmpAuthState extends State<EmpAuth> {
                                           Colors
                                               .transparent,
                                       child: InkWell(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
                                         onTap: () async {
                                           final safceContext =
                                               context;
@@ -1358,6 +1368,7 @@ class CalcButtonPin extends StatelessWidget {
             color: color ?? Colors.white,
           ),
           child: InkWell(
+            mouseCursor: SystemMouseCursors.click,
             onTap: action,
             borderRadius: BorderRadius.circular(10),
             child: Container(

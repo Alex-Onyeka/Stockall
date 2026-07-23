@@ -75,6 +75,9 @@ class _ShopBannerScreenDesktopState
                           children: [
                             Expanded(
                               child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onTap: () {
                                   setRole(context, theme);
                                 },
@@ -141,6 +144,9 @@ class _ShopBannerScreenDesktopState
                             SizedBox(height: 20),
                             Expanded(
                               child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onTap: () {
                                   Navigator.push(
                                     context,
@@ -242,6 +248,8 @@ class _ShopBannerScreenDesktopState
                               ),
                             ),
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onTap: () {
                                 if (Theme.of(
                                           context,
@@ -334,6 +342,8 @@ class _ShopBannerScreenDesktopState
                               ),
                             ),
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onTap: () {
                                 showDialog(
                                   context: context,
@@ -468,6 +478,8 @@ Future<dynamic> setRole(
                           (role) => Material(
                             type: MaterialType.transparency,
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               borderRadius:
                                   BorderRadius.circular(5),
                               onTap: () {

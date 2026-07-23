@@ -164,8 +164,7 @@ class _RestrictedPageState extends State<RestrictedPage> {
                                             theme: theme,
                                             icon:
                                                 employeesIconSvg,
-                                            title:
-                                                'Employees',
+                                            title: 'Staffs',
                                             action: () {},
                                           ),
                                           ButtonTab(
@@ -226,8 +225,7 @@ class _RestrictedPageState extends State<RestrictedPage> {
                                             theme: theme,
                                             icon:
                                                 employeesIconSvg,
-                                            title:
-                                                'Employees',
+                                            title: 'Staffs',
                                             action: () {},
                                           ),
                                         ],
@@ -393,6 +391,9 @@ class _RestrictedPageState extends State<RestrictedPage> {
                                             Colors
                                                 .transparent,
                                         child: InkWell(
+                                          mouseCursor:
+                                              SystemMouseCursors
+                                                  .click,
                                           onTap: () async {
                                             Navigator.pushReplacement(
                                               context,
@@ -447,6 +448,9 @@ class _RestrictedPageState extends State<RestrictedPage> {
                                             Colors
                                                 .transparent,
                                         child: InkWell(
+                                          mouseCursor:
+                                              SystemMouseCursors
+                                                  .click,
                                           onTap: () async {
                                             final safceContext =
                                                 context;

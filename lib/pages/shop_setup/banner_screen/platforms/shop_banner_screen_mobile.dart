@@ -110,6 +110,8 @@ class _ShopBannerScreenMobileState
                           ),
                           SizedBox(height: 30),
                           InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             onTap: () {
                               performRestart();
                             },
@@ -163,6 +165,8 @@ class _ShopBannerScreenMobileState
                             MainAxisAlignment.center,
                         children: [
                           InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             onTap: () {
                               showDialog(
                                 context: context,

@@ -296,6 +296,8 @@ class _PurchaseListMobileState
                                   Authorizations().viewDate,
                             ),
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onTap: () {
                                 if (returnPurchaseProvider()
                                             .dateSet !=

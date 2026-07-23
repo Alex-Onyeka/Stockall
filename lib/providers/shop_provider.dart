@@ -620,7 +620,7 @@ class ShopProvider extends ChangeNotifier {
         if (updateResponse != null) {
           print('Failed to update shop: $updateResponse');
         } else {
-          print('Employee added successfully.');
+          print('Staff added successfully.');
         }
       } else {
         var res =
@@ -707,7 +707,7 @@ class ShopProvider extends ChangeNotifier {
       if (currentEmployees.contains(employeeIdToRemove)) {
         currentEmployees.remove(employeeIdToRemove);
       } else {
-        print('Employee not found in the shop');
+        print('Staff not found in the shop');
         return;
       }
 
@@ -720,7 +720,7 @@ class ShopProvider extends ChangeNotifier {
       if (updateResponse != null) {
         print('Failed to update shop: $updateResponse');
       } else {
-        print('Employee removed successfully.');
+        print('Staff removed successfully.');
         try {
           var res =
               await supabase

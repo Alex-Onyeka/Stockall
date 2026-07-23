@@ -102,6 +102,7 @@ class _CustomizeRoleMobileState
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
+                    mouseCursor: SystemMouseCursors.click,
                     onTap: () {
                       setState(() {
                         isSearch = !isSearch;
@@ -200,6 +201,9 @@ class _CustomizeRoleMobileState
                                           (
                                             permit,
                                           ) => InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () {
                                               setState(() {
                                                 if (tempAccess

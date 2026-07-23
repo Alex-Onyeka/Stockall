@@ -252,6 +252,7 @@ void selectProductWaybill({
                     ),
                     // SizedBox(height: 20),
                     InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       onTap: () {
                         setState(() {
                           setCustomPrice = !setCustomPrice;
@@ -359,6 +360,8 @@ void selectProductWaybill({
                       spacing: 5,
                       children: [
                         MaterialButton(
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
@@ -595,6 +598,9 @@ void selectProductsForWaybillBottomSheet({
                                   MainAxisAlignment.end,
                               children: [
                                 IconButton(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onPressed: () {
                                     Navigator.of(
                                       context,
@@ -942,6 +948,7 @@ void selectProductPurchase({
                     ),
                     // SizedBox(height: 20),
                     InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       onTap: () {
                         setState(() {
                           setCustomPrice = !setCustomPrice;
@@ -1049,6 +1056,8 @@ void selectProductPurchase({
                       spacing: 5,
                       children: [
                         MaterialButton(
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
@@ -1340,6 +1349,9 @@ void selectProductsForPurchaseBottomSheet({
                                   MainAxisAlignment.end,
                               children: [
                                 IconButton(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onPressed: () {
                                     Navigator.of(
                                       context,
@@ -1596,6 +1608,7 @@ void unitsBottomSheet(
                       ],
                     ),
                     IconButton(
+                      mouseCursor: SystemMouseCursors.click,
                       onPressed: () {
                         Navigator.of(context).pop();
                         FocusScope.of(context).unfocus();
@@ -1774,6 +1787,7 @@ void groupUnitsBottomSheet(
                       ],
                     ),
                     IconButton(
+                      mouseCursor: SystemMouseCursors.click,
                       onPressed: () {
                         Navigator.of(context).pop();
                         FocusScope.of(context).unfocus();
@@ -1966,6 +1980,8 @@ void categoriesBottomSheet(
                           ],
                         ),
                         IconButton(
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onPressed: () {
                             Navigator.of(context).pop();
                             FocusScope.of(
@@ -2150,6 +2166,9 @@ void categoriesBottomSheet(
                                           .prColor300,
                                 ),
                                 child: InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onTap: () {
                                     Navigator.of(
                                       context,
@@ -2230,6 +2249,9 @@ void categoriesBottomSheet(
                             child: Material(
                               color: Colors.transparent,
                               child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onTap: () {
                                   Navigator.of(
                                     context,
@@ -2450,6 +2472,7 @@ void colorsBottomSheet(
                       ],
                     ),
                     IconButton(
+                      mouseCursor: SystemMouseCursors.click,
                       onPressed: () {
                         Navigator.of(context).pop();
                         FocusScope.of(context).unfocus();
@@ -2624,6 +2647,8 @@ void sizeTypeBottomSheet(
                           ],
                         ),
                         IconButton(
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onPressed: () {
                             Navigator.of(context).pop();
                             FocusScope.of(
@@ -3265,6 +3290,9 @@ void selectProductSales({
                                           !cartItem
                                               .useWholeSalePrice,
                               child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onTap: () {
                                   returnSalesProvider()
                                       .toggleSetCustomPrice();
@@ -3480,6 +3508,9 @@ void selectProductSales({
                                               .shade100,
                                     ),
                                     child: InkWell(
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
                                       borderRadius:
                                           BorderRadius.circular(
                                             5,
@@ -3531,6 +3562,9 @@ void selectProductSales({
                                               .shade100,
                                     ),
                                     child: InkWell(
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
                                       borderRadius:
                                           BorderRadius.circular(
                                             5,
@@ -3694,6 +3728,9 @@ void selectProductSales({
                               spacing: 5,
                               children: [
                                 MaterialButton(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onPressed: () {
                                     Navigator.of(
                                       context,
@@ -4400,6 +4437,9 @@ class _CustomBottomPanelState
                                           .start,
                                   children: [
                                     InkWell(
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
                                       onTap: () {
                                         setState(() {});
                                       },
@@ -4434,6 +4474,9 @@ class _CustomBottomPanelState
                                   ],
                                 ),
                                 InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onTap: () {
                                     widget.close();
                                     widget.searchController
@@ -4568,6 +4611,9 @@ class _CustomBottomPanelState
                                             width: 2,
                                           ),
                                           IconButton(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onPressed: () async {
                                               mainSearchNode
                                                   .requestFocus();
@@ -4703,6 +4749,9 @@ class _CustomBottomPanelState
                                                     ),
                                               ),
                                               child: InkWell(
+                                                mouseCursor:
+                                                    SystemMouseCursors
+                                                        .click,
                                                 borderRadius:
                                                     BorderRadius.circular(
                                                       5,
@@ -5398,6 +5447,8 @@ class _CustomBottomPanelState
                                                                   color:
                                                                       Colors.transparent,
                                                                   child: InkWell(
+                                                                    mouseCursor:
+                                                                        SystemMouseCursors.click,
                                                                     onTap: () {
                                                                       setState(
                                                                         () {
@@ -5492,6 +5543,8 @@ class _CustomBottomPanelState
                                                                     ),
                                                                   ),
                                                                   child: InkWell(
+                                                                    mouseCursor:
+                                                                        SystemMouseCursors.click,
                                                                     borderRadius: BorderRadius.circular(
                                                                       5,
                                                                     ),
@@ -5647,6 +5700,7 @@ class MultipleTemporaryCartItems extends StatelessWidget {
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
+                    mouseCursor: SystemMouseCursors.click,
                     onTap: expandAction,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -5755,6 +5809,8 @@ class MultipleTemporaryCartItems extends StatelessWidget {
                           Material(
                             color: Colors.transparent,
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onTap: () {
                                 showDialog(
                                   context: context,
@@ -5815,6 +5871,7 @@ class MultipleTemporaryCartItems extends StatelessWidget {
                       color: Colors.grey.shade200,
                     ),
                     child: InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       onTap: () {
                         if (returnSalesProvider()
                             .tempCartItems
@@ -5874,6 +5931,7 @@ class MultipleTemporaryCartItems extends StatelessWidget {
                               .errorColor200,
                     ),
                     child: InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       onTap: () async {
                         if (returnSalesProvider()
                             .tempCartItems
@@ -6117,7 +6175,7 @@ Future<void> showOnScreenKeyboard() async {
 //                             ),
 //                           ],
 //                         ),
-//                         IconButton(
+//                         IconButton(mouseCursor: SystemMouseCursors.click,
 //                           onPressed: () {
 //                             Navigator.of(context).pop();
 //                             FocusScope.of(
@@ -6199,7 +6257,7 @@ Future<void> showOnScreenKeyboard() async {
 //                                               .grey
 //                                               .shade200,
 //                                     ),
-//                                     child: InkWell(
+//                                     child: InkWell( mouseCursor: SystemMouseCursors.click,
 //                                       borderRadius:
 //                                           BorderRadius.circular(
 //                                             5,
@@ -6250,7 +6308,7 @@ Future<void> showOnScreenKeyboard() async {
 //                                               .grey
 //                                               .shade200,
 //                                     ),
-//                                     child: InkWell(
+//                                     child: InkWell( mouseCursor: SystemMouseCursors.click,
 //                                       borderRadius:
 //                                           BorderRadius.circular(
 //                                             5,
@@ -6437,6 +6495,8 @@ class _CountryBottomSheetState
                         ],
                       ),
                       InkWell(
+                        mouseCursor:
+                            SystemMouseCursors.click,
                         onTap: () {
                           widget.close();
                         },

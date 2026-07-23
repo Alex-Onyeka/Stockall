@@ -342,6 +342,7 @@ class _PricingContainerWidgetState
                 borderRadius: BorderRadius.circular(2),
               ),
               child: InkWell(
+                mouseCursor: SystemMouseCursors.click,
                 onTap: () async {
                   if (AuthService().currentUser == null) {
                     showDialog(
@@ -687,6 +688,7 @@ class _PricingContainerWidgetState
             ),
           ),
           InkWell(
+            mouseCursor: SystemMouseCursors.click,
             onTap: () {
               scrollTo(widget.fullComparisonSection);
             },

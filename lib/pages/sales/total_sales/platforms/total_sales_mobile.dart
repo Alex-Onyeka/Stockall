@@ -403,6 +403,9 @@ class _TotalSalesMobileState
                                             .viewDate,
                                   ),
                                   child: InkWell(
+                                    mouseCursor:
+                                        SystemMouseCursors
+                                            .click,
                                     onTap: () {
                                       if (returnReceiptProvider(
                                                 context,

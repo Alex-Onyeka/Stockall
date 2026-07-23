@@ -16,6 +16,7 @@ class PaymentTypeButton extends StatelessWidget {
           border: Border.all(color: Colors.grey.shade300),
         ),
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           onTap: () {
             if (returnSalesProvider()
                     .currentCart()

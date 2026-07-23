@@ -39,6 +39,7 @@ class ButtonTab extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           elevation: 0, // Optional: add shadow if needed
           child: InkWell(
+            mouseCursor: SystemMouseCursors.click,
             borderRadius: BorderRadius.circular(10),
             onTap: action,
             child: Container(

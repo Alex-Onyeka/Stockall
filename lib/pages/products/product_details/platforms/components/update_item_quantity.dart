@@ -125,6 +125,9 @@ class _UpdateItemQuantityWidgetState
                             Opacity(
                               opacity: 0,
                               child: IconButton(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onPressed: () {},
                                 icon: Icon(Icons.clear),
                               ),
@@ -157,6 +160,9 @@ class _UpdateItemQuantityWidgetState
                                   );
                                 } else {
                                   return IconButton(
+                                    mouseCursor:
+                                        SystemMouseCursors
+                                            .click,
                                     onPressed: () {
                                       Navigator.of(
                                         context,
@@ -346,6 +352,9 @@ class _UpdateItemQuantityWidgetState
                             Material(
                               color: Colors.transparent,
                               child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onTap: () {
                                   setState(() {
                                     isAddToQuantity = true;
@@ -409,6 +418,9 @@ class _UpdateItemQuantityWidgetState
                             Material(
                               color: Colors.transparent,
                               child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onTap: () {
                                   setState(() {
                                     isAddToQuantity = false;

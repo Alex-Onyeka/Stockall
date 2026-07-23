@@ -205,6 +205,7 @@ class _MyCalculatorDesktopState
                   Opacity(
                     opacity: 0,
                     child: IconButton(
+                      mouseCursor: SystemMouseCursors.click,
                       onPressed: () {},
                       icon: Icon(Icons.clear),
                     ),
@@ -220,6 +221,7 @@ class _MyCalculatorDesktopState
                   Opacity(
                     opacity: 0,
                     child: IconButton(
+                      mouseCursor: SystemMouseCursors.click,
                       onPressed: () {},
                       icon: Icon(Icons.clear),
                     ),
@@ -558,6 +560,7 @@ class CalcButton extends StatelessWidget {
             color: color ?? Colors.white,
           ),
           child: InkWell(
+            mouseCursor: SystemMouseCursors.click,
             onTap: () {
               CalculatorAuthAction().useCalculatorAction(
                 context: context,

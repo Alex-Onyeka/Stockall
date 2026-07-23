@@ -1070,6 +1070,9 @@ class _AddProductDesktopState
                                                     .end,
                                             children: [
                                               InkWell(
+                                                mouseCursor:
+                                                    SystemMouseCursors
+                                                        .click,
                                                 onTap: () async {
                                                   ItemsAuthAction().generateBarcodeAction(
                                                     context:
@@ -1261,6 +1264,9 @@ class _AddProductDesktopState
                                       ),
                                       SizedBox(height: 20),
                                       InkWell(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
                                         onTap: () {
                                           returnData()
                                               .toggleIsManaged(
@@ -1340,6 +1346,9 @@ class _AddProductDesktopState
                                       ),
                                       SizedBox(height: 20),
                                       InkWell(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
                                         onTap: () {
                                           returnData()
                                               .toggleSetCustomPrice();
@@ -1424,6 +1433,9 @@ class _AddProductDesktopState
                                   Divider(height: 0),
                                   // SizedBox(height: 5),
                                   InkWell(
+                                    mouseCursor:
+                                        SystemMouseCursors
+                                            .click,
                                     onTap: () {
                                       setState(() {
                                         expand = !expand;
@@ -1450,6 +1462,9 @@ class _AddProductDesktopState
                                                 : 'More Details',
                                           ),
                                           InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () {
                                               setState(() {
                                                 expand =
@@ -1559,6 +1574,9 @@ class _AddProductDesktopState
                                                         Authorizations().viewAllDepartments,
                                                   ),
                                               child: InkWell(
+                                                mouseCursor:
+                                                    SystemMouseCursors
+                                                        .click,
                                                 onTap: () {
                                                   GeneralSettingsAuthAction().manageDeparmtmentsAction(
                                                     context:
@@ -1622,6 +1640,8 @@ class _AddProductDesktopState
                                                                                     color:
                                                                                         Colors.transparent,
                                                                                     child: InkWell(
+                                                                                      mouseCursor:
+                                                                                          SystemMouseCursors.click,
                                                                                       onTap: () {
                                                                                         setState(
                                                                                           () {
@@ -1798,6 +1818,8 @@ class _AddProductDesktopState
                                                             ),
                                                             Ink(
                                                               child: InkWell(
+                                                                mouseCursor:
+                                                                    SystemMouseCursors.click,
                                                                 borderRadius: BorderRadius.circular(
                                                                   20,
                                                                 ),
@@ -1830,6 +1852,9 @@ class _AddProductDesktopState
                                               height: 10,
                                             ),
                                             InkWell(
+                                              mouseCursor:
+                                                  SystemMouseCursors
+                                                      .click,
                                               onTap: () {
                                                 ItemsAuthAction().setExpiryDateAction(
                                                   context:
@@ -1941,6 +1966,8 @@ class _AddProductDesktopState
                                                           ),
                                                           Ink(
                                                             child: InkWell(
+                                                              mouseCursor:
+                                                                  SystemMouseCursors.click,
                                                               borderRadius: BorderRadius.circular(
                                                                 20,
                                                               ),

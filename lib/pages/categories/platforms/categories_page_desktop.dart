@@ -36,6 +36,7 @@ class _CategoriesPageDesktopState
               Material(
                 color: Colors.transparent,
                 child: InkWell(
+                  mouseCursor: SystemMouseCursors.click,
                   onTap: () {
                     Navigator.of(context).pop();
                   },
@@ -57,6 +58,7 @@ class _CategoriesPageDesktopState
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
+                    mouseCursor: SystemMouseCursors.click,
                     onTap: () {
                       returnCategoriesProvider()
                           .getCategories(shopId());
@@ -114,6 +116,7 @@ class _CategoriesPageDesktopState
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       onTap: () {
                         returnCategoriesProvider()
                             .getCategories(shopId());
@@ -221,6 +224,7 @@ class _CreateCategoryWidgetState
     return Material(
       color: Colors.transparent,
       child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
         onTap: () {
           ItemsAuthAction().applyVariationsAction(
             context: context,

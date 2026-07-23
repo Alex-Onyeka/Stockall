@@ -231,6 +231,9 @@ class _BarcodePrintingPageState
                                     MaterialType
                                         .transparency,
                                 child: InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onTap: () {
                                     returnData()
                                         .selectBarcodeGeneratingINdex(
@@ -294,6 +297,9 @@ class _BarcodePrintingPageState
                                     MaterialType
                                         .transparency,
                                 child: InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onTap: () {
                                     returnData()
                                         .selectBarcodeGeneratingINdex(
@@ -357,6 +363,9 @@ class _BarcodePrintingPageState
                                     MaterialType
                                         .transparency,
                                 child: InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onTap: () {
                                     returnData()
                                         .selectBarcodeGeneratingINdex(
@@ -497,6 +506,8 @@ class _BarcodePrintingPageState
                                                           color:
                                                               Colors.transparent,
                                                           child: InkWell(
+                                                            mouseCursor:
+                                                                SystemMouseCursors.click,
                                                             onTap: () {
                                                               var dataP =
                                                                   returnData();
@@ -621,6 +632,8 @@ class _BarcodePrintingPageState
                                                                         product.uuid ==
                                                                         productPage?.uuid,
                                                                     child: IconButton(
+                                                                      mouseCursor:
+                                                                          SystemMouseCursors.click,
                                                                       onPressed: () {
                                                                         setState(
                                                                           () {
@@ -687,6 +700,9 @@ class _BarcodePrintingPageState
                                   Opacity(
                                     opacity: 0,
                                     child: IconButton(
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
                                       onPressed: () {},
                                       icon: Icon(
                                         size: 18,
@@ -707,6 +723,9 @@ class _BarcodePrintingPageState
                                     'Avalaible Printers',
                                   ),
                                   IconButton(
+                                    mouseCursor:
+                                        SystemMouseCursors
+                                            .click,
                                     onPressed: () {
                                       listPrinters();
                                     },
@@ -816,6 +835,9 @@ class _BarcodePrintingPageState
                                                 Colors
                                                     .transparent,
                                             child: InkWell(
+                                              mouseCursor:
+                                                  SystemMouseCursors
+                                                      .click,
                                               borderRadius:
                                                   BorderRadius.circular(
                                                     50,
@@ -841,6 +863,8 @@ class _BarcodePrintingPageState
                                                         color:
                                                             Colors.transparent,
                                                         child: InkWell(
+                                                          mouseCursor:
+                                                              SystemMouseCursors.click,
                                                           onTap: () {
                                                             returnShopProvider().updatePrinterSettings(
                                                               returnShopProvider().defaultPrinterSettings,
@@ -1514,6 +1538,8 @@ class _BarcodePrintingPageState
                                                     ),
                                                   ),
                                                   child: InkWell(
+                                                    mouseCursor:
+                                                        SystemMouseCursors.click,
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                           5,

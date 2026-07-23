@@ -654,6 +654,7 @@ class _BottomInfoSectionState
                       ),
                     ),
                     child: InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       borderRadius: BorderRadius.circular(
                         3,
                       ),
@@ -686,6 +687,7 @@ class _BottomInfoSectionState
               Visibility(
                 visible: widget.setBarcodeAction == null,
                 child: InkWell(
+                  mouseCursor: SystemMouseCursors.click,
                   onTap: () {
                     widget.onClick != null
                         ? widget.onClick!()
@@ -757,6 +759,7 @@ class EditButton extends StatelessWidget {
         border: Border.all(color: Colors.grey.shade300),
       ),
       child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
         onTap: action,
         borderRadius: BorderRadius.circular(5),
         child: Container(

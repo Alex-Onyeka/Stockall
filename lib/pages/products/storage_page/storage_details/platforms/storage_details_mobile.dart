@@ -487,6 +487,7 @@ class EditButton extends StatelessWidget {
         border: Border.all(color: Colors.grey.shade300),
       ),
       child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
         onTap: action,
         borderRadius: BorderRadius.circular(5),
         child: Container(

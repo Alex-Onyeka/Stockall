@@ -203,6 +203,9 @@ class _CopyStaffIdDesktopState
                                           .center,
                                   children: [
                                     IconButton(
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
                                       onPressed: () {
                                         setState(() {
                                           showId = !showId;
@@ -241,6 +244,9 @@ class _CopyStaffIdDesktopState
                                       ),
                                     ),
                                     IconButton(
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
                                       onPressed: () async {
                                         await Clipboard.setData(
                                           ClipboardData(
@@ -289,6 +295,9 @@ class _CopyStaffIdDesktopState
                                       ),
                                     ),
                                     IconButton(
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
                                       onPressed: () {
                                         setState(() {
                                           whatsapp =
@@ -326,6 +335,9 @@ class _CopyStaffIdDesktopState
                                       ),
                                     ),
                                     IconButton(
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
                                       onPressed: () {
                                         setState(() {
                                           sendEmail =

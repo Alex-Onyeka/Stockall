@@ -893,6 +893,8 @@ class _SettingsPageMobileState
                                                                         color:
                                                                             Colors.transparent,
                                                                         child: InkWell(
+                                                                          mouseCursor:
+                                                                              SystemMouseCursors.click,
                                                                           onTap: () {
                                                                             setState(
                                                                               () {
@@ -1250,7 +1252,7 @@ class _SettingsPageMobileState
                         //                           type:
                         //                               MaterialType
                         //                                   .transparency,
-                        //                           child: InkWell(
+                        //                           child: InkWell( mouseCursor: SystemMouseCursors.click,
                         //                             onTap: () {
                         //                               returnSubcsription(
                         //                                 context,

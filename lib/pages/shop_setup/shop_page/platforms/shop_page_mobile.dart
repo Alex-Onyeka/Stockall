@@ -1170,6 +1170,8 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                                                         ],
                                                                       ),
                                                                       InkWell(
+                                                                        mouseCursor:
+                                                                            SystemMouseCursors.click,
                                                                         onTap: () {
                                                                           Navigator.of(
                                                                             context,

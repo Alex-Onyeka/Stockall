@@ -22,6 +22,7 @@ class SmallButtonMain extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
         onTap: action,
         child: Container(
           padding: EdgeInsets.symmetric(

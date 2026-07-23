@@ -77,6 +77,7 @@ class _TopNavBarState extends State<TopNavBar> {
                   children: [
                     SizedBox(width: 12),
                     InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       onTap: () {
                         widget.openSideBar!();
                       },
@@ -99,6 +100,7 @@ class _TopNavBarState extends State<TopNavBar> {
                               : 10,
                     ),
                     InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       onTap: () async {
                         if (!authorization(
                               authorized:
@@ -413,6 +415,7 @@ class _TopNavBarState extends State<TopNavBar> {
                       color: Colors.grey.shade100,
                     ),
                     child: InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       borderRadius: BorderRadius.circular(
                         5,
                       ),
@@ -642,6 +645,8 @@ class _TopNavBarState extends State<TopNavBar> {
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(
+                        mouseCursor:
+                            SystemMouseCursors.click,
                         borderRadius: BorderRadius.circular(
                           10,
                         ),
@@ -722,6 +727,8 @@ class _TopNavBarState extends State<TopNavBar> {
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(
+                        mouseCursor:
+                            SystemMouseCursors.click,
                         borderRadius: BorderRadius.circular(
                           10,
                         ),
@@ -883,6 +890,8 @@ class _TopNavBarState extends State<TopNavBar> {
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(
+                        mouseCursor:
+                            SystemMouseCursors.click,
                         borderRadius: BorderRadius.circular(
                           10,
                         ),
@@ -973,6 +982,8 @@ class _TopNavBarState extends State<TopNavBar> {
                           alignment: Alignment(1.2, -1.8),
                           children: [
                             InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onTap: () {
                                 widget.action!();
                               },

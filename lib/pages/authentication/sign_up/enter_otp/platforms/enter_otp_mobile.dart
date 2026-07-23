@@ -188,7 +188,7 @@
 //                   text: 'Verify Phone',
 //                 ),
 //                 SizedBox(height: 15),
-//                 InkWell(
+//                 InkWell( mouseCursor: SystemMouseCursors.click,
 //                   onTap: () {},
 //                   child: Row(
 //                     spacing: 5,

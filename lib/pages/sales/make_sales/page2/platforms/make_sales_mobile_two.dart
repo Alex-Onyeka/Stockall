@@ -145,6 +145,8 @@ class _MakeSalesMobileTwoState
                               'Is this Sale On Credit (Invoice?',
                             ),
                             InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onTap: () async {
                                 if (returnSalesProvider()
                                     .currentCart()

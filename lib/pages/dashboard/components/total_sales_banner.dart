@@ -89,6 +89,7 @@ class _DashboardTotalSalesBannerState
                 children: [
                   Ink(
                     child: InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       onTap: () {
                         toggleVisible.toggleVisible();
                       },
@@ -131,6 +132,7 @@ class _DashboardTotalSalesBannerState
                     ),
                   ),
                   InkWell(
+                    mouseCursor: SystemMouseCursors.click,
                     onTap: () {
                       toggleVisible.toggleVisible();
                     },
@@ -240,6 +242,8 @@ class _DashboardTotalSalesBannerState
                         return Material(
                           color: Colors.transparent,
                           child: InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             borderRadius:
                                 BorderRadius.circular(5),
                             onTap: () {
@@ -368,6 +372,7 @@ class _DashboardTotalSalesBannerState
             child: Material(
               color: Colors.transparent,
               child: InkWell(
+                mouseCursor: SystemMouseCursors.click,
                 borderRadius: BorderRadius.circular(5),
                 onTap: () async {
                   if (returnData().isSynced() == 0) {
@@ -770,6 +775,9 @@ void setDepartment({required BuildContext context}) {
                                               Colors
                                                   .transparent,
                                           child: InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () {
                                               setState(() {
                                                 if (selectedDept ==

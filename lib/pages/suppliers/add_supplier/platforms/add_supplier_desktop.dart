@@ -326,6 +326,8 @@ class _AddSupplierDesktopState
                           ),
                           SizedBox(height: 15),
                           InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             onTap: () {
                               setState(() {
                                 isExtra = !isExtra;

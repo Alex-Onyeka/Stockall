@@ -179,6 +179,7 @@ class ProductReportDesktopState
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       borderRadius: BorderRadius.circular(
                         10,
                       ),
@@ -434,6 +435,8 @@ class ProductReportDesktopState
                               MainAxisAlignment.end,
                           children: [
                             InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onTap: () {
                                 var safeContext = context;
                                 showDialog(
@@ -1075,6 +1078,8 @@ class ProductReportDesktopState
                           Material(
                             color: Colors.transparent,
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               borderRadius:
                                   BorderRadius.circular(5),
                               onTap: () {
@@ -1186,6 +1191,9 @@ class ProductReportDesktopState
                               ),
                               decoration: InputDecoration(
                                 suffixIcon: InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onTap: () {
                                     if (searchController
                                         .text
@@ -1254,6 +1262,9 @@ class ProductReportDesktopState
                               spacing: 0,
                               children: [
                                 IconButton(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onPressed: () {
                                     if (start != 0) {
                                       navigate(
@@ -1324,6 +1335,9 @@ class ProductReportDesktopState
                                   ],
                                 ),
                                 IconButton(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onPressed: () {
                                     if (end !=
                                         returnData()

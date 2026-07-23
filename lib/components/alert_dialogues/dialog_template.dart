@@ -135,6 +135,8 @@ class DialogTemplate extends StatelessWidget {
                             color: Colors.grey.shade200,
                           ),
                           child: InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             onTap: () {
                               cancelAction != null
                                   ? cancelAction!()
@@ -181,6 +183,8 @@ class DialogTemplate extends StatelessWidget {
                                     .errorColor200,
                           ),
                           child: InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             onTap: action,
                             child: Container(
                               padding: EdgeInsets.symmetric(

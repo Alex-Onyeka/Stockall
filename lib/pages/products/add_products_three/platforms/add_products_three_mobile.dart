@@ -139,7 +139,7 @@
 //         children: [
 //           Scaffold(
 //             appBar: AppBar(
-//               leading: IconButton(
+//               leading: IconButton(mouseCursor: SystemMouseCursors.click,
 //                 onPressed: () {
 //                   Navigator.of(context).pop();
 //                 },
@@ -233,7 +233,7 @@
 //                               theme: theme,
 //                             ),
 //                             SizedBox(height: 10),
-//                             InkWell(
+//                             InkWell( mouseCursor: SystemMouseCursors.click,
 //                               onTap: () {
 //                                 returnData(
 //                                   context,
@@ -288,7 +288,7 @@
 //                               ),
 //                             ),
 //                             SizedBox(height: 30),
-//                             InkWell(
+//                             InkWell( mouseCursor: SystemMouseCursors.click,
 //                               onTap: () {
 //                                 returnData(
 //                                   context,

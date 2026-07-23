@@ -23,6 +23,7 @@ class MainInfoTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      mouseCursor: SystemMouseCursors.click,
       borderRadius: BorderRadius.circular(10),
       onTap: action,
       child: Container(

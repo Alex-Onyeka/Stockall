@@ -772,6 +772,9 @@ class _AddProductMobileState
                                 children: [
                                   SizedBox(height: 20),
                                   InkWell(
+                                    mouseCursor:
+                                        SystemMouseCursors
+                                            .click,
                                     onTap: () {
                                       returnData()
                                           .toggleIsManaged(
@@ -854,6 +857,9 @@ class _AddProductMobileState
                                   ),
                                   SizedBox(height: 20),
                                   InkWell(
+                                    mouseCursor:
+                                        SystemMouseCursors
+                                            .click,
                                     onTap: () {
                                       returnData()
                                           .toggleSetCustomPrice();
@@ -941,6 +947,9 @@ class _AddProductMobileState
                               Divider(),
                               // SizedBox(height: 5),
                               InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onTap: () {
                                   setState(() {
                                     expand = !expand;
@@ -967,6 +976,9 @@ class _AddProductMobileState
                                             : 'More Details',
                                       ),
                                       InkWell(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
                                         onTap: () {
                                           setState(() {
                                             expand =
@@ -1047,6 +1059,9 @@ class _AddProductMobileState
                                                   .end,
                                           children: [
                                             InkWell(
+                                              mouseCursor:
+                                                  SystemMouseCursors
+                                                      .click,
                                               onTap: () async {
                                                 ItemsAuthAction().generateBarcodeAction(
                                                   context:
@@ -1316,6 +1331,9 @@ class _AddProductMobileState
                                                         .viewAllDepartments,
                                               ),
                                           child: InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () {
                                               GeneralSettingsAuthAction().manageDeparmtmentsAction(
                                                 context:
@@ -1379,6 +1397,8 @@ class _AddProductMobileState
                                                                                 color:
                                                                                     Colors.transparent,
                                                                                 child: InkWell(
+                                                                                  mouseCursor:
+                                                                                      SystemMouseCursors.click,
                                                                                   onTap: () {
                                                                                     setState(
                                                                                       () {
@@ -1555,6 +1575,8 @@ class _AddProductMobileState
                                                         ),
                                                         Ink(
                                                           child: InkWell(
+                                                            mouseCursor:
+                                                                SystemMouseCursors.click,
                                                             borderRadius: BorderRadius.circular(
                                                               20,
                                                             ),
@@ -1587,6 +1609,9 @@ class _AddProductMobileState
                                           height: 10,
                                         ),
                                         InkWell(
+                                          mouseCursor:
+                                              SystemMouseCursors
+                                                  .click,
                                           onTap: () {
                                             ItemsAuthAction().setExpiryDateAction(
                                               context:
@@ -1699,6 +1724,8 @@ class _AddProductMobileState
                                                       ),
                                                       Ink(
                                                         child: InkWell(
+                                                          mouseCursor:
+                                                              SystemMouseCursors.click,
                                                           borderRadius: BorderRadius.circular(
                                                             20,
                                                           ),

@@ -244,6 +244,9 @@ class _BluetoothDevicesPageState
                               Material(
                                 color: Colors.transparent,
                                 child: InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   borderRadius:
                                       BorderRadius.circular(
                                         30,
@@ -296,6 +299,9 @@ class _BluetoothDevicesPageState
                                               .print_disabled_rounded,
                                         ),
                                         InkWell(
+                                          mouseCursor:
+                                              SystemMouseCursors
+                                                  .click,
                                           onTap:
                                               onScanPressed,
                                           child: Text(
@@ -441,6 +447,8 @@ class _BluetoothDevicesPageState
                               color: Colors.grey.shade200,
                             ),
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               borderRadius:
                                   BorderRadius.circular(5),
                               onTap: () {
@@ -544,6 +552,8 @@ class _BluetoothDevicesPageState
                               color: Colors.grey.shade200,
                             ),
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               borderRadius:
                                   BorderRadius.circular(4),
                               onTap: () {

@@ -300,6 +300,8 @@ class _WaybillListMobileState
                                   Authorizations().viewDate,
                             ),
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onTap: () {
                                 if (returnWaybillProvider()
                                             .dateSet !=

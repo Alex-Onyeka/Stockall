@@ -264,7 +264,7 @@ class _SubscriptionPageState
                         children: [
                           // Material(
                           //   color: Colors.transparent,
-                          //   child: InkWell(
+                          //   child: InkWell( mouseCursor: SystemMouseCursors.click,
                           //     onTap: () {
                           //       returnSubPaymentProvider()
                           //           .selectCurrency(0);
@@ -339,6 +339,9 @@ class _SubscriptionPageState
                                 ),
                               ),
                               child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onTap: () {
                                   openWhatsApp();
                                 },
@@ -493,6 +496,7 @@ class DurationSelectionButton extends StatelessWidget {
                     : null,
           ),
           child: InkWell(
+            mouseCursor: SystemMouseCursors.click,
             onTap: action,
             child: Container(
               padding: EdgeInsets.symmetric(

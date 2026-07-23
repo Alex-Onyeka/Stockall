@@ -111,6 +111,8 @@ class _CopyStaffIdMobileState
                           MainAxisAlignment.center,
                       children: [
                         IconButton(
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onPressed: () {
                             setState(() {
                               showId = !showId;
@@ -145,6 +147,8 @@ class _CopyStaffIdMobileState
                           ),
                         ),
                         IconButton(
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onPressed: () async {
                             await Clipboard.setData(
                               ClipboardData(
@@ -186,6 +190,8 @@ class _CopyStaffIdMobileState
                           ),
                         ),
                         IconButton(
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onPressed: () {
                             setState(() {
                               whatsapp = !whatsapp;
@@ -219,6 +225,8 @@ class _CopyStaffIdMobileState
                           ),
                         ),
                         IconButton(
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onPressed: () {
                             setState(() {
                               sendEmail = !sendEmail;

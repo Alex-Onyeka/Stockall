@@ -19,6 +19,7 @@ PreferredSizeWidget appBar({
     leading: Opacity(
       opacity: turnOff == null || turnOff == false ? 1 : 0,
       child: IconButton(
+        mouseCursor: SystemMouseCursors.click,
         onPressed: () {
           if (backAction != null) {
             backAction();

@@ -83,6 +83,8 @@ class _WaybillPageDesktopState
                         spacing: 10,
                         children: [
                           InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             onTap: () {
                               if (Navigator.canPop(
                                 context,
@@ -222,6 +224,8 @@ class _WaybillPageDesktopState
                         spacing: 10,
                         children: [
                           InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             onTap: () {
                               if (Navigator.canPop(
                                 context,
@@ -1381,7 +1385,7 @@ class _WaybillPageDesktopState
                                   //     Row(
                                   //       spacing: 5,
                                   //       children: [
-                                  //         InkWell(
+                                  //         InkWell( mouseCursor: SystemMouseCursors.click,
                                   //           onTap: () {
                                   //             selectPayment(
                                   //               value: 1,
@@ -1442,7 +1446,7 @@ class _WaybillPageDesktopState
                                   //             ),
                                   //           ),
                                   //         ),
-                                  //         InkWell(
+                                  //         InkWell( mouseCursor: SystemMouseCursors.click,
                                   //           onTap: () {
                                   //             selectPayment(
                                   //               value: 2,
@@ -1588,7 +1592,7 @@ class _WaybillPageDesktopState
                                   //                   .lightModeColor
                                   //                   .prGradient,
                                   //         ),
-                                  //         child: InkWell(
+                                  //         child: InkWell( mouseCursor: SystemMouseCursors.click,
                                   //           onTap: () {
                                   //             if (paymentController
                                   //                     .text
@@ -1953,6 +1957,7 @@ class ActionButtonSmall extends StatelessWidget {
     return Material(
       type: MaterialType.transparency,
       child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
         onTap: action,
         borderRadius: BorderRadius.circular(3),
         child: Container(

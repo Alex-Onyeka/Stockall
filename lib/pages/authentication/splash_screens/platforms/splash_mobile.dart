@@ -76,6 +76,7 @@ class _SplashMobileState extends State<SplashMobile> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   MaterialButton(
+                    mouseCursor: SystemMouseCursors.click,
                     onPressed: () {
                       returnNavProvider(
                         context,
@@ -99,6 +100,7 @@ class _SplashMobileState extends State<SplashMobile> {
                     MainAxisAlignment.spaceBetween,
                 children: [
                   MaterialButton(
+                    mouseCursor: SystemMouseCursors.click,
                     onPressed: () {
                       widget.pageController.previousPage(
                         duration: Duration(
@@ -147,6 +149,7 @@ class _SplashMobileState extends State<SplashMobile> {
                     ),
                   ),
                   MaterialButton(
+                    mouseCursor: SystemMouseCursors.click,
                     onPressed: () {
                       widget.currentPage != 2
                           ? widget.pageController.nextPage(

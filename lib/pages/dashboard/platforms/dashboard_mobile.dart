@@ -531,7 +531,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                           icon:
                                                               employeesIconSvg,
                                                           title:
-                                                              'Employees',
+                                                              'Staffs',
                                                           action: () {
                                                             Navigator.push(
                                                               context,
@@ -767,7 +767,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                           icon:
                                                               employeesIconSvg,
                                                           title:
-                                                              'Employees',
+                                                              'Staffs',
                                                           action: () {
                                                             Navigator.push(
                                                               context,
@@ -900,6 +900,9 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                   Opacity(
                                     opacity: 0,
                                     child: IconButton(
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
                                       onPressed: () {},
                                       icon: Icon(
                                         Icons.clear,
@@ -914,6 +917,9 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                     'NEW UPDATE AVAILABLE',
                                   ),
                                   IconButton(
+                                    mouseCursor:
+                                        SystemMouseCursors
+                                            .click,
                                     onPressed: () {
                                       returnAppVersionProvider(
                                         context,
@@ -990,6 +996,9 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                     .prColor300,
                                           ),
                                           child: InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () async {
                                               setState(() {
                                                 isUpdateLodaingWeb =
@@ -1062,6 +1071,9 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                     .prColor300,
                                           ),
                                           child: InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () async {
                                               setState(() {
                                                 isUpdateLodaingMobile =
@@ -1160,6 +1172,9 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                     .prColor300,
                                           ),
                                           child: InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () async {
                                               setState(() {
                                                 isUpdateLodaingWeb =
@@ -1294,6 +1309,9 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                         spacing: 15,
                                         children: [
                                           InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () async {
                                               openWhatsApp();
                                             },
@@ -1325,6 +1343,9 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                             ),
                                           ),
                                           InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () async {
                                               phoneCall();
                                             },
@@ -1444,6 +1465,9 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                   Opacity(
                                     opacity: 0,
                                     child: IconButton(
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
                                       onPressed: () {},
                                       icon: Icon(
                                         Icons.clear,
@@ -1458,6 +1482,9 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                     'APP UPDATE AVAILABLE',
                                   ),
                                   IconButton(
+                                    mouseCursor:
+                                        SystemMouseCursors
+                                            .click,
                                     onPressed: () {
                                       returnAppVersionProvider(
                                         context,
@@ -1534,6 +1561,9 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                     .prColor300,
                                           ),
                                           child: InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () async {
                                               setState(() {
                                                 isUpdateLodaingWeb =
@@ -1606,6 +1636,9 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                     .prColor300,
                                           ),
                                           child: InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () async {
                                               setState(() {
                                                 isUpdateLodaingMobile =
@@ -1704,6 +1737,9 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                     .prColor300,
                                           ),
                                           child: InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () async {
                                               setState(() {
                                                 isUpdateLodaingWeb =

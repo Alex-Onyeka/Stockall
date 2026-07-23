@@ -48,6 +48,7 @@ class _DiscountSetterWidgetState
                 Material(
                   color: Colors.transparent,
                   child: InkWell(
+                    mouseCursor: SystemMouseCursors.click,
                     onTap: () {
                       setDiscountAction(
                         context,
@@ -301,6 +302,9 @@ class _DiscountSetterBodyState
                                         .prColor300,
                               ),
                               child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 borderRadius:
                                     BorderRadius.circular(
                                       2,
@@ -476,6 +480,8 @@ class _DiscountSetterBodyState
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(
+                        mouseCursor:
+                            SystemMouseCursors.click,
                         onTap: () {
                           if (screenWidth(context) >
                               mobileScreen) {
@@ -527,6 +533,9 @@ class _DiscountSetterBodyState
                                             Colors
                                                 .transparent,
                                         child: InkWell(
+                                          mouseCursor:
+                                              SystemMouseCursors
+                                                  .click,
                                           onTap: () {
                                             if ((double.tryParse(
                                                       dis,
@@ -664,6 +673,9 @@ class _DiscountSetterBodyState
                                             Colors
                                                 .transparent,
                                         child: InkWell(
+                                          mouseCursor:
+                                              SystemMouseCursors
+                                                  .click,
                                           onTap: () {
                                             if ((double.tryParse(
                                                       dis,
@@ -952,6 +964,9 @@ class _DiscountSetterBodyState
                                                 .secColor200,
                                       ),
                                       child: InkWell(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
                                         borderRadius:
                                             BorderRadius.circular(
                                               5,
@@ -1065,6 +1080,9 @@ class _DiscountSetterBodyState
                                             Colors
                                                 .transparent,
                                         child: InkWell(
+                                          mouseCursor:
+                                              SystemMouseCursors
+                                                  .click,
                                           onTap: () {
                                             if (dis
                                                     .toDouble() >
@@ -1199,6 +1217,9 @@ class _DiscountSetterBodyState
                                             Colors
                                                 .transparent,
                                         child: InkWell(
+                                          mouseCursor:
+                                              SystemMouseCursors
+                                                  .click,
                                           onTap: () {
                                             if (dis
                                                     .toDouble() >
@@ -1500,6 +1521,9 @@ class _DiscountSetterBodyState
                                                 .secColor200,
                                       ),
                                       child: InkWell(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
                                         borderRadius:
                                             BorderRadius.circular(
                                               5,
@@ -1623,6 +1647,7 @@ class DiscountSelectionTab extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
         onTap: action,
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 5),

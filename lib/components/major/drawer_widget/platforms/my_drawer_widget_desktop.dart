@@ -152,6 +152,9 @@ class _MyDrawerWidgetDesktopMainState
                                   screenWidth(context) <=
                                   tabletScreen,
                               child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onTap: () {
                                   widget
                                       .globalKey
@@ -468,7 +471,7 @@ class _MyDrawerWidgetDesktopMainState
                                       ),
                                     );
                                   },
-                                  title: 'Employees',
+                                  title: 'Staffs',
                                   svg: employeesIconSvg,
                                 ),
                               ),
@@ -486,6 +489,9 @@ class _MyDrawerWidgetDesktopMainState
                               Visibility(
                                 visible: !isStoreKeeper(),
                                 child: InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onTap: () {
                                     checkNavigate(context);
                                     Navigator.push(
@@ -580,6 +586,8 @@ class _MyDrawerWidgetDesktopMainState
                                                       Clip.none,
                                                   children: [
                                                     InkWell(
+                                                      mouseCursor:
+                                                          SystemMouseCursors.click,
                                                       onTap: () {
                                                         checkNavigate(
                                                           context,
@@ -904,6 +912,7 @@ class NavListTileDesktopAlt extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 2, bottom: 2),
       child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
         onTap: () {
           action!();
         },

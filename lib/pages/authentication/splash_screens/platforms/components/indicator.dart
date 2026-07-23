@@ -14,6 +14,7 @@ class MyIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      mouseCursor: SystemMouseCursors.click,
       onTap: onTap,
       child: Container(
         height: 5,

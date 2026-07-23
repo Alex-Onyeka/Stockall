@@ -46,6 +46,7 @@ class TopBannerTwo extends StatelessWidget {
                     MainAxisAlignment.spaceBetween,
                 children: [
                   InkWell(
+                    mouseCursor: SystemMouseCursors.click,
                     onTap: () {
                       if (isMain) {
                         Navigator.pushReplacement(
@@ -99,6 +100,7 @@ class TopBannerTwo extends StatelessWidget {
                   Opacity(
                     opacity: 0,
                     child: InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       onTap: () {},
                       child: Container(
                         padding: EdgeInsets.symmetric(

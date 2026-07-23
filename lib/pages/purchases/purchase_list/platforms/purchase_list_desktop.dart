@@ -203,6 +203,9 @@ class _PurchaseListDesktopState
                             child: Material(
                               color: Colors.transparent,
                               child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 borderRadius:
                                     BorderRadius.circular(
                                       10,
@@ -520,6 +523,9 @@ class _PurchaseListDesktopState
                                                   .viewDate,
                                         ),
                                         child: MaterialButton(
+                                          mouseCursor:
+                                              SystemMouseCursors
+                                                  .click,
                                           onPressed: () {
                                             if (returnPurchaseProvider()
                                                         .dateSet !=

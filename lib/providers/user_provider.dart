@@ -394,14 +394,14 @@ class UserProvider extends ChangeNotifier {
         if (updateResponse != null) {
           print('Failed to update shop: $updateResponse');
         } else {
-          print('Employee added successfully.');
+          print('Staff added successfully.');
         }
       }
       notifyListeners();
       await fetchUsersByShop();
       return null; // success
     } catch (e) {
-      print('❌❌ Error updating employee role: $e');
+      print('❌❌ Error updating Staff role: $e');
       return 'Error: ${e.toString()}';
     }
   }

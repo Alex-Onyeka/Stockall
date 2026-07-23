@@ -62,6 +62,7 @@ class InvoiceListMobileState
             Material(
               color: Colors.transparent,
               child: InkWell(
+                mouseCursor: SystemMouseCursors.click,
                 borderRadius: BorderRadius.circular(5),
                 onTap: () {
                   showSearchInvoicePage(context);
@@ -460,6 +461,8 @@ class _InvoiceListBodyMobileState
                               Authorizations().viewDate,
                         ),
                         child: InkWell(
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onTap: () {
                             if (returnInvoicesProvider()
                                         .dateSet !=

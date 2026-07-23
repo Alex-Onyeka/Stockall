@@ -74,6 +74,9 @@ class _CustomizeRoleDesktopState
                                     .spaceBetween,
                             children: [
                               InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onTap: () {
                                   showDialog(
                                     context: context,
@@ -183,6 +186,9 @@ class _CustomizeRoleDesktopState
                                 child: Material(
                                   color: Colors.transparent,
                                   child: InkWell(
+                                    mouseCursor:
+                                        SystemMouseCursors
+                                            .click,
                                     onTap: () {
                                       setState(() {
                                         isSearch =
@@ -277,6 +283,9 @@ class _CustomizeRoleDesktopState
                                               (
                                                 permit,
                                               ) => InkWell(
+                                                mouseCursor:
+                                                    SystemMouseCursors
+                                                        .click,
                                                 onTap: () {
                                                   setState(() {
                                                     if (tempAccess.contains(

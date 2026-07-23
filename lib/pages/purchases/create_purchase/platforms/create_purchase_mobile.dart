@@ -191,6 +191,9 @@ class CreatePurchaseMobileState
                               spacing: 5,
                               children: [
                                 InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onTap: () {
                                     setStatee(() {
                                       paymentSelected = 1;
@@ -268,6 +271,9 @@ class CreatePurchaseMobileState
                                   ),
                                 ),
                                 InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onTap: () {
                                     setStatee(() {
                                       paymentSelected = 2;
@@ -444,6 +450,7 @@ class CreatePurchaseMobileState
             ),
             actions: [
               InkWell(
+                mouseCursor: SystemMouseCursors.click,
                 onTap: () {
                   selectProductsForPurchaseBottomSheet(
                     priceController: widget.priceController,
@@ -495,6 +502,8 @@ class CreatePurchaseMobileState
                           0,
                         ),
                         child: InkWell(
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onTap: () {
                             Navigator.push(
                               context,
@@ -547,6 +556,9 @@ class CreatePurchaseMobileState
                                       'Select Supplier',
                                 ),
                                 InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onTap: () {
                                     if (returnPurchaseActionProvider()
                                             .tempSupplier !=
@@ -757,6 +769,8 @@ class CreatePurchaseMobileState
                                                             color:
                                                                 Colors.transparent,
                                                             child: InkWell(
+                                                              mouseCursor:
+                                                                  SystemMouseCursors.click,
                                                               onTap: () {
                                                                 selectProductPurchase(
                                                                   closeAction:
@@ -792,6 +806,8 @@ class CreatePurchaseMobileState
                                                             color:
                                                                 Colors.transparent,
                                                             child: InkWell(
+                                                              mouseCursor:
+                                                                  SystemMouseCursors.click,
                                                               onTap: () {
                                                                 showDialog(
                                                                   context:
@@ -890,6 +906,9 @@ class CreatePurchaseMobileState
                                               Colors
                                                   .transparent,
                                           child: InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () {
                                               widget
                                                       .priceController
@@ -1006,6 +1025,9 @@ class CreatePurchaseMobileState
                                                 Colors
                                                     .transparent,
                                             child: InkWell(
+                                              mouseCursor:
+                                                  SystemMouseCursors
+                                                      .click,
                                               onTap: () {
                                                 showDialog(
                                                   context:

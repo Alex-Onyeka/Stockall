@@ -39,6 +39,7 @@ class _SubStaffsPageMobileState
           child: Material(
             color: Colors.transparent,
             child: InkWell(
+              mouseCursor: SystemMouseCursors.click,
               onTap: () {
                 SalesAuthAction().allowBulkSaleAction(
                   context: context,

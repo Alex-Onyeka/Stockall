@@ -1191,6 +1191,8 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                                                                           ],
                                                                         ),
                                                                         InkWell(
+                                                                          mouseCursor:
+                                                                              SystemMouseCursors.click,
                                                                           onTap: () {
                                                                             Navigator.of(
                                                                               context,

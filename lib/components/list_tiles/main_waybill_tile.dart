@@ -96,6 +96,7 @@ class _MainWaybillTileMobileState
           color: Colors.white,
         ),
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           borderRadius: BorderRadius.circular(5),
           onTap: widget.action,
           child: Container(
@@ -366,6 +367,7 @@ class _MainWaybillTileDesktopState
           color: Colors.white,
         ),
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           borderRadius: BorderRadius.circular(5),
           onTap: widget.action,
           child: Container(

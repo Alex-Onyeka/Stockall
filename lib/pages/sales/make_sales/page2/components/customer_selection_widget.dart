@@ -45,6 +45,7 @@ class _CustomerSelectionWidgetState
                   ),
                 ),
                 child: InkWell(
+                  mouseCursor: SystemMouseCursors.click,
                   onTap: () {
                     SalesAuthAction().addCustomerToSaleAction(
                       context: context,
@@ -247,6 +248,7 @@ class _CustomerSelectionWidgetState
                           ? false
                           : true,
                   child: IconButton(
+                    mouseCursor: SystemMouseCursors.click,
                     onPressed: () {
                       returnCustomers(
                         context,

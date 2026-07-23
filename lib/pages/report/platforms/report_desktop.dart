@@ -406,9 +406,9 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                         theme: theme,
                                         action: () {},
                                         subText:
-                                            'View a break down of employee activities',
+                                            'View a break down of Staff activities',
                                         title:
-                                            'Employee Report (Coming Soon)',
+                                            'Staff Report (Coming Soon)',
                                       ),
                                       ReportListTile(
                                         isActive: false,
@@ -482,6 +482,7 @@ class ReportListTile extends StatelessWidget {
           color: Colors.white,
         ),
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           borderRadius: BorderRadius.circular(5),
           onTap: action,
           child: Container(

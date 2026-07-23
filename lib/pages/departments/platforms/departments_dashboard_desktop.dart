@@ -163,6 +163,8 @@ class _DepartmentsDashboardDesktopState
                           Opacity(
                             opacity: 0,
                             child: IconButton(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onPressed: () {},
                               icon: Icon(
                                 size: 18,
@@ -205,6 +207,9 @@ class _DepartmentsDashboardDesktopState
                                 );
                               } else {
                                 return IconButton(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onPressed: () {
                                     returnDepartmentsDashboardProvider()
                                         .fetchAllData();

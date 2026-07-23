@@ -263,6 +263,9 @@ class EnterCodeDesktop extends StatelessWidget {
                                   ),
                                   SizedBox(height: 15),
                                   InkWell(
+                                    mouseCursor:
+                                        SystemMouseCursors
+                                            .click,
                                     onTap: () {},
                                     child: Row(
                                       spacing: 5,

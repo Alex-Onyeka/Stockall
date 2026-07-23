@@ -24,6 +24,7 @@ class MainDropdownOnly extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         InkWell(
+          mouseCursor: SystemMouseCursors.click,
           onTap: onTap,
           child: TextFormField(
             enabled: false,

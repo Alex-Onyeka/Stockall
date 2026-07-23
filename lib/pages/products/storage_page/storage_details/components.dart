@@ -465,6 +465,8 @@ class _StorageQuantityUpdateWidgetState
                                                     (
                                                       product,
                                                     ) => InkWell(
+                                                      mouseCursor:
+                                                          SystemMouseCursors.click,
                                                       onTap: () {
                                                         setState(() {
                                                           if (productUuid ==
@@ -687,6 +689,8 @@ class _StorageQuantityUpdateWidgetState
                                                     (
                                                       user,
                                                     ) => InkWell(
+                                                      mouseCursor:
+                                                          SystemMouseCursors.click,
                                                       onTap: () {
                                                         setState(() {
                                                           if (staffUuid ==
@@ -779,6 +783,7 @@ class _StorageQuantityUpdateWidgetState
                   color: Colors.grey.shade200,
                 ),
                 child: InkWell(
+                  mouseCursor: SystemMouseCursors.click,
                   onTap: () {
                     Navigator.of(context).pop();
                   },
@@ -810,6 +815,7 @@ class _StorageQuantityUpdateWidgetState
                   color: theme.lightModeColor.errorColor200,
                 ),
                 child: InkWell(
+                  mouseCursor: SystemMouseCursors.click,
                   onTap: () {
                     if (quantityController
                             .text
@@ -1273,6 +1279,7 @@ class SelectProductButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      mouseCursor: SystemMouseCursors.click,
       onTap: action,
       child: Padding(
         padding: EdgeInsetsGeometry.symmetric(
@@ -1343,6 +1350,7 @@ class ToggleButton extends StatelessWidget {
             ),
           ),
           child: InkWell(
+            mouseCursor: SystemMouseCursors.click,
             onTap: action,
             child: Container(
               padding: EdgeInsets.symmetric(
@@ -1392,6 +1400,7 @@ class _ManageProductsStorageState
       spacing: 5,
       children: [
         InkWell(
+          mouseCursor: SystemMouseCursors.click,
           onTap: () {
             List<String> list = [];
             List<String> tempList = [];
@@ -1552,6 +1561,9 @@ class _ManageProductsStorageState
                                               Colors
                                                   .transparent,
                                           child: InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () {
                                               setState(() {
                                                 if (list.contains(

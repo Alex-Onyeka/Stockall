@@ -202,6 +202,9 @@ class _CartItemMainState extends State<CartItemMain> {
                                             .isVoid !=
                                         true,
                                 child: IconButton(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onPressed:
                                       widget.deleteCartItem,
                                   icon: Icon(
@@ -350,6 +353,9 @@ class _CartItemMainState extends State<CartItemMain> {
                                       Colors.grey.shade100,
                                 ),
                                 child: InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   borderRadius:
                                       BorderRadius.circular(
                                         5,

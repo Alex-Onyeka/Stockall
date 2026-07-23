@@ -201,6 +201,8 @@ class _IndividualStoreListWidgetState
                         ],
                       ),
                       IconButton(
+                        mouseCursor:
+                            SystemMouseCursors.click,
                         onPressed: () {
                           toggleIsOpen();
                         },
@@ -370,6 +372,8 @@ class _IndividualStoreListWidgetState
                               color: Colors.white,
                             ),
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onTap: () {
                                 if (widget
                                             .shop
@@ -465,6 +469,8 @@ class _IndividualStoreListWidgetState
                               color: Colors.white,
                             ),
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onTap: () {
                                 if (returnShopProvider()
                                         .userShop()

@@ -355,6 +355,8 @@ class _ProductReportMobileState
                             MainAxisAlignment.end,
                         children: [
                           InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             onTap: () {
                               var safeContext = context;
                               showDialog(
@@ -1005,6 +1007,9 @@ class _ProductReportMobileState
                             style: TextStyle(fontSize: 12),
                             decoration: InputDecoration(
                               suffixIcon: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onTap: () {
                                   if (searchController
                                       .text
@@ -1070,6 +1075,9 @@ class _ProductReportMobileState
                             spacing: 0,
                             children: [
                               IconButton(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onPressed: () {
                                   if (start != 0) {
                                     navigate(
@@ -1140,6 +1148,9 @@ class _ProductReportMobileState
                                 ],
                               ),
                               IconButton(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 onPressed: () {
                                   if (end !=
                                       returnData()

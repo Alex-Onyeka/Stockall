@@ -188,6 +188,7 @@ class _CreateWaybillDesktopState
                 ),
                 actions: [
                   InkWell(
+                    mouseCursor: SystemMouseCursors.click,
                     onTap: () {
                       selectProductsForWaybillBottomSheet(
                         priceController:
@@ -241,6 +242,8 @@ class _CreateWaybillDesktopState
                           0,
                         ),
                         child: InkWell(
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onTap: () {
                             Navigator.push(
                               context,
@@ -293,6 +296,9 @@ class _CreateWaybillDesktopState
                                       'Select Customer',
                                 ),
                                 InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onTap: () {
                                     if (returnWaybillProvider()
                                             .tempCustomer !=
@@ -505,6 +511,8 @@ class _CreateWaybillDesktopState
                                                             color:
                                                                 Colors.transparent,
                                                             child: InkWell(
+                                                              mouseCursor:
+                                                                  SystemMouseCursors.click,
                                                               onTap: () {
                                                                 selectProductWaybill(
                                                                   closeAction:
@@ -540,6 +548,8 @@ class _CreateWaybillDesktopState
                                                             color:
                                                                 Colors.transparent,
                                                             child: InkWell(
+                                                              mouseCursor:
+                                                                  SystemMouseCursors.click,
                                                               onTap: () {
                                                                 showDialog(
                                                                   context:
@@ -638,6 +648,9 @@ class _CreateWaybillDesktopState
                                               Colors
                                                   .transparent,
                                           child: InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () {
                                               widget
                                                       .priceController
@@ -754,6 +767,9 @@ class _CreateWaybillDesktopState
                                                 Colors
                                                     .transparent,
                                             child: InkWell(
+                                              mouseCursor:
+                                                  SystemMouseCursors
+                                                      .click,
                                               onTap: () {
                                                 showDialog(
                                                   context:

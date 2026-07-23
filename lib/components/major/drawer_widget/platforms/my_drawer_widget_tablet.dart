@@ -82,6 +82,8 @@ class _MyDrawerWidgetTabletState
                           left: 10.0,
                         ),
                         child: InkWell(
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onTap: () {
                             widget.globalKey.currentState
                                 ?.openDrawer();
@@ -408,7 +410,7 @@ class _MyDrawerWidgetTabletState
                                       ),
                                     );
                                   },
-                                  title: 'Employees',
+                                  title: 'Staffs',
                                   svg: employeesIconSvg,
                                 ),
                               ),
@@ -426,6 +428,9 @@ class _MyDrawerWidgetTabletState
                               Visibility(
                                 visible: !isStoreKeeper(),
                                 child: InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   onTap: () {
                                     checkNavigate(context);
                                     Navigator.push(
@@ -464,6 +469,9 @@ class _MyDrawerWidgetTabletState
                                               Clip.none,
                                           children: [
                                             InkWell(
+                                              mouseCursor:
+                                                  SystemMouseCursors
+                                                      .click,
                                               onTap: () {
                                                 checkNavigate(
                                                   context,
@@ -750,6 +758,7 @@ class NavListTileDesktopAlt extends StatelessWidget {
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return InkWell(
+      mouseCursor: SystemMouseCursors.click,
       onTap: () {
         action!();
       },

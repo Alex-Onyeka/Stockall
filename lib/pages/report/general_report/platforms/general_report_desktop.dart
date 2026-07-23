@@ -90,6 +90,7 @@ class _GeneralReportDesktopState
           toolbarHeight: 50,
           scrolledUnderElevation: 0,
           leading: IconButton(
+            mouseCursor: SystemMouseCursors.click,
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -146,7 +147,7 @@ class _GeneralReportDesktopState
                     //     mainAxisAlignment:
                     //         MainAxisAlignment.end,
                     //     children: [
-                    //       InkWell(
+                    //       InkWell( mouseCursor: SystemMouseCursors.click,
                     //         onTap: () {
                     //           showDialog(
                     //             context: context,
@@ -216,6 +217,8 @@ class _GeneralReportDesktopState
                             MainAxisAlignment.end,
                         children: [
                           MaterialButton(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             onPressed: () {
                               if (returnReceiptProvider(
                                         context,

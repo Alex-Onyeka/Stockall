@@ -17,6 +17,7 @@ class ProductActionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      mouseCursor: SystemMouseCursors.click,
       onTap: action,
       child: Container(
         padding: EdgeInsets.symmetric(

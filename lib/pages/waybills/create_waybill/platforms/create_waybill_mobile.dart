@@ -181,7 +181,7 @@ class CreateWaybillMobileState
   //                           Row(
   //                             spacing: 5,
   //                             children: [
-  //                               InkWell(
+  //                               InkWell( mouseCursor: SystemMouseCursors.click,
   //                                 onTap: () {
   //                                   setStatee(() {
   //                                     paymentSelected = 1;
@@ -258,7 +258,7 @@ class CreateWaybillMobileState
   //                                   ),
   //                                 ),
   //                               ),
-  //                               InkWell(
+  //                               InkWell( mouseCursor: SystemMouseCursors.click,
   //                                 onTap: () {
   //                                   setStatee(() {
   //                                     paymentSelected = 2;
@@ -434,7 +434,7 @@ class CreateWaybillMobileState
               ],
             ),
             actions: [
-              // InkWell(
+              // InkWell( mouseCursor: SystemMouseCursors.click,
               //   onTap: () {
               //     selectProductsForWaybillBottomSheet(
               //       priceController: widget.priceController,
@@ -485,7 +485,7 @@ class CreateWaybillMobileState
               //             10,
               //             0,
               //           ),
-              //           child: InkWell(
+              //           child: InkWell( mouseCursor: SystemMouseCursors.click,
               //             onTap: () {
               //               Navigator.push(
               //                 context,
@@ -537,7 +537,7 @@ class CreateWaybillMobileState
               //                             ?.name ??
               //                         'Select Supplier',
               //                   ),
-              //                   InkWell(
+              //                   InkWell( mouseCursor: SystemMouseCursors.click,
               //                     onTap: () {
               //                       if (returnWaybillActionProvider()
               //                               .tempSupplier !=
@@ -749,7 +749,7 @@ class CreateWaybillMobileState
               //                                             Material(
               //                                               color:
               //                                                   Colors.transparent,
-              //                                               child: InkWell(
+              //                                               child: InkWell( mouseCursor: SystemMouseCursors.click,
               //                                                 onTap: () {
               //                                                   selectProductWaybill(
               //                                                     closeAction:
@@ -784,7 +784,7 @@ class CreateWaybillMobileState
               //                                             Material(
               //                                               color:
               //                                                   Colors.transparent,
-              //                                               child: InkWell(
+              //                                               child: InkWell( mouseCursor: SystemMouseCursors.click,
               //                                                 onTap: () {
               //                                                   showDialog(
               //                                                     context:
@@ -882,7 +882,7 @@ class CreateWaybillMobileState
               //                             color:
               //                                 Colors
               //                                     .transparent,
-              //                             child: InkWell(
+              //                             child: InkWell( mouseCursor: SystemMouseCursors.click,
               //                               onTap: () {
               //                                 widget
               //                                         .priceController
@@ -998,7 +998,7 @@ class CreateWaybillMobileState
               //                               color:
               //                                   Colors
               //                                       .transparent,
-              //                               child: InkWell(
+              //                               child: InkWell( mouseCursor: SystemMouseCursors.click,
               //                                 onTap: () {
               //                                   showDialog(
               //                                     context:

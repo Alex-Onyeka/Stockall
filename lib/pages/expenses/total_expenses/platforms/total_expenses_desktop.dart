@@ -181,6 +181,8 @@ class TotalExpensesDesktopState
                           child: Material(
                             color: Colors.transparent,
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               borderRadius:
                                   BorderRadius.circular(10),
                               onTap: () async {
@@ -336,6 +338,9 @@ class TotalExpensesDesktopState
                                                     .end,
                                             children: [
                                               MaterialButton(
+                                                mouseCursor:
+                                                    SystemMouseCursors
+                                                        .click,
                                                 onPressed: () {
                                                   if (returnExpensesProvider(
                                                             context,

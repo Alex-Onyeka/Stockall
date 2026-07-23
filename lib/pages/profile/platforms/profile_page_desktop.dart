@@ -246,6 +246,9 @@ class ProfilePageDesktopState
                                 color: Colors.grey.shade100,
                               ),
                               child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 borderRadius:
                                     BorderRadius.circular(
                                       4,

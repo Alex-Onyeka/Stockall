@@ -36,6 +36,7 @@ class ToggleTotalPriceWidget extends StatelessWidget {
               color: Colors.grey.shade100,
             ),
             child: InkWell(
+              mouseCursor: SystemMouseCursors.click,
               borderRadius: BorderRadius.circular(5),
               onTap: () {
                 if (returnSalesProvider().setTotalPrice ==
@@ -56,6 +57,7 @@ class ToggleTotalPriceWidget extends StatelessWidget {
                       CrossAxisAlignment.start,
                   children: [
                     InkWell(
+                      mouseCursor: SystemMouseCursors.click,
                       onTap: () {
                         if (returnSalesProvider()
                                 .setTotalPrice ==

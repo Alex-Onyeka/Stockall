@@ -80,6 +80,9 @@ class ExpirySubPopUpDesktop extends StatelessWidget {
                               type:
                                   MaterialType.transparency,
                               child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 borderRadius:
                                     BorderRadius.circular(
                                       50,

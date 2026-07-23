@@ -348,6 +348,9 @@ class _SalesPageDesktopState
                                         children: [
                                           Expanded(
                                             child: InkWell(
+                                              mouseCursor:
+                                                  SystemMouseCursors
+                                                      .click,
                                               onTap: () {
                                                 // CartFunc()
                                                 //     .clearMainCart();
@@ -373,6 +376,9 @@ class _SalesPageDesktopState
                                             ),
                                           ),
                                           MaterialButton(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onPressed: () {
                                               Navigator.push(
                                                 context,

@@ -356,6 +356,8 @@ class _GlobalFloatingBubbleState
                       child: Material(
                         color: Colors.transparent,
                         child: InkWell(
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           borderRadius:
                               BorderRadius.circular(999),
                           onTap: toggleExpanded,
@@ -391,6 +393,7 @@ class _GlobalFloatingBubbleState
     return Material(
       color: Colors.transparent,
       child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
         borderRadius: BorderRadius.circular(5),
         onTap: onTap,
         child: Container(
@@ -466,6 +469,7 @@ void showCalculator(BuildContext newContext) {
                   0,
                 ),
                 child: IconButton(
+                  mouseCursor: SystemMouseCursors.click,
                   onPressed: () {
                     Navigator.of(calcContext).pop();
                   },

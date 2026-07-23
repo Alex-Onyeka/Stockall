@@ -226,6 +226,8 @@ class _ForgotPasswordDesktopState
                             ),
                             SizedBox(height: 20),
                             InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onTap: () {
                                 if (widget.isMain != null) {
                                   Navigator.pushReplacement(

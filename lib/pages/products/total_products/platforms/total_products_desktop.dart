@@ -227,6 +227,9 @@ class _TotalProductsDesktopState
                               Material(
                                 color: Colors.transparent,
                                 child: InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
                                   borderRadius:
                                       BorderRadius.circular(
                                         10,
@@ -1786,6 +1789,9 @@ void selectDepartmentProducts({
                                               Colors
                                                   .transparent,
                                           child: InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () {
                                               returnDepartmentProvider()
                                                   .selectMultipleDepartments(
@@ -1984,6 +1990,9 @@ void selectShopsProducts({
                                           Colors
                                               .transparent,
                                       child: InkWell(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
                                         onTap: () {
                                           returnShopProvider()
                                               .selectMultipleShop(
@@ -2085,6 +2094,7 @@ class ProductSelectionActionButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 3.0),
       child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
         onTap: action,
         child: Container(
           padding: EdgeInsets.symmetric(

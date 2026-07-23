@@ -374,6 +374,8 @@ class _DashboardDesktopState
                                                               ),
                                                             ),
                                                             child: InkWell(
+                                                              mouseCursor:
+                                                                  SystemMouseCursors.click,
                                                               onTap: () {
                                                                 Navigator.push(
                                                                   context,
@@ -755,7 +757,7 @@ class _DashboardDesktopState
                                                                   icon:
                                                                       employeesIconSvg,
                                                                   title:
-                                                                      'Employees',
+                                                                      'Staffs',
                                                                   action: () {
                                                                     returnNavProvider(
                                                                       context,
@@ -983,6 +985,8 @@ class _DashboardDesktopState
                                                           15,
                                                       children: [
                                                         InkWell(
+                                                          mouseCursor:
+                                                              SystemMouseCursors.click,
                                                           onTap: () async {
                                                             openWhatsApp();
                                                           },
@@ -1013,6 +1017,8 @@ class _DashboardDesktopState
                                                           ),
                                                         ),
                                                         InkWell(
+                                                          mouseCursor:
+                                                              SystemMouseCursors.click,
                                                           onTap: () async {
                                                             phoneCall();
                                                           },
@@ -1149,6 +1155,8 @@ class _DashboardDesktopState
                                                   opacity:
                                                       0,
                                                   child: IconButton(
+                                                    mouseCursor:
+                                                        SystemMouseCursors.click,
                                                     onPressed:
                                                         () {},
                                                     icon: Icon(
@@ -1165,6 +1173,9 @@ class _DashboardDesktopState
                                                   'NEW UPDATE AVAILABLE',
                                                 ),
                                                 IconButton(
+                                                  mouseCursor:
+                                                      SystemMouseCursors
+                                                          .click,
                                                   onPressed: () {
                                                     returnAppVersionProvider(
                                                       context,
@@ -1245,6 +1256,9 @@ class _DashboardDesktopState
                                                               theme.lightModeColor.prColor300,
                                                         ),
                                                         child: InkWell(
+                                                          mouseCursor:
+                                                              SystemMouseCursors.click,
+
                                                           onTap: () async {
                                                             setState(
                                                               () {
@@ -1311,6 +1325,8 @@ class _DashboardDesktopState
                                                               theme.lightModeColor.prColor300,
                                                         ),
                                                         child: InkWell(
+                                                          mouseCursor:
+                                                              SystemMouseCursors.click,
                                                           onTap: () async {
                                                             setState(
                                                               () {
@@ -1405,6 +1421,8 @@ class _DashboardDesktopState
                                                               theme.lightModeColor.prColor300,
                                                         ),
                                                         child: InkWell(
+                                                          mouseCursor:
+                                                              SystemMouseCursors.click,
                                                           onTap: () async {
                                                             setState(
                                                               () {

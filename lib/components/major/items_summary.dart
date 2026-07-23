@@ -224,6 +224,8 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             borderRadius:
                                 BorderRadius.circular(5),
                             onTap:
@@ -282,6 +284,8 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             borderRadius:
                                 BorderRadius.circular(5),
                             onTap: widget.refreshAction,
@@ -335,6 +339,8 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
                             borderRadius:
                                 BorderRadius.circular(5),
                             onTap: widget.filterAction,
@@ -423,6 +429,8 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                           mainWidget: Material(
                             color: Colors.transparent,
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               borderRadius:
                                   BorderRadius.circular(5),
                               onTap: () {
@@ -496,6 +504,8 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                           mainWidget: Material(
                             color: Colors.transparent,
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               borderRadius:
                                   BorderRadius.circular(5),
                               onTap: () {

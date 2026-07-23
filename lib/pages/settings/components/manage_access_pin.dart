@@ -487,6 +487,7 @@ class _ManagePinWidgetState extends State<ManagePinWidget> {
                     color: Colors.grey.shade200,
                   ),
                   child: InkWell(
+                    mouseCursor: SystemMouseCursors.click,
                     onTap: () {
                       Navigator.of(context).pop();
                     },
@@ -522,6 +523,7 @@ class _ManagePinWidgetState extends State<ManagePinWidget> {
                         theme.lightModeColor.errorColor200,
                   ),
                   child: InkWell(
+                    mouseCursor: SystemMouseCursors.click,
                     onTap: () {
                       if (!returnShopProvider()
                           .isUpdatePin) {

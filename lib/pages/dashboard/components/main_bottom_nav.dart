@@ -73,6 +73,7 @@ class MainBottomNav extends StatelessWidget {
               ),
               Expanded(
                 child: InkWell(
+                  mouseCursor: SystemMouseCursors.click,
                   onTap: () {
                     if (context.mounted) {
                       Provider.of<NavProvider>(
@@ -153,6 +154,7 @@ class MainBottomNav extends StatelessWidget {
         Visibility(
           visible: !isStoreKeeper(),
           child: InkWell(
+            mouseCursor: SystemMouseCursors.click,
             onTap: () {
               if (returnNavProvider(
                     context,

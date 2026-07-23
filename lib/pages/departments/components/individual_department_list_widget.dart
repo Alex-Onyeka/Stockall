@@ -211,6 +211,8 @@ class _IndividualDepartmentListWidgetState
                         ],
                       ),
                       IconButton(
+                        mouseCursor:
+                            SystemMouseCursors.click,
                         onPressed: () {
                           toggleIsOpen();
                         },
@@ -392,6 +394,8 @@ class _IndividualDepartmentListWidgetState
                               color: Colors.white,
                             ),
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onTap: () {
                                 showDialog(
                                   context: context,
@@ -506,6 +510,8 @@ class _IndividualDepartmentListWidgetState
                               color: Colors.white,
                             ),
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onTap: () {
                                 nameController.text =
                                     widget.department.name;
@@ -658,6 +664,9 @@ class _IndividualDepartmentListWidgetState
                                                   Colors
                                                       .transparent,
                                               child: InkWell(
+                                                mouseCursor:
+                                                    SystemMouseCursors
+                                                        .click,
                                                 onTap: () {
                                                   showDialog(
                                                     context:
@@ -682,6 +691,8 @@ class _IndividualDepartmentListWidgetState
                                                               showBottomActionButtons:
                                                                   false,
                                                               topRightWidget: IconButton(
+                                                                mouseCursor:
+                                                                    SystemMouseCursors.click,
                                                                 onPressed: () {
                                                                   Navigator.of(
                                                                     context,
@@ -723,7 +734,7 @@ class _IndividualDepartmentListWidgetState
                                                                               title:
                                                                                   'No Staff Added',
                                                                               subText:
-                                                                                  'Please proceed to the Employee page to add staff to this department.',
+                                                                                  'Please proceed to the Staff page to add staff to this department.',
                                                                               theme:
                                                                                   theme,
                                                                               height:
@@ -959,6 +970,8 @@ class _IndividualDepartmentListWidgetState
                               color: Colors.white,
                             ),
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               onTap: () {
                                 if (returnDepartmentProvider()
                                         .currentDepartment()

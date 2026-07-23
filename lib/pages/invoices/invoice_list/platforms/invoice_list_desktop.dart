@@ -182,6 +182,8 @@ class _InvoiceListDesktopState
                           Material(
                             color: Colors.transparent,
                             child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
                               borderRadius:
                                   BorderRadius.circular(5),
                               onTap: () {
@@ -243,6 +245,9 @@ class _InvoiceListDesktopState
                             child: Material(
                               color: Colors.transparent,
                               child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 borderRadius:
                                     BorderRadius.circular(
                                       10,
@@ -672,6 +677,8 @@ class _InvoiceListBodyDesktopState
                               Authorizations().viewDate,
                         ),
                         child: MaterialButton(
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onPressed: () {
                             if (returnInvoicesProvider()
                                         .dateSet !=

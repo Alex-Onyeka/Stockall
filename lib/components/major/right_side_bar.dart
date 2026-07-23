@@ -54,6 +54,7 @@ class RightSideBar extends StatelessWidget {
             Material(
               color: Colors.transparent,
               child: InkWell(
+                mouseCursor: SystemMouseCursors.click,
                 borderRadius: BorderRadius.circular(20),
                 onTap: () {
                   Navigator.push(
@@ -210,6 +211,8 @@ class RightSideBar extends StatelessWidget {
                       Material(
                         color: Colors.transparent,
                         child: InkWell(
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onTap: () {
                             Navigator.push(
                               context,
@@ -381,6 +384,9 @@ class RightSideBar extends StatelessWidget {
                                             Colors
                                                 .transparent,
                                         child: InkWell(
+                                          mouseCursor:
+                                              SystemMouseCursors
+                                                  .click,
                                           onTap: () {
                                             if (context
                                                     .mounted &&
@@ -581,6 +587,7 @@ class RightSideBar extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: InkWell(
+                    mouseCursor: SystemMouseCursors.click,
                     borderRadius: BorderRadius.circular(10),
                     onTap: () {
                       Navigator.push(

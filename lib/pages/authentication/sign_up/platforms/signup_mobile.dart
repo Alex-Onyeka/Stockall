@@ -268,6 +268,7 @@ class _SignupMobileState extends State<SignupMobile> {
             scrolledUnderElevation: 0,
             backgroundColor: Colors.white,
             leading: InkWell(
+              mouseCursor: SystemMouseCursors.click,
               onTap: () {
                 Navigator.of(context).pop();
               },

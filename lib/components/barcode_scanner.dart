@@ -111,6 +111,7 @@ class _BarcodeScannerMobileState
               child: Row(
                 children: [
                   IconButton(
+                    mouseCursor: SystemMouseCursors.click,
                     icon: const Icon(Icons.flash_on),
                     onPressed:
                         () =>
@@ -118,6 +119,7 @@ class _BarcodeScannerMobileState
                   ),
                   if (!kIsWeb)
                     IconButton(
+                      mouseCursor: SystemMouseCursors.click,
                       icon: const Icon(Icons.cameraswitch),
                       onPressed:
                           () =>
@@ -264,6 +266,7 @@ class _BarcodeScannerDesktopState
                 child: Row(
                   children: [
                     IconButton(
+                      mouseCursor: SystemMouseCursors.click,
                       icon: const Icon(Icons.flash_on),
                       onPressed:
                           () =>
@@ -272,6 +275,8 @@ class _BarcodeScannerDesktopState
                     ),
                     if (!kIsWeb)
                       IconButton(
+                        mouseCursor:
+                            SystemMouseCursors.click,
                         icon: const Icon(
                           Icons.cameraswitch,
                         ),

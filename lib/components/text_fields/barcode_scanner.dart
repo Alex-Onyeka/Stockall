@@ -42,6 +42,7 @@ class BarcodeScanner extends StatelessWidget {
                       TargetPlatform.android ||
                   platforms(context) == TargetPlatform.iOS,
               child: InkWell(
+                mouseCursor: SystemMouseCursors.click,
                 onTap: onTap,
 
                 child: TextFormField(
