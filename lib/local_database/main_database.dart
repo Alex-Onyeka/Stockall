@@ -52,59 +52,65 @@ class MainDatabase extends ChangeNotifier {
   MainDatabase._internal();
 
   Future<void> initHive() async {
-    if (kIsWeb) {
-      await Hive.initFlutter();
-    } else {
-      final dir = await getApplicationSupportDirectory();
-      final stockallDir = Directory('${dir.path}/Stockall');
-      if (!await stockallDir.exists()) {
-        await stockallDir.create(recursive: true);
+    try {
+      if (kIsWeb) {
+        await Hive.initFlutter();
+      } else {
+        final dir = await getApplicationSupportDirectory();
+        final stockallDir = Directory(
+          '${dir.path}/Stockall',
+        );
+        if (!await stockallDir.exists()) {
+          await stockallDir.create(recursive: true);
+        }
+        Hive.init(stockallDir.path);
       }
-      Hive.init(stockallDir.path);
+      await UserFunc().init();
+      await ShopFunc().init();
+      await PermissionFunc().init();
+      await AppVersionFunc().init();
+      await OnScreenKeyboardPinFunc().init();
+      await UtilityConstantsFunc().init();
+      await FloatingButtonVisibilityBox().init();
+      await VisibilityBox().init();
+      await CustomerFunc().init();
+      await ExpensesFunc().init();
+      await NotificationFunc().init();
+      await ProductsFunc().init();
+      await ProductRecordFunc().init();
+      await MainReceiptFunc().init();
+      await LoggedInUserFunc().init();
+      await ShopLogosFunc().init();
+      await CurrentShopFunc().init();
+      await SubscriptionFunc().init();
+      await ShopOwnerFunc().init();
+      await InventoryUpdatesFunc().init();
+      await ItemHistoriesFunc().init();
+      await QuantityUpdateFunc().init();
+      await EventsLogFunc().init();
+      await ErrorLogFunc().init();
+      await InvoicesFunc().init();
+      await SubStaffFunc().init();
+      if (returnShopProvider().isDesktop()) {
+        await BarcodePrinterLocalFunc().init();
+        await ReceiptPrinterFunc().init();
+        await PriceTagPrinterFunc().init();
+        await PriceAndBarcodePrinterLocalFunc().init();
+      }
+      await DepartmentsFunc().init();
+      await CategoryFunc().init();
+      await CurrentDepartmentFunc().init();
+      await StorageProductsFunc().init();
+      await CartFunc().init();
+      await PurchaseFunc().init();
+      await ItemPurchaseFunc().init();
+      await SuppliersFunc().init();
+      await WaybillsFunc().init();
+      await CountriesFunc().init();
+      print('init Complete');
+    } catch (e) {
+      print('Error Initializing Local Db: ${e.toString()}');
     }
-    await UserFunc().init();
-    await ShopFunc().init();
-    await PermissionFunc().init();
-    await AppVersionFunc().init();
-    await OnScreenKeyboardPinFunc().init();
-    await UtilityConstantsFunc().init();
-    await FloatingButtonVisibilityBox().init();
-    await VisibilityBox().init();
-    await CustomerFunc().init();
-    await ExpensesFunc().init();
-    await NotificationFunc().init();
-    await ProductsFunc().init();
-    await ProductRecordFunc().init();
-    await MainReceiptFunc().init();
-    await LoggedInUserFunc().init();
-    await ShopLogosFunc().init();
-    await CurrentShopFunc().init();
-    await SubscriptionFunc().init();
-    await ShopOwnerFunc().init();
-    await InventoryUpdatesFunc().init();
-    await ItemHistoriesFunc().init();
-    await QuantityUpdateFunc().init();
-    await EventsLogFunc().init();
-    await ErrorLogFunc().init();
-    await InvoicesFunc().init();
-    await SubStaffFunc().init();
-    if (returnShopProvider().isDesktop()) {
-      await BarcodePrinterLocalFunc().init();
-      await ReceiptPrinterFunc().init();
-      await PriceTagPrinterFunc().init();
-      await PriceAndBarcodePrinterLocalFunc().init();
-    }
-    await DepartmentsFunc().init();
-    await CategoryFunc().init();
-    await CurrentDepartmentFunc().init();
-    await StorageProductsFunc().init();
-    await CartFunc().init();
-    await PurchaseFunc().init();
-    await ItemPurchaseFunc().init();
-    await SuppliersFunc().init();
-    await WaybillsFunc().init();
-    await CountriesFunc().init();
-    print('init Complete');
   }
 }
 

@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
@@ -65,55 +67,63 @@ import 'package:window_manager/window_manager.dart';
 
 // Stopwatch stopwatch = Stopwatch();
 void main(List<String> args) async {
-  WidgetsFlutterBinding.ensureInitialized();
-  if (args.length >= 3) {
-    final windowId = int.tryParse(args[1]);
-    final argument = args[2];
-    // print(windowId);
-    // print(argument);
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
+    await startupLog('Starting Application');
+    if (args.length >= 3) {
+      final windowId = int.tryParse(args[1]);
+      final argument = args[2];
+      // await startupLog(windowId);
+      // await startupLog(argument);
 
-    try {
-      final decoded = jsonDecode(argument);
-      if (decoded['type'] == 'alt') {
-        runApp(
-          MyAppAlt(
-            home: AltDisplay(
-              windowId: windowId ?? -1,
-              cartId: decoded['cart_id'],
+      try {
+        final decoded = jsonDecode(argument);
+        if (decoded['type'] == 'alt') {
+          runApp(
+            MyAppAlt(
+              home: AltDisplay(
+                windowId: windowId ?? -1,
+                cartId: decoded['cart_id'],
+              ),
             ),
-          ),
-        );
+          );
+        }
+      } catch (e) {
+        await startupLog('An Error Occoured: $e');
       }
-    } catch (e) {
-      print('An Error Occoured: $e');
-    }
-  } else {
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        statusBarColor: Colors.white,
-        statusBarIconBrightness: Brightness.dark,
-        systemNavigationBarContrastEnforced: true,
-        statusBarBrightness: Brightness.light,
-      ),
-    );
-    // Lock to portrait only
-    await SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
+    } else {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarColor: Colors.white,
+          statusBarIconBrightness: Brightness.dark,
+          systemNavigationBarContrastEnforced: true,
+          statusBarBrightness: Brightness.light,
+        ),
+      );
+      // Lock to portrait only
+      await SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
 
-    await Supabase.initialize(
-      url: supabaseUrl,
-      anonKey: supabaseAnonKey,
-    );
-    await MainDatabase().initHive();
-    if (returnShopProvider().isDesktop()) {
-      await windowManager.ensureInitialized();
-      maxWindow();
-      print("Maximize In Main Dot Dart");
+      await Supabase.initialize(
+        url: supabaseUrl,
+        anonKey: supabaseAnonKey,
+      );
+      await MainDatabase().initHive();
+      if (returnShopProvider().isDesktop()) {
+        await windowManager.ensureInitialized();
+        maxWindow();
+        await startupLog("Maximize In Main Dot Dart");
+      }
+      await DeviceService.init();
+      runApp(MyApp(home: BasePage()));
     }
-    await DeviceService.init();
-    runApp(MyApp(home: BasePage()));
+  } catch (e, s) {
+    await startupLog(
+      'Error Occoured While Initialzing Main Dart File: ${e.toString()}',
+    );
+    await startupLog('Stack Trace: ${s.toString()}');
   }
 }
 
@@ -124,20 +134,51 @@ void syncData() {
 }
 
 void maxWindow() {
-  if (returnShopProvider().isDesktop()) {
-    timer = Timer.periodic(Duration(seconds: 1), (
-      timer,
-    ) async {
-      var isMax = await windowManager.isMaximized();
-      if (!isMax) {
-        await windowManager.maximize();
-        print("Maximize In Emp Auth Page");
-      } else {
-        timer.cancel();
-        print('Timer Cancelled');
-      }
-    });
+  // if (returnShopProvider().isDesktop()) {
+  //   timer = Timer.periodic(Duration(seconds: 1), (
+  //     timer,
+  //   ) async {
+  //     var isMax = await windowManager.isMaximized();
+  //     if (!isMax) {
+  //       await windowManager.maximize();
+  //       await startupLog("Maximize In Emp Auth Page");
+  //     } else {
+  //       timer.cancel();
+  //       await startupLog('Timer Cancelled');
+  //     }
+  //   });
+  // }
+}
+
+Future<void> startupLog(
+  String message, {
+  Object? error,
+  StackTrace? stackTrace,
+}) async {
+  final dir = await getApplicationSupportDirectory();
+
+  // startup.log goes directly inside the app support directory
+  final file = File('${dir.path}/mainLog.log');
+
+  final buffer =
+      StringBuffer()..writeln(
+        '[${DateTime.now().toIso8601String()}] $message',
+      );
+
+  if (error != null) {
+    buffer.writeln('Error: $error');
   }
+
+  if (stackTrace != null) {
+    buffer.writeln("Stack Trace: $stackTrace");
+  }
+
+  buffer.writeln();
+
+  await file.writeAsString(
+    buffer.toString(),
+    mode: FileMode.append,
+  );
 }
 
 TempUserClass currentUser() {
