@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/purchase_payments/unsynced/deleted_purchase_payments/deleted_purchase_payments.dart';
+import 'package:stockall/main.dart';
 
 class DeletedPurchasePaymentsFunc {
   static final DeletedPurchasePaymentsFunc instance =
@@ -20,7 +21,7 @@ class DeletedPurchasePaymentsFunc {
       Hive.registerAdapter(
         DeletedPurchasePaymentsAdapter(),
       );
-      print(
+      await mainLocalLog(
         'Deleted PurchasePayments Adapter registered ✅',
       );
     }
@@ -31,13 +32,15 @@ class DeletedPurchasePaymentsFunc {
           await Hive.openBox<DeletedPurchasePayments>(
             deletedPurchasePaymentsBoxName,
           );
-      print('Deleted PurchasePayments Box opened ✅');
+      await mainLocalLog(
+        'Deleted PurchasePayments Box opened ✅',
+      );
     } else {
       _deletedPurchasePaymentsBox =
           Hive.box<DeletedPurchasePayments>(
             deletedPurchasePaymentsBoxName,
           );
-      print(
+      await mainLocalLog(
         'Deleted PurchasePayments Box already open, reused ✅',
       );
     }
@@ -65,10 +68,12 @@ class DeletedPurchasePaymentsFunc {
       for (var purchase in deletedPurchasePayments) {
         await deletedPurchasePaymentsBox.add(purchase);
       }
-      print("Offline Deleted Purchase Payments inserted ✅");
+      await mainLocalLog(
+        "Offline Deleted Purchase Payments inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Deleted Purchase Payments insertion failed ❌: $e',
       );
       return 0;
@@ -82,12 +87,12 @@ class DeletedPurchasePaymentsFunc {
       await deletedPurchasePaymentsBox.add(
         deletedPurchasePayment,
       );
-      print(
+      await mainLocalLog(
         'Offline Deleted Purchase Payment inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Deleted Purchase Payment insertion failed ❌: $e',
       );
       return 0;
@@ -99,10 +104,12 @@ class DeletedPurchasePaymentsFunc {
   ) async {
     try {
       await deletedPurchasePaymentsBox.delete(uuid);
-      print('Delete Purchase Payment cleared ✅');
+      await mainLocalLog(
+        'Delete Purchase Payment cleared ✅',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error while Deleting Deleted Purchase Payment ❌: $e',
       );
       return 0;
@@ -112,10 +119,12 @@ class DeletedPurchasePaymentsFunc {
   Future<int> clearDeletedPurchasePayments() async {
     try {
       await deletedPurchasePaymentsBox.clear();
-      print('All Deleted Purchase Payments cleared ✅');
+      await mainLocalLog(
+        'All Deleted Purchase Payments cleared ✅',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error while clearing Deleted Purchase Payments ❌: $e',
       );
       return 0;

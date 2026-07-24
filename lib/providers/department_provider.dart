@@ -42,7 +42,7 @@ class DepartmentProvider with ChangeNotifier {
         );
         return depts.isEmpty ? null : depts.first;
       } catch (e) {
-        print(
+        mainLocalLog(
           'Error With Department First: ${e.toString()}',
         );
         return null;
@@ -57,7 +57,7 @@ class DepartmentProvider with ChangeNotifier {
           );
           return depts.isEmpty ? null : depts.first;
         } catch (e) {
-          print(
+          mainLocalLog(
             'Error With Department First: ${e.toString()}',
           );
           return null;
@@ -76,7 +76,7 @@ class DepartmentProvider with ChangeNotifier {
                     : null;
             return dept;
           } catch (e) {
-            print(
+            mainLocalLog(
               'Error With Department Second: ${e.toString()}',
             );
             return null;
@@ -92,7 +92,7 @@ class DepartmentProvider with ChangeNotifier {
     DepartmentClass? departmentClass,
   }) async {
     try {
-      print('Department Selection Started');
+      await mainLocalLog('Department Selection Started');
       int res =
           departmentClass != null
               ? await CurrentDepartmentFunc()
@@ -105,23 +105,25 @@ class DepartmentProvider with ChangeNotifier {
               : /*await clearDepartments()*/ await CurrentDepartmentFunc()
                   .clearCurrentDepartment();
       if (res == 1) {
-        print(
+        await mainLocalLog(
           'Current Department set: ${CurrentDepartmentFunc().getCurrentDepartment()?.currentDepartmentId}',
         );
         notifyListeners();
       } else {
-        print('Department Selection Failed');
+        await mainLocalLog('Department Selection Failed');
         notifyListeners();
       }
       returnShopProvider().setState();
     } catch (e) {
-      print('❌❌ Select Department Error: ${e.toString()}');
+      await mainLocalLog(
+        '❌❌ Select Department Error: ${e.toString()}',
+      );
     }
   }
 
   Future<int> clearDepartments() async {
     departments.clear();
-    print('Departments Cleared');
+    await mainLocalLog('Departments Cleared');
     notifyListeners();
     return await CurrentDepartmentFunc()
         .clearCurrentDepartment();
@@ -148,7 +150,9 @@ class DepartmentProvider with ChangeNotifier {
       syncData();
       return 1;
     } catch (e) {
-      print('Error Creating Department: ${e.toString()}');
+      await mainLocalLog(
+        'Error Creating Department: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -161,7 +165,9 @@ class DepartmentProvider with ChangeNotifier {
             .from(tableName)
             .select()
             .eq('shop_id', shopId());
-        print('Departments Gotten: ${res.length}');
+        await mainLocalLog(
+          'Departments Gotten: ${res.length}',
+        );
 
         departments =
             (res as List)
@@ -224,7 +230,9 @@ class DepartmentProvider with ChangeNotifier {
       notifyListeners();
       return departments;
     } catch (e) {
-      print('Error Getting Departments: ${e.toString()}');
+      await mainLocalLog(
+        'Error Getting Departments: ${e.toString()}',
+      );
       return [];
     }
   }
@@ -260,7 +268,9 @@ class DepartmentProvider with ChangeNotifier {
       notifyListeners();
       return departments;
     } catch (e) {
-      print('Error Getting Departments: ${e.toString()}');
+      await mainLocalLog(
+        'Error Getting Departments: ${e.toString()}',
+      );
       return [];
     }
   }
@@ -300,7 +310,9 @@ class DepartmentProvider with ChangeNotifier {
       syncData();
       return 1;
     } catch (e) {
-      print('Error Updating Department: ${e.toString()}');
+      await mainLocalLog(
+        'Error Updating Department: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -367,7 +379,9 @@ class DepartmentProvider with ChangeNotifier {
       syncData();
       return 1;
     } catch (e) {
-      print('Error Deleting Department: ${e.toString()}');
+      await mainLocalLog(
+        'Error Deleting Department: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -385,7 +399,7 @@ class DepartmentProvider with ChangeNotifier {
                 .getDepartment()
                 .toList();
         for (var dept in tempDepartments) {
-          print(
+          await mainLocalLog(
             'Updated Time: ${dept.department.updatedAt?.toString()}',
           );
         }
@@ -400,14 +414,20 @@ class DepartmentProvider with ChangeNotifier {
                 .insert(payload)
                 .select();
 
-        print('${data.length} items added Successfully ✅');
+        await mainLocalLog(
+          '${data.length} items added Successfully ✅',
+        );
         await CreatedDepartmentsFunc().clearDepartment();
-        print('Unsynced Departments Cleared');
-        print('Mounted, refreshing Departments ✅');
+        await mainLocalLog('Unsynced Departments Cleared');
+        await mainLocalLog(
+          'Mounted, refreshing Departments ✅',
+        );
         await getDepartments();
       }
     } catch (e) {
-      print('Batch Departments insert failed ❌: $e');
+      await mainLocalLog(
+        'Batch Departments insert failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Departments insert failed ❌: $e',
       );
@@ -444,18 +464,24 @@ class DepartmentProvider with ChangeNotifier {
                 ) // delete where id is in the list
                 .select();
 
-        print(
+        await mainLocalLog(
           '${data.length} items deleted successfully ✅',
         );
 
         await DeletedDepartmentsFunc()
             .clearDeletedDepartments();
-        print('Unsynced deleted Departments cleared');
-        print('Mounted, refreshing Departments ✅');
+        await mainLocalLog(
+          'Unsynced deleted Departments cleared',
+        );
+        await mainLocalLog(
+          'Mounted, refreshing Departments ✅',
+        );
         await getDepartments();
       }
     } catch (e) {
-      print('Batch Departments delete failed ❌: $e');
+      await mainLocalLog(
+        'Batch Departments delete failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Departments delete failed ❌: $e',
       );
@@ -469,7 +495,7 @@ class DepartmentProvider with ChangeNotifier {
   Future<void> updateDepartmentsSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
-      print(
+      await mainLocalLog(
         UpdatedDepartmentFunc()
             .getDepartments()
             .length
@@ -500,7 +526,7 @@ class DepartmentProvider with ChangeNotifier {
             await supabase
                 .from(tableName)
                 .insert(localDepartments.toJson());
-            print(
+            await mainLocalLog(
               'Inserted Department with uuid ${localDepartments.uuid}',
             );
             await UpdatedDepartmentFunc()
@@ -521,10 +547,12 @@ class DepartmentProvider with ChangeNotifier {
                 (localDepartments.updatedAt ??
                         DateTime.now())
                     .toUtc();
-            print(
+            await mainLocalLog(
               "Local updatedAt: ${localDepartments.updatedAt}",
             );
-            print("Remote updatedAt: $remoteUpdatedAt");
+            await mainLocalLog(
+              "Remote updatedAt: $remoteUpdatedAt",
+            );
 
             if (remoteUpdatedAt == null ||
                 localDepartments.updatedAt!.isAfter(
@@ -534,7 +562,7 @@ class DepartmentProvider with ChangeNotifier {
                   .from(tableName)
                   .update(localDepartments.toJson())
                   .eq('uuid', localDepartments.uuid);
-              print(
+              await mainLocalLog(
                 'Updated Department with uuid ${localDepartments.uuid}',
               );
               await UpdatedDepartmentFunc()
@@ -542,7 +570,7 @@ class DepartmentProvider with ChangeNotifier {
                     localDepartments.uuid,
                   );
             } else {
-              print(
+              await mainLocalLog(
                 'Skipped Department ${localDepartments.uuid}, remote is newer ✅',
               );
             }
@@ -551,12 +579,18 @@ class DepartmentProvider with ChangeNotifier {
 
         await UpdatedDepartmentFunc()
             .clearupdatedDepartments();
-        print('Unsynced updated Departments cleared');
-        print('Mounted, refreshing Departments ✅');
+        await mainLocalLog(
+          'Unsynced updated Departments cleared',
+        );
+        await mainLocalLog(
+          'Mounted, refreshing Departments ✅',
+        );
         await getDepartments();
       }
     } catch (e) {
-      print('Batch Departments update failed ❌: $e');
+      await mainLocalLog(
+        'Batch Departments update failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Departments update failed ❌: $e',
       );

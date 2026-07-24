@@ -15,7 +15,7 @@
 //     productSuggestionBox = await Hive.openBox(
 //       productSuggestionBoxName,
 //     );
-//     print('Product Suggestions Box Initialized');
+//     await mainLocalLog('Product Suggestions Box Initialized');
 //   }
 
 //   List<ProductSuggestion> getSuggestions() {
@@ -40,10 +40,10 @@
 //           suggestion,
 //         );
 //       }
-//       print("Offline Suggestions inserted");
+//       await mainLocalLog("Offline Suggestions inserted");
 //       return 1;
 //     } catch (e) {
-//       print(
+//       await mainLocalLog(
 //         'Offline Suggestions Insertion failed: ${e.toString()}',
 //       );
 //       return 0;
@@ -58,10 +58,10 @@
 //         suggestion.uuid,
 //         suggestion,
 //       );
-//       print('Offline Suggestion inserted Successfully');
+//       await mainLocalLog('Offline Suggestion inserted Successfully');
 //       return 1;
 //     } catch (e) {
-//       print('Offline Suggestion Isertion Failed');
+//       await mainLocalLog('Offline Suggestion Isertion Failed');
 //       return 0;
 //     }
 //   }
@@ -74,10 +74,10 @@
 //         suggestion.uuid,
 //         suggestion,
 //       );
-//       print('Offline Suggestion Updated Successfully');
+//       await mainLocalLog('Offline Suggestion Updated Successfully');
 //       return 1;
 //     } catch (e) {
-//       print('Offline Suggestion Update Failed');
+//       await mainLocalLog('Offline Suggestion Update Failed');
 //       return 0;
 //     }
 //   }
@@ -85,10 +85,10 @@
 //   Future<int> deleteSuggestion(String uuid) async {
 //     try {
 //       await productSuggestionBox.delete(uuid);
-//       print('Offline Suggestion Deleted Successfully');
+//       await mainLocalLog('Offline Suggestion Deleted Successfully');
 //       return 1;
 //     } catch (e) {
-//       print('Offline Suggestion Delete Failed');
+//       await mainLocalLog('Offline Suggestion Delete Failed');
 //       return 0;
 //     }
 //   }
@@ -96,10 +96,10 @@
 //   Future<int> clearSuggestion() async {
 //     try {
 //       await productSuggestionBox.clear();
-//       print('Offline Suggestion Cleared Successfully');
+//       await mainLocalLog('Offline Suggestion Cleared Successfully');
 //       return 1;
 //     } catch (e) {
-//       print('Offline Suggestion Clear Failed');
+//       await mainLocalLog('Offline Suggestion Clear Failed');
 //       return 0;
 //     }
 //   }

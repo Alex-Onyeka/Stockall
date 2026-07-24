@@ -19,7 +19,9 @@ class CreatedShopLogosFunc {
       TempShopLogosAdapter().typeId,
     )) {
       Hive.registerAdapter(TempShopLogosAdapter());
-      print('Temp Shop Logos Adapter registered ✅');
+      await mainLocalLog(
+        'Temp Shop Logos Adapter registered ✅',
+      );
     }
 
     if (!Hive.isBoxOpen(createdShopLogosBoxName)) {
@@ -27,12 +29,12 @@ class CreatedShopLogosFunc {
           await Hive.openBox<TempShopLogos>(
             createdShopLogosBoxName,
           );
-      print('Created Products Box opened ✅');
+      await mainLocalLog('Created Products Box opened ✅');
     } else {
       _createdShopLogosBox = Hive.box<TempShopLogos>(
         createdShopLogosBoxName,
       );
-      print(
+      await mainLocalLog(
         'Created Shop Logos Box already open, reused ✅',
       );
     }
@@ -66,10 +68,14 @@ class CreatedShopLogosFunc {
         returnShopProvider().userShop()!.shopId!,
         createdLogo,
       );
-      print('Offline Created Logo inserted successfully ✅');
+      await mainLocalLog(
+        'Offline Created Logo inserted successfully ✅',
+      );
       return 1;
     } catch (e) {
-      print('Offline Created Logo insertion failed ❌: $e');
+      await mainLocalLog(
+        'Offline Created Logo insertion failed ❌: $e',
+      );
       return 0;
     }
   }
@@ -77,10 +83,12 @@ class CreatedShopLogosFunc {
   Future<int> clearCreatedLogos() async {
     try {
       await createdShopLogosBox.clear();
-      print('All Created Logos cleared ✅');
+      await mainLocalLog('All Created Logos cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while clearing Created Logos ❌: $e');
+      await mainLocalLog(
+        'Error while clearing Created Logos ❌: $e',
+      );
       return 0;
     }
   }

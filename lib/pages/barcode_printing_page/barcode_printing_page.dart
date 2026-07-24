@@ -142,12 +142,12 @@ class _BarcodePrintingPageState
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       returnData().clearBarcodeGenerationList();
       searchController.clear();
 
       if (widget.product != null) {
-        print(widget.product?.name);
+        await mainLocalLog(widget.product?.name);
         setState(() {
           productPage = widget.product;
         });
@@ -1644,7 +1644,7 @@ class _BarcodePrintingPageState
                                                     .clearBarcodeGenerationList();
                                               }
 
-                                              print(
+                                              await mainLocalLog(
                                                 'Generate Clicked',
                                               );
                                             },

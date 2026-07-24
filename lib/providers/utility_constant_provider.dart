@@ -28,8 +28,12 @@ class UtilityConstantProvider extends ChangeNotifier {
 
         utilityConstants = UtilityConstants.fromJson(res);
 
-        print("💕💕👏${utilityConstants?.basicPlan}");
-        print("💕💕👏${utilityConstants?.vat}");
+        await mainLocalLog(
+          "💕💕👏${utilityConstants?.basicPlan}",
+        );
+        await mainLocalLog(
+          "💕💕👏${utilityConstants?.vat}",
+        );
 
         UtilityConstantsFunc().insertUtilityConstant(
           UtilityConstants.fromJson(res),
@@ -37,11 +41,13 @@ class UtilityConstantProvider extends ChangeNotifier {
 
         notifyListeners();
 
-        print('Utility Constants gotten Successfully');
+        await mainLocalLog(
+          'Utility Constants gotten Successfully',
+        );
 
         return utilityConstants;
       } catch (e) {
-        print(
+        await mainLocalLog(
           '❌Error Getting Utility Constants: ${e.toString()}',
         );
         return null;
@@ -50,7 +56,9 @@ class UtilityConstantProvider extends ChangeNotifier {
       utilityConstants =
           UtilityConstantsFunc().getUtilityConstants();
       notifyListeners();
-      print('Utility Constants gotten Offline');
+      await mainLocalLog(
+        'Utility Constants gotten Offline',
+      );
       return utilityConstants;
     }
   }

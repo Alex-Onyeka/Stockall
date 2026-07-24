@@ -79,7 +79,7 @@ class ShopProvider extends ChangeNotifier {
     shop.employees = [];
     shop.refCode?.toLowerCase();
     try {
-      print('Starting Creating Shop');
+      await mainLocalLog('Starting Creating Shop');
       await getUserShops();
       if (userShops.isEmpty) {
         await returnSubcsription(
@@ -89,7 +89,7 @@ class ShopProvider extends ChangeNotifier {
           // ignore: use_build_context_synchronously
         ).createSubscription(context);
         if (tempRole != 'Owner') {
-          print('User is not Owner');
+          await mainLocalLog('User is not Owner');
           shop.employees!.add(
             AuthService().currentUser ??
                 returnUserProviderSingle()
@@ -147,7 +147,9 @@ class ShopProvider extends ChangeNotifier {
             .maybeSingle();
       }
     } catch (e) {
-      print('Error Creating Shop: ${e.toString()}');
+      await mainLocalLog(
+        'Error Creating Shop: ${e.toString()}',
+      );
     }
   }
 
@@ -220,7 +222,9 @@ class ShopProvider extends ChangeNotifier {
           return 0;
         }
       } catch (e) {
-        print("Error Deleting Shop: ${e.toString()}");
+        await mainLocalLog(
+          "Error Deleting Shop: ${e.toString()}",
+        );
         return 0;
       }
     } else {
@@ -319,7 +323,7 @@ class ShopProvider extends ChangeNotifier {
                 .maybeSingle();
 
         if (res == null) {
-          print('Shop Owner not gotten');
+          await mainLocalLog('Shop Owner not gotten');
         } else {
           shopOwnerUser = TempUserClass.fromJson(res);
           await ShopOwnerFunc().insertShopOwner(
@@ -329,7 +333,7 @@ class ShopProvider extends ChangeNotifier {
         }
       } else {
         /// Offline mode
-        print('Gettiing Stores Offline');
+        await mainLocalLog('Gettiing Stores Offline');
         final shops = ShopFunc().getShops();
 
         shops.sort((a, b) {
@@ -348,7 +352,9 @@ class ShopProvider extends ChangeNotifier {
       notifyListeners();
       return userShops;
     } catch (e) {
-      print('Error Getting Stores: ${e.toString()}');
+      await mainLocalLog(
+        'Error Getting Stores: ${e.toString()}',
+      );
       return [];
     }
   }
@@ -362,7 +368,7 @@ class ShopProvider extends ChangeNotifier {
             .update({'is_head_quarters': true})
             .eq('shop_id', shop.shopId!)
             .maybeSingle();
-        // print('Shop Payment Plan Set: $plan');
+        // await mainLocalLog('Shop Payment Plan Set: $plan');
 
         final response = await getUserShops(
           // AuthService().currentUser!,
@@ -372,7 +378,7 @@ class ShopProvider extends ChangeNotifier {
           notifyListeners();
         }
       } catch (e) {
-        print(
+        await mainLocalLog(
           '❌ Error Setting Company as head quarter Online: ${e.toString()}',
         );
       }
@@ -390,7 +396,7 @@ class ShopProvider extends ChangeNotifier {
         // setShops(shop);
         notifyListeners();
       } catch (e) {
-        print(
+        await mainLocalLog(
           '❌ Error Setting Company as head quarter Offline: ${e.toString()}',
         );
       }
@@ -427,7 +433,9 @@ class ShopProvider extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      print("❌ Failed to update print type: $e");
+      await mainLocalLog(
+        "❌ Failed to update print type: $e",
+      );
     }
   }
 
@@ -460,7 +468,9 @@ class ShopProvider extends ChangeNotifier {
           notifyListeners();
         }
       } catch (e) {
-        print("❌ Failed to update contact details: $e");
+        await mainLocalLog(
+          "❌ Failed to update contact details: $e",
+        );
       }
     } else {
       // TempShopClass? shop = ShopFunc().getShop();
@@ -501,7 +511,9 @@ class ShopProvider extends ChangeNotifier {
           notifyListeners();
         }
       } catch (e) {
-        print("❌ Failed to update contact details: $e");
+        await mainLocalLog(
+          "❌ Failed to update contact details: $e",
+        );
       }
     } else {
       // TempShopClass? shop = ShopFunc().getShop();
@@ -528,8 +540,8 @@ class ShopProvider extends ChangeNotifier {
   }) async {
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
-      print("userShop(): ${userShop()?.name}");
-      print("shopId: ${userShop()?.shopId}");
+      await mainLocalLog("userShop(): ${userShop()?.name}");
+      await mainLocalLog("shopId: ${userShop()?.shopId}");
       try {
         final response =
             await supabase
@@ -545,7 +557,7 @@ class ShopProvider extends ChangeNotifier {
                 .eq('shop_id', userShop()!.shopId!)
                 .select()
                 .maybeSingle();
-        print("✅ Updated response: $response");
+        await mainLocalLog("✅ Updated response: $response");
         final shop = await getUserShops();
 
         if (response != null && response.isNotEmpty) {
@@ -553,11 +565,13 @@ class ShopProvider extends ChangeNotifier {
           // userShops[ind] = TempShopClass.fromJson(response);
           notifyListeners();
         } else {
-          print('No Shop Found');
+          await mainLocalLog('No Shop Found');
         }
       } catch (e, stack) {
-        print("❌ Failed to update location: $e");
-        print(stack);
+        await mainLocalLog(
+          "❌ Failed to update location: $e",
+        );
+        await mainLocalLog(stack.toString());
       }
     } else {
       // TempShopClass? shop = ShopFunc().getShop();
@@ -592,7 +606,7 @@ class ShopProvider extends ChangeNotifier {
                 .maybeSingle();
 
         if (response == null) {
-          print('Shop not found');
+          await mainLocalLog('Shop not found');
           return;
         }
 
@@ -618,9 +632,11 @@ class ShopProvider extends ChangeNotifier {
             .eq('shop_id', userShop()!.shopId!);
 
         if (updateResponse != null) {
-          print('Failed to update shop: $updateResponse');
+          await mainLocalLog(
+            'Failed to update shop: $updateResponse',
+          );
         } else {
-          print('Staff added successfully.');
+          await mainLocalLog('Staff added successfully.');
         }
       } else {
         var res =
@@ -632,10 +648,10 @@ class ShopProvider extends ChangeNotifier {
                 .maybeSingle();
 
         if (res == null) {
-          print('Shop not found');
+          await mainLocalLog('Shop not found');
           return;
         }
-        print('Shop Owner Added Successfully');
+        await mainLocalLog('Shop Owner Added Successfully');
 
         var userRes =
             await supabase
@@ -644,7 +660,7 @@ class ShopProvider extends ChangeNotifier {
                 .eq('user_id', newEmployeeId)
                 .maybeSingle();
         if (userRes == null) {
-          print('User not found');
+          await mainLocalLog('User not found');
           return;
         }
         var currUser = TempUserClass.fromJson(userRes);
@@ -667,13 +683,13 @@ class ShopProvider extends ChangeNotifier {
                 .select()
                 .maybeSingle();
         if (subRes == null) {
-          print('Subscription User Id Failed');
+          await mainLocalLog('Subscription User Id Failed');
           return;
         }
-        print('Subscription Update Success');
+        await mainLocalLog('Subscription Update Success');
       }
     } catch (e) {
-      print('An Error occurred: $e');
+      await mainLocalLog('An Error occurred: $e');
     }
   }
 
@@ -691,7 +707,7 @@ class ShopProvider extends ChangeNotifier {
               .maybeSingle();
 
       if (response == null) {
-        print('Shop not found');
+        await mainLocalLog('Shop not found');
         return;
       }
 
@@ -707,7 +723,7 @@ class ShopProvider extends ChangeNotifier {
       if (currentEmployees.contains(employeeIdToRemove)) {
         currentEmployees.remove(employeeIdToRemove);
       } else {
-        print('Staff not found in the shop');
+        await mainLocalLog('Staff not found in the shop');
         return;
       }
 
@@ -718,9 +734,11 @@ class ShopProvider extends ChangeNotifier {
           .eq('shop_id', userShop()!.shopId!);
 
       if (updateResponse != null) {
-        print('Failed to update shop: $updateResponse');
+        await mainLocalLog(
+          'Failed to update shop: $updateResponse',
+        );
       } else {
-        print('Staff removed successfully.');
+        await mainLocalLog('Staff removed successfully.');
         try {
           var res =
               await supabase
@@ -731,17 +749,21 @@ class ShopProvider extends ChangeNotifier {
                   .maybeSingle();
           if (res != null) {
             var newRes = TempUserClass.fromJson(res);
-            print('Staff Department updated Successfully');
-            print(newRes.departmentUuids?.length);
+            await mainLocalLog(
+              'Staff Department updated Successfully',
+            );
+            await mainLocalLog(
+              newRes.departmentUuids?.length.toString(),
+            );
           }
         } catch (e) {
-          print(
+          await mainLocalLog(
             'Staff Department Updated Failed: ${e.toString()}',
           );
         }
       }
     } catch (e) {
-      print('Exception occurred: $e');
+      await mainLocalLog('Exception occurred: $e');
     }
   }
 
@@ -771,17 +793,17 @@ class ShopProvider extends ChangeNotifier {
     } else {
       try {
         var safeContext = context;
-        print('Shop Selection Started');
+        await mainLocalLog('Shop Selection Started');
         // await returnData(
         //   context,
         //   listen: false,
         // ).clearTotalCache();
-        // print('Total Cache Cleared');
+        // await mainLocalLog('Total Cache Cleared');
         var res = await CurrentShopFunc().createCurrentShop(
           TempCurrentShop(currentShopId: shopC.shopId!),
         );
         if (res == 1) {
-          print(
+          await mainLocalLog(
             'Current Shop set: ${CurrentShopFunc().getCurrentShop()?.currentShopId}',
           );
           // ignore: use_build_context_synchronously
@@ -795,14 +817,16 @@ class ShopProvider extends ChangeNotifier {
               },
             ),
           );
-          print('Navigated');
+          await mainLocalLog('Navigated');
           notifyListeners();
         } else {
-          print('Shop Selection Failed');
+          await mainLocalLog('Shop Selection Failed');
           notifyListeners();
         }
       } catch (e) {
-        print('❌❌ Select Shop Error: ${e.toString()}');
+        await mainLocalLog(
+          '❌❌ Select Shop Error: ${e.toString()}',
+        );
       }
     }
   }
@@ -844,7 +868,9 @@ class ShopProvider extends ChangeNotifier {
         );
         return shops.isEmpty ? null : shops.first;
       } catch (e) {
-        print('Error With Shop First: ${e.toString()}');
+        mainLocalLog(
+          'Error With Shop First: ${e.toString()}',
+        );
         return null;
       }
     } else {
@@ -867,7 +893,9 @@ class ShopProvider extends ChangeNotifier {
           );
           return shops.isEmpty ? null : shops.first;
         } catch (e) {
-          print('Error With Shop Second: ${e.toString()}');
+          mainLocalLog(
+            'Error With Shop Second: ${e.toString()}',
+          );
           return null;
         }
       } else {
@@ -927,7 +955,7 @@ class ShopProvider extends ChangeNotifier {
                 .select()
                 .maybeSingle();
         if (res == null) {
-          print('VAT Update Failed');
+          await mainLocalLog('VAT Update Failed');
           isVatLoading = false;
           notifyListeners();
           return 0;
@@ -954,7 +982,7 @@ class ShopProvider extends ChangeNotifier {
           notifyListeners();
           return 1;
         } catch (e) {
-          print(
+          await mainLocalLog(
             "❌ Failed to Apply VAT Offline: ${e.toString()}",
           );
           isVatLoading = false;
@@ -963,7 +991,9 @@ class ShopProvider extends ChangeNotifier {
         }
       }
     } catch (e) {
-      print("❌ Failed to Apply VAT: ${e.toString()}");
+      await mainLocalLog(
+        "❌ Failed to Apply VAT: ${e.toString()}",
+      );
       isVatLoading = false;
       notifyListeners();
       return 0;
@@ -988,7 +1018,7 @@ class ShopProvider extends ChangeNotifier {
                 .select()
                 .maybeSingle();
         if (res == null) {
-          print('Whole Sale Update Failed');
+          await mainLocalLog('Whole Sale Update Failed');
           isWholeSaleLoading = false;
           notifyListeners();
           return 0;
@@ -1014,7 +1044,7 @@ class ShopProvider extends ChangeNotifier {
           notifyListeners();
           return 1;
         } catch (e) {
-          print(
+          await mainLocalLog(
             "❌ Failed to Toggle Whole Sale Offline: ${e.toString()}",
           );
           isWholeSaleLoading = false;
@@ -1023,7 +1053,7 @@ class ShopProvider extends ChangeNotifier {
         }
       }
     } catch (e) {
-      print(
+      await mainLocalLog(
         "❌ Failed to Toggle Whole Sale: ${e.toString()}",
       );
       isWholeSaleLoading = false;
@@ -1051,7 +1081,9 @@ class ShopProvider extends ChangeNotifier {
                 .select()
                 .maybeSingle();
         if (res == null) {
-          print('Manage Inventory Storage Update Failed');
+          await mainLocalLog(
+            'Manage Inventory Storage Update Failed',
+          );
           ismanageInventoryStorageLoading = false;
           notifyListeners();
           return 0;
@@ -1079,7 +1111,7 @@ class ShopProvider extends ChangeNotifier {
           notifyListeners();
           return 1;
         } catch (e) {
-          print(
+          await mainLocalLog(
             "❌ Failed to Update Manage Inventory Storage Offline: ${e.toString()}",
           );
           ismanageInventoryStorageLoading = false;
@@ -1088,7 +1120,7 @@ class ShopProvider extends ChangeNotifier {
         }
       }
     } catch (e) {
-      print(
+      await mainLocalLog(
         "❌ Failed to Update Manage Inventory Storage: ${e.toString()}",
       );
       ismanageInventoryStorageLoading = false;
@@ -1115,7 +1147,7 @@ class ShopProvider extends ChangeNotifier {
                 .select()
                 .maybeSingle();
         if (res == null) {
-          print('Access Pin Update Failed');
+          await mainLocalLog('Access Pin Update Failed');
           isUpdatePin = false;
           notifyListeners();
           return 0;
@@ -1142,7 +1174,7 @@ class ShopProvider extends ChangeNotifier {
           notifyListeners();
           return 1;
         } catch (e) {
-          print(
+          await mainLocalLog(
             "❌ Failed to Update Access Pin Offline: ${e.toString()}",
           );
           isUpdatePin = false;
@@ -1151,7 +1183,7 @@ class ShopProvider extends ChangeNotifier {
         }
       }
     } catch (e) {
-      print(
+      await mainLocalLog(
         "❌ Failed to Update Access Pin: ${e.toString()}",
       );
       isUpdatePin = false;
@@ -1179,7 +1211,9 @@ class ShopProvider extends ChangeNotifier {
                 .select()
                 .maybeSingle();
         if (res == null) {
-          print('Use Group Unit Update Failed');
+          await mainLocalLog(
+            'Use Group Unit Update Failed',
+          );
           isUseGroupUnitLoading = false;
           notifyListeners();
           return 0;
@@ -1207,7 +1241,7 @@ class ShopProvider extends ChangeNotifier {
           notifyListeners();
           return 1;
         } catch (e) {
-          print(
+          await mainLocalLog(
             "❌ Failed to Update Use Group Unit Offline: ${e.toString()}",
           );
           isUseGroupUnitLoading = false;
@@ -1216,7 +1250,7 @@ class ShopProvider extends ChangeNotifier {
         }
       }
     } catch (e) {
-      print(
+      await mainLocalLog(
         "❌ Failed to Update Use Group Unit: ${e.toString()}",
       );
       isUseGroupUnitLoading = false;
@@ -1243,7 +1277,7 @@ class ShopProvider extends ChangeNotifier {
                 .select()
                 .maybeSingle();
         if (res == null) {
-          print('Track Cart Update Failed');
+          await mainLocalLog('Track Cart Update Failed');
           isTrackCartLoading = false;
           notifyListeners();
           return 0;
@@ -1270,7 +1304,7 @@ class ShopProvider extends ChangeNotifier {
           notifyListeners();
           return 1;
         } catch (e) {
-          print(
+          await mainLocalLog(
             "❌ Failed to Update Track Cart Offline: ${e.toString()}",
           );
           isTrackCartLoading = false;
@@ -1279,7 +1313,7 @@ class ShopProvider extends ChangeNotifier {
         }
       }
     } catch (e) {
-      print(
+      await mainLocalLog(
         "❌ Failed to Update Track Cart: ${e.toString()}",
       );
       isTrackCartLoading = false;
@@ -1308,7 +1342,7 @@ class ShopProvider extends ChangeNotifier {
       isOnScreenKeyboardLoading = false;
       return res;
     } catch (e) {
-      print(
+      await mainLocalLog(
         "❌ Failed to Update Use on Screen Keyboard: ${e.toString()}",
       );
       isOnScreenKeyboardLoading = false;
@@ -1335,7 +1369,9 @@ class ShopProvider extends ChangeNotifier {
                 .select()
                 .maybeSingle();
         if (res == null) {
-          print('Toggle Bulk Sale Update Failed');
+          await mainLocalLog(
+            'Toggle Bulk Sale Update Failed',
+          );
           allowBulkSale = false;
           notifyListeners();
           return 0;
@@ -1363,7 +1399,7 @@ class ShopProvider extends ChangeNotifier {
           notifyListeners();
           return 1;
         } catch (e) {
-          print(
+          await mainLocalLog(
             "❌ Failed to Update Toggle Bulk Sale Offline: ${e.toString()}",
           );
           allowBulkSale = false;
@@ -1372,7 +1408,7 @@ class ShopProvider extends ChangeNotifier {
         }
       }
     } catch (e) {
-      print(
+      await mainLocalLog(
         "❌ Failed to Update Toggle Bulk Sale: ${e.toString()}",
       );
       allowBulkSale = false;
@@ -1400,7 +1436,9 @@ class ShopProvider extends ChangeNotifier {
                 .select()
                 .maybeSingle();
         if (res == null) {
-          print('Manage Departments Update Failed');
+          await mainLocalLog(
+            'Manage Departments Update Failed',
+          );
           manageDepartmentsLoading = false;
           notifyListeners();
           return 0;
@@ -1437,7 +1475,7 @@ class ShopProvider extends ChangeNotifier {
           notifyListeners();
           return 1;
         } catch (e) {
-          print(
+          await mainLocalLog(
             "❌ Failed to Update Manage Departments Offline: ${e.toString()}",
           );
           manageDepartmentsLoading = false;
@@ -1446,7 +1484,7 @@ class ShopProvider extends ChangeNotifier {
         }
       }
     } catch (e) {
-      print(
+      await mainLocalLog(
         "❌ Failed to Update Manage Departments: ${e.toString()}",
       );
       manageDepartmentsLoading = false;
@@ -1475,7 +1513,7 @@ class ShopProvider extends ChangeNotifier {
                 .select()
                 .maybeSingle();
         if (res == null) {
-          print('Close Sale Update Failed');
+          await mainLocalLog('Close Sale Update Failed');
           isSetCloseSaleTimeLoading = false;
           notifyListeners();
           return 0;
@@ -1512,7 +1550,7 @@ class ShopProvider extends ChangeNotifier {
           notifyListeners();
           return 1;
         } catch (e) {
-          print(
+          await mainLocalLog(
             "❌ Failed to Update Close Sale Offline: ${e.toString()}",
           );
           isSetCloseSaleTimeLoading = false;
@@ -1521,7 +1559,7 @@ class ShopProvider extends ChangeNotifier {
         }
       }
     } catch (e) {
-      print(
+      await mainLocalLog(
         "❌ Failed to Update Close Sale: ${e.toString()}",
       );
       isSetCloseSaleTimeLoading = false;
@@ -1549,7 +1587,9 @@ class ShopProvider extends ChangeNotifier {
                 .select()
                 .maybeSingle();
         if (res == null) {
-          print('Print Sales Docket Update Failed');
+          await mainLocalLog(
+            'Print Sales Docket Update Failed',
+          );
           printSalesDocketLoading = false;
           notifyListeners();
           return 0;
@@ -1584,7 +1624,7 @@ class ShopProvider extends ChangeNotifier {
           notifyListeners();
           return 1;
         } catch (e) {
-          print(
+          await mainLocalLog(
             "❌ Failed to Update Print Sales Docket Offline: ${e.toString()}",
           );
           printSalesDocketLoading = false;
@@ -1593,7 +1633,7 @@ class ShopProvider extends ChangeNotifier {
         }
       }
     } catch (e) {
-      print(
+      await mainLocalLog(
         "❌ Failed to Update Print Sales Docket: ${e.toString()}",
       );
       printSalesDocketLoading = false;
@@ -1672,7 +1712,7 @@ class ShopProvider extends ChangeNotifier {
           setShops(shops);
         }
       } catch (e) {
-        print(
+        await mainLocalLog(
           '❌❌ Error Updating Fixed Discount Online: ${e.toString()}',
         );
       }
@@ -1691,7 +1731,7 @@ class ShopProvider extends ChangeNotifier {
           notifyListeners();
         }
       } catch (e) {
-        print(
+        await mainLocalLog(
           "❌ Failed to Set Fixed Discount Offline: ${e.toString()}",
         );
       }
@@ -1722,7 +1762,7 @@ class ShopProvider extends ChangeNotifier {
         }
         clearDiscountsCache();
       } catch (e) {
-        print(
+        await mainLocalLog(
           '❌❌ Error Updating Percentage Discount Online: ${e.toString()}',
         );
       }
@@ -1742,7 +1782,7 @@ class ShopProvider extends ChangeNotifier {
         }
         clearDiscountsCache();
       } catch (e) {
-        print(
+        await mainLocalLog(
           "❌ Failed to Set Percentage Discount Offline: ${e.toString()}",
         );
       }
@@ -1766,7 +1806,7 @@ class ShopProvider extends ChangeNotifier {
   Future<void> updateShopSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
-      print(
+      await mainLocalLog(
         UpdatedShopFunc()
             .getUpdatedShop()
             .length
@@ -1784,7 +1824,9 @@ class ShopProvider extends ChangeNotifier {
           localShop.updatedAt ??= DateTime.now().toUtc();
 
           if (localShop.shopId == null) {
-            print('⚠️ Local shopId is null, skipping');
+            await mainLocalLog(
+              '⚠️ Local shopId is null, skipping',
+            );
             continue;
           }
           final remoteData =
@@ -1798,7 +1840,7 @@ class ShopProvider extends ChangeNotifier {
             await supabase
                 .from('shops')
                 .insert(localShop.toJson());
-            print(
+            await mainLocalLog(
               'Inserted Shop with Shop Id ${localShop.shopId}',
             );
             await UpdatedShopFunc().deleteUpdatedShop(
@@ -1817,10 +1859,12 @@ class ShopProvider extends ChangeNotifier {
             localShop.updatedAt =
                 (localShop.updatedAt ?? DateTime.now())
                     .toUtc();
-            print(
+            await mainLocalLog(
               "Local updatedAt: ${localShop.updatedAt}",
             );
-            print("Remote updatedAt: $remoteUpdatedAt");
+            await mainLocalLog(
+              "Remote updatedAt: $remoteUpdatedAt",
+            );
 
             if (remoteUpdatedAt == null ||
                 localShop.updatedAt!.isAfter(
@@ -1830,14 +1874,14 @@ class ShopProvider extends ChangeNotifier {
                   .from('shops')
                   .update(localShop.toJson())
                   .eq('shop_id', localShop.shopId!);
-              print(
+              await mainLocalLog(
                 'Updated Shop with shopId ${localShop.shopId}',
               );
               await UpdatedShopFunc().deleteUpdatedShop(
                 localShop.shopId!,
               );
             } else {
-              print(
+              await mainLocalLog(
                 'Skipped Shop ${localShop.shopId}, remote is newer ✅',
               );
             }
@@ -1845,12 +1889,12 @@ class ShopProvider extends ChangeNotifier {
         }
 
         await UpdatedShopFunc().clearUpdatedShop();
-        print('Unsynced updated Shop cleared');
-        print('Mounted, refreshing Shop ✅');
+        await mainLocalLog('Unsynced updated Shop cleared');
+        await mainLocalLog('Mounted, refreshing Shop ✅');
         await getUserShops();
       }
     } catch (e) {
-      print('Shop Update failed ❌: $e');
+      await mainLocalLog('Shop Update failed ❌: $e');
       await createErrorLog(
         error: 'Shop Update failed ❌: $e',
       );
@@ -1866,7 +1910,7 @@ class ShopProvider extends ChangeNotifier {
   ) async {
     try {
       bool isOnline = await connectivity.isOnline();
-      print(
+      await mainLocalLog(
         CreatedShopLogosFunc().getCreatedLogo().toString(),
       );
 
@@ -1905,7 +1949,7 @@ class ShopProvider extends ChangeNotifier {
           userShop()!.imageHeight = imageHeight;
           userShop()!.imageWidth = imageWidth;
           notifyListeners();
-          print(
+          await mainLocalLog(
             '✅  Online Logo uploaded and saved successfully!',
           );
           await ShopLogosFunc().createLogo(
@@ -1918,16 +1962,18 @@ class ShopProvider extends ChangeNotifier {
             // ignore: use_build_context_synchronously
           );
         } catch (e) {
-          print('❌ Error Syncing logo: $e');
+          await mainLocalLog('❌ Error Syncing logo: $e');
         }
 
         await CreatedShopLogosFunc().clearCreatedLogos();
-        print('Unsynced updated Shop Logo cleared');
-        print('Mounted, refreshing Shop ✅');
+        await mainLocalLog(
+          'Unsynced updated Shop Logo cleared',
+        );
+        await mainLocalLog('Mounted, refreshing Shop ✅');
         await getUserShops();
       }
     } catch (e) {
-      print('Logo Sync failed ❌: $e');
+      await mainLocalLog('Logo Sync failed ❌: $e');
     }
   }
 
@@ -2015,11 +2061,11 @@ class ShopProvider extends ChangeNotifier {
           context: context,
         );
         if (res != 'success') {
-          print(res);
+          await mainLocalLog(res);
           return res;
         }
       } catch (e) {
-        print('Error: ${e.toString()}');
+        await mainLocalLog('Error: ${e.toString()}');
         return e.toString();
       }
     }
@@ -2050,7 +2096,7 @@ class ShopProvider extends ChangeNotifier {
         }
         return 'success';
       } catch (e) {
-        print(
+        await mainLocalLog(
           "❌ Failed to update Print Details Online: $e",
         );
         clearImage();
@@ -2070,7 +2116,7 @@ class ShopProvider extends ChangeNotifier {
             : {};
         return 'success';
       } catch (e) {
-        print(
+        await mainLocalLog(
           "❌ Failed to update Print Details Offline: $e",
         );
         clearImage();
@@ -2105,7 +2151,9 @@ class ShopProvider extends ChangeNotifier {
         }
         return 1;
       } catch (e) {
-        print("❌ Failed to update location Online: $e");
+        await mainLocalLog(
+          "❌ Failed to update location Online: $e",
+        );
         return 0;
       }
     } else {
@@ -2124,7 +2172,9 @@ class ShopProvider extends ChangeNotifier {
         }
         return 1;
       } catch (e) {
-        print("❌ Failed to update location Offline: $e");
+        await mainLocalLog(
+          "❌ Failed to update location Offline: $e",
+        );
         return 0;
       }
     }
@@ -2138,13 +2188,15 @@ class ShopProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         return response.bodyBytes;
       } else {
-        print(
+        await mainLocalLog(
           '⚠️ Failed to load image: ${response.statusCode}',
         );
         return null;
       }
     } catch (e) {
-      print('❌ Error fetching image bytes: $e');
+      await mainLocalLog(
+        '❌ Error fetching image bytes: $e',
+      );
       return null;
     }
   }
@@ -2171,7 +2223,7 @@ class ShopProvider extends ChangeNotifier {
     imageWidth = null;
     imageHeight = null;
     rawImage = null;
-    print('Image Cleared');
+    mainLocalLog('Image Cleared');
     notifyListeners();
   }
 
@@ -2179,7 +2231,7 @@ class ShopProvider extends ChangeNotifier {
 
   void switchLogoPicked(bool value) {
     logoPicked = value;
-    print(
+    mainLocalLog(
       "Logo Picked Value is Now: ${logoPicked.toString()}",
     );
     notifyListeners();
@@ -2194,7 +2246,7 @@ class ShopProvider extends ChangeNotifier {
       );
 
       if (image == null) {
-        print('No image selected.');
+        await mainLocalLog('No image selected.');
         return null;
       }
 
@@ -2207,14 +2259,14 @@ class ShopProvider extends ChangeNotifier {
       imageHeight = imageSize.height;
       selectedLogo = imageBytes;
       rawImage = image;
-      print(
+      await mainLocalLog(
         'Image selected: ${image.name} (${imageBytes.length} $imageHeight x $imageWidth bytes)',
       );
       switchLogoPicked(true);
       notifyListeners();
       return image;
     } catch (e) {
-      print('Error picking image: $e');
+      await mainLocalLog('Error picking image: $e');
       return null;
     }
   }
@@ -2256,7 +2308,9 @@ class ShopProvider extends ChangeNotifier {
         notifyListeners();
         return onlineBytes;
       } catch (e) {
-        print('❌❌ Get Logo Error: ${e.toString()}');
+        await mainLocalLog(
+          '❌❌ Get Logo Error: ${e.toString()}',
+        );
         // clearImage();
         return null;
       }
@@ -2277,7 +2331,9 @@ class ShopProvider extends ChangeNotifier {
           return imageBytes;
         }
       } catch (e) {
-        print('❌❌ Get Logo Offline Error: ${e.toString()}');
+        await mainLocalLog(
+          '❌❌ Get Logo Offline Error: ${e.toString()}',
+        );
         // clearImage();
         return null;
       }
@@ -2330,7 +2386,7 @@ class ShopProvider extends ChangeNotifier {
         userShop()!.imageHeight = imageHeight;
         userShop()!.imageWidth = imageWidth;
         notifyListeners();
-        print(
+        await mainLocalLog(
           '✅  Online Logo uploaded and saved successfully!',
         );
         await ShopLogosFunc().createLogo(
@@ -2344,7 +2400,7 @@ class ShopProvider extends ChangeNotifier {
         );
         return 'success';
       } catch (e) {
-        print('❌ Error uploading logo: $e');
+        await mainLocalLog('❌ Error uploading logo: $e');
         clearImage();
         return 'Error uploading logo: The File extension type you selected is not Support. Please Select .jpeg, .jpg, or .png images.';
       }
@@ -2372,12 +2428,12 @@ class ShopProvider extends ChangeNotifier {
         userShop()!.imageHeight = imageHeight;
         userShop()!.imageWidth = imageWidth;
         notifyListeners();
-        print(
+        await mainLocalLog(
           '✅  Offline Logo uploaded and saved successfully!',
         );
         return 'success';
       } catch (e) {
-        print(
+        await mainLocalLog(
           '❌❌ Upload Logo Offline Error: ${e.toString()}',
         );
         clearImage();

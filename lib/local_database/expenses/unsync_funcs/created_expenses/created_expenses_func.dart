@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_expenses/unsynced/created_expenses/created_expenses.dart';
+import 'package:stockall/main.dart';
 
 class CreatedExpensesFunc {
   static final CreatedExpensesFunc instance =
@@ -18,7 +19,9 @@ class CreatedExpensesFunc {
       CreatedExpensesAdapter().typeId,
     )) {
       Hive.registerAdapter(CreatedExpensesAdapter());
-      print('Created Expenses Adapter registered ✅');
+      await mainLocalLog(
+        'Created Expenses Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,14 @@ class CreatedExpensesFunc {
           await Hive.openBox<CreatedExpenses>(
             createdExpensesBoxName,
           );
-      print('Created Expenses Box opened ✅');
+      await mainLocalLog('Created Expenses Box opened ✅');
     } else {
       _createdExpensesBox = Hive.box<CreatedExpenses>(
         createdExpensesBoxName,
       );
-      print('Created Expenses Box already open, reused ✅');
+      await mainLocalLog(
+        'Created Expenses Box already open, reused ✅',
+      );
     }
   }
 
@@ -60,10 +65,12 @@ class CreatedExpensesFunc {
           expenses,
         );
       }
-      print("Offline Created Expenses inserted ✅");
+      await mainLocalLog(
+        "Offline Created Expenses inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Expenses insertion failed ❌: $e',
       );
       return 0;
@@ -78,12 +85,12 @@ class CreatedExpensesFunc {
         createdExpenses.expenses.uuid,
         createdExpenses,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Expenses inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Expenses insertion failed ❌: $e',
       );
       return 0;
@@ -98,12 +105,12 @@ class CreatedExpensesFunc {
         createdExpenses.expenses.uuid,
         createdExpenses,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Expenses inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Expenses insertion failed ❌: $e',
       );
       return 0;
@@ -112,14 +119,16 @@ class CreatedExpensesFunc {
 
   Future<int> deleteExpenses(String uuid) async {
     try {
-      print(
+      await mainLocalLog(
         createdExpensesBox.containsKey(uuid).toString(),
       );
       await createdExpensesBox.delete(uuid);
-      print('Expenses Deleted');
+      await mainLocalLog('Expenses Deleted');
       return 1;
     } catch (e) {
-      print('Expenses Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Expenses Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -127,10 +136,12 @@ class CreatedExpensesFunc {
   Future<int> clearExpenses() async {
     try {
       await createdExpensesBox.clear();
-      print('All Created Expenses cleared ✅');
+      await mainLocalLog('All Created Expenses cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while clearing Created Expenses ❌: $e');
+      await mainLocalLog(
+        'Error while clearing Created Expenses ❌: $e',
+      );
       return 0;
     }
   }

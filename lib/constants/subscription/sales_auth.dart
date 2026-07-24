@@ -137,22 +137,22 @@ class SalesAuthAction {
             .firstWhere((pl) => pl.plan == plan)
             .salesAuth
             .numberOfCarts) {
-      print(
-        subPlans
-            .firstWhere((pl) => pl.plan == plan)
-            .salesAuth
-            .numberOfCarts,
-      );
+      // await mainLocalLog(
+      //   subPlans
+      //       .firstWhere((pl) => pl.plan == plan)
+      //       .salesAuth
+      //       .numberOfCarts,
+      // );
       action == null ? {} : action();
       return true;
     } else {
       if (action != null) {
-        print(
-          subPlans
-              .firstWhere((pl) => pl.plan == plan)
-              .salesAuth
-              .numberOfCarts,
-        );
+        // await mainLocalLog(
+        //   subPlans
+        //       .firstWhere((pl) => pl.plan == plan)
+        //       .salesAuth
+        //       .numberOfCarts,
+        // );
         showUnauthorizedDialog(context);
       }
       return false;
@@ -183,22 +183,22 @@ class SalesAuthAction {
             .firstWhere((pl) => pl.plan == plan)
             .salesAuth
             .numberOfCarts) {
-      print(
-        subPlans
-            .firstWhere((pl) => pl.plan == plan)
-            .salesAuth
-            .numberOfCarts,
-      );
+      // await mainLocalLog(
+      //   subPlans
+      //       .firstWhere((pl) => pl.plan == plan)
+      //       .salesAuth
+      //       .numberOfCarts,
+      // );
       action == null ? {} : action();
       return true;
     } else {
       if (action != null) {
-        print(
-          subPlans
-              .firstWhere((pl) => pl.plan == plan)
-              .salesAuth
-              .numberOfCarts,
-        );
+        // await mainLocalLog(
+        //   subPlans
+        //       .firstWhere((pl) => pl.plan == plan)
+        //       .salesAuth
+        //       .numberOfCarts,
+        // );
         showUnauthorizedDialog(context);
       }
       return false;

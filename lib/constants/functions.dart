@@ -59,7 +59,7 @@ Future<void> launchUrlMain(url) async {
       mode: LaunchMode.externalApplication,
     );
   } else {
-    print('Could not launch $url');
+    await mainLocalLog('Could not launch $url');
   }
 }
 
@@ -332,7 +332,7 @@ Future<void> generateAndPreviewPdf({
       if (Platform.isAndroid || Platform.isIOS) {
         await savePdfMobile(bytes, name);
       } else {
-        print('Printing For Desktop');
+        await mainLocalLog('Printing For Desktop');
         await savePdfDesktop(bytes, name);
       }
 
@@ -2927,7 +2927,9 @@ void downloadPdfWeb({
           ).toggleIsLoading(false);
         }
       } catch (e, stackTrace) {
-        print('❌ Error downloading PDF: $e\n$stackTrace');
+        await mainLocalLog(
+          '❌ Error downloading PDF: $e\n$stackTrace',
+        );
         returnErrorLogProvider().createLog(
           error: 'Error downloading PDF: $e\n$stackTrace',
         );
@@ -2949,7 +2951,7 @@ void downloadPdfWebRoll({
     context: context,
     action: () async {
       try {
-        print('Begin Download');
+        await mainLocalLog('Begin Download');
         final pdfBytes = await _buildPdfRoll(
           receipt,
           records,
@@ -2991,7 +2993,7 @@ void downloadPdfWebRoll({
         }
         // return pdfUint8;
       } catch (e, stackTrace) {
-        print(
+        await mainLocalLog(
           '❌ Error downloading/printing PDF: $e\n$stackTrace',
         );
         createErrorLog(
@@ -3862,7 +3864,7 @@ void downloadPdfWebProducts({
   required String filename,
 }) async {
   try {
-    print('Begin Download');
+    await mainLocalLog('Begin Download');
     final pdfBytes = await _buildPdfProducts(
       products,
       returnShopProvider().userShop()!,
@@ -3886,7 +3888,9 @@ void downloadPdfWebProducts({
       returnData().toggleIsLoading(false);
     }
   } catch (e, stackTrace) {
-    print('❌ Error downloading PDF: $e\n$stackTrace');
+    await mainLocalLog(
+      '❌ Error downloading PDF: $e\n$stackTrace',
+    );
     createErrorLog(
       error: 'Error downloading PDF: $e\n$stackTrace',
     );
@@ -4530,7 +4534,7 @@ void downloadPdfWebSales({
   required String filename,
 }) async {
   try {
-    print('Begin Download');
+    await mainLocalLog('Begin Download');
     final pdfBytes = await _buildPdfSales(
       records,
       returnShopProvider().userShop()!,
@@ -4554,7 +4558,9 @@ void downloadPdfWebSales({
       returnSalesProvider().toggleIsLoading(false);
     }
   } catch (e, stackTrace) {
-    print('❌ Error downloading PDF: $e\n$stackTrace');
+    await mainLocalLog(
+      '❌ Error downloading PDF: $e\n$stackTrace',
+    );
     createErrorLog(
       error: 'Error downloading PDF: $e\n$stackTrace',
     );
@@ -5082,7 +5088,7 @@ void downloadPdfWebSalesSummary({
   required String filename,
 }) async {
   try {
-    print('Begin Download');
+    await mainLocalLog('Begin Download');
     final pdfBytes = await _buildPdfSalesSummary(
       summary,
       returnShopProvider().userShop()!,
@@ -5106,7 +5112,9 @@ void downloadPdfWebSalesSummary({
       returnSalesProvider().toggleIsLoading(false);
     }
   } catch (e, stackTrace) {
-    print('❌ Error downloading PDF: $e\n$stackTrace');
+    await mainLocalLog(
+      '❌ Error downloading PDF: $e\n$stackTrace',
+    );
     createErrorLog(
       error: 'Error downloading PDF: $e\n$stackTrace',
     );

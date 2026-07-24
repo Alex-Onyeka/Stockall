@@ -195,10 +195,10 @@ class NavProvider extends ChangeNotifier {
             },
           );
           if (context.mounted) {
-            print('Context is Mounted');
+            await mainLocalLog('Context is Mounted');
             await dataProvider.syncData();
           } else {
-            print('Context is not mounted');
+            await mainLocalLog('Context is not mounted');
           }
         }
       }

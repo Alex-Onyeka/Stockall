@@ -124,7 +124,7 @@ class _ProductPageMobileState
                     // getProductList(context);
                   });
                 } else {
-                  print('Context not mounted');
+                  mainLocalLog('Context not mounted');
                 }
               });
             },

@@ -32,7 +32,7 @@ class PurchaseProvider extends ChangeNotifier {
   bool isLoading = false;
   void toggleIsLoading(bool value) {
     isLoading = value;
-    print(
+    mainLocalLog(
       'Purchase is ${value ? 'Loading on' : 'Loading Off'}',
     );
     notifyListeners();
@@ -52,7 +52,7 @@ class PurchaseProvider extends ChangeNotifier {
   void clearPurchases() {
     _purchases.clear();
     // clearRecords();
-    print('Purchases Cleared');
+    mainLocalLog('Purchases Cleared');
     notifyListeners();
   }
 
@@ -60,7 +60,7 @@ class PurchaseProvider extends ChangeNotifier {
   Future<TempPurchase?> createPurchase(
     TempPurchase purchase,
   ) async {
-    print('Inner Purchase Creation Started');
+    await mainLocalLog('Inner Purchase Creation Started');
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
       purchase.createdAt = DateTime.now().subtract(
@@ -81,7 +81,7 @@ class PurchaseProvider extends ChangeNotifier {
         // await loadPurchases(shopId());
         return newPurchase;
       } catch (e) {
-        print(
+        await mainLocalLog(
           '❌❌ Create Purchase Error Online: ${e.toString()}',
         );
         return null;
@@ -97,7 +97,7 @@ class PurchaseProvider extends ChangeNotifier {
         // await loadPurchases(shopId());
         return purchase;
       } catch (e) {
-        print(
+        await mainLocalLog(
           '❌❌ Create Purchase Error Offline: ${e.toString()}',
         );
         return null;
@@ -109,7 +109,7 @@ class PurchaseProvider extends ChangeNotifier {
   Future<TempPurchase?> updatePurchase(
     TempPurchase purchase,
   ) async {
-    print('Inner Purchase Update Started');
+    await mainLocalLog('Inner Purchase Update Started');
     bool isOnline = await connectivity.isOnline();
     purchase.updatedAt = DateTime.now();
     if (isOnline) {
@@ -128,7 +128,7 @@ class PurchaseProvider extends ChangeNotifier {
         await loadPurchases(shopId());
         return newPurchase;
       } catch (e) {
-        print(
+        await mainLocalLog(
           '❌❌ Update Purchase Error Online: ${e.toString()}',
         );
         return null;
@@ -169,7 +169,7 @@ class PurchaseProvider extends ChangeNotifier {
         syncData();
         return purchase;
       } catch (e) {
-        print(
+        await mainLocalLog(
           '❌❌ Create Purchase Error Offline: ${e.toString()}',
         );
         return null;
@@ -191,7 +191,9 @@ class PurchaseProvider extends ChangeNotifier {
             .eq('shop_id', shopId)
             .order('created_at', ascending: false);
         if (data.isNotEmpty) {
-          print('Purchases Gotten ${data.length}');
+          await mainLocalLog(
+            'Purchases Gotten ${data.length}',
+          );
         }
 
         _purchases =
@@ -199,17 +201,19 @@ class PurchaseProvider extends ChangeNotifier {
                 .map((json) => TempPurchase.fromJson(json))
                 .toList();
         await PurchaseFunc().insertAllPurchases(_purchases);
-        print('Loaded');
+        await mainLocalLog('Loaded');
         await loadItemPurchaseRecords(shopId);
         notifyListeners();
       } catch (e) {
-        print('❌ Error Getting Purchases: ${e.toString()}');
+        await mainLocalLog(
+          '❌ Error Getting Purchases: ${e.toString()}',
+        );
         return [];
       }
     } else {
       _purchases = PurchaseFunc().getPurchases();
       await loadItemPurchaseRecords(shopId);
-      print('Offline Purchases Gotten');
+      await mainLocalLog('Offline Purchases Gotten');
       notifyListeners();
     }
     notifyListeners();
@@ -230,10 +234,10 @@ class PurchaseProvider extends ChangeNotifier {
       dateSet = date;
       rangeStartDate = null;
       rangeEndDate = null;
-      print('Date set: $date');
+      mainLocalLog('Date set: $date');
     } else {
       dateSet = null;
-      print('Date Cleared');
+      mainLocalLog('Date Cleared');
     }
     notifyListeners();
   }
@@ -244,7 +248,7 @@ class PurchaseProvider extends ChangeNotifier {
   void setRange(DateTime rangeStart, DateTime endOfrange) {
     rangeStartDate = rangeStart;
     rangeEndDate = endOfrange;
-    print(
+    mainLocalLog(
       'Date Range set: Start: $rangeStart End: $endOfrange ',
     );
     dateSet = null;
@@ -257,7 +261,7 @@ class PurchaseProvider extends ChangeNotifier {
     bool? updateInventory,
     bool createUpdate,
   ) async {
-    print('Deleting Purchase');
+    await mainLocalLog('Deleting Purchase');
     List<TempItemPurchaseRecord> records =
         itemPurchaseRecords
             .where(
@@ -265,7 +269,7 @@ class PurchaseProvider extends ChangeNotifier {
             )
             .toList();
     try {
-      print('Deleting Purchase Offline');
+      await mainLocalLog('Deleting Purchase Offline');
       await PurchaseFunc().deletePurchase(purchase.uuid!);
       var containsCreated =
           CreatedPurchasesFunc()
@@ -383,12 +387,12 @@ class PurchaseProvider extends ChangeNotifier {
                     );
                   }
                 } catch (e) {
-                  print(
+                  await mainLocalLog(
                     '❌❌Error Creating Inventory Update: ${e.toString()}',
                   );
                 }
               } catch (e) {
-                print(
+                await mainLocalLog(
                   '❌❌Error Updating Storage Product Quantity: ${e.toString()}',
                 );
               }
@@ -434,11 +438,13 @@ class PurchaseProvider extends ChangeNotifier {
       }
       returnData().syncData();
 
-      print('✅ Purchase successfully Delete.');
+      await mainLocalLog('✅ Purchase successfully Delete.');
       notifyListeners();
       return 1;
     } catch (e) {
-      print('Error Deleting Purchase: ${e.toString()}');
+      await mainLocalLog(
+        'Error Deleting Purchase: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -475,17 +481,23 @@ class PurchaseProvider extends ChangeNotifier {
                 .insert(payload)
                 .select();
 
-        print('${data.length} items added successfully ✅');
+        await mainLocalLog(
+          '${data.length} items added successfully ✅',
+        );
         await CreatedPurchasesFunc().clearPurchases();
-        print('Unsynced Purchases Cleared');
+        await mainLocalLog('Unsynced Purchases Cleared');
 
-        print('Mounted, refreshing Purchases ✅');
+        await mainLocalLog(
+          'Mounted, refreshing Purchases ✅',
+        );
         await loadPurchases(
           returnShopProvider().userShop()!.shopId!,
         );
       }
     } catch (e) {
-      print('Batch Purchases insert failed ❌: $e');
+      await mainLocalLog(
+        'Batch Purchases insert failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Purchases insert failed ❌: $e',
       );
@@ -526,20 +538,26 @@ class PurchaseProvider extends ChangeNotifier {
           //     .deletedDeletedPurchases(rec.purchaseUuid);
         }
 
-        print(
+        await mainLocalLog(
           '${tempPurchases.length} Purchases Created successfully ✅',
         );
         await DeletedPurchasesFunc()
             .clearDeletedPurchases();
-        print('Unsynced Deleted Purchases Cleared');
+        await mainLocalLog(
+          'Unsynced Deleted Purchases Cleared',
+        );
 
-        print('Mounted, refreshing Purchases ✅');
+        await mainLocalLog(
+          'Mounted, refreshing Purchases ✅',
+        );
         await loadPurchases(
           returnShopProvider().userShop()!.shopId!,
         );
       }
     } catch (e) {
-      print('Batch Purchases Deleted failed ❌: $e');
+      await mainLocalLog(
+        'Batch Purchases Deleted failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Purchases Delete failed ❌: $e',
       );
@@ -554,7 +572,7 @@ class PurchaseProvider extends ChangeNotifier {
   Future<void> updatePurchaseSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
-      print(
+      await mainLocalLog(
         UpdatedPurchasesFunc()
             .getPurchaseIds()
             .length
@@ -575,7 +593,9 @@ class PurchaseProvider extends ChangeNotifier {
               DateTime.now().toLocal();
 
           if (localPurchases.uuid == null) {
-            print('Local Purchases Uuid is Null');
+            await mainLocalLog(
+              'Local Purchases Uuid is Null',
+            );
           }
           final remoteData =
               await supabase
@@ -588,7 +608,7 @@ class PurchaseProvider extends ChangeNotifier {
             await supabase
                 .from('purchases')
                 .insert(localPurchases.toJson());
-            print(
+            await mainLocalLog(
               'Inserted product with uuid ${localPurchases.uuid}',
             );
             await UpdatedPurchasesFunc()
@@ -608,10 +628,12 @@ class PurchaseProvider extends ChangeNotifier {
             localPurchases.updatedAt =
                 (localPurchases.updatedAt ?? DateTime.now())
                     .toUtc(); // ✅ keep both UTC
-            print(
+            await mainLocalLog(
               "Local updatedAt: ${localPurchases.updatedAt}",
             );
-            print("Remote updatedAt: $remoteUpdatedAt");
+            await mainLocalLog(
+              "Remote updatedAt: $remoteUpdatedAt",
+            );
 
             if (remoteUpdatedAt == null ||
                 localPurchases.updatedAt!.isAfter(
@@ -621,7 +643,7 @@ class PurchaseProvider extends ChangeNotifier {
                   .from('purchases')
                   .update(localPurchases.toJson())
                   .eq('uuid', localPurchases.uuid!);
-              print(
+              await mainLocalLog(
                 'Updated Purchase with uuid ${localPurchases.uuid}',
               );
               await UpdatedPurchasesFunc()
@@ -629,7 +651,7 @@ class PurchaseProvider extends ChangeNotifier {
                     localPurchases.uuid ?? '',
                   );
             } else {
-              print(
+              await mainLocalLog(
                 'Skipped Purchase ${localPurchases.uuid}, remote is newer ✅',
               );
             }
@@ -638,14 +660,20 @@ class PurchaseProvider extends ChangeNotifier {
 
         await UpdatedPurchasesFunc()
             .clearUpdatedPurchases();
-        print('Unsynced Purchase products cleared');
-        print('Mounted, refreshing products ✅');
+        await mainLocalLog(
+          'Unsynced Purchase products cleared',
+        );
+        await mainLocalLog(
+          'Mounted, refreshing products ✅',
+        );
         await loadPurchases(
           returnShopProvider().userShop()!.shopId!,
         );
       }
     } catch (e) {
-      print('Batch Purchases update failed ❌: $e');
+      await mainLocalLog(
+        'Batch Purchases update failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Purchases Update failed ❌: $e',
       );
@@ -750,7 +778,7 @@ class PurchaseProvider extends ChangeNotifier {
             await returnInventoryUpdatesProvider()
                 .createInventoryUpdate(newUpdate);
           } catch (e) {
-            print(
+            await mainLocalLog(
               '❌❌Error Creating Inventory Update: ${e.toString()}',
             );
           }
@@ -794,7 +822,7 @@ class PurchaseProvider extends ChangeNotifier {
       }
       // }
     } catch (e) {
-      print('Error ${e.toString()}');
+      await mainLocalLog('Error ${e.toString()}');
     }
 
     notifyListeners();
@@ -812,7 +840,9 @@ class PurchaseProvider extends ChangeNotifier {
             .eq('shop_id', shopId)
             .order('created_at', ascending: false);
 
-        print('✅Items Records gotten: ${data.length}');
+        await mainLocalLog(
+          '✅Items Records gotten: ${data.length}',
+        );
         _itemPurchaseRecords =
             (data as List)
                 .map(
@@ -832,7 +862,7 @@ class PurchaseProvider extends ChangeNotifier {
       notifyListeners();
       return _itemPurchaseRecords;
     } catch (e) {
-      print(
+      await mainLocalLog(
         '❌Error Getting Item Purchase Records: ${e.toString()}',
       );
       return [];
@@ -873,7 +903,7 @@ class PurchaseProvider extends ChangeNotifier {
         returnShopProvider().userShop()!.shopId!,
       );
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error Deleting Item Purchase Record: ${e.toString()}',
       );
     }
@@ -919,13 +949,17 @@ class PurchaseProvider extends ChangeNotifier {
                 .insert(payload)
                 .select();
 
-        print('${data.length} items added successfully ✅');
+        await mainLocalLog(
+          '${data.length} items added successfully ✅',
+        );
         await CreatedItemPurchaseFunc().clearRecords();
         await loadItemPurchaseRecords(shopId());
-        print('Unsynced Purchase Item Records Cleared');
+        await mainLocalLog(
+          'Unsynced Purchase Item Records Cleared',
+        );
       }
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Batch Created Purchase Records insert failed ❌: $e',
       );
       await createErrorLog(
@@ -962,16 +996,16 @@ class PurchaseProvider extends ChangeNotifier {
           //     .deletedDeletedPurchases(rec.purchaseUuid);
         }
 
-        print(
+        await mainLocalLog(
           '${tempItemPurchases.length} Purchase Item Records Deleted successfully ✅',
         );
         await DeletedItemPurchaseFunc()
             .clearDeletedItemRecords();
-        print(
+        await mainLocalLog(
           'Unsynced Deleted Purchase Item Records Cleared',
         );
 
-        print(
+        await mainLocalLog(
           'Mounted, refreshing Purchase Item Records ✅',
         );
         // await loadPurchases(
@@ -979,7 +1013,7 @@ class PurchaseProvider extends ChangeNotifier {
         // );
       }
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Batch Purchase Item Records Deleted failed ❌: $e',
       );
       await createErrorLog(

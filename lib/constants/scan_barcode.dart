@@ -6,6 +6,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:stockall/components/barcode_scanner.dart';
+import 'package:stockall/main.dart';
 
 // Future<String?> scanCode(
 //   BuildContext context,
@@ -80,7 +81,7 @@ Future<String?> scanCode(
 
   if (result != null) {
     // Do something with the scanned result
-    print('Scanned value: $result');
+    await mainLocalLog('Scanned value: $result');
     return result;
   } else {
     return null;

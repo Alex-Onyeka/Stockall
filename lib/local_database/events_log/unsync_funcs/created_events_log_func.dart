@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_event_log/unsynced/created_events_log_class.dart';
+import 'package:stockall/main.dart';
 
 class CreatedEventsLogFunc {
   static final CreatedEventsLogFunc instance =
@@ -16,7 +17,9 @@ class CreatedEventsLogFunc {
       CreatedEventsLogClassAdapter().typeId,
     )) {
       Hive.registerAdapter(CreatedEventsLogClassAdapter());
-      print('CreatedEventsLogClassAdapter registered ✅');
+      await mainLocalLog(
+        'CreatedEventsLogClassAdapter registered ✅',
+      );
     }
 
     if (!Hive.isBoxOpen(createdEventsLogBoxName)) {
@@ -24,13 +27,13 @@ class CreatedEventsLogFunc {
           await Hive.openBox<CreatedEventsLogClass>(
             createdEventsLogBoxName,
           );
-      print('Created Events Log Box opened ✅');
+      await mainLocalLog('Created Events Log Box opened ✅');
     } else {
       _createdEventsLogBox =
           Hive.box<CreatedEventsLogClass>(
             createdEventsLogBoxName,
           );
-      print(
+      await mainLocalLog(
         'Created Events Log Box already open, reused ✅',
       );
     }
@@ -60,10 +63,12 @@ class CreatedEventsLogFunc {
           log,
         );
       }
-      print("Offline Created Events Log inserted ✅");
+      await mainLocalLog(
+        "Offline Created Events Log inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Events Log insertion failed ❌: $e',
       );
       return 0;
@@ -78,12 +83,12 @@ class CreatedEventsLogFunc {
         createdEventsLog.eventLog.uuid,
         createdEventsLog,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Events Log inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Events Log insertion failed ❌: $e',
       );
       return 0;
@@ -92,14 +97,14 @@ class CreatedEventsLogFunc {
 
   Future<int> deleteEventLog(String uuid) async {
     try {
-      print(
+      await mainLocalLog(
         createdEventsLogBox.containsKey(uuid).toString(),
       );
       await createdEventsLogBox.delete(uuid);
-      print('Created Event Log Deleted');
+      await mainLocalLog('Created Event Log Deleted');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Created Event Log Delete Failed: ${e.toString()}',
       );
       return 0;
@@ -109,10 +114,12 @@ class CreatedEventsLogFunc {
   Future<int> clearEvents() async {
     try {
       await createdEventsLogBox.clear();
-      print('All Created Events Logs cleared ✅');
+      await mainLocalLog(
+        'All Created Events Logs cleared ✅',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error while clearing Created Events Logs ❌: $e',
       );
       return 0;

@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_storage_product/unsynced/created_storage_products/created_storage_products.dart';
+import 'package:stockall/main.dart';
 
 class CreatedStorageProductsFunc {
   static final CreatedStorageProductsFunc instance =
@@ -18,7 +19,7 @@ class CreatedStorageProductsFunc {
       CreatedStorageProductsAdapter().typeId,
     )) {
       Hive.registerAdapter(CreatedStorageProductsAdapter());
-      print(
+      await mainLocalLog(
         'Created Storage Products Adapter registered ✅',
       );
     }
@@ -29,13 +30,15 @@ class CreatedStorageProductsFunc {
           await Hive.openBox<CreatedStorageProducts>(
             createdStorageProductsBoxName,
           );
-      print('Created Storage Products Box opened ✅');
+      await mainLocalLog(
+        'Created Storage Products Box opened ✅',
+      );
     } else {
       _createdStorageProductsBox =
           Hive.box<CreatedStorageProducts>(
             createdStorageProductsBoxName,
           );
-      print(
+      await mainLocalLog(
         'Created Storage Products Box already open, reused ✅',
       );
     }
@@ -73,10 +76,12 @@ class CreatedStorageProductsFunc {
           storageP,
         );
       }
-      print("Offline Created Storage Products inserted ✅");
+      await mainLocalLog(
+        "Offline Created Storage Products inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Storage Products insertion failed ❌: $e',
       );
       return 0;
@@ -91,12 +96,12 @@ class CreatedStorageProductsFunc {
         createdStorageProduct.storageProduct.uuid,
         createdStorageProduct,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Storage Product inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Storage Product insertion failed ❌: $e',
       );
       return 0;
@@ -111,12 +116,12 @@ class CreatedStorageProductsFunc {
         createdStorageProduct.storageProduct.uuid,
         createdStorageProduct,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Storage Product Updated successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Storage Product Update failed ❌: $e',
       );
       return 0;
@@ -127,16 +132,16 @@ class CreatedStorageProductsFunc {
     String uuid,
   ) async {
     try {
-      print(
+      await mainLocalLog(
         createdStorageProductsBox
             .containsKey(uuid)
             .toString(),
       );
       await createdStorageProductsBox.delete(uuid);
-      print('Created Storage Product Deleted');
+      await mainLocalLog('Created Storage Product Deleted');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Created Storage Product Delete Failed: ${e.toString()}',
       );
       return 0;
@@ -146,10 +151,12 @@ class CreatedStorageProductsFunc {
   Future<int> clearCreatedStorageProducts() async {
     try {
       await createdStorageProductsBox.clear();
-      print('All Created Storage Products cleared ✅');
+      await mainLocalLog(
+        'All Created Storage Products cleared ✅',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error while clearing Created Storage Products ❌: $e',
       );
       return 0;

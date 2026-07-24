@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/updated/updated_products.dart';
+import 'package:stockall/main.dart';
 
 class UpdatedProductsFunc {
   static final UpdatedProductsFunc instance =
@@ -13,26 +14,45 @@ class UpdatedProductsFunc {
 
   /// Initialize Hive box + adapter safely
   Future<void> init() async {
-    // Check if adapter is already registered
     if (!Hive.isAdapterRegistered(
       UpdatedProductsAdapter().typeId,
     )) {
       Hive.registerAdapter(UpdatedProductsAdapter());
-      print('Updated Products Adapter registered ✅');
+      await mainLocalLog(
+        'Updated Products Adapter registered ✅',
+      );
     }
 
-    // Open the box only if it isn’t already open
+    try {
+      await _openBox();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Failed to open Updated Products Box. Deleting and recreating...',
+        error: e,
+        stackTrace: s,
+      );
+
+      await Hive.deleteBoxFromDisk(updatedProductsBoxName);
+
+      // Try exactly one more time
+      await _openBox();
+    }
+  }
+
+  Future<void> _openBox() async {
     if (!Hive.isBoxOpen(updatedProductsBoxName)) {
       _updatedProductsBox =
           await Hive.openBox<UpdatedProducts>(
             updatedProductsBoxName,
           );
-      print('Updated Products Box opened ✅');
+      await mainLocalLog('Updated Products Box opened ✅');
     } else {
       _updatedProductsBox = Hive.box<UpdatedProducts>(
         updatedProductsBoxName,
       );
-      print('Updated Products Box already open, reused ✅');
+      await mainLocalLog(
+        'Updated Products Box already open, reused ✅',
+      );
     }
   }
 
@@ -61,12 +81,12 @@ class UpdatedProductsFunc {
         updatedProduct.product.uuid,
         updatedProduct,
       );
-      print(
+      await mainLocalLog(
         'Offline updated Product inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline updated Product insertion failed ❌: $e',
       );
       return 0;
@@ -84,12 +104,12 @@ class UpdatedProductsFunc {
         updatedProduct.product.uuid,
         updatedProduct,
       );
-      print(
+      await mainLocalLog(
         'Offline updated Product inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline updated Product insertion failed ❌: $e',
       );
       return 0;
@@ -98,14 +118,16 @@ class UpdatedProductsFunc {
 
   Future<int> deleteUpdatedProduct(String uuid) async {
     try {
-      print(
+      await mainLocalLog(
         updatedProductsBox.containsKey(uuid).toString(),
       );
       await updatedProductsBox.delete(uuid);
-      print('Updated Product Deleted');
+      await mainLocalLog('Updated Product Deleted');
       return 1;
     } catch (e) {
-      print('Product Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Product Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -113,10 +135,12 @@ class UpdatedProductsFunc {
   Future<int> clearupdatedProducts() async {
     try {
       await updatedProductsBox.clear();
-      print('All updated Products cleared ✅');
+      await mainLocalLog('All updated Products cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while clearing updated Products ❌: $e');
+      await mainLocalLog(
+        'Error while clearing updated Products ❌: $e',
+      );
       return 0;
     }
   }

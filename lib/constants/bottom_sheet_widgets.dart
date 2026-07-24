@@ -8,8 +8,6 @@ import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_categories/category_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
-import 'package:stockall/classes/temp_waybills/temp_way_bills.dart';
-import 'package:stockall/classes/temp_waybills/waybill_items.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 // import 'package:stockall/classes/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
@@ -37,676 +35,676 @@ import 'package:stockall/providers/data_provider.dart';
 import 'package:stockall/providers/purchase_action_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
-void selectProductWaybill({
-  TempProductClass? product,
-  required Function() closeAction,
-  required TextEditingController priceController,
-  required TextEditingController quantityController,
-  required BuildContext context,
-  WaybillItems? waybillItem,
-  TempWayBills? waybill,
-}) {
-  var theme = returnTheme(context, listen: false);
-  bool setCustomPrice = false;
-  bool isGroupTemp = false;
+// void selectProductWaybill({
+//   TempProductClass? product,
+//   required Function() closeAction,
+//   required TextEditingController priceController,
+//   required TextEditingController quantityController,
+//   required BuildContext context,
+//   WaybillItems? waybillItem,
+//   TempWayBills? waybill,
+// }) {
+//   var theme = returnTheme(context, listen: false);
+//   bool setCustomPrice = false;
+//   bool isGroupTemp = false;
 
-  if (waybillItem != null) {
-    isGroupTemp = waybillItem.isGroup!;
-    if (waybillItem.customPrice != null) {
-      priceController.text =
-          '${waybillItem.customPrice ?? ''}';
-      setCustomPrice = true;
-    }
-    quantityController.text =
-        (waybillItem.quantity).toString();
-  } else {
-    if (returnShopProvider().userShop()?.useGroupUnit ==
-        true) {
-      isGroupTemp = true;
-    } else {
-      isGroupTemp = false;
-    }
-  }
-  double amount() {
-    if (waybillItem == null) {
-      if (setCustomPrice) {
-        return (double.tryParse(
-              priceController.text.replaceAll(',', ''),
-            ) ??
-            0);
-      } else {
-        return isGroupTemp
-            ? ((product?.sellingPrice ?? 0) *
-                (double.tryParse(
-                      quantityController.text.replaceAll(
-                        ',',
-                        '',
-                      ),
-                    ) ??
-                    0) *
-                (product?.qttyPerGroup ?? 1))
-            : (product?.sellingPrice ?? 0) *
-                (double.tryParse(
-                      quantityController.text.replaceAll(
-                        ',',
-                        '',
-                      ),
-                    ) ??
-                    0);
-      }
-    } else {
-      if (setCustomPrice) {
-        return (double.tryParse(
-              priceController.text.replaceAll(',', ''),
-            ) ??
-            0);
-      } else {
-        return isGroupTemp
-            ? ((waybillItem.originalCost ?? 0) *
-                (double.tryParse(
-                      quantityController.text.replaceAll(
-                        ',',
-                        '',
-                      ),
-                    ) ??
-                    0) *
-                (waybillItem.qttyPerGroup ?? 1))
-            : (waybillItem.originalCost ?? 0) *
-                (double.tryParse(
-                      quantityController.text.replaceAll(
-                        ',',
-                        '',
-                      ),
-                    ) ??
-                    0);
-      }
-    }
-  }
+//   if (waybillItem != null) {
+//     isGroupTemp = waybillItem.isGroup!;
+//     if (waybillItem.customPrice != null) {
+//       priceController.text =
+//           '${waybillItem.customPrice ?? ''}';
+//       setCustomPrice = true;
+//     }
+//     quantityController.text =
+//         (waybillItem.quantity).toString();
+//   } else {
+//     if (returnShopProvider().userShop()?.useGroupUnit ==
+//         true) {
+//       isGroupTemp = true;
+//     } else {
+//       isGroupTemp = false;
+//     }
+//   }
+//   double amount() {
+//     if (waybillItem == null) {
+//       if (setCustomPrice) {
+//         return (double.tryParse(
+//               priceController.text.replaceAll(',', ''),
+//             ) ??
+//             0);
+//       } else {
+//         return isGroupTemp
+//             ? ((product?.sellingPrice ?? 0) *
+//                 (double.tryParse(
+//                       quantityController.text.replaceAll(
+//                         ',',
+//                         '',
+//                       ),
+//                     ) ??
+//                     0) *
+//                 (product?.qttyPerGroup ?? 1))
+//             : (product?.sellingPrice ?? 0) *
+//                 (double.tryParse(
+//                       quantityController.text.replaceAll(
+//                         ',',
+//                         '',
+//                       ),
+//                     ) ??
+//                     0);
+//       }
+//     } else {
+//       if (setCustomPrice) {
+//         return (double.tryParse(
+//               priceController.text.replaceAll(',', ''),
+//             ) ??
+//             0);
+//       } else {
+//         return isGroupTemp
+//             ? ((waybillItem.originalCost ?? 0) *
+//                 (double.tryParse(
+//                       quantityController.text.replaceAll(
+//                         ',',
+//                         '',
+//                       ),
+//                     ) ??
+//                     0) *
+//                 (waybillItem.qttyPerGroup ?? 1))
+//             : (waybillItem.originalCost ?? 0) *
+//                 (double.tryParse(
+//                       quantityController.text.replaceAll(
+//                         ',',
+//                         '',
+//                       ),
+//                     ) ??
+//                     0);
+//       }
+//     }
+//   }
 
-  showDialog(
-    context: context,
-    builder: (context) {
-      return GestureDetector(
-        onTap:
-            () =>
-                FocusManager.instance.primaryFocus
-                    ?.unfocus(),
-        child: StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              insetPadding: EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 15,
-                vertical: 20,
-              ),
-              backgroundColor: Colors.white,
-              title: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Enter Item Purchase Details',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.h4.fontSize,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Divider(color: Colors.grey.shade300),
-                ],
-              ),
+//   showDialog(
+//     context: context,
+//     builder: (context) {
+//       return GestureDetector(
+//         onTap:
+//             () =>
+//                 FocusManager.instance.primaryFocus
+//                     ?.unfocus(),
+//         child: StatefulBuilder(
+//           builder: (context, setState) {
+//             return AlertDialog(
+//               insetPadding: EdgeInsets.symmetric(
+//                 horizontal: 15,
+//               ),
+//               contentPadding: EdgeInsets.symmetric(
+//                 horizontal: 15,
+//                 vertical: 20,
+//               ),
+//               backgroundColor: Colors.white,
+//               title: Column(
+//                 mainAxisSize: MainAxisSize.min,
+//                 children: [
+//                   Text(
+//                     'Enter Item Purchase Details',
+//                     textAlign: TextAlign.center,
+//                     style: TextStyle(
+//                       fontSize:
+//                           theme.mobileTexts.h4.fontSize,
+//                       fontWeight: FontWeight.bold,
+//                     ),
+//                   ),
+//                   SizedBox(height: 10),
+//                   Divider(color: Colors.grey.shade300),
+//                 ],
+//               ),
 
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      width: 450,
-                      child: EditCartTextField(
-                        title: 'Enter Item Quantity',
-                        hint: 'Quantity',
-                        controller: quantityController,
-                        theme: theme,
-                        onChanged: (value) {
-                          setState(() {});
-                        },
-                      ),
-                    ),
-                    Visibility(
-                      visible:
-                          returnShopProvider()
-                              .userShop()
-                              ?.useGroupUnit ==
-                          true,
-                      child: Column(
-                        children: [
-                          SizedBox(height: 20),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(
-                                  horizontal: 20.0,
-                                ),
-                            child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .spaceBetween,
-                              children: [
-                                Text(
-                                  style: TextStyle(
-                                    fontWeight:
-                                        FontWeight.bold,
-                                  ),
-                                  'Use Group Quantity?',
-                                ),
-                                MyToggleButton(
-                                  boolValue: isGroupTemp,
-                                  toggle: () {
-                                    setState(() {
-                                      isGroupTemp =
-                                          !isGroupTemp;
-                                    });
-                                  },
-                                  theme: theme,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Builder(
-                      builder: (context) {
-                        if (setCustomPrice) {
-                          return Column(
-                            children: [
-                              Row(
-                                spacing: 10,
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.end,
-                                children: [
-                                  Expanded(
-                                    child: MoneyTextfield(
-                                      title: 'Custom Price',
-                                      hint: 'Enter Price',
-                                      controller:
-                                          priceController,
-                                      theme: theme,
-                                      onChanged: (value) {
-                                        setState(() {});
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 20),
-                            ],
-                          );
-                        } else {
-                          return Container();
-                        }
-                      },
-                    ),
-                    // SizedBox(height: 20),
-                    InkWell(
-                      mouseCursor: SystemMouseCursors.click,
-                      onTap: () {
-                        setState(() {
-                          setCustomPrice = !setCustomPrice;
-                        });
-                        priceController.clear();
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 5,
-                          horizontal: 10,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
-                          spacing: 5,
-                          children: [
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b1
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              setCustomPrice
-                                  ? 'Cancel Custom Price'
-                                  : 'Set Custom Price',
-                            ),
-                            Stack(
-                              children: [
-                                Visibility(
-                                  visible:
-                                      setCustomPrice ==
-                                      false,
-                                  child: SvgPicture.asset(
-                                    editIconSvg,
-                                    height: 20,
-                                  ),
-                                ),
-                                Visibility(
-                                  visible:
-                                      setCustomPrice ==
-                                      true,
-                                  child: Icon(Icons.clear),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(
-                          10,
-                        ),
-                        color: Colors.grey.shade100,
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0,
-                        vertical: 10,
-                      ),
-                      child: Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b1
-                                      .fontSize,
-                            ),
-                            'Total',
-                          ),
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b1
-                                      .fontSize,
-                              fontWeight:
-                                  theme
-                                      .mobileTexts
-                                      .b1
-                                      .fontWeightBold,
-                            ),
-                            formatMoneyMid(
-                              amount: amount(),
-                              context: context,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
-                      spacing: 5,
-                      children: [
-                        MaterialButton(
-                          mouseCursor:
-                              SystemMouseCursors.click,
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text('Cancel'),
-                        ),
-                        SmallButtonMain(
-                          theme: theme,
-                          action: () {
-                            if (quantityController
-                                .text
-                                .isNotEmpty) {
-                              if (!setCustomPrice ||
-                                  (setCustomPrice &&
-                                      priceController
-                                          .text
-                                          .isNotEmpty)) {
-                                if (waybillItem != null) {
-                                  returnWaybillProvider().updateItem(
-                                    waybillItem: WaybillItems(
-                                      originalCost:
-                                          waybillItem
-                                              .originalCost,
-                                      uuid:
-                                          waybillItem.uuid,
-                                      waybillId:
-                                          waybillItem
-                                              .waybillId,
-                                      qttyPerGroup:
-                                          product
-                                              ?.qttyPerGroup,
+//               content: SingleChildScrollView(
+//                 child: Column(
+//                   mainAxisSize: MainAxisSize.min,
+//                   children: [
+//                     SizedBox(
+//                       width: 450,
+//                       child: EditCartTextField(
+//                         title: 'Enter Item Quantity',
+//                         hint: 'Quantity',
+//                         controller: quantityController,
+//                         theme: theme,
+//                         onChanged: (value) {
+//                           setState(() {});
+//                         },
+//                       ),
+//                     ),
+//                     Visibility(
+//                       visible:
+//                           returnShopProvider()
+//                               .userShop()
+//                               ?.useGroupUnit ==
+//                           true,
+//                       child: Column(
+//                         children: [
+//                           SizedBox(height: 20),
+//                           Padding(
+//                             padding:
+//                                 const EdgeInsets.symmetric(
+//                                   horizontal: 20.0,
+//                                 ),
+//                             child: Row(
+//                               mainAxisAlignment:
+//                                   MainAxisAlignment
+//                                       .spaceBetween,
+//                               children: [
+//                                 Text(
+//                                   style: TextStyle(
+//                                     fontWeight:
+//                                         FontWeight.bold,
+//                                   ),
+//                                   'Use Group Quantity?',
+//                                 ),
+//                                 MyToggleButton(
+//                                   boolValue: isGroupTemp,
+//                                   toggle: () {
+//                                     setState(() {
+//                                       isGroupTemp =
+//                                           !isGroupTemp;
+//                                     });
+//                                   },
+//                                   theme: theme,
+//                                 ),
+//                               ],
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                     SizedBox(height: 20),
+//                     Builder(
+//                       builder: (context) {
+//                         if (setCustomPrice) {
+//                           return Column(
+//                             children: [
+//                               Row(
+//                                 spacing: 10,
+//                                 crossAxisAlignment:
+//                                     CrossAxisAlignment.end,
+//                                 children: [
+//                                   Expanded(
+//                                     child: MoneyTextfield(
+//                                       title: 'Custom Price',
+//                                       hint: 'Enter Price',
+//                                       controller:
+//                                           priceController,
+//                                       theme: theme,
+//                                       onChanged: (value) {
+//                                         setState(() {});
+//                                       },
+//                                     ),
+//                                   ),
+//                                 ],
+//                               ),
+//                               SizedBox(height: 20),
+//                             ],
+//                           );
+//                         } else {
+//                           return Container();
+//                         }
+//                       },
+//                     ),
+//                     // SizedBox(height: 20),
+//                     InkWell(
+//                       mouseCursor: SystemMouseCursors.click,
+//                       onTap: () {
+//                         setState(() {
+//                           setCustomPrice = !setCustomPrice;
+//                         });
+//                         priceController.clear();
+//                       },
+//                       child: Container(
+//                         padding: EdgeInsets.symmetric(
+//                           vertical: 5,
+//                           horizontal: 10,
+//                         ),
+//                         child: Row(
+//                           mainAxisSize: MainAxisSize.min,
+//                           mainAxisAlignment:
+//                               MainAxisAlignment.center,
+//                           spacing: 5,
+//                           children: [
+//                             Text(
+//                               style: TextStyle(
+//                                 fontSize:
+//                                     theme
+//                                         .mobileTexts
+//                                         .b1
+//                                         .fontSize,
+//                                 fontWeight: FontWeight.bold,
+//                               ),
+//                               setCustomPrice
+//                                   ? 'Cancel Custom Price'
+//                                   : 'Set Custom Price',
+//                             ),
+//                             Stack(
+//                               children: [
+//                                 Visibility(
+//                                   visible:
+//                                       setCustomPrice ==
+//                                       false,
+//                                   child: SvgPicture.asset(
+//                                     editIconSvg,
+//                                     height: 20,
+//                                   ),
+//                                 ),
+//                                 Visibility(
+//                                   visible:
+//                                       setCustomPrice ==
+//                                       true,
+//                                   child: Icon(Icons.clear),
+//                                 ),
+//                               ],
+//                             ),
+//                           ],
+//                         ),
+//                       ),
+//                     ),
+//                     SizedBox(height: 20),
+//                     Container(
+//                       decoration: BoxDecoration(
+//                         borderRadius: BorderRadius.circular(
+//                           10,
+//                         ),
+//                         color: Colors.grey.shade100,
+//                       ),
+//                       padding: const EdgeInsets.symmetric(
+//                         horizontal: 20.0,
+//                         vertical: 10,
+//                       ),
+//                       child: Row(
+//                         mainAxisAlignment:
+//                             MainAxisAlignment.spaceBetween,
+//                         children: [
+//                           Text(
+//                             style: TextStyle(
+//                               fontSize:
+//                                   theme
+//                                       .mobileTexts
+//                                       .b1
+//                                       .fontSize,
+//                             ),
+//                             'Total',
+//                           ),
+//                           Text(
+//                             style: TextStyle(
+//                               fontSize:
+//                                   theme
+//                                       .mobileTexts
+//                                       .b1
+//                                       .fontSize,
+//                               fontWeight:
+//                                   theme
+//                                       .mobileTexts
+//                                       .b1
+//                                       .fontWeightBold,
+//                             ),
+//                             formatMoneyMid(
+//                               amount: amount(),
+//                               context: context,
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                     SizedBox(height: 20),
+//                     Row(
+//                       mainAxisAlignment:
+//                           MainAxisAlignment.center,
+//                       spacing: 5,
+//                       children: [
+//                         MaterialButton(
+//                           mouseCursor:
+//                               SystemMouseCursors.click,
+//                           onPressed: () {
+//                             Navigator.of(context).pop();
+//                           },
+//                           child: Text('Cancel'),
+//                         ),
+//                         SmallButtonMain(
+//                           theme: theme,
+//                           action: () {
+//                             if (quantityController
+//                                 .text
+//                                 .isNotEmpty) {
+//                               if (!setCustomPrice ||
+//                                   (setCustomPrice &&
+//                                       priceController
+//                                           .text
+//                                           .isNotEmpty)) {
+//                                 if (waybillItem != null) {
+//                                   returnWaybillProvider().updateItem(
+//                                     waybillItem: WaybillItems(
+//                                       originalCost:
+//                                           waybillItem
+//                                               .originalCost,
+//                                       uuid:
+//                                           waybillItem.uuid,
+//                                       waybillId:
+//                                           waybillItem
+//                                               .waybillId,
+//                                       qttyPerGroup:
+//                                           product
+//                                               ?.qttyPerGroup,
 
-                                      itemName:
-                                          waybillItem
-                                              .itemName,
-                                      customPrice:
-                                          double.tryParse(
-                                            priceController
-                                                .text
-                                                .replaceAll(
-                                                  ',',
-                                                  '',
-                                                ),
-                                          ),
-                                      itemUuid:
-                                          waybillItem
-                                              .itemUuid,
-                                      amount: amount(),
-                                      quantity:
-                                          (double.tryParse(
-                                                quantityController
-                                                    .text
-                                                    .replaceAll(
-                                                      ',',
-                                                      '',
-                                                    ),
-                                              ) ??
-                                              0),
-                                      isGroup: isGroupTemp,
-                                    ),
-                                  );
-                                } else {
-                                  returnWaybillProvider().addToItems(
-                                    item: WaybillItems(
-                                      originalCost:
-                                          product
-                                              ?.sellingPrice,
-                                      uuid: uuidGen(),
-                                      waybillId: null,
-                                      qttyPerGroup:
-                                          product
-                                              ?.qttyPerGroup,
-                                      itemName:
-                                          product?.name ??
-                                          'Item Name',
-                                      customPrice:
-                                          double.tryParse(
-                                            priceController
-                                                .text
-                                                .replaceAll(
-                                                  ',',
-                                                  '',
-                                                ),
-                                          ),
-                                      itemUuid:
-                                          product!.uuid!,
+//                                       itemName:
+//                                           waybillItem
+//                                               .itemName,
+//                                       customPrice:
+//                                           double.tryParse(
+//                                             priceController
+//                                                 .text
+//                                                 .replaceAll(
+//                                                   ',',
+//                                                   '',
+//                                                 ),
+//                                           ),
+//                                       itemUuid:
+//                                           waybillItem
+//                                               .itemUuid,
+//                                       amount: amount(),
+//                                       quantity:
+//                                           (double.tryParse(
+//                                                 quantityController
+//                                                     .text
+//                                                     .replaceAll(
+//                                                       ',',
+//                                                       '',
+//                                                     ),
+//                                               ) ??
+//                                               0),
+//                                       isGroup: isGroupTemp,
+//                                     ),
+//                                   );
+//                                 } else {
+//                                   returnWaybillProvider().addToItems(
+//                                     item: WaybillItems(
+//                                       originalCost:
+//                                           product
+//                                               ?.sellingPrice,
+//                                       uuid: uuidGen(),
+//                                       waybillId: null,
+//                                       qttyPerGroup:
+//                                           product
+//                                               ?.qttyPerGroup,
+//                                       itemName:
+//                                           product?.name ??
+//                                           'Item Name',
+//                                       customPrice:
+//                                           double.tryParse(
+//                                             priceController
+//                                                 .text
+//                                                 .replaceAll(
+//                                                   ',',
+//                                                   '',
+//                                                 ),
+//                                           ),
+//                                       itemUuid:
+//                                           product!.uuid!,
 
-                                      amount: amount(),
-                                      quantity:
-                                          (double.tryParse(
-                                                quantityController
-                                                    .text
-                                                    .replaceAll(
-                                                      ',',
-                                                      '',
-                                                    ),
-                                              ) ??
-                                              0),
-                                      isGroup: isGroupTemp,
-                                    ),
-                                  );
-                                  Navigator.of(
-                                    context,
-                                  ).pop();
-                                }
-                                Navigator.of(context).pop();
-                              }
-                            }
-                          },
-                          buttonText: 'Add Item',
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      );
-    },
-  ).then((value) {
-    quantityController.clear();
-    priceController.clear();
-  });
-}
+//                                       amount: amount(),
+//                                       quantity:
+//                                           (double.tryParse(
+//                                                 quantityController
+//                                                     .text
+//                                                     .replaceAll(
+//                                                       ',',
+//                                                       '',
+//                                                     ),
+//                                               ) ??
+//                                               0),
+//                                       isGroup: isGroupTemp,
+//                                     ),
+//                                   );
+//                                   Navigator.of(
+//                                     context,
+//                                   ).pop();
+//                                 }
+//                                 Navigator.of(context).pop();
+//                               }
+//                             }
+//                           },
+//                           buttonText: 'Add Item',
+//                         ),
+//                       ],
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             );
+//           },
+//         ),
+//       );
+//     },
+//   ).then((value) {
+//     quantityController.clear();
+//     priceController.clear();
+//   });
+// }
 
-void selectProductsForWaybillBottomSheet({
-  required BuildContext context,
-  Function()? action,
-  required TextEditingController searchController,
-  required TextEditingController priceController,
-  required TextEditingController quantityController,
-}) async {
-  await showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-        top: Radius.circular(20),
-      ),
-    ),
-    backgroundColor: Colors.white,
-    builder: (BuildContext context) {
-      return DraggableScrollableSheet(
-        expand: false,
-        initialChildSize: 0.95,
-        maxChildSize: 0.95,
-        minChildSize: 0.3,
-        builder: (context, scrollController) {
-          List<TempProductClass> products = [];
-          products =
-              returnData(
-                context: context,
-              ).productListMain.where((item) {
-                if (returnWaybillProvider().waybillItemsTemp
-                    .where(
-                      (purch) =>
-                          purch.itemUuid == item.uuid,
-                    )
-                    .isEmpty) {
-                  return true;
-                } else {
-                  return false;
-                }
-              }).toList();
-          products.sort(
-            (a, b) => a.name.toLowerCase().compareTo(
-              b.name.toLowerCase(),
-            ),
-          );
+// void selectProductsForWaybillBottomSheet({
+//   required BuildContext context,
+//   Function()? action,
+//   required TextEditingController searchController,
+//   required TextEditingController priceController,
+//   required TextEditingController quantityController,
+// }) async {
+//   await showModalBottomSheet(
+//     context: context,
+//     isScrollControlled: true,
+//     shape: RoundedRectangleBorder(
+//       borderRadius: BorderRadius.vertical(
+//         top: Radius.circular(20),
+//       ),
+//     ),
+//     backgroundColor: Colors.white,
+//     builder: (BuildContext context) {
+//       return DraggableScrollableSheet(
+//         expand: false,
+//         initialChildSize: 0.95,
+//         maxChildSize: 0.95,
+//         minChildSize: 0.3,
+//         builder: (context, scrollController) {
+//           List<TempProductClass> products = [];
+//           products =
+//               returnData(
+//                 context: context,
+//               ).productListMain.where((item) {
+//                 if (returnWaybillProvider().waybillItemsTemp
+//                     .where(
+//                       (purch) =>
+//                           purch.itemUuid == item.uuid,
+//                     )
+//                     .isEmpty) {
+//                   return true;
+//                 } else {
+//                   return false;
+//                 }
+//               }).toList();
+//           products.sort(
+//             (a, b) => a.name.toLowerCase().compareTo(
+//               b.name.toLowerCase(),
+//             ),
+//           );
 
-          return StatefulBuilder(
-            builder:
-                (context, setState) => Container(
-                  padding: const EdgeInsets.fromLTRB(
-                    30,
-                    15,
-                    30,
-                    45,
-                  ),
-                  child: Column(
-                    children: [
-                      Center(
-                        child: Container(
-                          height: 4,
-                          width: 70,
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(5),
-                            color: Colors.grey.shade400,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 30),
-                      Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              'Select Items',
-                              style: TextStyle(
-                                fontSize:
-                                    returnTheme(context)
-                                        .mobileTexts
-                                        .b1
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: SizedBox(
-                              height: 30,
-                              width: 200,
-                              child: GeneralTextfieldOnly(
-                                onChanged: (value) {
-                                  setState(() {});
-                                },
-                                hint: 'Search Name',
-                                controller:
-                                    searchController,
-                                lines: 1,
-                                theme: returnTheme(
-                                  context,
-                                  listen: false,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.end,
-                              children: [
-                                IconButton(
-                                  mouseCursor:
-                                      SystemMouseCursors
-                                          .click,
-                                  onPressed: () {
-                                    Navigator.of(
-                                      context,
-                                    ).pop();
-                                    FocusScope.of(
-                                      context,
-                                    ).unfocus();
-                                  },
-                                  icon: Icon(Icons.check),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(10),
-                            border: Border.all(
-                              color: Colors.grey.shade300,
-                            ),
-                          ),
-                          child: ListView(
-                            controller: scrollController,
-                            children:
-                                products
-                                    .where(
-                                      (prod) => prod.name
-                                          .toLowerCase()
-                                          .contains(
-                                            searchController
-                                                .text
-                                                .toLowerCase(),
-                                          ),
-                                    )
-                                    .map(
-                                      (pro) => Container(
-                                        decoration: BoxDecoration(
-                                          border: Border(
-                                            top: BorderSide(
-                                              color:
-                                                  Colors
-                                                      .grey
-                                                      .shade300,
-                                            ),
-                                          ),
-                                        ),
-                                        child: Material(
-                                          color:
-                                              Colors.white,
-                                          child: ListTile(
-                                            title: Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    returnTheme(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    ).mobileTexts.b2.fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              pro.name,
-                                            ),
-                                            onTap: () {
-                                              selectProductWaybill(
-                                                product:
-                                                    pro,
-                                                closeAction:
-                                                    () {},
-                                                priceController:
-                                                    priceController,
-                                                quantityController:
-                                                    quantityController,
-                                                context:
-                                                    context,
-                                              );
-                                            },
-                                            trailing: Icon(
-                                              size: 18,
-                                              Icons.add,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                    .toList(),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-          );
-        },
-      );
-    },
-  ).then((_) {
-    searchController.clear();
-  });
-  action!();
-}
+//           return StatefulBuilder(
+//             builder:
+//                 (context, setState) => Container(
+//                   padding: const EdgeInsets.fromLTRB(
+//                     30,
+//                     15,
+//                     30,
+//                     45,
+//                   ),
+//                   child: Column(
+//                     children: [
+//                       Center(
+//                         child: Container(
+//                           height: 4,
+//                           width: 70,
+//                           decoration: BoxDecoration(
+//                             borderRadius:
+//                                 BorderRadius.circular(5),
+//                             color: Colors.grey.shade400,
+//                           ),
+//                         ),
+//                       ),
+//                       SizedBox(height: 30),
+//                       Row(
+//                         mainAxisAlignment:
+//                             MainAxisAlignment.spaceBetween,
+//                         children: [
+//                           Expanded(
+//                             child: Text(
+//                               'Select Items',
+//                               style: TextStyle(
+//                                 fontSize:
+//                                     returnTheme(context)
+//                                         .mobileTexts
+//                                         .b1
+//                                         .fontSize,
+//                                 fontWeight: FontWeight.bold,
+//                               ),
+//                             ),
+//                           ),
+//                           Expanded(
+//                             child: SizedBox(
+//                               height: 30,
+//                               width: 200,
+//                               child: GeneralTextfieldOnly(
+//                                 onChanged: (value) {
+//                                   setState(() {});
+//                                 },
+//                                 hint: 'Search Name',
+//                                 controller:
+//                                     searchController,
+//                                 lines: 1,
+//                                 theme: returnTheme(
+//                                   context,
+//                                   listen: false,
+//                                 ),
+//                               ),
+//                             ),
+//                           ),
+//                           Expanded(
+//                             child: Row(
+//                               mainAxisAlignment:
+//                                   MainAxisAlignment.end,
+//                               children: [
+//                                 IconButton(
+//                                   mouseCursor:
+//                                       SystemMouseCursors
+//                                           .click,
+//                                   onPressed: () {
+//                                     Navigator.of(
+//                                       context,
+//                                     ).pop();
+//                                     FocusScope.of(
+//                                       context,
+//                                     ).unfocus();
+//                                   },
+//                                   icon: Icon(Icons.check),
+//                                 ),
+//                               ],
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                       SizedBox(height: 10),
+//                       Expanded(
+//                         child: Container(
+//                           decoration: BoxDecoration(
+//                             borderRadius:
+//                                 BorderRadius.circular(10),
+//                             border: Border.all(
+//                               color: Colors.grey.shade300,
+//                             ),
+//                           ),
+//                           child: ListView(
+//                             controller: scrollController,
+//                             children:
+//                                 products
+//                                     .where(
+//                                       (prod) => prod.name
+//                                           .toLowerCase()
+//                                           .contains(
+//                                             searchController
+//                                                 .text
+//                                                 .toLowerCase(),
+//                                           ),
+//                                     )
+//                                     .map(
+//                                       (pro) => Container(
+//                                         decoration: BoxDecoration(
+//                                           border: Border(
+//                                             top: BorderSide(
+//                                               color:
+//                                                   Colors
+//                                                       .grey
+//                                                       .shade300,
+//                                             ),
+//                                           ),
+//                                         ),
+//                                         child: Material(
+//                                           color:
+//                                               Colors.white,
+//                                           child: ListTile(
+//                                             title: Text(
+//                                               style: TextStyle(
+//                                                 fontSize:
+//                                                     returnTheme(
+//                                                       context,
+//                                                       listen:
+//                                                           false,
+//                                                     ).mobileTexts.b2.fontSize,
+//                                                 fontWeight:
+//                                                     FontWeight
+//                                                         .bold,
+//                                               ),
+//                                               pro.name,
+//                                             ),
+//                                             onTap: () {
+//                                               selectProductWaybill(
+//                                                 product:
+//                                                     pro,
+//                                                 closeAction:
+//                                                     () {},
+//                                                 priceController:
+//                                                     priceController,
+//                                                 quantityController:
+//                                                     quantityController,
+//                                                 context:
+//                                                     context,
+//                                               );
+//                                             },
+//                                             trailing: Icon(
+//                                               size: 18,
+//                                               Icons.add,
+//                                             ),
+//                                           ),
+//                                         ),
+//                                       ),
+//                                     )
+//                                     .toList(),
+//                           ),
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//           );
+//         },
+//       );
+//     },
+//   ).then((_) {
+//     searchController.clear();
+//   });
+//   action!();
+// }
 
 void selectProductPurchase({
   TempProductClass? product,
@@ -722,7 +720,6 @@ void selectProductPurchase({
   bool isGroupTemp = false;
 
   if (purchaseItem != null) {
-    print('Beans and Beans');
     isGroupTemp = purchaseItem.isGroup;
     if (purchaseItem.customPrice != null) {
       priceController.text =
@@ -2961,9 +2958,6 @@ void selectProductSales({
                                   setState(() {
                                     currentFocus = 1;
                                   });
-                                  print(
-                                    'Current Focus Value: $currentFocus',
-                                  );
                                 },
                                 focusNode: qttyNode,
                                 // onSubmitted: (value) {
@@ -3062,9 +3056,6 @@ void selectProductSales({
                                         ),
                                       ) ??
                                       0;
-                                  print(
-                                    'Entered Valueee: $entered',
-                                  );
                                   if (cartItem
                                           .getItem()
                                           ?.isManaged ??
@@ -3232,14 +3223,11 @@ void selectProductSales({
                                       ),
                                       Expanded(
                                         child: MoneyTextfield(
-                                          onTap: () {
+                                          onTap: () async {
                                             setState(() {
                                               currentFocus =
                                                   2;
                                             });
-                                            print(
-                                              'Current Focus Value: $currentFocus',
-                                            );
                                           },
                                           focusNode:
                                               priceNode,
@@ -3588,9 +3576,6 @@ void selectProductSales({
                                                   ),
                                             ) ??
                                             0;
-                                        print(
-                                          'Entered Valueee: $entered',
-                                        );
                                         if (cartItem
                                                 .getItem()
                                                 ?.isManaged ??
@@ -4089,9 +4074,6 @@ void selectProductSales({
                                                     ),
                                               ) ??
                                               0;
-                                          print(
-                                            'Entered Valueee: $entered',
-                                          );
                                           if (cartItem
                                                   .getItem()
                                                   ?.isManaged ??
@@ -6074,7 +6056,9 @@ Future<void> showOnScreenKeyboard() async {
       ], mode: ProcessStartMode.detached);
     }
   } catch (e) {
-    print('Error Opening Keyboard: ${e.toString()}');
+    await mainLocalLog(
+      'Error Opening Keyboard: ${e.toString()}',
+    );
   }
 }
 

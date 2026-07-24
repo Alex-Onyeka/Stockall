@@ -1,6 +1,7 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:stockall/main.dart';
 
 class DeviceService {
   static bool isPos = false;
@@ -15,7 +16,7 @@ class DeviceService {
     final deviceInfo = DeviceInfoPlugin();
 
     if (kIsWeb) {
-      print("Running on Web");
+      await mainLocalLog("Running on Web");
     } else if (Platform.isAndroid) {
       final androidInfo = await deviceInfo.androidInfo;
 
@@ -32,32 +33,34 @@ class DeviceService {
       );
 
       // Print info to console
-      print("=== ANDROID DEVICE INFO ===");
-      print("Brand: $brand");
-      print("Model: $model");
-      print("Manufacturer: $manufacturer");
-      print("Device: ${androidInfo.device}");
-      print("Android Version: $androidVersion");
-      print(
+      await mainLocalLog("=== ANDROID DEVICE INFO ===");
+      await mainLocalLog("Brand: $brand");
+      await mainLocalLog("Model: $model");
+      await mainLocalLog("Manufacturer: $manufacturer");
+      await mainLocalLog("Device: ${androidInfo.device}");
+      await mainLocalLog(
+        "Android Version: $androidVersion",
+      );
+      await mainLocalLog(
         isPos
             ? "This is a POS device ✅"
             : "This is a normal Android device 📱",
       );
-      print(
+      await mainLocalLog(
         hasInternalPrinter
             ? "Device has internal printer ✅"
             : "No internal printer detected ❌",
       );
     } else if (Platform.isWindows) {
-      print("Running on Windows");
+      await mainLocalLog("Running on Windows");
     } else if (Platform.isLinux) {
-      print("Running on Linux");
+      await mainLocalLog("Running on Linux");
     } else if (Platform.isMacOS) {
-      print("Running on macOS");
+      await mainLocalLog("Running on macOS");
     } else if (Platform.isIOS) {
-      print("Running on iOS");
+      await mainLocalLog("Running on iOS");
     } else {
-      print("Unknown platform");
+      await mainLocalLog("Unknown platform");
     }
   }
 

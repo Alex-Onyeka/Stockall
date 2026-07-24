@@ -86,7 +86,7 @@ class MainBottomNav extends StatelessWidget {
                       ).clearDate();
                       globalKey.currentState?.openDrawer();
                     } else {
-                      print('Context not mounted');
+                      mainLocalLog('Context not mounted');
                     }
                   },
                   child: SizedBox(
@@ -191,7 +191,7 @@ class MainBottomNav extends StatelessWidget {
                   listen: false,
                 ).clearDate();
               } else {
-                print("Context not Mounted");
+                mainLocalLog("Context not Mounted");
               }
             },
             child: Stack(

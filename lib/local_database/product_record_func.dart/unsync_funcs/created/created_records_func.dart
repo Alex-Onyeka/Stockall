@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_product_slaes_record/unsynced/created_records/created_records.dart';
+import 'package:stockall/main.dart';
 
 class CreatedRecordsFunc {
   static final CreatedRecordsFunc instance =
@@ -18,7 +19,9 @@ class CreatedRecordsFunc {
       CreatedRecordsAdapter().typeId,
     )) {
       Hive.registerAdapter(CreatedRecordsAdapter());
-      print('Created Records Adapter registered ✅');
+      await mainLocalLog(
+        'Created Records Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,14 @@ class CreatedRecordsFunc {
           await Hive.openBox<CreatedRecords>(
             createdRecordsBoxName,
           );
-      print('Created Records Box opened ✅');
+      await mainLocalLog('Created Records Box opened ✅');
     } else {
       _createdRecordsBox = Hive.box<CreatedRecords>(
         createdRecordsBoxName,
       );
-      print('Created Records Box already open, reused ✅');
+      await mainLocalLog(
+        'Created Records Box already open, reused ✅',
+      );
     }
   }
 
@@ -66,10 +71,12 @@ class CreatedRecordsFunc {
           records,
         );
       }
-      print("Offline Created Records inserted ✅");
+      await mainLocalLog(
+        "Offline Created Records inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Records insertion failed ❌: $e',
       );
       return 0;
@@ -88,12 +95,12 @@ class CreatedRecordsFunc {
         createdRecords.record.uuid,
         createdRecords,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Records inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Records insertion failed ❌: $e',
       );
       return 0;
@@ -102,12 +109,16 @@ class CreatedRecordsFunc {
 
   Future<int> deleteRecords(String uuid) async {
     try {
-      print(createdRecordsBox.containsKey(uuid).toString());
+      await mainLocalLog(
+        createdRecordsBox.containsKey(uuid).toString(),
+      );
       await createdRecordsBox.delete(uuid);
-      print('Records Deleted');
+      await mainLocalLog('Records Deleted');
       return 1;
     } catch (e) {
-      print('Records Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Records Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -115,10 +126,12 @@ class CreatedRecordsFunc {
   Future<int> clearRecords() async {
     try {
       await createdRecordsBox.clear();
-      print('All Created Records cleared ✅');
+      await mainLocalLog('All Created Records cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while clearing Created Records ❌: $e');
+      await mainLocalLog(
+        'Error while clearing Created Records ❌: $e',
+      );
       return 0;
     }
   }

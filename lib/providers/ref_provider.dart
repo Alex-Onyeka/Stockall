@@ -74,7 +74,7 @@
 //       currentReferree = TempReferralClass.fromJson(res);
 //       notifyListeners();
 //     } catch (e) {
-//       print('Error getting referree: $e');
+//       await mainLocalLog('Error getting referree: $e');
 //       currentReferree = null;
 //     }
 //   }
@@ -97,7 +97,7 @@
 //   //     currentReferree = Referree.fromJson(res);
 //   //     notifyListeners();
 //   //   } catch (e) {
-//   //     print('Error getting referree: $e');
+//   //     await mainLocalLog('Error getting referree: $e');
 //   //     currentReferree = null;
 //   //   }
 //   // }

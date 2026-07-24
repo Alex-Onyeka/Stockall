@@ -20,7 +20,7 @@ Future<bool> downloadDocket({
   required bool setTotal,
 }) async {
   try {
-    print('Begin Download');
+    await mainLocalLog('Begin Download');
     final pdfBytes = await _buildPdfRoll(
       context: context,
       fileName: fileName,
@@ -65,7 +65,7 @@ Future<bool> downloadDocket({
     return res;
     // return pdfUint8;
   } catch (e, stackTrace) {
-    print(
+    await mainLocalLog(
       '❌ Error downloading/printing PDF: $e\n$stackTrace',
     );
     return false;

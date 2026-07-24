@@ -29,13 +29,14 @@ class ItemHistoryAdapter extends TypeAdapter<ItemHistory> {
       newValue: fields[6] as String?,
       oldValue: fields[7] as String?,
       itemUuid: fields[5] as String?,
+      quantityChange: fields[12] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ItemHistory obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -59,7 +60,9 @@ class ItemHistoryAdapter extends TypeAdapter<ItemHistory> {
       ..writeByte(10)
       ..write(obj.departmentName)
       ..writeByte(11)
-      ..write(obj.departmentUuid);
+      ..write(obj.departmentUuid)
+      ..writeByte(12)
+      ..write(obj.quantityChange);
   }
 
   @override

@@ -263,7 +263,7 @@ class _LoginDesktopState extends State<LoginDesktop> {
                   controller: widget.emailController,
                   theme: widget.theme,
                   onSubmit: (value) {
-                    print('Clicked');
+                    mainLocalLog('Clicked');
                     passwordNode.requestFocus();
                   },
                 ),

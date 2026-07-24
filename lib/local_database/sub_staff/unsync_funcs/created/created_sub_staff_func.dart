@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_sub_staff/unsynced/created_sub_staffs/created_sub_staff.dart';
+import 'package:stockall/main.dart';
 
 class CreatedSubStaffFunc {
   static final CreatedSubStaffFunc instance =
@@ -18,7 +19,9 @@ class CreatedSubStaffFunc {
       CreatedSubStaffAdapter().typeId,
     )) {
       Hive.registerAdapter(CreatedSubStaffAdapter());
-      print('Created Sub Staff Adapter registered ✅');
+      await mainLocalLog(
+        'Created Sub Staff Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,12 @@ class CreatedSubStaffFunc {
           await Hive.openBox<CreatedSubStaff>(
             createdSubStaffBoxName,
           );
-      print('Created Sub Staffs Box opened ✅');
+      await mainLocalLog('Created Sub Staffs Box opened ✅');
     } else {
       _createdSubStaffBox = Hive.box<CreatedSubStaff>(
         createdSubStaffBoxName,
       );
-      print(
+      await mainLocalLog(
         'Created Sub Staffs Box already open, reused ✅',
       );
     }
@@ -69,10 +72,12 @@ class CreatedSubStaffFunc {
           subStaff,
         );
       }
-      print("Offline Created Sub Staffs inserted ✅");
+      await mainLocalLog(
+        "Offline Created Sub Staffs inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Sub Staffs insertion failed ❌: $e',
       );
       return 0;
@@ -87,12 +92,12 @@ class CreatedSubStaffFunc {
         createdSubStaff.subStaff.uuid,
         createdSubStaff,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Sub Staff inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Sub Staff insertion failed ❌: $e',
       );
       return 0;
@@ -107,12 +112,12 @@ class CreatedSubStaffFunc {
         createdSubStaff.subStaff.uuid,
         createdSubStaff,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Sub Staff inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Sub Staff insertion failed ❌: $e',
       );
       return 0;
@@ -121,14 +126,16 @@ class CreatedSubStaffFunc {
 
   Future<int> deleteSubStaff(String uuid) async {
     try {
-      print(
+      await mainLocalLog(
         createdSubStaffBox.containsKey(uuid).toString(),
       );
       await createdSubStaffBox.delete(uuid);
-      print('Sub Staff Deleted');
+      await mainLocalLog('Sub Staff Deleted');
       return 1;
     } catch (e) {
-      print('Sub Staff Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Sub Staff Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -136,10 +143,12 @@ class CreatedSubStaffFunc {
   Future<int> clearSubStaffs() async {
     try {
       await createdSubStaffBox.clear();
-      print('All Created Sub Staffs cleared ✅');
+      await mainLocalLog(
+        'All Created Sub Staffs cleared ✅',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error while clearing Created Sub Staffs ❌: $e',
       );
       return 0;

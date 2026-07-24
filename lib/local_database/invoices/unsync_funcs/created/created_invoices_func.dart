@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_invoices/unsynced/created_invoices/created_invoices.dart';
+import 'package:stockall/main.dart';
 
 class CreatedInvoicesFunc {
   static final CreatedInvoicesFunc instance =
@@ -18,7 +19,9 @@ class CreatedInvoicesFunc {
       CreatedInvoicesAdapter().typeId,
     )) {
       Hive.registerAdapter(CreatedInvoicesAdapter());
-      print('Created Invoices Adapter registered ✅');
+      await mainLocalLog(
+        'Created Invoices Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,14 @@ class CreatedInvoicesFunc {
           await Hive.openBox<CreatedInvoices>(
             createdInvoicesBoxName,
           );
-      print('Created Invoices Box opened ✅');
+      await mainLocalLog('Created Invoices Box opened ✅');
     } else {
       _createdInvoicesBox = Hive.box<CreatedInvoices>(
         createdInvoicesBoxName,
       );
-      print('Created Invoices Box already open, reused ✅');
+      await mainLocalLog(
+        'Created Invoices Box already open, reused ✅',
+      );
     }
   }
 
@@ -67,10 +72,12 @@ class CreatedInvoicesFunc {
           invoice,
         );
       }
-      print("Offline Created Invoices inserted ✅");
+      await mainLocalLog(
+        "Offline Created Invoices inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Invoices insertion failed ❌: $e',
       );
       return 0;
@@ -85,12 +92,12 @@ class CreatedInvoicesFunc {
         createdInvoice.invoice.uuid,
         createdInvoice,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Invoice inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Invoice insertion failed ❌: $e',
       );
       return 0;
@@ -105,26 +112,28 @@ class CreatedInvoicesFunc {
         createdInvoice.invoice.uuid,
         createdInvoice,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Invoice Updated successfully ✅',
       );
       return 1;
     } catch (e) {
-      print('Offline Created Invoice Update failed ❌: $e');
+      await mainLocalLog(
+        'Offline Created Invoice Update failed ❌: $e',
+      );
       return 0;
     }
   }
 
   Future<int> deleteInvoice(String uuid) async {
     try {
-      print(
+      await mainLocalLog(
         createdInvoicesBox.containsKey(uuid).toString(),
       );
       await createdInvoicesBox.delete(uuid);
-      print('Created Invoice Deleted');
+      await mainLocalLog('Created Invoice Deleted');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Created Invoice Delete Failed: ${e.toString()}',
       );
       return 0;
@@ -134,10 +143,12 @@ class CreatedInvoicesFunc {
   Future<int> clearInvoices() async {
     try {
       await createdInvoicesBox.clear();
-      print('All Created Invoices cleared ✅');
+      await mainLocalLog('All Created Invoices cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while clearing Created Invoices ❌: $e');
+      await mainLocalLog(
+        'Error while clearing Created Invoices ❌: $e',
+      );
       return 0;
     }
   }

@@ -9,6 +9,7 @@ import 'package:stockall/components/major/desktop_page_container.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/main.dart';
 import 'package:stockall/theme/main_theme.dart';
 
 class AltDisplayWaiting extends StatefulWidget {
@@ -145,10 +146,14 @@ class AltDisplayState extends State<AltDisplay> {
           break;
 
         default:
-          print('Unknown method: ${call.method}');
+          await mainLocalLog(
+            'Unknown method: ${call.method}',
+          );
       }
     } catch (e) {
-      print('Error Updating Alt Screen: ${e.toString()}');
+      await mainLocalLog(
+        'Error Updating Alt Screen: ${e.toString()}',
+      );
     }
   }
 

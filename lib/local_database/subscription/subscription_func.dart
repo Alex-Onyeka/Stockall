@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/subscription/subscription_class.dart';
+import 'package:stockall/main.dart';
 
 class SubscriptionFunc {
   static final SubscriptionFunc instance =
@@ -15,7 +16,7 @@ class SubscriptionFunc {
     subscriptionBox = await Hive.openBox(
       subscriptionBoxName,
     );
-    print('Subscription Box Initialized ✅');
+    await mainLocalLog('Subscription Box Initialized ✅');
   }
 
   SubscriptionClass? getSubscription() {
@@ -35,11 +36,13 @@ class SubscriptionFunc {
         subscription.subscriptionId!,
         subscription,
       );
-      print('Offline Subscription inserted Successfully');
+      await mainLocalLog(
+        'Offline Subscription inserted Successfully',
+      );
 
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Subscription Insertion Failed: ${e.toString()}',
       );
       return 0;
@@ -50,11 +53,13 @@ class SubscriptionFunc {
     try {
       if (subscriptionBox.values.isNotEmpty) {
         await subscriptionBox.clear();
-        print('Subscription Cleared');
+        await mainLocalLog('Subscription Cleared');
       }
       return 1;
     } catch (e) {
-      print('❌❌ Subscription Clear Error: ${e.toString()}');
+      await mainLocalLog(
+        '❌❌ Subscription Clear Error: ${e.toString()}',
+      );
       return 0;
     }
   }

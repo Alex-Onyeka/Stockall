@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/created_products/created_products.dart';
+import 'package:stockall/main.dart';
 
 class CreatedProductFunc {
   static final CreatedProductFunc instance =
@@ -13,26 +14,45 @@ class CreatedProductFunc {
 
   /// Initialize Hive box + adapter safely
   Future<void> init() async {
-    // Check if adapter is already registered
-    if (!Hive.isAdapterRegistered(
-      CreatedProductsAdapter().typeId,
-    )) {
-      Hive.registerAdapter(CreatedProductsAdapter());
-      print('CreatedProductsAdapter registered ✅');
-    }
+    try {
+      if (!Hive.isAdapterRegistered(
+        CreatedProductsAdapter().typeId,
+      )) {
+        Hive.registerAdapter(CreatedProductsAdapter());
+        await mainLocalLog(
+          'Created Products Adapter registered ✅',
+        );
+      }
 
-    // Open the box only if it isn’t already open
+      // Open the box only if it isn’t already open
+      await _openBox();
+    } catch (e, s) {
+      await Hive.deleteBoxFromDisk(
+        'createdProductsBoxStockall',
+      );
+      await mainLocalLog(
+        'Error Initializing Created Products Box: ${e.toString()}',
+        error: e,
+        stackTrace: s,
+      );
+      await _openBox();
+    }
+  }
+
+  Future<void> _openBox() async {
     if (!Hive.isBoxOpen(createdProductsBoxName)) {
       _createdProductsBox =
           await Hive.openBox<CreatedProducts>(
             createdProductsBoxName,
           );
-      print('Created Products Box opened ✅');
+      await mainLocalLog('Created Products Box opened ✅');
     } else {
       _createdProductsBox = Hive.box<CreatedProducts>(
         createdProductsBoxName,
       );
-      print('Created Products Box already open, reused ✅');
+      await mainLocalLog(
+        'Created Products Box already open, reused ✅',
+      );
     }
   }
 
@@ -60,10 +80,12 @@ class CreatedProductFunc {
           product,
         );
       }
-      print("Offline Created Products inserted ✅");
+      await mainLocalLog(
+        "Offline Created Products inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Products insertion failed ❌: $e',
       );
       return 0;
@@ -78,12 +100,12 @@ class CreatedProductFunc {
         createdProduct.product.uuid,
         createdProduct,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Product inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Product insertion failed ❌: $e',
       );
       return 0;
@@ -94,7 +116,7 @@ class CreatedProductFunc {
     CreatedProducts createdProduct,
   ) async {
     try {
-      print(
+      await mainLocalLog(
         createdProductsBox
             .containsKey(createdProduct.product.uuid)
             .toString(),
@@ -103,12 +125,12 @@ class CreatedProductFunc {
         createdProduct.product.uuid,
         createdProduct,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Product Updated Successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         '❌Offline Created Product Update Failed: ${e.toString()}',
       );
       return 0;
@@ -117,14 +139,16 @@ class CreatedProductFunc {
 
   Future<int> deleteProduct(String uuid) async {
     try {
-      print(
+      await mainLocalLog(
         createdProductsBox.containsKey(uuid).toString(),
       );
       await createdProductsBox.delete(uuid);
-      print('Product Deleted');
+      await mainLocalLog('Product Deleted');
       return 1;
     } catch (e) {
-      print('Product Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Product Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -132,10 +156,12 @@ class CreatedProductFunc {
   Future<int> clearProducts() async {
     try {
       await createdProductsBox.clear();
-      print('All Created Products cleared ✅');
+      await mainLocalLog('All Created Products cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while clearing Created Products ❌: $e');
+      await mainLocalLog(
+        'Error while clearing Created Products ❌: $e',
+      );
       return 0;
     }
   }

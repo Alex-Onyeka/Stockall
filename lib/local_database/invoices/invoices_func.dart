@@ -19,7 +19,7 @@ class InvoicesFunc {
     await CreatedInvoicesFunc().init();
     await DeletedInvoicesFunc().init();
     await UpdatedInvoicesFunc().init();
-    print('Invoices Box Initialized');
+    await mainLocalLog('Invoices Box Initialized');
   }
 
   List<TempInvoice> getInvoices() {
@@ -39,10 +39,12 @@ class InvoicesFunc {
       for (var rec in invoices) {
         await invoicesBox.put(rec.uuid, rec);
       }
-      print('Offline Invoices Success');
+      await mainLocalLog('Offline Invoices Success');
       return 1;
     } catch (e) {
-      print('Offline Invoices Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Offline Invoices Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -50,10 +52,12 @@ class InvoicesFunc {
   Future<int> createInvoices(TempInvoice invoice) async {
     try {
       await invoicesBox.put(invoice.uuid, invoice);
-      print('Offline Invoices Created');
+      await mainLocalLog('Offline Invoices Created');
       return 1;
     } catch (e) {
-      print('Offline Invoices Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Offline Invoices Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -61,10 +65,10 @@ class InvoicesFunc {
   Future<int> updateInvoice(TempInvoice invoice) async {
     try {
       await invoicesBox.put(invoice.uuid, invoice);
-      print('Offline Invoices Updated');
+      await mainLocalLog('Offline Invoices Updated');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Invoices Update Failed: ${e.toString()}',
       );
       return 0;
@@ -74,10 +78,12 @@ class InvoicesFunc {
   Future<int> deleteInvoices(String uuid) async {
     try {
       await invoicesBox.delete(uuid);
-      print('Offline Invoice Deleted');
+      await mainLocalLog('Offline Invoice Deleted');
       return 1;
     } catch (e) {
-      print('Offline Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Offline Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -92,14 +98,14 @@ class InvoicesFunc {
   //       // Save back into Hive explicitly
   //       await invoicesBox.put(uuid, invoice);
 
-  //       print('Offline Invoices Sale Updated Successfully');
+  //       await mainLocalLog('Offline Invoices Sale Updated Successfully');
   //       return 1;
   //     } else {
-  //       print('Invoices not found in box ❌');
+  //       await mainLocalLog('Invoices not found in box ❌');
   //       return 0;
   //     }
   //   } catch (e) {
-  //     print(
+  //     await mainLocalLog(
   //       'Offline Invoices Sale Update Failed: ${e.toString()}',
   //     );
   //     return 0;
@@ -109,10 +115,10 @@ class InvoicesFunc {
   Future<int> clearInvoices() async {
     try {
       await invoicesBox.clear();
-      print('Offline Invoicess Cleared');
+      await mainLocalLog('Offline Invoicess Cleared');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Invoices Clear Failed: ${e.toString()}',
       );
       return 0;

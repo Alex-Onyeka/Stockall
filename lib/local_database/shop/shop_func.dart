@@ -3,6 +3,7 @@ import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart';
 import 'package:stockall/local_database/users/user_func.dart';
 import 'package:stockall/services/auth_service.dart';
+import 'package:stockall/main.dart';
 
 class ShopFunc {
   static final ShopFunc instance = ShopFunc._internal();
@@ -12,11 +13,19 @@ class ShopFunc {
   final String shopBoxName = 'shopBoxStockall';
 
   Future<void> init() async {
-    // await Hive.deleteBoxFromDisk(shopBoxName);
-    Hive.registerAdapter(TempShopClassAdapter());
-    shopBox = await Hive.openBox(shopBoxName);
-    await UpdatedShopFunc().init();
-    print('Shop Box Initialized');
+    try {
+      // await Hive.deleteBoxFromDisk(shopBoxName);
+      Hive.registerAdapter(TempShopClassAdapter());
+      shopBox = await Hive.openBox(shopBoxName);
+      await UpdatedShopFunc().init();
+      await mainLocalLog('Shop Box Initialized');
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error Initializing Shops Func: ${e.toString()}',
+        error: e,
+        stackTrace: s,
+      );
+    }
   }
 
   List<TempShopClass> getShops() {
@@ -25,7 +34,7 @@ class ShopFunc {
       AuthService().currentUser!,
     );
     if (user == null) {
-      print('Offline User not found');
+      // await mainLocalLog('Offline User not found');
       return [];
     }
 
@@ -47,7 +56,7 @@ class ShopFunc {
             .toList();
       }
     } catch (e) {
-      print('No Shop Match ${e.toString()}');
+      // await mainLocalLog('No Shop Match ${e.toString()}');
       return [];
     }
   }
@@ -59,13 +68,15 @@ class ShopFunc {
         for (final shop in shops) {
           await shopBox.put(shop.shopId, shop);
         }
-        print('Shop Insert Success');
+        await mainLocalLog('Shop Insert Success');
         return 1;
       } else {
         return 0;
       }
     } catch (e) {
-      print('Shop Insert Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Shop Insert Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -75,13 +86,15 @@ class ShopFunc {
       if (shop != null) {
         shop.updatedAt = DateTime.now();
         await shopBox.put(shop.shopId, shop);
-        print('Shop Update Success');
+        await mainLocalLog('Shop Update Success');
         return 1;
       } else {
         return 0;
       }
     } catch (e) {
-      print('Shop Update Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Shop Update Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -98,12 +111,12 @@ class ShopFunc {
         sho.updatedAt = DateTime.now();
         updateShop(sho);
       }
-      print(
+      await mainLocalLog(
         "Setting HeadQuarters Failed Offline And Updating Other Shops Success",
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         "Setting HeadQuarters Failed Offline: ${e.toString()}",
       );
       return 0;
@@ -113,10 +126,12 @@ class ShopFunc {
   Future<int> clearShop() async {
     try {
       await shopBox.clear();
-      print('Offline Shop Cleared');
+      await mainLocalLog('Offline Shop Cleared');
       return 1;
     } catch (e) {
-      print('Offline Shop Clear Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Offline Shop Clear Failed: ${e.toString()}',
+      );
       return 0;
     }
   }

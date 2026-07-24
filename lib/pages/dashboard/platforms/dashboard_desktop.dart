@@ -102,7 +102,7 @@ class _DashboardDesktopState
           context,
           listen: false,
         ).load(true);
-        print('Data Loaded');
+        await mainLocalLog('Data Loaded');
       });
     }
     // loadSuggestions();
@@ -1550,7 +1550,7 @@ class _DashboardDesktopState
 //     super.initState();
 //     returnData().keepNodeFocus();
 //     returnData().startBarcodeTimer();
-//     print('❌❌✅✅ Barcode Timer Created');
+//     await mainLocalLog('❌❌✅✅ Barcode Timer Created');
 //   }
 
 //   @override
@@ -1562,7 +1562,7 @@ class _DashboardDesktopState
 //   @override
 //   void dispose() {
 //     super.dispose();
-//     print('❌❌✅✅Disposed');
+//     await mainLocalLog('❌❌✅✅Disposed');
 //     returnData().cancelBarcodeTimer();
 //   }
 
@@ -1619,7 +1619,7 @@ class _DashboardDesktopState
 //               }
 //             }
 //           }
-//           print("Barcode Value: $value");
+//           await mainLocalLog("Barcode Value: $value");
 //         },
 //       ),
 //     );

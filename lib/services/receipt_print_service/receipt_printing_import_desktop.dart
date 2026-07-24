@@ -390,7 +390,9 @@ Future<bool> sendReceiptToPrinter(
 
     return success;
   } catch (e) {
-    print('Error Sending to Printer: ${e.toString()}');
+    await mainLocalLog(
+      'Error Sending to Printer: ${e.toString()}',
+    );
     return false;
   }
 }

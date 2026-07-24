@@ -32,10 +32,10 @@ class ErrorLogProvider with ChangeNotifier {
       dateSet = date;
       rangeStartDate = null;
       rangeEndDate = null;
-      print('Date set: $date');
+      mainLocalLog('Date set: $date');
     } else {
       dateSet = null;
-      print('Date Cleared');
+      mainLocalLog('Date Cleared');
     }
     notifyListeners();
   }
@@ -46,7 +46,7 @@ class ErrorLogProvider with ChangeNotifier {
   void setRange(DateTime rangeStart, DateTime endOfrange) {
     rangeStartDate = rangeStart;
     rangeEndDate = endOfrange;
-    print(
+    mainLocalLog(
       'Date Range set: Start: $rangeStart End: $endOfrange ',
     );
     dateSet = null;
@@ -140,7 +140,7 @@ class ErrorLogProvider with ChangeNotifier {
             .eq('shop_id', shopId)
             .order('created_at', ascending: false);
         if (res.isEmpty) {
-          print('No Error Logs Returned');
+          await mainLocalLog('No Error Logs Returned');
           logs.clear();
           ErrorLogFunc().clearErrorLog();
           notifyListeners();
@@ -152,12 +152,14 @@ class ErrorLogProvider with ChangeNotifier {
                 .toList();
 
         await ErrorLogFunc().insertAllErrorLog(logs);
-        print('✅✅ Error Gotten Successfully Online');
+        await mainLocalLog(
+          '✅✅ Error Gotten Successfully Online',
+        );
         notifyListeners();
 
         return logs;
       } catch (e) {
-        print(
+        await mainLocalLog(
           '❌❌ Error Getting Online Failed: ${e.toString()}',
         );
         return [];
@@ -165,7 +167,9 @@ class ErrorLogProvider with ChangeNotifier {
     } else {
       logs = ErrorLogFunc().getErrorLogs();
 
-      print('Error Gotten Successfully Offline');
+      await mainLocalLog(
+        'Error Gotten Successfully Offline',
+      );
       notifyListeners();
       return logs;
     }
@@ -175,7 +179,7 @@ class ErrorLogProvider with ChangeNotifier {
   getErrorLogsOffline() async {
     logs = ErrorLogFunc().getErrorLogs();
 
-    print('Error Gotten Successfully Offline');
+    await mainLocalLog('Error Gotten Successfully Offline');
     notifyListeners();
     return logs;
   }
@@ -222,7 +226,7 @@ class ErrorLogProvider with ChangeNotifier {
     //             .select()
     //             .maybeSingle();
     //     if (res == null) {
-    //       print('Error Logging Failed');
+    //       await mainLocalLog('Error Logging Failed');
     //       return 0;
     //     }
     //     logs.add(TempErrorLogClass.fromJson(res));
@@ -231,10 +235,10 @@ class ErrorLogProvider with ChangeNotifier {
     //     );
     //     notifyListeners();
     //     await getErrorLogs();
-    //     print('✅✅ Error Logged Successfully Online');
+    //     await mainLocalLog('✅✅ Error Logged Successfully Online');
     //     return 1;
     //   } catch (e) {
-    //     print(
+    //     await mainLocalLog(
     //       'Error Creating Online Failed: ${e.toString()}',
     //     );
     //     return 0;
@@ -250,7 +254,7 @@ class ErrorLogProvider with ChangeNotifier {
     //   syncData();
     //   return 1;
     // } catch (e) {
-    //   print(
+    //   await mainLocalLog(
     //     'Offline Error Creating Failed: ${e.toString()}',
     //   );
     //   return 0;
@@ -302,7 +306,7 @@ class ErrorLogProvider with ChangeNotifier {
             await CreatedErrorLogFunc().deleteErrorLog(
               item.errorLog.uuid!,
             );
-            print(
+            await mainLocalLog(
               'Error Occoured While Creating Error Log: ${e.toString()}',
             );
             // }
@@ -313,16 +317,20 @@ class ErrorLogProvider with ChangeNotifier {
           }
         }
 
-        print(
+        await mainLocalLog(
           '$count Error Log items added successfully ✅',
         );
         await CreatedErrorLogFunc().clearError();
-        print('Unsynced Error Logs Cleared');
-        print('Mounted, refreshing Receipts ✅');
+        await mainLocalLog('Unsynced Error Logs Cleared');
+        await mainLocalLog(
+          'Mounted, refreshing Receipts ✅',
+        );
         await getErrorLogs();
       }
     } catch (e) {
-      print('Batch Error Logs insert failed ❌: $e');
+      await mainLocalLog(
+        'Batch Error Logs insert failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Error Logs insert failed ❌: $e',
       );

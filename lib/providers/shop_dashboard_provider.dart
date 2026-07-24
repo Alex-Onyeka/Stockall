@@ -46,10 +46,10 @@ class ShopDashboardProvider extends ChangeNotifier {
       dateSet = date;
       rangeStartDate = null;
       rangeEndDate = null;
-      print('Date set: $date');
+      mainLocalLog('Date set: $date');
     } else {
       dateSet = null;
-      print('Date Cleared');
+      mainLocalLog('Date Cleared');
     }
     notifyListeners();
   }
@@ -60,7 +60,7 @@ class ShopDashboardProvider extends ChangeNotifier {
   void setRange(DateTime rangeStart, DateTime endOfrange) {
     rangeStartDate = rangeStart;
     rangeEndDate = endOfrange;
-    print(
+    mainLocalLog(
       'Date Range set: Start: $rangeStart End: $endOfrange ',
     );
     dateSet = null;
@@ -82,7 +82,9 @@ class ShopDashboardProvider extends ChangeNotifier {
       notifyListeners();
       return 1;
     } catch (e) {
-      print('Error Fetching All Records: ${e.toString()}');
+      await mainLocalLog(
+        'Error Fetching All Records: ${e.toString()}',
+      );
       isLoading = false;
       return 0;
     }
@@ -104,10 +106,14 @@ class ShopDashboardProvider extends ChangeNotifier {
         );
       }
       allReceipts = temp;
-      print("Receipts Gotten: ${allReceipts.length}");
+      await mainLocalLog(
+        "Receipts Gotten: ${allReceipts.length}",
+      );
       return allReceipts;
     } catch (e) {
-      print('Error Getting Receipts: ${e.toString()}');
+      await mainLocalLog(
+        'Error Getting Receipts: ${e.toString()}',
+      );
       return [];
     }
   }
@@ -172,10 +178,14 @@ class ShopDashboardProvider extends ChangeNotifier {
         );
       }
       allExpenses = temp;
-      print("Expenses Gotten ${allExpenses.length}");
+      await mainLocalLog(
+        "Expenses Gotten ${allExpenses.length}",
+      );
       return allExpenses;
     } catch (e) {
-      print('Error Getting Expenses: ${e.toString()}');
+      await mainLocalLog(
+        'Error Getting Expenses: ${e.toString()}',
+      );
       return [];
     }
   }
@@ -241,10 +251,14 @@ class ShopDashboardProvider extends ChangeNotifier {
         );
       }
       allInvoices = temp;
-      print("Invoices Gotten ${allInvoices.length}");
+      await mainLocalLog(
+        "Invoices Gotten ${allInvoices.length}",
+      );
       return allInvoices;
     } catch (e) {
-      print('Error Getting Invoices: ${e.toString()}');
+      await mainLocalLog(
+        'Error Getting Invoices: ${e.toString()}',
+      );
       return [];
     }
   }
@@ -309,10 +323,14 @@ class ShopDashboardProvider extends ChangeNotifier {
         );
       }
       allCustomers = temp;
-      print("Customers Gotten ${allCustomers.length}");
+      await mainLocalLog(
+        "Customers Gotten ${allCustomers.length}",
+      );
       return allCustomers;
     } catch (e) {
-      print('Error Getting Customers: ${e.toString()}');
+      await mainLocalLog(
+        'Error Getting Customers: ${e.toString()}',
+      );
       return [];
     }
   }
@@ -347,10 +365,12 @@ class ShopDashboardProvider extends ChangeNotifier {
         );
       }
       allItems = temp;
-      print("Items Gotten ${allItems.length}");
+      await mainLocalLog("Items Gotten ${allItems.length}");
       return allItems;
     } catch (e) {
-      print('Error Getting Items: ${e.toString()}');
+      await mainLocalLog(
+        'Error Getting Items: ${e.toString()}',
+      );
       return [];
     }
   }
@@ -395,7 +415,7 @@ class ShopDashboardProvider extends ChangeNotifier {
             .from('users')
             .select()
             .inFilter('user_id', (shop.employees ?? []));
-        // print('Users Gotten from Supabase: ${data.length}');
+        // await mainLocalLog('Users Gotten from Supabase: ${data.length}');
 
         temp.addAll(
           data
@@ -406,10 +426,14 @@ class ShopDashboardProvider extends ChangeNotifier {
         );
       }
       allStaffs = temp;
-      print("Staffs Gotten ${allStaffs.length}");
+      await mainLocalLog(
+        "Staffs Gotten ${allStaffs.length}",
+      );
       return allStaffs;
     } catch (e) {
-      print('Error Getting Items: ${e.toString()}');
+      await mainLocalLog(
+        'Error Getting Items: ${e.toString()}',
+      );
       return [];
     }
   }

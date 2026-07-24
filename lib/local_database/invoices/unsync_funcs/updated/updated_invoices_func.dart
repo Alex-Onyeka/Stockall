@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_invoices/unsynced/updated/updated_invoices.dart';
+import 'package:stockall/main.dart';
 
 class UpdatedInvoicesFunc {
   static final UpdatedInvoicesFunc instance =
@@ -18,7 +19,7 @@ class UpdatedInvoicesFunc {
       UpdatedInvoicesAdapter().typeId,
     )) {
       Hive.registerAdapter(UpdatedInvoicesAdapter());
-      print(
+      await mainLocalLog(
         '😍😍😍😍😍Updated Invoices Adapter registered ✅',
       );
     }
@@ -29,12 +30,14 @@ class UpdatedInvoicesFunc {
           await Hive.openBox<UpdatedInvoices>(
             updatedInvoicesBoxName,
           );
-      print('😍😍😍😍😍Updated Invoices Box opened ✅');
+      await mainLocalLog(
+        '😍😍😍😍😍Updated Invoices Box opened ✅',
+      );
     } else {
       _updatedInvoicesBox = Hive.box<UpdatedInvoices>(
         updatedInvoicesBoxName,
       );
-      print(
+      await mainLocalLog(
         '😍😍😍😍😍Updated Invoices Box already open, reused ✅',
       );
     }
@@ -67,12 +70,12 @@ class UpdatedInvoicesFunc {
         updatedInvoice.updatedInvoice.uuid,
         updatedInvoice,
       );
-      print(
+      await mainLocalLog(
         'Offline updated Invoice inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline updated Invoice insertion failed ❌: $e',
       );
       return 0;
@@ -92,12 +95,12 @@ class UpdatedInvoicesFunc {
         updatedInvoice.updatedInvoice.uuid,
         updatedInvoice,
       );
-      print(
+      await mainLocalLog(
         'Offline updated Invoice inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline updated Invoice insertion failed ❌: $e',
       );
       return 0;
@@ -106,14 +109,16 @@ class UpdatedInvoicesFunc {
 
   Future<int> deleteUpdatedInvoice(String uuid) async {
     try {
-      print(
+      await mainLocalLog(
         updatedInvoicesBox.containsKey(uuid).toString(),
       );
       await updatedInvoicesBox.delete(uuid);
-      print('Updated Invoice Deleted');
+      await mainLocalLog('Updated Invoice Deleted');
       return 1;
     } catch (e) {
-      print('Invoice Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Invoice Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -121,10 +126,12 @@ class UpdatedInvoicesFunc {
   Future<int> clearupdatedInvoiceUpdatedInvoices() async {
     try {
       await updatedInvoicesBox.clear();
-      print('All updated InvoiceUpdatedInvoices cleared ✅');
+      await mainLocalLog(
+        'All updated InvoiceUpdatedInvoices cleared ✅',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error while clearing updated InvoiceUpdatedInvoices ❌: $e',
       );
       return 0;

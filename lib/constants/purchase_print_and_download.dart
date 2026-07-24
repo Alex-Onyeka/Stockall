@@ -51,7 +51,9 @@ void downloadPdfWebPurchase({
 
         returnPurchaseProvider().toggleIsLoading(false);
       } catch (e, stackTrace) {
-        print('❌ Error downloading PDF: $e\n$stackTrace');
+        await mainLocalLog(
+          '❌ Error downloading PDF: $e\n$stackTrace',
+        );
       }
     },
   );
@@ -966,7 +968,7 @@ Future<void> generateAndPreviewPdfPurchase({
       if (Platform.isAndroid || Platform.isIOS) {
         await savePdfMobilePurchase(bytes, name);
       } else {
-        print('Printing For Desktop');
+        await mainLocalLog('Printing For Desktop');
         await savePdfDesktopPurchase(bytes, name);
       }
 
@@ -1011,7 +1013,7 @@ void downloadPdfWebRollPurchase({
     context: context,
     action: () async {
       try {
-        print('Begin Download');
+        await mainLocalLog('Begin Download');
         final pdfBytes = await _buildPdfRollPurchase(
           purchase: purchase,
           records: records,
@@ -1049,7 +1051,7 @@ void downloadPdfWebRollPurchase({
         }
         // return pdfUint8;
       } catch (e, stackTrace) {
-        print(
+        await mainLocalLog(
           '❌ Error downloading/printing PDF: $e\n$stackTrace',
         );
       }

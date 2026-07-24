@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_suppliers/unsynced/created_suppliers/created_suppliers.dart';
+import 'package:stockall/main.dart';
 
 class CreatedSupplierFunc {
   static final CreatedSupplierFunc instance =
@@ -18,7 +19,9 @@ class CreatedSupplierFunc {
       CreatedSuppliersAdapter().typeId,
     )) {
       Hive.registerAdapter(CreatedSuppliersAdapter());
-      print('Created Suppliers Adapter registered ✅');
+      await mainLocalLog(
+        'Created Suppliers Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,14 @@ class CreatedSupplierFunc {
           await Hive.openBox<CreatedSuppliers>(
             createdSuppliersBoxName,
           );
-      print('Created Suppliers Box opened ✅');
+      await mainLocalLog('Created Suppliers Box opened ✅');
     } else {
       _createdSuppliersBox = Hive.box<CreatedSuppliers>(
         createdSuppliersBoxName,
       );
-      print('Created Suppliers Box already open, reused ✅');
+      await mainLocalLog(
+        'Created Suppliers Box already open, reused ✅',
+      );
     }
   }
 
@@ -65,10 +70,12 @@ class CreatedSupplierFunc {
           suppliers,
         );
       }
-      print("Offline Created Suppliers inserted ✅");
+      await mainLocalLog(
+        "Offline Created Suppliers inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Suppliers insertion failed ❌: $e',
       );
       return 0;
@@ -83,12 +90,12 @@ class CreatedSupplierFunc {
         createdSuppliers.supplier.uuid,
         createdSuppliers,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Suppliers inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Suppliers insertion failed ❌: $e',
       );
       return 0;
@@ -103,12 +110,12 @@ class CreatedSupplierFunc {
         createdSuppliers.supplier.uuid,
         createdSuppliers,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Suppliers inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Suppliers insertion failed ❌: $e',
       );
       return 0;
@@ -117,14 +124,16 @@ class CreatedSupplierFunc {
 
   Future<int> deleteSupplier(String uuid) async {
     try {
-      print(
+      await mainLocalLog(
         createdSuppliersBox.containsKey(uuid).toString(),
       );
       await createdSuppliersBox.delete(uuid);
-      print('Suppliers Deleted');
+      await mainLocalLog('Suppliers Deleted');
       return 1;
     } catch (e) {
-      print('Suppliers Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Suppliers Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -132,10 +141,12 @@ class CreatedSupplierFunc {
   Future<int> clearSuppliers() async {
     try {
       await createdSuppliersBox.clear();
-      print('All Created Suppliers cleared ✅');
+      await mainLocalLog('All Created Suppliers cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while clearing Created Suppliers ❌: $e');
+      await mainLocalLog(
+        'Error while clearing Created Suppliers ❌: $e',
+      );
       return 0;
     }
   }

@@ -19,7 +19,7 @@ class SuppliersFunc {
     await CreatedSupplierFunc().init();
     await DeletedSupplierFunc().init();
     await UpdatedSupplierFunc().init();
-    print('Supplier Box Initialized');
+    await mainLocalLog('Supplier Box Initialized');
   }
 
   List<SuppliersClass> getSuppliers() {
@@ -30,7 +30,7 @@ class SuppliersFunc {
         b.name.toLowerCase(),
       ),
     );
-    print('Suppliers Gotten: ${suppliers.length}');
+    // await mainLocalLog('Suppliers Gotten: ${suppliers.length}');
 
     return suppliers;
   }
@@ -43,10 +43,12 @@ class SuppliersFunc {
       for (var supplier in suppliers) {
         await suppliersBox.put(supplier.uuid, supplier);
       }
-      print('Offline Suppliers Inserted Successfully');
+      await mainLocalLog(
+        'Offline Suppliers Inserted Successfully',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Supplier insertion Failed: ${e.toString()}',
       );
       return 0;
@@ -58,10 +60,12 @@ class SuppliersFunc {
   ) async {
     try {
       await suppliersBox.put(supplier.uuid, supplier);
-      print('Offline Supplier Inserted');
+      await mainLocalLog('Offline Supplier Inserted');
       return 1;
     } catch (e) {
-      print('Supplier Insert Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Supplier Insert Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -72,10 +76,12 @@ class SuppliersFunc {
     try {
       supplier.updatedAt = DateTime.now();
       await suppliersBox.put(supplier.uuid, supplier);
-      print('Offline Supplier Updated');
+      await mainLocalLog('Offline Supplier Updated');
       return 1;
     } catch (e) {
-      print('Supplier Update Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Supplier Update Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -83,10 +89,12 @@ class SuppliersFunc {
   Future<int> deleteSupplier(String uuid) async {
     try {
       await suppliersBox.delete(uuid);
-      print('Offline Supplier Deleted');
+      await mainLocalLog('Offline Supplier Deleted');
       return 1;
     } catch (e) {
-      print('Supplier Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Supplier Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -96,10 +104,10 @@ class SuppliersFunc {
       await suppliersBox.clear().timeout(
         Duration(seconds: 2),
       );
-      print('Offline Suppliers Cleared');
+      await mainLocalLog('Offline Suppliers Cleared');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         '❌❌ Error Clearing Offline Suppliers: ${e.toString()}',
       );
       return 0;

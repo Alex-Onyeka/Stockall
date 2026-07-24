@@ -86,7 +86,7 @@ class RefreshFunctions {
   bool isUpdateLodaingMobile = false;
 
   Future<void> getMainReceipts() async {
-    print('Starting to get receipts');
+    await mainLocalLog('Starting to get receipts');
     await receiptsProvider.loadReceipts(
       shopProvider.userShop()!.shopId!,
     );
@@ -126,7 +126,7 @@ class RefreshFunctions {
   //
 
   Future<void> getInvoices() async {
-    print('Starting to get receipts');
+    await mainLocalLog('Starting to get receipts');
     await invoicesProvider.loadInvoices(
       shopProvider.userShop()!.shopId!,
     );
@@ -594,7 +594,7 @@ class RefreshFunctions {
 
                   // await getProductSalesRecord();
                   var subs = await loadSubscription();
-                  print(
+                  await mainLocalLog(
                     "Subscription PLan RefreshAll: ${subs?.plan}",
                   );
                   if (safeContext.mounted) {
@@ -603,7 +603,7 @@ class RefreshFunctions {
                       context: safeContext,
                     );
                   }
-                  print(
+                  await mainLocalLog(
                     "Allowed Items RefreshAll: ${dataProvider.allowedRangeItems}",
                   );
 
@@ -638,7 +638,7 @@ class RefreshFunctions {
               .getUtilityConstants();
           // await getProductSalesRecord();
           var subs = await loadSubscription();
-          print(
+          await mainLocalLog(
             "Subscription PLan RefreshAll: ${subs?.plan}",
           );
           if (safeContext.mounted) {
@@ -647,7 +647,7 @@ class RefreshFunctions {
               context: safeContext,
             );
           }
-          print(
+          await mainLocalLog(
             "Allowed Items RefreshAll: ${dataProvider.allowedRangeItems}",
           );
           await returnDepartmentProvider().getDepartments();

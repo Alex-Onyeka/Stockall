@@ -286,13 +286,16 @@ class _AddEmployeeMobileState
                                               currentSelected ??
                                               5,
                                           index: index,
-                                          action: () {
+                                          action: () async {
                                             setState(() {
                                               currentSelected =
                                                   index;
                                             });
-                                            print(index);
-                                            print(
+                                            await mainLocalLog(
+                                              index
+                                                  .toString(),
+                                            );
+                                            await mainLocalLog(
                                               employee.role,
                                             );
                                           },

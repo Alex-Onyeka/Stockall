@@ -14,12 +14,20 @@ class CustomerFunc {
   final String customerBoxName = 'customerBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(TempCustomersClassAdapter());
-    customerBox = await Hive.openBox(customerBoxName);
-    await CreatedCustomersFunc().init();
-    await DeletedCustomersFunc().init();
-    await UpdatedCustomersFunc().init();
-    print('Customter Box Initialized');
+    try {
+      Hive.registerAdapter(TempCustomersClassAdapter());
+      customerBox = await Hive.openBox(customerBoxName);
+      await CreatedCustomersFunc().init();
+      await DeletedCustomersFunc().init();
+      await UpdatedCustomersFunc().init();
+      await mainLocalLog('Customter Box Initialized');
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error Initializing Customer Func Box: ${e.toString()}',
+        error: e,
+        stackTrace: s,
+      );
+    }
   }
 
   List<TempCustomersClass> getCustomers() {
@@ -30,8 +38,6 @@ class CustomerFunc {
         b.name.toLowerCase(),
       ),
     );
-    print('Customers Gotten: ${customers.length}');
-
     return customers;
   }
 
@@ -43,10 +49,12 @@ class CustomerFunc {
       for (var customer in customers) {
         await customerBox.put(customer.uuid, customer);
       }
-      print('Offline Customers Inserted Successfully');
+      await mainLocalLog(
+        'Offline Customers Inserted Successfully',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Customer insertion Failed: ${e.toString()}',
       );
       return 0;
@@ -58,10 +66,12 @@ class CustomerFunc {
   ) async {
     try {
       await customerBox.put(customer.uuid, customer);
-      print('Offline Customer Inserted');
+      await mainLocalLog('Offline Customer Inserted');
       return 1;
     } catch (e) {
-      print('Customer Insert Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Customer Insert Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -72,10 +82,12 @@ class CustomerFunc {
     try {
       customer.updatedAt = DateTime.now();
       await customerBox.put(customer.uuid, customer);
-      print('Offline Customer Updated');
+      await mainLocalLog('Offline Customer Updated');
       return 1;
     } catch (e) {
-      print('Customer Update Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Customer Update Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -83,10 +95,12 @@ class CustomerFunc {
   Future<int> deleteCustomer(String uuid) async {
     try {
       await customerBox.delete(uuid);
-      print('Offline Customer Deleted');
+      await mainLocalLog('Offline Customer Deleted');
       return 1;
     } catch (e) {
-      print('Customer Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Customer Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -96,10 +110,10 @@ class CustomerFunc {
       await customerBox.clear().timeout(
         Duration(seconds: 2),
       );
-      print('Offline Customers Cleared');
+      await mainLocalLog('Offline Customers Cleared');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         '❌❌ Error Clearing Offline Customers: ${e.toString()}',
       );
       return 0;

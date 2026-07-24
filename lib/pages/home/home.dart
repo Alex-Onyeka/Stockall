@@ -32,7 +32,7 @@ class _HomeState extends State<Home> {
       context,
       listen: false,
     ).fetchCurrentUser(context);
-    print(user?.email);
+    await mainLocalLog(user?.email);
     return user;
   }
 
@@ -52,15 +52,17 @@ class _HomeState extends State<Home> {
   late Future<TempShopClass?> shopFuture;
   Future<TempShopClass?> getUserShop() async {
     try {
-      print('About to get Stores');
+      await mainLocalLog('About to get Stores');
       var shop = await returnShopProvider().getUserShops();
-      print('Stores Gotten: ${shop.length}');
+      await mainLocalLog('Stores Gotten: ${shop.length}');
 
       var mainShop = returnShopProvider().userShop();
-      print('Current Shop: ${mainShop?.name}');
+      await mainLocalLog('Current Shop: ${mainShop?.name}');
       return mainShop;
     } catch (e) {
-      print("Error With Shop: ${e.toString()}");
+      await mainLocalLog(
+        "Error With Shop: ${e.toString()}",
+      );
       return null;
     }
   }

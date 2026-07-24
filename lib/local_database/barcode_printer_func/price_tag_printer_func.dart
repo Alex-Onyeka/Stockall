@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_generated_prints/temp_price_tag_printer_class/price_tag_printer_local.dart';
 import 'package:stockall/classes/temp_generated_prints/temp_price_tag_printer_class/price_tag_printer_settings/price_tag_printer_settings.dart';
+import 'package:stockall/main.dart';
 
 class PriceTagPrinterFunc {
   static final PriceTagPrinterFunc instance =
@@ -17,7 +18,9 @@ class PriceTagPrinterFunc {
     priceTagPrinterLocalBox = await Hive.openBox(
       priceTagPrinterLocalBoxName,
     );
-    print('✅ Price Tag Printer Box Initialized');
+    await mainLocalLog(
+      '✅ Price Tag Printer Box Initialized',
+    );
   }
 
   PriceTagPrinterLocal? getPriceTagPrinterLocal() {
@@ -35,10 +38,12 @@ class PriceTagPrinterFunc {
         priceTagPrinter.printer.name,
         priceTagPrinter,
       );
-      print('Price Tag Printer inserted Success');
+      await mainLocalLog(
+        'Price Tag Printer inserted Success',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         '❌❌ Insert Price Tag Printer Offline Error: ${e.toString()}',
       );
       return 0;
@@ -47,6 +52,6 @@ class PriceTagPrinterFunc {
 
   Future clearPriceTagPrinters() async {
     await priceTagPrinterLocalBox.clear();
-    print('Offline Price Tag Printer Cleared');
+    await mainLocalLog('Offline Price Tag Printer Cleared');
   }
 }

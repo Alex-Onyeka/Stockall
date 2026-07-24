@@ -130,10 +130,10 @@ class EnterCodeMobile extends StatelessWidget {
                     appContext: context,
                     length: 6,
                     onChanged: (value) {
-                      // print("OTP: $value");
+                      // await mainLocalLog("OTP: $value");
                     },
                     onCompleted: (value) {
-                      // print("Completed with OTP: $value");
+                      // await mainLocalLog("Completed with OTP: $value");
                       // You can verify OTP here
                     },
                     pinTheme: PinTheme(

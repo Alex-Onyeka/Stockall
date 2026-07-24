@@ -59,7 +59,9 @@ class SalesProvider extends ChangeNotifier {
   Future<String> fetchMainCart() async {
     try {
       mainCartQueue = CartFunc().getMainCart();
-      print('Main Carts Gotten: ${mainCartQueue.length}');
+      await mainLocalLog(
+        'Main Carts Gotten: ${mainCartQueue.length}',
+      );
       if (mainCartQueue.isNotEmpty) {
         if (mainCartIdCache.isEmpty ||
             mainCartQueue
@@ -82,7 +84,9 @@ class SalesProvider extends ChangeNotifier {
         return await initCart();
       }
     } catch (e) {
-      print('Error Fetching Main Cart: ${e.toString()}');
+      await mainLocalLog(
+        'Error Fetching Main Cart: ${e.toString()}',
+      );
       // await CartFunc().clearMainCart();
       notifyListeners();
       return await initCart();
@@ -100,14 +104,16 @@ class SalesProvider extends ChangeNotifier {
   Future<String> initCart() async {
     try {
       var mainCartId = uuidGen();
-      print('Main Cart Id: $mainCartId');
-      print('Main Cart Length: ${mainCartQueue.length}');
+      await mainLocalLog('Main Cart Id: $mainCartId');
+      await mainLocalLog(
+        'Main Cart Length: ${mainCartQueue.length}',
+      );
       await CartFunc().createMainCart(
         TempMainCart(cartQueue: [], mainCartId: mainCartId),
       );
       mainCartIdCache = mainCartId;
       var cartId = uuidGen();
-      print('Normal Cart Id: $cartId');
+      await mainLocalLog('Normal Cart Id: $cartId');
       await CartFunc().updateMainCart(
         TempMainCart(
           cartQueue: [
@@ -131,12 +137,16 @@ class SalesProvider extends ChangeNotifier {
         ),
       );
       cartIdCache = cartId;
-      print('Normal Cart Id Cached: $cartIdCache');
+      await mainLocalLog(
+        'Normal Cart Id Cached: $cartIdCache',
+      );
       fetchMainCart();
       notifyListeners();
       return cartId;
     } catch (e) {
-      print('Error Initializing Cart: ${e.toString()}');
+      await mainLocalLog(
+        'Error Initializing Cart: ${e.toString()}',
+      );
       await CartFunc().clearMainCart();
       return '';
     }
@@ -178,7 +188,7 @@ class SalesProvider extends ChangeNotifier {
     );
     res.subStaff = selectedSubStaff;
     await CartFunc().updateMainCart(res);
-    print(
+    await mainLocalLog(
       'Added: ${mainCartQueue.firstWhere((c) => c.mainCartId == mainCartId).subStaff?.staffName}',
     );
     notifyListeners();
@@ -192,7 +202,7 @@ class SalesProvider extends ChangeNotifier {
     );
     res.subStaff = null;
     await CartFunc().updateMainCart(res);
-    print(
+    await mainLocalLog(
       'Removed: ${mainCartQueue.firstWhere((c) => c.mainCartId == mainCartId).subStaff?.staffName}',
     );
     notifyListeners();
@@ -253,14 +263,14 @@ class SalesProvider extends ChangeNotifier {
           );
 
           notifyListeners();
-          // print(
+          // await mainLocalLog(
           //   "Main Cart Length: ${mainCartQueue.length}",
           // );
-          // print(
+          // await mainLocalLog(
           //   'Cart Queue Length: ${mainCartQueue.firstWhere((c) => c.mainCartId == mainCartId).cartQueue.length}',
           // );
         } catch (e) {
-          print(
+          await mainLocalLog(
             'Error Creating New Main Cart: ${e.toString()}',
           );
         }
@@ -276,7 +286,7 @@ class SalesProvider extends ChangeNotifier {
       (cart) => cart.id == cartIdCache,
     );
     // } catch (e) {
-    //   print('Error Occoured: ${e.toString()}');
+    //   await mainLocalLog('Error Occoured: ${e.toString()}');
     //   return TempCart(
     //     cartItems: [],
     //     isInvoice: false,
@@ -362,7 +372,6 @@ class SalesProvider extends ChangeNotifier {
         await returnMultiDisplayProvider().createWindow(
           cartId: newId,
         );
-        print(currentMainCart().cartQueue);
         notifyListeners();
       },
     );
@@ -505,9 +514,9 @@ class SalesProvider extends ChangeNotifier {
         await returnMultiDisplayProvider().closeWindow(
           cartId: cartId,
         );
-        print('🙌🙌🙌💕😢Window Closed');
+        await mainLocalLog('🙌🙌🙌💕😢Window Closed');
       } catch (e) {
-        print(
+        await mainLocalLog(
           '❌❌❌❌❌😂Error Closing Window: ${e.toString()}',
         );
       }
@@ -526,7 +535,9 @@ class SalesProvider extends ChangeNotifier {
       await selectCart(id!);
       notifyListeners();
     } catch (e) {
-      print("Error Selecting main Cart: ${e.toString()}");
+      await mainLocalLog(
+        "Error Selecting main Cart: ${e.toString()}",
+      );
     }
   }
 
@@ -562,7 +573,10 @@ class SalesProvider extends ChangeNotifier {
     //           ?.name;
     // }
     // }
-    print(returnMultiDisplayProvider().windows.length);
+    await mainLocalLog(
+      returnMultiDisplayProvider().windows.length
+          .toString(),
+    );
     notifyListeners();
   }
 
@@ -576,7 +590,9 @@ class SalesProvider extends ChangeNotifier {
         newCartIndex: (getIndexOfCartItem(cartIdCache) + 1),
       );
     } catch (e) {
-      print('An Error Occured: ${e.toString()}');
+      await mainLocalLog(
+        'An Error Occured: ${e.toString()}',
+      );
     }
   }
 
@@ -597,13 +613,13 @@ class SalesProvider extends ChangeNotifier {
   //     const Duration(milliseconds: 200),
   //     (t) {
   //       if (scanBarcodeCartPageNode.hasFocus) {
-  //         print('Cart Page Node Still Has Listener');
+  //         await mainLocalLog('Cart Page Node Still Has Listener');
   //         unfocusScanBarcodeCartPage();
   //         scanBarcodeCartPageNode.removeListener(
   //           keepBarcodeFocused,
   //         );
   //       } else {
-  //         print('Cart Page Node Listener Cancelled');
+  //         await mainLocalLog('Cart Page Node Listener Cancelled');
   //         t.cancel(); // cancel this timer instance
   //         _timer = null; // clear reference
   //       }
@@ -731,9 +747,9 @@ class SalesProvider extends ChangeNotifier {
   }) {
     double itemPercent =
         ((fixedDiscountAmount * 100) / calcSubTotal());
-    print("Item Percent: $itemPercent");
+    mainLocalLog("Item Percent: $itemPercent");
     double result = ((itemPercent * itemCost) / 100);
-    print("Result $result");
+    mainLocalLog("Result $result");
     return result;
   }
 
@@ -748,12 +764,12 @@ class SalesProvider extends ChangeNotifier {
             fixedDiscountAmount: (discount ?? 0),
             itemCost: item.totalCost(),
           );
-      // print(
+      // await mainLocalLog(
       //   "General Fixed ${item.item.name}: ${item.fixedDiscount}  ${item.revenue()}",
       // );
     }
-    print(currentCart().fixedDiscount);
-    print(currentCart().discount);
+    //  mainLocalLog(currentCart().fixedDiscount);
+    //  mainLocalLog(currentCart().discount);
     CartFunc().updateMainCart(currentMainCart());
     returnMultiDisplayProvider().updateWindow(
       cartClass: AltCartClass(
@@ -781,7 +797,7 @@ class SalesProvider extends ChangeNotifier {
     for (var item in currentCart().getCartItems()) {
       item.discount = discount;
       item.fixedDiscount = null;
-      // print(
+      // await mainLocalLog(
       //   "${item.item.name}: ${item.discount} ${item.revenue()}",
       // );
     }
@@ -844,13 +860,17 @@ class SalesProvider extends ChangeNotifier {
         context: context,
         action: () {
           currentCart().isSettingDiscountOpen = value;
-          print(currentCart().isSettingDiscountOpen);
+          mainLocalLog(
+            currentCart().isSettingDiscountOpen.toString(),
+          );
           notifyListeners();
         },
       );
     } else {
       currentCart().isSettingDiscountOpen = value;
-      print(currentCart().isSettingDiscountOpen);
+      mainLocalLog(
+        currentCart().isSettingDiscountOpen.toString(),
+      );
       notifyListeners();
     }
     CartFunc().updateMainCart(currentMainCart());
@@ -949,7 +969,7 @@ class SalesProvider extends ChangeNotifier {
     final createdAt = currentCart().returnDate();
 
     if (currentCart().isInvoice) {
-      print('Current Sale is Invoice');
+      await mainLocalLog('Current Sale is Invoice');
       TempInvoice invoice = TempInvoice(
         subStaffName:
             currentCart().subStaffName ??
@@ -987,7 +1007,7 @@ class SalesProvider extends ChangeNotifier {
       TempInvoice? invoiceRes;
       try {
         if (currentCart().invoiceUuidEdit != null) {
-          print(
+          await mainLocalLog(
             'Invoice UUid is not null: ${currentCart().invoiceUuidEdit}',
           );
           try {
@@ -1010,7 +1030,7 @@ class SalesProvider extends ChangeNotifier {
               ),
             );
           } catch (e) {
-            print(
+            await mainLocalLog(
               'Error Deleting Invoice: ${e.toString()}',
             );
             return null;
@@ -1029,13 +1049,15 @@ class SalesProvider extends ChangeNotifier {
               1,
             ),
           );
-          print('Invoice Uuid is null');
+          await mainLocalLog('Invoice Uuid is null');
         }
         invoiceRes = await returnInvoicesProvider()
             .createInvoices(invoice);
-        print('Invoice Created Success');
+        await mainLocalLog('Invoice Created Success');
       } catch (e) {
-        print('Error Creating Invoice: ${e.toString()}');
+        await mainLocalLog(
+          'Error Creating Invoice: ${e.toString()}',
+        );
         return null;
       }
 
@@ -1103,7 +1125,9 @@ class SalesProvider extends ChangeNotifier {
               ) {
                 final product = cartItem.getItem();
 
-                print('Sales Record about to be Created');
+                mainLocalLog(
+                  'Sales Record about to be Created',
+                );
 
                 return TempProductSaleRecord(
                   isVoid: cartItem.isVoid ?? false,
@@ -1146,7 +1170,9 @@ class SalesProvider extends ChangeNotifier {
               }).toList();
 
           if (context.mounted) {
-            print('Creating Record Sales About to Start');
+            await mainLocalLog(
+              'Creating Record Sales About to Start',
+            );
             await returnReceiptProvider(
               context,
               listen: false,
@@ -1155,7 +1181,7 @@ class SalesProvider extends ChangeNotifier {
               isPartPayment: false,
             );
           }
-          print('Sales Record Inserted');
+          await mainLocalLog('Sales Record Inserted');
 
           try {
             // Step 3: Decrement quantity via RPC
@@ -1192,7 +1218,9 @@ class SalesProvider extends ChangeNotifier {
             }
 
             try {
-              print('Products Decrementation Done');
+              await mainLocalLog(
+                'Products Decrementation Done',
+              );
 
               // Step 4: Create new product for items with addToStock == true
               for (final record in productSaleRecords) {
@@ -1262,7 +1290,7 @@ class SalesProvider extends ChangeNotifier {
                       product,
                     );
                   } else {
-                    print(
+                    await mainLocalLog(
                       'Context Not Mounted to Created New Product',
                     );
                   }
@@ -1276,7 +1304,7 @@ class SalesProvider extends ChangeNotifier {
                   context: context,
                 );
               } catch (e) {
-                print(
+                await mainLocalLog(
                   "Error Deleting Cart Inside Checkout Function: ${e.toString()}",
                 );
               }
@@ -1305,19 +1333,25 @@ class SalesProvider extends ChangeNotifier {
                 isReceipt: false,
               );
             } catch (e) {
-              print('Error Step 4: ${e.toString()}');
+              await mainLocalLog(
+                'Error Step 4: ${e.toString()}',
+              );
               return null;
             }
           } catch (e) {
-            print('Error Step 3: ${e.toString()}');
+            await mainLocalLog(
+              'Error Step 3: ${e.toString()}',
+            );
             return null;
           }
         } catch (e) {
-          print('Error Step 2: ${e.toString()}');
+          await mainLocalLog(
+            'Error Step 2: ${e.toString()}',
+          );
           return null;
         }
       } catch (e) {
-        print('Error Step 1: ${e.toString()}');
+        await mainLocalLog('Error Step 1: ${e.toString()}');
         return null;
       }
     } else {
@@ -1325,7 +1359,7 @@ class SalesProvider extends ChangeNotifier {
           currentCart().receiptUuidEdit ??
           currentCart().id ??
           uuidGen();
-      print('🌹🌹 Created Date: $createdAt');
+      await mainLocalLog('🌹🌹 Created Date: $createdAt');
       TempMainReceipt receipt = TempMainReceipt(
         subStaffName:
             currentCart().subStaffName ??
@@ -1356,7 +1390,7 @@ class SalesProvider extends ChangeNotifier {
         cartName: currentCart().cartName,
       );
       if (currentCart().receiptUuidEdit != null) {
-        print(
+        await mainLocalLog(
           'Receipt UUid is not null: ${currentCart().receiptUuidEdit}',
         );
         try {
@@ -1378,7 +1412,9 @@ class SalesProvider extends ChangeNotifier {
             ),
           );
         } catch (e) {
-          print('Error Deleting Receipt: ${e.toString()}');
+          await mainLocalLog(
+            'Error Deleting Receipt: ${e.toString()}',
+          );
           return null;
         }
       } else {
@@ -1395,16 +1431,16 @@ class SalesProvider extends ChangeNotifier {
             1,
           ),
         );
-        print('Receipt Uuid is null');
+        await mainLocalLog('Receipt Uuid is null');
       }
 
-      print('Checkout Started');
+      await mainLocalLog('Checkout Started');
 
       try {
         final receiptRes =
             await returnReceiptProviderSingle()
                 .createReceipt(receipt);
-        print('Receipt Created');
+        await mainLocalLog('Receipt Created');
 
         final receiptId = receiptRes!.id;
         final receiptUuid = receiptRes.uuid;
@@ -1417,7 +1453,7 @@ class SalesProvider extends ChangeNotifier {
               ) {
                 final product = cartItem.getItem();
 
-                print(
+                mainLocalLog(
                   'Sales Record about to be Created: ${cartItem.getItem()?.name}',
                 );
 
@@ -1461,7 +1497,7 @@ class SalesProvider extends ChangeNotifier {
               }).toList();
 
           if (context.mounted) {
-            print(
+            await mainLocalLog(
               'Creating Record Sales About to Start: ${productSaleRecords.length}',
             );
             await returnReceiptProvider(
@@ -1472,7 +1508,7 @@ class SalesProvider extends ChangeNotifier {
               isPartPayment: false,
             );
           }
-          print('Sales Record Inserted');
+          await mainLocalLog('Sales Record Inserted');
 
           try {
             for (final cartItem
@@ -1508,7 +1544,9 @@ class SalesProvider extends ChangeNotifier {
             }
 
             try {
-              print('Products Decrementation Done');
+              await mainLocalLog(
+                'Products Decrementation Done',
+              );
 
               // Step 4: Create new product for items with addToStock == true
               for (final record in productSaleRecords) {
@@ -1576,7 +1614,7 @@ class SalesProvider extends ChangeNotifier {
                       product,
                     );
                   } else {
-                    print(
+                    await mainLocalLog(
                       'Context Not Mounted to Created New Product',
                     );
                   }
@@ -1590,7 +1628,7 @@ class SalesProvider extends ChangeNotifier {
                   context: context,
                 );
               } catch (e) {
-                print(
+                await mainLocalLog(
                   "Error Deleting Cart Inside Checkout Function: ${e.toString()}",
                 );
               }
@@ -1619,7 +1657,9 @@ class SalesProvider extends ChangeNotifier {
                 receipt: receipt,
               );
             } catch (e) {
-              print('Error Step 4: ${e.toString()}');
+              await mainLocalLog(
+                'Error Step 4: ${e.toString()}',
+              );
               await returnReceiptProvider(
                 // ignore: use_build_context_synchronously
                 context,
@@ -1633,7 +1673,9 @@ class SalesProvider extends ChangeNotifier {
               return null;
             }
           } catch (e) {
-            print('Error Step 3: ${e.toString()}');
+            await mainLocalLog(
+              'Error Step 3: ${e.toString()}',
+            );
             await returnReceiptProvider(
               // ignore: use_build_context_synchronously
               context,
@@ -1644,7 +1686,9 @@ class SalesProvider extends ChangeNotifier {
             return null;
           }
         } catch (e) {
-          print('Error Step 2: ${e.toString()}');
+          await mainLocalLog(
+            'Error Step 2: ${e.toString()}',
+          );
           await returnReceiptProvider(
             // ignore: use_build_context_synchronously
             context,
@@ -1653,7 +1697,7 @@ class SalesProvider extends ChangeNotifier {
           return null;
         }
       } catch (e) {
-        print('Error Step 1: ${e.toString()}');
+        await mainLocalLog('Error Step 1: ${e.toString()}');
         return null;
       }
     }
@@ -1685,7 +1729,7 @@ class SalesProvider extends ChangeNotifier {
       ),
     );
     await CartFunc().updateMainCart(currentMainCart());
-    print('Cart Cleared');
+    await mainLocalLog('Cart Cleared');
 
     notifyListeners();
   }
@@ -1916,7 +1960,7 @@ class SalesProvider extends ChangeNotifier {
           newCartItem.getItem(),
         ) &&
         (newCartItem.getItem()?.isManaged ?? false)) {
-      print(
+      mainLocalLog(
         'Cannot add — total ($newTotal) exceeds available stock ($remainingQtty) : Avaliable Quantity: ${availableQty()}',
       );
       return false;

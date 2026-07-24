@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:stockall/main.dart';
 
 class FloatingButtonVisibilityBox extends ChangeNotifier {
   static final FloatingButtonVisibilityBox _instance =
@@ -17,22 +18,30 @@ class FloatingButtonVisibilityBox extends ChangeNotifier {
 
   /// Initialize Hive and open visibility boxes
   Future<void> init() async {
-    _floatingButtonVisibilityBox ??=
-        await Hive.openBox<bool>(
-          _floatingButtonVisibilityBoxName,
-        );
+    try {
+      _floatingButtonVisibilityBox ??=
+          await Hive.openBox<bool>(
+            _floatingButtonVisibilityBoxName,
+          );
 
-    // Set default value for visibility if not set
-    if (!_floatingButtonVisibilityBox!.containsKey(
-      _visibilityKey,
-    )) {
-      await _floatingButtonVisibilityBox!.put(
+      // Set default value for visibility if not set
+      if (!_floatingButtonVisibilityBox!.containsKey(
         _visibilityKey,
-        true,
+      )) {
+        await _floatingButtonVisibilityBox!.put(
+          _visibilityKey,
+          true,
+        );
+      }
+
+      await mainLocalLog("✅ Visibility Box Opened");
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error Initializing Floating Utility Button Box: ${e.toString()}',
+        error: e,
+        stackTrace: s,
       );
     }
-
-    print("✅ Visibility Box Opened");
   }
 
   // ------------------- Visibility Methods -------------------

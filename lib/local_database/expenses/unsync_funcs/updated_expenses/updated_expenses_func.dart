@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_expenses/unsynced/updated/updated_expenses.dart';
+import 'package:stockall/main.dart';
 
 class UpdatedExpensesFunc {
   static final UpdatedExpensesFunc instance =
@@ -18,7 +19,9 @@ class UpdatedExpensesFunc {
       UpdatedExpensesAdapter().typeId,
     )) {
       Hive.registerAdapter(UpdatedExpensesAdapter());
-      print('Updated Expenses Adapter registered ✅');
+      await mainLocalLog(
+        'Updated Expenses Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,14 @@ class UpdatedExpensesFunc {
           await Hive.openBox<UpdatedExpenses>(
             updatedExpensesBoxName,
           );
-      print('Updated Expenses Box opened ✅');
+      await mainLocalLog('Updated Expenses Box opened ✅');
     } else {
       _updatedExpensesBox = Hive.box<UpdatedExpenses>(
         updatedExpensesBoxName,
       );
-      print('Updated Expenses Box already open, reused ✅');
+      await mainLocalLog(
+        'Updated Expenses Box already open, reused ✅',
+      );
     }
   }
 
@@ -61,12 +66,12 @@ class UpdatedExpensesFunc {
         updatedExpense.expenses.uuid,
         updatedExpense,
       );
-      print(
+      await mainLocalLog(
         'Offline updated Expense inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline updated Expense insertion failed ❌: $e',
       );
       return 0;
@@ -75,14 +80,16 @@ class UpdatedExpensesFunc {
 
   Future<int> deleteUpdatedExpense(String uuid) async {
     try {
-      print(
+      await mainLocalLog(
         updatedExpensesBox.containsKey(uuid).toString(),
       );
       await updatedExpensesBox.delete(uuid);
-      print('Updated Expense Deleted');
+      await mainLocalLog('Updated Expense Deleted');
       return 1;
     } catch (e) {
-      print('Expense Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Expense Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -90,10 +97,12 @@ class UpdatedExpensesFunc {
   Future<int> clearupdatedExpenses() async {
     try {
       await updatedExpensesBox.clear();
-      print('All updated Expenses cleared ✅');
+      await mainLocalLog('All updated Expenses cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while clearing updated Expenses ❌: $e');
+      await mainLocalLog(
+        'Error while clearing updated Expenses ❌: $e',
+      );
       return 0;
     }
   }

@@ -155,7 +155,6 @@ class _GenerateBarcodeScreenState
                             backgroundColor: Colors.white,
                             drawText: true,
                             errorBuilder: (context, error) {
-                              print(error.toString());
                               return Text(
                                 'Error: $error',
                                 style: const TextStyle(
@@ -308,9 +307,6 @@ class _GenerateBarcodeScreenState
                                         context,
                                         error,
                                       ) {
-                                        print(
-                                          error.toString(),
-                                        );
                                         return Text(
                                           'Error: $error',
                                           style:
@@ -527,10 +523,10 @@ Future<bool> generateBarcodeAndPrint(
   List<ProductBarcode> productBarcodes,
   bool isEdit,
 ) async {
-  print('Starting Generation');
+  await mainLocalLog('Starting Generation');
   final safeContext = context;
   for (var pr in productBarcodes) {
-    print(pr.product.barcode);
+    await mainLocalLog(pr.product.barcode ?? '');
   }
 
   final productUuid = returnOnlyDigits(
@@ -551,13 +547,13 @@ Future<bool> generateBarcodeAndPrint(
                 ? 'Generated Price'
                 : 'B.Code & Price',
         action: () async {
-          print('Starting Printing');
+          await mainLocalLog('Starting Printing');
 
           List<ProductBarcode> productBarcodesTemp() {
             List<ProductBarcode> temp = [];
             for (var prB in productBarcodes) {
               for (var i = 0; i < prB.number; i++) {
-                print("❤❌❌❌✅${prB.product.barcode}");
+                // await mainLocalLog("❤❌❌❌✅${prB.product.barcode}");
                 temp.add(
                   ProductBarcode(
                     product: prB.product,
@@ -566,7 +562,7 @@ Future<bool> generateBarcodeAndPrint(
                 );
               }
             }
-            print(temp.length);
+            // await mainLocalLog(temp.length);
             return temp;
           }
 
@@ -588,16 +584,16 @@ Future<bool> generateBarcodeAndPrint(
                         '',
                     productBarcodesTemp(),
                   );
-          print(printingSuccess);
+          await mainLocalLog(printingSuccess.toString());
 
           if (!printingSuccess && safeContext.mounted) {
-            print('Printing Cancelled');
+            await mainLocalLog('Printing Cancelled');
             Navigator.pop(safeContext, false);
             return;
           }
 
           // for (var pr in productBarcodes) {
-          //   print("✅✅✅✅ ${pr.product.barcode}");
+          //   await mainLocalLog("✅✅✅✅ ${pr.product.barcode}");
           // }
 
           if (safeContext.mounted) {
@@ -611,7 +607,7 @@ Future<bool> generateBarcodeAndPrint(
                   );
 
                   pr.product.barcode = newShit;
-                  print("✅✅✅❌$newShit");
+                  await mainLocalLog("✅✅✅❌$newShit");
 
                   await returnData().updateProduct(
                     itemHistory: null,
@@ -622,7 +618,7 @@ Future<bool> generateBarcodeAndPrint(
                     quantityChange: null,
                   );
                 }
-                print(
+                await mainLocalLog(
                   'Finished Printing and Updating Product Barcode',
                 );
               }
@@ -630,10 +626,10 @@ Future<bool> generateBarcodeAndPrint(
             if (!safeContext.mounted) {
               return;
             }
-            print('Finished Printing');
+            await mainLocalLog('Finished Printing');
             Navigator.pop(safeContext, true);
           } else {
-            print('Context not mounted');
+            await mainLocalLog('Context not mounted');
             if (!safeContext.mounted) {
               return;
             }
@@ -823,7 +819,7 @@ Future<dynamic> settingsGenerateProductBarcode(
                                                           .clearBarcodeGenerationList();
                                                     }
 
-                                                    print(
+                                                    await mainLocalLog(
                                                       'Generate Clicked',
                                                     );
                                                   },

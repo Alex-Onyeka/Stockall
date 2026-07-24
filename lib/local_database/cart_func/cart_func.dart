@@ -2,6 +2,7 @@ import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_main_cart/temp_main_cart.dart';
+import 'package:stockall/main.dart';
 
 class CartFunc {
   static final CartFunc instance = CartFunc._internal();
@@ -15,7 +16,7 @@ class CartFunc {
     Hive.registerAdapter(TempCartAdapter());
     Hive.registerAdapter(TempCartItemAdapter());
     cartBox = await Hive.openBox(cartBoxName);
-    print('MainCart Box Initialized');
+    await mainLocalLog('MainCart Box Initialized');
   }
 
   List<TempMainCart> getMainCart() {
@@ -30,10 +31,10 @@ class CartFunc {
   //   try {
 
   //         await cartBox.put(mainCart., mainCart);
-  //       print('Offline MainCarts Insert Success');
+  //       await mainLocalLog('Offline MainCarts Insert Success');
   //       return 1;
   //   } catch (e) {
-  //     print(
+  //     await mainLocalLog(
   //       'Offline MainCarts Insert Failed: ${e.toString()}',
   //     );
   //     return 0;
@@ -43,10 +44,10 @@ class CartFunc {
   Future<int> createMainCart(TempMainCart mainCart) async {
     try {
       await cartBox.put(mainCart.mainCartId, mainCart);
-      print('Offline MainCart Created');
+      await mainLocalLog('Offline MainCart Created');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline MainCart Creation Failed: ${e.toString()}',
       );
       return 0;
@@ -56,10 +57,10 @@ class CartFunc {
   Future<int> updateMainCart(TempMainCart mainCart) async {
     try {
       await cartBox.put(mainCart.mainCartId, mainCart);
-      print('Offline MainCart Updated');
+      await mainLocalLog('Offline MainCart Updated');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline MainCart Update Failed: ${e.toString()}',
       );
       return 0;
@@ -69,10 +70,10 @@ class CartFunc {
   Future<int> deleteMainCart(String uuid) async {
     try {
       await cartBox.delete(uuid);
-      print('Offline MainCart Deleted');
+      await mainLocalLog('Offline MainCart Deleted');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline MainCart Delete Failed: ${e.toString()}',
       );
       return 0;
@@ -82,10 +83,12 @@ class CartFunc {
   Future<int> clearMainCart() async {
     try {
       await cartBox.clear();
-      print('Offline MainCart Cleared');
+      await mainLocalLog('Offline MainCart Cleared');
       return 1;
     } catch (e) {
-      print('MainCart Clear Failed: ${e.toString()}');
+      await mainLocalLog(
+        'MainCart Clear Failed: ${e.toString()}',
+      );
       return 0;
     }
   }

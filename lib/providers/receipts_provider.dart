@@ -40,7 +40,7 @@ class ReceiptsProvider extends ChangeNotifier {
   bool isLoading = false;
   void toggleIsLoading(bool value) {
     isLoading = value;
-    print(
+    mainLocalLog(
       'Receipt is ${value ? 'Loading on' : 'Loading Off'}',
     );
     notifyListeners();
@@ -58,7 +58,7 @@ class ReceiptsProvider extends ChangeNotifier {
   void clearReceipts() {
     _receipts.clear();
     clearRecords();
-    print('Receipts Cleared');
+    mainLocalLog('Receipts Cleared');
     notifyListeners();
   }
 
@@ -70,7 +70,7 @@ class ReceiptsProvider extends ChangeNotifier {
   bool isLoaded = false;
   void load(bool value) {
     isLoaded = value;
-    print(
+    mainLocalLog(
       value == true
           ? 'Receipts Loaded is now true'
           : 'Receipts Loaded is now false',
@@ -82,7 +82,7 @@ class ReceiptsProvider extends ChangeNotifier {
   Future<TempMainReceipt?> createReceipt(
     TempMainReceipt receipt,
   ) async {
-    print('Inner Receipt Creation Started');
+    await mainLocalLog('Inner Receipt Creation Started');
     var barcode = returnOnlyDigits(uuidGen());
     receipt.barcode = barcode;
     await MainReceiptFunc().createReceipt(receipt);
@@ -107,7 +107,7 @@ class ReceiptsProvider extends ChangeNotifier {
                 .eq('uuid', uuid)
                 .maybeSingle();
         if (data == null) {
-          print('Receipt Not Found');
+          await mainLocalLog('Receipt Not Found');
           return;
         } else {
           TempMainReceipt tempMainReceipt =
@@ -129,14 +129,16 @@ class ReceiptsProvider extends ChangeNotifier {
                       .first
                   : null;
           if (existingReceipt != null) {
-            print('💖💖👏🥰Receipt Exists');
+            await mainLocalLog('💖💖👏🥰Receipt Exists');
             receipts.remove(existingReceipt);
           }
           receipts.add(tempMainReceipt);
           receipts.sort(
             (a, b) => b.createdAt.compareTo(a.createdAt),
           );
-          print('💖💖👏🥰 Single Receipt Loaded');
+          await mainLocalLog(
+            '💖💖👏🥰 Single Receipt Loaded',
+          );
           List<TempProductSaleRecord> records =
               _sales
                   .where(
@@ -152,7 +154,7 @@ class ReceiptsProvider extends ChangeNotifier {
                 .eq('receipt_uuid', tempMainReceipt.uuid!)
                 .order('created_at', ascending: false);
             if (data.isEmpty) {
-              print(
+              await mainLocalLog(
                 'No Sales Records Found From Single Receipt Fetch',
               );
               return;
@@ -182,7 +184,9 @@ class ReceiptsProvider extends ChangeNotifier {
                             .first
                         : null;
                 if (existingSalesRecord != null) {
-                  print('💖💖👏🥰SalesRecord Exists');
+                  await mainLocalLog(
+                    '💖💖👏🥰SalesRecord Exists',
+                  );
                   _sales.remove(existingSalesRecord);
                 }
                 _sales.add(item);
@@ -197,7 +201,7 @@ class ReceiptsProvider extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error Fetching Single Receipt: ${e.toString()}',
       );
     }
@@ -219,7 +223,9 @@ class ReceiptsProvider extends ChangeNotifier {
             .order('created_at', ascending: false)
             .range(0, 1000);
         tempList.addAll(data);
-        print('Receipts Gotten ${tempList.length}');
+        await mainLocalLog(
+          'Receipts Gotten ${tempList.length}',
+        );
 
         if (data.length >= 1000) {
           final data2 = await supabase
@@ -229,7 +235,7 @@ class ReceiptsProvider extends ChangeNotifier {
               .order('created_at', ascending: false)
               .range(1001, 2000);
           tempList.addAll(data2);
-          print(
+          await mainLocalLog(
             'Receipts Gotten Second ${tempList.length}',
           );
         }
@@ -243,7 +249,7 @@ class ReceiptsProvider extends ChangeNotifier {
         await MainReceiptFunc().insertAllReceipts(
           _receipts,
         );
-        print('Loaded');
+        await mainLocalLog('Loaded');
         await returnInvoicesProvider().loadInvoices(shopId);
         await returnData().getProducts(
           returnShopProvider().userShop()!.shopId!,
@@ -253,12 +259,14 @@ class ReceiptsProvider extends ChangeNotifier {
         );
         notifyListeners();
       } catch (e) {
-        print('Error Getting Receipts: ${e.toString()}');
+        await mainLocalLog(
+          'Error Getting Receipts: ${e.toString()}',
+        );
         return [];
       }
     } else {
       _receipts = MainReceiptFunc().getReceipts();
-      print('Offline Receipts Gotten');
+      await mainLocalLog('Offline Receipts Gotten');
       await returnInvoicesProvider().loadInvoices(
         returnShopProvider().userShop()!.shopId!,
       );
@@ -278,7 +286,7 @@ class ReceiptsProvider extends ChangeNotifier {
     int shopId,
   ) async {
     _receipts = MainReceiptFunc().getReceipts();
-    print('Offline Receipts Gotten');
+    await mainLocalLog('Offline Receipts Gotten');
     await returnInvoicesProvider().loadInvoicesOffline(
       returnShopProvider().userShop()!.shopId!,
     );
@@ -308,10 +316,10 @@ class ReceiptsProvider extends ChangeNotifier {
       dateSet = date;
       rangeStartDate = null;
       rangeEndDate = null;
-      print('Date set: $date');
+      mainLocalLog('Date set: $date');
     } else {
       dateSet = null;
-      print('Date Cleared');
+      mainLocalLog('Date Cleared');
     }
     notifyListeners();
   }
@@ -322,7 +330,7 @@ class ReceiptsProvider extends ChangeNotifier {
   void setRange(DateTime rangeStart, DateTime endOfrange) {
     rangeStartDate = rangeStart;
     rangeEndDate = endOfrange;
-    print(
+    mainLocalLog(
       'Date Range set: Start: $rangeStart End: $endOfrange ',
     );
     dateSet = null;
@@ -335,7 +343,7 @@ class ReceiptsProvider extends ChangeNotifier {
     List<String> productNames,
   ) async {
     try {
-      print('Deleting Receipt Offline');
+      await mainLocalLog('Deleting Receipt Offline');
       await MainReceiptFunc().deleteReceipt(receipt.uuid!);
       var containsCreated =
           CreatedReceiptsFunc()
@@ -375,7 +383,7 @@ class ReceiptsProvider extends ChangeNotifier {
         );
       }
 
-      print(
+      await mainLocalLog(
         '✅ Receipt and inventory successfully Delete and Updated.',
       );
 
@@ -383,12 +391,16 @@ class ReceiptsProvider extends ChangeNotifier {
         returnShopProvider().userShop()!.shopId!,
       );
 
-      print('Totally Finished Deleting Receipt');
+      await mainLocalLog(
+        'Totally Finished Deleting Receipt',
+      );
       notifyListeners();
       syncData();
       return 1;
     } catch (e) {
-      print('Error Deleting Receipt: ${e.toString()}');
+      await mainLocalLog(
+        'Error Deleting Receipt: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -398,15 +410,15 @@ class ReceiptsProvider extends ChangeNotifier {
     String uuid,
     // BuildContext context,
   ) async {
-    print('Deleting Receipt 2');
+    await mainLocalLog('Deleting Receipt 2');
     // bool isOnline = await connectivity.isOnline();
     // if (isOnline) {
-    //   print('Deleting Receipt 2 Online');
+    //   await mainLocalLog('Deleting Receipt 2 Online');
     //   await supabase.rpc(
     //     'delete_receipt_without_updating_inventory',
     //     params: {'target_receipt_uuid': uuid},
     //   );
-    //   print('Finished Deleting Receipt 2 Online');
+    //   await mainLocalLog('Finished Deleting Receipt 2 Online');
     //   var containsUpdate = UpdatedReceiptsFunc()
     //       .getReceiptIds()
     //       .where((rec) => rec.receiptUuid == uuid);
@@ -416,7 +428,7 @@ class ReceiptsProvider extends ChangeNotifier {
     //     );
     //   }
     // } else {
-    print('Deleting Receipt Offline');
+    await mainLocalLog('Deleting Receipt Offline');
     await MainReceiptFunc().deleteReceipt(uuid);
     var containsCreated =
         CreatedReceiptsFunc()
@@ -444,7 +456,7 @@ class ReceiptsProvider extends ChangeNotifier {
         );
     // }
 
-    print(
+    await mainLocalLog(
       '✅ Receipt and inventory successfully Delete and Updated.',
     );
 
@@ -452,7 +464,7 @@ class ReceiptsProvider extends ChangeNotifier {
       returnShopProvider().userShop()!.shopId!,
     );
 
-    print('Totally Finished Deleting Receipt');
+    await mainLocalLog('Totally Finished Deleting Receipt');
     notifyListeners();
     returnData().syncData();
   }
@@ -505,16 +517,22 @@ class ReceiptsProvider extends ChangeNotifier {
           }
         }
 
-        print('$count items added successfully ✅');
+        await mainLocalLog(
+          '$count items added successfully ✅',
+        );
         // await CreatedReceiptsFunc().clearReceipts();
-        print('Unsynced Receipts Cleared');
-        print('Mounted, refreshing Receipts ✅');
+        await mainLocalLog('Unsynced Receipts Cleared');
+        await mainLocalLog(
+          'Mounted, refreshing Receipts ✅',
+        );
         await loadReceipts(
           returnShopProvider().userShop()!.shopId!,
         );
       }
     } catch (e) {
-      print('Batch Receipts Insert failed ❌: $e');
+      await mainLocalLog(
+        'Batch Receipts Insert failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Receipts Insert failed ❌: $e',
       );
@@ -555,18 +573,24 @@ class ReceiptsProvider extends ChangeNotifier {
               .deletedDeletedReceipts(rec.receiptUuid);
         }
 
-        print(
+        await mainLocalLog(
           '${tempReceipts.length} Receipts Created successfully ✅',
         );
         await DeletedReceiptsFunc().clearDeletedReceipts();
-        print('Unsynced Deleted Receipts Cleared');
-        print('Mounted, refreshing Receipts ✅');
+        await mainLocalLog(
+          'Unsynced Deleted Receipts Cleared',
+        );
+        await mainLocalLog(
+          'Mounted, refreshing Receipts ✅',
+        );
         await loadReceipts(
           returnShopProvider().userShop()!.shopId!,
         );
       }
     } catch (e) {
-      print('Batch Receipts Delete failed ❌: $e');
+      await mainLocalLog(
+        'Batch Receipts Delete failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Receipts Delete failed ❌: $e',
       );
@@ -599,18 +623,22 @@ class ReceiptsProvider extends ChangeNotifier {
           );
         }
 
-        print(
+        await mainLocalLog(
           '${tempReceipts.length} items added successfully ✅',
         );
         await UpdatedReceiptsFunc().clearUpdatedReceipts();
-        print('Unsynced Receipts Cleared');
-        print('Mounted, refreshing Receipts ✅');
+        await mainLocalLog('Unsynced Receipts Cleared');
+        await mainLocalLog(
+          'Mounted, refreshing Receipts ✅',
+        );
         await loadReceipts(
           returnShopProvider().userShop()!.shopId!,
         );
       }
     } catch (e) {
-      print('Batch Receipts Update failed ❌: $e');
+      await mainLocalLog(
+        'Batch Receipts Update failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Receipts Update failed ❌: $e',
       );
@@ -651,12 +679,14 @@ class ReceiptsProvider extends ChangeNotifier {
     required bool isPartPayment,
   }) async {
     try {
-      print(
+      await mainLocalLog(
         'About to Create Product Sales Offline: ${records.length}',
       );
       var newRecords =
           records.map((rec) {
-            print('Record to Create: ${rec.productName}');
+            mainLocalLog(
+              'Record to Create: ${rec.productName}',
+            );
 
             return rec;
           }).toList();
@@ -671,9 +701,11 @@ class ReceiptsProvider extends ChangeNotifier {
           }).toList();
       await CreatedRecordsFunc().insertAllRecords(cRecords);
       await loadProductSalesRecordOffline(shopId());
-      print('Finished Creating Product Sales Offline');
+      await mainLocalLog(
+        'Finished Creating Product Sales Offline',
+      );
     } catch (e) {
-      print('Error ${e.toString()}');
+      await mainLocalLog('Error ${e.toString()}');
     }
 
     notifyListeners();
@@ -693,7 +725,7 @@ class ReceiptsProvider extends ChangeNotifier {
           .range(0, 1000);
       tempList.addAll(data);
 
-      print(
+      await mainLocalLog(
         'Items Records gotten First: ${tempList.length}',
       );
       if (data.length >= 1000) {
@@ -704,7 +736,7 @@ class ReceiptsProvider extends ChangeNotifier {
             .order('created_at', ascending: false)
             .range(1001, 2000);
         tempList.addAll(data2);
-        print(
+        await mainLocalLog(
           'Items Records gotten Second: ${tempList.length}',
         );
       }
@@ -716,7 +748,7 @@ class ReceiptsProvider extends ChangeNotifier {
             .order('created_at', ascending: false)
             .range(2001, 3000);
         tempList.addAll(data3);
-        print(
+        await mainLocalLog(
           'Items Records gotten Third: ${tempList.length}',
         );
       }
@@ -836,7 +868,7 @@ class ReceiptsProvider extends ChangeNotifier {
                 item.record.uuid!,
               );
             }
-            print(
+            await mainLocalLog(
               '🎶🎶🤦‍♀️💖💋✅Error Synchronizing Product Sales Record ${item.record.productName}: $e',
             );
             await createErrorLog(
@@ -846,12 +878,16 @@ class ReceiptsProvider extends ChangeNotifier {
           }
         }
 
-        print('$count items added successfully ✅');
+        await mainLocalLog(
+          '$count items added successfully ✅',
+        );
         // await CreatedRecordsFunc().clearRecords();
-        print('Unsynced Records Cleared');
+        await mainLocalLog('Unsynced Records Cleared');
       }
     } catch (e) {
-      print('Batch Sales Records insert failed ❌: $e');
+      await mainLocalLog(
+        'Batch Sales Records insert failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Sales Records Insert failed ❌: $e',
       );
@@ -1474,14 +1510,14 @@ class ReceiptsProvider extends ChangeNotifier {
           TempProductClass product = productList.first;
           if (product.storageUuid != null) {
             final uuid = product.storageUuid ?? '';
-            // print(
+            // await mainLocalLog(
             //   '✅ Product Storage Exist: ${product.name}',
             // );
 
             grouped.putIfAbsent(uuid, () => []);
             grouped[uuid]!.add(item);
           } else {
-            // print(
+            // await mainLocalLog(
             //   '🔥 Product Storage Uuid does not Exist: ${product.name}',
             // );
             final uuid = product.uuid ?? '';
@@ -1491,7 +1527,7 @@ class ReceiptsProvider extends ChangeNotifier {
           }
         } else {
           final uuid = item.productUuid ?? '';
-          // print(
+          // await mainLocalLog(
           //   '❌ Product Does Not Exist: ${item.productName}',
           // );
 
@@ -1620,14 +1656,14 @@ class ReceiptsProvider extends ChangeNotifier {
           TempProductClass product = productList.first;
           if (product.storageUuid != null) {
             final uuid = product.storageUuid ?? '';
-            // print(
+            // await mainLocalLog(
             //   '✅ Product Storage Exist: ${product.name}',
             // );
 
             grouped.putIfAbsent(uuid, () => []);
             grouped[uuid]!.add(item);
           } else {
-            // print(
+            // await mainLocalLog(
             //   '🔥 Product Storage Uuid does not Exist: ${product.name}',
             // );
             final uuid = product.uuid ?? '';
@@ -1637,7 +1673,7 @@ class ReceiptsProvider extends ChangeNotifier {
           }
         } else {
           final uuid = item.productUuid ?? '';
-          // print(
+          // await mainLocalLog(
           //   '❌ Product Does Not Exist: ${item.productName}',
           // );
 
@@ -1757,14 +1793,14 @@ class ReceiptsProvider extends ChangeNotifier {
           TempProductClass product = productList.first;
           if (product.storageUuid != null) {
             final uuid = product.storageUuid ?? '';
-            // print(
+            // await mainLocalLog(
             //   '✅ Product Storage Exist: ${product.name}',
             // );
 
             grouped.putIfAbsent(uuid, () => []);
             grouped[uuid]!.add(item);
           } else {
-            // print(
+            // await mainLocalLog(
             //   '🔥 Product Storage Uuid does not Exist: ${product.name}',
             // );
             final uuid = product.uuid ?? '';
@@ -1774,7 +1810,7 @@ class ReceiptsProvider extends ChangeNotifier {
           }
         } else {
           final uuid = item.productUuid ?? '';
-          // print(
+          // await mainLocalLog(
           //   '❌ Product Does Not Exist: ${item.productName}',
           // );
 

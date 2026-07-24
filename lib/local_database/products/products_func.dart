@@ -16,19 +16,26 @@ class ProductsFunc {
   final String productBoxName = 'productBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(TempProductClassAdapter());
-    productBox = await Hive.openBox(productBoxName);
-    await CreatedProductFunc().init();
-    await DeletedProductsFunc().init();
-    await UpdatedProductsFunc().init();
-    // await SalesProductFunc().init();
-    await QuantityUpdateFunc().init();
-    print('Product Box Initialized');
+    try {
+      Hive.registerAdapter(TempProductClassAdapter());
+      productBox = await Hive.openBox(productBoxName);
+      await CreatedProductFunc().init();
+      await DeletedProductsFunc().init();
+      await UpdatedProductsFunc().init();
+      await QuantityUpdateFunc().init();
+      await mainLocalLog('Product Box Initialized');
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error Initializing Products Func: ${e.toString()}',
+        error: e,
+        stackTrace: s,
+      );
+    }
   }
 
   List<TempProductClass> getProducts() {
-    List<TempProductClass> products =
-        productBox.values.toList();
+    List<TempProductClass> products = productBox.values
+        .toList();
     products.sort(
       (a, b) => a.name.toLowerCase().compareTo(
         b.name.toLowerCase(),
@@ -40,10 +47,9 @@ class ProductsFunc {
   TempProductClass? getSingleProduct({
     required String uuid,
   }) {
-    List<TempProductClass> products =
-        productBox.values
-            .where((pro) => pro.uuid == uuid)
-            .toList();
+    List<TempProductClass> products = productBox.values
+        .where((pro) => pro.uuid == uuid)
+        .toList();
     if (products.isNotEmpty) {
       return products.first;
     } else {
@@ -59,13 +65,13 @@ class ProductsFunc {
       for (var product in products) {
         await productBox.put(product.uuid, product);
       }
-      print(
+      await mainLocalLog(
         "Offline Products inserted: ${products.length}",
       );
-      print(getProducts().length);
+      await mainLocalLog(getProducts().length.toString());
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Products Insertion failed: ${e.toString()}',
       );
       return 0;
@@ -77,11 +83,13 @@ class ProductsFunc {
   ) async {
     try {
       await productBox.put(product.uuid, product);
-      print('Offline Product inserted Successfully');
+      await mainLocalLog(
+        'Offline Product inserted Successfully',
+      );
 
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Product Insertion Failed: ${e.toString()}',
       );
       return 0;
@@ -94,10 +102,14 @@ class ProductsFunc {
     try {
       product.updatedAt = DateTime.now();
       await productBox.put(product.uuid, product);
-      print('Offline Product Update Successful');
+      await mainLocalLog(
+        'Offline Product Update Successful',
+      );
       return 1;
     } catch (e) {
-      print('❌❌ Update Error: ${e.toString()}');
+      await mainLocalLog(
+        '❌❌ Update Error: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -105,10 +117,10 @@ class ProductsFunc {
   Future<int> deleteProduct(String uuid) async {
     try {
       await productBox.delete(uuid);
-      print('Offline Product Deleted Success');
+      await mainLocalLog('Offline Product Deleted Success');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Product Delete Failed: ${e.toString()}',
       );
       return 0;
@@ -157,20 +169,20 @@ class ProductsFunc {
   //             );
   //           }
   //         }
-  //         print(
+  //         await mainLocalLog(
   //           'Offline Product Quantity Deducted Successfully',
   //         );
   //         return 1;
   //       } else {
-  //         print('Offline Product Is Not Managed');
+  //         await mainLocalLog('Offline Product Is Not Managed');
   //         return 0;
   //       }
   //     } else {
-  //       print('Product not found in box ❌');
+  //       await mainLocalLog('Product not found in box ❌');
   //       return 0;
   //     }
   //   } catch (e) {
-  //     print(
+  //     await mainLocalLog(
   //       'Offline Product Deduct Failed: ${e.toString()}',
   //     );
   //     return 0;
@@ -206,16 +218,16 @@ class ProductsFunc {
   //             );
   //       }
 
-  //       print(
+  //       await mainLocalLog(
   //         'Offline Product Quantity Incremented Successfully',
   //       );
   //       return 1;
   //     } else {
-  //       print('Product not found in box ❌');
+  //       await mainLocalLog('Product not found in box ❌');
   //       return 0;
   //     }
   //   } catch (e) {
-  //     print(
+  //     await mainLocalLog(
   //       'Offline Product Increment Failed: ${e.toString()}',
   //     );
   //     return 0;
@@ -226,11 +238,11 @@ class ProductsFunc {
     try {
       if (productBox.values.isNotEmpty) {
         await productBox.clear();
-        print('Offline Products Cleared');
+        await mainLocalLog('Offline Products Cleared');
       }
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         '❌❌ Offline Products Clear Error: ${e.toString()}',
       );
       return 0;

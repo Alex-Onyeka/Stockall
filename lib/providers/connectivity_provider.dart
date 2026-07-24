@@ -2,6 +2,7 @@ import 'dart:async';
 // import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:stockall/main.dart';
 
 class ConnectivityProvider extends ChangeNotifier {
   static final ConnectivityProvider _instance =
@@ -22,7 +23,7 @@ class ConnectivityProvider extends ChangeNotifier {
 
   void checkConnection(bool value) async {
     isConnected = value;
-    print('Connection is Now $value');
+    await mainLocalLog('Connection is Now $value');
     notifyListeners();
   }
 
@@ -51,7 +52,7 @@ class ConnectivityProvider extends ChangeNotifier {
         notifyListeners();
       }
 
-      print('Connected: $isConnected');
+      await mainLocalLog('Connected: $isConnected');
     });
     // } else {
     //   // Fallback for Windows
@@ -82,7 +83,7 @@ class ConnectivityProvider extends ChangeNotifier {
 
   Future<bool> isOnline() async {
     // final results = await _connectivity.checkConnectivity();
-    // print('Connectivity results: $results');
+    // await mainLocalLog('Connectivity results: $results');
     // bool anything = results.any(
     //   (result) =>
     //       result != ConnectivityResult.none &&
@@ -97,7 +98,7 @@ class ConnectivityProvider extends ChangeNotifier {
 
   Future<bool> isOnlineAction() async {
     final results = await _connectivity.checkConnectivity();
-    print('Connectivity results: $results');
+    await mainLocalLog('Connectivity results: $results');
     bool anything = results.any(
       (result) =>
           result != ConnectivityResult.none &&
@@ -142,7 +143,7 @@ class ConnectivityProvider extends ChangeNotifier {
 //               status == InternetConnectionStatus.connected;
 //           if (connected != isConnected) {
 //             isConnected = connected;
-//             print('Connection is Now $connected');
+//             await mainLocalLog('Connection is Now $connected');
 //             notifyListeners();
 //           }
 //         });

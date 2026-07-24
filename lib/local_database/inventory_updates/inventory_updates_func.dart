@@ -18,7 +18,9 @@ class InventoryUpdatesFunc {
       inventoryUpdatesBoxName,
     );
     await CreatedInventoryUpdatesFunc().init();
-    print('Inventory Updates  Box Initialized');
+    await mainLocalLog(
+      'Inventory Updates  Box Initialized',
+    );
   }
 
   List<TempInventoryUpdateClass> getInventoryUpdatess() {
@@ -38,13 +40,12 @@ class InventoryUpdatesFunc {
       for (var update in inventoryUpdates) {
         await inventoryUpdatesBox.put(update.uuid, update);
       }
-      print(
+      await mainLocalLog(
         "Offline Inventory Updates  inserted: ${inventoryUpdates.length}",
       );
-      print(getInventoryUpdatess().length);
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Inventory Updates  Insertion failed: ${e.toString()}',
       );
       return 0;
@@ -59,13 +60,13 @@ class InventoryUpdatesFunc {
         inventoryUpdates.uuid,
         inventoryUpdates,
       );
-      print(
+      await mainLocalLog(
         'Offline Inventory Updates inserted Successfully',
       );
 
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Inventory Updates Insertion Failed: ${e.toString()}',
       );
       return 0;
@@ -76,11 +77,13 @@ class InventoryUpdatesFunc {
     try {
       if (inventoryUpdatesBox.values.isNotEmpty) {
         await inventoryUpdatesBox.clear();
-        print('Offline InventoryU pdates  Cleared');
+        await mainLocalLog(
+          'Offline InventoryU pdates  Cleared',
+        );
       }
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         '❌❌ Offline InventoryUpdates  Clear Error: ${e.toString()}',
       );
       return 0;

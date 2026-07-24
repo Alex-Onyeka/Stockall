@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_purchase/unsynced/deleted_purchase/deleted_purchases.dart';
+import 'package:stockall/main.dart';
 
 class DeletedPurchasesFunc {
   static final DeletedPurchasesFunc instance =
@@ -18,7 +19,9 @@ class DeletedPurchasesFunc {
       DeletedPurchasesAdapter().typeId,
     )) {
       Hive.registerAdapter(DeletedPurchasesAdapter());
-      print('Deleted Purchases Adapter registered ✅');
+      await mainLocalLog(
+        'Deleted Purchases Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,14 @@ class DeletedPurchasesFunc {
           await Hive.openBox<DeletedPurchases>(
             deletedPurchasesBoxName,
           );
-      print('Deleted Purchases Box opened ✅');
+      await mainLocalLog('Deleted Purchases Box opened ✅');
     } else {
       _deletedPurchasesBox = Hive.box<DeletedPurchases>(
         deletedPurchasesBoxName,
       );
-      print('Deleted Purchases Box already open, reused ✅');
+      await mainLocalLog(
+        'Deleted Purchases Box already open, reused ✅',
+      );
     }
   }
 
@@ -57,10 +62,12 @@ class DeletedPurchasesFunc {
       for (var purchase in deletedPurchases) {
         await deletedPurchasesBox.add(purchase);
       }
-      print("Offline Deleted Purchases inserted ✅");
+      await mainLocalLog(
+        "Offline Deleted Purchases inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Deleted Purchases insertion failed ❌: $e',
       );
       return 0;
@@ -72,12 +79,12 @@ class DeletedPurchasesFunc {
   ) async {
     try {
       await deletedPurchasesBox.add(deletedPurchase);
-      print(
+      await mainLocalLog(
         'Offline Deleted Purchase inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Deleted Purchase insertion failed ❌: $e',
       );
       return 0;
@@ -87,10 +94,12 @@ class DeletedPurchasesFunc {
   Future<int> deletedDeletedPurchases(String uuid) async {
     try {
       await deletedPurchasesBox.delete(uuid);
-      print('Delete Purchase cleared ✅');
+      await mainLocalLog('Delete Purchase cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while Deleting Deleted Purchase ❌: $e');
+      await mainLocalLog(
+        'Error while Deleting Deleted Purchase ❌: $e',
+      );
       return 0;
     }
   }
@@ -98,10 +107,12 @@ class DeletedPurchasesFunc {
   Future<int> clearDeletedPurchases() async {
     try {
       await deletedPurchasesBox.clear();
-      print('All Deleted Purchases cleared ✅');
+      await mainLocalLog('All Deleted Purchases cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while clearing Deleted Purchases ❌: $e');
+      await mainLocalLog(
+        'Error while clearing Deleted Purchases ❌: $e',
+      );
       return 0;
     }
   }

@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_suppliers/unsynced/updated/updated_suppliers.dart';
+import 'package:stockall/main.dart';
 
 class UpdatedSupplierFunc {
   static final UpdatedSupplierFunc instance =
@@ -18,7 +19,9 @@ class UpdatedSupplierFunc {
       UpdatedSuppliersAdapter().typeId,
     )) {
       Hive.registerAdapter(UpdatedSuppliersAdapter());
-      print('Updated Suppliers Adapter registered ✅');
+      await mainLocalLog(
+        'Updated Suppliers Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,14 @@ class UpdatedSupplierFunc {
           await Hive.openBox<UpdatedSuppliers>(
             updatedSuppliersBoxName,
           );
-      print('Updated Suppliers Box opened ✅');
+      await mainLocalLog('Updated Suppliers Box opened ✅');
     } else {
       _updatedSuppliersBox = Hive.box<UpdatedSuppliers>(
         updatedSuppliersBoxName,
       );
-      print('Updated Suppliers Box already open, reused ✅');
+      await mainLocalLog(
+        'Updated Suppliers Box already open, reused ✅',
+      );
     }
   }
 
@@ -61,12 +66,12 @@ class UpdatedSupplierFunc {
         updatedSupplier.suppliers.uuid,
         updatedSupplier,
       );
-      print(
+      await mainLocalLog(
         'Offline updated Supplier inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline updated Supplier insertion failed ❌: $e',
       );
       return 0;
@@ -75,14 +80,16 @@ class UpdatedSupplierFunc {
 
   Future<int> deleteUpdatedSupplier(String uuid) async {
     try {
-      print(
+      await mainLocalLog(
         updatedSuppliersBox.containsKey(uuid).toString(),
       );
       await updatedSuppliersBox.delete(uuid);
-      print('Updated Supplier Deleted');
+      await mainLocalLog('Updated Supplier Deleted');
       return 1;
     } catch (e) {
-      print('Supplier Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Supplier Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -90,10 +97,12 @@ class UpdatedSupplierFunc {
   Future<int> clearUpdatedSuppliers() async {
     try {
       await updatedSuppliersBox.clear();
-      print('All updated Suppliers cleared ✅');
+      await mainLocalLog('All updated Suppliers cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while clearing updated Suppliers ❌: $e');
+      await mainLocalLog(
+        'Error while clearing updated Suppliers ❌: $e',
+      );
       return 0;
     }
   }

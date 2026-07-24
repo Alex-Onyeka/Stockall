@@ -49,11 +49,11 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
     widget.controller.addListener(() {
       if (_isEditing) return;
       final input = widget.controller.text;
-      print('Input: $input');
+      // await mainLocalLog('Input: $input');
       String normalized = input
           .replaceAll(',', '')
           .replaceAll(RegExp(r'[^0-9.]'), '');
-      print('Normalized: $normalized');
+      // await mainLocalLog('Normalized: $normalized');
 
       // prevent multiple dots
       final parts = normalized.split('.');
@@ -61,13 +61,13 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
         normalized =
             '${parts[0]}.${parts.sublist(1).join('')}';
       }
-      print('Raw: $_rawValue');
+      // await mainLocalLog('Raw: $_rawValue');
       // if (normalized != _rawValue) {
       _rawValue = normalized;
 
       final String amount =
           _rawValue.isEmpty ? '0' : _rawValue;
-      print('Amount: $amount');
+      // await mainLocalLog('Amount: $amount');
       String formatted = '';
       if (amount == '0') {
         formatted = '';
@@ -89,7 +89,7 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
         }
       }
 
-      print('Formatted: $formatted');
+      // await mainLocalLog('Formatted: $formatted');
 
       _isEditing = true;
       widget.controller.value = TextEditingValue(

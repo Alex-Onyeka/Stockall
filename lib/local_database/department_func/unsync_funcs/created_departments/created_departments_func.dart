@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_departments_class/unsynced/created_departments/created_departments.dart';
+import 'package:stockall/main.dart';
 
 class CreatedDepartmentsFunc {
   static final CreatedDepartmentsFunc instance =
@@ -18,7 +19,9 @@ class CreatedDepartmentsFunc {
       CreatedDepartmentsAdapter().typeId,
     )) {
       Hive.registerAdapter(CreatedDepartmentsAdapter());
-      print('Created Department Adapter registered ✅');
+      await mainLocalLog(
+        'Created Department Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,12 @@ class CreatedDepartmentsFunc {
           await Hive.openBox<CreatedDepartments>(
             createdDepartmentsBoxName,
           );
-      print('Created Department Box opened ✅');
+      await mainLocalLog('Created Department Box opened ✅');
     } else {
       _createdDepartmentsBox = Hive.box<CreatedDepartments>(
         createdDepartmentsBoxName,
       );
-      print(
+      await mainLocalLog(
         'Created Department Box already open, reused ✅',
       );
     }
@@ -62,10 +65,12 @@ class CreatedDepartmentsFunc {
           department,
         );
       }
-      print("Offline Created Department inserted ✅");
+      await mainLocalLog(
+        "Offline Created Department inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Department insertion failed ❌: $e',
       );
       return 0;
@@ -80,12 +85,12 @@ class CreatedDepartmentsFunc {
         createdDepartments.department.uuid,
         createdDepartments,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Department inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Department insertion failed ❌: $e',
       );
       return 0;
@@ -100,12 +105,12 @@ class CreatedDepartmentsFunc {
         createdDepartments.department.uuid,
         createdDepartments,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Department inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Department insertion failed ❌: $e',
       );
       return 0;
@@ -114,14 +119,16 @@ class CreatedDepartmentsFunc {
 
   Future<int> deleteDepartment(String uuid) async {
     try {
-      print(
+      await mainLocalLog(
         createdDepartmentsBox.containsKey(uuid).toString(),
       );
       await createdDepartmentsBox.delete(uuid);
-      print('Department Deleted');
+      await mainLocalLog('Department Deleted');
       return 1;
     } catch (e) {
-      print('Department Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Department Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -129,10 +136,12 @@ class CreatedDepartmentsFunc {
   Future<int> clearDepartment() async {
     try {
       await createdDepartmentsBox.clear();
-      print('All Created Department cleared ✅');
+      await mainLocalLog(
+        'All Created Department cleared ✅',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error while clearing Created Department ❌: $e',
       );
       return 0;

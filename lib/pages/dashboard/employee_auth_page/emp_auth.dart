@@ -789,7 +789,7 @@ class _EmpAuthState extends State<EmpAuth> {
                                                       );
                                                     },
                                                   );
-                                                  print(
+                                                  await mainLocalLog(
                                                     "Pin Code Now: ${pinController.text}",
                                                   );
                                                   setState(() {
@@ -818,7 +818,7 @@ class _EmpAuthState extends State<EmpAuth> {
                                                   );
                                                   if (context
                                                       .mounted) {
-                                                    print(
+                                                    await mainLocalLog(
                                                       "✅✅✅✅ Mounted... Implemented Pin Success",
                                                     );
                                                     widget

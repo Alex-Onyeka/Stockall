@@ -19,7 +19,7 @@ class SubStaffFunc {
     await CreatedSubStaffFunc().init();
     await DeletedSubStaffFunc().init();
     await UpdatedSubStaffFunc().init();
-    print('Sub Staff Box Initialized');
+    await mainLocalLog('Sub Staff Box Initialized');
   }
 
   List<TempSubStaff> getSubStaffs() {
@@ -30,7 +30,7 @@ class SubStaffFunc {
         b.staffName!.toLowerCase(),
       ),
     );
-    print('Sub Staffs Gotten: ${subStaffs.length}');
+    // await mainLocalLog('Sub Staffs Gotten: ${subStaffs.length}');
 
     return subStaffs;
   }
@@ -43,10 +43,12 @@ class SubStaffFunc {
       for (var subStaff in subStaffs) {
         await subStaffBox.put(subStaff.uuid, subStaff);
       }
-      print('Offline Sub Staffs Inserted Successfully');
+      await mainLocalLog(
+        'Offline Sub Staffs Inserted Successfully',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Sub Staff insertion Failed: ${e.toString()}',
       );
       return 0;
@@ -56,10 +58,12 @@ class SubStaffFunc {
   Future<int> createSubStaff(TempSubStaff subStaff) async {
     try {
       await subStaffBox.put(subStaff.uuid, subStaff);
-      print('Offline Sub Staff Inserted');
+      await mainLocalLog('Offline Sub Staff Inserted');
       return 1;
     } catch (e) {
-      print('Sub Staff Insert Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Sub Staff Insert Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -68,10 +72,12 @@ class SubStaffFunc {
     try {
       subStaff.updatedAt = DateTime.now();
       await subStaffBox.put(subStaff.uuid, subStaff);
-      print('Offline Sub Staff Updated');
+      await mainLocalLog('Offline Sub Staff Updated');
       return 1;
     } catch (e) {
-      print('Sub Staff Update Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Sub Staff Update Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -79,10 +85,12 @@ class SubStaffFunc {
   Future<int> deleteSubStaff(String uuid) async {
     try {
       await subStaffBox.delete(uuid);
-      print('Offline Sub Staff Deleted');
+      await mainLocalLog('Offline Sub Staff Deleted');
       return 1;
     } catch (e) {
-      print('Sub Staff Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Sub Staff Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -90,10 +98,10 @@ class SubStaffFunc {
   Future<int> clearSubStaffs() async {
     try {
       await subStaffBox.clear();
-      print('Offline SubStaffs Cleared');
+      await mainLocalLog('Offline SubStaffs Cleared');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         '❌❌ Error Clearing Offline Sub Staffs: ${e.toString()}',
       );
       return 0;

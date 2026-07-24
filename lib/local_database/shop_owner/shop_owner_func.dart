@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_shop_owner/shop_owner.dart';
+import 'package:stockall/main.dart';
 
 class ShopOwnerFunc {
   static final ShopOwnerFunc instance =
@@ -14,25 +15,27 @@ class ShopOwnerFunc {
     try {
       Hive.registerAdapter(ShopOwnerAdapter());
       shopOwnerBox = await Hive.openBox(shopOwnerBoxName);
-      print('Shop Owner Box Initialized');
+      await mainLocalLog('Shop Owner Box Initialized');
     } catch (e) {
-      print('❌ Error New Shop Owner: ${e.toString()}');
+      await mainLocalLog(
+        '❌ Error New Shop Owner: ${e.toString()}',
+      );
       // try {
       //   if (Hive.isBoxOpen(shopOwnerBoxName)) {
       //     await Hive.box(shopOwnerBoxName).close();
       //   }
 
       //   await Hive.deleteBoxFromDisk(shopOwnerBoxName);
-      //   print(
+      //   await mainLocalLog(
       //     '🧹 Deleted Corrupted Current Logged In User Box',
       //   );
 
       //   shopOwnerBox = await Hive.openBox(
       //     shopOwnerBoxName,
       //   );
-      //   print('✅ Reinitialized Logged In User Box');
+      //   await mainLocalLog('✅ Reinitialized Logged In User Box');
       // } catch (innerError) {
-      //   print(
+      //   await mainLocalLog(
       //     '⚠️ Failed to recover Hive box Logged In User: $innerError',
       //   );
       // }
@@ -49,10 +52,12 @@ class ShopOwnerFunc {
     await clearShopOwner();
     try {
       await shopOwnerBox.put(user.shopOwner!.userId, user);
-      print('Shop Owner inserted Success');
+      await mainLocalLog('Shop Owner inserted Success');
       return 1;
     } catch (e) {
-      print('❌❌ Shop Owner Error: ${e.toString()}');
+      await mainLocalLog(
+        '❌❌ Shop Owner Error: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -60,10 +65,10 @@ class ShopOwnerFunc {
   Future<int> clearShopOwner() async {
     try {
       await shopOwnerBox.clear();
-      print('Shop Owner Cleared Successfully');
+      await mainLocalLog('Shop Owner Cleared Successfully');
       return 1;
     } catch (e) {
-      print('Error Clearing Shop Owner');
+      await mainLocalLog('Error Clearing Shop Owner');
       return 0;
     }
   }

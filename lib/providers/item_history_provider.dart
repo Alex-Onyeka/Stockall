@@ -33,10 +33,10 @@ class ItemHistoryProvider with ChangeNotifier {
       dateSet = date;
       rangeStartDate = null;
       rangeEndDate = null;
-      print('Date set: $date');
+      mainLocalLog('Date set: $date');
     } else {
       dateSet = null;
-      print('Date Cleared');
+      mainLocalLog('Date Cleared');
     }
     notifyListeners();
   }
@@ -47,7 +47,7 @@ class ItemHistoryProvider with ChangeNotifier {
   void setRange(DateTime rangeStart, DateTime endOfrange) {
     rangeStartDate = rangeStart;
     rangeEndDate = endOfrange;
-    print(
+    mainLocalLog(
       'Date Range set: Start: $rangeStart End: $endOfrange ',
     );
     dateSet = null;
@@ -139,7 +139,7 @@ class ItemHistoryProvider with ChangeNotifier {
     //         .eq('shop_id', shopId)
     //         .order('created_at', ascending: false);
     //     if (res.isEmpty) {
-    //       print('No Item Histories Returned');
+    //       await mainLocalLog('No Item Histories Returned');
     //       itemHistories.clear();
     //       ItemHistoriesFunc().clearItemHistories();
     //       notifyListeners();
@@ -152,14 +152,14 @@ class ItemHistoryProvider with ChangeNotifier {
     //     await ItemHistoriesFunc().insertAllItemHistories(
     //       itemHistories,
     //     );
-    //     print(
+    //     await mainLocalLog(
     //       '✅✅ Item Histories Gotten Successfully Online',
     //     );
     //     notifyListeners();
 
     //     return itemHistories;
     //   } catch (e) {
-    //     print(
+    //     await mainLocalLog(
     //       '❌❌ Item Histories Getting Online Failed: ${e.toString()}',
     //     );
     //     return [];
@@ -167,7 +167,7 @@ class ItemHistoryProvider with ChangeNotifier {
     // } else {
     //   itemHistories =
     //       ItemHistoriesFunc().getItemHistories();
-    //   print('Item Histories Gotten Successfully Offline');
+    //   await mainLocalLog('Item Histories Gotten Successfully Offline');
     //   notifyListeners();
     //   return itemHistories;
     // }
@@ -177,7 +177,9 @@ class ItemHistoryProvider with ChangeNotifier {
   Future<List<ItemHistory>>
   getItemHistoriesOffline() async {
     itemHistories = ItemHistoriesFunc().getItemHistories();
-    print('Item Histories Gotten Successfully Offline');
+    await mainLocalLog(
+      'Item Histories Gotten Successfully Offline',
+    );
     notifyListeners();
     return itemHistories;
   }
@@ -211,7 +213,7 @@ class ItemHistoryProvider with ChangeNotifier {
     //     syncData();
     //     return 1;
     //   } catch (e) {
-    //     print('Offline Creating Failed: ${e.toString()}');
+    //     await mainLocalLog('Offline Creating Failed: ${e.toString()}');
     //     return 0;
     //   }
     // } else {
@@ -251,16 +253,22 @@ class ItemHistoryProvider with ChangeNotifier {
                 .insert(payload)
                 .select();
 
-        print(
+        await mainLocalLog(
           '${data.length} Item Histories added successfully ✅',
         );
         await CreatedItemHistoriesFunc().clearItemHistory();
-        print('Unsynced Item Histories Cleared');
-        print('Mounted, refreshing Item Histories ✅');
+        await mainLocalLog(
+          'Unsynced Item Histories Cleared',
+        );
+        await mainLocalLog(
+          'Mounted, refreshing Item Histories ✅',
+        );
         await getItemHistories();
       }
     } catch (e) {
-      print('Batch Item Histories insert failed ❌: $e');
+      await mainLocalLog(
+        'Batch Item Histories insert failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Item Histories insert failed ❌: $e',
       );

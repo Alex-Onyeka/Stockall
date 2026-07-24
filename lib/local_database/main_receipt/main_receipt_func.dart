@@ -19,7 +19,7 @@ class MainReceiptFunc {
     await CreatedReceiptsFunc().init();
     await DeletedReceiptsFunc().init();
     await UpdatedReceiptsFunc().init();
-    print('Receipt Box Initialized');
+    await mainLocalLog('Receipt Box Initialized');
   }
 
   List<TempMainReceipt> getReceipts() {
@@ -39,10 +39,12 @@ class MainReceiptFunc {
       for (var rec in receipts) {
         await receiptBox.put(rec.uuid, rec);
       }
-      print('Offline Receipt Success');
+      await mainLocalLog('Offline Receipt Success');
       return 1;
     } catch (e) {
-      print('Offline Receipt Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Offline Receipt Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -52,10 +54,12 @@ class MainReceiptFunc {
     // newRec.createdAt.add(Duration(hours: 1));
     try {
       await receiptBox.put(rec.uuid, rec);
-      print('Offline Receipt Created');
+      await mainLocalLog('Offline Receipt Created');
       return 1;
     } catch (e) {
-      print('Offline Receipt Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Offline Receipt Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -63,10 +67,12 @@ class MainReceiptFunc {
   Future<int> deleteReceipt(String uuid) async {
     try {
       await receiptBox.delete(uuid);
-      print('Offline Receipt Deleted');
+      await mainLocalLog('Offline Receipt Deleted');
       return 1;
     } catch (e) {
-      print('Offline Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Offline Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -81,14 +87,16 @@ class MainReceiptFunc {
         // Save back into Hive explicitly
         await receiptBox.put(uuid, receipt);
 
-        print('Offline Receipt Sale Updated Successfully');
+        await mainLocalLog(
+          'Offline Receipt Sale Updated Successfully',
+        );
         return 1;
       } else {
-        print('receipt not found in box ❌');
+        await mainLocalLog('receipt not found in box ❌');
         return 0;
       }
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Receipt Sale Update Failed: ${e.toString()}',
       );
       return 0;
@@ -98,10 +106,10 @@ class MainReceiptFunc {
   Future<int> clearReceipts() async {
     try {
       await receiptBox.clear();
-      print('Offline Receipts Cleared');
+      await mainLocalLog('Offline Receipts Cleared');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Receipt Clear Failed: ${e.toString()}',
       );
       return 0;

@@ -55,7 +55,7 @@ class NotificationProvider with ChangeNotifier {
 
   void clearNotifications() {
     _notifications.clear();
-    print('Notifications Cleared');
+    mainLocalLog('Notifications Cleared');
     notifyListeners();
   }
 
@@ -143,7 +143,7 @@ class NotificationProvider with ChangeNotifier {
       );
       if (!no.isViewed) {
         try {
-          print(
+          await mainLocalLog(
             'Updating notification with uuid: $notifUuid',
           );
           final response =

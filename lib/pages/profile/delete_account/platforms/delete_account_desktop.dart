@@ -217,7 +217,7 @@ class DeleteAccountDesktopState
                                               ),
                                             );
                                           } else {
-                                            print(
+                                            await mainLocalLog(
                                               'Context not Mounted',
                                             );
                                           }

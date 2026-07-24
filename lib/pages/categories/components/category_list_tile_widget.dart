@@ -287,7 +287,7 @@ class _CategoryListTileWidgetState
                                     action: () {
                                       nameController.text =
                                           category.name;
-                                      print("Init");
+                                      // await mainLocalLog("Init");
                                       showDialog(
                                         context: context,
                                         builder: (

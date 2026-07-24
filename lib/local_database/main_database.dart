@@ -107,9 +107,13 @@ class MainDatabase extends ChangeNotifier {
       await SuppliersFunc().init();
       await WaybillsFunc().init();
       await CountriesFunc().init();
-      print('init Complete');
-    } catch (e) {
-      print('Error Initializing Local Db: ${e.toString()}');
+      await mainLocalLog('init Complete');
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error Initializing Local Db: ${e.toString()}',
+        error: e,
+        stackTrace: s,
+      );
     }
   }
 }

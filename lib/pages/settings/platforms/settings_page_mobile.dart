@@ -1387,12 +1387,12 @@ class _SettingsPageMobileState
                                 ),
                               ).then((_) {
                                 if (context.mounted) {
-                                  print(
+                                  mainLocalLog(
                                     'Context is mounted',
                                   );
                                   setState(() {});
                                 } else {
-                                  print(
+                                  mainLocalLog(
                                     'Context is not mounted',
                                   );
                                 }

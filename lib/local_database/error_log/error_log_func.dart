@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_error_log/temp_error_log_class.dart';
 import 'package:stockall/local_database/error_log/unsync_funcs/created_events_log_func.dart';
+import 'package:stockall/main.dart';
 
 class ErrorLogFunc {
   static final ErrorLogFunc instance =
@@ -14,7 +15,7 @@ class ErrorLogFunc {
     Hive.registerAdapter(TempErrorLogClassAdapter());
     errorLogBox = await Hive.openBox(errorLogBoxName);
     await CreatedErrorLogFunc().init();
-    print('Error Log Box Initialized');
+    await mainLocalLog('Error Log Box Initialized');
   }
 
   List<TempErrorLogClass> getErrorLogs() {
@@ -34,13 +35,12 @@ class ErrorLogFunc {
       for (var log in errorLog) {
         await errorLogBox.put(log.uuid, log);
       }
-      print(
+      await mainLocalLog(
         "Offline Error Log inserted: ${errorLog.length}",
       );
-      print(getErrorLogs().length);
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Error Log Insertion failed: ${e.toString()}',
       );
       return 0;
@@ -52,11 +52,13 @@ class ErrorLogFunc {
   ) async {
     try {
       await errorLogBox.put(errorLog.uuid, errorLog);
-      print('Offline Error Log inserted Successfully');
+      await mainLocalLog(
+        'Offline Error Log inserted Successfully',
+      );
 
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Error Log Insertion Failed: ${e.toString()}',
       );
       return 0;
@@ -67,11 +69,11 @@ class ErrorLogFunc {
     try {
       if (errorLogBox.values.isNotEmpty) {
         await errorLogBox.clear();
-        print('Offline Error Log Cleared');
+        await mainLocalLog('Offline Error Log Cleared');
       }
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         '❌❌ Offline Error Log Clear Error: ${e.toString()}',
       );
       return 0;

@@ -257,11 +257,11 @@ class _CustomerListMobileState
                                           } else if (widget
                                                   .isWaybill !=
                                               null) {
-                                            returnWaybillProvider()
-                                                .selectCustomer(
-                                                  customer:
-                                                      customer,
-                                                );
+                                            // returnWaybillProvider()
+                                            //     .selectCustomer(
+                                            //       customer:
+                                            //           customer,
+                                            //     );
                                             Navigator.of(
                                               context,
                                             ).pop(context);
@@ -347,11 +347,11 @@ class _CustomerListMobileState
                                     } else if (widget
                                             .isWaybill !=
                                         null) {
-                                      returnWaybillProvider()
-                                          .selectCustomer(
-                                            customer:
-                                                customer,
-                                          );
+                                      // returnWaybillProvider()
+                                      //     .selectCustomer(
+                                      //       customer:
+                                      //           customer,
+                                      //     );
                                       Navigator.of(
                                         context,
                                       ).pop(context);

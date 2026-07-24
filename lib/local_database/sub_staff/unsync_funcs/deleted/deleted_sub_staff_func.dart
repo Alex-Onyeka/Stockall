@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_sub_staff/unsynced/deleted_sub_staff/deleted_sub_staff.dart';
+import 'package:stockall/main.dart';
 
 class DeletedSubStaffFunc {
   static final DeletedSubStaffFunc instance =
@@ -18,7 +19,9 @@ class DeletedSubStaffFunc {
       DeletedSubStaffAdapter().typeId,
     )) {
       Hive.registerAdapter(DeletedSubStaffAdapter());
-      print('Deleted Sub Staff Adapter registered ✅');
+      await mainLocalLog(
+        'Deleted Sub Staff Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,14 @@ class DeletedSubStaffFunc {
           await Hive.openBox<DeletedSubStaff>(
             deletedSubStaffBoxName,
           );
-      print('Deleted Sub Staff Box opened ✅');
+      await mainLocalLog('Deleted Sub Staff Box opened ✅');
     } else {
       _deletedSubStaffBox = Hive.box<DeletedSubStaff>(
         deletedSubStaffBoxName,
       );
-      print('Deleted Sub Staff Box already open, reused ✅');
+      await mainLocalLog(
+        'Deleted Sub Staff Box already open, reused ✅',
+      );
     }
   }
 
@@ -57,10 +62,12 @@ class DeletedSubStaffFunc {
       for (var subStaff in deletedSubStaff) {
         await deletedSubStaffBox.add(subStaff);
       }
-      print("Offline Deleted Sub Staff inserted ✅");
+      await mainLocalLog(
+        "Offline Deleted Sub Staff inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Deleted Sub Staff insertion failed ❌: $e',
       );
       return 0;
@@ -72,12 +79,12 @@ class DeletedSubStaffFunc {
   ) async {
     try {
       await deletedSubStaffBox.add(deletedSubStaff);
-      print(
+      await mainLocalLog(
         'Offline Deleted Sub Staff inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Deleted Sub Staff insertion failed ❌: $e',
       );
       return 0;
@@ -87,10 +94,12 @@ class DeletedSubStaffFunc {
   Future<int> clearDeletedSubStaff() async {
     try {
       await deletedSubStaffBox.clear();
-      print('All Deleted Sub Staff cleared ✅');
+      await mainLocalLog('All Deleted Sub Staff cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while clearing Deleted Sub Staff ❌: $e');
+      await mainLocalLog(
+        'Error while clearing Deleted Sub Staff ❌: $e',
+      );
       return 0;
     }
   }

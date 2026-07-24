@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_logged_in_user/logged_in_user.dart';
+import 'package:stockall/main.dart';
 
 class LoggedInUserFunc {
   static final LoggedInUserFunc instance =
@@ -17,25 +18,27 @@ class LoggedInUserFunc {
       loggedInUserBox = await Hive.openBox(
         loggedInUserBoxName,
       );
-      print('Logged In User Box Initialized');
+      await mainLocalLog('Logged In User Box Initialized');
     } catch (e) {
-      print('❌ Error New Logged In User: ${e.toString()}');
+      await mainLocalLog(
+        '❌ Error New Logged In User: ${e.toString()}',
+      );
       // try {
       //   if (Hive.isBoxOpen(loggedInUserBoxName)) {
       //     await Hive.box(loggedInUserBoxName).close();
       //   }
 
       //   await Hive.deleteBoxFromDisk(loggedInUserBoxName);
-      //   print(
+      //   await mainLocalLog(
       //     '🧹 Deleted Corrupted Current Logged In User Box',
       //   );
 
       //   loggedInUserBox = await Hive.openBox(
       //     loggedInUserBoxName,
       //   );
-      //   print('✅ Reinitialized Logged In User Box');
+      //   await mainLocalLog('✅ Reinitialized Logged In User Box');
       // } catch (innerError) {
-      //   print(
+      //   await mainLocalLog(
       //     '⚠️ Failed to recover Hive box Logged In User: $innerError',
       //   );
       // }
@@ -55,10 +58,12 @@ class LoggedInUserFunc {
         user.loggedInUser!.userId,
         user,
       );
-      print('Logged In User inserted Success');
+      await mainLocalLog('Logged In User inserted Success');
       return 1;
     } catch (e) {
-      print('❌❌ Logged In User Error: ${e.toString()}');
+      await mainLocalLog(
+        '❌❌ Logged In User Error: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -66,10 +71,12 @@ class LoggedInUserFunc {
   Future<int> logOut() async {
     try {
       await loggedInUserBox.clear();
-      print('Offline Logout Success');
+      await mainLocalLog('Offline Logout Success');
       return 1;
     } catch (e) {
-      print('❌❌ Offline Logout Error: ${e.toString()}');
+      await mainLocalLog(
+        '❌❌ Offline Logout Error: ${e.toString()}',
+      );
       return 0;
     }
   }

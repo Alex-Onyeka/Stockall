@@ -48,7 +48,7 @@ class AuthService extends ChangeNotifier {
         final userId = signUpRes.user?.id;
 
         if (userId == null) {
-          print('Failed to sign up user.');
+          await mainLocalLog('Failed to sign up user.');
           return null;
         }
 
@@ -62,7 +62,9 @@ class AuthService extends ChangeNotifier {
         return 'exists';
       }
     } catch (e) {
-      print('Error Creating User Account: ${e.toString()}');
+      await mainLocalLog(
+        'Error Creating User Account: ${e.toString()}',
+      );
       showDialog(
         // ignore: use_build_context_synchronously
         context: context,
@@ -88,9 +90,9 @@ class AuthService extends ChangeNotifier {
         type: OtpType.signup,
         email: email,
       );
-      print('Success');
+      await mainLocalLog('Success');
     } catch (e) {
-      print('Error: ${e.toString()}');
+      await mainLocalLog('Error: ${e.toString()}');
     }
   }
 
@@ -142,14 +144,14 @@ class AuthService extends ChangeNotifier {
       if (context.mounted) {
         returnNavProvider(context, listen: false).verify();
       }
-      print(
+      await mainLocalLog(
         newEmail != null
             ? 'Email Changed Successfully'
             : 'Email Verified Successfully',
       );
       return 1;
     } catch (e) {
-      print('Error: ${e.toString()}');
+      await mainLocalLog('Error: ${e.toString()}');
       return 0;
     }
   }
@@ -167,9 +169,9 @@ class AuthService extends ChangeNotifier {
       await Supabase.instance.client.auth.updateUser(
         UserAttributes(email: emaill),
       );
-      print('Email reset OTP sent.');
+      await mainLocalLog('Email reset OTP sent.');
     } catch (e) {
-      print('Error sending OTP to email: $e');
+      await mainLocalLog('Error sending OTP to email: $e');
     }
   }
 
@@ -183,9 +185,9 @@ class AuthService extends ChangeNotifier {
         // emailRedirectTo:
         //     "https://www.stockallapp.com/#/check-verification",
       );
-      print('Email Change OTP Resent Success');
+      await mainLocalLog('Email Change OTP Resent Success');
     } catch (e) {
-      print('Error: ${e.toString()}');
+      await mainLocalLog('Error: ${e.toString()}');
     }
   }
 
@@ -226,21 +228,23 @@ class AuthService extends ChangeNotifier {
         await LoggedInUserFunc().insertLoggedInUser(
           LoggedInUser(loggedInUser: tempUser),
         );
-        print('Offline User Logged In');
+        await mainLocalLog('Offline User Logged In');
 
         await UserFunc().insertUser(tempUser);
-        print('Offline User Insertted');
+        await mainLocalLog('Offline User Insertted');
 
         navProvider.verify();
         navProvider.offLoading();
 
-        print(
+        await mainLocalLog(
           "✅ User signed in and saved locally: ${tempUser.email}",
         );
 
         return 1;
       } catch (e) {
-        print("❌ Sign-in failed: ${e.toString()}");
+        await mainLocalLog(
+          "❌ Sign-in failed: ${e.toString()}",
+        );
         return 0;
       }
     } else {
@@ -250,22 +254,24 @@ class AuthService extends ChangeNotifier {
               password,
               email,
             );
-        print(user?.name);
+        await mainLocalLog(user?.name);
 
         if (user != null) {
-          print('Offline User Found');
+          await mainLocalLog('Offline User Found');
           LoggedInUserFunc().insertLoggedInUser(
             LoggedInUser(loggedInUser: user),
           );
-          print('Offline User Logged In');
+          await mainLocalLog('Offline User Logged In');
 
           return 1;
         } else {
-          print('Offline User Not Found');
+          await mainLocalLog('Offline User Not Found');
           return 0;
         }
       } catch (e) {
-        print('❌❌Offline Login Error: ${e.toString()}');
+        await mainLocalLog(
+          '❌❌Offline Login Error: ${e.toString()}',
+        );
         return 0;
       }
     }
@@ -345,7 +351,7 @@ class AuthService extends ChangeNotifier {
           ),
         );
       } else {
-        print('Context is Not Mounted');
+        await mainLocalLog('Context is Not Mounted');
       }
 
       notifyListeners();
@@ -361,9 +367,9 @@ class AuthService extends ChangeNotifier {
             redirectTo:
                 'https://www.stockallapp.com/#/reset-password',
           );
-      print('Password reset email sent.');
+      await mainLocalLog('Password reset email sent.');
     } catch (e) {
-      print('Error sending reset email: $e');
+      await mainLocalLog('Error sending reset email: $e');
     }
   }
 
@@ -383,11 +389,13 @@ class AuthService extends ChangeNotifier {
         );
       }
 
-      print(
+      await mainLocalLog(
         "🔐 Password successfully updated in Supabase Auth for ${user.email}",
       );
 
-      print("Updating user with ID: ${user.id}");
+      await mainLocalLog(
+        "Updating user with ID: ${user.id}",
+      );
 
       // ✅ Step 2: Update password in your 'users' table
       final updateResponse =
@@ -399,29 +407,33 @@ class AuthService extends ChangeNotifier {
               .maybeSingle();
 
       // 4. Store the user in local DB
-      print("context.mounted = ${context.mounted}");
+      await mainLocalLog(
+        "context.mounted = ${context.mounted}",
+      );
       if (context.mounted) {
-        print("✅ Inserting Users into the Local");
+        await mainLocalLog(
+          "✅ Inserting Users into the Local",
+        );
         await returnUserProvider(
           context,
           listen: false,
         ).fetchCurrentUser(context);
         return 'Success';
       } else {
-        print(
+        await mainLocalLog(
           "⚠️ Context no longer mounted, skipping local insert",
         );
       }
 
-      print(
+      await mainLocalLog(
         "✅ Password updated in 'users' table: $updateResponse",
       );
       return 'Success';
     } on AuthException catch (e) {
-      print('Error Changing Password: $e');
+      await mainLocalLog('Error Changing Password: $e');
       return e.statusCode!;
     } catch (e) {
-      print(e);
+      await mainLocalLog(e.toString());
       return e.toString();
     }
   }
@@ -448,10 +460,10 @@ class AuthService extends ChangeNotifier {
   Future<String?> checkAuth() async {
     bool isOnline = ConnectivityProvider().isConnected;
     if (isOnline) {
-      print('Online Auth Validated');
+      await mainLocalLog('Online Auth Validated');
       return currentUserAuth?.id;
     } else {
-      print('Offline Auth Validated');
+      await mainLocalLog('Offline Auth Validated');
       return LoggedInUserFunc()
           .getLoggedInUser()
           ?.loggedInUser
@@ -467,7 +479,9 @@ class AuthService extends ChangeNotifier {
       final user = _client.auth.currentUser;
 
       if (user == null) {
-        print("No user is currently signed in.");
+        await mainLocalLog(
+          "No user is currently signed in.",
+        );
         return 0;
       }
 
@@ -477,7 +491,7 @@ class AuthService extends ChangeNotifier {
       );
 
       if (response.status == 200) {
-        print(
+        await mainLocalLog(
           "User deleted successfully: ${response.data}",
         );
         await returnShopProvider().removeEmployeeFromShop(
@@ -495,13 +509,15 @@ class AuthService extends ChangeNotifier {
         await signOut(context: context, allowLogout: true);
         return 1;
       } else {
-        print(
+        await mainLocalLog(
           "Error Deleting User Account: ${response.data}",
         );
         return 0;
       }
     } catch (e) {
-      print("Error Deleting User Account: ${e.toString()}");
+      await mainLocalLog(
+        "Error Deleting User Account: ${e.toString()}",
+      );
       return 0;
     }
   }

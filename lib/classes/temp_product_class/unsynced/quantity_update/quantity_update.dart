@@ -29,7 +29,7 @@ class QuantityUpdate extends HiveObject {
     this.createdAt,
     required this.quantity,
     required this.productUuid,
-    required this.isIncrement,
+    this.isIncrement = true,
     required this.isStorage,
     // required this.otherUuid,
   });

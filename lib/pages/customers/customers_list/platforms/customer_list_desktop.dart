@@ -429,10 +429,10 @@ class _CustomerListDesktopState
                                                           );
                                                         } else if (widget.isWaybill !=
                                                             null) {
-                                                          returnWaybillProvider().selectCustomer(
-                                                            customer:
-                                                                customer,
-                                                          );
+                                                          // returnWaybillProvider().selectCustomer(
+                                                          //   customer:
+                                                          //       customer,
+                                                          // );
                                                           Navigator.of(
                                                             context,
                                                           ).pop(
@@ -526,10 +526,10 @@ class _CustomerListDesktopState
                                                   } else if (widget
                                                           .isWaybill !=
                                                       null) {
-                                                    returnWaybillProvider().selectCustomer(
-                                                      customer:
-                                                          customer,
-                                                    );
+                                                    // returnWaybillProvider().selectCustomer(
+                                                    //   customer:
+                                                    //       customer,
+                                                    // );
                                                     Navigator.of(
                                                       context,
                                                     ).pop(

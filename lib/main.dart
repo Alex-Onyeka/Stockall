@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
@@ -58,7 +59,6 @@ import 'package:stockall/providers/user_provider.dart';
 import 'package:stockall/providers/utility_constant_provider.dart';
 import 'package:stockall/providers/utility_widget_provider.dart';
 import 'package:stockall/providers/validate_input_provider.dart';
-import 'package:stockall/providers/waybill_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:stockall/services/navigation_service.dart';
 import 'package:stockall/services/payment_result_page.dart/payment_result_page.dart';
@@ -69,12 +69,13 @@ import 'package:window_manager/window_manager.dart';
 void main(List<String> args) async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
-    await startupLog('Starting Application');
+    await initMainLog();
+    await mainLocalLog('Starting Application');
     if (args.length >= 3) {
       final windowId = int.tryParse(args[1]);
       final argument = args[2];
-      // await startupLog(windowId);
-      // await startupLog(argument);
+      // await mainLocalLog(windowId);
+      // await mainLocalLog(argument);
 
       try {
         final decoded = jsonDecode(argument);
@@ -89,7 +90,7 @@ void main(List<String> args) async {
           );
         }
       } catch (e) {
-        await startupLog('An Error Occoured: $e');
+        await mainLocalLog('An Error Occoured: $e');
       }
     } else {
       SystemChrome.setSystemUIOverlayStyle(
@@ -114,16 +115,17 @@ void main(List<String> args) async {
       if (returnShopProvider().isDesktop()) {
         await windowManager.ensureInitialized();
         maxWindow();
-        await startupLog("Maximize In Main Dot Dart");
+        await mainLocalLog("Maximize In Main Dot Dart");
       }
       await DeviceService.init();
       runApp(MyApp(home: BasePage()));
     }
   } catch (e, s) {
-    await startupLog(
+    await mainLocalLog(
       'Error Occoured While Initialzing Main Dart File: ${e.toString()}',
+      error: e,
+      stackTrace: s,
     );
-    await startupLog('Stack Trace: ${s.toString()}');
   }
 }
 
@@ -134,55 +136,101 @@ void syncData() {
 }
 
 void maxWindow() {
-  // if (returnShopProvider().isDesktop()) {
-  //   timer = Timer.periodic(Duration(seconds: 1), (
-  //     timer,
-  //   ) async {
-  //     var isMax = await windowManager.isMaximized();
-  //     if (!isMax) {
-  //       await windowManager.maximize();
-  //       await startupLog("Maximize In Emp Auth Page");
-  //     } else {
-  //       timer.cancel();
-  //       await startupLog('Timer Cancelled');
-  //     }
-  //   });
-  // }
+  if (Platform.isLinux ||
+      Platform.isMacOS ||
+      Platform.isWindows) {
+    timer = Timer.periodic(Duration(seconds: 1), (
+      timer,
+    ) async {
+      var isMax = await windowManager.isMaximized();
+      if (!isMax) {
+        await windowManager.maximize();
+        await mainLocalLog("Maximize In Emp Auth Page");
+      } else {
+        timer.cancel();
+        await mainLocalLog('Timer Cancelled');
+      }
+    });
+  }
 }
 
-Future<void> startupLog(
-  String message, {
+// String dateFormatMainApp(DateTime date) {
+//   return "${date.hour | date.minute | date.second}";
+// }
+
+Future<void> initMainLog() async {
+  if (kIsWeb) {
+    return;
+  } else {
+    if (Platform.isLinux ||
+        Platform.isMacOS ||
+        Platform.isWindows) {
+      final dir = await getApplicationSupportDirectory();
+      final file = File('${dir.path}/mainLog.log');
+
+      await file.writeAsString('');
+      await file.writeAsString(
+        '========== STOCKALL LOCAL LOG ==========\n'
+        'TIME: ${DateTime.now().toString().split('.').first}\n'
+        'VERSION: 1.8.74.0\n'
+        'PLATFORM: Windows\n'
+        'DIRECTORY: ${dir.path}\n'
+        '======================================\n\n',
+      );
+    }
+  }
+}
+
+Future<void> mainLocalLog(
+  String? message, {
   Object? error,
   StackTrace? stackTrace,
 }) async {
-  final dir = await getApplicationSupportDirectory();
+  print('Message: ${message ?? 'Not Set'}');
+  if (kIsWeb) {
+    return;
+  } else {
+    if (Platform.isLinux ||
+        Platform.isMacOS ||
+        Platform.isWindows) {
+      final dir = await getApplicationSupportDirectory();
 
-  // startup.log goes directly inside the app support directory
-  final file = File('${dir.path}/mainLog.log');
+      // startup.log goes directly inside the app support directory
+      final file = File('${dir.path}/mainLog.log');
 
-  final buffer =
-      StringBuffer()..writeln(
-        '[${DateTime.now().toIso8601String()}] $message',
+      final buffer =
+          StringBuffer()..writeln(
+            'Message: [${DateTime.now().toString().split('.').first}] ${message ?? 'Not Set'}',
+          );
+
+      if (error != null) {
+        buffer.writeln('Error: $error');
+      }
+
+      if (stackTrace != null) {
+        buffer.writeln("Stack Trace: $stackTrace");
+      }
+
+      buffer.writeln();
+
+      await file.writeAsString(
+        buffer.toString(),
+        mode: FileMode.append,
       );
-
-  if (error != null) {
-    buffer.writeln('Error: $error');
+    }
   }
-
-  if (stackTrace != null) {
-    buffer.writeln("Stack Trace: $stackTrace");
-  }
-
-  buffer.writeln();
-
-  await file.writeAsString(
-    buffer.toString(),
-    mode: FileMode.append,
-  );
 }
 
 TempUserClass currentUser() {
-  return UserProvider().currentUserMain!;
+  return UserProvider().currentUserMain ??
+      TempUserClass(
+        password: 'password',
+        name: 'name',
+        email: 'email',
+        role: 'role',
+        departmentUuids: [],
+        access: [],
+      );
 }
 
 bool isStoreKeeper() {
@@ -571,15 +619,15 @@ PurchaseActionProvider returnPurchaseActionProvider({
   }
 }
 
-WaybillProvider returnWaybillProvider({
-  BuildContext? context,
-}) {
-  if (context == null) {
-    return WaybillProvider();
-  } else {
-    return Provider.of<WaybillProvider>(context);
-  }
-}
+// WaybillProvider returnWaybillProvider({
+//   BuildContext? context,
+// }) {
+//   if (context == null) {
+//     return WaybillProvider();
+//   } else {
+//     return Provider.of<WaybillProvider>(context);
+//   }
+// }
 
 UtilityWidgetProvider returnUtilityWidgetProvider({
   BuildContext? context,
@@ -772,9 +820,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => PurchaseActionProvider(),
         ),
-        ChangeNotifierProvider(
-          create: (_) => WaybillProvider(),
-        ),
+        // ChangeNotifierProvider(
+        //   create: (_) => WaybillProvider(),
+        // ),
         ChangeNotifierProvider(
           create: (_) => UtilityWidgetProvider(),
         ),

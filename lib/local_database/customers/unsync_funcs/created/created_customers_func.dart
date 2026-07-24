@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_customers/unsynced/created_customers/created_customers.dart';
+import 'package:stockall/main.dart';
 
 class CreatedCustomersFunc {
   static final CreatedCustomersFunc instance =
@@ -18,7 +19,9 @@ class CreatedCustomersFunc {
       CreatedCustomersAdapter().typeId,
     )) {
       Hive.registerAdapter(CreatedCustomersAdapter());
-      print('Created Customers Adapter registered ✅');
+      await mainLocalLog(
+        'Created Customers Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,14 @@ class CreatedCustomersFunc {
           await Hive.openBox<CreatedCustomers>(
             createdCustomersBoxName,
           );
-      print('Created Customers Box opened ✅');
+      await mainLocalLog('Created Customers Box opened ✅');
     } else {
       _createdCustomersBox = Hive.box<CreatedCustomers>(
         createdCustomersBoxName,
       );
-      print('Created Customers Box already open, reused ✅');
+      await mainLocalLog(
+        'Created Customers Box already open, reused ✅',
+      );
     }
   }
 
@@ -65,10 +70,12 @@ class CreatedCustomersFunc {
           customers,
         );
       }
-      print("Offline Created Customers inserted ✅");
+      await mainLocalLog(
+        "Offline Created Customers inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Customers insertion failed ❌: $e',
       );
       return 0;
@@ -83,12 +90,12 @@ class CreatedCustomersFunc {
         createdCustomers.customer.uuid,
         createdCustomers,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Customers inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Customers insertion failed ❌: $e',
       );
       return 0;
@@ -103,12 +110,12 @@ class CreatedCustomersFunc {
         createdCustomers.customer.uuid,
         createdCustomers,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Customers inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Customers insertion failed ❌: $e',
       );
       return 0;
@@ -117,14 +124,16 @@ class CreatedCustomersFunc {
 
   Future<int> deleteCustomer(String uuid) async {
     try {
-      print(
+      await mainLocalLog(
         createdCustomersBox.containsKey(uuid).toString(),
       );
       await createdCustomersBox.delete(uuid);
-      print('Customers Deleted');
+      await mainLocalLog('Customers Deleted');
       return 1;
     } catch (e) {
-      print('Customers Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Customers Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -132,10 +141,12 @@ class CreatedCustomersFunc {
   Future<int> clearCustomers() async {
     try {
       await createdCustomersBox.clear();
-      print('All Created Customers cleared ✅');
+      await mainLocalLog('All Created Customers cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while clearing Created Customers ❌: $e');
+      await mainLocalLog(
+        'Error while clearing Created Customers ❌: $e',
+      );
       return 0;
     }
   }

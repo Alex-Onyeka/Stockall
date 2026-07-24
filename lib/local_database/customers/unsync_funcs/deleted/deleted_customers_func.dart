@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_customers/unsynced/deleted_customers/deleted_customers.dart';
+import 'package:stockall/main.dart';
 
 class DeletedCustomersFunc {
   static final DeletedCustomersFunc instance =
@@ -18,7 +19,9 @@ class DeletedCustomersFunc {
       DeletedCustomersAdapter().typeId,
     )) {
       Hive.registerAdapter(DeletedCustomersAdapter());
-      print('Deleted Customers Adapter registered ✅');
+      await mainLocalLog(
+        'Deleted Customers Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,14 @@ class DeletedCustomersFunc {
           await Hive.openBox<DeletedCustomers>(
             deletedCustomersBoxName,
           );
-      print('Deleted Customers Box opened ✅');
+      await mainLocalLog('Deleted Customers Box opened ✅');
     } else {
       _deletedCustomersBox = Hive.box<DeletedCustomers>(
         deletedCustomersBoxName,
       );
-      print('Deleted Customers Box already open, reused ✅');
+      await mainLocalLog(
+        'Deleted Customers Box already open, reused ✅',
+      );
     }
   }
 
@@ -57,10 +62,12 @@ class DeletedCustomersFunc {
       for (var customer in deletedCustomers) {
         await deletedCustomersBox.add(customer);
       }
-      print("Offline Deleted Customers inserted ✅");
+      await mainLocalLog(
+        "Offline Deleted Customers inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Deleted Customers insertion failed ❌: $e',
       );
       return 0;
@@ -72,12 +79,12 @@ class DeletedCustomersFunc {
   ) async {
     try {
       await deletedCustomersBox.add(deletedCustomer);
-      print(
+      await mainLocalLog(
         'Offline Deleted Customer inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Deleted Customer insertion failed ❌: $e',
       );
       return 0;
@@ -87,10 +94,12 @@ class DeletedCustomersFunc {
   Future<int> clearDeletedCustomers() async {
     try {
       await deletedCustomersBox.clear();
-      print('All Deleted Customers cleared ✅');
+      await mainLocalLog('All Deleted Customers cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while clearing Deleted Customers ❌: $e');
+      await mainLocalLog(
+        'Error while clearing Deleted Customers ❌: $e',
+      );
       return 0;
     }
   }

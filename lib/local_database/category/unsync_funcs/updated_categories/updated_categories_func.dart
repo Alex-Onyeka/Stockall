@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_categories/unsynced/updated/updated_category.dart';
+import 'package:stockall/main.dart';
 
 class UpdatedCategoriesFunc {
   static final UpdatedCategoriesFunc instance =
@@ -18,7 +19,9 @@ class UpdatedCategoriesFunc {
       UpdatedCategoryAdapter().typeId,
     )) {
       Hive.registerAdapter(UpdatedCategoryAdapter());
-      print('Updated Categories Adapter registered ✅');
+      await mainLocalLog(
+        'Updated Categories Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,12 @@ class UpdatedCategoriesFunc {
           await Hive.openBox<UpdatedCategory>(
             updatedCategoriesBoxName,
           );
-      print('Updated Categories Box opened ✅');
+      await mainLocalLog('Updated Categories Box opened ✅');
     } else {
       _updatedCategoriesBox = Hive.box<UpdatedCategory>(
         updatedCategoriesBoxName,
       );
-      print(
+      await mainLocalLog(
         'Updated Categories Box already open, reused ✅',
       );
     }
@@ -63,12 +66,12 @@ class UpdatedCategoriesFunc {
         updatedCategory.category.uuid,
         updatedCategory,
       );
-      print(
+      await mainLocalLog(
         'Offline updated Categories inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline updated Categories insertion failed ❌: $e',
       );
       return 0;
@@ -77,14 +80,16 @@ class UpdatedCategoriesFunc {
 
   Future<int> deleteUpdatedCategory(String uuid) async {
     try {
-      print(
+      await mainLocalLog(
         updatedCategoriesBox.containsKey(uuid).toString(),
       );
       await updatedCategoriesBox.delete(uuid);
-      print('Updated Category Deleted');
+      await mainLocalLog('Updated Category Deleted');
       return 1;
     } catch (e) {
-      print('Category Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Category Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -92,10 +97,12 @@ class UpdatedCategoriesFunc {
   Future<int> clearUpdatedCategory() async {
     try {
       await updatedCategoriesBox.clear();
-      print('All updated Categories cleared ✅');
+      await mainLocalLog(
+        'All updated Categories cleared ✅',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error while clearing updated Categories ❌: $e',
       );
       return 0;

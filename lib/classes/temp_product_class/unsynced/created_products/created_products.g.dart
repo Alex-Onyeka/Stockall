@@ -6,7 +6,8 @@ part of 'created_products.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class CreatedProductsAdapter extends TypeAdapter<CreatedProducts> {
+class CreatedProductsAdapter
+    extends TypeAdapter<CreatedProducts> {
   @override
   final int typeId = 9;
 
@@ -14,11 +15,12 @@ class CreatedProductsAdapter extends TypeAdapter<CreatedProducts> {
   CreatedProducts read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++)
+        reader.readByte(): reader.read(),
     };
     return CreatedProducts(
       product: fields[0] as TempProductClass,
-      includeQuantity: fields[1] as bool,
+      includeQuantity: fields[1] as bool? ?? false,
     );
   }
 

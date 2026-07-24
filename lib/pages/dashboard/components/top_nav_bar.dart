@@ -179,7 +179,7 @@ class _TopNavBarState extends State<TopNavBar> {
                             setState(() {
                               isOpen = false;
                             });
-                            print('Popover closed');
+                            mainLocalLog('Popover closed');
                           },
                           direction:
                               PopoverDirection.bottom,
@@ -425,7 +425,9 @@ class _TopNavBarState extends State<TopNavBar> {
                             context: context,
                           );
                         } else {
-                          print('Data is in sync');
+                          await mainLocalLog(
+                            'Data is in sync',
+                          );
                           returnData().toggleRefreshing(
                             true,
                           );
@@ -651,17 +653,17 @@ class _TopNavBarState extends State<TopNavBar> {
                           10,
                         ),
                         onTap: () async {
-                          // print(
+                          // await mainLocalLog(
                           //   CreatedRecordsFunc()
                           //       .getRecords()
                           //       .length,
                           // );
-                          // print(
+                          // await mainLocalLog(
                           //   CreatedReceiptsFunc()
                           //       .getReceipts()
                           //       .length,
                           // );
-                          // print(
+                          // await mainLocalLog(
                           //   SalesProductFunc()
                           //       .getProducts()
                           //       .first
@@ -735,7 +737,7 @@ class _TopNavBarState extends State<TopNavBar> {
                         onTap: () async {
                           // if (returnData().isSynced() ==
                           //     0) {
-                          print('Beans');
+                          await mainLocalLog('Beans');
                           await returnData().syncData(
                             context: context,
                           );
@@ -1221,7 +1223,7 @@ class PopoverMenu extends StatelessWidget {
                                       shop,
                                     );
 
-                                // print(
+                                // await mainLocalLog(
                                 //   returnShopProvider(
                                 //     safeContext,
                                 //     listen: false,

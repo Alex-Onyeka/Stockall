@@ -24,7 +24,7 @@
 //       (cart) => cart.mainCartId == mainCartIdCache,
 //     );
 //     // } catch (e) {
-//     //   print('Error : ${e.toString()}');
+//     //   await mainLocalLog('Error : ${e.toString()}');
 //     //   return TempMainCart(
 //     //     cartQueue: [],
 //     //     mainCartId: 'mainCartId',
@@ -36,23 +36,23 @@
 //   String initCart() {
 //     try {
 //       var mainCartId = uuidGen();
-//       print('Main Cart Id: $mainCartId');
-//       print('Main Cart Length: ${mainCartQueue.length}');
+//       await mainLocalLog('Main Cart Id: $mainCartId');
+//       await mainLocalLog('Main Cart Length: ${mainCartQueue.length}');
 
 //       mainCartQueue.add(
 //         TempMainCart(cartQueue: [], mainCartId: mainCartId),
 //       );
-//       print(
+//       await mainLocalLog(
 //         'First Main Cart Id: ${mainCartQueue.first.mainCartId}',
 //       );
-//       print('Main Cart Length: ${mainCartQueue.length}');
+//       await mainLocalLog('Main Cart Length: ${mainCartQueue.length}');
 
 //       mainCartIdCache = mainCartId;
-//       print('Main Cart Id Cached: $mainCartIdCache');
+//       await mainLocalLog('Main Cart Id Cached: $mainCartIdCache');
 
 //       var cartId = uuidGen();
-//       print('Normal Cart Id: $cartId');
-//       print(
+//       await mainLocalLog('Normal Cart Id: $cartId');
+//       await mainLocalLog(
 //         'Normal Cart Length: ${mainCartQueue.first.cartQueue.length}',
 //       );
 //       mainCartQueue.first.cartQueue.add(
@@ -73,19 +73,19 @@
 //           id: cartId,
 //         ),
 //       );
-//       print(
+//       await mainLocalLog(
 //         'First Normal Cart Id: ${mainCartQueue.first.cartQueue.first.id}',
 //       );
-//       print(
+//       await mainLocalLog(
 //         'Normal Cart Length: ${mainCartQueue.first.cartQueue.length}',
 //       );
 //       cartIdCache = cartId;
-//       print('Normal Cart Id Cached: $cartIdCache');
+//       await mainLocalLog('Normal Cart Id Cached: $cartIdCache');
 
 //       notifyListeners();
 //       return cartId;
 //     } catch (e) {
-//       print('Error Initializing Cart: ${e.toString()}');
+//       await mainLocalLog('Error Initializing Cart: ${e.toString()}');
 //       return '';
 //     }
 //   }

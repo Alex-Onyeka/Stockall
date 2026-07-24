@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_error_log/unsynced/created_error_log_class.dart';
+import 'package:stockall/main.dart';
 
 class CreatedErrorLogFunc {
   static final CreatedErrorLogFunc instance =
@@ -16,7 +17,9 @@ class CreatedErrorLogFunc {
       CreatedErrorLogClassAdapter().typeId,
     )) {
       Hive.registerAdapter(CreatedErrorLogClassAdapter());
-      print('CreatedErrorLogClassAdapter registered ✅');
+      await mainLocalLog(
+        'CreatedErrorLogClassAdapter registered ✅',
+      );
     }
 
     if (!Hive.isBoxOpen(createdErrorLogBoxName)) {
@@ -24,12 +27,14 @@ class CreatedErrorLogFunc {
           await Hive.openBox<CreatedErrorLogClass>(
             createdErrorLogBoxName,
           );
-      print('Created Error Log Box opened ✅');
+      await mainLocalLog('Created Error Log Box opened ✅');
     } else {
       _createdErrorLogBox = Hive.box<CreatedErrorLogClass>(
         createdErrorLogBoxName,
       );
-      print('Created Error Log Box already open, reused ✅');
+      await mainLocalLog(
+        'Created Error Log Box already open, reused ✅',
+      );
     }
   }
 
@@ -57,10 +62,12 @@ class CreatedErrorLogFunc {
           log,
         );
       }
-      print("Offline Created Error Log inserted ✅");
+      await mainLocalLog(
+        "Offline Created Error Log inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Error Log insertion failed ❌: $e',
       );
       return 0;
@@ -75,12 +82,12 @@ class CreatedErrorLogFunc {
         createdErrorLog.errorLog.uuid,
         createdErrorLog,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Error Log inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Error Log insertion failed ❌: $e',
       );
       return 0;
@@ -89,14 +96,14 @@ class CreatedErrorLogFunc {
 
   Future<int> deleteErrorLog(String uuid) async {
     try {
-      print(
+      await mainLocalLog(
         createdErrorLogBox.containsKey(uuid).toString(),
       );
       await createdErrorLogBox.delete(uuid);
-      print('Created Error Log Deleted');
+      await mainLocalLog('Created Error Log Deleted');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Created Error Log Delete Failed: ${e.toString()}',
       );
       return 0;
@@ -106,10 +113,12 @@ class CreatedErrorLogFunc {
   Future<int> clearError() async {
     try {
       await createdErrorLogBox.clear();
-      print('All Created Error Logs cleared ✅');
+      await mainLocalLog(
+        'All Created Error Logs cleared ✅',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error while clearing Created Error Logs ❌: $e',
       );
       return 0;

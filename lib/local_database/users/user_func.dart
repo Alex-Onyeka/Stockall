@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
+import 'package:stockall/main.dart';
 
 class UserFunc {
   static final UserFunc instance = UserFunc._internal();
@@ -13,9 +14,9 @@ class UserFunc {
     try {
       Hive.registerAdapter(TempUserClassAdapter());
       userBox = await Hive.openBox(userBoxName);
-      print('User Box Initialized');
+      await mainLocalLog('User Box Initialized');
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error Initializing Users Box: ${e.toString()}',
       );
     }
@@ -23,8 +24,8 @@ class UserFunc {
 
   List<TempUserClass> getUsers() {
     List<TempUserClass> users = userBox.values.toList();
-    print(users.first.name);
-    print(users.last.name);
+    // await mainLocalLog(users.first.name);
+    // await mainLocalLog(users.last.name);
     return users;
   }
 
@@ -41,7 +42,7 @@ class UserFunc {
     String email,
   ) {
     if (userBox.values.isNotEmpty) {
-      print(userBox.values.length);
+      // await mainLocalLog(userBox.values.length);
       if (userBox.values
           .where(
             (user) =>
@@ -68,7 +69,7 @@ class UserFunc {
     String password,
     String email,
   ) {
-    print(userBox.values.length);
+    // await mainLocalLog(userBox.values.length);
     if (userBox.values.isNotEmpty) {
       if (userBox.values
           .where(
@@ -100,10 +101,10 @@ class UserFunc {
       for (var user in users) {
         await userBox.put(user.userId, user);
       }
-      print('All Users Insert Success');
+      await mainLocalLog('All Users Insert Success');
       return 1;
     } catch (e) {
-      print('Failed: ${e.toString()}');
+      await mainLocalLog('Failed: ${e.toString()}');
       return 0;
     }
   }
@@ -111,10 +112,10 @@ class UserFunc {
   Future<int> insertUser(TempUserClass user) async {
     try {
       await userBox.put(user.userId, user);
-      print('User inserted Success');
+      await mainLocalLog('User inserted Success');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         '❌❌ Insert User Offline Error: ${e.toString()}',
       );
       return 0;
@@ -123,6 +124,6 @@ class UserFunc {
 
   Future clearUsers() async {
     await userBox.clear();
-    print('Offline Users Cleared');
+    await mainLocalLog('Offline Users Cleared');
   }
 }

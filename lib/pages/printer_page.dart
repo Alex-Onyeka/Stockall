@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:bluetooth_print_plus/bluetooth_print_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:stockall/main.dart';
 
 class PrinterPage extends StatefulWidget {
   const PrinterPage({super.key});
@@ -55,7 +56,9 @@ class _PrinterPageState extends State<PrinterPage> {
     /// listen isScanning
     _isScanningSubscription = BluetoothPrintPlus.isScanning
         .listen((event) {
-          print('********** isScanning: $event **********');
+          mainLocalLog(
+            '********** isScanning: $event **********',
+          );
           if (mounted) {
             setState(() {});
           }
@@ -64,7 +67,7 @@ class _PrinterPageState extends State<PrinterPage> {
     /// listen blue state
     _blueStateSubscription = BluetoothPrintPlus.blueState
         .listen((event) {
-          print(
+          mainLocalLog(
             '********** blueState change: $event **********',
           );
           if (mounted) {
@@ -76,7 +79,7 @@ class _PrinterPageState extends State<PrinterPage> {
     _connectStateSubscription = BluetoothPrintPlus
         .connectState
         .listen((event) {
-          print(
+          mainLocalLog(
             '********** connectState change: $event **********',
           );
           switch (event) {
@@ -104,7 +107,7 @@ class _PrinterPageState extends State<PrinterPage> {
     _receivedDataSubscription = BluetoothPrintPlus
         .receivedData
         .listen((data) {
-          print(
+          mainLocalLog(
             '********** received data: $data **********',
           );
 
@@ -168,7 +171,7 @@ class _PrinterPageState extends State<PrinterPage> {
                                       // var res =
                                       //     BluetoothPrintPlus
                                       //         .isConnected;
-                                      // print(res);
+                                      // await mainLocalLog(res);
 
                                       BluetoothPrintPlus.write(
                                         Uint8List.fromList(
@@ -232,7 +235,7 @@ class _PrinterPageState extends State<PrinterPage> {
         timeout: Duration(seconds: 10),
       );
     } catch (e) {
-      print("onScanPressed error: $e");
+      await mainLocalLog("onScanPressed error: $e");
     }
   }
 
@@ -240,7 +243,7 @@ class _PrinterPageState extends State<PrinterPage> {
     try {
       BluetoothPrintPlus.stopScan();
     } catch (e) {
-      print("onStopPressed error: $e");
+      await mainLocalLog("onStopPressed error: $e");
     }
   }
 }

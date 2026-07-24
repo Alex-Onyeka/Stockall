@@ -994,10 +994,10 @@ class _AddProductDesktopState
                                                                 true;
                                                           }
                                                         });
-                                                        print(
+                                                        mainLocalLog(
                                                           barcode,
                                                         );
-                                                        print(
+                                                        mainLocalLog(
                                                           barCodeSet.toString(),
                                                         );
                                                       },

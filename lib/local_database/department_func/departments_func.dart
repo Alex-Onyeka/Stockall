@@ -20,7 +20,7 @@ class DepartmentsFunc {
     await CreatedDepartmentsFunc().init();
     await DeletedDepartmentsFunc().init();
     await UpdatedDepartmentFunc().init();
-    print('Department Box Initialized');
+    await mainLocalLog('Department Box Initialized');
   }
 
   List<DepartmentClass> getDepartment() {
@@ -42,11 +42,13 @@ class DepartmentsFunc {
         for (var dept in department) {
           await departmentBox.put(dept.uuid, dept);
         }
-        print('Offline Departments Insert Success');
+        await mainLocalLog(
+          'Offline Departments Insert Success',
+        );
         return 1;
       }
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Departments Insert Failed: ${e.toString()}',
       );
       return 0;
@@ -58,10 +60,10 @@ class DepartmentsFunc {
   ) async {
     try {
       await departmentBox.put(department.uuid, department);
-      print('Offline Department Created');
+      await mainLocalLog('Offline Department Created');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Department Creation Failed: ${e.toString()}',
       );
       return 0;
@@ -76,10 +78,10 @@ class DepartmentsFunc {
     );
     try {
       await departmentBox.put(department.uuid, department);
-      print('Offline Department Updated');
+      await mainLocalLog('Offline Department Updated');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Department Update Failed: ${e.toString()}',
       );
       return 0;
@@ -89,10 +91,10 @@ class DepartmentsFunc {
   Future<int> deleteDepartment(String uuid) async {
     try {
       await departmentBox.delete(uuid);
-      print('Offline Department Deleted');
+      await mainLocalLog('Offline Department Deleted');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Department Delete Failed: ${e.toString()}',
       );
       return 0;
@@ -102,10 +104,12 @@ class DepartmentsFunc {
   Future<int> clearDepartment() async {
     try {
       await departmentBox.clear();
-      print('Offline Department Cleared');
+      await mainLocalLog('Offline Department Cleared');
       return 1;
     } catch (e) {
-      print('Department Clear Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Department Clear Failed: ${e.toString()}',
+      );
       return 0;
     }
   }

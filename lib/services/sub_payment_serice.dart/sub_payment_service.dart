@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/main.dart';
 
 class PaymentInitResponse {
   final String authorizationUrl;
@@ -25,7 +26,7 @@ class PaymentService {
     required int duration,
     required Uri callbackUrl,
   }) async {
-    print('About to Initiate Payment Process');
+    await mainLocalLog('About to Initiate Payment Process');
     final res = await http.post(
       Uri.parse(functionUrl),
       headers: {
@@ -51,7 +52,7 @@ class PaymentService {
         reference: data['reference'] as String,
       );
     } else {
-      print('Error: ${res.body}');
+      await mainLocalLog('Error: ${res.body}');
       return null;
     }
   }
@@ -69,10 +70,14 @@ class PaymentService {
     );
 
     if (res.statusCode == 200) {
-      print('Payment verified and subscription updated');
+      await mainLocalLog(
+        'Payment verified and subscription updated',
+      );
       return true;
     } else {
-      print('Verification failed: ${res.body}');
+      await mainLocalLog(
+        'Verification failed: ${res.body}',
+      );
       return false;
     }
   }

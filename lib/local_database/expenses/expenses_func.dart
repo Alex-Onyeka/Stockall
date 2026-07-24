@@ -14,12 +14,20 @@ class ExpensesFunc {
   final String expensesBoxName = 'expensesBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(TempExpensesClassAdapter());
-    expensesBox = await Hive.openBox(expensesBoxName);
-    await CreatedExpensesFunc().init();
-    await DeletedExpensesFunc().init();
-    await UpdatedExpensesFunc().init();
-    print('Expenses Box Initialized');
+    try {
+      Hive.registerAdapter(TempExpensesClassAdapter());
+      expensesBox = await Hive.openBox(expensesBoxName);
+      await CreatedExpensesFunc().init();
+      await DeletedExpensesFunc().init();
+      await UpdatedExpensesFunc().init();
+      await mainLocalLog('Expenses Box Initialized');
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error Initializing Expenses Func Box: ${e.toString()}',
+        error: e,
+        stackTrace: s,
+      );
+    }
   }
 
   List<TempExpensesClass> getExpenses() {
@@ -39,10 +47,12 @@ class ExpensesFunc {
       for (var exp in expenses) {
         await expensesBox.put(exp.uuid, exp);
       }
-      print('Offline Success');
+      await mainLocalLog('Offline Success');
       return 1;
     } catch (e) {
-      print('Offline Exp Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Offline Exp Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -52,10 +62,10 @@ class ExpensesFunc {
   ) async {
     try {
       await expensesBox.put(expenses.uuid, expenses);
-      print('Offline Expenses Created');
+      await mainLocalLog('Offline Expenses Created');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Expenses Creation Failed: ${e.toString()}',
       );
       return 0;
@@ -70,10 +80,10 @@ class ExpensesFunc {
     );
     try {
       await expensesBox.put(expenses.uuid, expenses);
-      print('Offline Expenses Updated');
+      await mainLocalLog('Offline Expenses Updated');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Expenses Update Failed: ${e.toString()}',
       );
       return 0;
@@ -83,10 +93,10 @@ class ExpensesFunc {
   Future<int> deleteExpenses(String uuid) async {
     try {
       await expensesBox.delete(uuid);
-      print('Offline Expenses Deleted');
+      await mainLocalLog('Offline Expenses Deleted');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Expenses Delete Failed: ${e.toString()}',
       );
       return 0;
@@ -96,10 +106,12 @@ class ExpensesFunc {
   Future<int> clearExpenses() async {
     try {
       await expensesBox.clear();
-      print('Offline Expenses Cleared');
+      await mainLocalLog('Offline Expenses Cleared');
       return 1;
     } catch (e) {
-      print('Expenses Clear Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Expenses Clear Failed: ${e.toString()}',
+      );
       return 0;
     }
   }

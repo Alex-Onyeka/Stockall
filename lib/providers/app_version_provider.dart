@@ -40,7 +40,9 @@ class AppVersionProvider extends ChangeNotifier {
           AppVersion.fromJson(res),
         );
         notifyListeners();
-        print('App Version gotten Successfully');
+        await mainLocalLog(
+          'App Version gotten Successfully',
+        );
         if (screenWidth(context) <= mobileScreen) {
           if (appVersion?.mobileVersion !=
               appVersionMobile) {
@@ -58,7 +60,7 @@ class AppVersionProvider extends ChangeNotifier {
         }
         return appVersion;
       } catch (e) {
-        print(
+        await mainLocalLog(
           '❌Error Getting App Version: ${e.toString()}',
         );
         return null;
@@ -79,7 +81,7 @@ class AppVersionProvider extends ChangeNotifier {
           toggleUpdated(true);
         }
       }
-      print('App version gotten Offline');
+      await mainLocalLog('App version gotten Offline');
       return appVersion;
     }
   }

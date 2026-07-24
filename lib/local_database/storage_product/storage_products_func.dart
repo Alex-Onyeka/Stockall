@@ -22,7 +22,7 @@ class StorageProductsFunc {
     await CreatedStorageProductsFunc().init();
     await DeletedStorageProductsFunc().init();
     await UpdatedStorageProductsFunc().init();
-    print('Storage Products Box Initialized');
+    await mainLocalLog('Storage Products Box Initialized');
   }
 
   List<TempStorageProducts> getStorageProducts() {
@@ -44,10 +44,12 @@ class StorageProductsFunc {
       for (var rec in storageProducts) {
         await storageProductsBox.put(rec.uuid, rec);
       }
-      print('Offline Storage Products Success');
+      await mainLocalLog(
+        'Offline Storage Products Success',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Storage Products Failed: ${e.toString()}',
       );
       return 0;
@@ -62,10 +64,12 @@ class StorageProductsFunc {
         storageProduct.uuid,
         storageProduct,
       );
-      print('Offline Storage Products Created');
+      await mainLocalLog(
+        'Offline Storage Products Created',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Storage Products Failed: ${e.toString()}',
       );
       return 0;
@@ -80,10 +84,12 @@ class StorageProductsFunc {
         storageProduct.uuid,
         storageProduct,
       );
-      print('Offline Storage Products Updated');
+      await mainLocalLog(
+        'Offline Storage Products Updated',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Storage Products Update Failed: ${e.toString()}',
       );
       return 0;
@@ -93,10 +99,10 @@ class StorageProductsFunc {
   Future<int> deleteStorageProduct(String uuid) async {
     try {
       await storageProductsBox.delete(uuid);
-      print('Offline Storage Product Deleted');
+      await mainLocalLog('Offline Storage Product Deleted');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Storage Product Delete Failed: ${e.toString()}',
       );
       return 0;
@@ -106,10 +112,12 @@ class StorageProductsFunc {
   Future<int> clearStorageProducts() async {
     try {
       await storageProductsBox.clear();
-      print('Offline Storage Products Cleared');
+      await mainLocalLog(
+        'Offline Storage Products Cleared',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Storage Products Clear Failed: ${e.toString()}',
       );
       return 0;

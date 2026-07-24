@@ -16,7 +16,7 @@ class ShopLogosFunc {
     Hive.registerAdapter(TempShopLogosAdapter());
     shopLogosBox = await Hive.openBox(shopLogosBoxName);
     await CreatedShopLogosFunc().init();
-    print('Shop Logos Box Initialized ✅');
+    await mainLocalLog('Shop Logos Box Initialized ✅');
   }
 
   TempShopLogos? getLogo() {
@@ -34,11 +34,13 @@ class ShopLogosFunc {
         returnShopProvider().userShop()!.shopId!,
         logo,
       );
-      print('Offline Logo inserted Successfully');
+      await mainLocalLog(
+        'Offline Logo inserted Successfully',
+      );
 
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Logo Insertion Failed: ${e.toString()}',
       );
       return 0;
@@ -49,11 +51,13 @@ class ShopLogosFunc {
     try {
       if (shopLogosBox.values.isNotEmpty) {
         await shopLogosBox.clear();
-        print('Logos Cleared');
+        await mainLocalLog('Logos Cleared');
       }
       return 1;
     } catch (e) {
-      print('❌❌ Logo Clear Error: ${e.toString()}');
+      await mainLocalLog(
+        '❌❌ Logo Clear Error: ${e.toString()}',
+      );
       return 0;
     }
   }

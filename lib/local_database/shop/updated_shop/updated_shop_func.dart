@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_shop/unsynced/updated_shop.dart';
+import 'package:stockall/main.dart';
 
 class UpdatedShopFunc {
   static final UpdatedShopFunc instance =
@@ -18,7 +19,9 @@ class UpdatedShopFunc {
       UpdatedShopAdapter().typeId,
     )) {
       Hive.registerAdapter(UpdatedShopAdapter());
-      print('Updated Shop Adapter registered ✅');
+      await mainLocalLog(
+        'Updated Shop Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -26,12 +29,14 @@ class UpdatedShopFunc {
       _updatedShopBox = await Hive.openBox<UpdatedShop>(
         updatedShopBoxName,
       );
-      print('Updated Shop Box opened ✅');
+      await mainLocalLog('Updated Shop Box opened ✅');
     } else {
       _updatedShopBox = Hive.box<UpdatedShop>(
         updatedShopBoxName,
       );
-      print('Updated Shop Box already open, reused ✅');
+      await mainLocalLog(
+        'Updated Shop Box already open, reused ✅',
+      );
     }
   }
 
@@ -60,10 +65,14 @@ class UpdatedShopFunc {
         updatedShop.shop.shopId,
         updatedShop,
       );
-      print('Offline updated Shop inserted successfully ✅');
+      await mainLocalLog(
+        'Offline updated Shop inserted successfully ✅',
+      );
       return 1;
     } catch (e) {
-      print('Offline updated Shop insertion failed ❌: $e');
+      await mainLocalLog(
+        'Offline updated Shop insertion failed ❌: $e',
+      );
       return 0;
     }
   }
@@ -79,22 +88,26 @@ class UpdatedShopFunc {
   //       updatedShop.shop.shopId,
   //       updatedShop,
   //     );
-  //     print('Offline updated Shop inserted successfully ✅');
+  //     await mainLocalLog('Offline updated Shop inserted successfully ✅');
   //     return 1;
   //   } catch (e) {
-  //     print('Offline updated Shop insertion failed ❌: $e');
+  //     await mainLocalLog('Offline updated Shop insertion failed ❌: $e');
   //     return 0;
   //   }
   // }
 
   Future<int> deleteUpdatedShop(int shopId) async {
     try {
-      print(updatedShopBox.containsKey(shopId).toString());
+      await mainLocalLog(
+        updatedShopBox.containsKey(shopId).toString(),
+      );
       await updatedShopBox.delete(shopId);
-      print('Updated Shop Deleted');
+      await mainLocalLog('Updated Shop Deleted');
       return 1;
     } catch (e) {
-      print('Shop Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Shop Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -102,10 +115,12 @@ class UpdatedShopFunc {
   Future<int> clearUpdatedShop() async {
     try {
       await updatedShopBox.clear();
-      print('All updated Shop cleared ✅');
+      await mainLocalLog('All updated Shop cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while clearing updated Shop ❌: $e');
+      await mainLocalLog(
+        'Error while clearing updated Shop ❌: $e',
+      );
       return 0;
     }
   }

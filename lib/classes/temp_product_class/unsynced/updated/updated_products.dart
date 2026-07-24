@@ -12,6 +12,6 @@ class UpdatedProducts extends HiveObject {
 
   UpdatedProducts({
     required this.product,
-    required this.includeQuantity,
+    this.includeQuantity = false,
   });
 }

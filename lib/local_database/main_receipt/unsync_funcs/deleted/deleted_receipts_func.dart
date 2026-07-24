@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_main_receipt/unsynced/deleted_customers/deleted_receipts.dart';
+import 'package:stockall/main.dart';
 
 class DeletedReceiptsFunc {
   static final DeletedReceiptsFunc instance =
@@ -18,7 +19,9 @@ class DeletedReceiptsFunc {
       DeletedReceiptsAdapter().typeId,
     )) {
       Hive.registerAdapter(DeletedReceiptsAdapter());
-      print('Deleted Receipts Adapter registered ✅');
+      await mainLocalLog(
+        'Deleted Receipts Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,14 @@ class DeletedReceiptsFunc {
           await Hive.openBox<DeletedReceipts>(
             deletedReceiptsBoxName,
           );
-      print('Deleted Receipts Box opened ✅');
+      await mainLocalLog('Deleted Receipts Box opened ✅');
     } else {
       _deletedReceiptsBox = Hive.box<DeletedReceipts>(
         deletedReceiptsBoxName,
       );
-      print('Deleted Receipts Box already open, reused ✅');
+      await mainLocalLog(
+        'Deleted Receipts Box already open, reused ✅',
+      );
     }
   }
 
@@ -57,10 +62,12 @@ class DeletedReceiptsFunc {
       for (var receipt in deletedReceipts) {
         await deletedReceiptsBox.add(receipt);
       }
-      print("Offline Deleted Receipts inserted ✅");
+      await mainLocalLog(
+        "Offline Deleted Receipts inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Deleted Receipts insertion failed ❌: $e',
       );
       return 0;
@@ -72,12 +79,12 @@ class DeletedReceiptsFunc {
   ) async {
     try {
       await deletedReceiptsBox.add(deletedReceipt);
-      print(
+      await mainLocalLog(
         'Offline Deleted Receipt inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Deleted Receipt insertion failed ❌: $e',
       );
       return 0;
@@ -87,10 +94,12 @@ class DeletedReceiptsFunc {
   Future<int> deletedDeletedReceipts(String uuid) async {
     try {
       await deletedReceiptsBox.delete(uuid);
-      print('Delete Receipt cleared ✅');
+      await mainLocalLog('Delete Receipt cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while Deleting Deleted Receipt ❌: $e');
+      await mainLocalLog(
+        'Error while Deleting Deleted Receipt ❌: $e',
+      );
       return 0;
     }
   }
@@ -98,10 +107,12 @@ class DeletedReceiptsFunc {
   Future<int> clearDeletedReceipts() async {
     try {
       await deletedReceiptsBox.clear();
-      print('All Deleted Receipts cleared ✅');
+      await mainLocalLog('All Deleted Receipts cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while clearing Deleted Receipts ❌: $e');
+      await mainLocalLog(
+        'Error while clearing Deleted Receipts ❌: $e',
+      );
       return 0;
     }
   }

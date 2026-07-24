@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_waybills/unsynced/updated/updated_waybills.dart';
+import 'package:stockall/main.dart';
 
 class UpdatedWaybillsFunc {
   static final UpdatedWaybillsFunc instance =
@@ -18,7 +19,9 @@ class UpdatedWaybillsFunc {
       UpdatedWaybillsAdapter().typeId,
     )) {
       Hive.registerAdapter(UpdatedWaybillsAdapter());
-      print('Updated Waybills Adapter registered ✅');
+      await mainLocalLog(
+        'Updated Waybills Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,14 @@ class UpdatedWaybillsFunc {
           await Hive.openBox<UpdatedWaybills>(
             updatedWaybillsBoxName,
           );
-      print('Updated Waybills Box opened ✅');
+      await mainLocalLog('Updated Waybills Box opened ✅');
     } else {
       _updatedWaybillsBox = Hive.box<UpdatedWaybills>(
         updatedWaybillsBoxName,
       );
-      print('Updated Waybills Box already open, reused ✅');
+      await mainLocalLog(
+        'Updated Waybills Box already open, reused ✅',
+      );
     }
   }
 
@@ -57,12 +62,12 @@ class UpdatedWaybillsFunc {
       updatedWaybillsBox.add(
         UpdatedWaybills(waybill: updatedWaybill.waybill),
       );
-      print(
+      await mainLocalLog(
         'Offline Updated Waybill inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Updated Waybill insertion failed ❌: $e',
       );
       return 0;
@@ -76,26 +81,30 @@ class UpdatedWaybillsFunc {
       updatedWaybillsBox.add(
         UpdatedWaybills(waybill: updatedWaybill.waybill),
       );
-      print(
+      await mainLocalLog(
         'Offline Updated Waybill Updated successfully ✅',
       );
       return 1;
     } catch (e) {
-      print('Offline Updated Waybill Update failed ❌: $e');
+      await mainLocalLog(
+        'Offline Updated Waybill Update failed ❌: $e',
+      );
       return 0;
     }
   }
 
   Future<int> deleteUpdatedWaybill(String uuid) async {
     try {
-      print(
+      await mainLocalLog(
         updatedWaybillsBox.containsKey(uuid).toString(),
       );
       await updatedWaybillsBox.delete(uuid);
-      print('Updated Waybill Deleted');
+      await mainLocalLog('Updated Waybill Deleted');
       return 1;
     } catch (e) {
-      print('Waybill Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Waybill Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -103,10 +112,12 @@ class UpdatedWaybillsFunc {
   Future<int> clearUpdatedWaybills() async {
     try {
       await updatedWaybillsBox.clear();
-      print('All updated Waybills cleared ✅');
+      await mainLocalLog('All updated Waybills cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while clearing updated Waybills ❌: $e');
+      await mainLocalLog(
+        'Error while clearing updated Waybills ❌: $e',
+      );
       return 0;
     }
   }

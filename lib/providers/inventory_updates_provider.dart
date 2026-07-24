@@ -34,10 +34,10 @@ class InventoryUpdatesProvider with ChangeNotifier {
       dateSet = date;
       rangeStartDate = null;
       rangeEndDate = null;
-      print('Date set: $date');
+      mainLocalLog('Date set: $date');
     } else {
       dateSet = null;
-      print('Date Cleared');
+      mainLocalLog('Date Cleared');
     }
     notifyListeners();
   }
@@ -48,7 +48,7 @@ class InventoryUpdatesProvider with ChangeNotifier {
   void setRange(DateTime rangeStart, DateTime endOfrange) {
     rangeStartDate = rangeStart;
     rangeEndDate = endOfrange;
-    print(
+    mainLocalLog(
       'Date Range set: Start: $rangeStart End: $endOfrange ',
     );
     dateSet = null;
@@ -142,7 +142,9 @@ class InventoryUpdatesProvider with ChangeNotifier {
             .eq('shop_id', shopId)
             .order('created_at', ascending: false);
         if (res.isEmpty) {
-          print('No Inventory Updates Returned');
+          await mainLocalLog(
+            'No Inventory Updates Returned',
+          );
           inventoryUpdates.clear();
           InventoryUpdatesFunc().clearInventoryUpdates();
           notifyListeners();
@@ -157,14 +159,14 @@ class InventoryUpdatesProvider with ChangeNotifier {
                 .toList();
         await InventoryUpdatesFunc()
             .insertAllInventoryUpdates(inventoryUpdates);
-        print(
+        await mainLocalLog(
           '✅✅ Inventory Updates Gotten Successfully Online',
         );
         notifyListeners();
 
         return inventoryUpdates;
       } catch (e) {
-        print(
+        await mainLocalLog(
           '❌❌ Inventory Updates Getting Online Failed: ${e.toString()}',
         );
         return [];
@@ -172,7 +174,7 @@ class InventoryUpdatesProvider with ChangeNotifier {
     } else {
       inventoryUpdates =
           InventoryUpdatesFunc().getInventoryUpdatess();
-      print(
+      await mainLocalLog(
         'Inventory Updates Gotten Successfully Offline',
       );
       notifyListeners();
@@ -184,7 +186,9 @@ class InventoryUpdatesProvider with ChangeNotifier {
   getInventoryUpdatesOffline() async {
     inventoryUpdates =
         InventoryUpdatesFunc().getInventoryUpdatess();
-    print('Inventory Updates Gotten Successfully Offline');
+    await mainLocalLog(
+      'Inventory Updates Gotten Successfully Offline',
+    );
     notifyListeners();
     return inventoryUpdates;
   }
@@ -212,7 +216,9 @@ class InventoryUpdatesProvider with ChangeNotifier {
         syncData();
         return 1;
       } catch (e) {
-        print('Offline Creating Failed: ${e.toString()}');
+        await mainLocalLog(
+          'Offline Creating Failed: ${e.toString()}',
+        );
         return 0;
       }
     } else {
@@ -251,17 +257,23 @@ class InventoryUpdatesProvider with ChangeNotifier {
                 .insert(payload)
                 .select();
 
-        print(
+        await mainLocalLog(
           '${data.length} Inventory Update items added successfully ✅',
         );
         await CreatedInventoryUpdatesFunc()
             .clearInventoryUpdate();
-        print('Unsynced Inventory Updates Cleared');
-        print('Mounted, refreshing Inventory Updates ✅');
+        await mainLocalLog(
+          'Unsynced Inventory Updates Cleared',
+        );
+        await mainLocalLog(
+          'Mounted, refreshing Inventory Updates ✅',
+        );
         await getInventoryUpdates();
       }
     } catch (e) {
-      print('Batch Inventory Updates insert failed ❌: $e');
+      await mainLocalLog(
+        'Batch Inventory Updates insert failed ❌: $e',
+      );
       await createErrorLog(
         error:
             'Batch Inventory Updates insert failed ❌: $e',

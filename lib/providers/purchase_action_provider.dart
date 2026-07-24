@@ -204,7 +204,7 @@ class PurchaseActionProvider extends ChangeNotifier {
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error Creating Purchase Action: ${e.toString()}',
       );
       return 0;
@@ -259,7 +259,7 @@ class PurchaseActionProvider extends ChangeNotifier {
         ),
       );
     } catch (e) {
-      print(
+      mainLocalLog(
         'Error Initiating Edit Purchase: ${e.toString()}',
       );
     }

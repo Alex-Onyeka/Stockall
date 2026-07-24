@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_inventory_updates/unsynced/created_inventory_updates_class.dart';
+import 'package:stockall/main.dart';
 
 class CreatedInventoryUpdatesFunc {
   static final CreatedInventoryUpdatesFunc instance =
@@ -19,7 +20,7 @@ class CreatedInventoryUpdatesFunc {
       Hive.registerAdapter(
         CreatedInventoryUpdatesClassAdapter(),
       );
-      print(
+      await mainLocalLog(
         'Created Inventory Updates Class Adapter registered ✅',
       );
     }
@@ -29,13 +30,15 @@ class CreatedInventoryUpdatesFunc {
           await Hive.openBox<CreatedInventoryUpdatesClass>(
             createdInventoryUpdatesBoxName,
           );
-      print('Created Inventory Update Box opened ✅');
+      await mainLocalLog(
+        'Created Inventory Update Box opened ✅',
+      );
     } else {
       _createdInventoryUpdatesBox =
           Hive.box<CreatedInventoryUpdatesClass>(
             createdInventoryUpdatesBoxName,
           );
-      print(
+      await mainLocalLog(
         'Created Inventory Update Box already open, reused ✅',
       );
     }
@@ -68,10 +71,12 @@ class CreatedInventoryUpdatesFunc {
           update,
         );
       }
-      print("Offline Created Inventory Update inserted ✅");
+      await mainLocalLog(
+        "Offline Created Inventory Update inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Inventory Update insertion failed ❌: $e',
       );
       return 0;
@@ -86,12 +91,12 @@ class CreatedInventoryUpdatesFunc {
         createdInventoryUpdates.inventoryUpdate.uuid,
         createdInventoryUpdates,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Inventory Update inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Inventory Update insertion failed ❌: $e',
       );
       return 0;
@@ -101,10 +106,12 @@ class CreatedInventoryUpdatesFunc {
   Future<int> clearInventoryUpdate() async {
     try {
       await createdInventoryUpdatesBox.clear();
-      print('All Created Inventory Updates cleared ✅');
+      await mainLocalLog(
+        'All Created Inventory Updates cleared ✅',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error while clearing Created Inventory Updates ❌: $e',
       );
       return 0;

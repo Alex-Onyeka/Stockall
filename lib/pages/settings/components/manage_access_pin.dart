@@ -276,7 +276,7 @@ class _ManagePinWidgetState extends State<ManagePinWidget> {
                                 //       );
                                 //     },
                                 //   );
-                                //   print(
+                                //   await mainLocalLog(
                                 //     "Pin Code Now: ${confirmPinController.text}",
                                 //   );
                                 //   setState(() {

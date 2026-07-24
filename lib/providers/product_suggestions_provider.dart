@@ -15,7 +15,7 @@
 //   void clearSuggestionsMain() {
 //     _suggestions.clear();
 //     tempSuggestions.clear();
-//     print('Suggestions Cleared');
+//     await mainLocalLog('Suggestions Cleared');
 //     notifyListeners();
 //   }
 
@@ -46,13 +46,13 @@
 
 //   void clearSuggestions() {
 //     tempSuggestions.clear();
-//     print('Suugestions Cleared');
+//     await mainLocalLog('Suugestions Cleared');
 //     notifyListeners();
 //   }
 
 //   /// Load all suggestions for a specific shop
 //   Future<void> loadSuggestions(int shopId) async {
-//     // print('Start Loading Provider');
+//     // await mainLocalLog('Start Loading Provider');
 //     bool isOnline = await ConnectivityProvider().isOnline();
 
 //     if (isOnline) {
@@ -61,7 +61,7 @@
 //           .select()
 //           .eq('shop_id', shopId)
 //           .order('name', ascending: false);
-//       // print('Loaded Provider $res');
+//       // await mainLocalLog('Loaded Provider $res');
 
 //       _suggestions =
 //           (res as List)
@@ -83,7 +83,7 @@
 
 //   Future<void> createSuggestions() async {
 //     if (tempSuggestions.isEmpty) {
-//       print('No suggestions to insert.');
+//       await mainLocalLog('No suggestions to insert.');
 //       return;
 //     }
 
@@ -145,7 +145,7 @@
 //             .insert(toInsert);
 //       }
 
-//       print(
+//       await mainLocalLog(
 //         'Inserted ${toInsert.length}, Updated ${toUpdate.length}',
 //       );
 //     } else {}

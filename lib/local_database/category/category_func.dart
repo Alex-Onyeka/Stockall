@@ -19,7 +19,7 @@ class CategoryFunc {
     await CreatedCategoriesFunc().init();
     await DeletedCategoriesFunc().init();
     await UpdatedCategoriesFunc().init();
-    print('Category Box Initialized');
+    await mainLocalLog('Category Box Initialized');
   }
 
   List<CategoryClass> getCategories() {
@@ -37,10 +37,12 @@ class CategoryFunc {
       for (var category in category) {
         await categoryBox.put(category.uuid, category);
       }
-      print('Offline Success');
+      await mainLocalLog('Offline Success');
       return 1;
     } catch (e) {
-      print('Offline Exp Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Offline Exp Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -48,10 +50,10 @@ class CategoryFunc {
   Future<int> createCategory(CategoryClass category) async {
     try {
       await categoryBox.put(category.uuid, category);
-      print('Offline Category Created');
+      await mainLocalLog('Offline Category Created');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Category Creation Failed: ${e.toString()}',
       );
       return 0;
@@ -64,10 +66,10 @@ class CategoryFunc {
     );
     try {
       await categoryBox.put(category.uuid, category);
-      print('Offline Category Updated');
+      await mainLocalLog('Offline Category Updated');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Category Update Failed: ${e.toString()}',
       );
       return 0;
@@ -77,10 +79,10 @@ class CategoryFunc {
   Future<int> deleteCategory(String uuid) async {
     try {
       await categoryBox.delete(uuid);
-      print('Offline Category Deleted');
+      await mainLocalLog('Offline Category Deleted');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Category Delete Failed: ${e.toString()}',
       );
       return 0;
@@ -90,10 +92,12 @@ class CategoryFunc {
   Future<int> clearCategories() async {
     try {
       await categoryBox.clear();
-      print('Offline Category Cleared');
+      await mainLocalLog('Offline Category Cleared');
       return 1;
     } catch (e) {
-      print('Category Clear Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Category Clear Failed: ${e.toString()}',
+      );
       return 0;
     }
   }

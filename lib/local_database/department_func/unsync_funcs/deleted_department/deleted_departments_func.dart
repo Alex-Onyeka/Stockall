@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_departments_class/unsynced/deleted_departments/deleted_departments.dart';
+import 'package:stockall/main.dart';
 
 class DeletedDepartmentsFunc {
   static final DeletedDepartmentsFunc instance =
@@ -18,7 +19,9 @@ class DeletedDepartmentsFunc {
       DeletedDepartmentsAdapter().typeId,
     )) {
       Hive.registerAdapter(DeletedDepartmentsAdapter());
-      print('Deleted Departments Adapter registered ✅');
+      await mainLocalLog(
+        'Deleted Departments Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,14 @@ class DeletedDepartmentsFunc {
           await Hive.openBox<DeletedDepartments>(
             deletedDepartmentsBoxName,
           );
-      print('Deleted Departments Box opened ✅');
+      await mainLocalLog(
+        'Deleted Departments Box opened ✅',
+      );
     } else {
       _deletedDepartmentsBox = Hive.box<DeletedDepartments>(
         deletedDepartmentsBoxName,
       );
-      print(
+      await mainLocalLog(
         'Deleted Departments Box already open, reused ✅',
       );
     }
@@ -59,10 +64,12 @@ class DeletedDepartmentsFunc {
       for (var department in deletedDepartments) {
         await deletedDepartmentsBox.add(department);
       }
-      print("Offline Deleted Departments inserted ✅");
+      await mainLocalLog(
+        "Offline Deleted Departments inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Deleted Departments insertion failed ❌: $e',
       );
       return 0;
@@ -74,12 +81,12 @@ class DeletedDepartmentsFunc {
   ) async {
     try {
       await deletedDepartmentsBox.add(deletedDepartment);
-      print(
+      await mainLocalLog(
         'Offline Deleted Department inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Deleted Department insertion failed ❌: $e',
       );
       return 0;
@@ -89,10 +96,12 @@ class DeletedDepartmentsFunc {
   Future<int> clearDeletedDepartments() async {
     try {
       await deletedDepartmentsBox.clear();
-      print('All Deleted Departments cleared ✅');
+      await mainLocalLog(
+        'All Deleted Departments cleared ✅',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error while clearing Deleted Departments ❌: $e',
       );
       return 0;

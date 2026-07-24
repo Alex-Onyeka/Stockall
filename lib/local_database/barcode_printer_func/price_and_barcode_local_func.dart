@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_generated_prints/temp_price_and_barcode_printer_class%20copy/price_and_barcode_printer_local.dart';
 import 'package:stockall/classes/temp_generated_prints/temp_price_and_barcode_printer_class%20copy/price_and_barcode_printer_settings/price_and_barcode_printer_settings.dart';
+import 'package:stockall/main.dart';
 
 class PriceAndBarcodePrinterLocalFunc {
   static final PriceAndBarcodePrinterLocalFunc instance =
@@ -22,7 +23,7 @@ class PriceAndBarcodePrinterLocalFunc {
     priceAndBarcodePrinterLocalBox = await Hive.openBox(
       priceAndBarcodePrinterLocalBoxName,
     );
-    print('✅ Barcode Printer Box Initialized');
+    await mainLocalLog('✅ Barcode Printer Box Initialized');
   }
 
   PriceAndBarcodePrinterLocal?
@@ -41,10 +42,12 @@ class PriceAndBarcodePrinterLocalFunc {
         priceBarcodeAndPrinter.printer.name,
         priceBarcodeAndPrinter,
       );
-      print('priceBarcodeAndPrinter inserted Success');
+      await mainLocalLog(
+        'priceBarcodeAndPrinter inserted Success',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         '❌❌ Insert priceBarcodeAndPrinter Offline Error: ${e.toString()}',
       );
       return 0;
@@ -53,6 +56,8 @@ class PriceAndBarcodePrinterLocalFunc {
 
   Future clearpriceBarcodeAndPrinters() async {
     await priceAndBarcodePrinterLocalBox.clear();
-    print('Offline priceBarcodeAndPrinter Cleared');
+    await mainLocalLog(
+      'Offline priceBarcodeAndPrinter Cleared',
+    );
   }
 }

@@ -97,10 +97,10 @@ class DataProvider extends ChangeNotifier {
       if (searchNode.hasFocus) {
         searchNode.removeListener(keepNodeFocus);
         unFocusSearchNode();
-        print('Search Node has Listners');
+        mainLocalLog('Search Node has Listners');
       } else {
         timer.cancel();
-        print('Search Node Does not have Listners');
+        mainLocalLog('Search Node Does not have Listners');
         notifyListeners();
       }
     });
@@ -122,7 +122,7 @@ class DataProvider extends ChangeNotifier {
 
   void toggleIsLoading(bool value) {
     isLoading = value;
-    print('Loading: ${value.toString()}');
+    mainLocalLog('Loading: ${value.toString()}');
     notifyListeners();
   }
 
@@ -144,7 +144,9 @@ class DataProvider extends ChangeNotifier {
     await returnEventsLogProvider().createLog(
       returnEventsLogProvider().productAdapter(product, 1),
     );
-    print('Offline Product inserted Successfully');
+    await mainLocalLog(
+      'Offline Product inserted Successfully',
+    );
     await getProductsOffline(
       returnShopProvider().userShop()!.shopId!,
     );
@@ -170,7 +172,8 @@ class DataProvider extends ChangeNotifier {
                 .from('products')
                 .insert(
                   item.product.toJson(
-                    isIncludeQuantity: item.includeQuantity,
+                    isIncludeQuantity:
+                        item.includeQuantity ?? false,
                   ),
                 )
                 .select();
@@ -191,18 +194,22 @@ class DataProvider extends ChangeNotifier {
           }
         }
 
-        print('$count items added successfully ✅');
+        await mainLocalLog(
+          '$count items added successfully ✅',
+        );
         // await CreatedProductFunc().clearProducts();
-        print('Mounted, refreshing products ✅');
+        await mainLocalLog(
+          'Mounted, refreshing products ✅',
+        );
         await getProducts(
           returnShopProvider().userShop()!.shopId!,
         );
 
         clearFields();
-        print('Unsynced Products Cleared');
+        await mainLocalLog('Unsynced Products Cleared');
       }
     } catch (e) {
-      print('Batch Items insert failed ❌: $e');
+      await mainLocalLog('Batch Items insert failed ❌: $e');
       await createErrorLog(
         error: 'Batch Items insert failed ❌: $e',
       );
@@ -230,22 +237,26 @@ class DataProvider extends ChangeNotifier {
                 .inFilter('uuid', uuids)
                 .select();
 
-        print(
+        await mainLocalLog(
           '${data.length} items deleted successfully ✅',
         );
 
         await DeletedProductsFunc().clearDeletedProducts();
 
-        print('Mounted, refreshing products ✅');
+        await mainLocalLog(
+          'Mounted, refreshing products ✅',
+        );
         await getProducts(
           returnShopProvider().userShop()!.shopId!,
         );
 
         clearFields();
-        print('Unsynced deleted products cleared');
+        await mainLocalLog(
+          'Unsynced deleted products cleared',
+        );
       }
     } catch (e) {
-      print('Batch Items delete failed ❌: $e');
+      await mainLocalLog('Batch Items delete failed ❌: $e');
       await createErrorLog(
         error: 'Batch Items delete failed ❌: $e',
       );
@@ -255,7 +266,7 @@ class DataProvider extends ChangeNotifier {
   Future<void> updateProductsSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
-      print(
+      await mainLocalLog(
         UpdatedProductsFunc()
             .getProducts()
             .length
@@ -274,7 +285,9 @@ class DataProvider extends ChangeNotifier {
               DateTime.now().toLocal();
 
           if (localProduct.uuid == null) {
-            print('Local Product Uuid is Null');
+            await mainLocalLog(
+              'Local Product Uuid is Null',
+            );
           }
           final remoteData =
               await supabase
@@ -293,7 +306,7 @@ class DataProvider extends ChangeNotifier {
                           updated.includeQuantity,
                     ),
                   );
-              print(
+              await mainLocalLog(
                 'Inserted product with uuid ${localProduct.uuid}',
               );
               await UpdatedProductsFunc()
@@ -325,10 +338,12 @@ class DataProvider extends ChangeNotifier {
             localProduct.updatedAt =
                 (localProduct.updatedAt ?? DateTime.now())
                     .toUtc(); // ✅ keep both UTC
-            print(
+            await mainLocalLog(
               "Local updatedAt: ${localProduct.updatedAt}",
             );
-            print("Remote updatedAt: $remoteUpdatedAt");
+            await mainLocalLog(
+              "Remote updatedAt: $remoteUpdatedAt",
+            );
 
             if (remoteUpdatedAt == null ||
                 localProduct.updatedAt!.isAfter(
@@ -344,7 +359,7 @@ class DataProvider extends ChangeNotifier {
                       ),
                     )
                     .eq('uuid', localProduct.uuid!);
-                print(
+                await mainLocalLog(
                   'Updated product with uuid ${localProduct.uuid}',
                 );
                 await UpdatedProductsFunc()
@@ -364,7 +379,7 @@ class DataProvider extends ChangeNotifier {
                 );
               }
             } else {
-              print(
+              await mainLocalLog(
                 'Skipped product ${localProduct.uuid}, remote is newer ✅',
               );
             }
@@ -372,15 +387,19 @@ class DataProvider extends ChangeNotifier {
         }
 
         // await UpdatedProductsFunc().clearupdatedProducts();
-        print('Unsynced updated products cleared');
-        print('Mounted, refreshing products ✅');
+        await mainLocalLog(
+          'Unsynced updated products cleared',
+        );
+        await mainLocalLog(
+          'Mounted, refreshing products ✅',
+        );
         await getProducts(
           returnShopProvider().userShop()!.shopId!,
         );
         clearFields();
       }
     } catch (e) {
-      print('Batch Items update failed ❌: $e');
+      await mainLocalLog('Batch Items update failed ❌: $e');
       await createErrorLog(
         error: 'Batch Items Update failed ❌: $e',
       );
@@ -466,7 +485,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnCategoriesProvider()
                 .createCategoriesSync();
-            print('Finished Syncing Created Categories');
+            await mainLocalLog(
+              'Finished Syncing Created Categories',
+            );
             setSyncProgress(1);
           }
           if (UpdatedCategoriesFunc()
@@ -475,7 +496,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnCategoriesProvider()
                 .updateCategoriesSync();
-            print('Finished Syncing Updated Categories');
+            await mainLocalLog(
+              'Finished Syncing Updated Categories',
+            );
             setSyncProgress(2);
           }
           if (DeletedCategoriesFunc()
@@ -484,7 +507,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnCategoriesProvider()
                 .deleteCategoriesSync();
-            print('Finished Syncing Deleted Categories');
+            await mainLocalLog(
+              'Finished Syncing Deleted Categories',
+            );
             setSyncProgress(3);
           }
           if (CreatedDepartmentsFunc()
@@ -493,7 +518,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await DepartmentProvider()
                 .createDepartmentsSync();
-            print('Finished Syncing Created Departments');
+            await mainLocalLog(
+              'Finished Syncing Created Departments',
+            );
             setSyncProgress(4);
           }
           if (UpdatedDepartmentFunc()
@@ -502,7 +529,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await DepartmentProvider()
                 .updateDepartmentsSync();
-            print('Finished Syncing Updated Departments');
+            await mainLocalLog(
+              'Finished Syncing Updated Departments',
+            );
             setSyncProgress(5);
           }
           if (DeletedDepartmentsFunc()
@@ -511,7 +540,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await DepartmentProvider()
                 .deleteDepartmentsSync();
-            print('Finished Syncing Deleted Departments');
+            await mainLocalLog(
+              'Finished Syncing Deleted Departments',
+            );
             setSyncProgress(6);
           }
           if (CreatedStorageProductsFunc()
@@ -520,7 +551,7 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnStorageProductProvider()
                 .createStorageProductsSync();
-            print(
+            await mainLocalLog(
               'Finished Syncing Created StorageProductss',
             );
             setSyncProgress(7);
@@ -531,7 +562,7 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnStorageProductProvider()
                 .updateStorageProductsSync();
-            print(
+            await mainLocalLog(
               'Finished Syncing Updated StorageProductss',
             );
             setSyncProgress(8);
@@ -542,7 +573,7 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnStorageProductProvider()
                 .deleteStorageProductsSync();
-            print(
+            await mainLocalLog(
               'Finished Syncing Deleted StorageProductss',
             );
             setSyncProgress(9);
@@ -552,7 +583,9 @@ class DataProvider extends ChangeNotifier {
                   .isNotEmpty &&
               isOnline) {
             await createProductsSync();
-            print('Finished Syncing Created Products');
+            await mainLocalLog(
+              'Finished Syncing Created Products',
+            );
             setSyncProgress(10);
           }
           if (DeletedProductsFunc()
@@ -560,7 +593,9 @@ class DataProvider extends ChangeNotifier {
                   .isNotEmpty &&
               isOnline) {
             await deleteProductsSync();
-            print('Finished Syncing Deleted Products');
+            await mainLocalLog(
+              'Finished Syncing Deleted Products',
+            );
             setSyncProgress(11);
           }
           if (UpdatedProductsFunc()
@@ -568,13 +603,15 @@ class DataProvider extends ChangeNotifier {
                   .isNotEmpty &&
               isOnline) {
             await updateProductsSync();
-            print('Finished Syncing Updated Products');
+            await mainLocalLog(
+              'Finished Syncing Updated Products',
+            );
             setSyncProgress(12);
           }
           // if (SalesProductFunc().getProducts().isNotEmpty &&
           //     isOnline) {
           //   await salesProductsSync();
-          //   print('Finished Syncing Sales Products');
+          //   await mainLocalLog('Finished Syncing Sales Products');
           //   setSyncProgress(13);
           // }
           if (QuantityUpdateFunc()
@@ -583,7 +620,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnQuantityUpdateProvider()
                 .quantityUpdateSync();
-            print('Finished Syncing Quantity Updates');
+            await mainLocalLog(
+              'Finished Syncing Quantity Updates',
+            );
             setSyncProgress(13);
           }
           if (CreatedExpensesFunc()
@@ -592,7 +631,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnExpensesProviderSingle()
                 .createExpensesSync();
-            print('Finished Syncing Created Expenses');
+            await mainLocalLog(
+              'Finished Syncing Created Expenses',
+            );
             setSyncProgress(14);
           }
           if (UpdatedExpensesFunc()
@@ -601,7 +642,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnExpensesProviderSingle()
                 .updateExpensesSync();
-            print('Finished Syncing Updated Expenses');
+            await mainLocalLog(
+              'Finished Syncing Updated Expenses',
+            );
             setSyncProgress(15);
           }
           if (DeletedExpensesFunc()
@@ -610,7 +653,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnExpensesProviderSingle()
                 .deleteExpensesSync();
-            print('Finished Syncing Deleted Expenses');
+            await mainLocalLog(
+              'Finished Syncing Deleted Expenses',
+            );
             setSyncProgress(16);
           }
           if (CreatedCustomersFunc()
@@ -619,7 +664,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnCustomersSingle()
                 .createCustomersSync();
-            print('Finished Syncing Created Customer');
+            await mainLocalLog(
+              'Finished Syncing Created Customer',
+            );
             setSyncProgress(17);
           }
           if (UpdatedCustomersFunc()
@@ -628,7 +675,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnCustomersSingle()
                 .updateCustomersSync();
-            print('Finished Syncing Updated Customers');
+            await mainLocalLog(
+              'Finished Syncing Updated Customers',
+            );
             setSyncProgress(18);
           }
           if (DeletedCustomersFunc()
@@ -637,7 +686,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnCustomersSingle()
                 .deletedCustomersSync();
-            print('Finished Syncing Deleted Customers');
+            await mainLocalLog(
+              'Finished Syncing Deleted Customers',
+            );
             setSyncProgress(19);
           }
           if (CreatedSubStaffFunc()
@@ -646,7 +697,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnSubStaffProvider()
                 .createSubStaffSync();
-            print('Finished Syncing Created Sub Staffs');
+            await mainLocalLog(
+              'Finished Syncing Created Sub Staffs',
+            );
             setSyncProgress(20);
           }
           if (UpdatedSubStaffFunc()
@@ -655,7 +708,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnSubStaffProvider()
                 .updateSubStaffSync();
-            print('Finished Syncing Updated Sub Staffs');
+            await mainLocalLog(
+              'Finished Syncing Updated Sub Staffs',
+            );
             setSyncProgress(21);
           }
           if (DeletedSubStaffFunc()
@@ -664,7 +719,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnSubStaffProvider()
                 .deleteSubStaffSync();
-            print('Finished Syncing Deleted Sub Staffs');
+            await mainLocalLog(
+              'Finished Syncing Deleted Sub Staffs',
+            );
             setSyncProgress(22);
           }
           if (CreatedSupplierFunc()
@@ -673,7 +730,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnSuppliersProvider()
                 .createSupplierSync();
-            print('Finished Syncing Created Suppliers');
+            await mainLocalLog(
+              'Finished Syncing Created Suppliers',
+            );
             setSyncProgress(23);
           }
           if (UpdatedSupplierFunc()
@@ -682,7 +741,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnSuppliersProvider()
                 .updateSuppliersSync();
-            print('Finished Syncing Updated Suppliers');
+            await mainLocalLog(
+              'Finished Syncing Updated Suppliers',
+            );
             setSyncProgress(24);
           }
           if (DeletedSupplierFunc()
@@ -691,7 +752,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnSuppliersProvider()
                 .deletedSuppliersSync();
-            print('Finished Syncing Deleted Suppliers');
+            await mainLocalLog(
+              'Finished Syncing Deleted Suppliers',
+            );
             setSyncProgress(25);
           }
           if (DeletedInvoicesFunc()
@@ -700,7 +763,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnInvoicesProvider()
                 .deleteInvoicesSync();
-            print('Finished Syncing Deleted Invoices');
+            await mainLocalLog(
+              'Finished Syncing Deleted Invoices',
+            );
             setSyncProgress(26);
           }
           if (CreatedInvoicesFunc()
@@ -709,7 +774,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnInvoicesProvider()
                 .createInvoicesSync();
-            print('Finished Syncing Created Invoices');
+            await mainLocalLog(
+              'Finished Syncing Created Invoices',
+            );
             setSyncProgress(27);
           }
           if (UpdatedInvoicesFunc()
@@ -718,7 +785,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnInvoicesProvider()
                 .updateInvoicesSync();
-            print('Finished Syncing Updated Invoices');
+            await mainLocalLog(
+              'Finished Syncing Updated Invoices',
+            );
             setSyncProgress(28);
           }
           if (DeletedReceiptsFunc()
@@ -727,7 +796,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnReceiptProviderSingle()
                 .deleteReceiptsSync();
-            print('Finished Syncing Deleted Receipts');
+            await mainLocalLog(
+              'Finished Syncing Deleted Receipts',
+            );
             setSyncProgress(29);
           }
           if (CreatedReceiptsFunc()
@@ -736,7 +807,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnReceiptProviderSingle()
                 .createReceiptsSync();
-            print('Finished Syncing Created Receipts');
+            await mainLocalLog(
+              'Finished Syncing Created Receipts',
+            );
             setSyncProgress(30);
           }
           if (UpdatedReceiptsFunc()
@@ -745,7 +818,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnReceiptProviderSingle()
                 .updateReceiptsSync();
-            print('Finished Syncing Created Receipts');
+            await mainLocalLog(
+              'Finished Syncing Created Receipts',
+            );
             setSyncProgress(31);
           }
           if (CreatedRecordsFunc()
@@ -754,7 +829,7 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnReceiptProviderSingle()
                 .createRecordsSync();
-            print(
+            await mainLocalLog(
               'Finished Syncing Created Records Customers',
             );
             setSyncProgress(32);
@@ -764,14 +839,18 @@ class DataProvider extends ChangeNotifier {
                   .isNotEmpty &&
               isOnline) {
             await returnShopProvider().updateShopSync();
-            print('Finished Syncing Created Receipts');
+            await mainLocalLog(
+              'Finished Syncing Created Receipts',
+            );
             setSyncProgress(33);
           }
           if (CreatedShopLogosFunc().getCreatedLogo() !=
                   null &&
               isOnline) {
             await returnShopProvider().uploadShopLogoSync();
-            print('Finished Syncing Created Logo');
+            await mainLocalLog(
+              'Finished Syncing Created Logo',
+            );
             setSyncProgress(34);
           }
           if (CreatedEventsLogFunc()
@@ -780,7 +859,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             // await returnEventsLogProvider().eventsLogSync();
             await CreatedEventsLogFunc().clearEvents();
-            print('Finished Syncing Created Events Log');
+            await mainLocalLog(
+              'Finished Syncing Created Events Log',
+            );
             setSyncProgress(35);
           }
           if (CreatedInventoryUpdatesFunc()
@@ -789,7 +870,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnInventoryUpdatesProvider()
                 .inventoryUpdatesSync();
-            print('Finished Syncing Inventory Updates');
+            await mainLocalLog(
+              'Finished Syncing Inventory Updates',
+            );
             setSyncProgress(36);
           }
           if (CreatedPurchasesFunc()
@@ -798,7 +881,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnPurchaseProvider()
                 .createPurchasesSync();
-            print('Finished Syncing Created Purchasess');
+            await mainLocalLog(
+              'Finished Syncing Created Purchasess',
+            );
             setSyncProgress(37);
           }
           if (UpdatedPurchasesFunc()
@@ -807,7 +892,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnPurchaseProvider()
                 .updatePurchaseSync();
-            print('Finished Syncing Updated Purchasess');
+            await mainLocalLog(
+              'Finished Syncing Updated Purchasess',
+            );
             setSyncProgress(38);
           }
           if (DeletedPurchasesFunc()
@@ -816,7 +903,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnPurchaseProvider()
                 .deletePurchasesSync();
-            print('Finished Syncing Deleted Purchasess');
+            await mainLocalLog(
+              'Finished Syncing Deleted Purchasess',
+            );
             setSyncProgress(39);
           }
           if (CreatedItemPurchaseFunc()
@@ -825,7 +914,7 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnPurchaseProvider()
                 .createRecordsSync();
-            print(
+            await mainLocalLog(
               'Finished Syncing Created Purchase Item Records',
             );
             setSyncProgress(40);
@@ -836,45 +925,53 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnPurchaseProvider()
                 .deleteItemRecordsSync();
-            print(
+            await mainLocalLog(
               'Finished Syncing Deleted Purchase Item Records',
             );
             setSyncProgress(41);
           }
-          if (CreatedWaybillsFunc()
-                  .getWaybills()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnWaybillProvider()
-                .createWaybillsSync();
-            print('Finished Syncing Created Waybills');
-            setSyncProgress(42);
-          }
-          if (UpdatedWaybillsFunc()
-                  .getWaybillIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnWaybillProvider()
-                .updateWaybillSync();
-            print('Finished Syncing Updated Waybills');
-            setSyncProgress(43);
-          }
-          if (DeletedWaybillsFunc()
-                  .getWaybillIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnWaybillProvider()
-                .deleteWaybillsSync();
-            print('Finished Syncing Deleted Waybills');
-            setSyncProgress(44);
-          }
+          // if (CreatedWaybillsFunc()
+          //         .getWaybills()
+          //         .isNotEmpty &&
+          //     isOnline) {
+          //   await returnWaybillProvider()
+          //       .createWaybillsSync();
+          //   await mainLocalLog(
+          //     'Finished Syncing Created Waybills',
+          //   );
+          //   setSyncProgress(42);
+          // }
+          // if (UpdatedWaybillsFunc()
+          //         .getWaybillIds()
+          //         .isNotEmpty &&
+          //     isOnline) {
+          //   await returnWaybillProvider()
+          //       .updateWaybillSync();
+          //   await mainLocalLog(
+          //     'Finished Syncing Updated Waybills',
+          //   );
+          //   setSyncProgress(43);
+          // }
+          // if (DeletedWaybillsFunc()
+          //         .getWaybillIds()
+          //         .isNotEmpty &&
+          //     isOnline) {
+          //   await returnWaybillProvider()
+          //       .deleteWaybillsSync();
+          //   await mainLocalLog(
+          //     'Finished Syncing Deleted Waybills',
+          //   );
+          //   setSyncProgress(44);
+          // }
           if (CreatedItemHistoriesFunc()
                   .getCreatedItemHistoriess()
                   .isNotEmpty &&
               isOnline) {
             await returnItemHistoryProvider()
                 .itemHistoriesSync();
-            print('Finished Syncing Item Histories');
+            await mainLocalLog(
+              'Finished Syncing Item Histories',
+            );
             setSyncProgress(45);
           }
           if (CreatedErrorLogFunc()
@@ -883,7 +980,9 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             // await returnErrorLogProvider().errorsLogSync();
             await CreatedErrorLogFunc().clearError();
-            print('Finished Syncing Created Error Logs');
+            await mainLocalLog(
+              'Finished Syncing Created Error Logs',
+            );
             // setSyncProgress(44);
           }
 
@@ -1095,7 +1194,7 @@ class DataProvider extends ChangeNotifier {
 
   void clearProducts() {
     productListMain.clear();
-    print('Products Cleared');
+    mainLocalLog('Products Cleared');
     notifyListeners();
   }
 
@@ -1119,7 +1218,7 @@ class DataProvider extends ChangeNotifier {
     int shopId,
   ) async {
     bool isOnline = await connectivity.isOnline();
-    print('✅✅ Products List Cleared');
+    await mainLocalLog('✅✅ Products List Cleared');
     if (isOnline && ProductsFunc().isSynced()) {
       final data = await supabase
           .from('products')
@@ -1133,7 +1232,7 @@ class DataProvider extends ChangeNotifier {
                 : 1000,
           );
 
-      print('Items gotten: ${data.length}');
+      await mainLocalLog('Items gotten: ${data.length}');
 
       productListMain =
           (data as List)
@@ -1146,7 +1245,9 @@ class DataProvider extends ChangeNotifier {
           b.name.toLowerCase(),
         ),
       );
-      print('Product List Set: ${productListMain.length}');
+      await mainLocalLog(
+        'Product List Set: ${productListMain.length}',
+      );
       if (data.length > 999) {
         final data2 = await supabase
             .from('products')
@@ -1159,7 +1260,9 @@ class DataProvider extends ChangeNotifier {
                   ? (allowedRangeItems ?? 0) - 1
                   : 2000,
             );
-        print('Items 2 gotten: ${data2.length}');
+        await mainLocalLog(
+          'Items 2 gotten: ${data2.length}',
+        );
         productListMain.addAll(
           (data2 as List)
               .map(
@@ -1172,7 +1275,7 @@ class DataProvider extends ChangeNotifier {
             b.name.toLowerCase(),
           ),
         );
-        print(
+        await mainLocalLog(
           'Product List 2 Set: ${productListMain.length}',
         );
 
@@ -1183,7 +1286,9 @@ class DataProvider extends ChangeNotifier {
               .eq('shop_id', shopId)
               .order('name', ascending: true)
               .range(2001, allowedRangeItems ?? 3000);
-          print('Items 3 gotten: ${data3.length}');
+          await mainLocalLog(
+            'Items 3 gotten: ${data3.length}',
+          );
           productListMain.addAll(
             (data3 as List)
                 .map(
@@ -1197,7 +1302,7 @@ class DataProvider extends ChangeNotifier {
               b.name.toLowerCase(),
             ),
           );
-          print(
+          await mainLocalLog(
             'Product List 3 Set: ${productListMain.length}',
           );
         }
@@ -1221,7 +1326,7 @@ class DataProvider extends ChangeNotifier {
         productListMain,
       );
     } else {
-      print(
+      await mainLocalLog(
         "Offline Data Gotten: ${ProductsFunc().getProducts().length}",
       );
       productListMain = ProductsFunc().getProducts();
@@ -1268,7 +1373,7 @@ class DataProvider extends ChangeNotifier {
     bool? isMultipleUpdate,
   }) async {
     try {
-      print(product.isManaged.toString());
+      await mainLocalLog(product.isManaged.toString());
       var res = await ProductsFunc().updateProduct(product);
       if (res == 1) {
         if (isQuantityUpdate == false) {
@@ -1338,7 +1443,9 @@ class DataProvider extends ChangeNotifier {
       }
     } catch (e) {
       notifyListeners();
-      print("Error Updating Product: ${e.toString()}");
+      await mainLocalLog(
+        "Error Updating Product: ${e.toString()}",
+      );
       return null;
     }
   }
@@ -1375,7 +1482,7 @@ class DataProvider extends ChangeNotifier {
       await UpdatedProductsFunc().deleteUpdatedProduct(
         containsUpdated.first.product.uuid!,
       );
-      print('Deleted Update Log');
+      await mainLocalLog('Deleted Update Log');
     }
     await returnEventsLogProvider().createLog(
       returnEventsLogProvider(
@@ -2030,7 +2137,7 @@ class DataProvider extends ChangeNotifier {
       syncData();
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         "Error Deleting Multiple Products: ${e.toString()}",
       );
       return 0;
@@ -2068,7 +2175,7 @@ class DataProvider extends ChangeNotifier {
       return 1;
       // }
     } catch (e) {
-      print(
+      await mainLocalLog(
         "Error Duplicating Multiple Products: ${e.toString()}",
       );
       return 0;
@@ -2106,7 +2213,7 @@ class DataProvider extends ChangeNotifier {
       syncData();
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         "Error Duplicating Multiple Products To Selected Shops: ${e.toString()}",
       );
       return 0;
@@ -2151,7 +2258,7 @@ class DataProvider extends ChangeNotifier {
       syncData();
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         "Error Duplicating Multiple Products To Selected Departments: ${e.toString()}",
       );
       return 0;
@@ -2196,7 +2303,7 @@ class DataProvider extends ChangeNotifier {
       return 1;
       // }
     } catch (e) {
-      print(
+      await mainLocalLog(
         "Error Generating Multiple Storage Products: ${e.toString()}",
       );
       return 0;

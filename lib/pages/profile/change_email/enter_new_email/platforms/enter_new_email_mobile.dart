@@ -147,7 +147,7 @@ class EnterNewEmailMobileState
                                   ),
                                 );
                               } else {
-                                print(
+                                await mainLocalLog(
                                   'Context not Mounted',
                                 );
                               }

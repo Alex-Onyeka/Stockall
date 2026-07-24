@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_item_purchase_record/unsynced/created_item_records/created_item_records.dart';
+import 'package:stockall/main.dart';
 
 class CreatedItemPurchaseFunc {
   static final CreatedItemPurchaseFunc instance =
@@ -18,7 +19,7 @@ class CreatedItemPurchaseFunc {
       CreatedItemRecordsAdapter().typeId,
     )) {
       Hive.registerAdapter(CreatedItemRecordsAdapter());
-      print(
+      await mainLocalLog(
         'Created Item Purchase Records Adapter registered ✅',
       );
     }
@@ -31,13 +32,15 @@ class CreatedItemPurchaseFunc {
           await Hive.openBox<CreatedItemRecords>(
             createdItemPurchaseRecordsBoxName,
           );
-      print('Created Item Purchase Records Box opened ✅');
+      await mainLocalLog(
+        'Created Item Purchase Records Box opened ✅',
+      );
     } else {
       _createdItemPurchaseRecordsBox =
           Hive.box<CreatedItemRecords>(
             createdItemPurchaseRecordsBoxName,
           );
-      print(
+      await mainLocalLog(
         'Created Item Purchase Records Box already open, reused ✅',
       );
     }
@@ -74,12 +77,12 @@ class CreatedItemPurchaseFunc {
           records,
         );
       }
-      print(
+      await mainLocalLog(
         "Offline Created Item Purchase Records inserted ✅",
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Item Purchase Records insertion failed ❌: $e',
       );
       return 0;
@@ -94,12 +97,12 @@ class CreatedItemPurchaseFunc {
         createdItemRecords.record.uuid,
         createdItemRecords,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Item Purchase Records inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Item Purchase Records insertion failed ❌: $e',
       );
       return 0;
@@ -108,16 +111,18 @@ class CreatedItemPurchaseFunc {
 
   Future<int> deleteRecords(String uuid) async {
     try {
-      print(
+      await mainLocalLog(
         createdItemPurchaseRecordsBox
             .containsKey(uuid)
             .toString(),
       );
       await createdItemPurchaseRecordsBox.delete(uuid);
-      print('Records Deleted');
+      await mainLocalLog('Records Deleted');
       return 1;
     } catch (e) {
-      print('Records Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Records Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -125,10 +130,12 @@ class CreatedItemPurchaseFunc {
   Future<int> clearRecords() async {
     try {
       await createdItemPurchaseRecordsBox.clear();
-      print('All Created Item Purchase Records cleared ✅');
+      await mainLocalLog(
+        'All Created Item Purchase Records cleared ✅',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error while clearing Created Item Purchase Records ❌: $e',
       );
       return 0;

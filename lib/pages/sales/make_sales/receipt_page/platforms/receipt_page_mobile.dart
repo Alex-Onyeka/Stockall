@@ -2122,7 +2122,7 @@ class _ReceiptDetailsContainerState
                                       Navigator.of(
                                         context,
                                       ).pop();
-                                      print(
+                                      await mainLocalLog(
                                         'Bluetooth Scanning Started',
                                       );
                                       scanBluetoothPrinters(

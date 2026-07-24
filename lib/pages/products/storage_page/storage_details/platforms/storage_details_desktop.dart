@@ -692,7 +692,7 @@ class _BottomInfoSectionState
                     widget.onClick != null
                         ? widget.onClick!()
                         : {};
-                    print('Clicked');
+                    mainLocalLog('Clicked');
                   },
                   child: Row(
                     mainAxisSize: MainAxisSize.min,

@@ -21,7 +21,7 @@ class PurchaseFunc {
     await CreatedPurchasesFunc().init();
     await DeletedPurchasesFunc().init();
     await UpdatedPurchasesFunc().init();
-    print('Purchase Box Initialized');
+    await mainLocalLog('Purchase Box Initialized');
   }
 
   List<TempPurchase> getPurchases() {
@@ -41,10 +41,12 @@ class PurchaseFunc {
       for (var rec in purchases) {
         await purchasesBox.put(rec.uuid, rec);
       }
-      print('Offline Purchase Success');
+      await mainLocalLog('Offline Purchase Success');
       return 1;
     } catch (e) {
-      print('Offline Purchase Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Offline Purchase Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -52,10 +54,12 @@ class PurchaseFunc {
   Future<int> createPurchase(TempPurchase purchase) async {
     try {
       await purchasesBox.put(purchase.uuid, purchase);
-      print('Offline Purchase Created');
+      await mainLocalLog('Offline Purchase Created');
       return 1;
     } catch (e) {
-      print('Offline Purchase Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Offline Purchase Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -63,10 +67,12 @@ class PurchaseFunc {
   Future<int> deletePurchase(String uuid) async {
     try {
       await purchasesBox.delete(uuid);
-      print('Offline Purchase Deleted');
+      await mainLocalLog('Offline Purchase Deleted');
       return 1;
     } catch (e) {
-      print('Offline Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Offline Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -74,10 +80,10 @@ class PurchaseFunc {
   Future<int> clearPurchases() async {
     try {
       await purchasesBox.clear();
-      print('Offline Purchases Cleared');
+      await mainLocalLog('Offline Purchases Cleared');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Purchase Clear Failed: ${e.toString()}',
       );
       return 0;

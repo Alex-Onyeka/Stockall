@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/receipt_printer_class/receipt_printer_class.dart';
+import 'package:stockall/main.dart';
 
 class ReceiptPrinterFunc {
   static final ReceiptPrinterFunc instance =
@@ -16,7 +17,7 @@ class ReceiptPrinterFunc {
     receiptPrinterBox = await Hive.openBox(
       receiptPrinterBoxName,
     );
-    print('✅Receipt Printer Box Initialized');
+    await mainLocalLog('✅Receipt Printer Box Initialized');
   }
 
   ReceiptPrinterClass? getReceiptPrinterClass() {
@@ -34,12 +35,12 @@ class ReceiptPrinterFunc {
         receiptPrinter.printerName,
         receiptPrinter,
       );
-      print(
+      await mainLocalLog(
         'Printer inserted Success: Name: ${receiptPrinter.printerName}  |  Size: ${receiptPrinter.printerSize}',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         '❌❌ Insert Printer Offline Error: ${e.toString()}',
       );
       return 0;
@@ -48,6 +49,6 @@ class ReceiptPrinterFunc {
 
   Future clearPrinters() async {
     await receiptPrinterBox.clear();
-    print('Offline Printer Cleared');
+    await mainLocalLog('Offline Printer Cleared');
   }
 }

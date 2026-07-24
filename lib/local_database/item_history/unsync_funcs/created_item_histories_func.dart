@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_item_history/unsynced/created_item_history.dart';
+import 'package:stockall/main.dart';
 
 class CreatedItemHistoriesFunc {
   static final CreatedItemHistoriesFunc instance =
@@ -16,7 +17,7 @@ class CreatedItemHistoriesFunc {
       CreatedItemHistoryAdapter().typeId,
     )) {
       Hive.registerAdapter(CreatedItemHistoryAdapter());
-      print(
+      await mainLocalLog(
         'Created Item History Class Adapter registered ✅',
       );
     }
@@ -26,13 +27,15 @@ class CreatedItemHistoriesFunc {
           await Hive.openBox<CreatedItemHistory>(
             createdItemHistoriesBoxName,
           );
-      print('Created Item Histories Box opened ✅');
+      await mainLocalLog(
+        'Created Item Histories Box opened ✅',
+      );
     } else {
       _createdItemHistoriesBox =
           Hive.box<CreatedItemHistory>(
             createdItemHistoriesBoxName,
           );
-      print(
+      await mainLocalLog(
         'Created Item Histories Box already open, reused ✅',
       );
     }
@@ -62,10 +65,12 @@ class CreatedItemHistoriesFunc {
           history,
         );
       }
-      print("Offline Created Item Histories inserted ✅");
+      await mainLocalLog(
+        "Offline Created Item Histories inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Item Histories insertion failed ❌: $e',
       );
       return 0;
@@ -80,12 +85,12 @@ class CreatedItemHistoriesFunc {
         createdItemHistory.itemHistory.uuid,
         createdItemHistory,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Item Histories inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Item Histories insertion failed ❌: $e',
       );
       return 0;
@@ -95,10 +100,12 @@ class CreatedItemHistoriesFunc {
   Future<int> clearItemHistory() async {
     try {
       await createdItemHistoriesBox.clear();
-      print('All Created Item History cleared ✅');
+      await mainLocalLog(
+        'All Created Item History cleared ✅',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error while clearing Created Item History ❌: $e',
       );
       return 0;

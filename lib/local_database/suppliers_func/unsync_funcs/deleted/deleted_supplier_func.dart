@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_suppliers/unsynced/deleted_suppliers/deleted_supplier.dart';
+import 'package:stockall/main.dart';
 
 class DeletedSupplierFunc {
   static final DeletedSupplierFunc instance =
@@ -18,7 +19,9 @@ class DeletedSupplierFunc {
       DeletedSupplierAdapter().typeId,
     )) {
       Hive.registerAdapter(DeletedSupplierAdapter());
-      print('Deleted Suppliers Adapter registered ✅');
+      await mainLocalLog(
+        'Deleted Suppliers Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,14 @@ class DeletedSupplierFunc {
           await Hive.openBox<DeletedSupplier>(
             deletedSuppliersBoxName,
           );
-      print('Deleted Suppliers Box opened ✅');
+      await mainLocalLog('Deleted Suppliers Box opened ✅');
     } else {
       _deletedSuppliersBox = Hive.box<DeletedSupplier>(
         deletedSuppliersBoxName,
       );
-      print('Deleted Suppliers Box already open, reused ✅');
+      await mainLocalLog(
+        'Deleted Suppliers Box already open, reused ✅',
+      );
     }
   }
 
@@ -57,10 +62,12 @@ class DeletedSupplierFunc {
       for (var supplier in deletedSupplier) {
         await deletedSuppliersBox.add(supplier);
       }
-      print("Offline Deleted Suppliers inserted ✅");
+      await mainLocalLog(
+        "Offline Deleted Suppliers inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Deleted Suppliers insertion failed ❌: $e',
       );
       return 0;
@@ -72,12 +79,12 @@ class DeletedSupplierFunc {
   ) async {
     try {
       await deletedSuppliersBox.add(deletedSupplier);
-      print(
+      await mainLocalLog(
         'Offline Deleted Supplier inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Deleted Supplier insertion failed ❌: $e',
       );
       return 0;
@@ -87,10 +94,12 @@ class DeletedSupplierFunc {
   Future<int> clearDeletedSupplier() async {
     try {
       await deletedSuppliersBox.clear();
-      print('All Deleted Suppliers cleared ✅');
+      await mainLocalLog('All Deleted Suppliers cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while clearing Deleted Suppliers ❌: $e');
+      await mainLocalLog(
+        'Error while clearing Deleted Suppliers ❌: $e',
+      );
       return 0;
     }
   }

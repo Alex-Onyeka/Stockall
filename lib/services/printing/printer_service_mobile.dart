@@ -70,7 +70,7 @@ class _BluetoothDevicesPageState
         timeout: Duration(seconds: 10),
       );
     } catch (e) {
-      print("onScanPressed error: $e");
+      await mainLocalLog("onScanPressed error: $e");
     }
   }
 
@@ -78,7 +78,7 @@ class _BluetoothDevicesPageState
     try {
       BluetoothPrintPlus.stopScan();
     } catch (e) {
-      print("onStopPressed error: $e");
+      await mainLocalLog("onStopPressed error: $e");
     }
   }
 
@@ -86,7 +86,7 @@ class _BluetoothDevicesPageState
   void initState() {
     super.initState();
     initBluetoothPrintPlusListen();
-    print(BluetoothPrintPlus.isBlueOn);
+    // await mainLocalLog(BluetoothPrintPlus.isBlueOn);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (_scanResults.isEmpty) {
         onScanPressed();
@@ -120,18 +120,18 @@ class _BluetoothDevicesPageState
     /// listen isScanning
     _isScanningSubscription = BluetoothPrintPlus.isScanning
         .listen((event) {
-          print('********** isScanning: $event **********');
-          if (mounted) {
-            setState(() {});
-          }
+          // await mainLocalLog('********** isScanning: $event **********');
+          // if (mounted) {
+          //   setState(() {});
+          // }
         });
 
     /// listen blue state
     _blueStateSubscription = BluetoothPrintPlus.blueState
         .listen((event) {
-          print(
-            '********** blueState change: $event **********',
-          );
+          // await mainLocalLog(
+          //   '********** blueState change: $event **********',
+          // );
           if (mounted) {
             setState(() {});
           }
@@ -141,9 +141,9 @@ class _BluetoothDevicesPageState
     _connectStateSubscription = BluetoothPrintPlus
         .connectState
         .listen((event) {
-          print(
-            '********** connectState change: $event **********',
-          );
+          // await mainLocalLog(
+          //   '********** connectState change: $event **********',
+          // );
           switch (event) {
             case ConnectState.connected:
               setState(() {
@@ -169,9 +169,9 @@ class _BluetoothDevicesPageState
     _receivedDataSubscription = BluetoothPrintPlus
         .receivedData
         .listen((data) {
-          print(
-            '********** received data: $data **********',
-          );
+          // await mainLocalLog(
+          //   '********** received data: $data **********',
+          // );
 
           /// do something...
         });
@@ -606,7 +606,7 @@ void scanBluetoothPrinters({
   required TempShopClass shop,
   required BuildContext context,
 }) async {
-  print('Main Bluetooth Scanning Started');
+  await mainLocalLog('Main Bluetooth Scanning Started');
   if (BluetoothPrintPlus.isConnected) {
     connectToPrinter(
       safeContext: context,
@@ -1020,7 +1020,7 @@ void scanBluetoothPrintersinvoice({
   required TempShopClass shop,
   required BuildContext context,
 }) async {
-  print('Main Bluetooth Scanning Started');
+  await mainLocalLog('Main Bluetooth Scanning Started');
   if (BluetoothPrintPlus.isConnected) {
     connectToPrinterInvoice(
       safeContext: context,

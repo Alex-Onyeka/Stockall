@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/locations/country_model.dart';
+import 'package:stockall/main.dart';
 
 class CountriesFunc {
   static final CountriesFunc instance =
@@ -14,11 +15,11 @@ class CountriesFunc {
     // try {
     //   await Hive.deleteBoxFromDisk(locationBoxName);
     // } catch (e) {
-    //   print('Error Deleting Location Box: ${e.toString()}');
+    //   await mainLocalLog('Error Deleting Location Box: ${e.toString()}');
     // }
     Hive.registerAdapter(CountryModelAdapter());
     countrysBox = await Hive.openBox(countrysBoxName);
-    print('✅Countries Box Initialized');
+    await mainLocalLog('✅Countries Box Initialized');
   }
 
   List<CountryModel> getCountryModel() {
@@ -32,10 +33,10 @@ class CountriesFunc {
       for (var locat in countrys) {
         await countrysBox.put(locat.country, locat);
       }
-      print('Countries inserted Success');
+      await mainLocalLog('Countries inserted Success');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         '❌❌ Insert Countries Offline Error: ${e.toString()}',
       );
       return 0;
@@ -44,6 +45,6 @@ class CountriesFunc {
 
   Future clearCountriess() async {
     await countrysBox.clear();
-    print('Offline Countries Cleared');
+    await mainLocalLog('Offline Countries Cleared');
   }
 }

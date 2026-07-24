@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_categories/unsynced/deleted_category/deleted_category.dart';
+import 'package:stockall/main.dart';
 
 class DeletedCategoriesFunc {
   static final DeletedCategoriesFunc instance =
@@ -18,7 +19,9 @@ class DeletedCategoriesFunc {
       DeletedCategoryAdapter().typeId,
     )) {
       Hive.registerAdapter(DeletedCategoryAdapter());
-      print('Deleted Categories Adapter registered ✅');
+      await mainLocalLog(
+        'Deleted Categories Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,12 @@ class DeletedCategoriesFunc {
           await Hive.openBox<DeletedCategory>(
             deletedCategoriesBoxName,
           );
-      print('Deleted Categories Box opened ✅');
+      await mainLocalLog('Deleted Categories Box opened ✅');
     } else {
       _deletedCategoriesBox = Hive.box<DeletedCategory>(
         deletedCategoriesBoxName,
       );
-      print(
+      await mainLocalLog(
         'Deleted Categories Box already open, reused ✅',
       );
     }
@@ -59,10 +62,12 @@ class DeletedCategoriesFunc {
       for (var category in deletedCategories) {
         await deletedCategoriesBox.add(category);
       }
-      print("Offline Deleted Categories inserted ✅");
+      await mainLocalLog(
+        "Offline Deleted Categories inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Deleted Categories insertion failed ❌: $e',
       );
       return 0;
@@ -74,12 +79,12 @@ class DeletedCategoriesFunc {
   ) async {
     try {
       await deletedCategoriesBox.add(deletedCategory);
-      print(
+      await mainLocalLog(
         'Offline Deleted Category inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Deleted Category insertion failed ❌: $e',
       );
       return 0;
@@ -89,10 +94,12 @@ class DeletedCategoriesFunc {
   Future<int> clearDeletedCategories() async {
     try {
       await deletedCategoriesBox.clear();
-      print('All Deleted Categories cleared ✅');
+      await mainLocalLog(
+        'All Deleted Categories cleared ✅',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error while clearing Deleted Categories ❌: $e',
       );
       return 0;

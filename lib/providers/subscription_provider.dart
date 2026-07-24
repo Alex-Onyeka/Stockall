@@ -42,7 +42,7 @@ class SubscriptionProvider extends ChangeNotifier {
   void toggleIsClicked(bool value) {
     isClicked = value;
     notifyListeners();
-    print("Is Clicked Value: $isClicked");
+    // await mainLocalLog("Is Clicked Value: $isClicked");
   }
 
   void checkSubscriptionExpiryNotification() {
@@ -51,11 +51,11 @@ class SubscriptionProvider extends ChangeNotifier {
         subscription?.plan != 0) {
       isClicked = false;
       notifyListeners();
-      print('Is Clicked is False');
+      mainLocalLog('Is Clicked is False');
     } else {
       isClicked = true;
       notifyListeners();
-      print('Is Clicked is True');
+      mainLocalLog('Is Clicked is True');
     }
   }
 
@@ -101,7 +101,9 @@ class SubscriptionProvider extends ChangeNotifier {
       }
       return null;
     } catch (e) {
-      print('Error Creating Online: ${e.toString()}');
+      await mainLocalLog(
+        'Error Creating Online: ${e.toString()}',
+      );
       return null;
     }
   }
@@ -110,7 +112,7 @@ class SubscriptionProvider extends ChangeNotifier {
     BuildContext context,
   ) async {
     var isOnline = await connectivity.isOnline();
-    print('Getting Subscription Inside');
+    await mainLocalLog('Getting Subscription Inside');
     // ignore: use_build_context_synchronously
     var shop = await userShop(context);
     if (isOnline) {
@@ -126,7 +128,7 @@ class SubscriptionProvider extends ChangeNotifier {
                 )
                 .maybeSingle();
         if (response == null) {
-          print('No Subscription Found');
+          await mainLocalLog('No Subscription Found');
           // ignore: use_build_context_synchronously
           var subs = await createSubscription(context);
           return subs;
@@ -138,17 +140,19 @@ class SubscriptionProvider extends ChangeNotifier {
         notifyListeners();
         return SubscriptionClass.fromJson(response);
       } catch (e) {
-        print('❌❌ Get Subscription Error: ${e.toString()}');
+        await mainLocalLog(
+          '❌❌ Get Subscription Error: ${e.toString()}',
+        );
         return null;
       }
     } else {
       try {
-        print('Getting Subscription Offline');
+        await mainLocalLog('Getting Subscription Offline');
         subscription = SubscriptionFunc().getSubscription();
         notifyListeners();
         return subscription;
       } catch (e) {
-        print(
+        await mainLocalLog(
           '❌❌ Get Subscription Error Offline: ${e.toString()}',
         );
         return null;
@@ -207,7 +211,7 @@ class SubscriptionProvider extends ChangeNotifier {
               .maybeSingle();
 
       if (res == null) {
-        print('Subcription Action Failed');
+        await mainLocalLog('Subcription Action Failed');
         return 0;
       }
       try {
@@ -228,7 +232,7 @@ class SubscriptionProvider extends ChangeNotifier {
                     subPayment.userId == shop.userId,
               )
               .isNotEmpty) {
-            print("Store Subcription Exists");
+            await mainLocalLog("Store Subcription Exists");
             var tempP =
                 tempSubPayments
                     .where(
@@ -257,7 +261,9 @@ class SubscriptionProvider extends ChangeNotifier {
                 })
                 .eq('payments_id', tempP.paymentsId!);
           } else {
-            print("Store Subcription Does not Exists");
+            await mainLocalLog(
+              "Store Subcription Does not Exists",
+            );
             // var nextPayment =
             //     plan == 0
             //         ? null
@@ -293,7 +299,7 @@ class SubscriptionProvider extends ChangeNotifier {
         }
         await getSubscription(context);
       } catch (e) {
-        print(
+        await mainLocalLog(
           'Subsciption Payments Creation Failed: ${e.toString()}',
         );
       }
@@ -302,10 +308,12 @@ class SubscriptionProvider extends ChangeNotifier {
         SubscriptionClass.fromJson(res),
       );
       notifyListeners();
-      print('Subscription Success');
+      await mainLocalLog('Subscription Success');
       return 1;
     } catch (e) {
-      print('❌❌ SubScribe Error: ${e.toString()}');
+      await mainLocalLog(
+        '❌❌ SubScribe Error: ${e.toString()}',
+      );
       return 0;
     }
   }

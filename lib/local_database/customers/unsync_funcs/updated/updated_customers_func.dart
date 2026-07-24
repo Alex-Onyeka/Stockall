@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_customers/unsynced/updated/updated_customers.dart';
+import 'package:stockall/main.dart';
 
 class UpdatedCustomersFunc {
   static final UpdatedCustomersFunc instance =
@@ -18,7 +19,9 @@ class UpdatedCustomersFunc {
       UpdatedCustomersAdapter().typeId,
     )) {
       Hive.registerAdapter(UpdatedCustomersAdapter());
-      print('Updated Customers Adapter registered ✅');
+      await mainLocalLog(
+        'Updated Customers Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,14 @@ class UpdatedCustomersFunc {
           await Hive.openBox<UpdatedCustomers>(
             updatedCustomersBoxName,
           );
-      print('Updated Customers Box opened ✅');
+      await mainLocalLog('Updated Customers Box opened ✅');
     } else {
       _updatedCustomersBox = Hive.box<UpdatedCustomers>(
         updatedCustomersBoxName,
       );
-      print('Updated Customers Box already open, reused ✅');
+      await mainLocalLog(
+        'Updated Customers Box already open, reused ✅',
+      );
     }
   }
 
@@ -61,12 +66,12 @@ class UpdatedCustomersFunc {
         updatedCustomer.customer.uuid,
         updatedCustomer,
       );
-      print(
+      await mainLocalLog(
         'Offline updated Customer inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline updated Customer insertion failed ❌: $e',
       );
       return 0;
@@ -75,14 +80,16 @@ class UpdatedCustomersFunc {
 
   Future<int> deleteUpdatedCustomer(String uuid) async {
     try {
-      print(
+      await mainLocalLog(
         updatedCustomersBox.containsKey(uuid).toString(),
       );
       await updatedCustomersBox.delete(uuid);
-      print('Updated Customer Deleted');
+      await mainLocalLog('Updated Customer Deleted');
       return 1;
     } catch (e) {
-      print('Customer Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Customer Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -90,10 +97,12 @@ class UpdatedCustomersFunc {
   Future<int> clearupdatedCustomers() async {
     try {
       await updatedCustomersBox.clear();
-      print('All updated Customers cleared ✅');
+      await mainLocalLog('All updated Customers cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while clearing updated Customers ❌: $e');
+      await mainLocalLog(
+        'Error while clearing updated Customers ❌: $e',
+      );
       return 0;
     }
   }

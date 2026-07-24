@@ -70,7 +70,7 @@ class MultiDisplayProvider extends ChangeNotifier {
                 .windowId;
         return displayIds.contains(displayId);
       } catch (e) {
-        print(
+        mainLocalLog(
           'Error Occured Checking if Window Exists: ${e.toString()}',
         );
         return true;
@@ -131,7 +131,9 @@ class MultiDisplayProvider extends ChangeNotifier {
           await win.controller.hide();
         }
       } catch (e) {
-        print('Failed to Create Window: ${e.toString()}');
+        await mainLocalLog(
+          'Failed to Create Window: ${e.toString()}',
+        );
       }
     }
     await getAllSubWindows();
@@ -176,10 +178,14 @@ class MultiDisplayProvider extends ChangeNotifier {
             );
           }
         } catch (e) {
-          print('Error Updating Cart: ${e.toString()}');
+          await mainLocalLog(
+            'Error Updating Cart: ${e.toString()}',
+          );
         }
       } else {
-        print('Error: Window Id does not exists');
+        await mainLocalLog(
+          'Error: Window Id does not exists',
+        );
       }
     }
   }
@@ -191,8 +197,8 @@ class MultiDisplayProvider extends ChangeNotifier {
   }) async {
     var yes = await isAllowed();
     await getAllSubWindows();
-    // print(cartId);
-    // print(cartIndex);
+    // await mainLocalLog(cartId);
+    // await mainLocalLog(cartIndex);
     if (yes) {
       var selWins = windows.where(
         (win) => win.id == cartId,
@@ -207,7 +213,7 @@ class MultiDisplayProvider extends ChangeNotifier {
             'Cart $cartIndex',
           );
           selWin.name = 'Cart $cartIndex';
-          print(
+          await mainLocalLog(
             'Updated Window Name and Title Numbers to $cartIndex',
           );
         }
@@ -244,7 +250,7 @@ class MultiDisplayProvider extends ChangeNotifier {
     var yes = await isAllowed();
     await getAllSubWindows();
     if (yes) {
-      print(windows.length);
+      await mainLocalLog(windows.length.toString());
       await windows
           .where((win) => win.id == cartId)
           .first

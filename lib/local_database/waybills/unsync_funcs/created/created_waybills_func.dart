@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_waybills/unsynced/created_waybills/created_waybills.dart';
+import 'package:stockall/main.dart';
 
 class CreatedWaybillsFunc {
   static final CreatedWaybillsFunc instance =
@@ -18,7 +19,9 @@ class CreatedWaybillsFunc {
       CreatedWaybillsAdapter().typeId,
     )) {
       Hive.registerAdapter(CreatedWaybillsAdapter());
-      print('Created Waybills Adapter registered ✅');
+      await mainLocalLog(
+        'Created Waybills Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,14 @@ class CreatedWaybillsFunc {
           await Hive.openBox<CreatedWaybills>(
             createdWaybillsBoxName,
           );
-      print('Created Waybills Box opened ✅');
+      await mainLocalLog('Created Waybills Box opened ✅');
     } else {
       _createdWaybillsBox = Hive.box<CreatedWaybills>(
         createdWaybillsBoxName,
       );
-      print('Created Waybills Box already open, reused ✅');
+      await mainLocalLog(
+        'Created Waybills Box already open, reused ✅',
+      );
     }
   }
 
@@ -67,10 +72,12 @@ class CreatedWaybillsFunc {
           waybills,
         );
       }
-      print("Offline Created Waybills inserted ✅");
+      await mainLocalLog(
+        "Offline Created Waybills inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Waybills insertion failed ❌: $e',
       );
       return 0;
@@ -85,12 +92,12 @@ class CreatedWaybillsFunc {
         createdWaybills.waybill.uuid,
         createdWaybills,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Waybills inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Waybills insertion failed ❌: $e',
       );
       return 0;
@@ -105,26 +112,28 @@ class CreatedWaybillsFunc {
         createdWaybills.waybill.uuid,
         createdWaybills,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Waybills Updated successfully ✅',
       );
       return 1;
     } catch (e) {
-      print('Offline Created Waybills Update failed ❌: $e');
+      await mainLocalLog(
+        'Offline Created Waybills Update failed ❌: $e',
+      );
       return 0;
     }
   }
 
   Future<int> deleteWaybill(String uuid) async {
     try {
-      print(
+      await mainLocalLog(
         createdWaybillsBox.containsKey(uuid).toString(),
       );
       await createdWaybillsBox.delete(uuid);
-      print('Created Waybill Deleted');
+      await mainLocalLog('Created Waybill Deleted');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Created Waybill Delete Failed: ${e.toString()}',
       );
       return 0;
@@ -134,10 +143,12 @@ class CreatedWaybillsFunc {
   Future<int> clearWaybills() async {
     try {
       await createdWaybillsBox.clear();
-      print('All Created Waybills cleared ✅');
+      await mainLocalLog('All Created Waybills cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while clearing Created Waybills ❌: $e');
+      await mainLocalLog(
+        'Error while clearing Created Waybills ❌: $e',
+      );
       return 0;
     }
   }

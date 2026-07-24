@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_storage_product/unsynced/updated/updated_storage_product.dart';
+import 'package:stockall/main.dart';
 
 class UpdatedStorageProductsFunc {
   static final UpdatedStorageProductsFunc instance =
@@ -18,7 +19,9 @@ class UpdatedStorageProductsFunc {
       UpdatedStorageProductAdapter().typeId,
     )) {
       Hive.registerAdapter(UpdatedStorageProductAdapter());
-      print('Updated Storage Product Adapter registered ✅');
+      await mainLocalLog(
+        'Updated Storage Product Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,13 +30,15 @@ class UpdatedStorageProductsFunc {
           await Hive.openBox<UpdatedStorageProduct>(
             updatedStorageProductBoxName,
           );
-      print('Updated Storage Product Box opened ✅');
+      await mainLocalLog(
+        'Updated Storage Product Box opened ✅',
+      );
     } else {
       _updatedStorageProductBox =
           Hive.box<UpdatedStorageProduct>(
             updatedStorageProductBoxName,
           );
-      print(
+      await mainLocalLog(
         'Updated Storage Product Box already open, reused ✅',
       );
     }
@@ -66,12 +71,12 @@ class UpdatedStorageProductsFunc {
         updatedStorageProduct.updatedStorageProduct.uuid,
         updatedStorageProduct,
       );
-      print(
+      await mainLocalLog(
         'Offline updated Storage Product inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline updated Storage Product insertion failed ❌: $e',
       );
       return 0;
@@ -91,12 +96,12 @@ class UpdatedStorageProductsFunc {
         updatedStorageProduct.updatedStorageProduct.uuid,
         updatedStorageProduct,
       );
-      print(
+      await mainLocalLog(
         'Offline updated Storage Product inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline updated Storage Product insertion failed ❌: $e',
       );
       return 0;
@@ -107,16 +112,16 @@ class UpdatedStorageProductsFunc {
     String uuid,
   ) async {
     try {
-      print(
+      await mainLocalLog(
         updatedStorageProductBox
             .containsKey(uuid)
             .toString(),
       );
       await updatedStorageProductBox.delete(uuid);
-      print('Updated Storage Product Deleted');
+      await mainLocalLog('Updated Storage Product Deleted');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Storage Product Delete Failed: ${e.toString()}',
       );
       return 0;
@@ -126,10 +131,12 @@ class UpdatedStorageProductsFunc {
   Future<int> clearUpdatedStorageProduct() async {
     try {
       await updatedStorageProductBox.clear();
-      print('All Updated Storage Product cleared ✅');
+      await mainLocalLog(
+        'All Updated Storage Product cleared ✅',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error while clearing Updated Storage Product ❌: $e',
       );
       return 0;

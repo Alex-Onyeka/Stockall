@@ -40,10 +40,10 @@ class EventsLogProvider with ChangeNotifier {
       dateSet = date;
       rangeStartDate = null;
       rangeEndDate = null;
-      print('Date set: $date');
+      mainLocalLog('Date set: $date');
     } else {
       dateSet = null;
-      print('Date Cleared');
+      mainLocalLog('Date Cleared');
     }
     notifyListeners();
   }
@@ -54,7 +54,7 @@ class EventsLogProvider with ChangeNotifier {
   void setRange(DateTime rangeStart, DateTime endOfrange) {
     rangeStartDate = rangeStart;
     rangeEndDate = endOfrange;
-    print(
+    mainLocalLog(
       'Date Range set: Start: $rangeStart End: $endOfrange ',
     );
     dateSet = null;
@@ -148,7 +148,7 @@ class EventsLogProvider with ChangeNotifier {
             .eq('shop_id', shopId)
             .order('created_at', ascending: false);
         if (res.isEmpty) {
-          print('No Event Logs Returned');
+          await mainLocalLog('No Event Logs Returned');
           logs.clear();
           EventsLogFunc().clearEventsLog();
           notifyListeners();
@@ -160,12 +160,14 @@ class EventsLogProvider with ChangeNotifier {
                 .toList();
 
         await EventsLogFunc().insertAllEventsLog(logs);
-        print('✅✅ Events Gotten Successfully Online');
+        await mainLocalLog(
+          '✅✅ Events Gotten Successfully Online',
+        );
         notifyListeners();
 
         return logs;
       } catch (e) {
-        print(
+        await mainLocalLog(
           '❌❌ Events Getting Online Failed: ${e.toString()}',
         );
         return [];
@@ -173,7 +175,9 @@ class EventsLogProvider with ChangeNotifier {
     } else {
       logs = EventsLogFunc().getEventsLogs();
 
-      print('Events Gotten Successfully Offline');
+      await mainLocalLog(
+        'Events Gotten Successfully Offline',
+      );
       notifyListeners();
       return logs;
     }
@@ -183,7 +187,9 @@ class EventsLogProvider with ChangeNotifier {
   getEventLogsOffline() async {
     logs = EventsLogFunc().getEventsLogs();
 
-    print('Events Gotten Successfully Offline');
+    await mainLocalLog(
+      'Events Gotten Successfully Offline',
+    );
     notifyListeners();
     return logs;
   }
@@ -203,7 +209,7 @@ class EventsLogProvider with ChangeNotifier {
     //   //             .select()
     //   //             .maybeSingle();
     //   //     if (res == null) {
-    //   //       print('Event Logging Failed');
+    //   //       await mainLocalLog('Event Logging Failed');
     //   //       return 0;
     //   //     }
     //   //     logs.add(TempEventLogClass.fromJson(res));
@@ -212,10 +218,10 @@ class EventsLogProvider with ChangeNotifier {
     //   //     );
     //   //     notifyListeners();
     //   //     await getEventLogs();
-    //   //     print('✅✅ Event Logged Successfully Online');
+    //   //     await mainLocalLog('✅✅ Event Logged Successfully Online');
     //   //     return 1;
     //   //   } catch (e) {
-    //   //     print(
+    //   //     await mainLocalLog(
     //   //       'Event Creating Online Failed: ${e.toString()}',
     //   //     );
     //   //     return 0;
@@ -230,7 +236,7 @@ class EventsLogProvider with ChangeNotifier {
     //     // syncData();
     //     return 1;
     //   } catch (e) {
-    //     print(
+    //     await mainLocalLog(
     //       'Offline Event Creating Failed: ${e.toString()}',
     //     );
     //     return 0;
@@ -529,7 +535,7 @@ class EventsLogProvider with ChangeNotifier {
             await CreatedEventsLogFunc().deleteEventLog(
               item.eventLog.uuid!,
             );
-            print(
+            await mainLocalLog(
               'Error Synchronizing Events Log ${item.eventLog.title}: $e',
             );
             // }
@@ -540,16 +546,20 @@ class EventsLogProvider with ChangeNotifier {
           }
         }
 
-        print(
+        await mainLocalLog(
           '$count Event Log items added successfully ✅',
         );
         await CreatedEventsLogFunc().clearEvents();
-        print('Unsynced Event Logs Cleared');
-        print('Mounted, refreshing Receipts ✅');
+        await mainLocalLog('Unsynced Event Logs Cleared');
+        await mainLocalLog(
+          'Mounted, refreshing Receipts ✅',
+        );
         await getEventLogs();
       }
     } catch (e) {
-      print('Batch Event Logs insert failed ❌: $e');
+      await mainLocalLog(
+        'Batch Event Logs insert failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Event Logs insert failed ❌: $e',
       );

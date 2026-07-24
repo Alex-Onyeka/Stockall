@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/app_version/app_version.dart';
+import 'package:stockall/main.dart';
 
 class AppVersionFunc {
   static final AppVersionFunc instance =
@@ -10,10 +11,18 @@ class AppVersionFunc {
   final String appVersionBoxName = 'appVersionBoxStockall';
 
   Future<void> init() async {
-    // await Hive.deleteBoxFromDisk(appVersionBoxName);
-    Hive.registerAdapter(AppVersionAdapter());
-    appVersionBox = await Hive.openBox(appVersionBoxName);
-    print('✅App Version Box Initialized');
+    try {
+      // await Hive.deleteBoxFromDisk(appVersionBoxName);
+      Hive.registerAdapter(AppVersionAdapter());
+      appVersionBox = await Hive.openBox(appVersionBoxName);
+      await mainLocalLog('✅App Version Box Initialized');
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error Initializing App Versions Box: ${e.toString()}',
+        error: e,
+        stackTrace: s,
+      );
+    }
   }
 
   AppVersion? getAppVersion() {
@@ -25,10 +34,10 @@ class AppVersionFunc {
   Future<int> insertVersion(AppVersion version) async {
     try {
       await appVersionBox.put(version.id, version);
-      print('Version inserted Success');
+      await mainLocalLog('Version inserted Success');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         '❌❌ Insert Version Offline Error: ${e.toString()}',
       );
       return 0;
@@ -37,6 +46,6 @@ class AppVersionFunc {
 
   Future clearVersions() async {
     await appVersionBox.clear();
-    print('Offline Version Cleared');
+    await mainLocalLog('Offline Version Cleared');
   }
 }

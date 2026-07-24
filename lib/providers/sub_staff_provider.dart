@@ -70,7 +70,7 @@ class SubStaffProvider extends ChangeNotifier {
   final String tableName = 'sub_staff';
   void clearSubStaffs() {
     subStaffsMain.clear();
-    print('Sub Staffs Cleared');
+    mainLocalLog('Sub Staffs Cleared');
     notifyListeners();
   }
 
@@ -89,7 +89,7 @@ class SubStaffProvider extends ChangeNotifier {
       //           .maybeSingle();
 
       //   if (res == null) {
-      //     print('Failed to Create Sub Staff');
+      //     await mainLocalLog('Failed to Create Sub Staff');
       //     return 0;
       //   }
 
@@ -101,7 +101,7 @@ class SubStaffProvider extends ChangeNotifier {
       //     ).subStaffAdapter(exp, 1),
       //     // ignore: use_build_context_synchronously
       //   );
-      //   print('Created Sub Staff Online');
+      //   await mainLocalLog('Created Sub Staff Online');
       //   await getSubStaffs();
       //   notifyListeners();
       //   return 1;
@@ -116,13 +116,15 @@ class SubStaffProvider extends ChangeNotifier {
         ).subStaffAdapter(subStaff, 1),
         // ignore: use_build_context_synchronously
       );
-      print('Created Sub Staff Offline');
+      await mainLocalLog('Created Sub Staff Offline');
       await getSubStaffsOffline();
       notifyListeners();
       return 1;
       // }
     } catch (e) {
-      print('Error Creating Sub Staff: ${e.toString()}');
+      await mainLocalLog(
+        'Error Creating Sub Staff: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -143,7 +145,9 @@ class SubStaffProvider extends ChangeNotifier {
           .from(tableName)
           .select()
           .eq('shop_id', shopId());
-      print('Sub Staffs Gotten: ${response.length}');
+      await mainLocalLog(
+        'Sub Staffs Gotten: ${response.length}',
+      );
 
       subStaffsMain =
           (response as List)
@@ -187,7 +191,7 @@ class SubStaffProvider extends ChangeNotifier {
     // bool isOnline = await connectivity.isOnline();
     try {
       subStaff.updatedAt = DateTime.now();
-      // print(subStaff.uuid);
+      // await mainLocalLog(subStaff.uuid);
       // if (isOnline) {
       //   var res =
       //       await supabase
@@ -197,7 +201,7 @@ class SubStaffProvider extends ChangeNotifier {
       //           .select()
       //           .maybeSingle();
       //   if (res == null) {
-      //     print('Failed to Update Sub Staff');
+      //     await mainLocalLog('Failed to Update Sub Staff');
       //     return 0;
       //   }
       //   await returnEventsLogProvider().createLog(
@@ -238,7 +242,9 @@ class SubStaffProvider extends ChangeNotifier {
       return 1;
       // }
     } catch (e) {
-      print('Error Updating Sub Staff: ${e.toString()}');
+      await mainLocalLog(
+        'Error Updating Sub Staff: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -311,7 +317,9 @@ class SubStaffProvider extends ChangeNotifier {
       return 1;
       // }
     } catch (e) {
-      print('Error Deleting Sub Staff: ${e.toString()}');
+      await mainLocalLog(
+        'Error Deleting Sub Staff: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -333,7 +341,7 @@ class SubStaffProvider extends ChangeNotifier {
         final subStaffs =
             CreatedSubStaffFunc().getSubStaffs().toList();
         for (var subStaff in subStaffs) {
-          print(
+          await mainLocalLog(
             'Updated Time: ${subStaff.subStaff.updatedAt?.toString()}',
           );
         }
@@ -349,14 +357,20 @@ class SubStaffProvider extends ChangeNotifier {
                 .insert(payload)
                 .select();
 
-        print('${data.length} items added successfully ✅');
+        await mainLocalLog(
+          '${data.length} items added successfully ✅',
+        );
         await CreatedSubStaffFunc().clearSubStaffs();
-        print('Unsynced Sub Staffs Cleared');
-        print('Mounted, refreshing Sub Staffs ✅');
+        await mainLocalLog('Unsynced Sub Staffs Cleared');
+        await mainLocalLog(
+          'Mounted, refreshing Sub Staffs ✅',
+        );
         await getSubStaffs();
       }
     } catch (e) {
-      print('Batch Sub Staffs Insert failed ❌: $e');
+      await mainLocalLog(
+        'Batch Sub Staffs Insert failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Sub Staffs Insert failed ❌: $e',
       );
@@ -393,17 +407,23 @@ class SubStaffProvider extends ChangeNotifier {
                 ) // delete where id is in the list
                 .select();
 
-        print(
+        await mainLocalLog(
           '${data.length} items deleted successfully ✅',
         );
 
         await DeletedSubStaffFunc().clearDeletedSubStaff();
-        print('Unsynced deleted Sub Staffs cleared');
-        print('Mounted, refreshing Sub Staffs ✅');
+        await mainLocalLog(
+          'Unsynced deleted Sub Staffs cleared',
+        );
+        await mainLocalLog(
+          'Mounted, refreshing Sub Staffs ✅',
+        );
         await getSubStaffs();
       }
     } catch (e) {
-      print('Batch Sub Staffs Delete failed ❌: $e');
+      await mainLocalLog(
+        'Batch Sub Staffs Delete failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Sub Staffs Delete failed ❌: $e',
       );
@@ -417,7 +437,7 @@ class SubStaffProvider extends ChangeNotifier {
   Future<void> updateSubStaffSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
-      print(
+      await mainLocalLog(
         UpdatedSubStaffFunc()
             .getSubStaffs()
             .length
@@ -436,7 +456,9 @@ class SubStaffProvider extends ChangeNotifier {
               DateTime.now().toLocal();
 
           if (localSubStaffs.uuid == null) {
-            print('Local Sub Staffs Uuid is Null');
+            await mainLocalLog(
+              'Local Sub Staffs Uuid is Null',
+            );
           }
           final remoteData =
               await supabase
@@ -449,7 +471,7 @@ class SubStaffProvider extends ChangeNotifier {
             await supabase
                 .from(tableName)
                 .insert(localSubStaffs.toJson());
-            print(
+            await mainLocalLog(
               'Inserted Sub Staffs with uuid ${localSubStaffs.uuid}',
             );
             await UpdatedSubStaffFunc()
@@ -469,10 +491,12 @@ class SubStaffProvider extends ChangeNotifier {
             localSubStaffs.updatedAt =
                 (localSubStaffs.updatedAt ?? DateTime.now())
                     .toUtc(); // ✅ keep both UTC
-            print(
+            await mainLocalLog(
               "Local updatedAt: ${localSubStaffs.updatedAt}",
             );
-            print("Remote updatedAt: $remoteUpdatedAt");
+            await mainLocalLog(
+              "Remote updatedAt: $remoteUpdatedAt",
+            );
 
             if (remoteUpdatedAt == null ||
                 localSubStaffs.updatedAt!.isAfter(
@@ -482,7 +506,7 @@ class SubStaffProvider extends ChangeNotifier {
                   .from(tableName)
                   .update(localSubStaffs.toJson())
                   .eq('uuid', localSubStaffs.uuid!);
-              print(
+              await mainLocalLog(
                 'Updated Sub Staffs with uuid ${localSubStaffs.uuid}',
               );
               await UpdatedSubStaffFunc()
@@ -490,7 +514,7 @@ class SubStaffProvider extends ChangeNotifier {
                     localSubStaffs.uuid ?? '',
                   );
             } else {
-              print(
+              await mainLocalLog(
                 'Skipped Sub Staffs ${localSubStaffs.uuid}, remote is newer ✅',
               );
             }
@@ -498,12 +522,18 @@ class SubStaffProvider extends ChangeNotifier {
         }
 
         await UpdatedSubStaffFunc().clearUpdatedSubStaff();
-        print('Unsynced updated Sub Staffs cleared');
-        print('Mounted, refreshing Sub Staffs ✅');
+        await mainLocalLog(
+          'Unsynced updated Sub Staffs cleared',
+        );
+        await mainLocalLog(
+          'Mounted, refreshing Sub Staffs ✅',
+        );
         await getSubStaffs();
       }
     } catch (e) {
-      print('Batch Sub Staffs Update failed ❌: $e');
+      await mainLocalLog(
+        'Batch Sub Staffs Update failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Sub Staffs Update failed ❌: $e',
       );

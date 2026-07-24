@@ -26,7 +26,7 @@ class ExpensesProvider extends ChangeNotifier {
   List<TempExpensesClass> expensesMain = [];
   void clearExpenses() {
     expensesMain.clear();
-    print('Expenses Cleared');
+    mainLocalLog('Expenses Cleared');
     notifyListeners();
   }
 
@@ -34,7 +34,7 @@ class ExpensesProvider extends ChangeNotifier {
     TempExpensesClass expense,
     // BuildContext context,
   ) async {
-    // bool isOnline = await connectivity.isOnline();
+    // bool isOnline =  connectivity.isOnline();
     expense.updatedAt = DateTime.now();
     // if (isOnline) {
     //   Map<String, dynamic> res =
@@ -68,10 +68,10 @@ class ExpensesProvider extends ChangeNotifier {
     );
     // }
     // if (context.mounted) {
-    print('Mounted: Add Expense');
+    await mainLocalLog('Mounted: Add Expense');
     await getExpensesOffline(shopId());
     // } else {
-    //   print('Context not Mounted for create Expenses');
+    //   await mainLocalLog('Context not Mounted for create Expenses');
     // }
     notifyListeners();
     syncData();
@@ -97,11 +97,14 @@ class ExpensesProvider extends ChangeNotifier {
             .select()
             .eq('shop_id', shopId)
             .order('created_date', ascending: false);
-        print('Expenses Gotten: ${response.length}');
+        await mainLocalLog(
+          'Expenses Gotten: ${response.length}',
+        );
 
-        expensesMain = (response as List)
-            .map((e) => TempExpensesClass.fromJson(e))
-            .toList();
+        expensesMain =
+            (response as List)
+                .map((e) => TempExpensesClass.fromJson(e))
+                .toList();
 
         await ExpensesFunc().insertAllExpenses(
           expensesMain,
@@ -109,7 +112,7 @@ class ExpensesProvider extends ChangeNotifier {
         notifyListeners();
         return expensesMain;
       } catch (e) {
-        print(
+        await mainLocalLog(
           'Error Getting Expenses Online: ${e.toString()}',
         );
         notifyListeners();
@@ -121,7 +124,7 @@ class ExpensesProvider extends ChangeNotifier {
         notifyListeners();
         return expensesMain;
       } catch (e) {
-        print(
+        await mainLocalLog(
           'Error Getting Expenses Offline: ${e.toString()}',
         );
         notifyListeners();
@@ -138,7 +141,7 @@ class ExpensesProvider extends ChangeNotifier {
       notifyListeners();
       return expensesMain;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error Getting Expenses Offline: ${e.toString()}',
       );
       notifyListeners();
@@ -172,10 +175,10 @@ class ExpensesProvider extends ChangeNotifier {
       dateSet = date;
       rangeStartDate = null;
       rangeEndDate = null;
-      print('Date set: $date');
+      mainLocalLog('Date set: $date');
     } else {
       dateSet = null;
-      print('Date Cleared');
+      mainLocalLog('Date Cleared');
     }
     notifyListeners();
   }
@@ -186,7 +189,7 @@ class ExpensesProvider extends ChangeNotifier {
   void setRange(DateTime rangeStart, DateTime endOfrange) {
     rangeStartDate = rangeStart;
     rangeEndDate = endOfrange;
-    print(
+    mainLocalLog(
       'Date Range set: Start: $rangeStart End: $endOfrange ',
     );
     dateSet = null;
@@ -350,7 +353,7 @@ class ExpensesProvider extends ChangeNotifier {
   ) async {
     // bool isOnline = await connectivity.isOnline();
     expense.updatedAt = DateTime.now();
-    print(expense.uuid);
+    await mainLocalLog(expense.uuid);
     // if (isOnline) {
     //   await supabase
     //       .from('expenses')
@@ -364,10 +367,13 @@ class ExpensesProvider extends ChangeNotifier {
     //   );
     // } else {
     await ExpensesFunc().updateExpenses(expense);
-    var containsCreated = CreatedExpensesFunc()
-        .getExpenses()
-        .where((exp) => exp.expenses.uuid == expense.uuid)
-        .toList();
+    var containsCreated =
+        CreatedExpensesFunc()
+            .getExpenses()
+            .where(
+              (exp) => exp.expenses.uuid == expense.uuid,
+            )
+            .toList();
     if (containsCreated.isEmpty) {
       await UpdatedExpensesFunc().createUpdatedExpense(
         UpdatedExpenses(expenses: expense),
@@ -415,14 +421,18 @@ class ExpensesProvider extends ChangeNotifier {
     //     // ignore: use_build_context_synchronously
     //   );
     // } else {
-    var containsCreated = CreatedExpensesFunc()
-        .getExpenses()
-        .where((exp) => exp.expenses.uuid == uuid)
-        .toList();
-    var containsUpdated = UpdatedExpensesFunc()
-        .getExpenses()
-        .where((exp) => exp.expenses.uuid == expenses.uuid)
-        .toList();
+    var containsCreated =
+        CreatedExpensesFunc()
+            .getExpenses()
+            .where((exp) => exp.expenses.uuid == uuid)
+            .toList();
+    var containsUpdated =
+        UpdatedExpensesFunc()
+            .getExpenses()
+            .where(
+              (exp) => exp.expenses.uuid == expenses.uuid,
+            )
+            .toList();
     await ExpensesFunc().deleteExpenses(expenses.uuid!);
 
     if (containsCreated.isNotEmpty) {
@@ -467,11 +477,10 @@ class ExpensesProvider extends ChangeNotifier {
       // Prepare batch payload
       if (CreatedExpensesFunc().getExpenses().isNotEmpty &&
           isOnline) {
-        final tempExpenses = CreatedExpensesFunc()
-            .getExpenses()
-            .toList();
+        final tempExpenses =
+            CreatedExpensesFunc().getExpenses().toList();
         // for (var exp in tempExpenses) {
-        //   print(
+        //   await mainLocalLog(
         //     'Updated Time: ${exp.expenses.updatedAt?.toString()}',
         //   );
         // }
@@ -507,16 +516,22 @@ class ExpensesProvider extends ChangeNotifier {
           }
         }
 
-        print('$count items added successfully ✅');
+        await mainLocalLog(
+          '$count items added successfully ✅',
+        );
         // await CreatedExpensesFunc().clearExpenses();
-        print('Unsynced Expenses Cleared');
-        print('Mounted, refreshing Expenses ✅');
+        await mainLocalLog('Unsynced Expenses Cleared');
+        await mainLocalLog(
+          'Mounted, refreshing Expenses ✅',
+        );
         await getExpenses(
           returnShopProvider().userShop()!.shopId!,
         );
       }
     } catch (e) {
-      print('Batch Expenses insert failed ❌: $e');
+      await mainLocalLog(
+        'Batch Expenses insert failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Expenses insert failed ❌: $e',
       );
@@ -537,33 +552,41 @@ class ExpensesProvider extends ChangeNotifier {
               .getExpenseIds()
               .isNotEmpty &&
           isOnline) {
-        final uuids = DeletedExpensesFunc()
-            .getExpenseIds()
-            .map((p) => p.expensesUuid)
-            .toList();
+        final uuids =
+            DeletedExpensesFunc()
+                .getExpenseIds()
+                .map((p) => p.expensesUuid)
+                .toList();
 
-        final data = await supabase
-            .from('expenses')
-            .delete()
-            .inFilter(
-              'uuid',
-              uuids,
-            ) // delete where id is in the list
-            .select();
+        final data =
+            await supabase
+                .from('expenses')
+                .delete()
+                .inFilter(
+                  'uuid',
+                  uuids,
+                ) // delete where id is in the list
+                .select();
 
-        print(
+        await mainLocalLog(
           '${data.length} items deleted successfully ✅',
         );
 
         await DeletedExpensesFunc().clearDeletedExpenses();
-        print('Unsynced deleted Expenses cleared');
-        print('Mounted, refreshing Expenses ✅');
+        await mainLocalLog(
+          'Unsynced deleted Expenses cleared',
+        );
+        await mainLocalLog(
+          'Mounted, refreshing Expenses ✅',
+        );
         await getExpenses(
           returnShopProvider().userShop()!.shopId!,
         );
       }
     } catch (e) {
-      print('Batch Expenses delete failed ❌: $e');
+      await mainLocalLog(
+        'Batch Expenses delete failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Expenses delete failed ❌: $e',
       );
@@ -577,7 +600,7 @@ class ExpensesProvider extends ChangeNotifier {
   Future<void> updateExpensesSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
-      print(
+      await mainLocalLog(
         UpdatedExpensesFunc()
             .getExpenses()
             .length
@@ -586,29 +609,32 @@ class ExpensesProvider extends ChangeNotifier {
 
       if (UpdatedExpensesFunc().getExpenses().isNotEmpty &&
           isOnline) {
-        final updatedExpenses = UpdatedExpensesFunc()
-            .getExpenses();
+        final updatedExpenses =
+            UpdatedExpensesFunc().getExpenses();
 
         for (final updated in updatedExpenses) {
           final localExpenses = updated.expenses;
 
-          localExpenses.updatedAt ??= DateTime.now()
-              .toLocal();
+          localExpenses.updatedAt ??=
+              DateTime.now().toLocal();
 
           if (localExpenses.uuid == null) {
-            print('Local Expenses Uuid is Null');
+            await mainLocalLog(
+              'Local Expenses Uuid is Null',
+            );
           }
-          final remoteData = await supabase
-              .from('expenses')
-              .select('uuid, updated_at')
-              .eq('uuid', localExpenses.uuid!)
-              .maybeSingle();
+          final remoteData =
+              await supabase
+                  .from('expenses')
+                  .select('uuid, updated_at')
+                  .eq('uuid', localExpenses.uuid!)
+                  .maybeSingle();
 
           if (remoteData == null) {
             await supabase
                 .from('expenses')
                 .insert(localExpenses.toJson());
-            print(
+            await mainLocalLog(
               'Inserted Expenses with uuid ${localExpenses.uuid}',
             );
             await UpdatedExpensesFunc()
@@ -620,18 +646,20 @@ class ExpensesProvider extends ChangeNotifier {
                 remoteData['updated_at'];
             final remoteUpdatedAt =
                 remoteUpdatedAtRaw == null
-                ? null
-                : DateTime.parse(
-                    remoteUpdatedAtRaw,
-                  ).toUtc();
+                    ? null
+                    : DateTime.parse(
+                      remoteUpdatedAtRaw,
+                    ).toUtc();
 
             localExpenses.updatedAt =
                 (localExpenses.updatedAt ?? DateTime.now())
                     .toUtc(); // ✅ keep both UTC
-            print(
+            await mainLocalLog(
               "Local updatedAt: ${localExpenses.updatedAt}",
             );
-            print("Remote updatedAt: $remoteUpdatedAt");
+            await mainLocalLog(
+              "Remote updatedAt: $remoteUpdatedAt",
+            );
 
             if (remoteUpdatedAt == null ||
                 localExpenses.updatedAt!.isAfter(
@@ -641,7 +669,7 @@ class ExpensesProvider extends ChangeNotifier {
                   .from('expenses')
                   .update(localExpenses.toJson())
                   .eq('uuid', localExpenses.uuid!);
-              print(
+              await mainLocalLog(
                 'Updated Expenses with uuid ${localExpenses.uuid}',
               );
               await UpdatedExpensesFunc()
@@ -649,7 +677,7 @@ class ExpensesProvider extends ChangeNotifier {
                     localExpenses.uuid ?? '',
                   );
             } else {
-              print(
+              await mainLocalLog(
                 'Skipped Expenses ${localExpenses.uuid}, remote is newer ✅',
               );
             }
@@ -657,14 +685,20 @@ class ExpensesProvider extends ChangeNotifier {
         }
 
         await UpdatedExpensesFunc().clearupdatedExpenses();
-        print('Unsynced updated Expenses cleared');
-        print('Mounted, refreshing Expenses ✅');
+        await mainLocalLog(
+          'Unsynced updated Expenses cleared',
+        );
+        await mainLocalLog(
+          'Mounted, refreshing Expenses ✅',
+        );
         await getExpenses(
           returnShopProvider().userShop()!.shopId!,
         );
       }
     } catch (e) {
-      print('Batch Expenses update failed ❌: $e');
+      await mainLocalLog(
+        'Batch Expenses update failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Expenses update failed ❌: $e',
       );

@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_categories/unsynced/created_category/created_category.dart';
+import 'package:stockall/main.dart';
 
 class CreatedCategoriesFunc {
   static final CreatedCategoriesFunc instance =
@@ -18,7 +19,9 @@ class CreatedCategoriesFunc {
       CreatedCategoryAdapter().typeId,
     )) {
       Hive.registerAdapter(CreatedCategoryAdapter());
-      print('Created Categories Adapter registered ✅');
+      await mainLocalLog(
+        'Created Categories Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,12 @@ class CreatedCategoriesFunc {
           await Hive.openBox<CreatedCategory>(
             createdCategoriesBoxName,
           );
-      print('Created Categories Box opened ✅');
+      await mainLocalLog('Created Categories Box opened ✅');
     } else {
       _createdCategoriesBox = Hive.box<CreatedCategory>(
         createdCategoriesBoxName,
       );
-      print(
+      await mainLocalLog(
         'Created Categories Box already open, reused ✅',
       );
     }
@@ -62,10 +65,12 @@ class CreatedCategoriesFunc {
           category,
         );
       }
-      print("Offline Created Categories inserted ✅");
+      await mainLocalLog(
+        "Offline Created Categories inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Categories insertion failed ❌: $e',
       );
       return 0;
@@ -80,12 +85,12 @@ class CreatedCategoriesFunc {
         createdCategory.category.uuid,
         createdCategory,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Categories inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Categories insertion failed ❌: $e',
       );
       return 0;
@@ -100,12 +105,12 @@ class CreatedCategoriesFunc {
         createdCategory.category.uuid,
         createdCategory,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Categories inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Categories insertion failed ❌: $e',
       );
       return 0;
@@ -114,14 +119,16 @@ class CreatedCategoriesFunc {
 
   Future<int> deleteCategory(String uuid) async {
     try {
-      print(
+      await mainLocalLog(
         createdCategoriesBox.containsKey(uuid).toString(),
       );
       await createdCategoriesBox.delete(uuid);
-      print('Category Deleted');
+      await mainLocalLog('Category Deleted');
       return 1;
     } catch (e) {
-      print('Category Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Category Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -129,10 +136,12 @@ class CreatedCategoriesFunc {
   Future<int> clearCategories() async {
     try {
       await createdCategoriesBox.clear();
-      print('All Created Categories cleared ✅');
+      await mainLocalLog(
+        'All Created Categories cleared ✅',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error while clearing Created Categories ❌: $e',
       );
       return 0;

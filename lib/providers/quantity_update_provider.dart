@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/quantity_update/quantity_update.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/local_database/products/unsync_funcs/quantity_update/quantity_update_func.dart';
+import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -27,7 +28,7 @@ class QuantityUpdateProvider with ChangeNotifier {
       notifyListeners();
       return res;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error Creating Quantity Update: ${e.toString()}',
       );
       notifyListeners();
@@ -40,7 +41,7 @@ class QuantityUpdateProvider with ChangeNotifier {
       await QuantityUpdateFunc().clearQuantitiesUpdate();
       notifyListeners();
     } catch (e) {
-      print('Error Clearing: ${e.toString()}');
+      await mainLocalLog('Error Clearing: ${e.toString()}');
     }
   }
 
@@ -72,10 +73,14 @@ class QuantityUpdateProvider with ChangeNotifier {
         );
 
         await QuantityUpdateFunc().clearQuantitiesUpdate();
-        print('Unsynced Quantity Updates Cleared');
+        await mainLocalLog(
+          'Unsynced Quantity Updates Cleared',
+        );
       }
     } catch (e) {
-      print('Batch Quantity Updates insert failed ❌: $e');
+      await mainLocalLog(
+        'Batch Quantity Updates insert failed ❌: $e',
+      );
     }
   }
 }

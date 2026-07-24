@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_invoices/unsynced/deleted_invoices/deleted_invoices.dart';
+import 'package:stockall/main.dart';
 
 class DeletedInvoicesFunc {
   static final DeletedInvoicesFunc instance =
@@ -18,7 +19,9 @@ class DeletedInvoicesFunc {
       DeletedInvoicesAdapter().typeId,
     )) {
       Hive.registerAdapter(DeletedInvoicesAdapter());
-      print('Deleted Invoices Adapter registered ✅');
+      await mainLocalLog(
+        'Deleted Invoices Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,14 @@ class DeletedInvoicesFunc {
           await Hive.openBox<DeletedInvoices>(
             deletedInvoicesBoxName,
           );
-      print('Deleted Invoices Box opened ✅');
+      await mainLocalLog('Deleted Invoices Box opened ✅');
     } else {
       _deletedInvoicesBox = Hive.box<DeletedInvoices>(
         deletedInvoicesBoxName,
       );
-      print('Deleted Invoices Box already open, reused ✅');
+      await mainLocalLog(
+        'Deleted Invoices Box already open, reused ✅',
+      );
     }
   }
 
@@ -57,10 +62,12 @@ class DeletedInvoicesFunc {
       for (var invoice in deletedInvoices) {
         await deletedInvoicesBox.add(invoice);
       }
-      print("Offline Deleted Invoices inserted ✅");
+      await mainLocalLog(
+        "Offline Deleted Invoices inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Deleted Invoices insertion failed ❌: $e',
       );
       return 0;
@@ -72,12 +79,12 @@ class DeletedInvoicesFunc {
   ) async {
     try {
       await deletedInvoicesBox.add(deletedInvoice);
-      print(
+      await mainLocalLog(
         'Offline Deleted Invoice inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Deleted Invoice insertion failed ❌: $e',
       );
       return 0;
@@ -87,10 +94,12 @@ class DeletedInvoicesFunc {
   Future<int> deletedDeletedInvoices(String uuid) async {
     try {
       await deletedInvoicesBox.delete(uuid);
-      print('Delete Invoice cleared ✅');
+      await mainLocalLog('Delete Invoice cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while Deleting Deleted Invoice ❌: $e');
+      await mainLocalLog(
+        'Error while Deleting Deleted Invoice ❌: $e',
+      );
       return 0;
     }
   }
@@ -98,10 +107,12 @@ class DeletedInvoicesFunc {
   Future<int> clearDeletedInvoices() async {
     try {
       await deletedInvoicesBox.clear();
-      print('All Deleted Invoices cleared ✅');
+      await mainLocalLog('All Deleted Invoices cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while clearing Deleted Invoices ❌: $e');
+      await mainLocalLog(
+        'Error while clearing Deleted Invoices ❌: $e',
+      );
       return 0;
     }
   }

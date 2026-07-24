@@ -3573,7 +3573,7 @@ class _DocketListTileWidgetState
                         3,
                       ),
                       onTap: () {
-                        // print(widget.item.quantity);
+                        // await mainLocalLog(widget.item.quantity);
                         setState(() {
                           if (widget.item.quantity >
                               (newItem?.quantity ?? 0)) {
@@ -3948,7 +3948,7 @@ class _SubStaffSelectionWidgetState
                                                                             returnSalesProvider().removeStaffFromMainCart(
                                                                               cart.mainCartId!,
                                                                             );
-                                                                            // print(
+                                                                            // await mainLocalLog(
                                                                             //   cart.subStaff?.staffName,
                                                                             // );
                                                                             Navigator.of(
@@ -3959,7 +3959,7 @@ class _SubStaffSelectionWidgetState
                                                                           returnSalesProvider().removeStaffFromMainCart(
                                                                             cart.mainCartId!,
                                                                           );
-                                                                          // print(
+                                                                          // await mainLocalLog(
                                                                           //   cart.subStaff?.staffName,
                                                                           // );
                                                                           Navigator.of(
@@ -4138,14 +4138,14 @@ class ProjectDisplayWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(3),
                     onTap: () async {
                       returnSalesProvider().createWindow();
-                      print(
-                        returnMultiDisplayProvider()
-                            .windows,
-                      );
-                      print(
-                        returnMultiDisplayProvider()
-                            .displayIds,
-                      );
+                      // await mainLocalLog(
+                      //   returnMultiDisplayProvider()
+                      //       .windows,
+                      // );
+                      // await mainLocalLog(
+                      //   returnMultiDisplayProvider()
+                      //       .displayIds,
+                      // );
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(

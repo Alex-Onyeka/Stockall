@@ -16,7 +16,7 @@ class ItemHistoriesFunc {
     Hive.registerAdapter(ItemHistoryAdapter());
     itemHistoryBox = await Hive.openBox(itemHistoryBoxName);
     await CreatedItemHistoriesFunc().init();
-    print('Item History Box Initialized');
+    await mainLocalLog('Item History Box Initialized');
   }
 
   List<ItemHistory> getItemHistories() {
@@ -36,13 +36,15 @@ class ItemHistoriesFunc {
       for (var history in itemHistory) {
         await itemHistoryBox.put(history.uuid, history);
       }
-      print(
+      await mainLocalLog(
         "Offline Item History  inserted: ${itemHistory.length}",
       );
-      print(getItemHistories().length);
+      await mainLocalLog(
+        getItemHistories().length.toString(),
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Item History  Insertion failed: ${e.toString()}',
       );
       return 0;
@@ -57,11 +59,13 @@ class ItemHistoriesFunc {
         itemHistory.uuid,
         itemHistory,
       );
-      print('Offline Item History inserted Successfully');
+      await mainLocalLog(
+        'Offline Item History inserted Successfully',
+      );
 
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Item History Insertion Failed: ${e.toString()}',
       );
       return 0;
@@ -72,11 +76,13 @@ class ItemHistoriesFunc {
     try {
       if (itemHistoryBox.values.isNotEmpty) {
         await itemHistoryBox.clear();
-        print('Offline Item Histories  Cleared');
+        await mainLocalLog(
+          'Offline Item Histories  Cleared',
+        );
       }
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         '❌❌ Offline Item Historie  Clear Error: ${e.toString()}',
       );
       return 0;

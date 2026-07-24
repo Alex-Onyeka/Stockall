@@ -62,7 +62,9 @@ void downloadPdfWebInvoice({
           ).toggleIsLoading(false);
         }
       } catch (e, stackTrace) {
-        print('❌ Error downloading PDF: $e\n$stackTrace');
+        await mainLocalLog(
+          '❌ Error downloading PDF: $e\n$stackTrace',
+        );
         createErrorLog(
           error: 'Error downloading PDF: $e\n$stackTrace',
         );
@@ -1343,7 +1345,7 @@ Future<void> generateAndPreviewPdfInvoice({
       if (Platform.isAndroid || Platform.isIOS) {
         await savePdfMobileInvoice(bytes, name);
       } else {
-        print('Printing For Desktop');
+        await mainLocalLog('Printing For Desktop');
         await savePdfDesktopInvoice(bytes, name);
       }
 
@@ -1393,7 +1395,7 @@ void downloadPdfWebRollInvoice({
     context: context,
     action: () async {
       try {
-        print('Begin Download');
+        await mainLocalLog('Begin Download');
         final pdfBytes = await _buildPdfRollInvoice(
           invoice: invoice,
           receipts: receipts,
@@ -1436,7 +1438,7 @@ void downloadPdfWebRollInvoice({
         }
         // return pdfUint8;
       } catch (e, stackTrace) {
-        print(
+        await mainLocalLog(
           '❌ Error downloading/printing PDF: $e\n$stackTrace',
         );
         createErrorLog(

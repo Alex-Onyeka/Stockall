@@ -237,7 +237,7 @@ class EnterNewEmailDesktopState
                                               ),
                                             );
                                           } else {
-                                            print(
+                                            await mainLocalLog(
                                               'Context not Mounted',
                                             );
                                           }

@@ -38,7 +38,7 @@ class InvoicesProvider extends ChangeNotifier {
   bool isLoading = false;
   void toggleIsLoading(bool value) {
     isLoading = value;
-    print(
+    mainLocalLog(
       'Invoice is ${value ? 'Loading on' : 'Loading Off'}',
     );
     notifyListeners();
@@ -56,14 +56,14 @@ class InvoicesProvider extends ChangeNotifier {
   void clearinvoices() {
     _invoices.clear();
     // clearRecords();
-    print('Invoices Cleared');
+    mainLocalLog('Invoices Cleared');
     notifyListeners();
   }
 
   bool isLoaded = false;
   void load(bool value) {
     isLoaded = value;
-    print(
+    mainLocalLog(
       value == true
           ? 'Invoices Loaded is now true'
           : 'Invoices Loaded is now false',
@@ -75,7 +75,7 @@ class InvoicesProvider extends ChangeNotifier {
   Future<TempInvoice?> createInvoices(
     TempInvoice invoice,
   ) async {
-    print('Inner Invoice Creation Started');
+    await mainLocalLog('Inner Invoice Creation Started');
     var barcode = returnOnlyDigits(uuidGen());
     invoice.barcode = barcode;
     await InvoicesFunc().createInvoices(invoice);
@@ -99,7 +99,7 @@ class InvoicesProvider extends ChangeNotifier {
                 .eq('invoice_uuid', uuid)
                 .maybeSingle();
         if (data == null) {
-          print('Invoice Not Found');
+          await mainLocalLog('Invoice Not Found');
           return;
         } else {
           TempInvoice tempInvoice = TempInvoice.fromJson(
@@ -120,19 +120,21 @@ class InvoicesProvider extends ChangeNotifier {
                       .first
                   : null;
           if (existingInvoice != null) {
-            print('Invoice Exists');
+            await mainLocalLog('Invoice Exists');
             invoicesMain.remove(existingInvoice);
           }
           invoicesMain.add(tempInvoice);
           invoicesMain.sort(
             (a, b) => b.createdAt.compareTo(a.createdAt),
           );
-          print("💖💖👏🥰 Single Invoice Loaded");
+          await mainLocalLog(
+            "💖💖👏🥰 Single Invoice Loaded",
+          );
           notifyListeners();
         }
       }
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error Fetching Single Invoice: ${e.toString()}',
       );
     }
@@ -150,7 +152,9 @@ class InvoicesProvider extends ChangeNotifier {
             .eq('shop_id', shopId)
             .order('created_at', ascending: false);
         if (data.isNotEmpty) {
-          print('Invoices Gotten ${data.length}');
+          await mainLocalLog(
+            'Invoices Gotten ${data.length}',
+          );
         }
 
         _invoices =
@@ -160,15 +164,17 @@ class InvoicesProvider extends ChangeNotifier {
         notifyListeners();
         await InvoicesFunc().insertAllInvoices(_invoices);
         notifyListeners();
-        print('Invoices Loaded');
+        await mainLocalLog('Invoices Loaded');
       } catch (e) {
-        print('❌❌Error Getting Invoices: ${e.toString()}');
+        await mainLocalLog(
+          '❌❌Error Getting Invoices: ${e.toString()}',
+        );
         return [];
       }
     } else {
       _invoices = InvoicesFunc().getInvoices();
       notifyListeners();
-      print('Offline Invoices Gotten');
+      await mainLocalLog('Offline Invoices Gotten');
     }
     notifyListeners();
     return _invoices;
@@ -179,7 +185,7 @@ class InvoicesProvider extends ChangeNotifier {
   ) async {
     _invoices = InvoicesFunc().getInvoices();
     notifyListeners();
-    print('Offline Invoices Gotten');
+    await mainLocalLog('Offline Invoices Gotten');
     notifyListeners();
     return _invoices;
   }
@@ -218,7 +224,9 @@ class InvoicesProvider extends ChangeNotifier {
       await loadInvoicesOffline(shopId());
       return 1;
     } catch (e) {
-      print('Error Updating Invoices: ${e.toString()}');
+      await mainLocalLog(
+        'Error Updating Invoices: ${e.toString()}',
+      );
       notifyListeners();
       return 0;
     }
@@ -247,7 +255,7 @@ class InvoicesProvider extends ChangeNotifier {
     List<String> productNames,
   ) async {
     try {
-      print('Deleting Invoices Offline');
+      await mainLocalLog('Deleting Invoices Offline');
       await InvoicesFunc().deleteInvoices(invoice.uuid!);
       var containsCreated =
           CreatedInvoicesFunc()
@@ -289,7 +297,7 @@ class InvoicesProvider extends ChangeNotifier {
         );
       }
 
-      print(
+      await mainLocalLog(
         '✅ Invoice and inventory successfully Delete and Updated.',
       );
 
@@ -297,12 +305,16 @@ class InvoicesProvider extends ChangeNotifier {
         returnShopProvider().userShop()!.shopId!,
       );
 
-      print('Totally Finished Deleting Invoices');
+      await mainLocalLog(
+        'Totally Finished Deleting Invoices',
+      );
       notifyListeners();
       syncData();
       return 1;
     } catch (e) {
-      print('Error Deleting Invoice: ${e.toString()}');
+      await mainLocalLog(
+        'Error Deleting Invoice: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -312,7 +324,7 @@ class InvoicesProvider extends ChangeNotifier {
     String uuid,
   ) async {
     try {
-      print('Deleting Invoice Offline');
+      await mainLocalLog('Deleting Invoice Offline');
       await InvoicesFunc().deleteInvoices(uuid);
       var containsCreated =
           CreatedInvoicesFunc()
@@ -340,7 +352,7 @@ class InvoicesProvider extends ChangeNotifier {
           );
       // }
 
-      print(
+      await mainLocalLog(
         '✅ Invoice and inventory successfully Delete and Updated.',
       );
 
@@ -348,12 +360,14 @@ class InvoicesProvider extends ChangeNotifier {
         returnShopProvider().userShop()!.shopId!,
       );
 
-      print('Totally Finished Deleting Invoice');
+      await mainLocalLog(
+        'Totally Finished Deleting Invoice',
+      );
       notifyListeners();
       syncData();
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error Deleting Invoice without Updating Inventory: ${e.toString()}',
       );
       return 0;
@@ -395,11 +409,11 @@ class InvoicesProvider extends ChangeNotifier {
         cartName: invoice.cartName,
       );
 
-      print('Checkout Started');
+      await mainLocalLog('Checkout Started');
       var res = await returnReceiptProviderSingle()
           .createReceipt(receipt);
       if (res != null) {
-        print('Receipt Created');
+        await mainLocalLog('Receipt Created');
 
         await returnEventsLogProvider().createLog(
           returnEventsLogProvider().receiptAdapter(
@@ -413,7 +427,9 @@ class InvoicesProvider extends ChangeNotifier {
 
         final productSaleRecords =
             salesRecords.map((record) {
-              print('Sales Record about to be Created');
+              mainLocalLog(
+                'Sales Record about to be Created',
+              );
               return TempProductSaleRecord(
                 isVoid: record.isVoid ?? false,
                 customPriceSet: record.customPriceSet,
@@ -492,13 +508,15 @@ class InvoicesProvider extends ChangeNotifier {
               );
             }).toList();
 
-        print('Creating Record Sales About to Start');
+        await mainLocalLog(
+          'Creating Record Sales About to Start',
+        );
         await returnReceiptProviderSingle()
             .createProductSaleRecord(
               records: productSaleRecords,
               isPartPayment: true,
             );
-        print('Sales Record Inserted');
+        await mainLocalLog('Sales Record Inserted');
         // invoice.balance =
         //    getBalance(invoice: invoice) - currentPayment;
         // invoice.status =
@@ -509,17 +527,19 @@ class InvoicesProvider extends ChangeNotifier {
         await returnReceiptProviderSingle()
             .loadReceiptsOffline(shopId());
         returnData().syncData();
-        print(
+        await mainLocalLog(
           'Context is Not Mounted So Offline Data Cannot Be Synchronized',
         );
         notifyListeners();
         return 1;
       } else {
-        print('Failed to Create Receipt From Invoice');
+        await mainLocalLog(
+          'Failed to Create Receipt From Invoice',
+        );
         return 0;
       }
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error Creating Receipt From Invoice: ${e.toString()}',
       );
       return 0;
@@ -866,10 +886,10 @@ class InvoicesProvider extends ChangeNotifier {
       dateSet = date;
       rangeStartDate = null;
       rangeEndDate = null;
-      print('Date set: $date');
+      mainLocalLog('Date set: $date');
     } else {
       dateSet = null;
-      print('Date Cleared');
+      mainLocalLog('Date Cleared');
     }
     notifyListeners();
   }
@@ -880,7 +900,7 @@ class InvoicesProvider extends ChangeNotifier {
   void setRange(DateTime rangeStart, DateTime endOfrange) {
     rangeStartDate = rangeStart;
     rangeEndDate = endOfrange;
-    print(
+    mainLocalLog(
       'Date Range set: Start: $rangeStart End: $endOfrange ',
     );
     dateSet = null;
@@ -1129,14 +1149,20 @@ class InvoicesProvider extends ChangeNotifier {
           }
         }
 
-        print('$count items added successfully ✅');
-        print('Mounted, refreshing Invoices ✅');
+        await mainLocalLog(
+          '$count items added successfully ✅',
+        );
+        await mainLocalLog(
+          'Mounted, refreshing Invoices ✅',
+        );
         await loadInvoices(
           returnShopProvider().userShop()!.shopId!,
         );
       }
     } catch (e) {
-      print('Batch Invoices insert failed ❌: $e');
+      await mainLocalLog(
+        'Batch Invoices insert failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Invoices insert failed ❌: $e',
       );
@@ -1186,18 +1212,24 @@ class InvoicesProvider extends ChangeNotifier {
           }
         }
 
-        print(
+        await mainLocalLog(
           '${tempInvoice.length} Invoices Created successfully ✅',
         );
         await DeletedInvoicesFunc().clearDeletedInvoices();
-        print('Unsynced Deleted Invoices Cleared');
-        print('Mounted, refreshing Invoices ✅');
+        await mainLocalLog(
+          'Unsynced Deleted Invoices Cleared',
+        );
+        await mainLocalLog(
+          'Mounted, refreshing Invoices ✅',
+        );
         await loadInvoices(
           returnShopProvider().userShop()!.shopId!,
         );
       }
     } catch (e) {
-      print('Batch Invoices Deleted failed ❌: $e');
+      await mainLocalLog(
+        'Batch Invoices Deleted failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Invoices Delete failed ❌: $e',
       );
@@ -1214,7 +1246,7 @@ class InvoicesProvider extends ChangeNotifier {
   ) async {
     try {
       bool isOnline = await connectivity.isOnline();
-      print(
+      await mainLocalLog(
         UpdatedInvoicesFunc()
             .getInvoiceIds()
             .length
@@ -1235,7 +1267,9 @@ class InvoicesProvider extends ChangeNotifier {
               DateTime.now().toLocal();
 
           if (localInvoices.uuid == null) {
-            print('Local Invoices Uuid is Null');
+            await mainLocalLog(
+              'Local Invoices Uuid is Null',
+            );
           }
           final remoteData =
               await supabase
@@ -1248,7 +1282,7 @@ class InvoicesProvider extends ChangeNotifier {
             await supabase
                 .from('invoices')
                 .insert(localInvoices.toJson());
-            print(
+            await mainLocalLog(
               'Inserted Invoices with uuid ${localInvoices.uuid}',
             );
             await UpdatedInvoicesFunc()
@@ -1268,10 +1302,12 @@ class InvoicesProvider extends ChangeNotifier {
             localInvoices.updatedAt =
                 (localInvoices.updatedAt ?? DateTime.now())
                     .toUtc(); // ✅ keep both UTC
-            print(
+            await mainLocalLog(
               "Local updatedAt: ${localInvoices.updatedAt}",
             );
-            print("Remote updatedAt: $remoteUpdatedAt");
+            await mainLocalLog(
+              "Remote updatedAt: $remoteUpdatedAt",
+            );
 
             if (remoteUpdatedAt == null ||
                 localInvoices.updatedAt!.isAfter(
@@ -1281,7 +1317,7 @@ class InvoicesProvider extends ChangeNotifier {
                   .from('invoices')
                   .update(localInvoices.toJson())
                   .eq('invoice_uuid', localInvoices.uuid!);
-              print(
+              await mainLocalLog(
                 'Updated Invoices with uuid ${localInvoices.uuid}',
               );
               await UpdatedInvoicesFunc()
@@ -1289,7 +1325,7 @@ class InvoicesProvider extends ChangeNotifier {
                     localInvoices.uuid ?? '',
                   );
             } else {
-              print(
+              await mainLocalLog(
                 'Skipped Invoices ${localInvoices.uuid}, remote is newer ✅',
               );
             }
@@ -1298,14 +1334,20 @@ class InvoicesProvider extends ChangeNotifier {
 
         await UpdatedInvoicesFunc()
             .clearupdatedInvoiceUpdatedInvoices();
-        print('Unsynced updated Invoices cleared');
-        print('Mounted, refreshing Invoices ✅');
+        await mainLocalLog(
+          'Unsynced updated Invoices cleared',
+        );
+        await mainLocalLog(
+          'Mounted, refreshing Invoices ✅',
+        );
         await loadInvoices(
           returnShopProvider().userShop()!.shopId!,
         );
       }
     } catch (e) {
-      print('Batch Invoices update failed ❌: $e');
+      await mainLocalLog(
+        'Batch Invoices update failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Invoices update failed ❌: $e',
       );

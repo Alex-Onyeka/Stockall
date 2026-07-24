@@ -36,7 +36,9 @@ Future<bool> sendRawToUsbPrinter(
 
   // Try to open the printer by name
   if (OpenPrinter(pPrinterName, hPrinter, nullptr) == 0) {
-    print('Failed to open printer: $printerName');
+    await mainLocalLog(
+      'Failed to open printer: $printerName',
+    );
     calloc.free(pPrinterName);
     calloc.free(hPrinter);
     return false;
@@ -69,16 +71,20 @@ Future<bool> sendRawToUsbPrinter(
         written,
       );
       if (res != 0) {
-        print('Sent ${written.value} bytes to printer.');
+        await mainLocalLog(
+          'Sent ${written.value} bytes to printer.',
+        );
         success = true;
       } else {
-        print('Failed to write to printer: $printerName');
+        await mainLocalLog(
+          'Failed to write to printer: $printerName',
+        );
       }
       EndPagePrinter(hPrinter.value);
     }
     EndDocPrinter(hPrinter.value);
   } else {
-    print(
+    await mainLocalLog(
       'Failed to start document for printer: $printerName',
     );
   }
@@ -272,7 +278,7 @@ void listPrinters() {
     );
 
     if (success == 0) {
-      print('Failed to enumerate printers.');
+      // await mainLocalLog('Failed to enumerate printers.');
       calloc.free(buffer);
       calloc.free(needed);
       calloc.free(returned);

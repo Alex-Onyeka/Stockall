@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_current_department/temp_current_department.dart';
+import 'package:stockall/main.dart';
 
 class CurrentDepartmentFunc {
   static final CurrentDepartmentFunc instance =
@@ -17,9 +18,11 @@ class CurrentDepartmentFunc {
       currentDepartmentBox = await Hive.openBox(
         currentDepartmentBoxName,
       );
-      print('✅ Current Department Box Initialized');
+      await mainLocalLog(
+        '✅ Current Department Box Initialized',
+      );
     } catch (e) {
-      print('❌ Error New: ${e.toString()}');
+      await mainLocalLog('❌ Error New: ${e.toString()}');
       try {
         if (Hive.isBoxOpen(currentDepartmentBoxName)) {
           await Hive.box(currentDepartmentBoxName).close();
@@ -28,16 +31,20 @@ class CurrentDepartmentFunc {
         await Hive.deleteBoxFromDisk(
           currentDepartmentBoxName,
         );
-        print(
+        await mainLocalLog(
           '🧹 Deleted Corrupted Current Department Box',
         );
 
         currentDepartmentBox = await Hive.openBox(
           currentDepartmentBoxName,
         );
-        print('✅ Reinitialized Current Department Box');
+        await mainLocalLog(
+          '✅ Reinitialized Current Department Box',
+        );
       } catch (innerError) {
-        print('⚠️ Failed to recover Hive box: $innerError');
+        await mainLocalLog(
+          '⚠️ Failed to recover Hive box: $innerError',
+        );
       }
     }
   }
@@ -59,13 +66,13 @@ class CurrentDepartmentFunc {
         department.currentDepartmentId,
         department,
       );
-      print(
+      await mainLocalLog(
         'Offline Current Department inserted Successfully',
       );
 
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Current Department Insertion Failed: ${e.toString()}',
       );
       return 0;
@@ -76,11 +83,13 @@ class CurrentDepartmentFunc {
     try {
       if (currentDepartmentBox.values.isNotEmpty) {
         await currentDepartmentBox.clear();
-        print('Offline Current Department Cleared');
+        await mainLocalLog(
+          'Offline Current Department Cleared',
+        );
       }
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         '❌❌ Offline Current Department Error: ${e.toString()}',
       );
       return 0;

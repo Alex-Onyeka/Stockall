@@ -20,7 +20,7 @@ void downloadItemSalesPdfWebRoll({
     context: context,
     action: () async {
       try {
-        print('Begin Download');
+        await mainLocalLog('Begin Download');
         final pdfBytes = await _buildPdfRoll(
           context,
           records,
@@ -58,7 +58,7 @@ void downloadItemSalesPdfWebRoll({
         }
         // return pdfUint8;
       } catch (e, stackTrace) {
-        print(
+        await mainLocalLog(
           '❌ Error downloading/printing PDF: $e\n$stackTrace',
         );
       }

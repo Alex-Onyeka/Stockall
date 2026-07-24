@@ -140,7 +140,7 @@ class _MyPinCodeWidgetState extends State<MyPinCodeWidget> {
                             );
                           },
                         );
-                        print(
+                        await mainLocalLog(
                           "Pin Code Now: ${pinController.text}",
                         );
                         setState(() {
@@ -151,10 +151,11 @@ class _MyPinCodeWidgetState extends State<MyPinCodeWidget> {
                       }
                     } else {
                       if (pinController.text ==
-                          currentUser().pin ||pinController.text ==
-                          returnShopProvider()
-                              .userShop()
-                              ?.accessPin) {
+                              currentUser().pin ||
+                          pinController.text ==
+                              returnShopProvider()
+                                  .userShop()
+                                  ?.accessPin) {
                         Navigator.of(context).pop(true);
                       } else {
                         showDialog(
@@ -168,7 +169,7 @@ class _MyPinCodeWidgetState extends State<MyPinCodeWidget> {
                             );
                           },
                         );
-                        print(
+                        await mainLocalLog(
                           "Pin Code Now: ${pinController.text}",
                         );
                         setState(() {

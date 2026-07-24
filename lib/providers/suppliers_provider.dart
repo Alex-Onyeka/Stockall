@@ -33,7 +33,7 @@ class SuppliersProvider extends ChangeNotifier {
 
   void clearSuppliers() {
     suppliers.clear();
-    print('Suppliers Cleared');
+    mainLocalLog('Suppliers Cleared');
     notifyListeners();
   }
 
@@ -90,7 +90,7 @@ class SuppliersProvider extends ChangeNotifier {
           .select()
           .eq('shop_id', shopId)
           .order('name', ascending: true);
-      print(data.length.toString());
+      await mainLocalLog(data.length.toString());
 
       suppliers =
           (data as List)
@@ -122,7 +122,7 @@ class SuppliersProvider extends ChangeNotifier {
               .insert(supplier.toJson())
               .select()
               .single();
-      print(res);
+      // await mainLocalLog(res);
 
       final newSupplier = SuppliersClass.fromJson(res);
       await SuppliersFunc().createSupplier(newSupplier);
@@ -226,7 +226,7 @@ class SuppliersProvider extends ChangeNotifier {
           .from(tableName)
           .delete()
           .eq('uuid', supplier.uuid!);
-      print('Supplier Deleted');
+      await mainLocalLog('Supplier Deleted');
       // var res = await returnEventsLogProvider(
       //   // ignore: use_build_context_synchronously
       // ).createLog(
@@ -237,9 +237,9 @@ class SuppliersProvider extends ChangeNotifier {
       //   // ignore: use_build_context_synchronously
       // );
       // if (res == 1) {
-      //   print('Supplier Delete Logged');
+      //   await mainLocalLog('Supplier Delete Logged');
       // } else {
-      //   print('Supplier Delete Log Failed');
+      //   await mainLocalLog('Supplier Delete Log Failed');
       // }
     } else {
       var containsCreated =
@@ -343,7 +343,7 @@ class SuppliersProvider extends ChangeNotifier {
         final tempSuppliers =
             CreatedSupplierFunc().getSuppliers().toList();
         for (var supp in tempSuppliers) {
-          print(
+          await mainLocalLog(
             'Updated Time: ${supp.supplier.updatedAt?.toString()}',
           );
         }
@@ -359,16 +359,22 @@ class SuppliersProvider extends ChangeNotifier {
                 .insert(payload)
                 .select();
 
-        print('${data.length} items added successfully ✅');
+        await mainLocalLog(
+          '${data.length} items added successfully ✅',
+        );
         await CreatedSupplierFunc().clearSuppliers();
-        print('Unsynced Suppliers Cleared');
-        print('Mounted, refreshing Suppliers ✅');
+        await mainLocalLog('Unsynced Suppliers Cleared');
+        await mainLocalLog(
+          'Mounted, refreshing Suppliers ✅',
+        );
         await fetchSuppliers(
           shopProvider.userShop()!.shopId!,
         );
       }
     } catch (e) {
-      print('Batch Suppliers Insert failed ❌: $e');
+      await mainLocalLog(
+        'Batch Suppliers Insert failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Suppliers Insert failed ❌: $e',
       );
@@ -385,7 +391,7 @@ class SuppliersProvider extends ChangeNotifier {
     final shopProvider = returnShopProvider();
     try {
       bool isOnline = await connectivity.isOnline();
-      print(
+      await mainLocalLog(
         UpdatedSupplierFunc()
             .getSuppliers()
             .length
@@ -404,7 +410,9 @@ class SuppliersProvider extends ChangeNotifier {
               DateTime.now().toLocal();
 
           if (localSupplier.uuid == null) {
-            print('Local Supplier Uuid is Null');
+            await mainLocalLog(
+              'Local Supplier Uuid is Null',
+            );
           }
           final remoteData =
               await supabase
@@ -417,7 +425,7 @@ class SuppliersProvider extends ChangeNotifier {
             await supabase
                 .from(tableName)
                 .insert(localSupplier.toJson());
-            print(
+            await mainLocalLog(
               'Inserted Supplier with uuid ${localSupplier.uuid}',
             );
             await UpdatedSupplierFunc()
@@ -437,10 +445,12 @@ class SuppliersProvider extends ChangeNotifier {
             localSupplier.updatedAt =
                 (localSupplier.updatedAt ?? DateTime.now())
                     .toUtc(); // ✅ keep both UTC
-            print(
+            await mainLocalLog(
               "Local updatedAt: ${localSupplier.updatedAt}",
             );
-            print("Remote updatedAt: $remoteUpdatedAt");
+            await mainLocalLog(
+              "Remote updatedAt: $remoteUpdatedAt",
+            );
 
             if (remoteUpdatedAt == null ||
                 localSupplier.updatedAt!.isAfter(
@@ -450,7 +460,7 @@ class SuppliersProvider extends ChangeNotifier {
                   .from(tableName)
                   .update(localSupplier.toJson())
                   .eq('uuid', localSupplier.uuid!);
-              print(
+              await mainLocalLog(
                 'Updated Supplier with uuid ${localSupplier.uuid}',
               );
               await UpdatedSupplierFunc()
@@ -458,7 +468,7 @@ class SuppliersProvider extends ChangeNotifier {
                     localSupplier.uuid ?? '',
                   );
             } else {
-              print(
+              await mainLocalLog(
                 'Skipped Supplier ${localSupplier.uuid}, remote is newer ✅',
               );
             }
@@ -466,15 +476,21 @@ class SuppliersProvider extends ChangeNotifier {
         }
 
         await UpdatedSupplierFunc().clearUpdatedSuppliers();
-        print('Unsynced updated Suppliers cleared');
+        await mainLocalLog(
+          'Unsynced updated Suppliers cleared',
+        );
 
-        print('Mounted, refreshing Suppliers ✅');
+        await mainLocalLog(
+          'Mounted, refreshing Suppliers ✅',
+        );
         await fetchSuppliers(
           shopProvider.userShop()!.shopId!,
         );
       }
     } catch (e) {
-      print('Batch Suppliers Update failed ❌: $e');
+      await mainLocalLog(
+        'Batch Suppliers Update failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Suppliers Update failed ❌: $e',
       );
@@ -511,20 +527,26 @@ class SuppliersProvider extends ChangeNotifier {
                 ) // delete where id is in the list
                 .select();
 
-        print(
+        await mainLocalLog(
           '${data.length} items deleted successfully ✅',
         );
 
         await DeletedSupplierFunc().clearDeletedSupplier();
-        print('Unsynced deleted Suppliers cleared');
+        await mainLocalLog(
+          'Unsynced deleted Suppliers cleared',
+        );
 
-        print('Mounted, refreshing Suppliers ✅');
+        await mainLocalLog(
+          'Mounted, refreshing Suppliers ✅',
+        );
         await fetchSuppliers(
           shopProvider.userShop()!.shopId!,
         );
       }
     } catch (e) {
-      print('Batch Suppliers Delete failed ❌: $e');
+      await mainLocalLog(
+        'Batch Suppliers Delete failed ❌: $e',
+      );
       await createErrorLog(
         error: 'Batch Suppliers Delete failed ❌: $e',
       );

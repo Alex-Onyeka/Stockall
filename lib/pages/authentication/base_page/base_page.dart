@@ -31,7 +31,7 @@ class _BasePageState extends State<BasePage> {
       context,
       listen: false,
     ).fetchCurrentUser(context);
-    print(user?.email);
+    await mainLocalLog(user?.email);
     return user;
   }
 

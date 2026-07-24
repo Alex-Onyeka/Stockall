@@ -1381,7 +1381,7 @@ class _ProductDetailsMobileState
                                                     });
                                                   });
 
-                                                  print(
+                                                  await mainLocalLog(
                                                     'Generate Clicked',
                                                   );
                                                 },

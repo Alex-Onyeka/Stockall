@@ -18,7 +18,7 @@
 //       SalesProductsAdapter().typeId,
 //     )) {
 //       Hive.registerAdapter(SalesProductsAdapter());
-//       print('SalesProductsAdapter registered ✅');
+//       await mainLocalLog('SalesProductsAdapter registered ✅');
 //     }
 
 //     // Open the box only if it isn’t already open
@@ -26,12 +26,12 @@
 //       _salesProductsBox = await Hive.openBox<SalesProducts>(
 //         salesProductsBoxName,
 //       );
-//       print('Sales Products Box opened ✅');
+//       await mainLocalLog('Sales Products Box opened ✅');
 //     } else {
 //       _salesProductsBox = Hive.box<SalesProducts>(
 //         salesProductsBoxName,
 //       );
-//       print('Sales Products Box already open, reused ✅');
+//       await mainLocalLog('Sales Products Box already open, reused ✅');
 //     }
 //   }
 
@@ -59,10 +59,10 @@
 //   //         product,
 //   //       );
 //   //     }
-//   //     print("Offline Sales Products inserted ✅");
+//   //     await mainLocalLog("Offline Sales Products inserted ✅");
 //   //     return 1;
 //   //   } catch (e) {
-//   //     print(
+//   //     await mainLocalLog(
 //   //       'Offline Sales Products insertion failed ❌: $e',
 //   //     );
 //   //     return 0;
@@ -82,21 +82,21 @@
 //           salesProduct.productUuid,
 //           salesProduct,
 //         );
-//         print(
+//         await mainLocalLog(
 //           'Offline Sales Product inserted successfully ✅',
 //         );
 //       } else {
 //         salesProducts.first.quantity =
 //             salesProducts.first.quantity +
 //             salesProduct.quantity;
-//         print(
+//         await mainLocalLog(
 //           'Offline Sales Product Updated successfully: New Quantity ${salesProducts.first.quantity} ✅',
 //         );
 //       }
 
 //       return 1;
 //     } catch (e) {
-//       print('Offline Sales Product insertion failed ❌: $e');
+//       await mainLocalLog('Offline Sales Product insertion failed ❌: $e');
 //       return 0;
 //     }
 //   }
@@ -113,19 +113,19 @@
 //         var product = salesProducts.first;
 //         if (product.quantity - salesProduct.quantity <= 0) {
 //           await deleteProduct(product.productUuid);
-//           print('Sales Product Deleted Successfully');
+//           await mainLocalLog('Sales Product Deleted Successfully');
 //         } else {
 //           salesProducts.first.quantity =
 //               salesProducts.first.quantity -
 //               salesProduct.quantity;
-//           print(
+//           await mainLocalLog(
 //             'Offline Sales Product Delecremented successfully: New Quantity ${salesProduct.quantity} ✅',
 //           );
 //         }
 //       }
 //       return 1;
 //     } catch (e) {
-//       print('Offline Sales Product insertion failed ❌: $e');
+//       await mainLocalLog('Offline Sales Product insertion failed ❌: $e');
 //       return 0;
 //     }
 //   }
@@ -134,7 +134,7 @@
 //   //   SalesProducts salesProduct,
 //   // ) async {
 //   //   try {
-//   //     print(
+//   //     await mainLocalLog(
 //   //       salesProductsBox
 //   //           .containsKey(salesProduct.productUuid)
 //   //           .toString(),
@@ -143,22 +143,22 @@
 //   //       salesProduct.productUuid,
 //   //       salesProduct,
 //   //     );
-//   //     print('Sales Product Deleted');
+//   //     await mainLocalLog('Sales Product Deleted');
 //   //     return 1;
 //   //   } catch (e) {
-//   //     print('Sales Product Delete Failed: ${e.toString()}');
+//   //     await mainLocalLog('Sales Product Delete Failed: ${e.toString()}');
 //   //     return 0;
 //   //   }
 //   // }
 
 //   Future<int> deleteProduct(String uuid) async {
 //     try {
-//       print(salesProductsBox.containsKey(uuid).toString());
+//       await mainLocalLog(salesProductsBox.containsKey(uuid).toString());
 //       await salesProductsBox.delete(uuid);
-//       print('Product Deleted');
+//       await mainLocalLog('Product Deleted');
 //       return 1;
 //     } catch (e) {
-//       print('Product Delete Failed: ${e.toString()}');
+//       await mainLocalLog('Product Delete Failed: ${e.toString()}');
 //       return 0;
 //     }
 //   }
@@ -166,10 +166,10 @@
 //   Future<int> clearProducts() async {
 //     try {
 //       await salesProductsBox.clear();
-//       print('All Sales Products cleared ✅');
+//       await mainLocalLog('All Sales Products cleared ✅');
 //       return 1;
 //     } catch (e) {
-//       print('Error while clearing Sales Products ❌: $e');
+//       await mainLocalLog('Error while clearing Sales Products ❌: $e');
 //       return 0;
 //     }
 //   }

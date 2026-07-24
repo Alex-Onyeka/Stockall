@@ -9,6 +9,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
+import 'package:stockall/main.dart';
 
 class VerifyEmailDesktop extends StatefulWidget {
   final ThemeProvider theme;
@@ -427,20 +428,20 @@ class _VerifyEmailDesktopState
       setState(() {
         isLoading = true;
       });
-      print('Verification Started');
+      await mainLocalLog('Verification Started');
       var res = await AuthService().verifyOtp(
         context: context,
         otp: otp,
         user: widget.user,
         userId: widget.userId,
       );
-      print(
+      await mainLocalLog(
         'Verification Ended: ${res == 1 ? 'Success' : 'Failed'}',
       );
       if (res == 1) {
         await AuthService().client.auth.refreshSession();
         if (context.mounted) {
-          print('Context is Mounted');
+          await mainLocalLog('Context is Mounted');
           Navigator.pushReplacement(
             // ignore: use_build_context_synchronously
             context,
@@ -451,7 +452,7 @@ class _VerifyEmailDesktopState
             ),
           );
         } else {
-          print('Context is Not Mounted');
+          await mainLocalLog('Context is Not Mounted');
         }
       } else {
         showDialog(

@@ -380,7 +380,7 @@ class _DashboardTotalSalesBannerState
                       context: context,
                     );
                   } else {
-                    print('Data is in sync');
+                    await mainLocalLog('Data is in sync');
                     returnData().toggleRefreshing(true);
                     await RefreshFunctions(
                       context,

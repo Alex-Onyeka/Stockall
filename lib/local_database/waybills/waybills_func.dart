@@ -21,7 +21,7 @@ class WaybillsFunc {
     await CreatedWaybillsFunc().init();
     await DeletedWaybillsFunc().init();
     await UpdatedWaybillsFunc().init();
-    print('Waybill Box Initialized');
+    await mainLocalLog('Waybill Box Initialized');
   }
 
   List<TempWayBills> getWaybills() {
@@ -41,10 +41,12 @@ class WaybillsFunc {
       for (var waybill in waybills) {
         await waybillBox.put(waybill.uuid, waybill);
       }
-      print('Offline Waybill Success');
+      await mainLocalLog('Offline Waybill Success');
       return 1;
     } catch (e) {
-      print('Offline Waybill Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Offline Waybill Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -52,10 +54,12 @@ class WaybillsFunc {
   Future<int> createWaybill(TempWayBills waybill) async {
     try {
       await waybillBox.put(waybill.uuid, waybill);
-      print('Offline Waybill Created');
+      await mainLocalLog('Offline Waybill Created');
       return 1;
     } catch (e) {
-      print('Offline Waybill Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Offline Waybill Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -63,10 +67,10 @@ class WaybillsFunc {
   Future<int> updateWaybill(TempWayBills waybill) async {
     try {
       await waybillBox.put(waybill.uuid, waybill);
-      print('Offline Waybill Updated');
+      await mainLocalLog('Offline Waybill Updated');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Waybill Update Failed: ${e.toString()}',
       );
       return 0;
@@ -76,10 +80,12 @@ class WaybillsFunc {
   Future<int> deleteWaybill(String uuid) async {
     try {
       await waybillBox.delete(uuid);
-      print('Offline Waybill Deleted');
+      await mainLocalLog('Offline Waybill Deleted');
       return 1;
     } catch (e) {
-      print('Offline Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Offline Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -87,10 +93,10 @@ class WaybillsFunc {
   Future<int> clearWaybills() async {
     try {
       await waybillBox.clear();
-      print('Offline Waybills Cleared');
+      await mainLocalLog('Offline Waybills Cleared');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Waybill Clear Failed: ${e.toString()}',
       );
       return 0;

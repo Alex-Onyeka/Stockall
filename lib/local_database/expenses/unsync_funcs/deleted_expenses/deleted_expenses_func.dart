@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_expenses/unsynced/deleted_expenses/deleted_expenses.dart';
+import 'package:stockall/main.dart';
 
 class DeletedExpensesFunc {
   static final DeletedExpensesFunc instance =
@@ -18,7 +19,9 @@ class DeletedExpensesFunc {
       DeletedExpensesAdapter().typeId,
     )) {
       Hive.registerAdapter(DeletedExpensesAdapter());
-      print('Deleted Expenses Adapter registered ✅');
+      await mainLocalLog(
+        'Deleted Expenses Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,14 @@ class DeletedExpensesFunc {
           await Hive.openBox<DeletedExpenses>(
             deletedExpensesBoxName,
           );
-      print('Deleted Expenses Box opened ✅');
+      await mainLocalLog('Deleted Expenses Box opened ✅');
     } else {
       _deletedExpensesBox = Hive.box<DeletedExpenses>(
         deletedExpensesBoxName,
       );
-      print('Deleted Expenses Box already open, reused ✅');
+      await mainLocalLog(
+        'Deleted Expenses Box already open, reused ✅',
+      );
     }
   }
 
@@ -57,10 +62,12 @@ class DeletedExpensesFunc {
       for (var Expense in deletedExpenses) {
         await deletedExpensesBox.add(Expense);
       }
-      print("Offline Deleted Expenses inserted ✅");
+      await mainLocalLog(
+        "Offline Deleted Expenses inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Deleted Expenses insertion failed ❌: $e',
       );
       return 0;
@@ -72,12 +79,12 @@ class DeletedExpensesFunc {
   ) async {
     try {
       await deletedExpensesBox.add(deletedExpense);
-      print(
+      await mainLocalLog(
         'Offline Deleted Expense inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Deleted Expense insertion failed ❌: $e',
       );
       return 0;
@@ -87,10 +94,12 @@ class DeletedExpensesFunc {
   Future<int> clearDeletedExpenses() async {
     try {
       await deletedExpensesBox.clear();
-      print('All Deleted Expenses cleared ✅');
+      await mainLocalLog('All Deleted Expenses cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while clearing Deleted Expenses ❌: $e');
+      await mainLocalLog(
+        'Error while clearing Deleted Expenses ❌: $e',
+      );
       return 0;
     }
   }

@@ -51,7 +51,7 @@ class _PricingContainerWidgetState
     double amount,
     int duration,
   ) async {
-    print('Payment Process Begins');
+    await mainLocalLog('Payment Process Begins');
 
     if (plan != 0) {
       if (returnSubPaymentProvider().currencyIndex == 0) {
@@ -82,7 +82,7 @@ class _PricingContainerWidgetState
           return;
         }
         if (kIsWeb) {
-          print('Platform is Web');
+          await mainLocalLog('Platform is Web');
           launchUrlMain(authorizationUrl.authorizationUrl);
         } else {
           Navigator.push<bool>(

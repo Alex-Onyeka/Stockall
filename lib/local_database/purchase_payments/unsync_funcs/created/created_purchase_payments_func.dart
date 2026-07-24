@@ -20,7 +20,7 @@
 //       Hive.registerAdapter(
 //         CreatedPurchasePaymentsAdapter(),
 //       );
-//       print(
+//       await mainLocalLog(
 //         'Created Purchase Payments Adapter registered ✅',
 //       );
 //     }
@@ -31,13 +31,13 @@
 //           await Hive.openBox<CreatedPurchasePayments>(
 //             createdPurchasePaymentsBoxName,
 //           );
-//       print('Created Purchase Payments Box opened ✅');
+//       await mainLocalLog('Created Purchase Payments Box opened ✅');
 //     } else {
 //       _createdPurchasePaymentsBox =
 //           Hive.box<CreatedPurchasePayments>(
 //             createdPurchasePaymentsBoxName,
 //           );
-//       print(
+//       await mainLocalLog(
 //         'Created Purchase Payments Box already open, reused ✅',
 //       );
 //     }
@@ -76,10 +76,10 @@
 //           purchasePayments,
 //         );
 //       }
-//       print("Offline Created Purchase Payments inserted ✅");
+//       await mainLocalLog("Offline Created Purchase Payments inserted ✅");
 //       return 1;
 //     } catch (e) {
-//       print(
+//       await mainLocalLog(
 //         'Offline Created Purchase Payments insertion failed ❌: $e',
 //       );
 //       return 0;
@@ -94,12 +94,12 @@
 //         createdPurchasePayments.purchasPayments.uuid,
 //         createdPurchasePayments,
 //       );
-//       print(
+//       await mainLocalLog(
 //         'Offline Created Purchase Payments inserted successfully ✅',
 //       );
 //       return 1;
 //     } catch (e) {
-//       print(
+//       await mainLocalLog(
 //         'Offline Created Purchase Payments insertion failed ❌: $e',
 //       );
 //       return 0;
@@ -108,16 +108,16 @@
 
 //   Future<int> deletePurchasePayments(String uuid) async {
 //     try {
-//       print(
+//       await mainLocalLog(
 //         createdPurchasePaymentsBox
 //             .containsKey(uuid)
 //             .toString(),
 //       );
 //       await createdPurchasePaymentsBox.delete(uuid);
-//       print('Created Purchase Deleted');
+//       await mainLocalLog('Created Purchase Deleted');
 //       return 1;
 //     } catch (e) {
-//       print(
+//       await mainLocalLog(
 //         'Created Purchase Delete Failed: ${e.toString()}',
 //       );
 //       return 0;
@@ -127,10 +127,10 @@
 //   Future<int> clearPurchasePayments() async {
 //     try {
 //       await createdPurchasePaymentsBox.clear();
-//       print('All Created Purchase Payments cleared ✅');
+//       await mainLocalLog('All Created Purchase Payments cleared ✅');
 //       return 1;
 //     } catch (e) {
-//       print(
+//       await mainLocalLog(
 //         'Error while clearing Created Purchase Payments ❌: $e',
 //       );
 //       return 0;

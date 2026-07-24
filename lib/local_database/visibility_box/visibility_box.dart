@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:stockall/main.dart';
 
 class VisibilityBox extends ChangeNotifier {
   static final VisibilityBox _instance =
@@ -17,16 +18,22 @@ class VisibilityBox extends ChangeNotifier {
 
   /// Initialize Hive and open visibility boxes
   Future<void> init() async {
-    _visibilityBox ??= await Hive.openBox<bool>(
-      _visibilityBoxName,
-    );
+    try {
+      _visibilityBox ??= await Hive.openBox<bool>(
+        _visibilityBoxName,
+      );
 
-    // Set default value for visibility if not set
-    if (!_visibilityBox!.containsKey(_visibilityKey)) {
-      await _visibilityBox!.put(_visibilityKey, true);
+      // Set default value for visibility if not set
+      if (!_visibilityBox!.containsKey(_visibilityKey)) {
+        await _visibilityBox!.put(_visibilityKey, true);
+      }
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error Initializing Visibility Button Box: ${e.toString()}',
+        error: e,
+        stackTrace: s,
+      );
     }
-
-    print("✅ Visibility Box Opened");
   }
 
   // ------------------- Visibility Methods -------------------

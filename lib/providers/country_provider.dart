@@ -141,7 +141,7 @@ class CountryProvider extends ChangeNotifier {
 
         isLoading = false;
         notifyListeners();
-        print(
+        await mainLocalLog(
           'Countrys Gotten Successfully Offline: ${countries.length}',
         );
 
@@ -159,7 +159,7 @@ class CountryProvider extends ChangeNotifier {
             'offset': '0',
           }),
         );
-        print(response.body);
+        await mainLocalLog(response.body);
 
         if (response.statusCode == 200) {
           final Map<String, dynamic> data = jsonDecode(
@@ -178,7 +178,7 @@ class CountryProvider extends ChangeNotifier {
 
           CountriesFunc().insertCountries(locatTemp);
           isLoading = false;
-          print(
+          await mainLocalLog(
             'Countrys Gotten Successfully Online: ${locatTemp.length}',
           );
 
@@ -189,7 +189,9 @@ class CountryProvider extends ChangeNotifier {
           );
         }
       } else {
-        print('Internet Connection Not Detected');
+        await mainLocalLog(
+          'Internet Connection Not Detected',
+        );
       }
     } catch (e) {
       throw Exception('Error fetching countries: $e');
@@ -219,7 +221,7 @@ class CountryProvider extends ChangeNotifier {
             },
           ),
         );
-        print(response.body);
+        await mainLocalLog(response.body);
 
         if (response.statusCode == 200) {
           final Map<String, dynamic> data = jsonDecode(
@@ -240,7 +242,7 @@ class CountryProvider extends ChangeNotifier {
           states = locatTemp;
 
           isLoading = false;
-          print(
+          await mainLocalLog(
             'States Gotten Successfully Online: ${locatTemp.length}',
           );
 
@@ -257,7 +259,7 @@ class CountryProvider extends ChangeNotifier {
         notifyListeners();
       }
     } else {
-      print('No Internet Connection Detected');
+      await mainLocalLog('No Internet Connection Detected');
     }
   }
 
@@ -281,7 +283,7 @@ class CountryProvider extends ChangeNotifier {
             },
           ),
         );
-        print(response.body);
+        await mainLocalLog(response.body);
 
         if (response.statusCode == 200) {
           final Map<String, dynamic> data = jsonDecode(
@@ -297,7 +299,7 @@ class CountryProvider extends ChangeNotifier {
           cities = locatTemp;
 
           isLoading = false;
-          print(
+          await mainLocalLog(
             'Cities Gotten Successfully Online: ${locatTemp.length}',
           );
 
@@ -314,7 +316,7 @@ class CountryProvider extends ChangeNotifier {
         notifyListeners();
       }
     } else {
-      print('No Internet Connection Detected');
+      await mainLocalLog('No Internet Connection Detected');
     }
   }
 
@@ -334,23 +336,23 @@ class CountryProvider extends ChangeNotifier {
 
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
-          print('Printed data: $data');
+          await mainLocalLog('Printed data: $data');
 
           return data['countryCode'] == 'NG';
         } else {
-          print(
+          await mainLocalLog(
             "Response Status Code: ${response.statusCode}",
           );
           return false;
         }
       } catch (e) {
-        print(
+        await mainLocalLog(
           'Error Occoured when Checking Users Country: ${e.toString()}',
         );
         return true;
       }
     } else {
-      print('No Internet Detected');
+      await mainLocalLog('No Internet Detected');
       return true;
     }
   }

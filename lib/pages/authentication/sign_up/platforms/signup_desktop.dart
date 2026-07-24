@@ -225,7 +225,7 @@ class _SignupDesktopState extends State<SignupDesktop> {
         setState(() {
           isLoading = false;
         });
-        // print(e);
+        // await mainLocalLog(e);
         if (!context.mounted) return;
         showDialog(
           // ignore: use_build_context_synchronously

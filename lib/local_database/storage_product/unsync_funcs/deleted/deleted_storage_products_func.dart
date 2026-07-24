@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_storage_product/unsynced/deleted_storage_products/deleted_storage_product.dart';
+import 'package:stockall/main.dart';
 
 class DeletedStorageProductsFunc {
   static final DeletedStorageProductsFunc instance =
@@ -18,7 +19,7 @@ class DeletedStorageProductsFunc {
       DeletedStorageProductAdapter().typeId,
     )) {
       Hive.registerAdapter(DeletedStorageProductAdapter());
-      print(
+      await mainLocalLog(
         'Deleted Storage Products Adapter registered ✅',
       );
     }
@@ -29,13 +30,15 @@ class DeletedStorageProductsFunc {
           await Hive.openBox<DeletedStorageProduct>(
             deletedStorageProductBoxName,
           );
-      print('Deleted Storage Products Box opened ✅');
+      await mainLocalLog(
+        'Deleted Storage Products Box opened ✅',
+      );
     } else {
       _deletedStorageProductBox =
           Hive.box<DeletedStorageProduct>(
             deletedStorageProductBoxName,
           );
-      print(
+      await mainLocalLog(
         'Deleted Storage Products Box already open, reused ✅',
       );
     }
@@ -62,10 +65,12 @@ class DeletedStorageProductsFunc {
       for (var invoice in deletedStorageProduct) {
         await deletedStorageProductBox.add(invoice);
       }
-      print("Offline Deleted Storage Products inserted ✅");
+      await mainLocalLog(
+        "Offline Deleted Storage Products inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Deleted Storage Products insertion failed ❌: $e',
       );
       return 0;
@@ -79,12 +84,12 @@ class DeletedStorageProductsFunc {
       await deletedStorageProductBox.add(
         deletedStorageProduct,
       );
-      print(
+      await mainLocalLog(
         'Offline Deleted Storage Product inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Deleted Storage Product insertion failed ❌: $e',
       );
       return 0;
@@ -96,10 +101,12 @@ class DeletedStorageProductsFunc {
   ) async {
     try {
       await deletedStorageProductBox.delete(uuid);
-      print('Delete Storage Product cleared ✅');
+      await mainLocalLog(
+        'Delete Storage Product cleared ✅',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error while Deleting Deleted Storage Product ❌: $e',
       );
       return 0;
@@ -109,10 +116,12 @@ class DeletedStorageProductsFunc {
   Future<int> clearDeletedStorageProduct() async {
     try {
       await deletedStorageProductBox.clear();
-      print('All Deleted Storage Products cleared ✅');
+      await mainLocalLog(
+        'All Deleted Storage Products cleared ✅',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error while clearing Deleted Storage Products ❌: $e',
       );
       return 0;

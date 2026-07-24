@@ -46,8 +46,10 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      print(returnShopProvider().userShop()?.name);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await mainLocalLog(
+        returnShopProvider().userShop()?.name,
+      );
       _handlePostFrameLogic();
     });
     setState(() {});

@@ -1779,7 +1779,7 @@ class _InvoicePageDesktopState
                                               SystemMouseCursors
                                                   .click,
                                           onTap: () {
-                                            print(
+                                            mainLocalLog(
                                               invoice
                                                   .subStaffUuid,
                                             );

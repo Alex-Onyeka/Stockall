@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/on_screen_keyboard_pin/on_screen_keyboard_pin_class.dart';
+import 'package:stockall/main.dart';
 
 class OnScreenKeyboardPinFunc {
   static final OnScreenKeyboardPinFunc instance =
@@ -11,22 +12,32 @@ class OnScreenKeyboardPinFunc {
       'onScreenKeyboardPinBoxStockall';
 
   Future<void> init() async {
-    // await Hive.deleteBoxFromDisk(onScreenKeyboardPinBoxName);
+    try {
+      Hive.registerAdapter(
+        OnScreenKeyboardPinClassAdapter(),
+      );
 
-    Hive.registerAdapter(OnScreenKeyboardPinClassAdapter());
+      onScreenKeyboardPinBox = await Hive.openBox(
+        onScreenKeyboardPinBoxName,
+      );
 
-    onScreenKeyboardPinBox = await Hive.openBox(
-      onScreenKeyboardPinBoxName,
-    );
+      // Initialize default value
+      if (onScreenKeyboardPinBox.isEmpty) {
+        await insertOnScreenKeyboardPin(
+          OnScreenKeyboardPinClass(id: 1, isOn: false),
+        );
+      }
 
-    // Initialize default value
-    if (onScreenKeyboardPinBox.isEmpty) {
-      await insertOnScreenKeyboardPin(
-        OnScreenKeyboardPinClass(id: 1, isOn: false),
+      await mainLocalLog(
+        '✅App OnScreenKeyboardPin Box Initialized',
+      );
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error Initializing On Screen Keyboard Box: ${e.toString()}',
+        error: e,
+        stackTrace: s,
       );
     }
-
-    print('✅App OnScreenKeyboardPin Box Initialized');
   }
 
   OnScreenKeyboardPinClass? getOnScreenKeyboardPinClass() {
@@ -43,10 +54,12 @@ class OnScreenKeyboardPinFunc {
         onScreenKeyboardPin.id,
         onScreenKeyboardPin,
       );
-      print('OnScreenKeyboardPin inserted Success');
+      await mainLocalLog(
+        'OnScreenKeyboardPin inserted Success',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         '❌❌ Insert OnScreenKeyboardPin Offline Error: ${e.toString()}',
       );
       return 0;
@@ -68,7 +81,7 @@ class OnScreenKeyboardPinFunc {
         return 0;
       }
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Error Toggling On Screen Keyboard Value: ${e.toString()}',
       );
       return 0;
@@ -77,6 +90,8 @@ class OnScreenKeyboardPinFunc {
 
   Future clearOnScreenKeyboardPins() async {
     await onScreenKeyboardPinBox.clear();
-    print('Offline OnScreenKeyboardPin Cleared');
+    await mainLocalLog(
+      'Offline OnScreenKeyboardPin Cleared',
+    );
   }
 }

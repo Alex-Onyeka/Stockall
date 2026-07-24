@@ -21,7 +21,9 @@ class ItemPurchaseFunc {
     );
     await CreatedItemPurchaseFunc().init();
     await DeletedItemPurchaseFunc().init();
-    print('Item Purchase Record Box Initialized');
+    await mainLocalLog(
+      'Item Purchase Record Box Initialized',
+    );
   }
 
   List<TempItemPurchaseRecord> getItemPurchaseRecords() {
@@ -44,10 +46,14 @@ class ItemPurchaseFunc {
           record,
         );
       }
-      print('Offline Record insert Successful');
+      await mainLocalLog(
+        'Offline Record insert Successful',
+      );
       return 1;
     } catch (e) {
-      print('❌❌ Record Insert Error: ${e.toString()}');
+      await mainLocalLog(
+        '❌❌ Record Insert Error: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -62,10 +68,14 @@ class ItemPurchaseFunc {
           record,
         );
       }
-      print('Offline Record insert Successful');
+      await mainLocalLog(
+        'Offline Record insert Successful',
+      );
       return 1;
     } catch (e) {
-      print('❌❌ Record Insert Error: ${e.toString()}');
+      await mainLocalLog(
+        '❌❌ Record Insert Error: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -75,10 +85,14 @@ class ItemPurchaseFunc {
   ) async {
     try {
       await itemPurchaseRecordsBox.put(record.uuid, record);
-      print('Offline Record insert Successful');
+      await mainLocalLog(
+        'Offline Record insert Successful',
+      );
       return 1;
     } catch (e) {
-      print('❌❌ Record Insert Error: ${e.toString()}');
+      await mainLocalLog(
+        '❌❌ Record Insert Error: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -86,10 +100,14 @@ class ItemPurchaseFunc {
   Future<int> deleteRecord(String uuid) async {
     try {
       await itemPurchaseRecordsBox.delete(uuid);
-      print('Offline Record Deleted Successful');
+      await mainLocalLog(
+        'Offline Record Deleted Successful',
+      );
       return 1;
     } catch (e) {
-      print('❌❌ Record Delete Error: ${e.toString()}');
+      await mainLocalLog(
+        '❌❌ Record Delete Error: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -97,7 +115,7 @@ class ItemPurchaseFunc {
   Future<int> deleteRecordsInPurchase(
     String purchaseUuid,
   ) async {
-    print('Deleting Records in Purchase');
+    await mainLocalLog('Deleting Records in Purchase');
     try {
       List<TempItemPurchaseRecord> records =
           getItemPurchaseRecords()
@@ -106,7 +124,9 @@ class ItemPurchaseFunc {
                     record.purchaseId == purchaseUuid,
               )
               .toList();
-      print('Records Gotten: ${records.length}');
+      await mainLocalLog(
+        'Records Gotten: ${records.length}',
+      );
       for (var record in records) {
         await itemPurchaseRecordsBox.delete(record.uuid);
         var containsCreated = CreatedRecordsFunc()
@@ -119,14 +139,16 @@ class ItemPurchaseFunc {
             record.uuid!,
           );
         }
-        print('Records Deleted');
+        await mainLocalLog('Records Deleted');
       }
-      print(
+      await mainLocalLog(
         '${records.length}} Offline Records Deleted Successful',
       );
       return 1;
     } catch (e) {
-      print('❌❌ Record Delete Error: ${e.toString()}');
+      await mainLocalLog(
+        '❌❌ Record Delete Error: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -134,10 +156,14 @@ class ItemPurchaseFunc {
   Future<int> clearRecords() async {
     try {
       await itemPurchaseRecordsBox.clear();
-      print('Offline Record Cleared Successful');
+      await mainLocalLog(
+        'Offline Record Cleared Successful',
+      );
       return 1;
     } catch (e) {
-      print('❌❌ Record Clear Error: ${e.toString()}');
+      await mainLocalLog(
+        '❌❌ Record Clear Error: ${e.toString()}',
+      );
       return 0;
     }
   }

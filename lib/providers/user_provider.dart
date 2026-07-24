@@ -27,7 +27,7 @@ class UserProvider extends ChangeNotifier {
 
   void clearUsers() {
     usersMain.clear();
-    print('📍📍📍Users Cleared');
+    mainLocalLog('📍📍📍Users Cleared');
     notifyListeners();
   }
 
@@ -52,7 +52,9 @@ class UserProvider extends ChangeNotifier {
             .from('users')
             .select()
             .inFilter('user_id', employees);
-        print('Users Gotten from Supabase: ${data.length}');
+        await mainLocalLog(
+          'Users Gotten from Supabase: ${data.length}',
+        );
 
         _users =
             data
@@ -76,7 +78,9 @@ class UserProvider extends ChangeNotifier {
       isLoading = false;
       return _users;
     } catch (e) {
-      print('Error Fetching Users: ${e.toString()}');
+      await mainLocalLog(
+        'Error Fetching Users: ${e.toString()}',
+      );
       return [];
     }
   }
@@ -97,7 +101,7 @@ class UserProvider extends ChangeNotifier {
         final authUser = _supabase.currentUser;
         if (authUser == null) {
           _currentUser = null;
-          print('No User Found');
+          await mainLocalLog('No User Found');
           return null;
         }
         final data =
@@ -109,7 +113,9 @@ class UserProvider extends ChangeNotifier {
 
         _currentUser = TempUserClass.fromJson(data);
         // notifyListeners();
-        print('User Found: ${_currentUser?.name}');
+        await mainLocalLog(
+          'User Found: ${_currentUser?.name}',
+        );
         await UserFunc().insertUser(_currentUser!);
         await LoggedInUserFunc().insertLoggedInUser(
           LoggedInUser(loggedInUser: _currentUser),
@@ -118,7 +124,7 @@ class UserProvider extends ChangeNotifier {
         final authUser = _supabase.currentUser;
         if (authUser == null) {
           _currentUser = null;
-          print('No User Found');
+          await mainLocalLog('No User Found');
           return null;
         }
         final data =
@@ -128,7 +134,9 @@ class UserProvider extends ChangeNotifier {
                 .eq('user_id', authUser)
                 .single();
         _currentUser = TempUserClass.fromJson(data);
-        print('User Found: ${_currentUser?.name}');
+        await mainLocalLog(
+          'User Found: ${_currentUser?.name}',
+        );
         await UserFunc().insertUser(_currentUser!);
         await LoggedInUserFunc().insertLoggedInUser(
           LoggedInUser(loggedInUser: _currentUser),
@@ -139,7 +147,7 @@ class UserProvider extends ChangeNotifier {
           LoggedInUserFunc()
               .getLoggedInUser()
               ?.loggedInUser;
-      print(
+      await mainLocalLog(
         'Current Logged In User: ${_currentUser?.name}',
       );
     }
@@ -176,9 +184,9 @@ class UserProvider extends ChangeNotifier {
           .update({'password': newPassword})
           .eq('user_id', userId);
 
-      print("✅ Password updated on Supabase");
+      await mainLocalLog("✅ Password updated on Supabase");
     } catch (e) {
-      print("❌ Failed to update password: $e");
+      await mainLocalLog("❌ Failed to update password: $e");
     }
   }
 
@@ -192,9 +200,9 @@ class UserProvider extends ChangeNotifier {
           .update({'pin': newPin})
           .eq('user_id', userId);
 
-      print("✅ Password updated on Supabase");
+      await mainLocalLog("✅ Password updated on Supabase");
     } catch (e) {
-      print("❌ Failed to update password: $e");
+      await mainLocalLog("❌ Failed to update password: $e");
     }
   }
 
@@ -214,13 +222,13 @@ class UserProvider extends ChangeNotifier {
                 .maybeSingle();
 
         if (data == null) {
-          print('User not found');
+          await mainLocalLog('User not found');
           return null;
         }
 
         var user = TempUserClass.fromJson(data);
         notifyListeners();
-        print('User found');
+        await mainLocalLog('User found');
         return user;
       } catch (e) {
         return null;
@@ -275,7 +283,7 @@ class UserProvider extends ChangeNotifier {
       await fetchUsersByShop();
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Failed to update user access: ${e.toString()}',
       );
       return 0;
@@ -297,7 +305,7 @@ class UserProvider extends ChangeNotifier {
       await fetchUsersByShop();
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Failed to update user Departments: ${e.toString()}',
       );
       return 0;
@@ -325,7 +333,7 @@ class UserProvider extends ChangeNotifier {
               .maybeSingle();
 
       if (authUserResponse == null) {
-        print("Auth Response is Null");
+        await mainLocalLog("Auth Response is Null");
         return '131';
       }
 
@@ -342,7 +350,7 @@ class UserProvider extends ChangeNotifier {
         (user) => user.userId == userId,
       );
       if (user.isEmpty) {
-        print('User Not Found');
+        await mainLocalLog('User Not Found');
       } else {
         user.first.role = newRole;
       }
@@ -362,7 +370,7 @@ class UserProvider extends ChangeNotifier {
                 .maybeSingle();
 
         if (response == null) {
-          print('Shop not found');
+          await mainLocalLog('Shop not found');
           // return;
         }
 
@@ -377,7 +385,7 @@ class UserProvider extends ChangeNotifier {
         if (currentEmployees.contains(userId)) {
           currentEmployees.remove(userId);
         } else {
-          print(
+          await mainLocalLog(
             'Error Removing User Id From Shop Employees',
           );
         }
@@ -392,16 +400,20 @@ class UserProvider extends ChangeNotifier {
             );
 
         if (updateResponse != null) {
-          print('Failed to update shop: $updateResponse');
+          await mainLocalLog(
+            'Failed to update shop: $updateResponse',
+          );
         } else {
-          print('Staff added successfully.');
+          await mainLocalLog('Staff added successfully.');
         }
       }
       notifyListeners();
       await fetchUsersByShop();
       return null; // success
     } catch (e) {
-      print('❌❌ Error updating Staff role: $e');
+      await mainLocalLog(
+        '❌❌ Error updating Staff role: $e',
+      );
       return 'Error: ${e.toString()}';
     }
   }
@@ -412,9 +424,11 @@ class UserProvider extends ChangeNotifier {
           .from('users')
           .delete()
           .eq('user_id', userId);
-      print('User Row Deleted Successfully');
+      await mainLocalLog('User Row Deleted Successfully');
     } catch (e) {
-      print("User Row Deletiong Failed: ${e.toString()}");
+      await mainLocalLog(
+        "User Row Deletiong Failed: ${e.toString()}",
+      );
     }
   }
 

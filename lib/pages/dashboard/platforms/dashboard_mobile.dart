@@ -105,7 +105,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
           context,
           listen: false,
         ).load(true);
-        print('Data Loaded');
+        await mainLocalLog('Data Loaded');
       });
     }
     // loadSuggestions();

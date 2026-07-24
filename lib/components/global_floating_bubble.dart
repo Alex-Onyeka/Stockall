@@ -313,7 +313,7 @@ class _GlobalFloatingBubbleState
                                           toggleExpanded();
                                         }
                                       } catch (e) {
-                                        print(
+                                        await mainLocalLog(
                                           'Error Opening Keyboard: ${e.toString()}',
                                         );
                                       }

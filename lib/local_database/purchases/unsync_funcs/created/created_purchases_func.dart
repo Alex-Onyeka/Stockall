@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_purchase/unsynced/created_purchases/created_purchases.dart';
+import 'package:stockall/main.dart';
 
 class CreatedPurchasesFunc {
   static final CreatedPurchasesFunc instance =
@@ -18,7 +19,9 @@ class CreatedPurchasesFunc {
       CreatedPurchasesAdapter().typeId,
     )) {
       Hive.registerAdapter(CreatedPurchasesAdapter());
-      print('Created Purchases Adapter registered ✅');
+      await mainLocalLog(
+        'Created Purchases Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,14 @@ class CreatedPurchasesFunc {
           await Hive.openBox<CreatedPurchases>(
             createdPurchasesBoxName,
           );
-      print('Created Purchases Box opened ✅');
+      await mainLocalLog('Created Purchases Box opened ✅');
     } else {
       _createdPurchasesBox = Hive.box<CreatedPurchases>(
         createdPurchasesBoxName,
       );
-      print('Created Purchases Box already open, reused ✅');
+      await mainLocalLog(
+        'Created Purchases Box already open, reused ✅',
+      );
     }
   }
 
@@ -67,10 +72,12 @@ class CreatedPurchasesFunc {
           purchases,
         );
       }
-      print("Offline Created Purchases inserted ✅");
+      await mainLocalLog(
+        "Offline Created Purchases inserted ✅",
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Purchases insertion failed ❌: $e',
       );
       return 0;
@@ -85,12 +92,12 @@ class CreatedPurchasesFunc {
         createdPurchases.purchase.uuid,
         createdPurchases,
       );
-      print(
+      await mainLocalLog(
         'Offline Created Purchases inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Created Purchases insertion failed ❌: $e',
       );
       return 0;
@@ -99,14 +106,14 @@ class CreatedPurchasesFunc {
 
   Future<int> deletePurchase(String uuid) async {
     try {
-      print(
+      await mainLocalLog(
         createdPurchasesBox.containsKey(uuid).toString(),
       );
       await createdPurchasesBox.delete(uuid);
-      print('Created Purchase Deleted');
+      await mainLocalLog('Created Purchase Deleted');
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Created Purchase Delete Failed: ${e.toString()}',
       );
       return 0;
@@ -116,10 +123,12 @@ class CreatedPurchasesFunc {
   Future<int> clearPurchases() async {
     try {
       await createdPurchasesBox.clear();
-      print('All Created Purchases cleared ✅');
+      await mainLocalLog('All Created Purchases cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while clearing Created Purchases ❌: $e');
+      await mainLocalLog(
+        'Error while clearing Created Purchases ❌: $e',
+      );
       return 0;
     }
   }

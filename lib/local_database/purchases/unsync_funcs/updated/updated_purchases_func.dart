@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_purchase/unsynced/updated/updated_purchases.dart';
+import 'package:stockall/main.dart';
 
 class UpdatedPurchasesFunc {
   static final UpdatedPurchasesFunc instance =
@@ -18,7 +19,9 @@ class UpdatedPurchasesFunc {
       UpdatedPurchasesAdapter().typeId,
     )) {
       Hive.registerAdapter(UpdatedPurchasesAdapter());
-      print('Updated Purchases Adapter registered ✅');
+      await mainLocalLog(
+        'Updated Purchases Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +30,14 @@ class UpdatedPurchasesFunc {
           await Hive.openBox<UpdatedPurchases>(
             updatedPurchasesBoxName,
           );
-      print('Updated Purchases Box opened ✅');
+      await mainLocalLog('Updated Purchases Box opened ✅');
     } else {
       _updatedPurchasesBox = Hive.box<UpdatedPurchases>(
         updatedPurchasesBoxName,
       );
-      print('Updated Purchases Box already open, reused ✅');
+      await mainLocalLog(
+        'Updated Purchases Box already open, reused ✅',
+      );
     }
   }
 
@@ -59,12 +64,12 @@ class UpdatedPurchasesFunc {
           purchase: updatedPurchase.purchase,
         ),
       );
-      print(
+      await mainLocalLog(
         'Offline Updated Purchase inserted successfully ✅',
       );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Updated Purchase insertion failed ❌: $e',
       );
       return 0;
@@ -73,14 +78,16 @@ class UpdatedPurchasesFunc {
 
   Future<int> deleteUpdatedPurchase(String uuid) async {
     try {
-      print(
+      await mainLocalLog(
         updatedPurchasesBox.containsKey(uuid).toString(),
       );
       await updatedPurchasesBox.delete(uuid);
-      print('Updated Purchase Deleted');
+      await mainLocalLog('Updated Purchase Deleted');
       return 1;
     } catch (e) {
-      print('Purchase Delete Failed: ${e.toString()}');
+      await mainLocalLog(
+        'Purchase Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -88,10 +95,12 @@ class UpdatedPurchasesFunc {
   Future<int> clearUpdatedPurchases() async {
     try {
       await updatedPurchasesBox.clear();
-      print('All updated Purchases cleared ✅');
+      await mainLocalLog('All updated Purchases cleared ✅');
       return 1;
     } catch (e) {
-      print('Error while clearing updated Purchases ❌: $e');
+      await mainLocalLog(
+        'Error while clearing updated Purchases ❌: $e',
+      );
       return 0;
     }
   }

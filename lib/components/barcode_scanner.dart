@@ -159,9 +159,9 @@ class _BarcodeScannerMobileState
                   // fit: BoxFit.contain,
                   controller: cameraController,
                   onDetect: _onDetectNative,
-                  onDetectError: (error, stackTrace) {
-                    print(error.toString());
-                    print(
+                  onDetectError: (error, stackTrace) async {
+                    await mainLocalLog(error.toString());
+                    await mainLocalLog(
                       '❌❌ Error: ${stackTrace.toString()}',
                     );
                     returnErrorLogProvider().createLog(
@@ -319,9 +319,12 @@ class _BarcodeScannerDesktopState
                     // fit: BoxFit.contain,
                     controller: cameraController,
                     onDetect: _onDetectNative,
-                    onDetectError: (error, stackTrace) {
-                      print(error.toString());
-                      print(
+                    onDetectError: (
+                      error,
+                      stackTrace,
+                    ) async {
+                      await mainLocalLog(error.toString());
+                      await mainLocalLog(
                         '❌❌ Error: ${stackTrace.toString()}',
                       );
                       returnErrorLogProvider().createLog(

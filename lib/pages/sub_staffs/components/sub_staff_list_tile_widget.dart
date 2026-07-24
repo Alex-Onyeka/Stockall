@@ -268,7 +268,7 @@ class _SubStaffListTileWidgetState
                                   phoneController.text =
                                       widget.staff.phone ??
                                       '';
-                                  print("Init");
+                                  mainLocalLog("Init");
                                   showDialog(
                                     context: context,
                                     builder: (

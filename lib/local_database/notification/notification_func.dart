@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_notification/temp_notification.dart';
+import 'package:stockall/main.dart';
 
 class NotificationFunc {
   static final NotificationFunc instance =
@@ -15,7 +16,7 @@ class NotificationFunc {
     notificationBox = await Hive.openBox(
       notificationBoxName,
     );
-    print('Notification Box Initialized');
+    await mainLocalLog('Notification Box Initialized');
   }
 
   List<TempNotification> getNotifications() {
@@ -35,10 +36,12 @@ class NotificationFunc {
       for (var notif in notifications) {
         await notificationBox.put(notif.uuid, notif);
       }
-      print('Offline Notif Insert Success');
+      await mainLocalLog('Offline Notif Insert Success');
       return 1;
     } catch (e) {
-      print('Offline notif insert failed: ${e.toString()}');
+      await mainLocalLog(
+        'Offline notif insert failed: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -46,10 +49,12 @@ class NotificationFunc {
   Future<int> clearNotifications() async {
     try {
       await notificationBox.clear();
-      print('Notif Cleared Success');
+      await mainLocalLog('Notif Cleared Success');
       return 1;
     } catch (e) {
-      print('❌❌ Notif Clear Error: ${e.toString()}');
+      await mainLocalLog(
+        '❌❌ Notif Clear Error: ${e.toString()}',
+      );
       return 0;
     }
   }

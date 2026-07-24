@@ -15,7 +15,7 @@ class EventsLogFunc {
     Hive.registerAdapter(TempEventLogClassAdapter());
     eventsLogBox = await Hive.openBox(eventsLogBoxName);
     await CreatedEventsLogFunc().init();
-    print('Events Log Box Initialized');
+    await mainLocalLog('Events Log Box Initialized');
   }
 
   List<TempEventLogClass> getEventsLogs() {
@@ -35,13 +35,12 @@ class EventsLogFunc {
       for (var log in eventsLog) {
         await eventsLogBox.put(log.uuid, log);
       }
-      print(
+      await mainLocalLog(
         "Offline Events Log inserted: ${eventsLog.length}",
       );
-      print(getEventsLogs().length);
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Events Log Insertion failed: ${e.toString()}',
       );
       return 0;
@@ -53,11 +52,13 @@ class EventsLogFunc {
   ) async {
     try {
       await eventsLogBox.put(eventsLog.uuid, eventsLog);
-      print('Offline Events Log inserted Successfully');
+      await mainLocalLog(
+        'Offline Events Log inserted Successfully',
+      );
 
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         'Offline Events Log Insertion Failed: ${e.toString()}',
       );
       return 0;
@@ -68,11 +69,11 @@ class EventsLogFunc {
     try {
       if (eventsLogBox.values.isNotEmpty) {
         await eventsLogBox.clear();
-        print('Offline Events Log Cleared');
+        await mainLocalLog('Offline Events Log Cleared');
       }
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         '❌❌ Offline Events Log Clear Error: ${e.toString()}',
       );
       return 0;

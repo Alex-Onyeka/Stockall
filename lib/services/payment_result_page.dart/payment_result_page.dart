@@ -33,7 +33,7 @@ class _PaymentResultPageState
         final uri = Uri.base;
         final reference = uri.queryParameters['reference'];
         if (reference == null || reference.isEmpty) {
-          print('Reference is Empty');
+          await mainLocalLog('Reference is Empty');
           setState(() {
             isVerified = false;
             isLoading = true;

@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_permission/temp_permission_class.dart';
+import 'package:stockall/main.dart';
 
 class PermissionFunc {
   static final PermissionFunc instance =
@@ -11,12 +12,22 @@ class PermissionFunc {
       'permissionModelBoxStockall';
 
   Future<void> init() async {
-    // await Hive.deleteBoxFromDisk(permissionModelBoxName);
-    Hive.registerAdapter(PermissionModelAdapter());
-    permissionModelBox = await Hive.openBox(
-      permissionModelBoxName,
-    );
-    print('✅ Permisson Model Box Initialized');
+    try {
+      // await Hive.deleteBoxFromDisk(permissionModelBoxName);
+      Hive.registerAdapter(PermissionModelAdapter());
+      permissionModelBox = await Hive.openBox(
+        permissionModelBoxName,
+      );
+      await mainLocalLog(
+        '✅ Permisson Model Box Initialized',
+      );
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error Initializing Permissions Box: ${e.toString()}',
+        error: e,
+        stackTrace: s,
+      );
+    }
   }
 
   List<PermissionModel> getPermissionModel() {
@@ -31,10 +42,12 @@ class PermissionFunc {
       for (var permit in permissions) {
         await permissionModelBox.put(permit.id, permit);
       }
-      print('Offline Permissions Inserted Successfully');
+      await mainLocalLog(
+        'Offline Permissions Inserted Successfully',
+      );
       return 1;
     } catch (e) {
-      print(
+      await mainLocalLog(
         '❌❌ Offline Permissions insertion Failed: ${e.toString()}',
       );
       return 0;
@@ -43,6 +56,6 @@ class PermissionFunc {
 
   Future clearPermission() async {
     await permissionModelBox.clear();
-    print('Offline Permission Cleared');
+    await mainLocalLog('Offline Permission Cleared');
   }
 }

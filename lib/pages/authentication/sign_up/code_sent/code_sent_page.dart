@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/sign_up/code_sent/platforms/code_sent_desktop.dart';
 import 'package:stockall/pages/authentication/sign_up/code_sent/platforms/code_sent_mobile.dart';
 import 'package:stockall/pages/authentication/sign_up/verify_email/verify_email_page.dart';
@@ -92,7 +93,7 @@ class _CodeSentPageState extends State<CodeSentPage> {
           if (context.mounted) {
             Navigator.of(context).pop();
           } else {
-            print('Context Not Mounted');
+            mainLocalLog('Context Not Mounted');
           }
         });
       });
