@@ -78,6 +78,9 @@ class TempCart extends HiveObject {
   @HiveField(23)
   TimeOfDay? timeOfDay;
 
+  @HiveField(24)
+  String? comment;
+
   TempCart({
     required this.cartItems,
     required this.isInvoice,
@@ -103,6 +106,7 @@ class TempCart extends HiveObject {
     required this.hasPrintedDocket,
     required this.subStaffName,
     required this.timeOfDay,
+    required this.comment,
   });
 
   List<TempCartItem> getCartItemsAll() {

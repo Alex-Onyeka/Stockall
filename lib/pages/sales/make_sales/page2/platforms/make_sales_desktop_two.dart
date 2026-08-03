@@ -17,8 +17,10 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/sales/make_sales/page1/platforms/make_sales_desktop.dart';
+import 'package:stockall/pages/sales/make_sales/page1/platforms/components/project_display_widget.dart';
+import 'package:stockall/pages/sales/make_sales/page1/platforms/components/sub_staff_selection_widget.dart';
 import 'package:stockall/pages/sales/make_sales/page2/components/customer_selection_widget.dart';
+import 'package:stockall/pages/sales/make_sales/page2/components/receipt_comment_widget.dart';
 import 'package:stockall/pages/sales/make_sales/page2/components/set_custom_receipt_created_date_widget.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -30,6 +32,7 @@ class MakeSalesDesktopTwo extends StatefulWidget {
   final TextEditingController bankController;
   final TextEditingController customerController;
   final TextEditingController partPaymentController;
+  final TextEditingController commentController;
   const MakeSalesDesktopTwo({
     super.key,
     required this.searchController,
@@ -38,6 +41,7 @@ class MakeSalesDesktopTwo extends StatefulWidget {
     required this.customerController,
     required this.totalAmount,
     required this.partPaymentController,
+    required this.commentController,
   });
 
   @override
@@ -644,8 +648,8 @@ class _MakeSalesDesktopTwoState
                                                     TempCart(
                                                       timeOfDay:
                                                           null,
-                                                      // createdDate:
-                                                      //     DateTime.now(),
+                                                      comment:
+                                                          null,
                                                       hasPrintedDocket:
                                                           false,
                                                       subStaffName:
@@ -1096,7 +1100,8 @@ class _MakeSalesDesktopTwoState
                                             : 'Check Out',
                                   ),
                                 ),
-                                SizedBox(height: 20),
+                                SizedBox(height: 10),
+                                ReceiptCommentWidget(),
                               ],
                             ),
                           ),

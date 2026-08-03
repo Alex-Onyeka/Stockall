@@ -509,12 +509,15 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                           .product
                                                           .quantity ==
                                                       null
-                                                  ? 'Qtty Not Set'
+                                                  ? 'Not Set'
                                                   : authorization(
                                                     authorized:
                                                         Authorizations().viewItemQuantity,
                                                   )
-                                                  ? '${formatLargeNumberDouble((widget.product.quantity ?? 0))} in Stock'
+                                                  ? formatLargeNumberDouble(
+                                                    (widget.product.quantity ??
+                                                        0),
+                                                  )
                                                   : 'Restricted'
                                               : 'Item Expired'
                                           : widget
@@ -526,13 +529,18 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                   .product
                                                   .quantity ==
                                               null
-                                          ? 'Qtty Not Set'
+                                          ? 'Not Set'
                                           : authorization(
                                             authorized:
                                                 Authorizations()
                                                     .viewItemQuantity,
                                           )
-                                          ? '${formatLargeNumberDouble((widget.product.quantity ?? 0))} in Stock'
+                                          ? formatLargeNumberDouble(
+                                            (widget
+                                                    .product
+                                                    .quantity ??
+                                                0),
+                                          )
                                           : 'Restricted',
                                     ),
                                   ),

@@ -154,10 +154,6 @@ void maxWindow() {
   }
 }
 
-// String dateFormatMainApp(DateTime date) {
-//   return "${date.hour | date.minute | date.second}";
-// }
-
 Future<void> initMainLog() async {
   if (kIsWeb) {
     return;
@@ -174,7 +170,6 @@ Future<void> initMainLog() async {
         'TIME: ${DateTime.now().toString().split('.').first}\n'
         'VERSION: 1.8.74.0\n'
         'PLATFORM: Windows\n'
-        'DIRECTORY: ${dir.path}\n'
         '======================================\n\n',
       );
     }
@@ -186,7 +181,7 @@ Future<void> mainLocalLog(
   Object? error,
   StackTrace? stackTrace,
 }) async {
-  print('Message: ${message ?? 'Not Set'}');
+  print('Log: ${message ?? 'Not Set'}');
   if (kIsWeb) {
     return;
   } else {
@@ -200,15 +195,15 @@ Future<void> mainLocalLog(
 
       final buffer =
           StringBuffer()..writeln(
-            'Message: [${DateTime.now().toString().split('.').first}] ${message ?? 'Not Set'}',
+            'Log: [${DateTime.now().toString().split('.').first}] ${message ?? 'Not Set'}',
           );
 
       if (error != null) {
-        buffer.writeln('Error: $error');
+        buffer.writeln('Error Log: $error');
       }
 
       if (stackTrace != null) {
-        buffer.writeln("Stack Trace: $stackTrace");
+        buffer.writeln("Stack Trace Log: $stackTrace");
       }
 
       buffer.writeln();

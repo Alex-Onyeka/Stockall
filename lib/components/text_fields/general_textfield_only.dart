@@ -66,7 +66,7 @@ class _GeneralTextfieldOnlyState
         },
         style: TextStyle(
           fontWeight: FontWeight.bold,
-          fontSize: theme.mobileTexts.b1.fontSize,
+          fontSize: theme.mobileTexts.b2.fontSize,
         ),
         onChanged: widget.onChanged,
         maxLines: widget.lines,

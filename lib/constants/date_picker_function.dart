@@ -3,7 +3,11 @@ import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/providers/excel_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
+
+import 'package:syncfusion_flutter_xlsio/xlsio.dart'
+    show Workbook, Range;
 
 Future<dynamic> mainDatePicker({
   required BuildContext context,
@@ -437,3 +441,123 @@ Future<TimeOfDay?> myTimePickerAction(
     initialTime: TimeOfDay.now(),
   );
 }
+
+class ProductExcelRow {
+  final String name;
+  final double quantity;
+  final double price;
+
+  ProductExcelRow({
+    required this.name,
+    required this.quantity,
+    required this.price,
+  });
+
+  Map<String, dynamic> toMap() => {
+    'Name': name,
+    'Quantity': quantity,
+    'Price': price,
+  };
+}
+
+final products = [
+  ProductExcelRow(name: 'Rice', quantity: 20, price: 500),
+  ProductExcelRow(name: 'Beans', quantity: 15, price: 350),
+  ProductExcelRow(name: 'Oil', quantity: 8, price: 2500),
+];
+
+Future<void> generateProductExcel() async {
+  try {
+    final workbook = Workbook();
+
+    final sheet = workbook.worksheets[0];
+    sheet.name = 'Products';
+
+    // Header Row
+    for (
+      var i = 0;
+      i < ExcelProvider().headers(items: products).length;
+      i++
+    ) {
+      sheet
+          .getRangeByIndex(1, i + 1)
+          .setText(
+            ExcelProvider().headers(items: products)[i],
+          );
+    }
+
+    var row = 2;
+    for (var product in products) {
+      int column = 1;
+      for (var value in ExcelProvider().values(
+        item: product,
+      )) {
+        Range cell = sheet.getRangeByIndex(row, column);
+        if (value is num) {
+          cell.setNumber(value.toDouble());
+        } else {
+          cell.setText(value);
+        }
+
+        column++;
+      }
+      row++;
+    }
+
+    var footer = ExcelProvider().footerRange(
+      items: products,
+      sheet: sheet,
+    );
+
+    footer.isAutoFitText;
+
+    ExcelProvider().styleHeader(
+      items: products,
+      sheet: sheet,
+    );
+
+    final bytes = workbook.saveAsStream();
+
+    workbook.dispose();
+
+    await ExcelProvider().save(
+      bytes: bytes,
+      name: 'Inventory Report',
+    );
+    print('Excel File Saved');
+  } catch (e) {
+    print('Error Generating Excel File: ${e.toString()}');
+  }
+}
+
+// class ExcelSaver {
+//   ExcelSaver._();
+
+//   static Future<bool> save({
+//     required List<int> bytes,
+//     required String fileName,
+//   }) async {
+//     try {
+//       if (kIsWeb) {
+//         throw UnsupportedError(
+//           'Web support will be implemented separately.',
+//         );
+//       }
+//       final Uint8List uint8Bytes = Uint8List.fromList(
+//         bytes,
+//       );
+
+//       await FileSaver.instance.saveFile(
+//         name: 'Stockall Excel',
+//         fileExtension: "xlsx",
+//         bytes: uint8Bytes,
+//         mimeType: MimeType.microsoftExcel,
+//       );
+
+//       return true;
+//     } catch (e) {
+//       debugPrint('Excel save failed: $e');
+//       return false;
+//     }
+//   }
+// }

@@ -12,16 +12,7 @@ class SetCustomReceiptCreatedDateWidget
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return Visibility(
-      visible:
-      // (returnSalesProviderContext(
-      //           context,
-      //         ).currentCart().invoiceUuidEdit !=
-      //         null ||
-      //     returnSalesProviderContext(
-      //           context,
-      //         ).currentCart().receiptUuidEdit !=
-      //         null) &&
-      authorization(
+      visible: authorization(
         authorized:
             Authorizations().setCustomReceiptCreatedDate,
       ),
@@ -134,17 +125,6 @@ class SetCustomReceiptCreatedDateWidget
                                       CrossAxisAlignment
                                           .start,
                                   children: [
-                                    // Text(
-                                    //   style: TextStyle(
-                                    //     fontSize:
-                                    //         theme
-                                    //             .mobileTexts
-                                    //             .b4
-                                    //             .fontSize,
-                                    //   ),
-                                    //   'Custom Created Date:',
-                                    // ),
-                                    // SizedBox(height: 2),
                                     Text(
                                       style: TextStyle(
                                         fontSize:

@@ -17,7 +17,8 @@ import 'package:stockall/pages/products/storage_page/components/summary_table_he
 import 'package:stockall/pages/products/storage_page/components/table_row_widget.dart';
 
 class StoragePageDesktop extends StatefulWidget {
-  const StoragePageDesktop({super.key});
+  final String? itemName;
+  const StoragePageDesktop({super.key, this.itemName});
 
   @override
   State<StoragePageDesktop> createState() =>
@@ -88,6 +89,12 @@ class StoragePageDesktopState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       returnData().requestFocusSearchNode();
       returnData().addSearchNodeListener();
+      if (widget.itemName != null) {
+        setState(() {
+          searchController.text = widget.itemName ?? '';
+          sortIndex = 3;
+        });
+      }
     });
   }
 
@@ -164,10 +171,10 @@ class StoragePageDesktopState
           mainWidget: Scaffold(
             appBar: appBar(
               backAction: () {
-                if (sortIndex != 1) {
+                if (sortIndex != 1 &&
+                    widget.itemName == null) {
                   setState(() {
                     sortIndex = 1;
-                    searchController.clear();
                     viewUpdateSummary = false;
                   });
                   returnInventoryUpdatesProvider()
@@ -175,6 +182,7 @@ class StoragePageDesktopState
                 } else {
                   Navigator.of(context).pop();
                 }
+                searchController.clear();
               },
               context: context,
               title:
@@ -223,10 +231,7 @@ class StoragePageDesktopState
                     ),
                   ),
                   Visibility(
-                    visible: authorization(
-                      authorized:
-                          Authorizations().viewItemsSummary,
-                    ),
+                    visible: widget.itemName == null,
                     child: Padding(
                       padding: const EdgeInsets.only(
                         right: 15.0,
@@ -296,6 +301,11 @@ class StoragePageDesktopState
                               ),
                             ),
                             PopupMenuItem(
+                              enabled: authorization(
+                                authorized:
+                                    Authorizations()
+                                        .viewItemsHistory,
+                              ),
                               onTap: () {
                                 setState(() {
                                   sortIndex = 3;
@@ -1300,116 +1310,122 @@ class StoragePageDesktopState
                               ),
                             ),
                           ),
-                          SizedBox(
-                            height: 30,
-                            width: 200,
-                            child: TextField(
-                              focusNode:
-                                  returnData().searchNode,
-                              controller: searchController,
-                              onChanged: (value) async {
-                                if (sortIndex == 1) {
-                                  if (value.isNotEmpty) {
-                                    if (value.length > 20) {
-                                      searchController
-                                          .clear();
-                                    } else {
-                                      var allPrs =
-                                          returnData()
-                                              .productList()
-                                              .where(
-                                                (pr) =>
-                                                    pr.barcode ==
-                                                    searchController
-                                                        .text,
-                                              )
-                                              .toList();
-                                      if (allPrs
-                                          .isNotEmpty) {
-                                        await playBeep();
+                          Visibility(
+                            visible:
+                                widget.itemName == null,
+                            child: SizedBox(
+                              height: 30,
+                              width: 200,
+                              child: TextField(
+                                focusNode:
+                                    returnData().searchNode,
+                                controller:
+                                    searchController,
+                                onChanged: (value) async {
+                                  if (sortIndex == 1) {
+                                    if (value.isNotEmpty) {
+                                      if (value.length >
+                                          20) {
+                                        searchController
+                                            .clear();
+                                      } else {
+                                        var allPrs =
+                                            returnData()
+                                                .productList()
+                                                .where(
+                                                  (pr) =>
+                                                      pr.barcode ==
+                                                      searchController
+                                                          .text,
+                                                )
+                                                .toList();
+                                        if (allPrs
+                                            .isNotEmpty) {
+                                          await playBeep();
+                                        }
                                       }
                                     }
+                                    setState(() {
+                                      start = 0;
+                                      end =
+                                          returnData()
+                                                      .productList()
+                                                      .length >
+                                                  50
+                                              ? 50
+                                              : returnData()
+                                                  .productList()
+                                                  .length;
+                                      count = 1;
+                                    });
+                                    // setState(() {});
+                                  } else {
+                                    setState(() {});
                                   }
-                                  setState(() {
-                                    start = 0;
-                                    end =
-                                        returnData()
-                                                    .productList()
-                                                    .length >
-                                                50
-                                            ? 50
-                                            : returnData()
-                                                .productList()
-                                                .length;
-                                    count = 1;
-                                  });
-                                  // setState(() {});
-                                } else {
-                                  setState(() {});
-                                }
-                              },
-                              style: TextStyle(
-                                fontSize: 12,
-                              ),
-                              decoration: InputDecoration(
-                                suffixIcon: InkWell(
-                                  mouseCursor:
-                                      SystemMouseCursors
-                                          .click,
-                                  onTap: () {
-                                    if (searchController
-                                        .text
-                                        .isNotEmpty) {
-                                      searchController
-                                          .clear();
-                                      setState(() {
-                                        count = 1;
-                                      });
-                                    }
-                                  },
-                                  child: Icon(
-                                    size: 16,
-                                    Icons.clear,
-                                  ),
+                                },
+                                style: TextStyle(
+                                  fontSize: 12,
                                 ),
-                                hintText:
-                                    sortIndex == 1
-                                        ? 'Search Name or Scan'
-                                        : 'Search Event or Item Name',
-                                contentPadding:
-                                    EdgeInsets.symmetric(
-                                      vertical: 5,
-                                      horizontal: 5,
+                                decoration: InputDecoration(
+                                  suffixIcon: InkWell(
+                                    mouseCursor:
+                                        SystemMouseCursors
+                                            .click,
+                                    onTap: () {
+                                      if (searchController
+                                          .text
+                                          .isNotEmpty) {
+                                        searchController
+                                            .clear();
+                                        setState(() {
+                                          count = 1;
+                                        });
+                                      }
+                                    },
+                                    child: Icon(
+                                      size: 16,
+                                      Icons.clear,
                                     ),
-                                fillColor:
-                                    Colors.grey.shade200,
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade200,
-                                    width: 2,
                                   ),
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        3,
+                                  hintText:
+                                      sortIndex == 1
+                                          ? 'Search Name or Scan'
+                                          : 'Search Event or Item Name',
+                                  contentPadding:
+                                      EdgeInsets.symmetric(
+                                        vertical: 5,
+                                        horizontal: 5,
+                                      ),
+                                  fillColor:
+                                      Colors.grey.shade200,
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade200,
+                                      width: 2,
+                                    ),
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          3,
+                                        ),
+                                  ),
+                                  focusedBorder:
+                                      OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color:
+                                              Colors
+                                                  .grey
+                                                  .shade400,
+                                          width: 2,
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(
+                                              3,
+                                            ),
                                       ),
                                 ),
-                                focusedBorder:
-                                    OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade400,
-                                        width: 2,
-                                      ),
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            3,
-                                          ),
-                                    ),
                               ),
                             ),
                           ),
@@ -1551,7 +1567,9 @@ class StoragePageDesktopState
                             ),
                           ),
                           Visibility(
-                            visible: sortIndex == 3,
+                            visible:
+                                sortIndex == 3 &&
+                                widget.itemName == null,
                             child: Container(
                               color: Colors.white,
                               child: Row(

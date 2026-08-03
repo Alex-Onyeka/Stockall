@@ -41,13 +41,14 @@ class TempCartAdapter extends TypeAdapter<TempCart> {
       hasPrintedDocket: fields[21] as bool?,
       subStaffName: fields[22] as String?,
       timeOfDay: fields[23] as TimeOfDay?,
+      comment: fields[24] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempCart obj) {
     writer
-      ..writeByte(24)
+      ..writeByte(25)
       ..writeByte(0)
       ..write(obj.cartItems)
       ..writeByte(1)
@@ -95,7 +96,9 @@ class TempCartAdapter extends TypeAdapter<TempCart> {
       ..writeByte(22)
       ..write(obj.subStaffName)
       ..writeByte(23)
-      ..write(obj.timeOfDay);
+      ..write(obj.timeOfDay)
+      ..writeByte(24)
+      ..write(obj.comment);
   }
 
   @override

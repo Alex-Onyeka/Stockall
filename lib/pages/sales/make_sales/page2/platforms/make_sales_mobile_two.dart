@@ -10,9 +10,10 @@ import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/sales/make_sales/page1/platforms/make_sales_desktop.dart';
+import 'package:stockall/pages/sales/make_sales/page1/platforms/components/sub_staff_selection_widget.dart';
 import 'package:stockall/pages/sales/make_sales/page1/platforms/make_sales_mobile.dart';
 import 'package:stockall/pages/sales/make_sales/page2/components/customer_selection_widget.dart';
+import 'package:stockall/pages/sales/make_sales/page2/components/receipt_comment_widget.dart';
 import 'package:stockall/pages/sales/make_sales/page2/components/set_custom_receipt_created_date_widget.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -24,6 +25,7 @@ class MakeSalesMobileTwo extends StatefulWidget {
   final TextEditingController bankController;
   final TextEditingController customerController;
   final TextEditingController partPaymentController;
+  final TextEditingController commentController;
   const MakeSalesMobileTwo({
     super.key,
     required this.searchController,
@@ -32,6 +34,7 @@ class MakeSalesMobileTwo extends StatefulWidget {
     required this.customerController,
     required this.totalAmount,
     required this.partPaymentController,
+    required this.commentController,
   });
 
   @override
@@ -311,11 +314,11 @@ class _MakeSalesMobileTwoState
                               ],
                             ),
                             SizedBox(height: 5),
-                            PaymentTypeButton(index: 0),
-                            PaymentTypeButton(index: 1),
-                            PaymentTypeButton(index: 2),
+                            PaymentTypeDropdown(),
                           ],
                         ),
+                        SizedBox(height: 5),
+                        ReceiptCommentWidget(),
                         SizedBox(height: 20),
                         Visibility(
                           visible:

@@ -4337,15 +4337,6 @@ class _CustomBottomPanelState
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           color: Colors.grey.shade100,
-          // boxShadow: [
-          //   BoxShadow(
-          //     color: const Color.fromARGB(55, 0, 0, 0),
-          //     blurRadius: 5,
-          //   ),
-          // ],
-          // borderRadius: BorderRadius.vertical(
-          //   top: Radius.circular(20),
-          // ),
         ),
         child: SafeArea(
           child: Container(
@@ -4791,41 +4782,6 @@ class _CustomBottomPanelState
                                           ),
                                         );
                                       }).toList(),
-
-                                  // [
-                                  //   Container(
-                                  //     padding:
-                                  //         EdgeInsets.symmetric(
-                                  //           vertical: 5,
-                                  //           horizontal: 10,
-                                  //         ),
-                                  //     decoration: BoxDecoration(
-                                  //       color:
-                                  //           theme
-                                  //               .lightModeColor
-                                  //               .prColor300,
-                                  //       borderRadius:
-                                  //           BorderRadius.circular(
-                                  //             3,
-                                  //           ),
-                                  //     ),
-                                  //     child: Center(
-                                  //       child: Text(
-                                  //         style: TextStyle(
-                                  //           fontSize:
-                                  //               theme
-                                  //                   .mobileTexts
-                                  //                   .b4
-                                  //                   .fontSize,
-                                  //           color:
-                                  //               Colors
-                                  //                   .white,
-                                  //         ),
-                                  //         'Beans And Bread',
-                                  //       ),
-                                  //     ),
-                                  //   ),
-                                  // ],
                                 ),
                               ),
                             ),

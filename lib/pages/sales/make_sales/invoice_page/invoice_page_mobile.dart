@@ -1939,6 +1939,8 @@ class _InvoicePageMobileState
                                                                   },
                                                                 );
                                                                 var tempInvoice = TempInvoice(
+                                                                  comment:
+                                                                      invoice.comment,
                                                                   subStaffName:
                                                                       invoice.subStaffName,
                                                                   departmentUuidNew:

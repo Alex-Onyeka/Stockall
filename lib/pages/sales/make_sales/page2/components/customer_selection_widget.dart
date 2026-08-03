@@ -165,14 +165,19 @@ class _CustomerSelectionWidgetState
                       children: [
                         Text(
                           style: TextStyle(
-                            color: Colors.grey,
+                            color: Colors.grey.shade700,
                             fontWeight: FontWeight.bold,
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
                           ),
                           'Select Customer ${returnSalesProviderContext(context).currentCart().isInvoice ? '' : '(Optional)'}',
                         ),
                         Icon(
                           color: Colors.grey,
-                          size: 20,
+                          size: 18,
                           Icons.arrow_forward_ios_rounded,
                         ),
                       ],

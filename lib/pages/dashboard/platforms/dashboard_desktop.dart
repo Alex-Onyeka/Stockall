@@ -11,6 +11,7 @@ import 'package:stockall/components/major/drawer_widget/my_drawer_widget.dart';
 import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_desktop.dart';
 import 'package:stockall/components/major/right_side_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
@@ -638,14 +639,21 @@ class _DashboardDesktopState
                                                   children: [
                                                     Row(
                                                       children: [
-                                                        Text(
-                                                          style: TextStyle(
-                                                            fontSize:
-                                                                theme.mobileTexts.b1.fontSize,
-                                                            fontWeight:
-                                                                theme.mobileTexts.b1.fontWeightBold,
+                                                        InkWell(
+                                                          onTap: () {
+                                                            generateProductExcel();
+                                                          },
+                                                          mouseCursor:
+                                                              SystemMouseCursors.click,
+                                                          child: Text(
+                                                            style: TextStyle(
+                                                              fontSize:
+                                                                  theme.mobileTexts.b1.fontSize,
+                                                              fontWeight:
+                                                                  theme.mobileTexts.b1.fontWeightBold,
+                                                            ),
+                                                            'Quick Actions',
                                                           ),
-                                                          'Quick Actions',
                                                         ),
                                                       ],
                                                     ),

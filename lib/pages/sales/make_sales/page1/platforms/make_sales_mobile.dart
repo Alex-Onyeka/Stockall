@@ -26,7 +26,7 @@ import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/compnents/cart_item_main.dart';
-import 'package:stockall/pages/sales/make_sales/page1/platforms/make_sales_desktop.dart';
+import 'package:stockall/pages/sales/make_sales/page1/platforms/components/sub_staff_selection_widget.dart';
 import 'package:stockall/pages/sales/make_sales/page2/make_sales_two.dart';
 
 class MakeSalesMobile extends StatefulWidget {

@@ -3,7 +3,12 @@ import 'package:stockall/main.dart';
 
 class PaymentTypeButton extends StatelessWidget {
   final int index;
-  const PaymentTypeButton({super.key, required this.index});
+  final Function()? action;
+  const PaymentTypeButton({
+    super.key,
+    required this.index,
+    this.action,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +17,7 @@ class PaymentTypeButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: Ink(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(6),
           border: Border.all(color: Colors.grey.shade300),
         ),
         child: InkWell(
@@ -28,6 +33,7 @@ class PaymentTypeButton extends StatelessWidget {
                 index: index,
                 context: context,
               );
+              action != null ? action!() : {};
             }
           },
           child: SizedBox(
@@ -49,7 +55,7 @@ class PaymentTypeButton extends StatelessWidget {
                       Text(
                         style: TextStyle(
                           fontSize:
-                              theme.mobileTexts.b1.fontSize,
+                              theme.mobileTexts.b3.fontSize,
                           fontWeight: FontWeight.bold,
                           color:
                               returnSalesProviderContext(
@@ -63,12 +69,14 @@ class PaymentTypeButton extends StatelessWidget {
                         ),
                         returnSalesProviderContext(
                           context,
-                        ).paymentMethods[index]['method'],
+                        ).returnPaymentMethodSalesPage(
+                          index,
+                        )['method'],
                       ),
                       Text(
                         style: TextStyle(
                           fontSize:
-                              theme.mobileTexts.b3.fontSize,
+                              theme.mobileTexts.b4.fontSize,
                           fontWeight: FontWeight.normal,
                           color:
                               returnSalesProviderContext(
@@ -84,7 +92,9 @@ class PaymentTypeButton extends StatelessWidget {
                         ),
                         returnSalesProviderContext(
                           context,
-                        ).paymentMethods[index]['subText'],
+                        ).returnPaymentMethodSalesPage(
+                          index,
+                        )['subText'],
                       ),
                     ],
                   ),
@@ -128,6 +138,133 @@ class PaymentTypeButton extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class PaymentTypeDropdown extends StatefulWidget {
+  const PaymentTypeDropdown({super.key});
+
+  @override
+  State<PaymentTypeDropdown> createState() =>
+      _PaymentTypeDropdownState();
+}
+
+class _PaymentTypeDropdownState
+    extends State<PaymentTypeDropdown> {
+  bool isOpen = false;
+
+  void toggleIsOpen() {
+    setState(() {
+      isOpen = !isOpen;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      child: Column(
+        children: [
+          Ink(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(
+                color: Colors.grey.shade300,
+              ),
+            ),
+            child: InkWell(
+              mouseCursor: SystemMouseCursors.click,
+              onTap: () {
+                toggleIsOpen();
+              },
+              child: SizedBox(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    20,
+                    7,
+                    10,
+                    7,
+                  ),
+                  child: Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            returnSalesProviderContext(
+                              context,
+                            ).selectedPaymentMethod()['method'],
+                          ),
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b4
+                                      .fontSize,
+                              fontWeight: FontWeight.normal,
+                            ),
+                            returnSalesProviderContext(
+                              context,
+                            ).selectedPaymentMethod()['subText'],
+                          ),
+                        ],
+                      ),
+                      Icon(
+                        size: 30,
+                        isOpen
+                            ? Icons
+                                .keyboard_arrow_up_rounded
+                            : Icons
+                                .keyboard_arrow_down_rounded,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Visibility(
+            visible: isOpen,
+            child: Column(
+              children: [
+                SizedBox(height: 5),
+                PaymentTypeButton(
+                  index: 0,
+                  action: () {
+                    toggleIsOpen();
+                  },
+                ),
+                PaymentTypeButton(
+                  index: 1,
+                  action: () {
+                    toggleIsOpen();
+                  },
+                ),
+                PaymentTypeButton(
+                  index: 2,
+                  action: () {
+                    toggleIsOpen();
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

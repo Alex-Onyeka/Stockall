@@ -662,7 +662,7 @@ class ExpensesAndProfitValues extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
 
-              'Profit:',
+              'Balance:',
             ),
             Text(
               style: TextStyle(

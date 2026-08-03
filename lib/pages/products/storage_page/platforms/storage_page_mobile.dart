@@ -17,7 +17,8 @@ import 'package:stockall/pages/products/storage_page/storage_details/storage_det
 import 'package:stockall/pages/report/events_log/platforms/events_log_mobile.dart';
 
 class StoragePageMobile extends StatefulWidget {
-  const StoragePageMobile({super.key});
+  final String? itemName;
+  const StoragePageMobile({super.key, this.itemName});
 
   @override
   State<StoragePageMobile> createState() =>
@@ -82,6 +83,19 @@ class _StoragePageMobileState
   final searchController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.itemName != null) {
+        setState(() {
+          searchController.text = widget.itemName ?? '';
+          sortIndex = 3;
+        });
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     var products =
@@ -144,16 +158,17 @@ class _StoragePageMobileState
         Scaffold(
           appBar: appBar(
             backAction: () {
-              if (sortIndex != 1) {
+              if (sortIndex != 1 &&
+                  widget.itemName == null) {
                 setState(() {
                   sortIndex = 1;
                 });
                 returnInventoryUpdatesProvider()
                     .clearDate();
-                searchController.clear();
               } else {
                 Navigator.of(context).pop();
               }
+              searchController.clear();
             },
             context: context,
             title:
@@ -163,10 +178,7 @@ class _StoragePageMobileState
                     ? 'Summary'
                     : 'History',
             widget: Visibility(
-              visible: authorization(
-                authorized:
-                    Authorizations().viewItemsSummary,
-              ),
+              visible: widget.itemName == null,
               child: Padding(
                 padding: const EdgeInsets.only(right: 15.0),
                 child: PopupMenuButton(
@@ -228,6 +240,11 @@ class _StoragePageMobileState
                         ),
                       ),
                       PopupMenuItem(
+                        enabled: authorization(
+                          authorized:
+                              Authorizations()
+                                  .viewItemsHistory,
+                        ),
                         onTap: () {
                           setState(() {
                             sortIndex = 3;
@@ -1230,88 +1247,97 @@ class _StoragePageMobileState
                             ),
                           ),
                         ),
-                        SizedBox(
-                          height: 30,
-                          width: 150,
-                          child: TextField(
-                            focusNode:
-                                returnData().searchNode,
-                            controller: searchController,
-                            onChanged: (value) async {
-                              setState(() {
-                                start = 0;
-                                end =
-                                    returnData()
-                                                .productList()
-                                                .length >
-                                            50
-                                        ? 50
-                                        : returnData()
-                                            .productList()
-                                            .length;
-                                count = 1;
-                              });
-                            },
-                            style: TextStyle(fontSize: 12),
-                            decoration: InputDecoration(
-                              suffixIcon: InkWell(
-                                mouseCursor:
-                                    SystemMouseCursors
-                                        .click,
-                                onTap: () {
-                                  if (searchController
-                                      .text
-                                      .isNotEmpty) {
-                                    searchController
-                                        .clear();
-                                    setState(() {
-                                      count = 1;
-                                    });
-                                  }
-                                },
-                                child: Icon(
-                                  size: 16,
-                                  Icons.clear,
-                                ),
+                        Visibility(
+                          visible: widget.itemName == null,
+                          child: SizedBox(
+                            height: 30,
+                            width: 150,
+                            child: TextField(
+                              focusNode:
+                                  returnData().searchNode,
+                              controller: searchController,
+                              onChanged: (value) async {
+                                setState(() {
+                                  start = 0;
+                                  end =
+                                      returnData()
+                                                  .productList()
+                                                  .length >
+                                              50
+                                          ? 50
+                                          : returnData()
+                                              .productList()
+                                              .length;
+                                  count = 1;
+                                });
+                              },
+                              style: TextStyle(
+                                fontSize: 12,
                               ),
-                              hintText: 'Search Name',
-                              contentPadding:
-                                  EdgeInsets.symmetric(
-                                    vertical: 5,
-                                    horizontal: 5,
+                              decoration: InputDecoration(
+                                suffixIcon: InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
+                                  onTap: () {
+                                    if (searchController
+                                        .text
+                                        .isNotEmpty) {
+                                      searchController
+                                          .clear();
+                                      setState(() {
+                                        count = 1;
+                                      });
+                                    }
+                                  },
+                                  child: Icon(
+                                    size: 16,
+                                    Icons.clear,
                                   ),
-                              fillColor:
-                                  Colors.grey.shade200,
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color:
-                                      Colors.grey.shade200,
-                                  width: 2,
                                 ),
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      3,
+                                hintText: 'Search Name',
+                                contentPadding:
+                                    EdgeInsets.symmetric(
+                                      vertical: 5,
+                                      horizontal: 5,
+                                    ),
+                                fillColor:
+                                    Colors.grey.shade200,
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade200,
+                                    width: 2,
+                                  ),
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        3,
+                                      ),
+                                ),
+                                focusedBorder:
+                                    OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade400,
+                                        width: 2,
+                                      ),
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            3,
+                                          ),
                                     ),
                               ),
-                              focusedBorder:
-                                  OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade400,
-                                      width: 2,
-                                    ),
-                                    borderRadius:
-                                        BorderRadius.circular(
-                                          3,
-                                        ),
-                                  ),
                             ),
                           ),
                         ),
                         Visibility(
-                          visible: sortIndex == 1,
+                          visible:
+                              sortIndex == 1 &&
+                              widget.itemName == null,
                           child: Opacity(
                             opacity:
                                 searchController

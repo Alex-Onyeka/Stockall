@@ -568,13 +568,13 @@ Future<Uint8List> _buildPdfInvoice({
                                     ],
                                   ),
                                 ),
-                                pw.Builder(
-                                  builder: (context) {
-                                    if (invoice
-                                            .customerUuid !=
-                                        null) {
-                                      return pw.Expanded(
-                                        child: pw.Column(
+                                pw.Expanded(
+                                  child: pw.Builder(
+                                    builder: (context) {
+                                      if (invoice
+                                              .customerUuid !=
+                                          null) {
+                                        return pw.Column(
                                           crossAxisAlignment:
                                               pw
                                                   .CrossAxisAlignment
@@ -602,12 +602,12 @@ Future<Uint8List> _buildPdfInvoice({
                                                   'Not Set',
                                             ),
                                           ],
-                                        ),
-                                      );
-                                    } else {
-                                      return pw.Container();
-                                    }
-                                  },
+                                        );
+                                      } else {
+                                        return pw.Container();
+                                      }
+                                    },
+                                  ),
                                 ),
                               ],
                             ),
@@ -910,6 +910,57 @@ Future<Uint8List> _buildPdfInvoice({
                         ),
                       ),
                     ],
+                  ),
+                  pw.Builder(
+                    builder: (pw.Context pdfContext) {
+                      if (invoice.comment != null &&
+                          invoice.comment?.isNotEmpty ==
+                              true) {
+                        return pw.Column(
+                          children: [
+                            pw.SizedBox(height: 10),
+                            pw.Row(
+                              mainAxisAlignment:
+                                  pw
+                                      .MainAxisAlignment
+                                      .spaceEvenly,
+                              children: [
+                                pw.Expanded(
+                                  child: pw.Column(
+                                    crossAxisAlignment:
+                                        pw
+                                            .CrossAxisAlignment
+                                            .start,
+                                    children: [
+                                      pw.Text(
+                                        style: pw.TextStyle(
+                                          font: fontRegular,
+                                          fontSize: 9,
+                                        ),
+                                        'Comment:',
+                                      ),
+                                      pw.SizedBox(
+                                        height: 5,
+                                      ),
+                                      pw.Text(
+                                        style: pw.TextStyle(
+                                          font: fontRegular,
+                                          fontSize: 10,
+                                        ),
+                                        invoice.comment ??
+                                            'Comment Not Set',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      } else {
+                        return pw.Container();
+                      }
+                    },
                   ),
                   pw.SizedBox(height: 5),
                   pw.Divider(),
@@ -2085,33 +2136,6 @@ Future<Uint8List> _buildPdfRollInvoice({
                                   ],
                                 ),
                               ),
-                              // pw.Expanded(
-                              //   child: pw.Column(
-                              //     crossAxisAlignment:
-                              //         pw
-                              //             .CrossAxisAlignment
-                              //             .start,
-                              //     children: [
-                              //       pw.Text(
-                              //         style: pw.TextStyle(
-                              //           font: fontRegular,
-                              //           fontSize: parText,
-                              //         ),
-                              //         'Time:',
-                              //       ),
-                              //       pw.SizedBox(height: 1),
-                              //       pw.Text(
-                              //         style: pw.TextStyle(
-                              //           font: fontBold,
-                              //           fontSize: parText,
-                              //         ),
-                              //         formatTime(
-                              //           invoice.createdAt,
-                              //         ),
-                              //       ),
-                              //     ],
-                              //   ),
-                              // ),
                               pw.Expanded(
                                 child: pw.Column(
                                   crossAxisAlignment:
@@ -2124,7 +2148,7 @@ Future<Uint8List> _buildPdfRollInvoice({
                                         font: fontRegular,
                                         fontSize: parText,
                                       ),
-                                      '#Ticket ID',
+                                      'Time:',
                                     ),
                                     pw.SizedBox(height: 1),
                                     pw.Text(
@@ -2132,11 +2156,9 @@ Future<Uint8List> _buildPdfRollInvoice({
                                         font: fontBold,
                                         fontSize: parText,
                                       ),
-                                      invoice.barcode ??
-                                          returnOnlyDigits(
-                                            invoice.uuid ??
-                                                '',
-                                          ),
+                                      formatTime(
+                                        invoice.createdAt,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -2186,6 +2208,55 @@ Future<Uint8List> _buildPdfRollInvoice({
                       ],
                     ),
                   ],
+                ),
+                pw.Builder(
+                  builder: (pw.Context pdfContext) {
+                    if (invoice.comment != null &&
+                        invoice.comment?.isNotEmpty ==
+                            true) {
+                      return pw.Column(
+                        children: [
+                          pw.SizedBox(height: 3),
+                          pw.Row(
+                            mainAxisAlignment:
+                                pw
+                                    .MainAxisAlignment
+                                    .spaceEvenly,
+                            children: [
+                              pw.Expanded(
+                                child: pw.Column(
+                                  crossAxisAlignment:
+                                      pw
+                                          .CrossAxisAlignment
+                                          .start,
+                                  children: [
+                                    pw.Text(
+                                      style: pw.TextStyle(
+                                        font: fontRegular,
+                                        fontSize: parText,
+                                      ),
+                                      'Comment:',
+                                    ),
+                                    pw.SizedBox(height: 1),
+                                    pw.Text(
+                                      style: pw.TextStyle(
+                                        font: fontBold,
+                                        fontSize: parText,
+                                      ),
+                                      invoice.comment ??
+                                          'Comment',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    } else {
+                      return pw.Container();
+                    }
+                  },
                 ),
                 pw.SizedBox(height: 3),
                 pw.Divider(thickness: 0.6, height: 6),

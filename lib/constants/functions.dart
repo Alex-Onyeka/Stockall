@@ -144,6 +144,7 @@ class Authorizations {
   String generateBarcode = 'Generate Barcode';
   String manageInventoryStorage = 'Manage Invetory Storage';
   String viewItemsSummary = 'View Items Summary';
+  String viewItemsHistory = 'View Items History';
   String viewAllTransactionRecords =
       'View All Transaction Records';
   String toggleBulkSale = 'Toggle Bulk Sale';
@@ -1233,6 +1234,57 @@ Future<Uint8List> _buildPdf(
                                         formatTime(
                                           receipt.createdAt,
                                         ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      } else {
+                        return pw.Container();
+                      }
+                    },
+                  ),
+                  pw.Builder(
+                    builder: (pw.Context pdfContext) {
+                      if (receipt.comment != null &&
+                          receipt.comment?.isNotEmpty ==
+                              true) {
+                        return pw.Column(
+                          children: [
+                            pw.SizedBox(height: 10),
+                            pw.Row(
+                              mainAxisAlignment:
+                                  pw
+                                      .MainAxisAlignment
+                                      .spaceEvenly,
+                              children: [
+                                pw.Expanded(
+                                  child: pw.Column(
+                                    crossAxisAlignment:
+                                        pw
+                                            .CrossAxisAlignment
+                                            .start,
+                                    children: [
+                                      pw.Text(
+                                        style: pw.TextStyle(
+                                          font: fontRegular,
+                                          fontSize: 9,
+                                        ),
+                                        'Comment:',
+                                      ),
+                                      pw.SizedBox(
+                                        height: 5,
+                                      ),
+                                      pw.Text(
+                                        style: pw.TextStyle(
+                                          font: fontBold,
+                                          fontSize: 10,
+                                        ),
+                                        receipt.comment ??
+                                            'Comment Not Set',
                                       ),
                                     ],
                                   ),
@@ -2352,6 +2404,55 @@ Future<Uint8List> _buildPdfRoll(
                                       formatTime(
                                         receipt.createdAt,
                                       ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    } else {
+                      return pw.Container();
+                    }
+                  },
+                ),
+                pw.Builder(
+                  builder: (pw.Context pdfContext) {
+                    if (receipt.comment != null &&
+                        receipt.comment?.isNotEmpty ==
+                            true) {
+                      return pw.Column(
+                        children: [
+                          pw.SizedBox(height: 3),
+                          pw.Row(
+                            mainAxisAlignment:
+                                pw
+                                    .MainAxisAlignment
+                                    .spaceEvenly,
+                            children: [
+                              pw.Expanded(
+                                child: pw.Column(
+                                  crossAxisAlignment:
+                                      pw
+                                          .CrossAxisAlignment
+                                          .start,
+                                  children: [
+                                    pw.Text(
+                                      style: pw.TextStyle(
+                                        font: fontRegular,
+                                        fontSize: parText,
+                                      ),
+                                      'Comment:',
+                                    ),
+                                    pw.SizedBox(height: 1),
+                                    pw.Text(
+                                      style: pw.TextStyle(
+                                        font: fontBold,
+                                        fontSize: parText,
+                                      ),
+                                      receipt.comment ??
+                                          'Comment',
                                     ),
                                   ],
                                 ),

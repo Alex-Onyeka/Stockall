@@ -109,7 +109,7 @@
 //   Future<TempWayBills?> createWaybill({
 //     required TempWayBills waybill,
 //   }) async {
-//     // print('Inner Waybill Creatprint( 
+//     // print('Inner Waybill Creatprint(
 //     bool isOnline = await connectivity.isOnline();
 //     var newUuid = uuidGen();
 //     waybill.uuid = newUuid;
@@ -118,7 +118,8 @@
 //         item.waybillId = newUuid;
 //       }
 //     } catch (e) {
-//       // print('Error Setting Waybill Item Waybiprint(eturn null;
+//       mainLocalLog('Error Setting Waybill Item Waybillid');
+//       return null;
 //     }
 //     waybill.items = waybillItemsTemp;
 //     waybill.createdAt = DateTime.now();
@@ -140,8 +141,9 @@
 //         clearAllAfterCreatingWaybill();
 //         return newWaybill;
 //       } catch (e) {
-//         // print(
-//         //   '❌❌ Create Waybill Error Online: $print(       );
+//         mainLocalLog(
+//           '❌❌ Create Waybill Error Online: ${e.toString()}',
+//         );
 //         return null;
 //       }
 //     } else {
@@ -155,8 +157,10 @@
 //         clearAllAfterCreatingWaybill();
 //         return waybill;
 //       } catch (e) {
-//         // print(
-//         //   '❌❌ Create Waybill Error Offline: ${e.toString(print(       return null;
+//         print(
+//           '❌❌ Create Waybill Error Offline: ${e.toString()}',
+//         );
+//         return null;
 //       }
 //     }
 //   }
@@ -190,86 +194,85 @@
 //   }
 
 //   // CREATE a new receipt
-// //   Future<TempWayBills?> updateWaybill({
-// //     required TempWayBills waybill,
-// //   }) async {
-// //     print('Inner Waybill Update Started');
-// //     bool isOnline =  connectivity.isConnected;
-// //       waybill.updatedAt = DateTime.now();
-// //     try {
-// //       for (var item in waybillItemsTemp) {
-// //         item.waybillId = waybill.uuid;
-// //       }
-// //     } catch (e) {
-// //       print('Error Setting Waybill Item Waybill Uuid');
-// //       return null;
-// //     }
-// //     waybill.createdAt = DateTime.now();
-// //     if (isOnline) {
-// //       try {
-// //         final res =
-// //             await supabase
-// //                 .from(tableName)
-// //                 .upsert(
-// //                   waybill.toJson(),
-// //                   onConflict: 'uuid',
-// //                 )
-// //                 .select()
-// //                 .single();
-// //         final newWaybill = TempWayBills.fromJson(res);
-// //         notifyListeners();
-// //         await loadWaybills(shopId());
-// //         clearAllAfterCreatingWaybill();
-// //         return newWaybill;
-// //       } catch (e) {
-// //         print(
-// //           '❌❌ Update Waybill Error Online: ${e.toString()}',
-// //         );
-// //         return null;
-// //       }
-// // print( {
-// //       waybill.updatedAt = DateTime.now().add(
-// //         Duration(days: 1),
-// //       );
-// //       try {
-// //         var res = await WaybillsFunc().createWaybill(
-// //           waybill,
-// //         );
-// //         if (res == 1) {
-// //           var containsCreated =
-// //               CreatedWaybillsFunc()
-// //                   .getWaybills()
-// //                   .where(
-// //                     (createdProduct) =>
-// //                         createdProduct.waybill.uuid ==
-// //                         waybill.uuid,
-// //                   )
-// //                   .toList();
-// //           if (containsCreated.isEmpty) {
-// //             await UpdatedWaybillsFunc()
-// //                 .createUpdatedWaybill(
-// //                   UpdatedWaybills(waybill: waybill),
-// //                 );
-// //           } else {
-// //             await CreatedWaybillsFunc().createWaybills(
-// //               CreatedWaybills(waybill: waybill),
-// //             );
-// //           }
-// //         } else {
-// //           notifyListeners();
-// //           return null;
-// //         }
-// //         await loadWaybills(shopId());
-// //         clearAllAfterCreatingWaybill();
-// //         return waybill;
-// //       } catch (e) {
-// //         print(
-// //           '❌❌ Update Waybill Error Offline: ${e.toString()}',
-// //         );
-// //         return null;
-// //       }
+//   //   Future<TempWayBills?> updateWaybill({
+//   //     required TempWayBills waybill,
+//   //   }) async {
+//   //     print('Inner Waybill Update Started');
+//   //     bool isOnline =  connectivity.isConnected;
+//   //       waybill.updatedAt = DateTime.now();
+//   //     try {
+//   //       for (var item in waybillItemsTemp) {
+//   //         item.waybillId = waybill.uuid;
+//   //       }
+//   //     } catch (e) {
+//   //       print('Error Setting Waybill Item Waybill Uuid');
+//   //       return null;
+//   //     }
+//   //     waybill.createdAt = DateTime.now();
+//   //     if (isOnline) {
+//   //       try {
+//   //         final res =
+//   //             await supabase
+//   //                 .from(tableName)
+//   //                 .upsert(
+//   //                   waybill.toJson(),
+//   //                   onConflict: 'uuid',
+//   //                 )
+//   //                 .select()
+//   //                 .single();
+//   //         final newWaybill = TempWayBills.fromJson(res);
+//   //         notifyListeners();
+//   //         await loadWaybills(shopId());
+//   //         clearAllAfterCreatingWaybill();
+//   //         return newWaybill;
+//   //       } catch (e) {
+//   //         print(
+//   //           '❌❌ Update Waybill Error Online: ${e.toString()}',
+//   //         );
+//   //         return null;
+//   //       }
+//   // print( {
+//   //       waybill.updatedAt = DateTime.now().add(
+//   //         Duration(days: 1),
+//   //       );
+//   //       try {
+//   //         var res = await WaybillsFunc().createWaybill(
+//   //           waybill,
+//   //         );
+//   //         if (res == 1) {
+//   //           var containsCreated =
+//   //               CreatedWaybillsFunc()
+//   //                   .getWaybills()
+//   //                   .where(
+//   //                     (createdProduct) =>
+//   //                         createdProduct.waybill.uuid ==
+//   //                         waybill.uuid,
+//   //                   )
+//   //                   .toList();
+//   //           if (containsCreated.isEmpty) {
+//   //             await UpdatedWaybillsFunc()
+//   //                 .createUpdatedWaybill(
+//   //                   UpdatedWaybills(waybill: waybill),
+//   //                 );
+//   //           } else {
+//   //             await CreatedWaybillsFunc().createWaybills(
+//   //               CreatedWaybills(waybill: waybill),
+//   //             );
+//   //           }
+//   //         } else {
+//   //           notifyListeners();
+//   //           return null;
+//   //         }
+//   //         await loadWaybills(shopId());
+//   //         clearAllAfterCreatingWaybill();
+//   //         return waybill;
+//   //       } catch (e) {
+//   //         print(
+//   //           '❌❌ Update Waybill Error Offline: ${e.toString()}',
+//   //         );
+//   //         return null;
+//   //       }
 //   //  print(D all receipts for a shop
-
 
 //   Future<List<TempWayBills>> loadWaybills(
 //     int shopId,
@@ -298,7 +301,7 @@
 //         print('❌ Error Getting Waybills: ${e.toString()}');
 //         return [];
 //       }
-//        } else {
+//     } else {
 //       _waybills = WaybillsFunc().getWaybills();
 //       // printprint(Gotten');
 //       notifyListeners();
@@ -310,7 +313,7 @@
 //   DateTime? dateSet;
 
 //   void clearDate() {
-// //  print(
+//     //  print(
 //     rangeStartDate = null;
 //     rangeEndDate = null;
 //     notifyListeners();
@@ -321,18 +324,17 @@
 //       dateSet = date;
 //       rangeStartDate = null;
 //       rangeEndDate = null;
-//     //  print(('Date set: $date');
+//       //  print(('Date set: $date');
 //     } else {
 //       dateSet = null;
-//     //  print(('Date Cleared');
+//       //  print(('Date Cleared');
 //     }
 //     notifyListeners();
 //   }
 
 //   DateTime? rangeStartDate;
 //   DateTime? rangeEndprint;
-  
-  
+
 //   // ((ange(DateTime rangeStart, DateTime endOfrange) {
 //   //   rangeStarprint((
 //   //   rangeEndDate = endOfrange;
@@ -414,46 +416,46 @@
 //   //
 //   //
 
-//   Future<void> createWaybillsSync() async {
-//     tprint(nt(ine = await connectivity.isOnline();
-//       // Prepare batch payload
-//       if (CreatedWaybillsFunc().gprint(nt(y &&
-//           isOnline) {
-//         final tempWaybills =
-//             CreatedWaybillsFunc().getWaybills().toList();
-//         var newWaybills = tempWaybills.map((rec) {
-//           rec.waybill.createdAt =
-//               rec.waybill.createdAt!.toUtc();
-//           return rec;
-//         });
-//         final payload =
-//             newWaybills
-//                 .map((p) => p.waybill.toJson())
-//                 .toList();
+//   //   Future<void> createWaybillsSync() async {
+//   //     tprint(nt(ine = await connectivity.isOnline();
+//   //       // Prepare batch payload
+//   //       if (CreatedWaybillsFunc().gprint(nt(y &&
+//   //           isOnline) {
+//   //         final tempWaybills =
+//   //             CreatedWaybillsFunc().getWaybills().toList();
+//   //         var newWaybills = tempWaybills.map((rec) {
+//   //           rec.waybill.createdAt =
+//   //               rec.waybill.createdAt!.toUtc();
+//   //           return rec;
+//   //         });
+//   //         final payload =
+//   //             newWaybills
+//   //                 .map((p) => p.waybill.toJson())
+//   //                 .toList();
 
-//         // Insert all at once
-//         final data =
-//             await supabase
-//                 .from(tableName)
-//                 .insert(payload)
-//                 .select();
+//   //         // Insert all at once
+//   //         final data =
+//   //             await supabase
+//   //                 .from(tableName)
+//   //                 .insert(payload)
+//   //                 .select();
 
-//      print(nt('${data.length} items added successfully ✅');
-//         await CreatedWaybillsFunc().clearWaybills();
-//      print(nt('Unsynced Waybills Cleared');
+//   //      print(nt('${data.length} items added successfully ✅');
+//   //         await CreatedWaybillsFunc().clearWaybills();
+//   //      print(nt('Unsynced Waybills Cleared');
 
-//      print(nt('Mounted, refreshing Waybills ✅');
-//         await loadWaybills(
-//           returnShopProvider().userShop()!.shopId!,
-//         );print(nt( (e) {
-//    print(nt('Batch Waybill Insert failed ❌: $e');
-//       await createErrorLog(
-//         error: 'Baprint(nt(led ❌: $e',
-//       );
-//     }
-//   }
+//   //      print(nt('Mounted, refreshing Waybills ✅');
+//   //         await loadWaybills(
+//   //           returnShopProvider().userShop()!.shopId!,
+//   //         );print(nt( (e) {
+//   //    print(nt('Batch Waybill Insert failed ❌: $e');
+//   //       await createErrorLog(
+//   //         error: 'Baprint(nt(led ❌: $e',
+//   //       );
+//   //     }
+//   //   }
 
-//  print(nt(
+//   //  print(nt(
 //   //
 
 //   //
@@ -462,333 +464,333 @@
 //   //
 //   //
 
-//   Future<void> deleteWaybillsSync() async {
-//     try {
-//       bool isOnline = await connectivity.isOnline();
-//       // print(int(      if (DeletedWaybillsFunc()
-//               .getWaybillIds()
-//               .isNotEmpty &&
-//           isOnline) {
-//         final tempWaybills =
-//             DeletedWaybillsFunc().getWaybillIds().toList();
+//   // Future<void> deleteWaybillsSync() async {
+//   //   try {
+//   //     bool isOnline = await connectivity.isOnline();
+//   //     // print(int(      if (DeletedWaybillsFunc()
+//   //             .getWaybillIds()
+//   //             .isNotEmpty &&
+//   //         isOnline) {
+//   //       final tempWaybills =
+//   //           DeletedWaybillsFunc().getWaybillIds().toList();
 
-//         for (var rec in tempWaybills) {
-//           await supabase
-//               .from(tableName)
-//               .delete()
-//               .eq('uuid', rec.waybillUuid);
-//           // await DeletedWaybillsFunc()
-//           //     .deletedDeletedWaybills(rec.waybillUuid);
-//         }
+//   //       for (var rec in tempWaybills) {
+//   //         await supabase
+//   //             .from(tableName)
+//   //             .delete()
+//   //             .eq('uuid', rec.waybillUuid);
+//   //         // await DeletedWaybillsFunc()
+//   //         //     .deletedDeletedWaybills(rec.waybillUuid);
+//   //       }
 
-//     print(int(
-//           '${tempWaybills.length} Waybills Created successfully ✅',
-//         );
-//         await DeletedWaybillsFunc().clearDeletedWaybills();
-//     print(int('Unsynced Deleted Waybills Cleared');
+//   //   print(int(
+//   //         '${tempWaybills.length} Waybills Created successfully ✅',
+//   //       );
+//   //       await DeletedWaybillsFunc().clearDeletedWaybills();
+//   //   print(int('Unsynced Deleted Waybills Cleared');
 
-//     print(int('Mounted, refreshing Waybills ✅');
-//         await loadWaybills(
-//           returnShopProvider().userShop()!.shopId!,
-//         );print(int((e) {
-//   print(int('Batch Waybills Delete failed ❌: $e');
-//       await createErrorLog(
-//         error: 'Batch Waybills Delete failed ❌: $e',
-//       print(int(
+//   //   print(int('Mounted, refreshing Waybills ✅');
+//   //       await loadWaybills(
+//   //         returnShopProvider().userShop()!.shopId!,
+//   //       );print(int((e) {
+//   // print(int('Batch Waybills Delete failed ❌: $e');
+//   //     await createErrorLog(
+//   //       error: 'Batch Waybills Delete failed ❌: $e',
+//   //     print(int(
 //   //
 //   //
 //   //
 
-//   Future<void> updateWaprint(rint( try {
-//       bool isOnline = await connectivity.isOnline();
-//  print(rint(
-//         UpdatedWaybillsFunc()
-//             .getWaybillIds()
-//             .length
-//  print(rint(
-//       );
+//   //   Future<void> updateWaprint(rint( try {
+//   //       bool isOnline = await connectivity.isOnline();
+//   //  print(rint(
+//   //         UpdatedWaybillsFunc()
+//   //             .getWaybillIds()
+//   //             .length
+//   //  print(rint(
+//   //       );
 
-//       if (UpdatedWaybillsFunc()
-//               .getWaybillIds()
-//               .isNotEmpty &&
-//           isOnline) {
-//         final updatedWaybills =
-//             UpdatedWaybillsFunc().getWaybillIds();
+//   //       if (UpdatedWaybillsFunc()
+//   //               .getWaybillIds()
+//   //               .isNotEmpty &&
+//   //           isOnline) {
+//   //         final updatedWaybills =
+//   //             UpdatedWaybillsFunc().getWaybillIds();
 
-//         for (final updated in updatedWaybills) {
-//           finaprint(print(.waybill;
+//   //         for (final updated in updatedWaybills) {
+//   //           finaprint(print(.waybill;
 
-//           localWaybills.updatedAt ??=
-//               DateTime.now().toLocal();
+//   //           localWaybills.updatedAt ??=
+//   //               DateTime.now().toLocal();
 
-//           if (localWaybills.uuid == null) {
-//       print(print('Local Waybills Uuid is Null');
-//           }
-//           final remoteData =
-//               await supabase
-//                   .from('waybills')
-//                   .select('uuid, updated_at')
-//                   .eq('uuid', localWaybills.uuid!)
-//                   .maybeSingle();
+//   //           if (localWaybills.uuid == null) {
+//   //       print(print('Local Waybills Uuid is Null');
+//   //           }
+//   //           final remoteData =
+//   //               await supabase
+//   //                   .from('waybills')
+//   //                   .select('uuid, updated_at')
+//   //                   .eq('uuid', localWaybills.uuid!)
+//   //                   .maybeSingle();
 
-//           if (remoteData == null) {
-//             await supabase
-//                 .from('waybills')
-//                 .insert(lprint(print(      print(print(
-//               'Inserted product with uuid ${localWaybills.uuid}',
-//             );
-//             await UpdatedWaybillsFunc()
-//                 .deleteUpdatedWaybill(
-//                   localWaybills.uuid ?? '',
-//                 );
-//           } else {
-//             final remoteUpdatedAtRaw =
-//                 remoteData['updated_at'];
-//             final remoteUpdatedAt =
-//                 remoteUpdatedAtRaw == null
-//   print(print(
-//                     : DateTime.parse(
-//                       remoteUpdatedAtRaw,
-//                     ).toUtc();
+//   //           if (remoteData == null) {
+//   //             await supabase
+//   //                 .from('waybills')
+//   //                 .insert(lprint(print(      print(print(
+//   //               'Inserted product with uuid ${localWaybills.uuid}',
+//   //             );
+//   //             await UpdatedWaybillsFunc()
+//   //                 .deleteUpdatedWaybill(
+//   //                   localWaybills.uuid ?? '',
+//   //                 );
+//   //           } else {
+//   //             final remoteUpdatedAtRaw =
+//   //                 remoteData['updated_at'];
+//   //             final remoteUpdatedAt =
+//   //                 remoteUpdatedAtRaw == null
+//   //   print(print(
+//   //                     : DateTime.parse(
+//   //                       remoteUpdatedAtRaw,
+//   //                     ).toUtc();
 
-//             localWaybills.updatedAt =
-//                 (localWaybills.updatedAt ?? DateTime.now())
-//                     .toUtc(); // ✅ keep both UTC
-//      print( print(
-//               "Local updatedAt: ${localWaybills.updatedAt}",
-//             );
-//      print( print("Remote updatedAt: $remoteUpdatedAt");
+//   //             localWaybills.updatedAt =
+//   //                 (localWaybills.updatedAt ?? DateTime.now())
+//   //                     .toUtc(); // ✅ keep both UTC
+//   //      print( print(
+//   //               "Local updatedAt: ${localWaybills.updatedAt}",
+//   //             );
+//   //      print( print("Remote updatedAt: $remoteUpdatedAt");
 
-//             if (remoteUpdatedAt == null ||
-//                 localWaybills.updatedAt!.isAfter(
-//                   remoteUpdatedAt,
-//                 )) {
-//               await supabase
-//                   .from('waybills')
-//                   .update(localWaybills.toJson())
-//                   print(uprint(uuid!);
-//        print( print(
-//                 'Updated Waybill with uuid ${localWaybprint(uprint(  );
-//               await UpdatedWaybillsFunc()
-//                   .deleteUpdatedWaybill(
-//                     localWaybills.uuid ?? '',
-//                   );
-//             } else {
-//        print( print(
-//                 'Skipped Waybill ${localWaybills.uuid}, remote is newer ✅',
-//               );
-//             }
-//           }
-//         }
+//   //             if (remoteUpdatedAt == null ||
+//   //                 localWaybills.updatedAt!.isAfter(
+//   //                   remoteUpdatedAt,
+//   //                 )) {
+//   //               await supabase
+//   //                   .from('waybills')
+//   //                   .update(localWaybills.toJson())
+//   //                   print(uprint(uuid!);
+//   //        print( print(
+//   //                 'Updated Waybill with uuid ${localWaybprint(uprint(  );
+//   //               await UpdatedWaybillsFunc()
+//   //                   .deleteUpdatedWaybill(
+//   //                     localWaybills.uuid ?? '',
+//   //                   );
+//   //             } else {
+//   //        print( print(
+//   //                 'Skipped Waybill ${localWaybills.uuid}, remote is newer ✅',
+//   //               );
+//   //             }
+//   //           }
+//   //         }
 
-//         await UpdatedWaybillsFuncprint(aprint(
-//  print( print('Unsynced Waybill products cleared');
-//  print( print('Mounted, refreshing products ✅');
-//         await loadWaybills(
-//           returnShopProvider().userShop()!.shopId!,
-//         );
-//       }
-//     } catch (e) {aprint(print('Batch Waybills Update failed ❌:aprint(rint(ErrorLog(
-//         error: 'Batch Waybills Update failed ❌: $e',
-//       );
-//     }
-//   }
+//   //         await UpdatedWaybillsFuncprint(aprint(
+//   //  print( print('Unsynced Waybill products cleared');
+//   //  print( print('Mounted, refreshing products ✅');
+//   //         await loadWaybills(
+//   //           returnShopProvider().userShop()!.shopId!,
+//   //         );
+//   //       }
+//   //     } catch (e) {aprint(print('Batch Waybills Update failed ❌:aprint(rint(ErrorLog(
+//   //         error: 'Batch Waybills Update failed ❌: $e',
+//   //       );
+//   //     }
+//   //   }
 //   //
 //   //
 
-//   List<TempWayBills> departmentWaybills() {
-//     if (returnShopProvider()
-//             .userShop()
-// aprint(rint(tments ==
-//         true) {
-//       if (!auaprint(rint(horized: Authorizations().viewAllDepartments,
-//       )) {
-//         return waybills.where((cat) {
-//           return cat.departmentId ==
-//               returnDeaprint(rint(             .currentDepartment()
-//                   ?.uuid;
-//         }).toList();
-//       } else {
-//         if (returnDepartmentProvider()
-//                 .currentDepartment()
-//                 ?.uuid ==
-//             null) {
-//           return waybills;
-//         } else {
-//           return waybills.where((cat) {
-//             return cat.departmentId ==
-//                 returnDepartmentProvider()
-//                     .currentDepartment()
-//                     ?.uuid;
-//             // }
-//           }).toList();
-//         }
-//       }
-//     } else {
-//       return waybills;
-//     }
-//   }
+//   //   List<TempWayBills> departmentWaybills() {
+//   //     if (returnShopProvider()
+//   //             .userShop()
+//   // aprint(rint(tments ==
+//   //         true) {
+//   //       if (!auaprint(rint(horized: Authorizations().viewAllDepartments,
+//   //       )) {
+//   //         return waybills.where((cat) {
+//   //           return cat.departmentId ==
+//   //               returnDeaprint(rint(             .currentDepartment()
+//   //                   ?.uuid;
+//   //         }).toList();
+//   //       } else {
+//   //         if (returnDepartmentProvider()
+//   //                 .currentDepartment()
+//   //                 ?.uuid ==
+//   //             null) {
+//   //           return waybills;
+//   //         } else {
+//   //           return waybills.where((cat) {
+//   //             return cat.departmentId ==
+//   //                 returnDepartmentProvider()
+//   //                     .currentDepartment()
+//   //                     ?.uuid;
+//   //             // }
+//   //           }).toList();
+//   //         }
+//   //       }
+//   //     } else {
+//   //       return waybills;
+//   //     }
+//   //   }
 
-//   List<TempWayBills> returnWaybillsByDateForIndex() {
-//     if (returnShopProvider()
-//             .userShop()
-//             ?.manageDepartments ==
-//         true) {
-//       if (rangeStartDate != null) {
-//         return departmentWaybills().where((waybill) {
-//           final created = waybill.createdAt!.toLocal();
-//           return !created.isBefore(
-//                 fourAm(rangeStartDate!),
-//               ) &&
-//               created.isBefore(
-//                 fourAmNextDay(
-//                   rangeEndDate ??
-//                       resolveBusinessDate(DateTime.now()),
-//                 ),
-//               );
-//         }).toList();
-//       } else {
-//         // final currentDate = dateSet ?? DateTime.now();
-//         final currentDate =
-//             dateSet ?? resolveBusinessDate(DateTime.now());
+//   // List<TempWayBills> returnWaybillsByDateForIndex() {
+//   //   if (returnShopProvider()
+//   //           .userShop()
+//   //           ?.manageDepartments ==
+//   //       true) {
+//   //     if (rangeStartDate != null) {
+//   //       return departmentWaybills().where((waybill) {
+//   //         final created = waybill.createdAt!.toLocal();
+//   //         return !created.isBefore(
+//   //               fourAm(rangeStartDate!),
+//   //             ) &&
+//   //             created.isBefore(
+//   //               fourAmNextDay(
+//   //                 rangeEndDate ??
+//   //                     resolveBusinessDate(DateTime.now()),
+//   //               ),
+//   //             );
+//   //       }).toList();
+//   //     } else {
+//   //       // final currentDate = dateSet ?? DateTime.now();
+//   //       final currentDate =
+//   //           dateSet ?? resolveBusinessDate(DateTime.now());
 
-//         return departmentWaybills()
-//             .where(
-//               (waybill) =>
-//                   !waybill.createdAt!.isBefore(
-//                     fourAm(currentDate),
-//                   ) &&
-//                   waybill.createdAt!.isBefore(
-//                     fourAmNextDay(currentDate),
-//                   ),
-//             )
-//             .toList();
-//       }
-//     } else {
-//       if (rangeStartDate != null) {
-//         if (authorization(
-//           authorized:
-//               Authorizations().viewAllTransactionRecords,
-//         )) {
-//           return waybills.where((waybill) {
-//             final created = waybill.createdAt!.toLocal();
-//             return !created.isBefore(
-//                   fourAm(rangeStartDate!),
-//                 ) &&
-//                 created.isBefore(
-//                   fourAmNextDay(
-//                     rangeEndDate ??
-//                         resolveBusinessDate(DateTime.now()),
-//                   ),
-//                 );
-//           }).toList();
-//         } else {
-//           return waybills.where((waybill) {
-//             final created = waybill.createdAt!.toLocal();
-//             return !created.isBefore(
-//                   fourAm(rangeStartDate!),
-//                 ) &&
-//                 created.isBefore(
-//                   fourAmNextDay(
-//                     rangeEndDate ??
-//                         resolveBusinessDate(DateTime.now()),
-//                   ),
-//                 ) &&
-//                 waybill.staffId == currentUser().userId;
-//           }).toList();
-//         }
-//       } else {
-//         final currentDate = dateSet ?? DateTime.now();
+//   //       return departmentWaybills()
+//   //           .where(
+//   //             (waybill) =>
+//   //                 !waybill.createdAt!.isBefore(
+//   //                   fourAm(currentDate),
+//   //                 ) &&
+//   //                 waybill.createdAt!.isBefore(
+//   //                   fourAmNextDay(currentDate),
+//   //                 ),
+//   //           )
+//   //           .toList();
+//   //     }
+//   //   } else {
+//   //     if (rangeStartDate != null) {
+//   //       if (authorization(
+//   //         authorized:
+//   //             Authorizations().viewAllTransactionRecords,
+//   //       )) {
+//   //         return waybills.where((waybill) {
+//   //           final created = waybill.createdAt!.toLocal();
+//   //           return !created.isBefore(
+//   //                 fourAm(rangeStartDate!),
+//   //               ) &&
+//   //               created.isBefore(
+//   //                 fourAmNextDay(
+//   //                   rangeEndDate ??
+//   //                       resolveBusinessDate(DateTime.now()),
+//   //                 ),
+//   //               );
+//   //         }).toList();
+//   //       } else {
+//   //         return waybills.where((waybill) {
+//   //           final created = waybill.createdAt!.toLocal();
+//   //           return !created.isBefore(
+//   //                 fourAm(rangeStartDate!),
+//   //               ) &&
+//   //               created.isBefore(
+//   //                 fourAmNextDay(
+//   //                   rangeEndDate ??
+//   //                       resolveBusinessDate(DateTime.now()),
+//   //                 ),
+//   //               ) &&
+//   //               waybill.staffId == currentUser().userId;
+//   //         }).toList();
+//   //       }
+//   //     } else {
+//   //       final currentDate = dateSet ?? DateTime.now();
 
-//         if (authorization(
-//           authorized:
-//               Authorizations().viewAllTransactionRecords,
-//         )) {
-//           return waybills
-//               .where(
-//                 (waybill) =>
-//                     !waybill.createdAt!.isBefore(
-//                       fourAm(currentDate),
-//                     ) &&
-//                     !waybill.createdAt!.isAfter(
-//                       fourAmNextDay(currentDate),
-//                     ),
-//               )
-//               .toList();
-//         } else {
-//           return waybills
-//               .where(
-//                 (waybill) =>
-//                     !waybill.createdAt!.isBefore(
-//                       fourAm(currentDate),
-//                     ) &&
-//                     !waybill.createdAt!.isAfter(
-//                       fourAmNextDay(currentDate),
-//                     ) &&
-//                     waybill.staffId == currentUser().userId,
-//               )
-//               .toList();
-//         }
-//       }
-//     }
-//   }
+//   //       if (authorization(
+//   //         authorized:
+//   //             Authorizations().viewAllTransactionRecords,
+//   //       )) {
+//   //         return waybills
+//   //             .where(
+//   //               (waybill) =>
+//   //                   !waybill.createdAt!.isBefore(
+//   //                     fourAm(currentDate),
+//   //                   ) &&
+//   //                   !waybill.createdAt!.isAfter(
+//   //                     fourAmNextDay(currentDate),
+//   //                   ),
+//   //             )
+//   //             .toList();
+//   //       } else {
+//   //         return waybills
+//   //             .where(
+//   //               (waybill) =>
+//   //                   !waybill.createdAt!.isBefore(
+//   //                     fourAm(currentDate),
+//   //                   ) &&
+//   //                   !waybill.createdAt!.isAfter(
+//   //                     fourAmNextDay(currentDate),
+//   //                   ) &&
+//   //                   waybill.staffId == currentUser().userId,
+//   //             )
+//   //             .toList();
+//   //       }
+//   //     }
+//   //   }
+//   // }
 
-//   List<TempWayBills> returnOwnWaybillsByDayOrWeek({
-//     required int index,
-//   }) {
-//     if (index == 2) {
-//       return returnWaybillsByDateForIndex().where((
-//         waybill,
-//       ) {
-//         return waybill.status == 'not-sent';
-//       }).toList();
-//     } else if (index == 3) {
-//       return returnWaybillsByDateForIndex().where((
-//         waybill,
-//       ) {
-//         return waybill.status == 'en-route';
-//       }).toList();
-//     } else if (index == 4) {
-//       return returnWaybillsByDateForIndex().where((
-//         waybill,
-//       ) {
-//         return waybill.status == 'delivered';
-//       }).toList();
-//     } else if (index == 5) {
-//       return returnWaybillsByDateForIndex().where((
-//         waybill,
-//       ) {
-//         return waybill.status == 'pick-up';
-//       }).toList();
-//     } else {
-//       return returnWaybillsByDateForIndex();
-//     }
-//   }
+//   // List<TempWayBills> returnOwnWaybillsByDayOrWeek({
+//   //   required int index,
+//   // }) {
+//   //   if (index == 2) {
+//   //     return returnWaybillsByDateForIndex().where((
+//   //       waybill,
+//   //     ) {
+//   //       return waybill.status == 'not-sent';
+//   //     }).toList();
+//   //   } else if (index == 3) {
+//   //     return returnWaybillsByDateForIndex().where((
+//   //       waybill,
+//   //     ) {
+//   //       return waybill.status == 'en-route';
+//   //     }).toList();
+//   //   } else if (index == 4) {
+//   //     return returnWaybillsByDateForIndex().where((
+//   //       waybill,
+//   //     ) {
+//   //       return waybill.status == 'delivered';
+//   //     }).toList();
+//   //   } else if (index == 5) {
+//   //     return returnWaybillsByDateForIndex().where((
+//   //       waybill,
+//   //     ) {
+//   //       return waybill.status == 'pick-up';
+//   //     }).toList();
+//   //   } else {
+//   //     return returnWaybillsByDateForIndex();
+//   //   }
+//   // }
 
-//   double getTotalRevenueForSelectedDayAll({
-//     String? staffId,
-//     String? customerUuid,
-//     required int index,
-//   }) {
-//     double tempTotalRevenue = 0;
+//   // double getTotalRevenueForSelectedDayAll({
+//   //   String? staffId,
+//   //   String? customerUuid,
+//   //   required int index,
+//   // }) {
+//   //   double tempTotalRevenue = 0;
 
-//     for (var waybill
-//         in (staffId != null
-//             ? returnOwnWaybillsByDayOrWeek(
-//               index: index,
-//             ).where((rec) => rec.staffId == staffId)
-//             : customerUuid != null
-//             ? returnOwnWaybillsByDayOrWeek(
-//               index: index,
-//             ).where((rec) => rec.customerId == customerUuid)
-//             : returnOwnWaybillsByDayOrWeek(index: index))) {
-//       tempTotalRevenue += getTotalMainRevenueWaybill(
-//         waybill,
-//       );
-//     }
+//   //   for (var waybill
+//   //       in (staffId != null
+//   //           ? returnOwnWaybillsByDayOrWeek(
+//   //             index: index,
+//   //           ).where((rec) => rec.staffId == staffId)
+//   //           : customerUuid != null
+//   //           ? returnOwnWaybillsByDayOrWeek(
+//   //             index: index,
+//   //           ).where((rec) => rec.customerId == customerUuid)
+//   //           : returnOwnWaybillsByDayOrWeek(index: index))) {
+//   //     tempTotalRevenue += getTotalMainRevenueWaybill(
+//   //       waybill,
+//   //     );
+//   //   }
 
-//     return tempTotalRevenue;
-//   }
+//   //   return tempTotalRevenue;
+//   // }
 
 //   String getWaybillText(TempWayBills waybill) {
 //     if (waybill.status == 'delivered') {

@@ -73,14 +73,14 @@ class _AddCustomerMobileState
                           .shopId!,
                   country:
                       returnCountryProvider()
-                          .selectedCountry!
-                          .country!,
+                          .selectedCountry
+                          ?.country,
                   state:
                       returnCountryProvider()
-                          .selectedState!
-                          .stateName!,
+                          .selectedState
+                          ?.stateName,
                   city:
-                      returnCountryProvider().selectedCity!,
+                      returnCountryProvider().selectedCity,
                   address:
                       widget.addressController.text.isEmpty
                           ? null
@@ -134,14 +134,14 @@ class _AddCustomerMobileState
                   address: widget.addressController.text,
                   country:
                       returnCountryProvider()
-                          .selectedCountry!
-                          .country!,
+                          .selectedCountry
+                          ?.country,
                   state:
                       returnCountryProvider()
-                          .selectedState!
-                          .stateName!,
+                          .selectedState
+                          ?.stateName,
                   city:
-                      returnCountryProvider().selectedCity!,
+                      returnCountryProvider().selectedCity,
                   dateAdded: widget.customer!.dateAdded,
                   updatedAt: DateTime.now(),
                   departmentName:

@@ -59,6 +59,7 @@ class _ReceiptPageDesktopState
       (rec) => rec.uuid! == widget.response.resUuid,
       orElse:
           () => TempMainReceipt(
+            comment: null,
             subStaffName: null,
             departmentName:
                 returnDepartmentProvider()
@@ -1238,6 +1239,69 @@ class _ReceiptDetailsContainerState
                                                     .mainReceipt
                                                     .createdAt,
                                               ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Visibility(
+                              visible:
+                                  widget
+                                          .mainReceipt
+                                          .comment !=
+                                      null &&
+                                  widget
+                                          .mainReceipt
+                                          .comment
+                                          ?.isNotEmpty ==
+                                      true,
+                              child: Column(
+                                children: [
+                                  SizedBox(height: 5),
+                                  Row(
+                                    spacing: 10,
+                                    children: [
+                                      Expanded(
+                                        flex: 5,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment
+                                                  .start,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b3
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              'Comment',
+                                            ),
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b3
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .normal,
+                                              ),
+                                              widget
+                                                      .mainReceipt
+                                                      .comment ??
+                                                  'Comment',
                                             ),
                                           ],
                                         ),

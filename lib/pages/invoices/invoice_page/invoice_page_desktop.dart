@@ -98,6 +98,7 @@ class _InvoicePageDesktopState
               inv.uuid == widget.checkoutResponse.resUuid,
           orElse: () {
             return TempInvoice(
+              comment: null,
               subStaffName: null,
               departmentName:
                   returnDepartmentProvider()
@@ -1505,12 +1506,11 @@ class _InvoicePageDesktopState
                                             visible:
                                                 customersClass
                                                         ?.email !=
-                                                    null ||
-                                                customersClass?.email !=
-                                                        null &&
-                                                    customersClass!
-                                                        .email
-                                                        .isEmpty,
+                                                    null &&
+                                                customersClass
+                                                        ?.email
+                                                        .isEmpty ==
+                                                    false,
                                             child: Row(
                                               spacing: 10,
                                               children: [
@@ -1532,6 +1532,55 @@ class _InvoicePageDesktopState
                                                   customersClass
                                                           ?.email ??
                                                       'Email',
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Visibility(
+                                            visible:
+                                                invoice.comment !=
+                                                    null &&
+                                                invoice
+                                                        .comment
+                                                        ?.isNotEmpty ==
+                                                    true,
+                                            child: Column(
+                                              spacing: 5,
+                                              children: [
+                                                Divider(
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade300,
+                                                  height:
+                                                      10,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            theme.mobileTexts.b3.fontSize,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                      'Comment:',
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              theme.mobileTexts.b4.fontSize,
+                                                        ),
+                                                        invoice.comment ??
+                                                            'Comment Not Set',
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ],
                                             ),
@@ -1811,13 +1860,9 @@ class _InvoicePageDesktopState
                                                         isLoading =
                                                             true;
                                                       });
-                                                      // var user =
-                                                      //     returnUserProvider(
-                                                      //       context,
-                                                      //       listen:
-                                                      //           false,
-                                                      //     ).currentUserMain!;
                                                       var tempInvoice = TempInvoice(
+                                                        comment:
+                                                            invoice.comment,
                                                         subStaffName:
                                                             invoice.subStaffName,
                                                         departmentUuidNew:

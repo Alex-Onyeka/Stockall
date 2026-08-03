@@ -8,7 +8,8 @@ import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class MyCalculatorDesktop extends StatefulWidget {
-  const MyCalculatorDesktop({super.key});
+  final bool? showHeader;
+  const MyCalculatorDesktop({super.key, this.showHeader});
 
   @override
   State<MyCalculatorDesktop> createState() =>
@@ -193,43 +194,57 @@ class _MyCalculatorDesktopState
         decoration: BoxDecoration(color: Colors.white),
         child: Column(
           children: [
-            SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 5.0,
-              ),
-              child: Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+            Visibility(
+              visible:
+                  widget.showHeader == null ||
+                  widget.showHeader == true,
+              child: Column(
                 children: [
-                  Opacity(
-                    opacity: 0,
-                    child: IconButton(
-                      mouseCursor: SystemMouseCursors.click,
-                      onPressed: () {},
-                      icon: Icon(Icons.clear),
+                  SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5.0,
+                    ),
+                    child: Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
+                      children: [
+                        Opacity(
+                          opacity: 0,
+                          child: IconButton(
+                            mouseCursor:
+                                SystemMouseCursors.click,
+                            onPressed: () {},
+                            icon: Icon(Icons.clear),
+                          ),
+                        ),
+                        Text(
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b1
+                                    .fontSize,
+                          ),
+                          'My Calculator',
+                        ),
+                        Opacity(
+                          opacity: 0,
+                          child: IconButton(
+                            mouseCursor:
+                                SystemMouseCursors.click,
+                            onPressed: () {},
+                            icon: Icon(Icons.clear),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Text(
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize:
-                          theme.mobileTexts.b1.fontSize,
-                    ),
-                    'My Calculator',
-                  ),
-                  Opacity(
-                    opacity: 0,
-                    child: IconButton(
-                      mouseCursor: SystemMouseCursors.click,
-                      onPressed: () {},
-                      icon: Icon(Icons.clear),
-                    ),
-                  ),
+                  SizedBox(height: 10),
                 ],
               ),
             ),
-            SizedBox(height: 10),
             Expanded(
               flex: 2,
               child: Container(

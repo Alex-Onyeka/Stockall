@@ -383,6 +383,7 @@ class InvoicesProvider extends ChangeNotifier {
       final createdAt = DateTime.now().toUtc();
 
       TempMainReceipt receipt = TempMainReceipt(
+        comment: null,
         subStaffName: invoice.subStaffName,
         createdAt: createdAt,
         shopId: invoice.shopId,
@@ -626,6 +627,7 @@ class InvoicesProvider extends ChangeNotifier {
             .isEmpty) {
           var newId = uuidGen();
           var tempCart = TempCart(
+            comment: invoice.comment,
             timeOfDay: null,
             hasPrintedDocket: false,
             subStaffName: invoice.subStaffName,
@@ -836,6 +838,7 @@ class InvoicesProvider extends ChangeNotifier {
                 await returnSalesProvider().addNewCart(
                   context,
                   TempCart(
+                    comment: null,
                     timeOfDay: null,
                     // createdDate: DateTime.now(),
                     hasPrintedDocket: false,

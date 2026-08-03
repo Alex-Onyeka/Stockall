@@ -118,8 +118,8 @@ class SalesProvider extends ChangeNotifier {
         TempMainCart(
           cartQueue: [
             TempCart(
+              comment: null,
               timeOfDay: null,
-              // createdDate: DateTime.now(),
               hasPrintedDocket: false,
               subStaffName: null,
               customDate: null,
@@ -237,6 +237,7 @@ class SalesProvider extends ChangeNotifier {
               .cartQueue
               .add(
                 TempCart(
+                  comment: null,
                   timeOfDay: null,
                   // createdDate: DateTime.now(),
                   hasPrintedDocket: false,
@@ -495,6 +496,7 @@ class SalesProvider extends ChangeNotifier {
       await addNewCart(
         context,
         TempCart(
+          comment: null,
           timeOfDay: null,
           // createdDate: DateTime.now(),
           hasPrintedDocket: false,
@@ -971,6 +973,7 @@ class SalesProvider extends ChangeNotifier {
     if (currentCart().isInvoice) {
       await mainLocalLog('Current Sale is Invoice');
       TempInvoice invoice = TempInvoice(
+        comment: currentCart().comment,
         subStaffName:
             currentCart().subStaffName ??
             currentMainCart().subStaff?.staffName,
@@ -1361,6 +1364,7 @@ class SalesProvider extends ChangeNotifier {
           uuidGen();
       await mainLocalLog('🌹🌹 Created Date: $createdAt');
       TempMainReceipt receipt = TempMainReceipt(
+        comment: currentCart().comment,
         subStaffName:
             currentCart().subStaffName ??
             currentMainCart().subStaff?.staffName,
@@ -1800,6 +1804,12 @@ class SalesProvider extends ChangeNotifier {
   void toggleSetCustomPrice() {
     currentCart().setCustomPrice =
         !currentCart().setCustomPrice;
+    CartFunc().updateMainCart(currentMainCart());
+    notifyListeners();
+  }
+
+  void setComment({required String? comment}) {
+    currentCart().comment = comment;
     CartFunc().updateMainCart(currentMainCart());
     notifyListeners();
   }
@@ -2361,6 +2371,35 @@ class SalesProvider extends ChangeNotifier {
     }
   }
 
+  Map<String, dynamic> returnPaymentMethodSalesPage(
+    int index,
+  ) {
+    return paymentMethods.firstWhere(
+      (item) => item['number'] == index,
+      orElse: () {
+        return {
+          'number': 0,
+          'method': 'Pay with Cash',
+          'subText': 'Use Cash to Make Payment',
+        };
+      },
+    );
+  }
+
+  Map<String, dynamic> selectedPaymentMethod() {
+    return paymentMethods.firstWhere(
+      (item) =>
+          item['number'] == currentCart().paymentMethod,
+      orElse: () {
+        return {
+          'number': 0,
+          'method': 'Pay with Cash',
+          'subText': 'Use Cash to Make Payment',
+        };
+      },
+    );
+  }
+
   //
   //
   //
@@ -2528,6 +2567,7 @@ class SalesProvider extends ChangeNotifier {
             .isEmpty) {
           var newId = uuidGen();
           var tempCart = TempCart(
+            comment: receipt.comment,
             timeOfDay: null,
             hasPrintedDocket: false,
             subStaffName: receipt.subStaffName,
@@ -2609,6 +2649,7 @@ class SalesProvider extends ChangeNotifier {
                 await addNewCart(
                   context,
                   TempCart(
+                    comment: null,
                     timeOfDay: null,
                     // createdDate: DateTime.now(),
                     hasPrintedDocket: false,

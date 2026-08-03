@@ -9,6 +9,7 @@ import 'package:stockall/pages/products/compnents/product_tile_main.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
 import 'package:stockall/pages/products/storage_page/add_storage_item/add_storage_item.dart';
 import 'package:stockall/pages/products/storage_page/storage_details/components.dart';
+import 'package:stockall/pages/products/storage_page/storage_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class StorageDetailsMobile extends StatefulWidget {
@@ -55,6 +56,52 @@ class _StorageDetailsMobileState
             appBar: appBar(
               context: context,
               title: 'Details',
+              widget: InkWell(
+                mouseCursor: SystemMouseCursors.click,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return StoragePage(
+                          itemName: product.name,
+                        );
+                      },
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 5,
+                    horizontal: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                  child: Row(
+                    spacing: 3,
+                    children: [
+                      Text(
+                        style: TextStyle(
+                          fontSize:
+                              widget
+                                  .theme
+                                  .mobileTexts
+                                  .b3
+                                  .fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        'History',
+                      ),
+                      Icon(
+                        size: 16,
+                        color: Colors.grey.shade600,
+                        Icons.history,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
             body: Padding(
               padding: const EdgeInsets.symmetric(

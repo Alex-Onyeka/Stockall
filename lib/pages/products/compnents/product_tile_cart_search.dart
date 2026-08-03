@@ -104,7 +104,7 @@ class _ProductTileCartSearchState
                                                 widget
                                                     .theme
                                                     .mobileTexts
-                                                    .b2
+                                                    .b3
                                                     .fontSize,
                                             fontWeight:
                                                 FontWeight
@@ -143,7 +143,7 @@ class _ProductTileCartSearchState
                                                 widget
                                                     .theme
                                                     .mobileTexts
-                                                    .b3
+                                                    .b4
                                                     .fontSize,
                                             fontWeight:
                                                 FontWeight
@@ -165,7 +165,10 @@ class _ProductTileCartSearchState
                               mouseCursor:
                                   SystemMouseCursors.click,
                               onPressed: widget.action,
-                              icon: Icon(Icons.add),
+                              icon: Icon(
+                                size: 16,
+                                Icons.add,
+                              ),
                             ),
                           ],
                         ),
@@ -186,7 +189,7 @@ class _ProductTileCartSearchState
                                             widget
                                                 .theme
                                                 .mobileTexts
-                                                .b2
+                                                .b3
                                                 .fontSize,
                                         fontWeight:
                                             FontWeight.bold,
@@ -250,7 +253,7 @@ class _ProductTileCartSearchState
                                             widget
                                                 .theme
                                                 .mobileTexts
-                                                .b2
+                                                .b3
                                                 .fontSize,
                                         fontWeight:
                                             FontWeight.bold,
@@ -381,7 +384,7 @@ class _ProductTileCartSearchState
                                       ),
                                   child: Text(
                                     style: TextStyle(
-                                      fontSize: 12,
+                                      fontSize: 10,
                                       fontWeight:
                                           FontWeight.bold,
                                       color:
@@ -450,7 +453,10 @@ class _ProductTileCartSearchState
                                                       Authorizations()
                                                           .viewItemQuantity,
                                                 )
-                                                ? '${formatLargeNumberDouble(widget.product.quantity ?? 0)} in Stock'
+                                                ? formatLargeNumberDouble(
+                                                  widget.product.quantity ??
+                                                      0,
+                                                )
                                                 : 'Restricted'
                                             : 'Item Expired'
                                         : widget
@@ -468,7 +474,12 @@ class _ProductTileCartSearchState
                                               Authorizations()
                                                   .viewItemQuantity,
                                         )
-                                        ? '${formatLargeNumberDouble(widget.product.quantity ?? 0)} in Stock'
+                                        ? formatLargeNumberDouble(
+                                          widget
+                                                  .product
+                                                  .quantity ??
+                                              0,
+                                        )
                                         : 'Restricted',
                                   ),
                                 ),
