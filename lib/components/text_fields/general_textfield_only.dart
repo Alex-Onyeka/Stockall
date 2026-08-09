@@ -8,10 +8,14 @@ class GeneralTextfieldOnly extends StatefulWidget {
   final TextEditingController controller;
   final Function(String)? onChanged;
   final int lines;
+  final int? minLines;
   final ThemeProvider theme;
   final GlobalKey<FormState>? formState;
   final String? initialValue;
   final FocusNode? focusNode;
+  final TextInputAction? textInputAction;
+  final Function(PointerDownEvent pointerDownEvent)?
+  onTapOutside;
   const GeneralTextfieldOnly({
     super.key,
     required this.hint,
@@ -22,6 +26,9 @@ class GeneralTextfieldOnly extends StatefulWidget {
     this.formState,
     this.initialValue,
     this.focusNode,
+    this.minLines,
+    this.textInputAction,
+    this.onTapOutside,
   });
 
   @override
@@ -49,7 +56,18 @@ class _GeneralTextfieldOnlyState
     return Form(
       key: widget.formState,
       child: TextFormField(
+        onTapOutside: widget.onTapOutside,
+        textInputAction:
+            widget.textInputAction ?? TextInputAction.done,
+        maxLines: widget.lines,
+        keyboardType:
+            widget.textInputAction ==
+                    TextInputAction.newline
+                ? TextInputType.multiline
+                : TextInputType.text,
+        textCapitalization: TextCapitalization.sentences,
         focusNode: widget.focusNode,
+        minLines: widget.minLines ?? 1,
         onTap: () {
           if (returnShopProvider().isOnScreenKeyboardOn()) {
             showOnScreenKeyboard();
@@ -69,9 +87,6 @@ class _GeneralTextfieldOnlyState
           fontSize: theme.mobileTexts.b2.fontSize,
         ),
         onChanged: widget.onChanged,
-        maxLines: widget.lines,
-        keyboardType: TextInputType.text,
-        textCapitalization: TextCapitalization.words,
         autocorrect: true,
         enableSuggestions: true,
         decoration: InputDecoration(

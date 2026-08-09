@@ -10,10 +10,10 @@ import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/product_details/platforms/components/item_comment_widget.dart';
 import 'package:stockall/pages/sales/make_sales/page1/platforms/components/sub_staff_selection_widget.dart';
 import 'package:stockall/pages/sales/make_sales/page1/platforms/make_sales_mobile.dart';
 import 'package:stockall/pages/sales/make_sales/page2/components/customer_selection_widget.dart';
-import 'package:stockall/pages/sales/make_sales/page2/components/receipt_comment_widget.dart';
 import 'package:stockall/pages/sales/make_sales/page2/components/set_custom_receipt_created_date_widget.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -48,6 +48,7 @@ class _MakeSalesMobileTwoState
   bool isLoading = false;
   bool showSuccess = false;
   final discountPercentController = TextEditingController();
+  final commentController = TextEditingController();
 
   @override
   void initState() {
@@ -318,7 +319,18 @@ class _MakeSalesMobileTwoState
                           ],
                         ),
                         SizedBox(height: 5),
-                        ReceiptCommentWidget(),
+                        ItemCommentWidget(
+                          commentController:
+                              commentController,
+                          onTapOutside: (pointerDownEvent) {
+                            returnSalesProvider()
+                                .setComment(
+                                  comment:
+                                      commentController
+                                          .text,
+                                );
+                          },
+                        ),
                         SizedBox(height: 20),
                         Visibility(
                           visible:
@@ -785,6 +797,12 @@ class _MakeSalesMobileTwoState
                                           safeContext,
                                         ).pop();
                                       }
+                                      returnSalesProvider()
+                                          .setComment(
+                                            comment:
+                                                commentController
+                                                    .text,
+                                          );
                                       var res = await returnSalesProvider().checkoutMain(
                                         context: context,
                                         salesCartItem:

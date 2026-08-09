@@ -17,10 +17,10 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/product_details/platforms/components/item_comment_widget.dart';
 import 'package:stockall/pages/sales/make_sales/page1/platforms/components/project_display_widget.dart';
 import 'package:stockall/pages/sales/make_sales/page1/platforms/components/sub_staff_selection_widget.dart';
 import 'package:stockall/pages/sales/make_sales/page2/components/customer_selection_widget.dart';
-import 'package:stockall/pages/sales/make_sales/page2/components/receipt_comment_widget.dart';
 import 'package:stockall/pages/sales/make_sales/page2/components/set_custom_receipt_created_date_widget.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -55,6 +55,7 @@ class _MakeSalesDesktopTwoState
   bool isLoading = false;
   bool showSuccess = false;
   final discountPercentController = TextEditingController();
+  final commentController = TextEditingController();
 
   @override
   void initState() {
@@ -973,6 +974,11 @@ class _MakeSalesDesktopTwoState
                                                     safeContext,
                                                   ).pop();
                                                 }
+                                                returnSalesProvider().setComment(
+                                                  comment:
+                                                      commentController
+                                                          .text,
+                                                );
                                                 var res = await returnSalesProvider().checkoutMain(
                                                   context:
                                                       context,
@@ -1101,7 +1107,20 @@ class _MakeSalesDesktopTwoState
                                   ),
                                 ),
                                 SizedBox(height: 10),
-                                ReceiptCommentWidget(),
+                                ItemCommentWidget(
+                                  commentController:
+                                      commentController,
+                                  onTapOutside: (
+                                    pointerDownEvent,
+                                  ) {
+                                    returnSalesProvider()
+                                        .setComment(
+                                          comment:
+                                              commentController
+                                                  .text,
+                                        );
+                                  },
+                                ),
                               ],
                             ),
                           ),

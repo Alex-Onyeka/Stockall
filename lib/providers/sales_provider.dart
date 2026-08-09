@@ -1846,8 +1846,17 @@ class SalesProvider extends ChangeNotifier {
   }
 
   void setComment({required String? comment}) {
-    currentCart().comment = comment;
+    if (comment == null) {
+      currentCart().comment = comment;
+    } else {
+      if (comment.isEmpty) {
+        currentCart().comment = null;
+      } else {
+        currentCart().comment = comment;
+      }
+    }
     CartFunc().updateMainCart(currentMainCart());
+    print('Comment Updated: $comment');
     notifyListeners();
   }
 

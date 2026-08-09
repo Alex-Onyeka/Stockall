@@ -6,11 +6,14 @@ class ItemCommentWidget extends StatefulWidget {
   final TextEditingController commentController;
   // final String? comment;
   // final Function()? action;
+  final Function(PointerDownEvent pointerDownEvent)?
+  onTapOutside;
   const ItemCommentWidget({
     super.key,
     required this.commentController,
     // required this.action,
     // required this.comment,
+    this.onTapOutside,
   });
 
   @override
@@ -47,7 +50,6 @@ class _ItemCommentWidgetState
           Row(
             mainAxisAlignment:
                 MainAxisAlignment.spaceBetween,
-            spacing: 5,
             children: [
               Text(
                 style: TextStyle(
@@ -56,111 +58,25 @@ class _ItemCommentWidgetState
                 ),
                 'Comment:',
               ),
-              // Row(
-              //   spacing: 5,
-              //   children: [
-              //     Visibility(
-              //       visible: isEdit,
-              //       child: InkWell(
-              //         borderRadius: BorderRadius.circular(
-              //           5,
-              //         ),
-              //         mouseCursor: SystemMouseCursors.click,
-              //         onTap: () {
-              //           toggleIsEdit(false);
-              //         },
-              //         child: Padding(
-              //           padding: EdgeInsetsGeometry.all(8),
-              //           child: Icon(size: 18, Icons.clear),
-              //         ),
-              //       ),
-              //     ),
-              //     Visibility(
-              //       visible: isEdit,
-              //       child: InkWell(
-              //         borderRadius: BorderRadius.circular(
-              //           5,
-              //         ),
-              //         mouseCursor: SystemMouseCursors.click,
-              //         onTap: () {
-              //           widget.action != null
-              //               ? widget.action!()
-              //               : {};
-              //           toggleIsEdit(false);
-              //         },
-              //         child: Padding(
-              //           padding: EdgeInsetsGeometry.all(7),
-              //           child: Icon(size: 20, Icons.check),
-              //         ),
-              //       ),
-              //     ),
-              //     Visibility(
-              //       visible: !isEdit,
-              //       child: InkWell(
-              //         borderRadius: BorderRadius.circular(
-              //           5,
-              //         ),
-              //         mouseCursor: SystemMouseCursors.click,
-              //         onTap: () {
-              //           toggleIsEdit(true);
-              //         },
-              //         child: Padding(
-              //           padding: EdgeInsetsGeometry.all(8),
-              //           child: Icon(size: 18, Icons.edit),
-              //         ),
-              //       ),
-              //     ),
-              //   ],
-              // ),
             ],
           ),
           Builder(
             builder: (context) {
-              // if (isEdit) {
-              // widget.commentController.text =
-              //     widget.comment ?? '';
               return Column(
                 children: [
                   SizedBox(height: 5),
                   GeneralTextfieldOnly(
+                    onTapOutside: widget.onTapOutside,
+                    textInputAction:
+                        TextInputAction.newline,
+                    minLines: 3,
                     hint: 'Enter Comment',
                     controller: widget.commentController,
-                    lines: 3,
+                    lines: 6,
                     theme: theme,
                   ),
                 ],
               );
-              // } else {
-              //   return Container(
-              //     padding: const EdgeInsets.all(6),
-              //     margin: EdgeInsets.only(top: 5),
-              //     decoration: BoxDecoration(
-              //       borderRadius: BorderRadius.circular(2),
-              //       color: Colors.grey.shade200,
-              //       border: Border.all(
-              //         color: Colors.grey.shade300,
-              //       ),
-              //     ),
-              //     child: Row(
-              //       children: [
-              //         Expanded(
-              //           child: Text(
-              //             style: TextStyle(
-              //               fontSize:
-              //                   theme
-              //                       .mobileTexts
-              //                       .b3
-              //                       .fontSize,
-              //               fontWeight: FontWeight.w500,
-              //             ),
-              //             widget.comment ??
-              //                 'Comment Not Set',
-              //           ),
-              //         ),
-              //       ],
-              //     ),
-              //   );
-              // }
             },
           ),
         ],
