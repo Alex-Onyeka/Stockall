@@ -82,34 +82,36 @@ class _CategoriesPageDesktopState
                   ),
                 ),
               ),
-              Column(
-                spacing: 8,
-                children: [
-                  Text(
-                    style: TextStyle(
-                      color:
-                          theme
-                              .lightModeColor
-                              .shadesColorBlack,
-                      fontSize:
-                          theme.mobileTexts.h3.fontSize,
-                      fontWeight:
+              Expanded(
+                child: Column(
+                  spacing: 8,
+                  children: [
+                    Text(
+                      style: TextStyle(
+                        color:
+                            theme
+                                .lightModeColor
+                                .shadesColorBlack,
+                        fontSize:
+                            theme.mobileTexts.h4.fontSize,
+                        fontWeight:
+                            theme
+                                .mobileTexts
+                                .h4
+                                .fontWeightBold,
+                      ),
+                      'Categories',
+                    ),
+                    Text(
+                      style:
                           theme
                               .mobileTexts
-                              .h3
-                              .fontWeightBold,
+                              .b3
+                              .textStyleNormal,
+                      "Manage Your Items Categories",
                     ),
-                    'Categories',
-                  ),
-                  Text(
-                    style:
-                        theme
-                            .mobileTexts
-                            .b1
-                            .textStyleNormal,
-                    "Manage Your Items Categories",
-                  ),
-                ],
+                  ],
+                ),
               ),
               Row(
                 children: [

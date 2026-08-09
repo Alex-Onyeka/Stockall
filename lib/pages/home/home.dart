@@ -199,15 +199,6 @@ class _HomeState extends State<Home> {
                       } else if (returnShopProvider()
                               .userShop() ==
                           null) {
-                        // if (!_handledNoShop) {
-                        //   _handledNoShop = true;
-                        //   WidgetsBinding.instance
-                        //       .addPostFrameCallback((_) {
-                        //         if (context.mounted) {
-                        //           _handleNoShop();
-                        //         }
-                        //       });
-                        // }
                         return ShopBannerScreen();
                       } else {
                         if (!returnNavProvider(

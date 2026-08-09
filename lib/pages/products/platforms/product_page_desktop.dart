@@ -469,23 +469,27 @@ class _ProductPageDesktopState
                                                   productIconSvg,
                                               height: 35,
                                               action: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (
-                                                      context,
-                                                    ) {
-                                                      return AddProduct();
-                                                    },
-                                                  ),
-                                                ).then((_) {
-                                                  if (context
-                                                      .mounted) {
-                                                    setState(
-                                                      () {},
-                                                    );
-                                                  }
-                                                });
+                                                if (authorization(
+                                                  authorized:
+                                                      Authorizations()
+                                                          .addProduct,
+                                                )) {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (
+                                                        context,
+                                                      ) {
+                                                        return AddProduct();
+                                                      },
+                                                    ),
+                                                  ).then((
+                                                    _,
+                                                  ) {
+                                                    if (context
+                                                        .mounted) {}
+                                                  });
+                                                }
                                               },
                                               theme:
                                                   widget

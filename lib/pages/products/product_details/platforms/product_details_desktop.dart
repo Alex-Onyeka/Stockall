@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
@@ -14,6 +15,8 @@ import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/barcode_printing_page/barcode_printing_page.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
+import 'package:stockall/pages/products/item_history_page/item_history_page.dart';
+import 'package:stockall/pages/products/product_details/platforms/components/transfer_item_quantity.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/update_item_quantity.dart';
 import 'package:stockall/providers/data_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -128,127 +131,63 @@ class _ProductDetailsDesktopState
                       appBar: appBar(
                         context: context,
                         title: 'Item Details',
-                        // widget: Visibility(
-                        //   visible: !isStoreKeeper(),
-                        //   child: InkWell( mouseCursor: SystemMouseCursors.click,
-                        //     onTap: () {
-                        //       // var safeContext = context;
-                        //       // showDialog(
-                        //       //   context: safeContext,
-                        //       //   builder: (context) {
-                        //       //     return ConfirmationAlert(
-                        //       //       theme: widget.theme,
-                        //       //       message:
-                        //       //           'This item is going to be added to your cart. Are you sure you want to proceed with this action?',
-                        //       //       title:
-                        //       //           'Add Item to Cart',
-                        //       //       action: () async {
-                        //       //         Navigator.of(
-                        //       //           safeContext,
-                        //       //         ).pop();
-                        //       //         var res = await returnSalesProvider()
-                        //       //             .addItemToCart(
-                        //       //               isEdit: false,
-                        //       //               context:
-                        //       //                   context,
-                        //       //               newItem: TempCartItem(
-                        //       //                 uuid:
-                        //       //                     uuidGen(),
-                        //       //                 itemUuid:
-                        //       //                     product
-                        //       //                         .uuid,
-                        //       //                 isVoid: false,
-                        //       //                 qttyPerGroup:
-                        //       //                     null,
-                        //       //                 useGroupQuantity:
-                        //       //                     false,
-                        //       //                 useWholeSalePrice:
-                        //       //                     false,
-                        //       //                 setCustomPrice:
-                        //       //                     false,
-                        //       //                 item: product,
-                        //       //                 quantity: 1,
-                        //       //                 discount:
-                        //       //                     null,
-                        //       //                 addToStock:
-                        //       //                     false,
-                        //       //                 setTotalPrice:
-                        //       //                     false,
-                        //       //               ),
-                        //       //               isCustomEdit:
-                        //       //                   false,
-                        //       //             );
-                        //       //         if (res ==
-                        //       //             "Quantity Limit Exceeded") {
-                        //       //           return;
-                        //       //         }
-                        //       //         Navigator.push(
-                        //       //           context,
-                        //       //           MaterialPageRoute(
-                        //       //             builder: (
-                        //       //               context,
-                        //       //             ) {
-                        //       //               return MakeSalesPage(
-                        //       //                 isMain: true,
-                        //       //                 // product: product,
-                        //       //               );
-                        //       //             },
-                        //       //           ),
-                        //       //         );
-                        //       //       },
-                        //       //     );
-                        //       //   },
-                        //       // );
-                        //       Navigator.push(
-                        //         context,
-                        //         MaterialPageRoute(
-                        //           builder: (context) {
-                        //             return ItemHistoryPage(
-                        //               productUuid:
-                        //                   widget
-                        //                       .productUuid,
-                        //             );
-                        //           },
-                        //         ),
-                        //       );
-                        //     },
-                        //     child: Container(
-                        //       margin: EdgeInsets.only(
-                        //         right: 5,
-                        //       ),
-                        //       padding: EdgeInsets.only(
-                        //         right: 15,
-                        //         left: 15,
-                        //         top: 5,
-                        //         bottom: 5,
-                        //       ),
-                        //       decoration: BoxDecoration(),
-                        //       child: Row(
-                        //         spacing: 3,
-                        //         children: [
-                        //           Text(
-                        //             style: TextStyle(
-                        //               fontWeight:
-                        //                   FontWeight.bold,
-                        //               fontSize:
-                        //                   widget
-                        //                       .theme
-                        //                       .mobileTexts
-                        //                       .b2
-                        //                       .fontSize,
-                        //             ),
-                        //             'View History',
-                        //           ),
-                        //           Icon(
-                        //             size: 17,
-                        //             Icons
-                        //                 .receipt_long_rounded,
-                        //           ),
-                        //         ],
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
+                        widget: Visibility(
+                          visible: !isStoreKeeper(),
+                          child: InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return ItemHistoryPage(
+                                      productUuid:
+                                          widget
+                                              .productUuid,
+                                      fromItemDetails: true,
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(
+                                right: 5,
+                              ),
+                              padding: EdgeInsets.only(
+                                right: 15,
+                                left: 15,
+                                top: 5,
+                                bottom: 5,
+                              ),
+                              decoration: BoxDecoration(),
+                              child: Row(
+                                spacing: 3,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontWeight:
+                                          FontWeight.bold,
+                                      fontSize:
+                                          widget
+                                              .theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                    ),
+                                    'View History',
+                                  ),
+                                  Icon(
+                                    size: 16,
+                                    Icons
+                                        .receipt_long_rounded,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                       body: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -619,7 +558,7 @@ class _ProductDetailsDesktopState
                                                                                       ),
                                                                                       child: SizedBox(
                                                                                         height:
-                                                                                            20,
+                                                                                            10,
                                                                                       ),
                                                                                     ),
                                                                                     MoneyTextfield(
@@ -631,6 +570,15 @@ class _ProductDetailsDesktopState
                                                                                           sellingController,
                                                                                       theme:
                                                                                           widget.theme,
+                                                                                    ),
+                                                                                    Visibility(
+                                                                                      visible:
+                                                                                          returnShopProvider().userShop()?.wholeSale ==
+                                                                                          true,
+                                                                                      child: SizedBox(
+                                                                                        height:
+                                                                                            10,
+                                                                                      ),
                                                                                     ),
                                                                                     Visibility(
                                                                                       visible:
@@ -698,6 +646,8 @@ class _ProductDetailsDesktopState
                                                                                                 quantityChange:
                                                                                                     null,
                                                                                                 product: TempProductClass(
+                                                                                                  categories:
+                                                                                                      product.categories,
                                                                                                   storageUuid:
                                                                                                       product.storageUuid,
                                                                                                   departmentName:
@@ -756,8 +706,8 @@ class _ProductDetailsDesktopState
                                                                                                       product.shopId,
                                                                                                   barcode:
                                                                                                       product.barcode,
-                                                                                                  categoryUuid:
-                                                                                                      product.categoryUuid,
+                                                                                                  // categoryUuid:
+                                                                                                  //     product.categoryUuid,
                                                                                                   createdAt:
                                                                                                       product.createdAt,
                                                                                                   discount:
@@ -1040,6 +990,8 @@ class _ProductDetailsDesktopState
                                                                     quantityChange:
                                                                         null,
                                                                     product: TempProductClass(
+                                                                      categories:
+                                                                          product.categories,
                                                                       storageUuid:
                                                                           product.storageUuid,
                                                                       departmentName:
@@ -1084,8 +1036,8 @@ class _ProductDetailsDesktopState
                                                                           product.shopId,
                                                                       barcode:
                                                                           product.barcode,
-                                                                      categoryUuid:
-                                                                          product.categoryUuid,
+                                                                      // categoryUuid:
+                                                                      //     product.categoryUuid,
                                                                       createdAt:
                                                                           product.createdAt,
                                                                       discount:
@@ -1440,36 +1392,9 @@ class _ProductDetailsDesktopState
                                                 widget
                                                     .theme,
                                             mainText:
-                                                returnCategoriesProvider(
-                                                          context:
-                                                              context,
-                                                        )
-                                                        .categories()
-                                                        .where(
-                                                          (
-                                                            cat,
-                                                          ) =>
-                                                              cat.uuid ==
-                                                              product.categoryUuid,
-                                                        )
-                                                        .isNotEmpty
-                                                    ? returnCategoriesProvider(
-                                                          context:
-                                                              context,
-                                                        )
-                                                        .categories()
-                                                        .where(
-                                                          (
-                                                            cat,
-                                                          ) =>
-                                                              cat.uuid ==
-                                                              product.categoryUuid,
-                                                        )
-                                                        .first
-                                                        .name
-                                                    : 'Not Set',
+                                                "(${product.categories?.length ?? 0}) Category(s)",
                                             text:
-                                                'Category',
+                                                'Categories',
                                           ),
                                           BottomInfoSection(
                                             theme:
@@ -1504,8 +1429,33 @@ class _ProductDetailsDesktopState
                             Row(
                               mainAxisAlignment:
                                   MainAxisAlignment.center,
-                              spacing: 15,
+                              spacing: 5,
                               children: [
+                                Visibility(
+                                  visible: authorization(
+                                    authorized:
+                                        Authorizations()
+                                            .transferProduct,
+                                  ),
+                                  child: Expanded(
+                                    child: EditButton(
+                                      text: 'Transfer',
+                                      action: () {
+                                        transferItemQuantity(
+                                          context,
+                                          product,
+                                        );
+                                      },
+                                      theme: returnTheme(
+                                        context,
+                                      ),
+                                      icon:
+                                          Icons
+                                              .rotate_left_rounded,
+                                      color: Colors.amber,
+                                    ),
+                                  ),
+                                ),
                                 Visibility(
                                   visible: authorization(
                                     authorized:
@@ -1514,7 +1464,7 @@ class _ProductDetailsDesktopState
                                   ),
                                   child: Expanded(
                                     child: EditButton(
-                                      text: 'Delete Item',
+                                      text: 'Delete',
                                       action: () {
                                         final safeContext =
                                             context;
@@ -1543,11 +1493,33 @@ class _ProductDetailsDesktopState
                                                   isLoading =
                                                       true;
                                                 });
-                                                await provider
-                                                    .deleteProductMain(
-                                                      product:
-                                                          product,
-                                                    );
+                                                ItemHistory
+                                                itemHistory = ItemHistory(
+                                                  shopId:
+                                                      shopId(),
+                                                  title:
+                                                      'Item Deleted',
+                                                  quantityChange:
+                                                      0,
+                                                  newValue:
+                                                      (product.quantity ??
+                                                              0)
+                                                          .toString(),
+                                                  desc:
+                                                      'Item Deleted Now',
+                                                  isIncreased:
+                                                      false,
+                                                  oldValue:
+                                                      (product.quantity ??
+                                                              0)
+                                                          .toString(),
+                                                );
+                                                await provider.deleteProductMain(
+                                                  itemHistory:
+                                                      itemHistory,
+                                                  product:
+                                                      product,
+                                                );
                                                 // await provider
                                                 //     .getProducts(
                                                 //       shopId,
@@ -1596,7 +1568,7 @@ class _ProductDetailsDesktopState
                                   ),
                                   child: Expanded(
                                     child: EditButton(
-                                      text: 'Edit Item',
+                                      text: 'Edit',
                                       action: () {
                                         Navigator.push(
                                           context,

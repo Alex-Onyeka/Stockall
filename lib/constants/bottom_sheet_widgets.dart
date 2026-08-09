@@ -1965,7 +1965,7 @@ void categoriesBottomSheet(
                               ),
                             ),
                             Text(
-                              'Select Item Category',
+                              'Select Item Category(s)',
                               style: TextStyle(
                                 fontSize:
                                     returnTheme(context)
@@ -2089,7 +2089,7 @@ void categoriesBottomSheet(
                                         ),
                                         onTap: () {
                                           returnData()
-                                              .selectCategory(
+                                              .selectCategories(
                                                 category,
                                               );
                                         },
@@ -2111,12 +2111,15 @@ void categoriesBottomSheet(
                                                   )
                                                   .lightModeColor
                                                   .prColor250,
-                                          value:
-                                              returnData(
+                                          value: returnData(
                                                 context:
                                                     context,
-                                              ).selectedCategory ==
-                                              category,
+                                              )
+                                              .selectedCategories
+                                              .contains(
+                                                category
+                                                    .uuid,
+                                              ),
                                           onChanged: (
                                             value,
                                           ) {
@@ -2125,7 +2128,7 @@ void categoriesBottomSheet(
                                             >(
                                               context,
                                               listen: false,
-                                            ).selectCategory(
+                                            ).selectCategories(
                                               category,
                                             );
                                           },
@@ -4815,8 +4818,10 @@ class _CustomBottomPanelState
                                                     (
                                                       itemm,
                                                     ) =>
-                                                        itemm.categoryUuid ==
-                                                            selectedCat?.uuid &&
+                                                        itemm.categories?.contains(
+                                                              selectedCat?.uuid,
+                                                            ) ==
+                                                            true &&
                                                         (itemm.barcode ==
                                                                 widget.searchController.text ||
                                                             itemm.name.toLowerCase().contains(

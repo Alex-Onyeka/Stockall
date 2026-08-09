@@ -60,7 +60,7 @@ class _DashboardState extends State<Dashboard> {
     return SafeArea(
       child: LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth < mobileScreen) {
+          if (constraints.maxWidth < mobileScreen + 50) {
             return DashboardMobile();
           } else {
             return DashboardDesktop();

@@ -34,10 +34,12 @@ class DesktopCenterContainer extends StatelessWidget {
               Center(
                 child: Container(
                   margin: EdgeInsets.symmetric(
-                    vertical: 10,
+                    vertical: 15,
                     horizontal: 10,
                   ),
-                  width: width ?? 550,
+                  constraints: BoxConstraints(
+                    maxWidth: width ?? 700,
+                  ),
                   padding: EdgeInsets.symmetric(
                     horizontal: 10,
                     vertical: 10,

@@ -1096,8 +1096,16 @@ class _StorageQuantityUpdateWidgetState
                                 ItemHistory
                                 itemHistory = ItemHistory(
                                   shopId: shopId(),
+                                  isIncreased:
+                                      newQuantity >
+                                      oldQuantity,
+                                  oldValue:
+                                      oldQuantity
+                                          .toString(),
+                                  desc:
+                                      'Item ${(newQuantity > oldQuantity) ? "Received From" : 'Returned To'} Storage',
                                   title:
-                                      'Item Quantity ${(newQuantity > oldQuantity) ? "Increased" : 'Reduced'}',
+                                      'Item ${(newQuantity > oldQuantity) ? "Received From" : 'Returned To'} Storage.',
                                   quantityChange:
                                       newQuantity -
                                       oldQuantity,

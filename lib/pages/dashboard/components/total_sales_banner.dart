@@ -102,7 +102,7 @@ class _DashboardTotalSalesBannerState
                                     widget
                                         .theme
                                         .mobileTexts
-                                        .b2
+                                        .b3
                                         .fontSize,
                                 color: Colors.white,
                                 fontWeight: FontWeight.w500,
@@ -115,7 +115,7 @@ class _DashboardTotalSalesBannerState
                               ),
                               child: Center(
                                 child: Icon(
-                                  size: 18,
+                                  size: 16,
                                   color:
                                       Colors.grey.shade300,
                                   visible.isVisible
@@ -627,7 +627,7 @@ class ExpensesAndProfitValues extends StatelessWidget {
             Text(
               style: TextStyle(
                 fontSize:
-                    widget.theme.mobileTexts.b3.fontSize,
+                    widget.theme.mobileTexts.b4.fontSize,
                 color: Colors.white,
                 fontWeight: FontWeight.w500,
               ),
@@ -644,7 +644,7 @@ class ExpensesAndProfitValues extends StatelessWidget {
                   255,
                 ),
                 fontSize:
-                    widget.theme.mobileTexts.b3.fontSize,
+                    widget.theme.mobileTexts.b4.fontSize,
               ),
 
               expenses,
@@ -657,7 +657,7 @@ class ExpensesAndProfitValues extends StatelessWidget {
             Text(
               style: TextStyle(
                 fontSize:
-                    widget.theme.mobileTexts.b3.fontSize,
+                    widget.theme.mobileTexts.b4.fontSize,
                 color: Colors.white,
                 fontWeight: FontWeight.w500,
               ),
@@ -674,7 +674,7 @@ class ExpensesAndProfitValues extends StatelessWidget {
                   255,
                 ),
                 fontSize:
-                    widget.theme.mobileTexts.b3.fontSize,
+                    widget.theme.mobileTexts.b4.fontSize,
               ),
 
               profit,

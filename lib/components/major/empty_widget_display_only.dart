@@ -34,34 +34,37 @@ class EmptyWidgetDisplayOnly extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.grey.shade300,
+            Visibility(
+              visible: icon != null,
+              child: Container(
+                padding: EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.grey.shade300,
+                  ),
                 ),
-              ),
-              child: Stack(
-                children: [
-                  Visibility(
-                    visible: svg != null,
-                    child: SvgPicture.asset(
-                      svg ?? '',
-                      height: height,
+                child: Stack(
+                  children: [
+                    Visibility(
+                      visible: svg != null,
+                      child: SvgPicture.asset(
+                        svg ?? '',
+                        height: height,
+                      ),
                     ),
-                  ),
-                  Visibility(
-                    visible: icon != null,
-                    child: Icon(
-                      icon,
-                      size: height,
-                      color:
-                          theme.lightModeColor.prColor300,
+                    Visibility(
+                      visible: icon != null,
+                      child: Icon(
+                        icon,
+                        size: height,
+                        color:
+                            theme.lightModeColor.prColor300,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
 

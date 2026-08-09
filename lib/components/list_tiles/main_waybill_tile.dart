@@ -118,7 +118,7 @@
 //                             fontSize:
 //                                 theme
 //                                     .mobileTexts
-//                                     .b2
+//                                     .b3
 //                                     .fontSize,
 //                             fontWeight: FontWeight.bold,
 //                           ),
@@ -144,7 +144,7 @@
 //                     // Text(
 //                     //   style: TextStyle(
 //                     //     fontSize:
-//                     //         theme.mobileTexts.b2.fontSize,
+//                     //         theme.mobileTexts.b3.fontSize,
 //                     //     fontWeight: FontWeight.bold,
 //                     //     color:
 //                     //         theme
@@ -156,7 +156,7 @@
 //                     Text(
 //                       style: TextStyle(
 //                         fontSize:
-//                             theme.mobileTexts.b2.fontSize,
+//                             theme.mobileTexts.b3.fontSize,
 //                         fontWeight: FontWeight.bold,
 //                         color: Colors.grey,
 //                       ),
@@ -206,7 +206,7 @@
 //                                 fontSize:
 //                                     theme
 //                                         .mobileTexts
-//                                         .b2
+//                                         .b3
 //                                         .fontSize,
 //                                 fontWeight: FontWeight.bold,
 //                               ),
@@ -243,7 +243,7 @@
 //                                 fontSize:
 //                                     theme
 //                                         .mobileTexts
-//                                         .b2
+//                                         .b3
 //                                         .fontSize,
 //                                 fontWeight: FontWeight.bold,
 //                               ),
@@ -270,7 +270,7 @@
 //                     Text(
 //                       style: TextStyle(
 //                         fontSize:
-//                             theme.mobileTexts.b2.fontSize,
+//                             theme.mobileTexts.b4.fontSize,
 //                         fontWeight: FontWeight.bold,
 //                         color:
 //                             theme
@@ -284,7 +284,7 @@
 //                     Text(
 //                       style: TextStyle(
 //                         fontSize:
-//                             theme.mobileTexts.b2.fontSize,
+//                             theme.mobileTexts.b4.fontSize,
 //                         fontWeight: FontWeight.bold,
 //                         color: Colors.grey.shade700,
 //                       ),
@@ -392,7 +392,7 @@
 //                             fontSize:
 //                                 theme
 //                                     .mobileTexts
-//                                     .b2
+//                                     .b3
 //                                     .fontSize,
 //                             fontWeight: FontWeight.bold,
 //                           ),

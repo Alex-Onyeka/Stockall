@@ -147,7 +147,7 @@ class _MainReceiptTileMobileState
                             fontSize:
                                 theme
                                     .mobileTexts
-                                    .b2
+                                    .b3
                                     .fontSize,
                             fontWeight: FontWeight.bold,
                           ),
@@ -172,7 +172,7 @@ class _MainReceiptTileMobileState
                     Text(
                       style: TextStyle(
                         fontSize:
-                            theme.mobileTexts.b2.fontSize,
+                            theme.mobileTexts.b3.fontSize,
                         fontWeight: FontWeight.bold,
                         color:
                             theme
@@ -184,7 +184,7 @@ class _MainReceiptTileMobileState
                     Text(
                       style: TextStyle(
                         fontSize:
-                            theme.mobileTexts.b2.fontSize,
+                            theme.mobileTexts.b3.fontSize,
                         fontWeight: FontWeight.bold,
                         color: Colors.grey,
                       ),
@@ -234,7 +234,7 @@ class _MainReceiptTileMobileState
                                 fontSize:
                                     theme
                                         .mobileTexts
-                                        .b2
+                                        .b3
                                         .fontSize,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -272,7 +272,7 @@ class _MainReceiptTileMobileState
                                 fontSize:
                                     theme
                                         .mobileTexts
-                                        .b2
+                                        .b3
                                         .fontSize,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -299,7 +299,7 @@ class _MainReceiptTileMobileState
                     Text(
                       style: TextStyle(
                         fontSize:
-                            theme.mobileTexts.b2.fontSize,
+                            theme.mobileTexts.b4.fontSize,
                         fontWeight: FontWeight.bold,
                         color:
                             theme
@@ -313,7 +313,7 @@ class _MainReceiptTileMobileState
                     Text(
                       style: TextStyle(
                         fontSize:
-                            theme.mobileTexts.b2.fontSize,
+                            theme.mobileTexts.b4.fontSize,
                         fontWeight: FontWeight.bold,
                         color: Colors.grey.shade700,
                       ),
@@ -446,7 +446,7 @@ class _MainReceiptTileDesktopState
                             fontSize:
                                 theme
                                     .mobileTexts
-                                    .b2
+                                    .b3
                                     .fontSize,
                             fontWeight: FontWeight.bold,
                           ),

@@ -17,6 +17,7 @@ import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/compnents/product_filter_button.dart';
 import 'package:stockall/pages/products/compnents/product_filter_button_category.dart';
 import 'package:stockall/pages/products/compnents/product_tile_main.dart';
+import 'package:stockall/pages/products/item_history_page/item_history_page.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
 import 'package:stockall/pages/products/total_products/platforms/total_products_desktop.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -124,8 +125,10 @@ class _TotalProductsMobileState
                 .productList()
                 .where(
                   (pr) =>
-                      pr.categoryUuid ==
-                      widget.categoryUuid,
+                      pr.categories?.contains(
+                        widget.categoryUuid,
+                      ) ==
+                      true,
                 )
                 .toList()
             : returnData().productList();
@@ -165,7 +168,11 @@ class _TotalProductsMobileState
     List<TempProductClass> categoryFilterProducts() {
       if (categoryUuid != null) {
         return products
-            .where((pr) => pr.categoryUuid == categoryUuid)
+            .where(
+              (pr) =>
+                  pr.categories?.contains(categoryUuid) ==
+                  true,
+            )
             .toList();
       }
       return products;
@@ -284,6 +291,44 @@ class _TotalProductsMobileState
                                               .shade700,
                                       Icons.check,
                                     ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          PopupMenuItem(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return ItemHistoryPage(
+                                      fromItemDetails:
+                                          false,
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal: 10.0,
+                                  ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .spaceBetween,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                    ),
+                                    'View History',
                                   ),
                                 ],
                               ),
@@ -525,19 +570,25 @@ class _TotalProductsMobileState
                                         widget.categoryUuid !=
                                                 null
                                             ? () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (
-                                                    context,
-                                                  ) {
-                                                    return AddProduct();
-                                                  },
-                                                ),
-                                              ).then((_) {
-                                                if (context
-                                                    .mounted) {}
-                                              });
+                                              if (authorization(
+                                                authorized:
+                                                    Authorizations()
+                                                        .addProduct,
+                                              )) {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (
+                                                      context,
+                                                    ) {
+                                                      return AddProduct();
+                                                    },
+                                                  ),
+                                                ).then((_) {
+                                                  if (context
+                                                      .mounted) {}
+                                                });
+                                              }
                                             }
                                             : () {},
                                     theme: widget.theme,

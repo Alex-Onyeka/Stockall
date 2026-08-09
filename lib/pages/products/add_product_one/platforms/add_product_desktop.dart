@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_categories/category_class.dart';
+import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -125,25 +125,25 @@ class _AddProductDesktopState
               });
 
               final dataProvider = returnData();
+              ItemHistory itemHistory = ItemHistory(
+                shopId: shopId(),
+                title: 'Item Created',
+                quantityChange: 0,
+                newValue: '0',
+                desc: 'Item Created Now',
+                isIncreased: true,
+                oldValue: '0',
+              );
 
               await dataProvider.createProduct(
-                TempProductClass(
+                itemHistory: itemHistory,
+                product: TempProductClass(
+                  categories:
+                      dataProvider.selectedCategories
+                          .toList(),
                   storageUuid: null,
                   isManaged: dataProvider.isManaged,
                   name: widget.nameController.text.trim(),
-                  totalQttyInStorageDouble:
-                      // widget
-                      //         .storageQuantityController
-                      //         .text
-                      //         .isNotEmpty
-                      //     ? double.parse(
-                      //       widget
-                      //           .storageQuantityController
-                      //           .text
-                      //           .replaceAll(',', ''),
-                      //     )
-                      //     :
-                      null,
                   unit:
                       dataProvider.selectedUnit ?? 'Others',
                   groupUnit:
@@ -194,17 +194,7 @@ class _AddProductDesktopState
                                 .replaceAll(',', ''),
                           )
                           : null,
-                  quantity:
-                      // widget
-                      //         .quantityController
-                      //         .text
-                      //         .isNotEmpty
-                      //     ? double.parse(
-                      //       widget.quantityController.text
-                      //           .replaceAll(',', ''),
-                      //     )
-                      //     :
-                      null,
+                  quantity: 0,
                   barcode: barcode,
                   lowQtty:
                       widget.lowQttyController.text.isEmpty
@@ -218,8 +208,8 @@ class _AddProductDesktopState
                         .replaceAll(',', ''),
                   ),
                   expiryDate: dataProvider.expiryDate,
-                  categoryUuid:
-                      dataProvider.selectedCategory?.uuid,
+                  // categoryUuid:
+                  //     dataProvider.selectedCategory?.uuid,
                   uuid: createdProductUuid,
                   departmentName:
                       returnData().departmentUuid != null
@@ -289,6 +279,10 @@ class _AddProductDesktopState
               isQuantityUpdate: false,
               quantityChange: null,
               product: TempProductClass(
+                categories:
+                    provider.selectedCategories
+                        .toList()
+                        .toList(),
                 storageUuid: widget.product?.storageUuid,
                 departmentName:
                     returnData().departmentUuid != null
@@ -361,8 +355,8 @@ class _AddProductDesktopState
                 //     : null,
                 shopId: userShop!.shopId!,
                 barcode: barcode,
-                categoryUuid:
-                    provider.selectedCategory?.uuid,
+                // categoryUuid:
+                //     provider.selectedCategory?.uuid,
                 createdAt: widget.product!.createdAt,
                 discount: double.tryParse(
                   widget.discountController.text.replaceAll(
@@ -457,6 +451,7 @@ class _AddProductDesktopState
     if (widget.product != null && context.mounted) {
       returnData().departmentUuid =
           widget.product?.departmentUuid;
+      returnData().expiryDate = widget.product?.expiryDate;
       barcode = widget.product!.barcode;
       barCodeSet =
           widget.product!.barcode != null ? true : false;
@@ -504,39 +499,9 @@ class _AddProductDesktopState
             widget.product!.sizeType!,
           )
           : null;
-      widget.product!.categoryUuid != null
-          ? returnData().selectCategory(
-            returnCategoriesProvider()
-                    .categories()
-                    .where(
-                      (cat) =>
-                          cat.uuid ==
-                          widget.product?.categoryUuid,
-                    )
-                    .isNotEmpty
-                ? returnCategoriesProvider()
-                    .categories()
-                    .where(
-                      (cat) =>
-                          cat.uuid ==
-                          widget.product?.categoryUuid,
-                    )
-                    .first
-                : CategoryClass(
-                  name: 'Not Set',
-                  shopId: shopId(),
-                  uuid: 'uuid',
-                  departmentId:
-                      returnDepartmentProvider()
-                          .currentDepartment()
-                          ?.uuid,
-                  departmentName:
-                      returnDepartmentProvider()
-                          .currentDepartment()
-                          ?.name,
-                ),
-          )
-          : null;
+      returnData().initCategories(
+        categories: widget.product?.categories ?? [],
+      );
     }
   }
 
@@ -1132,6 +1097,9 @@ class _AddProductDesktopState
                                                       }
 
                                                       var tempProduct = TempProductClass(
+                                                        categories:
+                                                            widget.product?.categories ??
+                                                            [],
                                                         storageUuid:
                                                             widget.product?.storageUuid,
                                                         departmentName:
@@ -2265,13 +2233,14 @@ class _AddProductDesktopState
                                                 isOpen:
                                                     isOpen,
                                                 title:
-                                                    'Category (Optional)',
+                                                    'Categories (Optional)',
                                                 hint:
                                                     returnData(
-                                                      context:
-                                                          context,
-                                                    ).selectedCategory?.name ??
-                                                    'Select Item Category',
+                                                          context:
+                                                              context,
+                                                        ).selectedCategories.toList().isNotEmpty
+                                                        ? "(${returnData(context: context).selectedCategories.toList().length}) Categories Selected"
+                                                        : 'Select Item Categories',
                                                 theme:
                                                     theme,
                                               ),

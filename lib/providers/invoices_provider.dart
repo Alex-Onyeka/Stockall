@@ -776,6 +776,7 @@ class InvoicesProvider extends ChangeNotifier {
                     record.quantity;
 
         TempProductClass productNew = TempProductClass(
+          categories: [],
           groupUnit: 'Others',
           storageUuid: null,
           qttyPerGroup: null,
@@ -788,7 +789,6 @@ class InvoicesProvider extends ChangeNotifier {
           isManaged: false,
           barcode: null,
           brand: null,
-          categoryUuid: null,
           color: null,
           createdAt: DateTime.now(),
           departmentUuid: record.departmentUuid,

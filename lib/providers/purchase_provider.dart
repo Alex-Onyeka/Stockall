@@ -12,6 +12,7 @@ import 'package:stockall/classes/temp_purchase/unsynced/updated/updated_purchase
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/local_database/item_purchase_func.dart%20copy/item_purchase_func.dart';
 import 'package:stockall/local_database/item_purchase_func.dart%20copy/unsync_funcs/created/created_item_purchase_func.dart';
 import 'package:stockall/local_database/item_purchase_func.dart%20copy/unsync_funcs/deleted/deleted_item_purchase_func.dart';
@@ -412,6 +413,12 @@ class PurchaseProvider extends ChangeNotifier {
                       : rec.quantity ?? 0);
 
               ItemHistory itemHistory = ItemHistory(
+                isIncreased: true,
+                oldValue:
+                    (products.first.quantity ?? 0)
+                        .toString(),
+                desc:
+                    '${(newPro.quantity ?? 0) - (rec.quantity ?? 0)} Quantity(s) of Item Returned From Purchase #${returnOnlyDigits(purchase.uuid ?? '')}',
                 shopId: shopId(),
                 title: 'Purchased item Returned',
                 quantityChange:
@@ -798,7 +805,11 @@ class PurchaseProvider extends ChangeNotifier {
                       (item.quantity ?? 0);
           newPr.updatedAt = DateTime.now();
           ItemHistory itemHistory = ItemHistory(
+            desc:
+                '${(newPr.quantity ?? 0) - (product.quantity ?? 0)} Quantity(s) purchased. #${returnOnlyDigits(item.purchaseId ?? '')}',
             shopId: shopId(),
+            isIncreased: true,
+            oldValue: (product.quantity ?? 0).toString(),
             title: 'Item Purchased',
             quantityChange:
                 -(newPr.quantity ?? 0) -

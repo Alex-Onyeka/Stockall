@@ -82,6 +82,7 @@ class SubscriptionProvider extends ChangeNotifier {
         lastPayment: DateTime.now().toUtc(),
         subscriptionId: uuidGen(),
         userId: AuthService().currentUser!,
+        email: AuthService().currentUserEmail,
         userName:
             "${returnUserProvider(context, listen: false).currentUserMain!.name} ${returnUserProvider(context, listen: false).currentUserMain!.lastName ?? ''}",
       );

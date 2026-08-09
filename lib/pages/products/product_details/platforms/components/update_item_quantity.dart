@@ -9,6 +9,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/product_details/platforms/components/item_comment_widget.dart';
 import 'package:stockall/pages/products/product_details/platforms/product_details_desktop.dart';
 
 Future<Object?> updateItemQuantity(
@@ -39,6 +40,7 @@ class _UpdateItemQuantityWidgetState
     extends State<UpdateItemQuantityWidget> {
   bool isEditQuantityLoading = false;
   final quantityController = TextEditingController();
+  final commentController = TextEditingController();
   bool isAddToQuantity = true;
   bool updateGroup = false;
 
@@ -484,6 +486,11 @@ class _UpdateItemQuantityWidgetState
                           ],
                         ),
                         SizedBox(height: 15),
+                        ItemCommentWidget(
+                          commentController:
+                              commentController,
+                        ),
+                        SizedBox(height: 15),
                         MainButtonP(
                           themeProvider: theme,
                           action: () {
@@ -571,6 +578,19 @@ class _UpdateItemQuantityWidgetState
                                         newValue:
                                             setQuantity()
                                                 .toString(),
+                                        desc:
+                                            commentController
+                                                    .text
+                                                    .isNotEmpty
+                                                ? commentController
+                                                    .text
+                                                : 'This Item Quantity Was Updated.',
+                                        isIncreased:
+                                            isIncrement,
+                                        oldValue:
+                                            (widget.product.quantity ??
+                                                    0)
+                                                .toString(),
                                       );
 
                                       await dataProvider.updateProduct(
@@ -588,6 +608,10 @@ class _UpdateItemQuantityWidgetState
                                                         0))
                                                 .abs(),
                                         product: TempProductClass(
+                                          categories:
+                                              widget
+                                                  .product
+                                                  .categories,
                                           storageUuid:
                                               widget
                                                   .product
@@ -656,10 +680,6 @@ class _UpdateItemQuantityWidgetState
                                               widget
                                                   .product
                                                   .barcode,
-                                          categoryUuid:
-                                              widget
-                                                  .product
-                                                  .categoryUuid,
                                           createdAt:
                                               widget
                                                   .product

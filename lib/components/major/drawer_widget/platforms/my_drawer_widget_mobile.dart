@@ -12,6 +12,7 @@ import 'package:stockall/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
+import 'package:stockall/pages/production/production_page.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
 import 'package:stockall/pages/purchases/purchase_list/purchase_list.dart';
 import 'package:stockall/pages/report/report_page.dart';
@@ -294,6 +295,35 @@ class _MyDrawerWidgetMobileState
                               title: 'Report',
                               svg: reportIconSvg,
                             ),
+                            Visibility(
+                              visible:
+                                  authorization(
+                                    authorized:
+                                        Authorizations()
+                                            .viewProductions,
+                                  ) &&
+                                  returnShopProvider()
+                                          .userShop()
+                                          ?.manageProductions ==
+                                      true,
+                              child: NavListTileAlt(
+                                height: 14,
+                                action: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return ProductionPage();
+                                      },
+                                    ),
+                                  );
+                                },
+                                title: 'Production',
+                                icon:
+                                    Icons
+                                        .view_in_ar_rounded,
+                              ),
+                            ),
                             SizedBox(height: 5),
                             Divider(
                               height:
@@ -489,49 +519,6 @@ class _MyDrawerWidgetMobileState
                                 ),
                               ),
                             ),
-                            // Visibility(
-                            //   visible: authorization(
-                            //     authorized:
-                            //         Authorizations()
-                            //             .contactStockall,
-                            //     context: context,
-                            //   ),
-                            //   child: NavListTileAlt(
-                            //     height: 20,
-                            //     action: () async {
-                            //       phoneCall();
-                            //     },
-                            //     title: 'Contact Us',
-                            //     icon: Icons.phone,
-                            //   ),
-                            // ),
-                            // Visibility(
-                            //   visible: authorization(
-                            //     authorized:
-                            //         Authorizations()
-                            //             .contactStockall,
-                            //     context: context,
-                            //   ),
-                            //   child: NavListTileAlt(
-                            //     height: 16,
-                            //     action: () async {
-                            //       openWhatsApp();
-                            //     },
-                            //     title: 'Chat With Us',
-                            //     svg: whatsappIconSvg,
-                            //   ),
-                            // ),
-                            // Visibility(
-                            //   visible: false,
-                            //   child: NavListTileAlt(
-                            //     height: 20,
-                            //     action: () {},
-                            //     title:
-                            //         'Privacy P. & Terms/C.',
-                            //     icon:
-                            //         Icons.menu_book_rounded,
-                            //   ),
-                            // ),
                             NavListTileAlt(
                               height: 16,
                               action: () {
@@ -849,52 +836,58 @@ class NavListTileAlt extends StatelessWidget {
             mainAxisAlignment:
                 MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                spacing: 10,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: 20,
-                    child: Center(
-                      child: Stack(
-                        children: [
-                          Visibility(
-                            visible: icon != null,
-                            child: Icon(
-                              color:
-                                  color ??
-                                  Colors.grey.shade600,
-                              size: height,
-                              icon ??
-                                  Icons
-                                      .arrow_forward_ios_rounded,
+              Expanded(
+                child: Row(
+                  spacing: 10,
+                  mainAxisAlignment:
+                      MainAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 20,
+                      child: Center(
+                        child: Stack(
+                          children: [
+                            Visibility(
+                              visible: icon != null,
+                              child: Icon(
+                                color:
+                                    color ??
+                                    Colors.grey.shade600,
+                                size: height,
+                                icon ??
+                                    Icons
+                                        .arrow_forward_ios_rounded,
+                              ),
                             ),
-                          ),
-                          Visibility(
-                            visible: svg != null,
-                            child: SvgPicture.asset(
-                              color:
-                                  color ??
-                                  Colors.grey.shade600,
-                              svg ?? '',
-                              height: height,
+                            Visibility(
+                              visible: svg != null,
+                              child: SvgPicture.asset(
+                                color:
+                                    color ??
+                                    Colors.grey.shade600,
+                                svg ?? '',
+                                height: height,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
 
-                  Text(
-                    style: TextStyle(
-                      color: color ?? Colors.grey.shade900,
-                      fontSize:
-                          theme.mobileTexts.b2.fontSize,
-                      fontWeight: FontWeight.w500,
+                    Expanded(
+                      child: Text(
+                        style: TextStyle(
+                          color:
+                              color ?? Colors.grey.shade900,
+                          fontSize:
+                              theme.mobileTexts.b2.fontSize,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        title,
+                      ),
                     ),
-                    title,
-                  ),
-                ],
+                  ],
+                ),
               ),
               Icon(
                 color: Colors.grey.shade600,

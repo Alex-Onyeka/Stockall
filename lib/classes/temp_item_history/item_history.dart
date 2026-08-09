@@ -43,6 +43,12 @@ class ItemHistory {
   @HiveField(12)
   double? quantityChange;
 
+  @HiveField(13)
+  String? desc;
+
+  @HiveField(14)
+  bool? isIncreased;
+
   ItemHistory({
     this.uuid,
     this.createdAt,
@@ -53,10 +59,12 @@ class ItemHistory {
     this.departmentUuid,
     this.staffId,
     this.staffName,
-    this.newValue,
-    this.oldValue,
+    required this.newValue,
+    required this.oldValue,
     this.itemUuid,
-    this.quantityChange,
+    required this.quantityChange,
+    required this.desc,
+    required this.isIncreased,
   });
 
   factory ItemHistory.fromJson(Map<String, dynamic> json) {
@@ -76,7 +84,10 @@ class ItemHistory {
       staffId: json['staff_id'] as String?,
       departmentName: json['department_name'] as String?,
       departmentUuid: json['department_uuid'] as String?,
-      quantityChange: json["quantity_change"] as double?,
+      quantityChange:
+          (json["quantity_change"] as num?)?.toDouble(),
+      desc: json['desc'] as String?,
+      isIncreased: json['is_increased'] as bool?,
     );
   }
 
@@ -95,6 +106,8 @@ class ItemHistory {
       'department_name': departmentName,
       'department_uuid': departmentUuid,
       'quantity_change': quantityChange,
+      'desc': desc,
+      'is_increased': isIncreased,
     };
   }
 }

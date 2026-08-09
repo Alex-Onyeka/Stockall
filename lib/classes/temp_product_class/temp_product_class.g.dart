@@ -50,13 +50,14 @@ class TempProductClassAdapter extends TypeAdapter<TempProductClass> {
       categoryUuid: fields[30] as String?,
       wholeSalePrice: fields[31] as double?,
       storageUuid: fields[32] as String?,
+      categories: (fields[33] as List?)?.cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, TempProductClass obj) {
     writer
-      ..writeByte(33)
+      ..writeByte(34)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -122,7 +123,9 @@ class TempProductClassAdapter extends TypeAdapter<TempProductClass> {
       ..writeByte(31)
       ..write(obj.wholeSalePrice)
       ..writeByte(32)
-      ..write(obj.storageUuid);
+      ..write(obj.storageUuid)
+      ..writeByte(33)
+      ..write(obj.categories);
   }
 
   @override

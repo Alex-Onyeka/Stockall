@@ -1242,6 +1242,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         returnSalesProvider()
                                             .setTotalPrice,
                                     item: TempProductClass(
+                                      categories: [],
                                       storageUuid: null,
                                       departmentName:
                                           returnDepartmentProvider()
@@ -1328,6 +1329,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       returnSalesProvider()
                                           .setTotalPrice,
                                   item: TempProductClass(
+                                    categories: [],
                                     storageUuid: null,
                                     departmentName:
                                         returnDepartmentProvider()
@@ -1442,6 +1444,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                             returnSalesProvider()
                                                 .setTotalPrice,
                                         item: TempProductClass(
+                                          categories: [],
                                           storageUuid: null,
                                           departmentName:
                                               returnDepartmentProvider()
@@ -1536,6 +1539,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       returnSalesProvider()
                                           .setTotalPrice,
                                   item: TempProductClass(
+                                    categories: [],
                                     storageUuid: null,
                                     departmentName:
                                         returnDepartmentProvider()
@@ -1729,6 +1733,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                         setTotalPrice:
                                                             returnSalesProvider().setTotalPrice,
                                                         item: TempProductClass(
+                                                          categories:
+                                                              [],
                                                           storageUuid:
                                                               null,
                                                           departmentName:
@@ -2410,6 +2416,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               setTotalPrice:
                                                                   returnSalesProvider().setTotalPrice,
                                                               item: TempProductClass(
+                                                                categories:
+                                                                    [],
                                                                 storageUuid:
                                                                     null,
                                                                 departmentName:

@@ -76,7 +76,7 @@ class DialogTemplate extends StatelessWidget {
                                 fontSize:
                                     theme
                                         .mobileTexts
-                                        .h3
+                                        .h4
                                         .fontSize,
                                 fontWeight:
                                     theme
@@ -101,7 +101,7 @@ class DialogTemplate extends StatelessWidget {
                             fontSize:
                                 theme
                                     .mobileTexts
-                                    .b1
+                                    .b3
                                     .fontSize,
                           ),
                           message,

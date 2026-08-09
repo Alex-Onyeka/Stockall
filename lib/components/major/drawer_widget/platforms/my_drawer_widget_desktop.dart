@@ -14,6 +14,7 @@ import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
+import 'package:stockall/pages/production/production_page.dart';
 import 'package:stockall/pages/purchases/purchase_list/purchase_list.dart';
 import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/pages/settings/settings_page.dart';
@@ -475,6 +476,37 @@ class _MyDrawerWidgetDesktopMainState
                                   svg: employeesIconSvg,
                                 ),
                               ),
+                              Visibility(
+                                visible:
+                                    authorization(
+                                      authorized:
+                                          Authorizations()
+                                              .viewProductions,
+                                    ) &&
+                                    returnShopProvider()
+                                            .userShop()
+                                            ?.manageProductions ==
+                                        true,
+                                child: NavListTileDesktopAlt(
+                                  itemIndex: -1,
+                                  height: 14,
+                                  action: () {
+                                    checkNavigate(context);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return ProductionPage();
+                                        },
+                                      ),
+                                    );
+                                  },
+                                  title: 'Production',
+                                  icon:
+                                      Icons
+                                          .view_in_ar_rounded,
+                                ),
+                              ),
                               SizedBox(height: 5),
                               Divider(
                                 height:
@@ -565,7 +597,7 @@ class _MyDrawerWidgetDesktopMainState
                                                           context,
                                                           listen:
                                                               false,
-                                                        ).mobileTexts.b2.fontSize,
+                                                        ).mobileTexts.b3.fontSize,
                                                     fontWeight:
                                                         returnNavProvider(
                                                                   context,
@@ -932,78 +964,86 @@ class NavListTileDesktopAlt extends StatelessWidget {
               mainAxisAlignment:
                   MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  spacing: 10,
-                  mainAxisAlignment:
-                      MainAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: 20,
-                      child: Center(
-                        child: Stack(
-                          children: [
-                            Visibility(
-                              visible: icon != null,
-                              child: Icon(
-                                color:
-                                    returnNavProvider(
-                                              context,
-                                            ).currentIndex ==
-                                            itemIndex
-                                        ? Colors
-                                            .grey
-                                            .shade900
-                                        : color ??
-                                            Colors
-                                                .grey
-                                                .shade600,
-                                size: height,
-                                icon ??
-                                    Icons
-                                        .arrow_forward_ios_rounded,
+                Expanded(
+                  child: Row(
+                    spacing: 10,
+                    mainAxisAlignment:
+                        MainAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 20,
+                        child: Center(
+                          child: Stack(
+                            children: [
+                              Visibility(
+                                visible: icon != null,
+                                child: Icon(
+                                  color:
+                                      returnNavProvider(
+                                                context,
+                                              ).currentIndex ==
+                                              itemIndex
+                                          ? Colors
+                                              .grey
+                                              .shade900
+                                          : color ??
+                                              Colors
+                                                  .grey
+                                                  .shade600,
+                                  size: height,
+                                  icon ??
+                                      Icons
+                                          .arrow_forward_ios_rounded,
+                                ),
                               ),
-                            ),
-                            Visibility(
-                              visible: svg != null,
-                              child: SvgPicture.asset(
-                                color:
-                                    returnNavProvider(
-                                              context,
-                                            ).currentIndex ==
-                                            itemIndex
-                                        ? Colors
-                                            .grey
-                                            .shade900
-                                        : color ??
-                                            Colors
-                                                .grey
-                                                .shade600,
-                                svg ?? '',
-                                height: height,
+                              Visibility(
+                                visible: svg != null,
+                                child: SvgPicture.asset(
+                                  color:
+                                      returnNavProvider(
+                                                context,
+                                              ).currentIndex ==
+                                              itemIndex
+                                          ? Colors
+                                              .grey
+                                              .shade900
+                                          : color ??
+                                              Colors
+                                                  .grey
+                                                  .shade600,
+                                  svg ?? '',
+                                  height: height,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
 
-                    Text(
-                      style: TextStyle(
-                        color:
-                            color ?? Colors.grey.shade900,
-                        fontSize:
-                            theme.mobileTexts.b2.fontSize,
-                        fontWeight:
-                            returnNavProvider(
-                                      context,
-                                    ).currentIndex ==
-                                    itemIndex
-                                ? FontWeight.bold
-                                : FontWeight.normal,
+                      Expanded(
+                        child: Text(
+                          style: TextStyle(
+                            color:
+                                color ??
+                                Colors.grey.shade900,
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                            fontWeight:
+                                returnNavProvider(
+                                          context,
+                                        ).currentIndex ==
+                                        itemIndex
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                          ),
+                          title,
+                        ),
                       ),
-                      title,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 Stack(
                   children: [

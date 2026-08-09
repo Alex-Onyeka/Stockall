@@ -142,7 +142,7 @@ class _MainInvoiceTileMobileState
                             fontSize:
                                 theme
                                     .mobileTexts
-                                    .b2
+                                    .b3
                                     .fontSize,
                             fontWeight: FontWeight.bold,
                           ),
@@ -167,7 +167,7 @@ class _MainInvoiceTileMobileState
                     Text(
                       style: TextStyle(
                         fontSize:
-                            theme.mobileTexts.b2.fontSize,
+                            theme.mobileTexts.b3.fontSize,
                         fontWeight: FontWeight.bold,
                         color:
                             theme
@@ -179,7 +179,7 @@ class _MainInvoiceTileMobileState
                     Text(
                       style: TextStyle(
                         fontSize:
-                            theme.mobileTexts.b2.fontSize,
+                            theme.mobileTexts.b3.fontSize,
                         fontWeight: FontWeight.bold,
                         color: Colors.grey,
                       ),
@@ -229,7 +229,7 @@ class _MainInvoiceTileMobileState
                                 fontSize:
                                     theme
                                         .mobileTexts
-                                        .b2
+                                        .b3
                                         .fontSize,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -267,7 +267,7 @@ class _MainInvoiceTileMobileState
                                 fontSize:
                                     theme
                                         .mobileTexts
-                                        .b2
+                                        .b3
                                         .fontSize,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -294,7 +294,7 @@ class _MainInvoiceTileMobileState
                     Text(
                       style: TextStyle(
                         fontSize:
-                            theme.mobileTexts.b2.fontSize,
+                            theme.mobileTexts.b4.fontSize,
                         fontWeight: FontWeight.bold,
                         color:
                             theme
@@ -308,7 +308,7 @@ class _MainInvoiceTileMobileState
                     Text(
                       style: TextStyle(
                         fontSize:
-                            theme.mobileTexts.b2.fontSize,
+                            theme.mobileTexts.b4.fontSize,
                         fontWeight: FontWeight.bold,
                         color: Colors.grey.shade700,
                       ),
@@ -437,7 +437,7 @@ class _MainInvoiceTileDesktopState
                             fontSize:
                                 theme
                                     .mobileTexts
-                                    .b2
+                                    .b3
                                     .fontSize,
                             fontWeight: FontWeight.bold,
                           ),

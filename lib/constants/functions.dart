@@ -113,6 +113,7 @@ class Authorizations {
   String addProduct = 'Add Items';
   String updateProduct = 'Update Items';
   String deleteProduct = 'Delete Items';
+  String transferProduct = 'Transfer Items';
   String addCustomer = 'Add Customers';
   String updateCustomer = 'Update Customers';
   String deleteCustomer = 'Delete Customers';
@@ -169,12 +170,34 @@ class Authorizations {
       'View Receipt Sales Report';
   String viewInvoiceSalesReport =
       'View Invoice Sales Report';
-  // String viewSalesAndRevenueReport =
-  //     'View Sales And Revenue Report';
   String viewItemSalesReport = 'View Item Sales Report';
   String managePurchases = 'Manage Purchases';
   String updateInvoice = 'Update Invoice';
   String deleteInvoice = 'Delete Invoice';
+  String toggleManageProductions =
+      'Toggle Manage Productions';
+  String viewProductions = 'View Productions';
+  String addMaterials = 'Add Materials';
+  String updateMaterials = 'Update Materials';
+  String deleteMaterials = 'Delete Materials';
+  String transferMaterials = 'Transfer Materials';
+  String updateMaterialQuantity =
+      'Update Material Quantity';
+  String viewMaterialQuantity = 'View Material Quantity';
+  String addProductionItems = 'Add Production Items';
+  String updateProductionItems = 'Update Production Items';
+  String deleteProductionItems = 'Delete Production Items';
+  String transferProductionItems =
+      'Transfer Production Items';
+  String updateProductionItemQuantity =
+      'Update Production Item Quantity';
+  String viewProductionItemQuantity =
+      'View Production Item Quantity';
+  String addProductionRecords = 'Add Production Records';
+  String updateProductionRecords =
+      'Update Production Records';
+  String deleteProductionRecords =
+      'Delete Production Records';
 }
 
 bool authorization({required String authorized}) {
@@ -3738,9 +3761,12 @@ Future<Uint8List> _buildPdfProducts(
                                           .categories()
                                           .where(
                                             (cat) =>
-                                                cat.uuid ==
                                                 product
-                                                    .categoryUuid,
+                                                    .categories
+                                                    ?.contains(
+                                                      cat.uuid,
+                                                    ) ==
+                                                true,
                                           )
                                           .isNotEmpty
                                       ? returnCategoriesProvider(
@@ -3750,9 +3776,12 @@ Future<Uint8List> _buildPdfProducts(
                                           .categories()
                                           .where(
                                             (cat) =>
-                                                cat.uuid ==
                                                 product
-                                                    .categoryUuid,
+                                                    .categories
+                                                    ?.contains(
+                                                      cat.uuid,
+                                                    ) ==
+                                                true,
                                           )
                                           .first
                                           .name

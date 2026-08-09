@@ -78,13 +78,13 @@ class InventoryUpdatesFunc {
       if (inventoryUpdatesBox.values.isNotEmpty) {
         await inventoryUpdatesBox.clear();
         await mainLocalLog(
-          'Offline InventoryU pdates  Cleared',
+          'Offline Inventory Updates  Cleared',
         );
       }
       return 1;
     } catch (e) {
       await mainLocalLog(
-        '❌❌ Offline InventoryUpdates  Clear Error: ${e.toString()}',
+        '❌❌ Offline Inventory Updates  Clear Error: ${e.toString()}',
       );
       return 0;
     }

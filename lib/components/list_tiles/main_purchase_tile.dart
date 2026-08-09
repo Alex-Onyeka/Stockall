@@ -126,7 +126,7 @@ class _MainPurchaseTileMobileState
                             fontSize:
                                 theme
                                     .mobileTexts
-                                    .b2
+                                    .b3
                                     .fontSize,
                             fontWeight: FontWeight.bold,
                           ),
@@ -151,7 +151,7 @@ class _MainPurchaseTileMobileState
                     // Text(
                     //   style: TextStyle(
                     //     fontSize:
-                    //         theme.mobileTexts.b2.fontSize,
+                    //         theme.mobileTexts.b3.fontSize,
                     //     fontWeight: FontWeight.bold,
                     //     color:
                     //         theme
@@ -163,7 +163,7 @@ class _MainPurchaseTileMobileState
                     Text(
                       style: TextStyle(
                         fontSize:
-                            theme.mobileTexts.b2.fontSize,
+                            theme.mobileTexts.b3.fontSize,
                         fontWeight: FontWeight.bold,
                         color: Colors.grey,
                       ),
@@ -213,7 +213,7 @@ class _MainPurchaseTileMobileState
                                 fontSize:
                                     theme
                                         .mobileTexts
-                                        .b2
+                                        .b3
                                         .fontSize,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -252,7 +252,7 @@ class _MainPurchaseTileMobileState
                                 fontSize:
                                     theme
                                         .mobileTexts
-                                        .b2
+                                        .b3
                                         .fontSize,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -279,7 +279,7 @@ class _MainPurchaseTileMobileState
                     Text(
                       style: TextStyle(
                         fontSize:
-                            theme.mobileTexts.b2.fontSize,
+                            theme.mobileTexts.b4.fontSize,
                         fontWeight: FontWeight.bold,
                         color:
                             theme
@@ -293,7 +293,7 @@ class _MainPurchaseTileMobileState
                     Text(
                       style: TextStyle(
                         fontSize:
-                            theme.mobileTexts.b2.fontSize,
+                            theme.mobileTexts.b4.fontSize,
                         fontWeight: FontWeight.bold,
                         color: Colors.grey.shade700,
                       ),
@@ -409,7 +409,7 @@ class _MainPurchaseTileDesktopState
                             fontSize:
                                 theme
                                     .mobileTexts
-                                    .b2
+                                    .b3
                                     .fontSize,
                             fontWeight: FontWeight.bold,
                           ),

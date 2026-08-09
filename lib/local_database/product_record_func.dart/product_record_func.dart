@@ -2,6 +2,7 @@ import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
+import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/created/created_records_func.dart';
 import 'package:stockall/main.dart';
 
@@ -138,13 +139,24 @@ class ProductRecordFunc {
                         record.quantity;
             ItemHistory itemHistory = ItemHistory(
               shopId: shopId(),
-              title: 'Item Purchased',
+              title: 'Item Returned',
+              desc:
+                  '${record.useGroupQuantity == true ? (record.quantity * (record.qttyPerGroup ?? 1)) : record.quantity} quantities of This Item was Returned. Receipt Id: #${returnOnlyDigits(receiptUuid)}.',
               quantityChange:
                   record.useGroupQuantity == true
                       ? (record.quantity *
                           (record.qttyPerGroup ?? 1))
                       : record.quantity,
               newValue: product.quantity?.toString(),
+              isIncreased: true,
+              oldValue:
+                  ((product.quantity ?? 0) -
+                          (record.useGroupQuantity == true
+                              ? (record.quantity *
+                                  (record.qttyPerGroup ??
+                                      1))
+                              : record.quantity))
+                      .toString(),
             );
             await returnData().updateProduct(
               itemHistory: itemHistory,
@@ -267,13 +279,24 @@ class ProductRecordFunc {
                         record.quantity;
             ItemHistory itemHistory = ItemHistory(
               shopId: shopId(),
-              title: 'Item Purchased',
+              title: 'Item Returned',
+              desc:
+                  '${record.useGroupQuantity == true ? (record.quantity * (record.qttyPerGroup ?? 1)) : record.quantity} quantities of This Item was Returned. Invoice Id: #${returnOnlyDigits(invoiceUuid)}.',
               quantityChange:
                   record.useGroupQuantity == true
                       ? (record.quantity *
                           (record.qttyPerGroup ?? 1))
                       : record.quantity,
               newValue: product.quantity?.toString(),
+              isIncreased: true,
+              oldValue:
+                  ((product.quantity ?? 0) -
+                          (record.useGroupQuantity == true
+                              ? (record.quantity *
+                                  (record.qttyPerGroup ??
+                                      1))
+                              : record.quantity))
+                      .toString(),
             );
             await returnData().updateProduct(
               itemHistory: itemHistory,

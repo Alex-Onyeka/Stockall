@@ -1987,10 +1987,13 @@ class _TableRowRecordWidgetState
                                 .categories()
                                 .where(
                                   (cat) =>
-                                      cat.uuid ==
                                       widget
                                           .product
-                                          .categoryUuid,
+                                          .categories
+                                          ?.contains(
+                                            cat.uuid,
+                                          ) ==
+                                      true,
                                 )
                                 .isNotEmpty
                             ? returnCategoriesProvider(
@@ -1999,10 +2002,13 @@ class _TableRowRecordWidgetState
                                 .categories()
                                 .where(
                                   (cat) =>
-                                      cat.uuid ==
                                       widget
                                           .product
-                                          .categoryUuid,
+                                          .categories
+                                          ?.contains(
+                                            cat.uuid,
+                                          ) ==
+                                      true,
                                 )
                                 .first
                                 .name

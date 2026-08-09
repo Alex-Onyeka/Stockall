@@ -90,7 +90,7 @@ class EmptyWidgetDisplay extends StatelessWidget {
               Text(
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: theme.mobileTexts.b2.fontSize,
+                  fontSize: theme.mobileTexts.b3.fontSize,
                   color: Colors.grey,
                   fontWeight: FontWeight.w500,
                 ),
@@ -129,7 +129,7 @@ class EmptyWidgetDisplay extends StatelessWidget {
                                 fontSize:
                                     theme
                                         .mobileTexts
-                                        .b1
+                                        .b2
                                         .fontSize,
                               ),
                               altActionText ?? '',
@@ -173,7 +173,7 @@ class EmptyWidgetDisplay extends StatelessWidget {
                                 fontSize:
                                     theme
                                         .mobileTexts
-                                        .b1
+                                        .b2
                                         .fontSize,
                               ),
                               'Logout Now',

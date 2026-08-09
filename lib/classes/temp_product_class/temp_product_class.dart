@@ -103,6 +103,9 @@ class TempProductClass {
   @HiveField(32)
   String? storageUuid;
 
+  @HiveField(33)
+  List<String>? categories;
+
   TempProductClass({
     this.id,
     required this.name,
@@ -137,6 +140,7 @@ class TempProductClass {
     this.categoryUuid,
     required this.wholeSalePrice,
     required this.storageUuid,
+    required this.categories,
   });
 
   factory TempProductClass.fromJson(
@@ -203,6 +207,11 @@ class TempProductClass {
       wholeSalePrice:
           (json['whole_sale_price'] as num?)?.toDouble(),
       storageUuid: json['storage_uuid'] as String?,
+      categories:
+          (json['categories'] as List<dynamic>?)
+              ?.map((item) => item.toString())
+              .toList() ??
+          [],
     );
   }
 
@@ -246,6 +255,7 @@ class TempProductClass {
         'category_uuid': categoryUuid,
         'whole_sale_price': wholeSalePrice,
         'storage_uuid': storageUuid,
+        'categories': categories ?? [],
       };
     } else {
       return {
@@ -284,6 +294,7 @@ class TempProductClass {
         'category_uuid': categoryUuid,
         'whole_sale_price': wholeSalePrice,
         'storage_uuid': storageUuid,
+        'categories': categories ?? [],
       };
     }
   }
@@ -322,6 +333,7 @@ class TempProductClass {
     String? categoryUuid,
     double? wholeSalePrice,
     String? storageUuid,
+    List<String>? categories,
   }) {
     return TempProductClass(
       id: id ?? this.id,
@@ -360,6 +372,7 @@ class TempProductClass {
       categoryUuid: categoryUuid ?? this.categoryUuid,
       wholeSalePrice: wholeSalePrice ?? this.wholeSalePrice,
       storageUuid: storageUuid ?? this.storageUuid,
+      categories: categories ?? this.categories,
     );
   }
 }

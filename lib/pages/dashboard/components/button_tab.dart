@@ -4,17 +4,20 @@ import 'package:stockall/providers/theme_provider.dart';
 
 class ButtonTab extends StatelessWidget {
   final String title;
-  final String icon;
+  final Color? iconColor;
+  final String? icon;
   final Function()? action;
-
   final ThemeProvider theme;
+  final Icon? iconWidget;
 
   const ButtonTab({
     super.key,
     required this.title,
-    required this.icon,
+    this.icon,
     this.action,
     required this.theme,
+    this.iconWidget,
+    this.iconColor,
   });
 
   @override
@@ -43,23 +46,36 @@ class ButtonTab extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             onTap: action,
             child: Container(
-              padding: EdgeInsets.all(15),
+              padding: EdgeInsets.symmetric(
+                vertical: 15,
+                horizontal: 5,
+              ),
               child: Center(
                 child: Column(
                   mainAxisAlignment:
                       MainAxisAlignment.center,
                   children: [
-                    SvgPicture.asset(
-                      icon,
-                      height: 23,
-                      width: 23,
+                    Builder(
+                      builder: (context) {
+                        if (iconWidget == null) {
+                          return SvgPicture.asset(
+                            icon ?? '',
+                            color: iconColor,
+                            height: 20,
+                            width: 20,
+                          );
+                        } else {
+                          return iconWidget ?? Container();
+                        }
+                      },
                     ),
                     SizedBox(height: 10),
                     Text(
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.grey.shade700,
                         fontSize:
-                            theme.mobileTexts.b3.fontSize,
+                            theme.mobileTexts.b4.fontSize,
                         fontWeight: FontWeight.w600,
                       ),
                       title,

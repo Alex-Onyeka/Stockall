@@ -1417,6 +1417,73 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
+  bool manageProductions = false;
+
+  Future<int> toggleManageProductions() async {
+    bool isOnline = await connectivity.isOnline();
+    manageProductions = true;
+    notifyListeners();
+    try {
+      if (isOnline) {
+        Map<String, dynamic>? res =
+            await supabase
+                .from('shops')
+                .update({
+                  'manage_productions':
+                      !userShop()!.manageProductions!,
+                })
+                .eq('shop_id', userShop()!.shopId!)
+                .select()
+                .maybeSingle();
+        if (res == null) {
+          await mainLocalLog(
+            'Toggle Manage Productions Update Failed',
+          );
+          manageProductions = false;
+          notifyListeners();
+          return 0;
+        }
+
+        var shops = await getUserShops();
+        setShops(shops);
+        manageProductions = false;
+        returnSalesProvider().selectFistMainCart();
+        notifyListeners();
+        return 1;
+      } else {
+        try {
+          userShop()!.updatedAt = DateTime.now();
+          userShop()!.manageProductions =
+              !userShop()!.manageProductions!;
+          await ShopFunc().updateShop(userShop()!);
+          if (userShop() != null) {
+            await UpdatedShopFunc().createUpdatedShop(
+              UpdatedShop(shop: userShop()!),
+            );
+            notifyListeners();
+          }
+          manageProductions = false;
+          notifyListeners();
+          return 1;
+        } catch (e) {
+          await mainLocalLog(
+            "❌ Failed to Update Toggle Manage Productions Offline: ${e.toString()}",
+          );
+          manageProductions = false;
+          notifyListeners();
+          return 0;
+        }
+      }
+    } catch (e) {
+      await mainLocalLog(
+        "❌ Failed to Update Toggle Manage Productions: ${e.toString()}",
+      );
+      manageProductions = false;
+      notifyListeners();
+      return 0;
+    }
+  }
+
   bool manageDepartmentsLoading = false;
 
   Future<int> toggleManageDepartments() async {

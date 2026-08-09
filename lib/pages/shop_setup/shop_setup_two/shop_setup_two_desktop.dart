@@ -98,6 +98,7 @@ class _ShopSetupTwoDesktopState
                 });
                 await shopProvider.createShop(
                   TempShopClass(
+                    manageProductions: false,
                     manageInventoryStorage: false,
                     closeSaleTimeString: null,
                     isVerified: false,

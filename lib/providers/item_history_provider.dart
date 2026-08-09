@@ -1,7 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_item_history/unsynced/created_item_history.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/local_database/item_history/item_histories_func.dart';
 import 'package:stockall/local_database/item_history/unsync_funcs/created_item_histories_func.dart';
 import 'package:stockall/main.dart';
@@ -129,49 +131,58 @@ class ItemHistoryProvider with ChangeNotifier {
   }
 
   Future<List<ItemHistory>> getItemHistories() async {
-    // bool isOnline = await ConnectivityProvider().isOnline();
-    // var shopId = returnShopProvider().userShop()!.shopId!;
-    // if (isOnline && ItemHistoriesFunc().isSynced()) {
-    //   try {
-    //     var res = await client
-    //         .from(tableName)
-    //         .select()
-    //         .eq('shop_id', shopId)
-    //         .order('created_at', ascending: false);
-    //     if (res.isEmpty) {
-    //       await mainLocalLog('No Item Histories Returned');
-    //       itemHistories.clear();
-    //       ItemHistoriesFunc().clearItemHistories();
-    //       notifyListeners();
-    //       return [];
-    //     }
-    //     itemHistories =
-    //         res
-    //             .map((m) => ItemHistory.fromJson(m))
-    //             .toList();
-    //     await ItemHistoriesFunc().insertAllItemHistories(
-    //       itemHistories,
-    //     );
-    //     await mainLocalLog(
-    //       '✅✅ Item Histories Gotten Successfully Online',
-    //     );
-    //     notifyListeners();
+    bool isOnline = await ConnectivityProvider().isOnline();
+    var shop = returnShopProvider().userShop()!;
+    var shopId = shop.shopId!;
+    if (isOnline &&
+        ItemHistoriesFunc().isSynced() &&
+        ItemsAuthAction().trackItemHistoryAction(
+          context: null,
+        ) &&
+        authorization(
+          authorized: Authorizations().viewItemsHistory,
+        )) {
+      try {
+        var res = await client
+            .from(tableName)
+            .select()
+            .eq('shop_id', shopId)
+            .order('created_at', ascending: false);
+        if (res.isEmpty) {
+          await mainLocalLog('No Item Histories Returned');
+          itemHistories.clear();
+          ItemHistoriesFunc().clearItemHistories();
+          notifyListeners();
+          return [];
+        }
+        itemHistories =
+            res
+                .map((m) => ItemHistory.fromJson(m))
+                .toList();
+        await ItemHistoriesFunc().insertAllItemHistories(
+          itemHistories,
+        );
+        await mainLocalLog(
+          '✅✅ Item Histories Gotten Successfully Online',
+        );
+        notifyListeners();
 
-    //     return itemHistories;
-    //   } catch (e) {
-    //     await mainLocalLog(
-    //       '❌❌ Item Histories Getting Online Failed: ${e.toString()}',
-    //     );
-    //     return [];
-    //   }
-    // } else {
-    //   itemHistories =
-    //       ItemHistoriesFunc().getItemHistories();
-    //   await mainLocalLog('Item Histories Gotten Successfully Offline');
-    //   notifyListeners();
-    //   return itemHistories;
-    // }
-    return [];
+        return itemHistories;
+      } catch (e) {
+        await mainLocalLog(
+          '❌❌ Item Histories Getting Online Failed: ${e.toString()}',
+        );
+        return [];
+      }
+    } else {
+      itemHistories =
+          ItemHistoriesFunc().getItemHistories();
+      await mainLocalLog(
+        'Item Histories Gotten Successfully Offline',
+      );
+      notifyListeners();
+      return itemHistories;
+    }
   }
 
   Future<List<ItemHistory>>
@@ -187,39 +198,40 @@ class ItemHistoryProvider with ChangeNotifier {
   Future<int> createItemHistory(
     ItemHistory itemHistory,
   ) async {
-    // if (ItemsAuthAction().trackItemHistoryAction(
-    //   context: null,
-    // )) {
-    //   itemHistory.uuid = uuidGen();
-    //   itemHistory.createdAt ??= DateTime.now();
-    //   itemHistory.staffId = currentUser().userId;
-    //   itemHistory.staffName = currentUser().name;
-    //   itemHistory.departmentName =
-    //       returnDepartmentProvider()
-    //           .currentDepartment()
-    //           ?.name;
-    //   itemHistory.departmentUuid =
-    //       returnDepartmentProvider()
-    //           .currentDepartment()
-    //           ?.uuid;
-    //   try {
-    //     await ItemHistoriesFunc().createItemHistories(
-    //       itemHistory,
-    //     );
-    //     await CreatedItemHistoriesFunc().createItemHistory(
-    //       CreatedItemHistory(itemHistory: itemHistory),
-    //     );
-    //     await getItemHistoriesOffline();
-    //     syncData();
-    //     return 1;
-    //   } catch (e) {
-    //     await mainLocalLog('Offline Creating Failed: ${e.toString()}');
-    //     return 0;
-    //   }
-    // } else {
-    //   return 0;
-    // }
-    return 1;
+    if (ItemsAuthAction().trackItemHistoryAction(
+      context: null,
+    )) {
+      itemHistory.uuid = uuidGen();
+      itemHistory.createdAt ??= DateTime.now();
+      itemHistory.staffId = currentUser().userId;
+      itemHistory.staffName = currentUser().name;
+      itemHistory.departmentName ??=
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.name;
+      itemHistory.departmentUuid ??=
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.uuid;
+      try {
+        await ItemHistoriesFunc().createItemHistories(
+          itemHistory,
+        );
+        await CreatedItemHistoriesFunc().createItemHistory(
+          CreatedItemHistory(itemHistory: itemHistory),
+        );
+        await getItemHistoriesOffline();
+        syncData();
+        return 1;
+      } catch (e) {
+        await mainLocalLog(
+          'Offline Creating Failed: ${e.toString()}',
+        );
+        return 0;
+      }
+    } else {
+      return 0;
+    }
   }
 
   Future<void> itemHistoriesSync() async {
@@ -275,16 +287,16 @@ class ItemHistoryProvider with ChangeNotifier {
     }
   }
 
-  List<ItemHistory> testItemHistories = [
-    ItemHistory(
-      newValue: '45000',
-      oldValue: '50000',
-      title: 'Item Quantity Updated',
-      uuid: uuidGen(),
-      shopId: 12,
-      createdAt: DateTime.now(),
-      itemName: 'A new Item is Created',
-      staffName: 'Alex Onyeka',
-    ),
-  ];
+  // List<ItemHistory> testItemHistories = [
+  //   ItemHistory(
+  //     newValue: '45000',
+  //     oldValue: '50000',
+  //     title: 'Item Quantity Updated',
+  //     uuid: uuidGen(),
+  //     shopId: 12,
+  //     createdAt: DateTime.now(),
+  //     itemName: 'A new Item is Created',
+  //     staffName: 'Alex Onyeka',
+  //   ),
+  // ];
 }

@@ -1332,6 +1332,8 @@ class _MakeSalesDesktopState
                                                   returnSalesProvider()
                                                       .setTotalPrice,
                                               item: TempProductClass(
+                                                categories:
+                                                    [],
                                                 storageUuid:
                                                     null,
                                                 departmentName:
@@ -1470,6 +1472,8 @@ class _MakeSalesDesktopState
                                                     setTotalPrice:
                                                         returnSalesProvider().setTotalPrice,
                                                     item: TempProductClass(
+                                                      categories:
+                                                          [],
                                                       storageUuid:
                                                           null,
                                                       departmentName:
@@ -1668,6 +1672,8 @@ class _MakeSalesDesktopState
                                                                           setTotalPrice:
                                                                               returnSalesProvider().setTotalPrice,
                                                                           item: TempProductClass(
+                                                                            categories:
+                                                                                [],
                                                                             storageUuid:
                                                                                 null,
                                                                             departmentName:
@@ -2424,6 +2430,8 @@ class _MakeSalesDesktopState
                                                           setTotalPrice:
                                                               returnSalesProvider().setTotalPrice,
                                                           item: TempProductClass(
+                                                            categories:
+                                                                [],
                                                             storageUuid:
                                                                 null,
                                                             departmentName:

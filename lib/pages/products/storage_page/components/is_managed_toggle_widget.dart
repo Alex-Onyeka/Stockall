@@ -52,6 +52,8 @@ class _IsManagedToggleWidgetState
                       isQuantityUpdate: false,
                       quantityChange: null,
                       product: TempProductClass(
+                        categories:
+                            widget.product.categories,
                         departmentName:
                             widget.product.departmentName,
                         departmentUuid:
@@ -89,8 +91,8 @@ class _IsManagedToggleWidgetState
                                 : widget.product.quantity,
                         shopId: widget.product.shopId,
                         barcode: widget.product.barcode,
-                        categoryUuid:
-                            widget.product.categoryUuid,
+                        // categoryUuid:
+                        //     widget.product.categoryUuid,
                         createdAt: widget.product.createdAt,
                         discount: widget.product.discount,
                         endDate: widget.product.endDate,

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:stockall/classes/temp_departments_class/department_class.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -35,11 +36,19 @@ import 'package:stockall/providers/inventory_updates_provider.dart';
 import 'package:stockall/providers/invoices_provider.dart';
 import 'package:stockall/providers/country_provider.dart';
 import 'package:stockall/providers/item_history_provider.dart';
+import 'package:stockall/providers/production_folder/material_quantity_update_provider.dart';
+import 'package:stockall/providers/production_folder/materials_item_history_provider.dart';
+import 'package:stockall/providers/production_folder/materials_provider.dart';
 import 'package:stockall/providers/multi_display_provider.dart';
 import 'package:stockall/providers/nav_provider.dart';
 import 'package:stockall/providers/notifications_provider.dart';
 import 'package:stockall/providers/permission_provider.dart';
 import 'package:stockall/providers/pos_printer/device_service.dart';
+import 'package:stockall/providers/production_folder/production_item_history_provider.dart';
+import 'package:stockall/providers/production_folder/production_items_provider.dart';
+import 'package:stockall/providers/production_folder/production_items_quantity_update_provider.dart';
+import 'package:stockall/providers/production_folder/production_record_provider.dart';
+import 'package:stockall/providers/production_folder/productions_action_provider.dart';
 import 'package:stockall/providers/purchase_action_provider.dart';
 import 'package:stockall/providers/purchase_provider.dart';
 import 'package:stockall/providers/quantity_update_provider.dart';
@@ -226,6 +235,10 @@ TempUserClass currentUser() {
         departmentUuids: [],
         access: [],
       );
+}
+
+DepartmentClass? currentDepartment() {
+  return returnDepartmentProvider().currentDepartment();
 }
 
 bool isStoreKeeper() {
@@ -674,6 +687,98 @@ ItemHistoryProvider returnItemHistoryProvider({
   }
 }
 
+ProductionItemHistoryProvider
+returnProductionItemHistoryProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return ProductionItemHistoryProvider();
+  } else {
+    return Provider.of<ProductionItemHistoryProvider>(
+      context,
+    );
+  }
+}
+
+MaterialsItemHistoryProvider
+returnMaterialsItemHistoryProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return MaterialsItemHistoryProvider();
+  } else {
+    return Provider.of<MaterialsItemHistoryProvider>(
+      context,
+    );
+  }
+}
+
+MaterialsProvider returnMaterialsProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return MaterialsProvider();
+  } else {
+    return Provider.of<MaterialsProvider>(context);
+  }
+}
+
+MaterialQuantityUpdateProvider
+returnMaterialsQuantityUpdateProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return MaterialQuantityUpdateProvider();
+  } else {
+    return Provider.of<MaterialQuantityUpdateProvider>(
+      context,
+    );
+  }
+}
+
+ProductionItemsProvider returnProductionItemsProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return ProductionItemsProvider();
+  } else {
+    return Provider.of<ProductionItemsProvider>(context);
+  }
+}
+
+ProductionItemsQuantityUpdateProvider
+returnProductionItemsQuantityUpdateProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return ProductionItemsQuantityUpdateProvider();
+  } else {
+    return Provider.of<
+      ProductionItemsQuantityUpdateProvider
+    >(context);
+  }
+}
+
+ProductionRecordsProvider returnProductionRecordsProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return ProductionRecordsProvider();
+  } else {
+    return Provider.of<ProductionRecordsProvider>(context);
+  }
+}
+
+ProductionsActionProvider returnProductionsActionProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return ProductionsActionProvider();
+  } else {
+    return Provider.of<ProductionsActionProvider>(context);
+  }
+}
+
 Widget colorWidget(
   Widget widget,
   bool isPrimary,
@@ -836,18 +941,36 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => ItemHistoryProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => ProductionItemHistoryProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => MaterialsItemHistoryProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => MaterialsProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => MaterialQuantityUpdateProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ProductionItemsProvider(),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) =>
+                  ProductionItemsQuantityUpdateProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ProductionRecordsProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ProductionsActionProvider(),
+        ),
       ],
       child: MaterialApp(
         navigatorKey: navigatorKey,
         title: 'Stockall Business Dashboard',
-
-        // builder: (context, child) {
-        //   return GlobalFloatingBubble(
-        //     bubble: const SizedBox(),
-        //     newContext: context,
-        //     child: child!,
-        //   );
-        // },
         initialRoute: "/",
         routes: {
           '/': (context) => home,

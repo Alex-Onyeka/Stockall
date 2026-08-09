@@ -164,7 +164,8 @@ class TempShopClass {
   @HiveField(54)
   String? accessPin;
 
-  // String? uuid
+  @HiveField(55)
+  bool? manageProductions;
 
   TempShopClass({
     this.shopId,
@@ -222,6 +223,7 @@ class TempShopClass {
     this.closeSaleTime,
     required this.trackCart,
     required this.accessPin,
+    required this.manageProductions,
     // required this.uuid
   });
 
@@ -300,6 +302,8 @@ class TempShopClass {
           json['close_sale_time'] as String?,
       trackCart: json['track_cart'] as bool?,
       accessPin: json['access_pin'] as String?,
+      manageProductions:
+          json['manage_productions'] as bool?,
     );
   }
 
@@ -315,7 +319,7 @@ class TempShopClass {
       'city': city,
       'country': country,
       'shop_address': shopAddress,
-      'categories': categories,
+      'categories': categories ?? [],
       'colors': colors,
       'phone_number': phoneNumber,
       'employees': employees,
@@ -359,6 +363,7 @@ class TempShopClass {
       'close_sale_time': closeSaleTimeString,
       'track_cart': trackCart,
       'access_pin': accessPin,
+      'manage_productions': manageProductions,
     };
   }
 
@@ -416,7 +421,7 @@ class TempShopClass {
     String? closeSaleTimeString,
     bool? trackCart,
     String? accessPin,
-    // String? uuid,
+    bool? manageProductions,
   }) {
     return TempShopClass(
       shopId: shopId ?? this.shopId,
@@ -482,7 +487,8 @@ class TempShopClass {
           closeSaleTimeString ?? this.closeSaleTimeString,
       trackCart: trackCart ?? this.trackCart,
       accessPin: accessPin ?? this.accessPin,
-      // uuid: uuid ?? this.uuid,
+      manageProductions:
+          manageProductions ?? this.manageProductions,
     );
   }
 }

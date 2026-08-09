@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:stockall/constants/functions.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class MainInfoTab extends StatelessWidget {
@@ -61,12 +60,7 @@ class MainInfoTab extends StatelessWidget {
                   style: TextStyle(
                     color:
                         theme.lightModeColor.greyColor200,
-                    fontSize:
-                        screenWidth(context) < 335
-                            ? theme.mobileTexts.b3.fontSize
-                            : screenWidth(context) > 550
-                            ? theme.mobileTexts.b4.fontSize
-                            : theme.mobileTexts.b3.fontSize,
+                    fontSize: theme.mobileTexts.b4.fontSize,
                     fontWeight: FontWeight.bold,
                   ),
 
@@ -103,32 +97,6 @@ class MainInfoTab extends StatelessWidget {
                 ],
               ),
             ),
-            // Divider(
-            //   color: Colors.grey.shade400,
-            //   thickness: 1,
-            //   height: 10,
-            // ),
-            // Row(
-            //   mainAxisAlignment:
-            //       MainAxisAlignment.spaceBetween,
-            //   children: [
-            //     Text(
-            //       style: TextStyle(
-            //         color:
-            //             theme.lightModeColor.greyColor100,
-            //         fontSize: theme.mobileTexts.b3.fontSize,
-            //         fontWeight:
-            //             theme.mobileTexts.b3.fontWeightBold,
-            //       ),
-            //       'See All',
-            //     ),
-            //     Icon(
-            //       color: Colors.grey.shade400,
-            //       size: 20,
-            //       Icons.arrow_forward_ios_rounded,
-            //     ),
-            //   ],
-            // ),
           ],
         ),
       ),

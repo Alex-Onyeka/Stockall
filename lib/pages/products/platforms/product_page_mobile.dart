@@ -111,22 +111,20 @@ class _ProductPageMobileState
           ItemsAuthAction().numberOfItemsAction(
             context: context,
             action: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return AddProduct();
-                  },
-                ),
-              ).then((_) {
-                if (context.mounted) {
-                  setState(() {
-                    // getProductList(context);
-                  });
-                } else {
-                  mainLocalLog('Context not mounted');
-                }
-              });
+              if (authorization(
+                authorized: Authorizations().addProduct,
+              )) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return AddProduct();
+                    },
+                  ),
+                ).then((_) {
+                  if (context.mounted) {}
+                });
+              }
             },
           );
         },
@@ -392,18 +390,25 @@ class _ProductPageMobileState
                                   svg: productIconSvg,
                                   height: 35,
                                   action: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return AddProduct();
-                                        },
-                                      ),
-                                    ).then((_) {
-                                      if (context.mounted) {
-                                        setState(() {});
-                                      }
-                                    });
+                                    if (authorization(
+                                      authorized:
+                                          Authorizations()
+                                              .addProduct,
+                                    )) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return AddProduct();
+                                          },
+                                        ),
+                                      ).then((_) {
+                                        if (context
+                                            .mounted) {}
+                                      });
+                                    }
                                   },
                                   theme: widget.theme,
                                   altAction: () async {

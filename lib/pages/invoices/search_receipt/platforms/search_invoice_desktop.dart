@@ -115,7 +115,7 @@ class _SearchInvoiceDesktopState
                     widget: Scaffold(
                       appBar: appBar(
                         context: context,
-                        title: 'Search For A Invoice',
+                        title: 'Search For An Invoice',
                         widget: SizedBox(
                           width: 250,
                           height: 35,

@@ -23,10 +23,16 @@ import 'package:stockall/local_database/item_history/item_histories_func.dart';
 import 'package:stockall/local_database/item_purchase_func.dart%20copy/item_purchase_func.dart';
 import 'package:stockall/local_database/logged_in_user/logged_in_user_func.dart';
 import 'package:stockall/local_database/main_receipt/main_receipt_func.dart';
+import 'package:stockall/local_database/materials/materials_func.dart';
+import 'package:stockall/local_database/materials_item_history/materials_item_histories_func.dart';
 import 'package:stockall/local_database/notification/notification_func.dart';
 import 'package:stockall/local_database/on_screen_keyboard_pin/on_screen_keyboard_pin_func.dart';
 import 'package:stockall/local_database/permission/permission_func.dart';
 import 'package:stockall/local_database/product_record_func.dart/product_record_func.dart';
+import 'package:stockall/local_database/production_item_history/production_item_histories_func.dart';
+import 'package:stockall/local_database/production_items/production_items_func.dart';
+import 'package:stockall/local_database/productions/production_records_func.dart';
+import 'package:stockall/local_database/productions_cart_func/productions_cart_func.dart';
 import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/quantity_update/quantity_update_func.dart';
 import 'package:stockall/local_database/purchases/purchase_func.dart';
@@ -107,6 +113,12 @@ class MainDatabase extends ChangeNotifier {
       await SuppliersFunc().init();
       await WaybillsFunc().init();
       await CountriesFunc().init();
+      await ProductionRecordsFunc().init();
+      await MaterialsFunc().init();
+      await MaterialsItemHistoriesFunc().init();
+      await ProductionItemsFunc().init();
+      await ProductionItemHistoriesFunc().init();
+      await ProductionsCartFunc().init();
       await mainLocalLog('init Complete');
     } catch (e, s) {
       await mainLocalLog(
@@ -118,4 +130,4 @@ class MainDatabase extends ChangeNotifier {
   }
 }
 
-int highestHiveClassIndex = 98;
+int highestHiveClassIndex = 120;

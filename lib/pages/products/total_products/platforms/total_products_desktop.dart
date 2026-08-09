@@ -19,6 +19,7 @@ import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/compnents/product_filter_button.dart';
 import 'package:stockall/pages/products/compnents/product_filter_button_category.dart';
 import 'package:stockall/pages/products/compnents/product_tile_main.dart';
+import 'package:stockall/pages/products/item_history_page/item_history_page.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -124,8 +125,10 @@ class _TotalProductsDesktopState
                 .productList()
                 .where(
                   (pr) =>
-                      pr.categoryUuid ==
-                      widget.categoryUuid,
+                      pr.categories?.contains(
+                        widget.categoryUuid,
+                      ) ==
+                      true,
                 )
                 .toList()
             : returnData().productList();
@@ -168,7 +171,11 @@ class _TotalProductsDesktopState
     List<TempProductClass> categoryFilterProducts() {
       if (categoryUuid != null) {
         return products
-            .where((pr) => pr.categoryUuid == categoryUuid)
+            .where(
+              (pr) =>
+                  pr.categories?.contains(categoryUuid) ==
+                  true,
+            )
             .toList();
       }
       return products;
@@ -398,6 +405,47 @@ class _TotalProductsDesktopState
                                       ),
                                       PopupMenuItem(
                                         onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return ItemHistoryPage(
+                                                  fromItemDetails:
+                                                      false,
+                                                );
+                                              },
+                                            ),
+                                          );
+                                        },
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.symmetric(
+                                                horizontal:
+                                                    10.0,
+                                              ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .spaceBetween,
+                                            children: [
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b3
+                                                          .fontSize,
+                                                ),
+                                                'View History',
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      PopupMenuItem(
+                                        onTap: () {
                                           if (returnData()
                                               .isSelectProducts) {
                                             returnData()
@@ -578,22 +626,27 @@ class _TotalProductsDesktopState
                                                       widget.categoryUuid !=
                                                               null
                                                           ? () {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder: (
-                                                                  context,
+                                                            if (authorization(
+                                                              authorized:
+                                                                  Authorizations().addProduct,
+                                                            )) {
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder: (
+                                                                    context,
+                                                                  ) {
+                                                                    return AddProduct();
+                                                                  },
+                                                                ),
+                                                              ).then(
+                                                                (
+                                                                  _,
                                                                 ) {
-                                                                  return AddProduct();
+                                                                  if (context.mounted) {}
                                                                 },
-                                                              ),
-                                                            ).then(
-                                                              (
-                                                                _,
-                                                              ) {
-                                                                if (context.mounted) {}
-                                                              },
-                                                            );
+                                                              );
+                                                            }
                                                           }
                                                           : () {},
                                                   theme:
@@ -1033,7 +1086,8 @@ class _TotalProductsDesktopState
                                                                                       );
                                                                                     },
                                                                                     currentSelected:
-                                                                                        categoryUuid!,
+                                                                                        categoryUuid ??
+                                                                                        '',
                                                                                     title:
                                                                                         cat.name,
                                                                                     uuid:
@@ -1212,7 +1266,8 @@ class _TotalProductsDesktopState
                                                                                 );
                                                                               },
                                                                               currentSelected:
-                                                                                  categoryUuid!,
+                                                                                  categoryUuid ??
+                                                                                  '',
                                                                               title:
                                                                                   cat.name,
                                                                               uuid:

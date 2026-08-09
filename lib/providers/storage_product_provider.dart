@@ -537,18 +537,6 @@ class StorageProductProvider extends ChangeNotifier {
                 ),
               );
         }
-        // } else {
-        //   QuantityUpdate quantityUpdate = QuantityUpdate(
-        //     isStorage: true,
-        //     quantity: (quantityChange ?? 0).abs(),
-        //     productUuid: product.uuid!,
-        //     isIncrement: isIncrement ?? true,
-        //   );
-        //   await returnQuantityUpdateProvider()
-        //       .createQuantityUpdate(
-        //         quantityUpdate: quantityUpdate,
-        //       );
-        // }
         await getStorageProductsOffline(
           returnShopProvider().userShop()!.shopId!,
         );
@@ -571,21 +559,7 @@ class StorageProductProvider extends ChangeNotifier {
 
   Future<void> deleteProductMain(
     TempStorageProducts product,
-    // BuildContext context,
   ) async {
-    // bool isOnline = await connectivity.isOnline();
-    // if (isOnline) {
-    //   await supabase
-    //       .from(tableName)
-    //       .delete()
-    //       .eq('uuid', product.uuid!);
-    //   // await returnEventsLogProvider().createLog(
-    //   //   returnEventsLogProvider(
-    //   //     // ignore: use_build_context_synchronously
-    //   //   ).productAdapter(product, 3),
-    //   //   // ignore: use_build_context_synchronously
-    //   // );
-    // } else {
     await StorageProductsFunc().deleteStorageProduct(
       product.uuid!,
     );

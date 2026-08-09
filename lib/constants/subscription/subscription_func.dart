@@ -74,6 +74,7 @@ List<SubplanClass> subPlans = [
       useFloatingButton: true,
       useOnScreenKeyboard: true,
       trackCart: true,
+      manageProductions: true,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -156,6 +157,7 @@ List<SubplanClass> subPlans = [
       useCloseSale: true,
       useFloatingButton: true,
       useOnScreenKeyboard: true,
+      manageProductions: true,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -239,6 +241,7 @@ List<SubplanClass> subPlans = [
       useCloseSale: true,
       useFloatingButton: true,
       useOnScreenKeyboard: true,
+      manageProductions: true,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -281,7 +284,7 @@ List<SubplanClass> subPlans = [
       manageInventoryStorage: false,
       useGroupUnit: true,
       setWholeSale: true,
-      trackItemHistory: true,
+      trackItemHistory: false,
     ),
     salesAuth: SalesAuth(
       useOfBarcode: true,
@@ -322,6 +325,7 @@ List<SubplanClass> subPlans = [
       useCloseSale: false,
       useFloatingButton: false,
       useOnScreenKeyboard: false,
+      manageProductions: false,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -364,7 +368,7 @@ List<SubplanClass> subPlans = [
       manageInventoryStorage: false,
       useGroupUnit: false,
       setWholeSale: false,
-      trackItemHistory: true,
+      trackItemHistory: false,
     ),
     salesAuth: SalesAuth(
       useOfBarcode: false,
@@ -405,6 +409,7 @@ List<SubplanClass> subPlans = [
       useCloseSale: false,
       useFloatingButton: false,
       useOnScreenKeyboard: false,
+      manageProductions: false,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -443,7 +448,7 @@ List<SubplanClass> subPlans = [
       generateItemBarcode: false,
       useGroupUnit: false,
       setWholeSale: false,
-      trackItemHistory: true,
+      trackItemHistory: false,
     ),
     salesAuth: SalesAuth(
       useOfBarcode: false,
@@ -484,6 +489,7 @@ List<SubplanClass> subPlans = [
       useCloseSale: false,
       useFloatingButton: false,
       useOnScreenKeyboard: false,
+      manageProductions: false,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: false,
@@ -590,7 +596,7 @@ class SubscribeAlertDialog extends StatelessWidget {
                         fontSize: 25,
                         fontWeight: FontWeight.bold,
                       ),
-                      'Premium Only Feature',
+                      'Plan Upgrade Required',
                     ),
                     Flexible(
                       child: Text(

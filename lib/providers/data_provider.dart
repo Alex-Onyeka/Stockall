@@ -33,14 +33,26 @@ import 'package:stockall/local_database/inventory_updates/unsync_funcs/created_i
 import 'package:stockall/local_database/invoices/unsync_funcs/created/created_invoices_func.dart';
 import 'package:stockall/local_database/invoices/unsync_funcs/deleted/deleted_invoices_func.dart';
 import 'package:stockall/local_database/invoices/unsync_funcs/updated/updated_invoices_func.dart';
-import 'package:stockall/local_database/item_history/item_histories_func.dart';
 import 'package:stockall/local_database/item_history/unsync_funcs/created_item_histories_func.dart';
 import 'package:stockall/local_database/item_purchase_func.dart%20copy/unsync_funcs/created/created_item_purchase_func.dart';
 import 'package:stockall/local_database/item_purchase_func.dart%20copy/unsync_funcs/deleted/deleted_item_purchase_func.dart';
 import 'package:stockall/local_database/main_receipt/unsync_funcs/created/created_receipts_func.dart';
 import 'package:stockall/local_database/main_receipt/unsync_funcs/deleted/deleted_receipts_func.dart';
 import 'package:stockall/local_database/main_receipt/unsync_funcs/updated/updated_receipts_func.dart';
+import 'package:stockall/local_database/materials/unsync_funcs/created_materials/created_materials_func.dart';
+import 'package:stockall/local_database/materials/unsync_funcs/deleted_materials/deleted_materials_func.dart';
+import 'package:stockall/local_database/materials/unsync_funcs/materials_quantity_update/materials_quantity_update_func.dart';
+import 'package:stockall/local_database/materials/unsync_funcs/updated_materials/updated_materials_func.dart';
+import 'package:stockall/local_database/materials_item_history/unsync_funcs/created_materials_item_histories_func.dart';
 import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/created/created_records_func.dart';
+import 'package:stockall/local_database/production_item_history/unsync_funcs/created_production_item_histories_func.dart';
+import 'package:stockall/local_database/production_items/unsync_funcs/created/created_production_items_func.dart';
+import 'package:stockall/local_database/production_items/unsync_funcs/deleted/deleted_production_items_func.dart';
+import 'package:stockall/local_database/production_items/unsync_funcs/production_items_quantity_update/production_items_quantity_update_func.dart';
+import 'package:stockall/local_database/production_items/unsync_funcs/updated/updated_production_items_func.dart';
+import 'package:stockall/local_database/productions/unsync_funcs/created/created_production_record_func.dart';
+import 'package:stockall/local_database/productions/unsync_funcs/deleted/deleted_production_records_func.dart';
+import 'package:stockall/local_database/productions/unsync_funcs/updated/updated_production_records_func.dart';
 import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/quantity_update/quantity_update_func.dart';
 // import 'package:stockall/local_database/products/unsync_funcs/sales_products/sales_product_func.dart';
@@ -128,9 +140,10 @@ class DataProvider extends ChangeNotifier {
 
   final supabase = Supabase.instance.client;
 
-  Future<void> createProduct(
-    TempProductClass product,
-  ) async {
+  Future<void> createProduct({
+    required TempProductClass product,
+    required ItemHistory? itemHistory,
+  }) async {
     product.updatedAt = DateTime.now();
     product.createdAt ??= DateTime.now();
 
@@ -150,6 +163,13 @@ class DataProvider extends ChangeNotifier {
     await getProductsOffline(
       returnShopProvider().userShop()!.shopId!,
     );
+    if (itemHistory != null) {
+      itemHistory.itemName = product.name;
+      itemHistory.itemUuid = product.uuid;
+      await returnItemHistoryProvider().createItemHistory(
+        itemHistory,
+      );
+    }
 
     syncData();
 
@@ -173,7 +193,7 @@ class DataProvider extends ChangeNotifier {
                 .insert(
                   item.product.toJson(
                     isIncludeQuantity:
-                        item.includeQuantity ?? false,
+                        item.includeQuantity ?? true,
                   ),
                 )
                 .select();
@@ -428,7 +448,6 @@ class DataProvider extends ChangeNotifier {
     await CreatedInventoryUpdatesFunc()
         .clearInventoryUpdate();
     await DeletedReceiptsFunc().clearDeletedReceipts();
-    // await SalesProductFunc().clearProducts();
     await QuantityUpdateFunc().clearQuantitiesUpdate();
     await UpdatedReceiptsFunc().clearUpdatedReceipts();
     await UpdatedShopFunc().clearUpdatedShop();
@@ -466,7 +485,29 @@ class DataProvider extends ChangeNotifier {
     await DeletedInvoicesFunc().clearDeletedInvoices();
     await UpdatedInvoicesFunc()
         .clearupdatedInvoiceUpdatedInvoices();
-    await ItemHistoriesFunc().clearItemHistories();
+    await CreatedItemHistoriesFunc().clearItemHistory();
+    await CreatedMaterialsFunc().clearMaterials();
+    await DeletedMaterialsFunc().clearDeletedMaterial();
+    await UpdatedMaterialsFunc().clearupdatedMaterials();
+    await MaterialsQuantityUpdateFunc()
+        .clearMaterialsQuantitiesUpdate();
+    await CreatedMaterialsItemHistoriesFunc()
+        .clearMaterialsItemHistory();
+    await CreatedProductionItemsFunc()
+        .clearProductionItems();
+    await DeletedProductionItemsFunc()
+        .clearDeletedProductionItem();
+    await UpdatedProductionItemsFunc()
+        .clearupdatedProductionItems();
+    await ProductionItemsQuantityUpdateFunc()
+        .clearProductionItemsQuantitiesUpdate();
+    await CreatedProductionItemHistoriesFunc()
+        .clearProductionItemHistory();
+    await CreatedProductionRecordsFunc().clearProductions();
+    await DeletedProductionRecordsFunc()
+        .clearDeletedProductionRecords();
+    await UpdatedProductionRecordsFunc()
+        .clearUpdatedProductionRecordsRecord();
     notifyListeners();
   }
 
@@ -608,12 +649,6 @@ class DataProvider extends ChangeNotifier {
             );
             setSyncProgress(12);
           }
-          // if (SalesProductFunc().getProducts().isNotEmpty &&
-          //     isOnline) {
-          //   await salesProductsSync();
-          //   await mainLocalLog('Finished Syncing Sales Products');
-          //   setSyncProgress(13);
-          // }
           if (QuantityUpdateFunc()
                   .getQuantitiesUpdate()
                   .isNotEmpty &&
@@ -985,18 +1020,153 @@ class DataProvider extends ChangeNotifier {
             );
             // setSyncProgress(44);
           }
-
-          // await clearTotalCache();
+          if (CreatedMaterialsFunc()
+                  .getMaterials()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnMaterialsProvider()
+                .createdMaterialsSync();
+            await mainLocalLog(
+              'Finished Syncing Created Materials',
+            );
+            setSyncProgress(46);
+          }
+          if (UpdatedMaterialsFunc()
+                  .getMaterials()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnMaterialsProvider()
+                .updatedMaterialsSync();
+            await mainLocalLog(
+              'Finished Syncing Updated Materials',
+            );
+            setSyncProgress(47);
+          }
+          if (DeletedMaterialsFunc()
+                  .getMaterialIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnMaterialsProvider()
+                .deletedMaterialsSync();
+            await mainLocalLog(
+              'Finished Syncing Deleted Materials',
+            );
+            setSyncProgress(48);
+          }
+          if (MaterialsQuantityUpdateFunc()
+                  .getMaterialsQuantitiesUpdate()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnMaterialsQuantityUpdateProvider()
+                .materialsQuantityUpdateSync();
+            await mainLocalLog(
+              'Finished Syncing Materials Quantity Updates',
+            );
+            setSyncProgress(49);
+          }
+          if (CreatedMaterialsItemHistoriesFunc()
+                  .getCreatedMaterialsItemHistoriess()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnMaterialsItemHistoryProvider()
+                .materialsItemHistoriesSync();
+            await mainLocalLog(
+              'Finished Syncing Materials Item Histories',
+            );
+            setSyncProgress(50);
+          }
+          if (CreatedProductionItemsFunc()
+                  .getProductionItems()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnProductionItemsProvider()
+                .createdProductionItemsSync();
+            await mainLocalLog(
+              'Finished Syncing Created Production Items',
+            );
+            setSyncProgress(51);
+          }
+          if (UpdatedProductionItemsFunc()
+                  .getProductionItems()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnProductionItemsProvider()
+                .updatedProductionItemsSync();
+            await mainLocalLog(
+              'Finished Syncing Updated Production Items',
+            );
+            setSyncProgress(52);
+          }
+          if (DeletedProductionItemsFunc()
+                  .getProductionItemIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnProductionItemsProvider()
+                .deletedProductionItemsSync();
+            await mainLocalLog(
+              'Finished Syncing Deleted Production Items',
+            );
+            setSyncProgress(53);
+          }
+          if (ProductionItemsQuantityUpdateFunc()
+                  .getProductionItemsQuantitiesUpdate()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnProductionItemsQuantityUpdateProvider()
+                .productionItemsQuantityUpdateSync();
+            await mainLocalLog(
+              'Finished Syncing ProductionItems Quantity Updates',
+            );
+            setSyncProgress(54);
+          }
+          if (CreatedProductionItemHistoriesFunc()
+                  .getCreatedProductionItemHistoriess()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnProductionItemHistoryProvider()
+                .productionItemHistoriesSync();
+            await mainLocalLog(
+              'Finished Syncing Production Item Histories',
+            );
+            setSyncProgress(55);
+          }
+          if (CreatedProductionRecordsFunc()
+                  .getProductions()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnProductionRecordsProvider()
+                .createProductionRecordSync();
+            await mainLocalLog(
+              'Finished Syncing Created Production Records',
+            );
+            setSyncProgress(56);
+          }
+          if (UpdatedProductionRecordsFunc()
+                  .getProductionIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnProductionRecordsProvider()
+                .updateProductionRecordsSync();
+            await mainLocalLog(
+              'Finished Syncing Updated Production Records',
+            );
+            setSyncProgress(57);
+          }
+          if (DeletedProductionRecordsFunc()
+                  .getProductionIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnProductionRecordsProvider()
+                .deleteProductionRecordsSync();
+            await mainLocalLog(
+              'Finished Syncing Deleted Production Records',
+            );
+            setSyncProgress(58);
+          }
           toggleSyncing(false);
         } else {
           // await ShopFunc().clearShop();
           toggleSyncing(false);
-          // returnNavProvider(context, listen: false).nullShop(
-          //   logoutAction:
-          //       () => returnNavProviderSingle().navPush(
-          //         context,
-          //       ),
-          // );
         }
       } else {
         toggleSyncing(false);
@@ -1027,7 +1197,7 @@ class DataProvider extends ChangeNotifier {
   bool isSyncing = false;
   double syncProgress = 0;
   void setSyncProgress(int value) {
-    syncProgress = (value / 44) * 100;
+    syncProgress = (value / 58) * 100;
     notifyListeners();
   }
 
@@ -1052,7 +1222,6 @@ class DataProvider extends ChangeNotifier {
           CreatedInventoryUpdatesFunc()
               .getCreatedInventoryUpdatess()
               .isEmpty &&
-          // SalesProductFunc().getProducts().isEmpty &&
           QuantityUpdateFunc()
               .getQuantitiesUpdate()
               .isEmpty &&
@@ -1117,6 +1286,39 @@ class DataProvider extends ChangeNotifier {
           DeletedWaybillsFunc().getWaybillIds().isEmpty &&
           CreatedItemHistoriesFunc()
               .getCreatedItemHistoriess()
+              .isEmpty &&
+          CreatedMaterialsFunc().getMaterials().isEmpty &&
+          UpdatedMaterialsFunc().getMaterials().isEmpty &&
+          DeletedMaterialsFunc().getMaterialIds().isEmpty &&
+          MaterialsQuantityUpdateFunc()
+              .getMaterialsQuantitiesUpdate()
+              .isEmpty &&
+          CreatedMaterialsItemHistoriesFunc()
+              .getCreatedMaterialsItemHistoriess()
+              .isEmpty &&
+          CreatedProductionItemsFunc()
+              .getProductionItems()
+              .isEmpty &&
+          UpdatedProductionItemsFunc()
+              .getProductionItems()
+              .isEmpty &&
+          DeletedProductionItemsFunc()
+              .getProductionItemIds()
+              .isEmpty &&
+          CreatedProductionItemHistoriesFunc()
+              .getCreatedProductionItemHistoriess()
+              .isEmpty &&
+          ProductionItemsQuantityUpdateFunc()
+              .getProductionItemsQuantitiesUpdate()
+              .isEmpty &&
+          CreatedProductionRecordsFunc()
+              .getProductions()
+              .isEmpty &&
+          UpdatedProductionRecordsFunc()
+              .getProductionIds()
+              .isEmpty &&
+          DeletedProductionRecordsFunc()
+              .getProductionIds()
               .isEmpty) {
         return 1;
       } else {
@@ -1362,6 +1564,96 @@ class DataProvider extends ChangeNotifier {
     return productListMain;
   }
 
+  Future<List<TempProductClass>> getProductsForOtherShops(
+    int shopId,
+  ) async {
+    List<TempProductClass> tempProducts = [];
+    final data = await supabase
+        .from('products')
+        .select()
+        .eq('shop_id', shopId)
+        .order('name', ascending: true)
+        .range(
+          0,
+          allowedRangeItems != null
+              ? (allowedRangeItems ?? 0) - 1
+              : 1000,
+        );
+
+    await mainLocalLog('Items gotten: ${data.length}');
+
+    tempProducts =
+        (data as List)
+            .map((json) => TempProductClass.fromJson(json))
+            .toList();
+    tempProducts.sort(
+      (a, b) => a.name.toLowerCase().compareTo(
+        b.name.toLowerCase(),
+      ),
+    );
+    await mainLocalLog(
+      'Product List Set: ${tempProducts.length}',
+    );
+    if (data.length > 999) {
+      final data2 = await supabase
+          .from('products')
+          .select()
+          .eq('shop_id', shopId)
+          .order('name', ascending: true)
+          .range(
+            1001,
+            allowedRangeItems != null
+                ? (allowedRangeItems ?? 0) - 1
+                : 2000,
+          );
+      await mainLocalLog('Items 2 gotten: ${data2.length}');
+      tempProducts.addAll(
+        (data2 as List)
+            .map(
+              (stuff) => TempProductClass.fromJson(stuff),
+            )
+            .toList(),
+      );
+      tempProducts.sort(
+        (a, b) => a.name.toLowerCase().compareTo(
+          b.name.toLowerCase(),
+        ),
+      );
+      await mainLocalLog(
+        'Product List 2 Set: ${tempProducts.length}',
+      );
+
+      if (tempProducts.length > 1999) {
+        final data3 = await supabase
+            .from('products')
+            .select()
+            .eq('shop_id', shopId)
+            .order('name', ascending: true)
+            .range(2001, allowedRangeItems ?? 3000);
+        await mainLocalLog(
+          'Items 3 gotten: ${data3.length}',
+        );
+        tempProducts.addAll(
+          (data3 as List)
+              .map(
+                (stuff) => TempProductClass.fromJson(stuff),
+              )
+              .toList(),
+        );
+        tempProducts.sort(
+          (a, b) => a.name.toLowerCase().compareTo(
+            b.name.toLowerCase(),
+          ),
+        );
+        await mainLocalLog(
+          'Product List 3 Set: ${tempProducts.length}',
+        );
+      }
+      notifyListeners();
+    }
+    return tempProducts;
+  }
+
   Future<TempProductClass?> updateProduct({
     required TempProductClass product,
     required bool isQuantityUpdate,
@@ -1373,7 +1665,7 @@ class DataProvider extends ChangeNotifier {
     bool? isMultipleUpdate,
   }) async {
     try {
-      await mainLocalLog(product.isManaged.toString());
+      product.updatedAt = DateTime.now();
       var res = await ProductsFunc().updateProduct(product);
       if (res == 1) {
         if (isQuantityUpdate == false) {
@@ -1450,9 +1742,48 @@ class DataProvider extends ChangeNotifier {
     }
   }
 
+  Future<TempProductClass?> updateProductForOtherShops({
+    required TempProductClass product,
+    required ItemHistory? itemHistory,
+    TempProductClass? oldProduct,
+  }) async {
+    try {
+      product.updatedAt = DateTime.now();
+      var res =
+          await supabase
+              .from('products')
+              .update(
+                product.toJson(isIncludeQuantity: true),
+              )
+              .eq('uuid', product.uuid!)
+              .select()
+              .maybeSingle();
+      if (res != null) {
+        TempProductClass? resProduct =
+            TempProductClass.fromJson(res);
+        if (itemHistory != null) {
+          itemHistory.itemName = product.name;
+          itemHistory.itemUuid = product.uuid;
+          await returnItemHistoryProvider()
+              .createItemHistory(itemHistory);
+        }
+        return resProduct;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      notifyListeners();
+      await mainLocalLog(
+        "Error Updating Product: ${e.toString()}",
+      );
+      return null;
+    }
+  }
+
   Future<void> deleteProductMain({
     required TempProductClass product,
     bool? isMultipleDelete,
+    required ItemHistory? itemHistory,
   }) async {
     await ProductsFunc().deleteProduct(product.uuid!);
     var containsCreated =
@@ -1494,6 +1825,13 @@ class DataProvider extends ChangeNotifier {
     await getProductsOffline(
       returnShopProvider().userShop()!.shopId!,
     );
+    if (itemHistory != null) {
+      itemHistory.itemName = product.name;
+      itemHistory.itemUuid = null;
+      await returnItemHistoryProvider().createItemHistory(
+        itemHistory,
+      );
+    }
     notifyListeners();
     if (isMultipleDelete != true) {
       syncData();
@@ -1521,7 +1859,8 @@ class DataProvider extends ChangeNotifier {
     isProductRefundable = false;
     setCustomPrice = false;
     isRefundable = false;
-    selectedCategory = null;
+    selectedCategories.clear();
+    // selectedCategory = null;
     selectedColor = null;
     selectedSize = null;
     inStock = false;
@@ -1534,8 +1873,6 @@ class DataProvider extends ChangeNotifier {
     colorValueSet = false;
     sizeValueSet = false;
     groupUnitValueSet = false;
-    // clearEndDate();
-    // clearStartDate();
     clearGroupUnit();
     clearExpDate();
     clearDepartment();
@@ -1633,33 +1970,34 @@ class DataProvider extends ChangeNotifier {
     'Others',
   ];
 
-  CategoryClass? selectedCategory;
+  List<String> selectedCategories = [];
 
   bool isOpen = false;
 
-  // void toggleCatOpen(BuildContext context) {
-  //   ItemsAuthAction().applyVariationsAction(
-  //     context: context,
-  //     action: () {
-  //       isOpen = !isOpen;
-  //       notifyListeners();
-  //     },
-  //   );
-  // }
-
-  void selectCategory(CategoryClass category) {
-    if (selectedCategory == null) {
-      selectedCategory = category;
-      catValueSet = true;
-    } else if (selectedCategory != category) {
-      selectedCategory = category;
-      catValueSet = true;
+  void selectCategories(CategoryClass category) {
+    if (selectedCategories.contains(category.uuid)) {
+      selectedCategories.remove(category.uuid);
     } else {
-      selectedCategory = null;
-      catValueSet = false;
+      selectedCategories.add(category.uuid);
     }
     notifyListeners();
   }
+
+  void initCategories({required List<String> categories}) {
+    selectedCategories = categories;
+    notifyListeners();
+  }
+
+  // CategoryClass? selectedCategory;
+
+  // void selectCategory(CategoryClass category) {
+  //   if (selectedCategories.contains(category)) {
+  //     selectedCategories.remove(category);
+  //   } else {
+  //     selectedCategories.add(category);
+  //   }
+  //   notifyListeners();
+  // }
 
   //
   //
@@ -2128,7 +2466,17 @@ class DataProvider extends ChangeNotifier {
       for (var pr in ProductsFunc().getProducts().where(
         (prr) => selectedProducts.contains(prr),
       )) {
+        ItemHistory itemHistory = ItemHistory(
+          shopId: shopId(),
+          title: 'Item Deleted',
+          quantityChange: 0,
+          newValue: (pr.quantity ?? 0).toString(),
+          desc: 'Item Deleted Now',
+          isIncreased: false,
+          oldValue: (pr.quantity ?? 0).toString(),
+        );
         await deleteProductMain(
+          itemHistory: itemHistory,
           product: pr,
           isMultipleDelete: true,
         );
@@ -2190,7 +2538,7 @@ class DataProvider extends ChangeNotifier {
           final newProduct = pr.copyWith(
             brand: null,
             category: null,
-            categoryUuid: null,
+            categories: [],
             departmentName: null,
             departmentUuid: null,
             storageUuid: null,

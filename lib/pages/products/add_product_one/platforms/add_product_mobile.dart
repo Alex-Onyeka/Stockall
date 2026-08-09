@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_categories/category_class.dart';
+import 'package:stockall/classes/temp_item_history/item_history.dart';
 // import 'package:path/path.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
@@ -121,9 +121,22 @@ class _AddProductMobileState
               });
 
               final dataProvider = returnData();
+              ItemHistory itemHistory = ItemHistory(
+                shopId: shopId(),
+                title: 'Item Created',
+                quantityChange: 0,
+                newValue: '0',
+                desc: 'Item Created Now',
+                isIncreased: true,
+                oldValue: '0',
+              );
 
               await dataProvider.createProduct(
-                TempProductClass(
+                itemHistory: itemHistory,
+                product: TempProductClass(
+                  categories:
+                      dataProvider.selectedCategories
+                          .toList(),
                   storageUuid: null,
                   departmentName:
                       returnData().departmentUuid != null
@@ -139,24 +152,7 @@ class _AddProductMobileState
                           : null,
                   departmentUuid:
                       returnData().departmentUuid,
-                  totalQttyInStorageDouble:
-                      // widget
-                      //         .storageQuantityController
-                      //         .text
-                      //         .isNotEmpty
-                      //     ? double.parse(
-                      //       widget
-                      //           .storageQuantityController
-                      //           .text
-                      //           .replaceAll(',', ''),
-                      //     )
-                      //     :
-                      null,
-                  isManaged:
-                      // widget.quantityController.text.isEmpty
-                      //     ? false
-                      //     :
-                      dataProvider.isManaged,
+                  isManaged: dataProvider.isManaged,
                   name: widget.nameController.text.trim(),
                   unit:
                       dataProvider.selectedUnit ?? 'Others',
@@ -208,17 +204,7 @@ class _AddProductMobileState
                                 .replaceAll(',', ''),
                           )
                           : null,
-                  quantity:
-                      // widget
-                      //         .quantityController
-                      //         .text
-                      //         .isNotEmpty
-                      //     ? double.parse(
-                      //       widget.quantityController.text
-                      //           .replaceAll(',', ''),
-                      //     )
-                      //     :
-                      null,
+                  quantity: 0,
                   barcode: barcode,
                   lowQtty:
                       widget.lowQttyController.text.isEmpty
@@ -232,8 +218,8 @@ class _AddProductMobileState
                         .replaceAll(',', ''),
                   ),
                   expiryDate: dataProvider.expiryDate,
-                  categoryUuid:
-                      dataProvider.selectedCategory?.uuid,
+                  // categoryUuid:
+                  //     dataProvider.selectedCategory?.uuid,
                   uuid: createdProductUuid,
                 ),
               );
@@ -291,6 +277,8 @@ class _AddProductMobileState
               isQuantityUpdate: false,
               quantityChange: null,
               product: TempProductClass(
+                categories:
+                    provider.selectedCategories.toList(),
                 storageUuid: widget.product?.storageUuid,
                 departmentName:
                     returnData().departmentUuid != null
@@ -364,8 +352,8 @@ class _AddProductMobileState
                 //     : null,
                 shopId: userShop!.shopId!,
                 barcode: barcode,
-                categoryUuid:
-                    provider.selectedCategory?.uuid,
+                // categoryUuid:
+                //     provider.selectedCategory?.uuid,
                 createdAt: widget.product!.createdAt,
                 discount: double.tryParse(
                   widget.discountController.text.replaceAll(
@@ -462,24 +450,18 @@ class _AddProductMobileState
           widget.product!.wholeSalePrice != null
               ? widget.product!.wholeSalePrice.toString()
               : '';
-      // widget.quantityController.text =
-      //     widget.product!.quantity == null
-      //         ? ''
-      //         : widget.product!.quantity.toString();
-
       widget.discountController.text =
           widget.product!.discount != null
               ? widget.product!.discount!.toString()
               : '';
       returnData().departmentUuid =
           widget.product?.departmentUuid;
+      returnData().expiryDate = widget.product?.expiryDate;
       returnData().isProductRefundable =
           widget.product!.isRefundable;
       returnData().isManaged = widget.product!.isManaged;
       returnData().setCustomPrice =
           widget.product!.setCustomPrice;
-      // returnData().selectedUnit =
-      //     widget.product!.unit;
       returnData().selectUnit(widget.product!.unit);
       returnData().selectGroupUnit(
         unit: widget.product!.groupUnit,
@@ -493,39 +475,9 @@ class _AddProductMobileState
             widget.product!.sizeType!,
           )
           : null;
-      widget.product!.categoryUuid != null
-          ? returnData().selectCategory(
-            returnCategoriesProvider()
-                    .categories()
-                    .where(
-                      (cat) =>
-                          cat.uuid ==
-                          widget.product?.categoryUuid,
-                    )
-                    .isNotEmpty
-                ? returnCategoriesProvider()
-                    .categories()
-                    .where(
-                      (cat) =>
-                          cat.uuid ==
-                          widget.product?.categoryUuid,
-                    )
-                    .first
-                : CategoryClass(
-                  name: 'Not Set',
-                  shopId: shopId(),
-                  uuid: 'uuid',
-                  departmentId:
-                      returnDepartmentProvider()
-                          .currentDepartment()
-                          ?.uuid,
-                  departmentName:
-                      returnDepartmentProvider()
-                          .currentDepartment()
-                          ?.name,
-                ),
-          )
-          : null;
+      returnData().initCategories(
+        categories: widget.product?.categories ?? [],
+      );
     }
   }
 
@@ -1127,6 +1079,9 @@ class _AddProductMobileState
                                                     }
 
                                                     var tempProduct = TempProductClass(
+                                                      categories:
+                                                          widget.product?.categories ??
+                                                          [],
                                                       storageUuid:
                                                           widget.product?.storageUuid,
                                                       departmentName:
@@ -2000,13 +1955,14 @@ class _AddProductMobileState
                                             },
                                             isOpen: isOpen,
                                             title:
-                                                'Category (Optional)',
+                                                'Categories (Optional)',
                                             hint:
                                                 returnData(
-                                                  context:
-                                                      context,
-                                                ).selectedCategory?.name ??
-                                                'Select Item Category',
+                                                      context:
+                                                          context,
+                                                    ).selectedCategories.isNotEmpty
+                                                    ? "(${returnData(context: context).selectedCategories.length}) Categories Selected"
+                                                    : 'Select Item Categories',
                                             theme: theme,
                                           ),
                                         ),

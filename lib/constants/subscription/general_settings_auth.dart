@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/providers/subscription_provider.dart';
 
 class GeneralSettingsAuth {
   final bool addSocials;
@@ -13,6 +14,7 @@ class GeneralSettingsAuth {
   final bool useFloatingButton;
   final bool useOnScreenKeyboard;
   final bool trackCart;
+  final bool manageProductions;
 
   GeneralSettingsAuth({
     required this.addSocials,
@@ -25,19 +27,16 @@ class GeneralSettingsAuth {
     required this.useFloatingButton,
     required this.useOnScreenKeyboard,
     required this.trackCart,
+    required this.manageProductions,
   });
 }
 
 class GeneralSettingsAuthAction {
   bool addSocialsAction({
-    required BuildContext context,
+    required BuildContext? context,
     Function()? action,
   }) {
-    var plan =
-        returnSubcsription(
-          context,
-          listen: false,
-        ).subscription?.plan;
+    var plan = SubscriptionProvider().subscription?.plan;
     if (plan == null) {
       return false;
     }
@@ -48,7 +47,7 @@ class GeneralSettingsAuthAction {
       action == null ? {} : action();
       return true;
     } else {
-      if (action != null) {
+      if (action != null && context != null) {
         showUnauthorizedDialog(context);
       }
       return false;
@@ -57,14 +56,10 @@ class GeneralSettingsAuthAction {
   }
 
   bool useCloseSalesAction({
-    required BuildContext context,
+    required BuildContext? context,
     Function()? action,
   }) {
-    var plan =
-        returnSubcsription(
-          context,
-          listen: false,
-        ).subscription?.plan;
+    var plan = SubscriptionProvider().subscription?.plan;
     if (plan == null) {
       return false;
     }
@@ -75,7 +70,7 @@ class GeneralSettingsAuthAction {
       action == null ? {} : action();
       return true;
     } else {
-      if (action != null) {
+      if (action != null && context != null) {
         showUnauthorizedDialog(context);
       }
       return false;
@@ -84,14 +79,10 @@ class GeneralSettingsAuthAction {
   }
 
   bool trackCart({
-    required BuildContext context,
+    required BuildContext? context,
     Function()? action,
   }) {
-    var plan =
-        returnSubcsription(
-          context,
-          listen: false,
-        ).subscription?.plan;
+    var plan = SubscriptionProvider().subscription?.plan;
     if (plan == null) {
       return false;
     }
@@ -102,7 +93,30 @@ class GeneralSettingsAuthAction {
       action == null ? {} : action();
       return true;
     } else {
-      if (action != null) {
+      if (action != null && context != null) {
+        showUnauthorizedDialog(context);
+      }
+      return false;
+    }
+    // }
+  }
+
+  bool manageProductions({
+    required BuildContext? context,
+    Function()? action,
+  }) {
+    var plan = SubscriptionProvider().subscription?.plan;
+    if (plan == null) {
+      return false;
+    }
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .generalSettingsAuth
+        .manageProductions) {
+      action == null ? {} : action();
+      return true;
+    } else {
+      if (action != null && context != null) {
         showUnauthorizedDialog(context);
       }
       return false;
@@ -111,14 +125,10 @@ class GeneralSettingsAuthAction {
   }
 
   bool useOnScreenKeyboardAction({
-    required BuildContext context,
+    required BuildContext? context,
     Function()? action,
   }) {
-    var plan =
-        returnSubcsription(
-          context,
-          listen: false,
-        ).subscription?.plan;
+    var plan = SubscriptionProvider().subscription?.plan;
     if (plan == null) {
       return false;
     }
@@ -129,7 +139,7 @@ class GeneralSettingsAuthAction {
       action == null ? {} : action();
       return true;
     } else {
-      if (action != null) {
+      if (action != null && context != null) {
         showUnauthorizedDialog(context);
       }
       return false;
@@ -138,14 +148,10 @@ class GeneralSettingsAuthAction {
   }
 
   bool useFloatingButtonAction({
-    required BuildContext context,
+    required BuildContext? context,
     Function()? action,
   }) {
-    var plan =
-        returnSubcsription(
-          context,
-          listen: false,
-        ).subscription?.plan;
+    var plan = SubscriptionProvider().subscription?.plan;
     if (plan == null) {
       return false;
     }
@@ -156,7 +162,7 @@ class GeneralSettingsAuthAction {
       action == null ? {} : action();
       return true;
     } else {
-      if (action != null) {
+      if (action != null && context != null) {
         showUnauthorizedDialog(context);
       }
       return false;
@@ -165,14 +171,10 @@ class GeneralSettingsAuthAction {
   }
 
   bool customizeReceiptTemplateAction({
-    required BuildContext context,
+    required BuildContext? context,
     Function()? action,
   }) {
-    var plan =
-        returnSubcsription(
-          context,
-          listen: false,
-        ).subscription?.plan;
+    var plan = SubscriptionProvider().subscription?.plan;
     if (plan == null) {
       return false;
     }
@@ -183,7 +185,7 @@ class GeneralSettingsAuthAction {
       action == null ? {} : action();
       return true;
     } else {
-      if (action != null) {
+      if (action != null && context != null) {
         showUnauthorizedDialog(context);
       }
       return false;
@@ -191,14 +193,10 @@ class GeneralSettingsAuthAction {
   }
 
   bool allowOfflineUseAction({
-    required BuildContext context,
+    required BuildContext? context,
     Function()? action,
   }) {
-    var plan =
-        returnSubcsription(
-          context,
-          listen: false,
-        ).subscription?.plan;
+    var plan = SubscriptionProvider().subscription?.plan;
     if (plan == null) {
       return false;
     }
@@ -209,7 +207,7 @@ class GeneralSettingsAuthAction {
       action == null ? {} : action();
       return true;
     } else {
-      if (action != null) {
+      if (action != null && context != null) {
         showUnauthorizedDialog(context);
       }
       return false;
@@ -217,14 +215,10 @@ class GeneralSettingsAuthAction {
   }
 
   bool manageVATAction({
-    required BuildContext context,
+    required BuildContext? context,
     Function()? action,
   }) {
-    var plan =
-        returnSubcsription(
-          context,
-          listen: false,
-        ).subscription?.plan;
+    var plan = SubscriptionProvider().subscription?.plan;
     if (plan == null) {
       return false;
     }
@@ -235,7 +229,7 @@ class GeneralSettingsAuthAction {
       action == null ? {} : action();
       return true;
     } else {
-      if (action != null) {
+      if (action != null && context != null) {
         showUnauthorizedDialog(context);
       }
       return false;
@@ -243,14 +237,10 @@ class GeneralSettingsAuthAction {
   }
 
   bool manageDeparmtmentsAction({
-    required BuildContext context,
+    required BuildContext? context,
     Function()? action,
   }) {
-    var plan =
-        returnSubcsription(
-          context,
-          listen: false,
-        ).subscription?.plan;
+    var plan = SubscriptionProvider().subscription?.plan;
     if (plan == null) {
       return false;
     }
@@ -261,7 +251,7 @@ class GeneralSettingsAuthAction {
       action == null ? {} : action();
       return true;
     } else {
-      if (action != null) {
+      if (action != null && context != null) {
         showUnauthorizedDialog(context);
       }
       return false;
@@ -269,14 +259,10 @@ class GeneralSettingsAuthAction {
   }
 
   bool numberOfDepartmentsAction({
-    required BuildContext context,
+    required BuildContext? context,
     Function()? action,
   }) {
-    var plan =
-        returnSubcsription(
-          context,
-          listen: false,
-        ).subscription?.plan;
+    var plan = SubscriptionProvider().subscription?.plan;
     if (plan == null) {
       return false;
     }
@@ -290,7 +276,7 @@ class GeneralSettingsAuthAction {
       action == null ? {} : action();
       return true;
     } else {
-      if (action != null) {
+      if (action != null && context != null) {
         showUnauthorizedDialog(context);
       }
       return false;

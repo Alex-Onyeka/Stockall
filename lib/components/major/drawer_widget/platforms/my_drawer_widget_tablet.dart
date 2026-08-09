@@ -14,6 +14,7 @@ import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
+import 'package:stockall/pages/production/production_page.dart';
 import 'package:stockall/pages/purchases/purchase_list/purchase_list.dart';
 import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/pages/settings/settings_page.dart';
@@ -128,7 +129,7 @@ class _MyDrawerWidgetTabletState
                         child: SingleChildScrollView(
                           child: Column(
                             children: [
-                              NavListTileDesktopAlt(
+                              NavListTileTablet(
                                 itemIndex: 0,
                                 height: 16,
                                 action: () {
@@ -167,7 +168,7 @@ class _MyDrawerWidgetTabletState
                                 title: 'Dashboard',
                                 icon: Icons.home_filled,
                               ),
-                              NavListTileDesktopAlt(
+                              NavListTileTablet(
                                 itemIndex: 1,
                                 height: 16,
                                 action: () {
@@ -207,7 +208,7 @@ class _MyDrawerWidgetTabletState
                               ),
                               Visibility(
                                 visible: !isStoreKeeper(),
-                                child: NavListTileDesktopAlt(
+                                child: NavListTileTablet(
                                   itemIndex: 2,
                                   height: 16,
                                   action: () {
@@ -253,7 +254,7 @@ class _MyDrawerWidgetTabletState
                               ),
                               Visibility(
                                 visible: !isStoreKeeper(),
-                                child: NavListTileDesktopAlt(
+                                child: NavListTileTablet(
                                   itemIndex: 3,
                                   height: 14,
                                   action: () {
@@ -273,7 +274,7 @@ class _MyDrawerWidgetTabletState
                               ),
                               Visibility(
                                 visible: !isStoreKeeper(),
-                                child: NavListTileDesktopAlt(
+                                child: NavListTileTablet(
                                   itemIndex: 4,
                                   height: 14,
                                   action: () {
@@ -299,7 +300,7 @@ class _MyDrawerWidgetTabletState
                                           Authorizations()
                                               .managePurchases,
                                     ),
-                                child: NavListTileDesktopAlt(
+                                child: NavListTileTablet(
                                   itemIndex: 5,
                                   height: 14,
                                   action: () {
@@ -321,7 +322,7 @@ class _MyDrawerWidgetTabletState
                               ),
                               Visibility(
                                 visible: !isStoreKeeper(),
-                                child: NavListTileDesktopAlt(
+                                child: NavListTileTablet(
                                   itemIndex: 6,
                                   height: 14,
                                   action: () {
@@ -347,7 +348,7 @@ class _MyDrawerWidgetTabletState
                               ),
                               Visibility(
                                 visible: !isStoreKeeper(),
-                                child: NavListTileDesktopAlt(
+                                child: NavListTileTablet(
                                   itemIndex: 7,
                                   height: 14,
                                   action: () {
@@ -369,7 +370,7 @@ class _MyDrawerWidgetTabletState
                                           .all_inclusive_sharp,
                                 ),
                               ),
-                              NavListTileDesktopAlt(
+                              NavListTileTablet(
                                 itemIndex: 8,
                                 height: 14,
                                 action: () {
@@ -392,7 +393,7 @@ class _MyDrawerWidgetTabletState
                                       Authorizations()
                                           .employeePage,
                                 ),
-                                child: NavListTileDesktopAlt(
+                                child: NavListTileTablet(
                                   itemIndex: 9,
                                   height: 14,
                                   action: () {
@@ -412,6 +413,37 @@ class _MyDrawerWidgetTabletState
                                   },
                                   title: 'Staffs',
                                   svg: employeesIconSvg,
+                                ),
+                              ),
+                              Visibility(
+                                visible:
+                                    authorization(
+                                      authorized:
+                                          Authorizations()
+                                              .viewProductions,
+                                    ) &&
+                                    returnShopProvider()
+                                            .userShop()
+                                            ?.manageProductions ==
+                                        true,
+                                child: NavListTileTablet(
+                                  itemIndex: -1,
+                                  height: 14,
+                                  action: () {
+                                    checkNavigate(context);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return ProductionPage();
+                                        },
+                                      ),
+                                    );
+                                  },
+                                  title: 'Production',
+                                  icon:
+                                      Icons
+                                          .view_in_ar_rounded,
                                 ),
                               ),
                               SizedBox(height: 5),
@@ -614,7 +646,7 @@ class _MyDrawerWidgetTabletState
                                   ),
                                 ),
                               ),
-                              NavListTileDesktopAlt(
+                              NavListTileTablet(
                                 itemIndex: 11,
                                 height: 18,
                                 action: () {
@@ -633,7 +665,7 @@ class _MyDrawerWidgetTabletState
                                     Icons
                                         .calculate_outlined,
                               ),
-                              NavListTileDesktopAlt(
+                              NavListTileTablet(
                                 height: 18,
                                 action: () {
                                   Navigator.push(
@@ -658,7 +690,7 @@ class _MyDrawerWidgetTabletState
                                                 .android ||
                                     screenWidth(context) >
                                         tabletScreenSmall,
-                                child: NavListTileDesktopAlt(
+                                child: NavListTileTablet(
                                   height: 18,
                                   action: () {
                                     showDialog(
@@ -714,11 +746,10 @@ class _MyDrawerWidgetTabletState
                                 : const EdgeInsets.only(
                                   bottom: 20.0,
                                 ),
-                        child: NavListTileDesktopAlt(
+                        child: NavListTileTablet(
                           height: 18,
                           action: widget.action,
                           title: 'Logout',
-                          // svg: reportIconSvg,
                           icon: Icons.logout_rounded,
                           color: Colors.redAccent,
                         ),
@@ -735,7 +766,7 @@ class _MyDrawerWidgetTabletState
   }
 }
 
-class NavListTileDesktopAlt extends StatelessWidget {
+class NavListTileTablet extends StatelessWidget {
   final String title;
   final int? itemIndex;
   final IconData? icon;
@@ -743,7 +774,7 @@ class NavListTileDesktopAlt extends StatelessWidget {
   final Function()? action;
   final double height;
   final Color? color;
-  const NavListTileDesktopAlt({
+  const NavListTileTablet({
     super.key,
     required this.title,
     this.icon,

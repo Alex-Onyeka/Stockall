@@ -15,6 +15,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/local_database/cart_func/cart_func.dart';
@@ -1198,8 +1199,15 @@ class SalesProvider extends ChangeNotifier {
                     (cartItem.getItem()!.quantity ?? 0) -
                     cartItem.getRealQuantity();
                 ItemHistory itemHistory = ItemHistory(
+                  desc:
+                      '${cartItem.getRealQuantity()} Quantity(s) of This Item was Sold. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
                   shopId: shopId,
-                  title: 'Item Sold',
+                  isIncreased: false,
+                  oldValue:
+                      ((cartItem.getItem()!.quantity ?? 0) -
+                              cartItem.getRealQuantity())
+                          .toString(),
+                  title: 'Item Sold In Invoice',
                   quantityChange:
                       -cartItem.getRealQuantity(),
                   newValue:
@@ -1258,6 +1266,7 @@ class SalesProvider extends ChangeNotifier {
 
                   TempProductClass
                   product = TempProductClass(
+                    categories: [],
                     storageUuid: null,
                     groupUnit: 'Others',
                     qttyPerGroup: null,
@@ -1270,7 +1279,7 @@ class SalesProvider extends ChangeNotifier {
                     isManaged: false,
                     barcode: null,
                     brand: null,
-                    categoryUuid: null,
+                    // categoryUuid: null,
                     color: null,
                     createdAt: DateTime.now(),
                     departmentUuid: record.departmentUuid,
@@ -1289,8 +1298,18 @@ class SalesProvider extends ChangeNotifier {
                     uuid: uuidGen(),
                   );
                   if (context.mounted) {
+                    ItemHistory itemHistory = ItemHistory(
+                      shopId: shopId,
+                      title: 'Item Created',
+                      quantityChange: 0,
+                      newValue: '0',
+                      desc: 'Item Created Now',
+                      isIncreased: true,
+                      oldValue: '0',
+                    );
                     await returnData().createProduct(
-                      product,
+                      itemHistory: itemHistory,
+                      product: product,
                     );
                   } else {
                     await mainLocalLog(
@@ -1526,7 +1545,14 @@ class SalesProvider extends ChangeNotifier {
                     cartItem.getRealQuantity();
                 ItemHistory itemHistory = ItemHistory(
                   shopId: shopId,
-                  title: 'Item Sold',
+                  desc:
+                      '${cartItem.getRealQuantity()} Quantity(s) of This Item was Sold. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
+                  isIncreased: false,
+                  oldValue:
+                      ((cartItem.getItem()!.quantity ?? 0) -
+                              cartItem.getRealQuantity())
+                          .toString(),
+                  title: 'Item Sold In Receipt',
                   quantityChange:
                       -cartItem.getRealQuantity(),
                   newValue:
@@ -1583,6 +1609,7 @@ class SalesProvider extends ChangeNotifier {
 
                   TempProductClass
                   product = TempProductClass(
+                    categories: [],
                     storageUuid: null,
                     groupUnit: 'Others',
                     qttyPerGroup: null,
@@ -1595,7 +1622,7 @@ class SalesProvider extends ChangeNotifier {
                     isManaged: false,
                     barcode: null,
                     brand: null,
-                    categoryUuid: null,
+                    // categoryUuid: null,
                     color: null,
                     createdAt: DateTime.now(),
                     departmentUuid: record.departmentUuid,
@@ -1614,8 +1641,18 @@ class SalesProvider extends ChangeNotifier {
                     uuid: uuidGen(),
                   );
                   if (context.mounted) {
+                    ItemHistory itemHistory = ItemHistory(
+                      shopId: shopId,
+                      title: 'Item Created',
+                      quantityChange: 0,
+                      newValue: '0',
+                      desc: 'Item Created Now',
+                      isIncreased: true,
+                      oldValue: '0',
+                    );
                     await returnData().createProduct(
-                      product,
+                      itemHistory: itemHistory,
+                      product: product,
                     );
                   } else {
                     await mainLocalLog(
@@ -2497,6 +2534,7 @@ class SalesProvider extends ChangeNotifier {
                     record.quantity;
 
         TempProductClass productNew = TempProductClass(
+          categories: [],
           storageUuid: null,
           groupUnit: 'Others',
           qttyPerGroup: null,
@@ -2509,7 +2547,7 @@ class SalesProvider extends ChangeNotifier {
           isManaged: false,
           barcode: null,
           brand: null,
-          categoryUuid: null,
+          // categoryUuid: null,
           color: null,
           createdAt: DateTime.now(),
           departmentUuid: record.departmentUuid,

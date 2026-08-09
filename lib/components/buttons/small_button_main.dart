@@ -48,7 +48,7 @@ class SmallButtonMain extends StatelessWidget {
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w500,
-                  fontSize: theme.mobileTexts.b1.fontSize,
+                  fontSize: theme.mobileTexts.b2.fontSize,
                 ),
                 buttonText,
               ),

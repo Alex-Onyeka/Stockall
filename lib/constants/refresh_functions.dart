@@ -595,7 +595,7 @@ class RefreshFunctions {
                   // await getProductSalesRecord();
                   var subs = await loadSubscription();
                   await mainLocalLog(
-                    "Subscription PLan RefreshAll: ${subs?.plan}",
+                    "Subscription Plan RefreshAll: ${subs?.plan}",
                   );
                   if (safeContext.mounted) {
                     dataProvider.setAllowedRange(
@@ -628,6 +628,12 @@ class RefreshFunctions {
                   await purchaseProvider.loadPurchases(
                     shopId(),
                   );
+                  await returnMaterialsProvider()
+                      .getMaterials();
+                  await returnProductionItemsProvider()
+                      .getProductionItems();
+                  await returnProductionRecordsProvider()
+                      .getProductionRecords(shopId());
                 },
               );
             },
@@ -636,10 +642,9 @@ class RefreshFunctions {
           await getUserShop();
           await utilityConstantProvider
               .getUtilityConstants();
-          // await getProductSalesRecord();
           var subs = await loadSubscription();
           await mainLocalLog(
-            "Subscription PLan RefreshAll: ${subs?.plan}",
+            "Subscription Plan RefreshAll: ${subs?.plan}",
           );
           if (safeContext.mounted) {
             dataProvider.setAllowedRange(
@@ -672,6 +677,11 @@ class RefreshFunctions {
           await getCustomers();
           await returnDepartmentProvider().getDepartments();
           await purchaseProvider.loadPurchases(shopId());
+          await returnProductionItemsProvider()
+              .getProductionItems();
+          await returnMaterialsProvider().getMaterials();
+          await returnProductionRecordsProvider()
+              .getProductionRecords(shopId());
         }
       }
 

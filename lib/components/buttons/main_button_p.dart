@@ -40,15 +40,7 @@ class MainButtonP extends StatelessWidget {
                 style: TextStyle(
                   color: Colors.white,
                   fontSize:
-                      screenWidth(context) < 600
-                          ? themeProvider
-                              .mobileTexts
-                              .b2
-                              .fontSize
-                          : themeProvider
-                              .mobileTexts
-                              .b3
-                              .fontSize,
+                      themeProvider.mobileTexts.b3.fontSize,
                   fontWeight: FontWeight.normal,
                 ),
                 text,
