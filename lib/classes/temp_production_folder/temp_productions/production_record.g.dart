@@ -29,19 +29,22 @@ class ProductionRecordAdapter extends TypeAdapter<ProductionRecord> {
       itemName: fields[10] as String?,
       itemUuid: fields[11] as String?,
       quantity: fields[9] as double?,
-      isGroup: fields[12] as bool?,
       unit: fields[14] as String?,
       qttyPerGroup: fields[13] as double?,
       totalCost: fields[15] as double?,
       customCost: fields[16] as double?,
       comment: fields[17] as String?,
+      selectedCostPriceOption: fields[18] as int?,
+      originalCostPerItem: fields[21] as double?,
+      originalUseGroupQuantity: fields[20] as bool?,
+      useGroupQuantity: fields[19] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ProductionRecord obj) {
     writer
-      ..writeByte(18)
+      ..writeByte(21)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -66,8 +69,6 @@ class ProductionRecordAdapter extends TypeAdapter<ProductionRecord> {
       ..write(obj.itemName)
       ..writeByte(11)
       ..write(obj.itemUuid)
-      ..writeByte(12)
-      ..write(obj.isGroup)
       ..writeByte(13)
       ..write(obj.qttyPerGroup)
       ..writeByte(14)
@@ -77,7 +78,15 @@ class ProductionRecordAdapter extends TypeAdapter<ProductionRecord> {
       ..writeByte(16)
       ..write(obj.customCost)
       ..writeByte(17)
-      ..write(obj.comment);
+      ..write(obj.comment)
+      ..writeByte(18)
+      ..write(obj.selectedCostPriceOption)
+      ..writeByte(19)
+      ..write(obj.useGroupQuantity)
+      ..writeByte(20)
+      ..write(obj.originalUseGroupQuantity)
+      ..writeByte(21)
+      ..write(obj.originalCostPerItem);
   }
 
   @override

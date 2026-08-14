@@ -4,7 +4,9 @@ import 'package:stockall/pages/production/components/production_page_list_tile_w
 import 'package:stockall/pages/production/materials_page/materials_page.dart';
 import 'package:stockall/pages/production/materials_page/materials_usage/materials_usage_page.dart';
 import 'package:stockall/pages/production/production_dashboard/productions_dashboard.dart';
+import 'package:stockall/pages/production/production_dashboard/productions_section/production_records_list/production_records_list.dart';
 import 'package:stockall/pages/production/production_items/production_items_page.dart';
+import 'package:stockall/pages/production/settings/production_settings_page.dart';
 
 class ProductionPageMobile extends StatefulWidget {
   const ProductionPageMobile({super.key});
@@ -64,6 +66,23 @@ class _ProductionPageMobileState
                           context,
                           MaterialPageRoute(
                             builder: ((context) {
+                              return ProductionRecordsList();
+                            }),
+                          ),
+                        );
+                      },
+                      icon: Icons.receipt,
+                      isActive: true,
+                      subText:
+                          'View Production Records You Created.',
+                      title: 'Production Records',
+                    ),
+                    ProductionPageListTileWidget(
+                      action: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: ((context) {
                               return ProductionItemsPage();
                             }),
                           ),
@@ -98,9 +117,7 @@ class _ProductionPageMobileState
                           context,
                           MaterialPageRoute(
                             builder: ((context) {
-                              return MaterialsUsagePage(
-                                fromMaterialUsagePage: true,
-                              );
+                              return MaterialsUsagePage();
                             }),
                           ),
                         );
@@ -110,6 +127,23 @@ class _ProductionPageMobileState
                       subText:
                           'Track How materials are used for Productions.',
                       title: 'Materials Usage Records',
+                    ),
+                    ProductionPageListTileWidget(
+                      action: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: ((context) {
+                              return ProductionSettingsPage();
+                            }),
+                          ),
+                        );
+                      },
+                      icon: Icons.settings,
+                      isActive: true,
+                      subText:
+                          'Manage Settings for Production',
+                      title: 'Settings',
                     ),
                     SizedBox(height: 10),
                   ],

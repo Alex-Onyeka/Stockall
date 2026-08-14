@@ -442,6 +442,8 @@ class _MaterialsDetailsDesktopState
                                                                     quantityChange:
                                                                         null,
                                                                     material: MaterialClass(
+                                                                      useGroupUnit:
+                                                                          material.useGroupUnit,
                                                                       categories:
                                                                           material.categories,
                                                                       departmentName:
@@ -591,9 +593,8 @@ class _MaterialsDetailsDesktopState
                                           ),
                                           Visibility(
                                             visible:
-                                                returnShopProvider()
-                                                    .userShop()
-                                                    ?.useGroupUnit ==
+                                                material
+                                                    .useGroupUnit ==
                                                 true,
                                             child: BottomInfoSection(
                                               theme:
@@ -1035,8 +1036,7 @@ class _MaterialsDetailsDesktopState
           Row(
             children: [
               Visibility(
-                visible:
-                    shop(context)?.useGroupUnit == true,
+                visible: material.useGroupUnit == true,
                 child: Expanded(
                   child: TabContainer(
                     isMoney: false,
@@ -1098,8 +1098,7 @@ class _MaterialsDetailsDesktopState
                 ),
               ),
               Visibility(
-                visible:
-                    shop(context)?.useGroupUnit == true,
+                visible: material.useGroupUnit == true,
                 child: SizedBox(width: 10),
               ),
               Expanded(
@@ -1379,6 +1378,9 @@ class _MaterialsDetailsDesktopState
                                                 quantityChange:
                                                     null,
                                                 material: MaterialClass(
+                                                  useGroupUnit:
+                                                      material
+                                                          .useGroupUnit,
                                                   categories:
                                                       material
                                                           .categories,

@@ -124,6 +124,8 @@ class _AddProductionItemDesktopState
                     productionItemHistory:
                         productionItemHistory,
                     productionItem: ProductionItem(
+                      useGroupUnit:
+                          dataProvider.useGroupUnit,
                       categories:
                           dataProvider.selectedCategories
                               .toList(),
@@ -132,10 +134,10 @@ class _AddProductionItemDesktopState
                           widget.nameController.text.trim(),
                       unit:
                           dataProvider.selectedUnit ??
-                          'Others',
+                          'Unit(s)',
                       groupUnit:
                           dataProvider.selectedGroupUnit ??
-                          'Others',
+                          'Group(s)',
                       qttyPerGroup:
                           widget
                                   .qttyPerGroupController
@@ -238,6 +240,7 @@ class _AddProductionItemDesktopState
               isQuantityUpdate: false,
               quantityChange: null,
               productionItem: ProductionItem(
+                useGroupUnit: dataProvider.useGroupUnit,
                 categories:
                     dataProvider.selectedCategories
                         .toList(),
@@ -360,6 +363,8 @@ class _AddProductionItemDesktopState
 
       returnData().isManaged =
           widget.productionItem!.isManaged;
+      returnData().useGroupUnit =
+          widget.productionItem!.useGroupUnit ?? false;
       returnData().selectUnit(widget.productionItem!.unit);
       returnData().selectGroupUnit(
         unit: widget.productionItem!.groupUnit,
@@ -1117,6 +1122,78 @@ class _AddProductionItemDesktopState
                                         ),
                                         Column(
                                           children: [
+                                            InkWell(
+                                              mouseCursor:
+                                                  SystemMouseCursors
+                                                      .click,
+                                              onTap: () {
+                                                returnData()
+                                                    .toggleUseGroupUnit();
+                                                FocusManager
+                                                    .instance
+                                                    .primaryFocus
+                                                    ?.unfocus();
+                                              },
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Flexible(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                theme.mobileTexts.b1.fontSize,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                          'Use Group Unit?',
+                                                        ),
+                                                        Column(
+                                                          spacing:
+                                                              5,
+                                                          children: [
+                                                            Text(
+                                                              style: TextStyle(
+                                                                fontSize:
+                                                                    10,
+                                                              ),
+                                                              'This Controls if you want to also manage the group unit of this item  (E.g: Single Unit: Bottle, Group Unit: Crate.)',
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Checkbox(
+                                                    activeColor:
+                                                        theme.lightModeColor.secColor100,
+                                                    value:
+                                                        returnData(
+                                                          context:
+                                                              context,
+                                                        ).useGroupUnit,
+                                                    onChanged: (
+                                                      value,
+                                                    ) {
+                                                      returnData()
+                                                          .toggleUseGroupUnit();
+                                                      FocusManager
+                                                          .instance
+                                                          .primaryFocus
+                                                          ?.unfocus();
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
                                             Row(
                                               children: [
                                                 Expanded(
@@ -1174,10 +1251,10 @@ class _AddProductionItemDesktopState
                                                 ),
                                                 Visibility(
                                                   visible:
-                                                      returnShopProvider(
+                                                      returnData(
                                                         context:
                                                             context,
-                                                      ).userShop()?.useGroupUnit ==
+                                                      ).useGroupUnit ==
                                                       true,
                                                   child: SizedBox(
                                                     width:
@@ -1186,10 +1263,10 @@ class _AddProductionItemDesktopState
                                                 ),
                                                 Visibility(
                                                   visible:
-                                                      returnShopProvider(
+                                                      returnData(
                                                         context:
                                                             context,
-                                                      ).userShop()?.useGroupUnit ==
+                                                      ).useGroupUnit ==
                                                       true,
                                                   child: Expanded(
                                                     child: SubWrapper(
@@ -1252,10 +1329,10 @@ class _AddProductionItemDesktopState
                                             ),
                                             Visibility(
                                               visible:
-                                                  returnShopProvider(
+                                                  returnData(
                                                     context:
                                                         context,
-                                                  ).userShop()?.useGroupUnit ==
+                                                  ).useGroupUnit ==
                                                   true,
                                               child: Column(
                                                 children: [

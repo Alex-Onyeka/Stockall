@@ -17,7 +17,7 @@ class PaymentTypeButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: Ink(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(4),
           border: Border.all(color: Colors.grey.shade300),
         ),
         child: InkWell(

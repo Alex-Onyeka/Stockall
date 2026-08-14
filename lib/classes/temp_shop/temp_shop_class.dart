@@ -167,6 +167,9 @@ class TempShopClass {
   @HiveField(55)
   bool? manageProductions;
 
+  @HiveField(56)
+  bool? manageProductionsStorage;
+
   TempShopClass({
     this.shopId,
     required this.createdAt,
@@ -224,7 +227,7 @@ class TempShopClass {
     required this.trackCart,
     required this.accessPin,
     required this.manageProductions,
-    // required this.uuid
+    required this.manageProductionsStorage,
   });
 
   factory TempShopClass.fromJson(
@@ -304,6 +307,8 @@ class TempShopClass {
       accessPin: json['access_pin'] as String?,
       manageProductions:
           json['manage_productions'] as bool?,
+      manageProductionsStorage:
+          json['manage_productions_storage'] as bool?,
     );
   }
 
@@ -364,6 +369,8 @@ class TempShopClass {
       'track_cart': trackCart,
       'access_pin': accessPin,
       'manage_productions': manageProductions,
+      'manage_productions_storage':
+          manageProductionsStorage,
     };
   }
 
@@ -422,6 +429,7 @@ class TempShopClass {
     bool? trackCart,
     String? accessPin,
     bool? manageProductions,
+    bool? manageProductionsStorage,
   }) {
     return TempShopClass(
       shopId: shopId ?? this.shopId,
@@ -489,6 +497,9 @@ class TempShopClass {
       accessPin: accessPin ?? this.accessPin,
       manageProductions:
           manageProductions ?? this.manageProductions,
+      manageProductionsStorage:
+          manageProductionsStorage ??
+          this.manageProductionsStorage,
     );
   }
 }

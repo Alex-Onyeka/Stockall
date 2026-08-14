@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_production_folder/temp_production_item_history/production_item_history.dart';
+import 'package:stockall/classes/temp_production_folder/temp_production_items/production_item.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions/production_record.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions/production_record_materials.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions/unsynced/created_productions/created_production_record.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions/unsynced/deleted_productions/deleted_production_record.dart';
-import 'package:stockall/classes/temp_production_folder/temp_productions/unsynced/updated/updated_production_record.dart';
+import 'package:stockall/classes/temp_production_folder/temp_productions_cart/productions_cart.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/local_database/productions/production_records_func.dart';
 import 'package:stockall/local_database/productions/unsync_funcs/created/created_production_record_func.dart';
 import 'package:stockall/local_database/productions/unsync_funcs/deleted/deleted_production_records_func.dart';
@@ -36,45 +39,8 @@ class ProductionRecordsProvider extends ChangeNotifier {
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
   // ignore: prefer_final_fields
-  List<ProductionRecord> _productionRecords = [
-    ProductionRecord(
-      comment:
-          'This is a comment for the first time in many days',
-      customCost: null,
-      totalCost: null,
-      isGroup: true,
-      qttyPerGroup: 10,
-      unit: 'Beans',
-      uuid: uuidGen(),
-      createdAt: DateTime.now(),
-      shopId: 379,
-      materials: [
-        ProductionRecordMaterials(
-          customCost: null,
-          unit: 'Yam',
-          productionRecordId: uuidGen(),
-          qttyPerGroup: 12,
-          uuid: uuidGen(),
-          quantity: 20,
-          materialName: 'Red Oil',
-          materialUuid: uuidGen(),
-          isGroup: false,
-          totalCost: 2000,
-          createdAt: DateTime.now(),
-          departmentName: null,
-          departmentUuid: null,
-          staffName: currentUser().name,
-          staffUuid: currentUser().userId,
-          productionRecordName: 'Beans and Rice',
-        ),
-      ],
-      itemName: 'Beans And Rice',
-      itemUuid: uuidGen(),
-      quantity: 24,
-      staffId: currentUser().userId!,
-      staffName: currentUser().name,
-    ),
-  ];
+  List<ProductionRecord> _productionRecords = [];
+
   List<ProductionRecord> get productionRecords =>
       _productionRecords;
 
@@ -86,195 +52,256 @@ class ProductionRecordsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  ProductionRecord? getSingleProductionRecord({
+    required String recordUuid,
+  }) {
+    return productionRecords
+            .where((item) => item.uuid == recordUuid)
+            .isNotEmpty
+        ? productionRecords
+            .where((item) => item.uuid == recordUuid)
+            .first
+        : null;
+  }
+
   // CREATE a new ProductionRecords
-  Future<ProductionRecord?> createProductionRecord(
-    ProductionRecord productionRecord,
-  ) async {
-    await mainLocalLog(
-      'Inner Production Records Creation Started',
-    );
-    bool isOnline = await connectivity.isOnline();
-    if (isOnline) {
-      productionRecord.createdAt = DateTime.now();
-      try {
-        final res =
-            await supabase
-                .from(tableName)
-                .upsert(
-                  productionRecord.toJson(),
-                  onConflict: 'uuid',
-                )
-                .select()
-                .single();
-        final newProductionRecords =
-            ProductionRecord.fromJson(res);
-        notifyListeners();
-        // await getProductionRecords(shopId());
-        return newProductionRecords;
-      } catch (e) {
-        await mainLocalLog(
-          '❌❌ Create Production Records Error Online: ${e.toString()}',
-        );
-        return null;
-      }
-    } else {
-      try {
-        productionRecord.createdAt = DateTime.now();
-        await ProductionRecordsFunc()
-            .createProductionRecord(productionRecord);
-        await CreatedProductionRecordsFunc()
-            .createProductions(
-              CreatedProductionRecord(
-                createdProductionRecord: productionRecord,
-              ),
+  Future<ProductionRecord?> createProductionRecord() async {
+    try {
+      ProductionsCart? cartItem =
+          returnProductionsActionProvider()
+              .getProductionsCart();
+      if (cartItem?.isEdit == true) {
+        ProductionRecord? productionRecord =
+            getSingleProductionRecord(
+              recordUuid: cartItem?.uuid ?? '',
             );
-        notifyListeners();
-        // await getProductionRecords(shopId());
-        return productionRecord;
-      } catch (e) {
-        await mainLocalLog(
-          '❌❌ Create Production Records Error Offline: ${e.toString()}',
+        if (productionRecord != null) {
+          await deleteProductionRecords(
+            productionRecord,
+            true,
+            true,
+          );
+        }
+      }
+      await mainLocalLog(
+        'Inner Production Records Creation Started',
+      );
+      ProductionsCart? productionCart =
+          returnProductionsActionProvider()
+              .getProductionsCart();
+      if (productionCart != null &&
+          productionCart.productionsCartItem != null) {
+        ProductionRecord? productionRecord;
+        productionRecord = ProductionRecord.fromCart(
+          cartItem: productionCart,
+          shopIdd: shopId(),
         );
+        try {
+          productionRecord.createdAt = DateTime.now().add(
+            Duration(hours: 1),
+          );
+          await ProductionRecordsFunc()
+              .createProductionRecord(productionRecord);
+          await CreatedProductionRecordsFunc()
+              .createProductions(
+                CreatedProductionRecord(
+                  createdProductionRecord: productionRecord,
+                ),
+              );
+          notifyListeners();
+          await getProductionRecordsOffline();
+          var tempItems = returnProductionItemsProvider()
+              .productionItemListMain
+              .where(
+                (item) =>
+                    item.uuid == productionRecord?.itemUuid,
+              );
+          if (tempItems.isNotEmpty) {
+            var oldItem = tempItems.first;
+            var item = oldItem.copyWith();
+            ProductionItemHistory itemHistory =
+                ProductionItemHistory(
+                  shopId: shopId(),
+                  title: 'Item Produced',
+                  oldValue:
+                      (oldItem.quantity ?? 0).toString(),
+                  desc: 'This Item was Produced',
+                  isIncreased: true,
+                  quantityChange:
+                      (productionRecord.quantity ?? 0),
+                  newValue: (item.quantity ?? 0).toString(),
+                );
+            item.quantity =
+                (item.quantity ?? 0) +
+                (productionRecord.quantity ?? 0);
+            await returnProductionItemsProvider()
+                .updateProductionItem(
+                  productionItem: item,
+                  isQuantityUpdate: true,
+                  includeQuantity: true,
+                  quantityChange:
+                      (productionRecord.quantity ?? 0),
+                  isIncrement: true,
+                  productionItemHistory: itemHistory,
+                );
+          }
+          returnData().syncData();
+          return productionRecord;
+        } catch (e) {
+          await mainLocalLog(
+            '❌❌ Create Production Records Error Offline: ${e.toString()}',
+          );
+          return null;
+        }
+      } else {
         return null;
       }
+    } catch (e) {
+      return null;
     }
   }
 
   // CREATE a new ProductionRecords
-  Future<ProductionRecord?> updateProductionRecords(
-    ProductionRecord productionRecord,
-  ) async {
-    await mainLocalLog(
-      'Inner Production Records Update Started',
-    );
-    bool isOnline = await connectivity.isOnline();
-    productionRecord.updatedAt = DateTime.now();
-    if (isOnline) {
-      try {
-        final res =
-            await supabase
-                .from(tableName)
-                .upsert(
-                  productionRecord.toJson(),
-                  onConflict: 'uuid',
-                )
-                .select()
-                .single();
-        final newProductionRecords =
-            ProductionRecord.fromJson(res);
-        notifyListeners();
-        await getProductionRecords(shopId());
-        return newProductionRecords;
-      } catch (e) {
-        await mainLocalLog(
-          '❌❌ Update Production Records Error Online: ${e.toString()}',
-        );
-        return null;
-      }
-    } else {
-      productionRecord.updatedAt = DateTime.now().add(
-        Duration(days: 1),
-      );
-      try {
-        var res = await ProductionRecordsFunc()
-            .createProductionRecord(productionRecord);
-        if (res == 1) {
-          var containsCreated =
-              CreatedProductionRecordsFunc()
-                  .getProductions()
-                  .where(
-                    (createdProduct) =>
-                        createdProduct
-                            .createdProductionRecord
-                            .uuid ==
-                        productionRecord.uuid,
-                  )
-                  .toList();
-          if (containsCreated.isEmpty) {
-            await UpdatedProductionRecordsFunc()
-                .createUpdatedProductionRecords(
-                  UpdatedProductionRecord(
-                    updatedProductionRecord:
-                        productionRecord,
-                  ),
-                );
-          } else {
-            await CreatedProductionRecordsFunc()
-                .createProductions(
-                  CreatedProductionRecord(
-                    createdProductionRecord:
-                        productionRecord,
-                  ),
-                );
-          }
-        } else {
-          notifyListeners();
-          return null;
-        }
-        await getProductionRecords(shopId());
-        syncData();
-        return productionRecord;
-      } catch (e) {
-        await mainLocalLog(
-          '❌❌ Create Production Records Error Offline: ${e.toString()}',
-        );
-        return null;
-      }
-    }
-  }
+  // Future<ProductionRecord?> updateProductionRecords(
+  //   ProductionRecord productionRecord,
+  // ) async {
+  //   await mainLocalLog(
+  //     'Inner Production Records Update Started',
+  //   );
+  //   // bool isOnline = await connectivity.isOnline();
+  //   // productionRecord.updatedAt = DateTime.now();
+  //   // if (isOnline) {
+  //   //   try {
+  //   //     final res =
+  //   //         await supabase
+  //   //             .from(tableName)
+  //   //             .upsert(
+  //   //               productionRecord.toJson(),
+  //   //               onConflict: 'uuid',
+  //   //             )
+  //   //             .select()
+  //   //             .single();
+  //   //     final newProductionRecords =
+  //   //         ProductionRecord.fromJson(res);
+  //   //     notifyListeners();
+  //   //     await getProductionRecords(shopId());
+  //   //     return newProductionRecords;
+  //   //   } catch (e) {
+  //   //     await mainLocalLog(
+  //   //       '❌❌ Update Production Records Error Online: ${e.toString()}',
+  //   //     );
+  //   //     return null;
+  //   //   }
+  //   // } else {
+  //   productionRecord.updatedAt = DateTime.now().add(
+  //     Duration(days: 1),
+  //   );
+  //   try {
+  //     var res = await ProductionRecordsFunc()
+  //         .updateProductionRecord(productionRecord);
+  //     if (res == 1) {
+  //       var containsCreated =
+  //           CreatedProductionRecordsFunc()
+  //               .getProductions()
+  //               .where(
+  //                 (createdProduct) =>
+  //                     createdProduct
+  //                         .createdProductionRecord
+  //                         .uuid ==
+  //                     productionRecord.uuid,
+  //               )
+  //               .toList();
+  //       if (containsCreated.isEmpty) {
+  //         await UpdatedProductionRecordsFunc()
+  //             .createUpdatedProductionRecords(
+  //               UpdatedProductionRecord(
+  //                 updatedProductionRecord: productionRecord,
+  //               ),
+  //             );
+  //       } else {
+  //         await CreatedProductionRecordsFunc()
+  //             .createProductions(
+  //               CreatedProductionRecord(
+  //                 createdProductionRecord: productionRecord,
+  //               ),
+  //             );
+  //       }
+  //     } else {
+  //       notifyListeners();
+  //       return null;
+  //     }
+  //     await getProductionRecords(shopId());
+  //     syncData();
+  //     return productionRecord;
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       '❌❌ Create Production Records Error Offline: ${e.toString()}',
+  //     );
+  //     return null;
+  //   }
+  // }
 
   // READ all ProductionRecords for a shop
   Future<List<ProductionRecord>> getProductionRecords(
     int shopId,
   ) async {
-    // bool isOnline = await connectivity.isOnline();
-    // if (isOnline &&
-    //     ProductionRecordsFunc().isSynced() &&
-    //     authorization(
-    //       authorized: Authorizations().viewProductions,
-    //     ) &&
-    //     GeneralSettingsAuthAction().manageProductions(
-    //       context: null,
-    //     )) {
-    //   await ProductionRecordsFunc()
-    //       .clearProductionRecords();
-    //   try {
-    //     final data = await supabase
-    //         .from(tableName)
-    //         .select()
-    //         .eq('shop_id', shopId)
-    //         .order('created_at', ascending: false);
-    //     if (data.isNotEmpty) {
-    //       await mainLocalLog(
-    //         'Production Records Gotten ${data.length}',
-    //       );
-    //     }
+    bool isOnline = await connectivity.isOnline();
+    if (isOnline &&
+        ProductionRecordsFunc().isSynced() &&
+        authorization(
+          authorized: Authorizations().viewProductions,
+        ) &&
+        GeneralSettingsAuthAction().manageProductions(
+          context: null,
+        )) {
+      await ProductionRecordsFunc()
+          .clearProductionRecords();
+      try {
+        final data = await supabase
+            .from(tableName)
+            .select()
+            .eq('shop_id', shopId)
+            .order('created_at', ascending: false);
+        if (data.isNotEmpty) {
+          await mainLocalLog(
+            'Production Records Gotten ${data.length}',
+          );
+        }
 
-    //     _productionRecords =
-    //         (data as List)
-    //             .map(
-    //               (json) => ProductionRecord.fromJson(json),
-    //             )
-    //             .toList();
-    //     await ProductionRecordsFunc()
-    //         .insertAllProductionRecords(_productionRecords);
-    //     await mainLocalLog('Loaded');
-    //     notifyListeners();
-    //   } catch (e) {
-    //     await mainLocalLog(
-    //       '❌ Error Getting Production Records: ${e.toString()}',
-    //     );
-    //     return [];
-    //   }
-    // } else {
-    //   _productionRecords =
-    //       ProductionRecordsFunc().getProductionRecords();
-    //   await mainLocalLog(
-    //     'Offline Production Records Gotten',
-    //   );
-    //   notifyListeners();
-    // }
-    // notifyListeners();
+        _productionRecords =
+            (data as List)
+                .map(
+                  (json) => ProductionRecord.fromJson(json),
+                )
+                .toList();
+        await ProductionRecordsFunc()
+            .insertAllProductionRecords(_productionRecords);
+        await mainLocalLog('Loaded');
+        notifyListeners();
+      } catch (e) {
+        await mainLocalLog(
+          '❌ Error Getting Production Records: ${e.toString()}',
+        );
+        return [];
+      }
+    } else {
+      _productionRecords =
+          ProductionRecordsFunc().getProductionRecords();
+      await mainLocalLog(
+        'Offline Production Records Gotten',
+      );
+      notifyListeners();
+    }
+    notifyListeners();
+    return _productionRecords;
+  }
+
+  Future<List<ProductionRecord>>
+  getProductionRecordsOffline() async {
+    _productionRecords =
+        ProductionRecordsFunc().getProductionRecords();
+    await mainLocalLog('Offline Production Records Gotten');
+    notifyListeners();
     return _productionRecords;
   }
 
@@ -364,6 +391,48 @@ class ProductionRecordsProvider extends ChangeNotifier {
             .deleteUpdatedProductionRecords(
               productionRecord.uuid!,
             );
+      }
+      if (updateInventory == true) {
+        List<ProductionItem> items =
+            returnProductionItemsProvider()
+                .productionItemListMain
+                .where(
+                  (item) =>
+                      item.uuid ==
+                      productionRecord.itemUuid,
+                )
+                .toList();
+        if (items.isNotEmpty) {
+          var oldItem = items.first;
+          ProductionItem newItem = oldItem.copyWith();
+          newItem.quantity =
+              (newItem.quantity ?? 0) -
+              (productionRecord.quantity ?? 0);
+          ProductionItemHistory
+          productionItemHistory = ProductionItemHistory(
+            shopId: shopId(),
+            title: 'Production Record Deleted',
+            oldValue: (oldItem.quantity ?? 0).toString(),
+            desc:
+                'Production Record Created Was Deleted, and this Item was updated.',
+            isIncreased: false,
+            itemName: oldItem.name,
+            itemUuid: oldItem.uuid,
+            newValue: (newItem.quantity ?? 0).toString(),
+            quantityChange: productionRecord.quantity ?? 0,
+          );
+          await returnProductionItemsProvider()
+              .updateProductionItem(
+                productionItem: newItem,
+                isQuantityUpdate: true,
+                includeQuantity: true,
+                quantityChange:
+                    productionRecord.quantity ?? 0,
+                isIncrement: false,
+                productionItemHistory:
+                    productionItemHistory,
+              );
+        }
       }
       returnData().syncData();
 
@@ -858,12 +927,8 @@ class ProductionRecordsProvider extends ChangeNotifier {
   double getTotalCostForProduction({
     required List<ProductionRecord> productionRecords,
   }) {
-    double temp = 0;
-    for (var item in productionRecords.expand(
-      (item) => item.materials,
-    )) {
-      temp += (item.getTotalCost());
-    }
-    return temp;
+    return productionRecords
+        .map((item) => item.getTotalCost())
+        .fold(0, (a, b) => a + b);
   }
 }

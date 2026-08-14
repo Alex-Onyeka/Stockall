@@ -1366,7 +1366,7 @@ class _ProductDetailsDesktopState
                                                             )
                                                             .first
                                                             .unit ??
-                                                        'Others'
+                                                        'Unit(s)'
                                                     : '${product.unit.substring(0, 1).toUpperCase()}${product.unit.substring(1)}',
                                             text: 'Unit',
                                           ),
@@ -1662,7 +1662,7 @@ class _ProductDetailsDesktopState
                                               .storageUuid,
                                     )
                                     .isNotEmpty
-                            ? ' Quantity Of ${returnStorageProductProvider().storageProductListMain.where((storage) => storage.uuid == product.storageUuid).first.groupUnit ?? 'Others'}'
+                            ? ' Quantity Of ${returnStorageProductProvider().storageProductListMain.where((storage) => storage.uuid == product.storageUuid).first.groupUnit ?? 'Group(s)'}'
                             : product.groupUnit != null &&
                                 product.groupUnit !=
                                     'Others'
@@ -1737,7 +1737,7 @@ class _ProductDetailsDesktopState
                                         product.storageUuid,
                                   )
                                   .isNotEmpty
-                          ? ' Quantity Of ${returnStorageProductProvider().storageProductListMain.where((storage) => storage.uuid == product.storageUuid).first.unit ?? 'Others'}'
+                          ? ' Quantity Of ${returnStorageProductProvider().storageProductListMain.where((storage) => storage.uuid == product.storageUuid).first.unit ?? 'Unit(s)'}'
                           : product.unit != 'Others'
                           ? ' Quantity Of ${product.unit}'
                           : 'Unit Quantity',

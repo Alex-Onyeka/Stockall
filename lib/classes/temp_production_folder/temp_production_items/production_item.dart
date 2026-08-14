@@ -58,6 +58,9 @@ class ProductionItem {
   @HiveField(17)
   List<String>? categories;
 
+  @HiveField(18)
+  bool? useGroupUnit;
+
   ProductionItem({
     required this.name,
     this.barcode,
@@ -77,6 +80,7 @@ class ProductionItem {
     required this.qttyPerGroup,
     this.categoryUuid,
     required this.categories,
+    required this.useGroupUnit,
   });
 
   factory ProductionItem.fromJson(
@@ -117,6 +121,7 @@ class ProductionItem {
               ?.map((item) => item.toString())
               .toList() ??
           [],
+      useGroupUnit: json['use_group_unit'] as bool?,
     );
   }
 
@@ -143,6 +148,7 @@ class ProductionItem {
         'qtty_per_group': qttyPerGroup,
         'category_uuid': categoryUuid,
         'categories': categories ?? [],
+        'use_group_unit': useGroupUnit,
       };
     } else {
       return {
@@ -163,6 +169,7 @@ class ProductionItem {
         'qtty_per_group': qttyPerGroup,
         'category_uuid': categoryUuid,
         'categories': categories ?? [],
+        'use_group_unit': useGroupUnit,
       };
     }
   }
@@ -186,6 +193,7 @@ class ProductionItem {
     String? categoryUuid,
     bool? isManaged,
     List<String>? categories,
+    bool? useGroupUnit,
   }) {
     return ProductionItem(
       name: name ?? this.name,
@@ -206,6 +214,49 @@ class ProductionItem {
       categoryUuid: categoryUuid ?? this.categoryUuid,
       quantity: quantity ?? this.quantity,
       categories: categories ?? this.categories,
+      useGroupUnit: useGroupUnit ?? this.useGroupUnit,
     );
+  }
+
+  double getRealQuantity() {
+    if (useGroupUnit == true) {
+      return (quantity ?? 0) * (qttyPerGroup ?? 1);
+    } else {
+      return quantity ?? 0;
+    }
+  }
+
+  double getRealQuantityForSales({
+    required double qtty,
+    required bool useGroup,
+  }) {
+    if (useGroup == true) {
+      return (qtty) * (qttyPerGroup ?? 1);
+    } else {
+      return qtty;
+    }
+  }
+
+  double getRealCost() {
+    return costPrice * getRealQuantity();
+  }
+
+  double getRealCostForSales({
+    required double qtty,
+    required bool useGroup,
+  }) {
+    return costPrice *
+        getRealQuantityForSales(
+          qtty: qtty,
+          useGroup: useGroup,
+        );
+  }
+
+  String getUnitForSales({required bool useGroup}) {
+    if (useGroup == true) {
+      return groupUnit ?? 'Group(s)';
+    } else {
+      return unit == 'Others' ? 'Unit(s)' : unit;
+    }
   }
 }

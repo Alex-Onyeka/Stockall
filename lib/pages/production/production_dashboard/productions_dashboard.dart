@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/production/production_dashboard/platforms/productions_dashboard_desktop.dart';
-import 'package:stockall/pages/production/production_dashboard/platforms/productions_dashboard_mobile.dart';
+import 'package:stockall/pages/production/production_dashboard/platforms/productions_dashboard_mobilee.dart';
 
 class ProductionsDashboard extends StatefulWidget {
   const ProductionsDashboard({super.key});

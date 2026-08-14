@@ -295,7 +295,7 @@ class _StorageDetailsDesktopState
                                                       product.groupUnit ==
                                                                   null ||
                                                               product.groupUnit ==
-                                                                  'Others'
+                                                                  'Group(s)'
                                                           ? 'Group Quantity'
                                                           : 'Quantity of ${product.groupUnit}',
                                                   price:
@@ -333,7 +333,7 @@ class _StorageDetailsDesktopState
                                                             product.unit ==
                                                                 'Others'
                                                         ? 'Unit Quantity'
-                                                        : 'Quantity of ${product.unit ?? 'Others'}',
+                                                        : 'Quantity of ${product.unit ?? 'Unit(s)'}',
                                                 price:
                                                     product
                                                         .quantity ??

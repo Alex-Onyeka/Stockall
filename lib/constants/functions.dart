@@ -176,7 +176,11 @@ class Authorizations {
   String deleteInvoice = 'Delete Invoice';
   String toggleManageProductions =
       'Toggle Manage Productions';
+  String toggleManageProductionsStorage =
+      'Toggle Manage Productions Storage';
   String viewProductions = 'View Productions';
+  String manageProductionsStorage =
+      'Manage Productions Storage';
   String addMaterials = 'Add Materials';
   String updateMaterials = 'Update Materials';
   String deleteMaterials = 'Delete Materials';
@@ -198,6 +202,9 @@ class Authorizations {
       'Update Production Records';
   String deleteProductionRecords =
       'Delete Production Records';
+  String addMaterialsUsage = 'Add Materials Usage';
+  String updateMaterialsUsage = 'Update Materials Usage';
+  String deleteMaterialsUsage = 'Delete Materials Usage';
 }
 
 bool authorization({required String authorized}) {

@@ -16,6 +16,8 @@ class GeneralTextfieldOnly extends StatefulWidget {
   final TextInputAction? textInputAction;
   final Function(PointerDownEvent pointerDownEvent)?
   onTapOutside;
+  final Function(String value)? onSubmitted;
+  final bool? autoFocus;
   const GeneralTextfieldOnly({
     super.key,
     required this.hint,
@@ -29,6 +31,8 @@ class GeneralTextfieldOnly extends StatefulWidget {
     this.minLines,
     this.textInputAction,
     this.onTapOutside,
+    this.onSubmitted,
+    this.autoFocus,
   });
 
   @override
@@ -56,6 +60,8 @@ class _GeneralTextfieldOnlyState
     return Form(
       key: widget.formState,
       child: TextFormField(
+        autofocus: widget.autoFocus ?? false,
+        onFieldSubmitted: widget.onSubmitted,
         onTapOutside: widget.onTapOutside,
         textInputAction:
             widget.textInputAction ?? TextInputAction.done,

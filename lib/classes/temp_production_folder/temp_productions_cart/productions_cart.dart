@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:stockall/classes/temp_production_folder/temp_production_material_cart_item/production_material_cart_item.dart';
-import 'package:stockall/classes/temp_production_folder/temp_productions_cart_item/productions_cart_item.dart';
+import 'package:stockall/classes/temp_production_folder/temp_productions_cart/temp_production_material_cart_item/production_material_cart_item.dart';
+import 'package:stockall/classes/temp_production_folder/temp_productions_cart/temp_productions_cart_item/productions_cart_item.dart';
 
 part 'productions_cart.g.dart';
 
@@ -52,6 +52,15 @@ class ProductionsCart extends HiveObject {
   @HiveField(14)
   List<ProductionMaterialCartItem> materialsCartItems;
 
+  @HiveField(15)
+  double? originalCostPerItem;
+
+  @HiveField(16)
+  bool? originalUseGroupQuantity;
+
+  // @HiveField(17)
+  // bool? useGroupQuantity;
+
   ProductionsCart({
     required this.productionsCartItem,
     this.uuid,
@@ -68,6 +77,9 @@ class ProductionsCart extends HiveObject {
     this.customPrice,
     this.productionUuidEdit,
     required this.materialsCartItems,
+    required this.originalCostPerItem,
+    required this.originalUseGroupQuantity,
+    // required this.useGroupQuantity,
   });
 
   List<ProductionMaterialCartItem>
@@ -77,10 +89,10 @@ class ProductionsCart extends HiveObject {
 
   double getCostPrice() {
     if (selectCostPriceToUse == 1) {
-      return (productionsCartItem?.getCostPrice() ?? 0);
+      return (productionsCartItem?.costPrice ?? 0);
     } else if (selectCostPriceToUse == 2) {
       return materialsCartItems
-          .map((item) => item.getCostPrice())
+          .map((item) => item.costPrice ?? 0)
           .fold(0, (a, b) => a + b);
     } else {
       return (customPrice ?? 0);

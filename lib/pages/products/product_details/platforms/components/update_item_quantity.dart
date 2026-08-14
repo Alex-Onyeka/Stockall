@@ -49,12 +49,12 @@ class _UpdateItemQuantityWidgetState
       return widget.product.groupUnit == null ||
               widget.product.groupUnit == 'Others'
           ? ''
-          : " Group";
+          : " Group(s)";
     } else {
       return widget.product.unit.isEmpty ||
               widget.product.unit == 'Others'
           ? ''
-          : " Unit";
+          : " Unit(s)";
     }
   }
 

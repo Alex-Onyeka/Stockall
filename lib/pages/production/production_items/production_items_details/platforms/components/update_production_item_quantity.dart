@@ -52,12 +52,12 @@ class _UpdateProductionItemQuantityWidgetState
       return widget.productionItem.groupUnit == null ||
               widget.productionItem.groupUnit == 'Others'
           ? ''
-          : " Group";
+          : " Group(s)";
     } else {
       return widget.productionItem.unit.isEmpty ||
               widget.productionItem.unit == 'Others'
           ? ''
-          : " Unit";
+          : " Unit(s)";
     }
   }
 
@@ -225,9 +225,9 @@ class _UpdateProductionItemQuantityWidgetState
                         SizedBox(height: 20),
                         Visibility(
                           visible:
-                              returnShopProvider()
-                                  .userShop()
-                                  ?.useGroupUnit ==
+                              widget
+                                  .productionItem
+                                  .useGroupUnit ==
                               true,
                           child: Column(
                             children: [
@@ -541,6 +541,10 @@ class _UpdateProductionItemQuantityWidgetState
                                                         .quantity ??
                                                     0)),
                                         productionItem: ProductionItem(
+                                          useGroupUnit:
+                                              widget
+                                                  .productionItem
+                                                  .useGroupUnit,
                                           categories:
                                               widget
                                                   .productionItem

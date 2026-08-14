@@ -71,13 +71,14 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       trackCart: fields[53] as bool?,
       accessPin: fields[54] as String?,
       manageProductions: fields[55] as bool?,
+      manageProductionsStorage: fields[56] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempShopClass obj) {
     writer
-      ..writeByte(54)
+      ..writeByte(55)
       ..writeByte(0)
       ..write(obj.shopId)
       ..writeByte(1)
@@ -185,7 +186,9 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       ..writeByte(54)
       ..write(obj.accessPin)
       ..writeByte(55)
-      ..write(obj.manageProductions);
+      ..write(obj.manageProductions)
+      ..writeByte(56)
+      ..write(obj.manageProductionsStorage);
   }
 
   @override

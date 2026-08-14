@@ -60,12 +60,12 @@ class _TransferProductionItemQuantityWidgetState
       return widget.productionItem.groupUnit == null ||
               widget.productionItem.groupUnit == 'Others'
           ? ''
-          : " Group";
+          : " Group(s)";
     } else {
       return widget.productionItem.unit.isEmpty ||
               widget.productionItem.unit == 'Others'
           ? ''
-          : " Unit";
+          : " Unit(s)";
     }
   }
 
@@ -258,9 +258,9 @@ class _TransferProductionItemQuantityWidgetState
                         SizedBox(height: 20),
                         Visibility(
                           visible:
-                              returnShopProvider()
-                                  .userShop()
-                                  ?.useGroupUnit ==
+                              widget
+                                  .productionItem
+                                  .useGroupUnit ==
                               true,
                           child: Column(
                             children: [

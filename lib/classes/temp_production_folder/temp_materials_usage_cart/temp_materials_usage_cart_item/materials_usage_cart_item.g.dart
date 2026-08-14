@@ -1,45 +1,52 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'productions_cart_item.dart';
+part of 'materials_usage_cart_item.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class ProductionsCartItemAdapter extends TypeAdapter<ProductionsCartItem> {
+class MaterialsUsageCartItemAdapter
+    extends TypeAdapter<MaterialsUsageCartItem> {
   @override
-  final int typeId = 118;
+  final int typeId = 126;
 
   @override
-  ProductionsCartItem read(BinaryReader reader) {
+  MaterialsUsageCartItem read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return ProductionsCartItem(
+    return MaterialsUsageCartItem(
       uuid: fields[0] as String?,
-      itemUuid: fields[1] as String?,
+      materialItemUuid: fields[1] as String?,
       name: fields[2] as String,
       quantity: fields[3] as double,
       customPrice: fields[5] as double?,
-      setCustomPrice: fields[6] as bool,
+      selectedCostInt: fields[6] as int,
       addToStock: fields[7] as bool,
       useGroupQuantity: fields[8] as bool?,
       costPrice: fields[4] as double?,
       groupUnit: fields[10] as String?,
       qttyPerGroup: fields[11] as double?,
       unit: fields[9] as String?,
+      originalCostPerItem: fields[12] as double?,
+      customUnit: fields[13] as String?,
+      originalUseGroupQuantity: fields[14] as bool?,
+      productionItemId: fields[16] as String?,
+      productionItemName: fields[15] as String?,
+      isManaged: fields[17] as bool?,
     );
   }
 
   @override
-  void write(BinaryWriter writer, ProductionsCartItem obj) {
+  void write(BinaryWriter writer, MaterialsUsageCartItem obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(18)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
-      ..write(obj.itemUuid)
+      ..write(obj.materialItemUuid)
       ..writeByte(2)
       ..write(obj.name)
       ..writeByte(3)
@@ -49,7 +56,7 @@ class ProductionsCartItemAdapter extends TypeAdapter<ProductionsCartItem> {
       ..writeByte(5)
       ..write(obj.customPrice)
       ..writeByte(6)
-      ..write(obj.setCustomPrice)
+      ..write(obj.selectedCostInt)
       ..writeByte(7)
       ..write(obj.addToStock)
       ..writeByte(8)
@@ -59,7 +66,19 @@ class ProductionsCartItemAdapter extends TypeAdapter<ProductionsCartItem> {
       ..writeByte(10)
       ..write(obj.groupUnit)
       ..writeByte(11)
-      ..write(obj.qttyPerGroup);
+      ..write(obj.qttyPerGroup)
+      ..writeByte(12)
+      ..write(obj.originalCostPerItem)
+      ..writeByte(13)
+      ..write(obj.customUnit)
+      ..writeByte(14)
+      ..write(obj.originalUseGroupQuantity)
+      ..writeByte(15)
+      ..write(obj.productionItemName)
+      ..writeByte(16)
+      ..write(obj.productionItemId)
+      ..writeByte(17)
+      ..write(obj.isManaged);
   }
 
   @override
@@ -68,7 +87,7 @@ class ProductionsCartItemAdapter extends TypeAdapter<ProductionsCartItem> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ProductionsCartItemAdapter &&
+      other is MaterialsUsageCartItemAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

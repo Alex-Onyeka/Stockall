@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/production/production_dashboard/productions_section/create_production/platforms/create_production_desktop.dart';
+import 'package:stockall/pages/production/production_dashboard/productions_section/create_production/platforms/create_production_mobile.dart';
 
 class CreateProduction extends StatefulWidget {
   const CreateProduction({super.key});
@@ -16,10 +17,15 @@ class _CreateProductionState
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      returnProductionsActionProvider()
-          .initProductionsCart();
-    });
+    if (returnProductionsActionProvider()
+            .getProductionsCart()
+            ?.isEdit !=
+        true) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        returnProductionsActionProvider()
+            .initProductionsCart();
+      });
+    }
   }
 
   @override
@@ -27,8 +33,7 @@ class _CreateProductionState
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth <= mobileScreen) {
-          // return CreateProductionMobile();
-          return Scaffold(appBar: AppBar());
+          return CreateProductionMobile();
         } else {
           return CreateProductionDesktop();
         }

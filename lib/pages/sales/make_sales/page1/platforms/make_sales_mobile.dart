@@ -1252,12 +1252,12 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                           returnDepartmentProvider()
                                               .currentDepartment()
                                               ?.uuid,
-                                      groupUnit: 'Others',
+                                      groupUnit: 'Group(s)',
                                       qttyPerGroup: null,
                                       isManaged: false,
                                       uuid: uuidGen(),
                                       name: nameC.text,
-                                      unit: 'Others',
+                                      unit: 'Unit(s)',
                                       isRefundable: false,
                                       costPrice:
                                           double.tryParse(
@@ -1339,12 +1339,12 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         returnDepartmentProvider()
                                             .currentDepartment()
                                             ?.uuid,
-                                    groupUnit: 'Others',
+                                    groupUnit: 'Group(s)',
                                     qttyPerGroup: null,
                                     isManaged: false,
                                     uuid: uuidGen(),
                                     name: nameC.text,
-                                    unit: 'Others',
+                                    unit: 'Unit(s)',
                                     isRefundable: false,
                                     costPrice:
                                         double.tryParse(
@@ -1455,13 +1455,13 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                   .currentDepartment()
                                                   ?.uuid,
                                           groupUnit:
-                                              'Others',
+                                              'Group(s)',
                                           qttyPerGroup:
                                               null,
                                           isManaged: false,
                                           uuid: uuidGen(),
                                           name: nameC.text,
-                                          unit: 'Others',
+                                          unit: 'Unit(s)',
                                           isRefundable:
                                               false,
                                           costPrice:
@@ -1549,12 +1549,12 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         returnDepartmentProvider()
                                             .currentDepartment()
                                             ?.uuid,
-                                    groupUnit: 'Others',
+                                    groupUnit: 'Group(s)',
                                     qttyPerGroup: null,
                                     isManaged: false,
                                     uuid: uuidGen(),
                                     name: nameC.text,
-                                    unit: 'Others',
+                                    unit: 'Unit(s)',
                                     isRefundable: false,
                                     costPrice:
                                         double.tryParse(
@@ -1742,7 +1742,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                           departmentUuid:
                                                               returnDepartmentProvider().currentDepartment()?.uuid,
                                                           groupUnit:
-                                                              'Others',
+                                                              'Group(s)',
                                                           qttyPerGroup:
                                                               null,
                                                           isManaged:
@@ -1752,7 +1752,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                           name:
                                                               nameC.text,
                                                           unit:
-                                                              'Others',
+                                                              'Unit(s)',
                                                           isRefundable:
                                                               false,
                                                           costPrice:
@@ -2425,7 +2425,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                 departmentUuid:
                                                                     returnDepartmentProvider().currentDepartment()?.uuid,
                                                                 groupUnit:
-                                                                    'Others',
+                                                                    'Group(s)',
                                                                 qttyPerGroup:
                                                                     null,
                                                                 isManaged:
@@ -2435,7 +2435,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                 name:
                                                                     nameC.text,
                                                                 unit:
-                                                                    'Others',
+                                                                    'Unit(s)',
                                                                 isRefundable:
                                                                     false,
                                                                 costPrice:

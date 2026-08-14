@@ -19,15 +19,15 @@ class SmallButtonMain extends StatelessWidget {
       decoration: BoxDecoration(
         // gradient: theme.lightModeColor.prGradient,
         color: theme.lightModeColor.prColor300,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(5),
       ),
       child: InkWell(
         mouseCursor: SystemMouseCursors.click,
         onTap: action,
         child: Container(
           padding: EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 10,
+            horizontal: 25,
+            vertical: 12,
           ),
 
           child: Row(
@@ -40,7 +40,7 @@ class SmallButtonMain extends StatelessWidget {
                     MediaQuery.of(context).size.width > 300,
                 child: Icon(
                   color: Colors.white,
-                  size: 20,
+                  size: 18,
                   Icons.add_rounded,
                 ),
               ),
@@ -48,7 +48,7 @@ class SmallButtonMain extends StatelessWidget {
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w500,
-                  fontSize: theme.mobileTexts.b2.fontSize,
+                  fontSize: theme.mobileTexts.b3.fontSize,
                 ),
                 buttonText,
               ),

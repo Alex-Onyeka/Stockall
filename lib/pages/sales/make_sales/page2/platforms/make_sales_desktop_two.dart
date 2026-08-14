@@ -64,6 +64,11 @@ class _MakeSalesDesktopTwoState
         widget.totalAmount.toString();
 
     widget.bankController.text = '0';
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      commentController.text =
+          returnSalesProvider().currentCart().comment ?? '';
+      setState(() {});
+    });
   }
 
   @override

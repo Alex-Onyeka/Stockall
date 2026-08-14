@@ -134,17 +134,14 @@ class _DashboardMobileState extends State<DashboardMobile> {
         body: returnCompProvider(
           context,
           listen: false,
-        ).showLoader(message: 'Loading'),
+        ).showLoader(message: 'Loading User Data'),
       );
     } else {
-      if (!returnReceiptProvider(
-        context,
-        // listen: false,
-      ).isLoaded) {
+      if (!returnReceiptProvider(context).isLoaded) {
         return returnCompProvider(
           context,
           listen: false,
-        ).showLoader(message: 'Loading');
+        ).showLoader(message: 'Loading Shop Data');
       } else {
         // return Container();
         return Stack(

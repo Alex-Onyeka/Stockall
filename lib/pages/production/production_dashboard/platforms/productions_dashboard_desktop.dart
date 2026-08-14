@@ -25,11 +25,16 @@ class _ProductionsDashboardDesktopState
     extends State<ProductionsDashboardDesktop> {
   @override
   Widget build(BuildContext context) {
-    var recordsProv = returnProductionRecordsProvider();
+    var recordsProv = returnProductionRecordsProvider(
+      context: context,
+    );
     var itemsHistoryProv =
-        returnProductionItemHistoryProvider();
-    var productionItemsProv =
-        returnProductionItemsProvider();
+        returnProductionItemHistoryProvider(
+          context: context,
+        );
+    var productionItemsProv = returnProductionItemsProvider(
+      context: context,
+    );
     var theme = returnTheme(context);
     return DesktopCenterContainer(
       width: 900,
@@ -261,18 +266,16 @@ class _ProductionsDashboardDesktopState
                                         .lightModeColor
                                         .tertColor200,
                                 entries:
-                                    recordsProv
-                                        .returnAllProductionRecordMaterials(
-                                          productionRecords:
-                                              null,
+                                    returnMaterialsUsageProvider(
+                                          context: context,
                                         )
+                                        .returnOwnProductionMaterialsUsageByDayOrWeek()
                                         .length,
                                 title: 'Materials Used',
-                                number: recordsProv
-                                    .getTotalMaterialsUsed(
-                                      productionRecords:
-                                          null,
-                                    ),
+                                number:
+                                    returnMaterialsUsageProvider(
+                                      context: context,
+                                    ).getTotalMaterialsUsed(),
                                 icon:
                                     Icons
                                         .app_registration_rounded,
@@ -281,10 +284,7 @@ class _ProductionsDashboardDesktopState
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) {
-                                        return MaterialsUsagePage(
-                                          fromMaterialUsagePage:
-                                              false,
-                                        );
+                                        return MaterialsUsagePage();
                                       },
                                     ),
                                   );

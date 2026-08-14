@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_production_folder/temp_productions/production_record_materials.dart';
+import 'package:stockall/classes/temp_production_folder/temp_production_materials_usage/production_materials_usage.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
-import 'package:stockall/components/buttons/main_button_transparent.dart';
+import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/production/production_dashboard/productions_section/production_details/production_details_page.dart';
+import 'package:stockall/pages/production/materials_page/materials_details/materials_details_page.dart';
+import 'package:stockall/pages/production/materials_page/materials_details/platforms/materials_details_mobile.dart';
+import 'package:stockall/pages/production/materials_page/materials_usage/create_materials_usage/create_materials_usage_page.dart';
 
 class MaterialsUsageTile extends StatefulWidget {
   const MaterialsUsageTile({
     super.key,
     required this.fromDetails,
-    required this.productionRecordMaterials,
+    required this.materialsUsage,
   });
-  final ProductionRecordMaterials productionRecordMaterials;
+  final ProductionMaterialsUsage materialsUsage;
   final bool fromDetails;
 
   @override
@@ -57,11 +60,18 @@ class MaterialsUsageTileState
                   title: 'Usage Details',
                   action: () {},
                   showBottomActionButtons: false,
+                  topRightWidget: IconButton(
+                    mouseCursor: SystemMouseCursors.click,
+                    padding: EdgeInsets.all(0),
+                    onPressed: () {
+                      Navigator.of(firstContext).pop();
+                    },
+                    icon: Icon(size: 26, Icons.clear),
+                  ),
                   widget: SizedBox(
                     height: screenHeight(context) - 200,
                     child: MaterialUsageDetailsWidget(
-                      productionRecordMaterials:
-                          widget.productionRecordMaterials,
+                      materialsUsage: widget.materialsUsage,
                       fromDetails: widget.fromDetails,
                     ),
                   ),
@@ -123,29 +133,62 @@ class MaterialsUsageTileState
                                               .fontSize,
                                     ),
                                     (widget
-                                        .productionRecordMaterials
+                                        .materialsUsage
                                         .materialName),
                                   ),
                                 ),
-                                Text(
-                                  style: TextStyle(
-                                    fontWeight:
-                                        FontWeight.bold,
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b2
-                                            .fontSize,
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .secColor200,
-                                  ),
-                                  formatLargeNumberDouble(
-                                    widget
-                                        .productionRecordMaterials
-                                        .quantity,
-                                  ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize,
+                                        color:
+                                            theme
+                                                .lightModeColor
+                                                .secColor200,
+                                      ),
+                                      formatLargeNumberDouble(
+                                        widget
+                                            .materialsUsage
+                                            .quantity,
+                                      ),
+                                    ),
+                                    Visibility(
+                                      visible:
+                                          screenWidth(
+                                            context,
+                                          ) >
+                                          mobileScreenSmall,
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(
+                                              left: 5.0,
+                                            ),
+                                        child: Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b4
+                                                    .fontSize,
+                                            color:
+                                                Colors
+                                                    .grey
+                                                    .shade600,
+                                          ),
+                                          widget
+                                              .materialsUsage
+                                              .getUnit(),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -192,7 +235,7 @@ class MaterialsUsageTileState
                                               .grey
                                               .shade600,
                                     ),
-                                    'Produced:',
+                                    'Cost:',
                                   ),
                                   Flexible(
                                     child: Text(
@@ -209,11 +252,12 @@ class MaterialsUsageTileState
                                         fontWeight:
                                             FontWeight.bold,
                                       ),
-                                      cutLongText(
-                                        widget
-                                                .productionRecordMaterials
-                                                .productionRecordName ??
-                                            'Not Set',
+                                      formatMoneyBig(
+                                        amount:
+                                            widget
+                                                .materialsUsage
+                                                .getTotalCost(),
+                                        context: context,
                                       ),
                                     ),
                                   ),
@@ -258,7 +302,7 @@ class MaterialsUsageTileState
                                   ),
                                   formatDateTimeTime(
                                     widget
-                                            .productionRecordMaterials
+                                            .materialsUsage
                                             .createdAt ??
                                         DateTime.now(),
                                   ),
@@ -281,13 +325,12 @@ class MaterialsUsageTileState
 }
 
 class MaterialUsageDetailsWidget extends StatefulWidget {
-  final ProductionRecordMaterials?
-  productionRecordMaterials;
+  final ProductionMaterialsUsage? materialsUsage;
   final bool fromDetails;
 
   const MaterialUsageDetailsWidget({
     super.key,
-    this.productionRecordMaterials,
+    this.materialsUsage,
     required this.fromDetails,
   });
 
@@ -312,19 +355,13 @@ class _MaterialUsageDetailsWidgetState
                 ItemHistorySectionWidget(
                   title: 'Material Name',
                   message:
-                      widget
-                          .productionRecordMaterials
-                          ?.materialName ??
+                      widget.materialsUsage?.materialName ??
                       'Not Set',
                 ),
                 ItemHistorySectionWidget(
                   title: 'Quantity',
-                  message: formatLargeNumberDouble(
-                    widget
-                            .productionRecordMaterials
-                            ?.quantity ??
-                        0,
-                  ),
+                  message:
+                      "${formatLargeNumberDouble(widget.materialsUsage?.quantity ?? 0)} ${widget.materialsUsage?.getUnit()}",
                 ),
                 ItemHistorySectionWidget(
                   title: 'Single Cost',
@@ -332,8 +369,8 @@ class _MaterialUsageDetailsWidgetState
                     context: context,
                     amount:
                         widget
-                            .productionRecordMaterials
-                            ?.totalCost ??
+                            .materialsUsage
+                            ?.originalCostPerItem ??
                         0,
                   ),
                 ),
@@ -342,47 +379,35 @@ class _MaterialUsageDetailsWidgetState
                   message: formatMoneyBig(
                     context: context,
                     amount:
-                        widget.productionRecordMaterials
+                        widget.materialsUsage
                             ?.getTotalCost() ??
                         0,
                   ),
                 ),
                 ItemHistorySectionWidget(
-                  title: 'Produced Item',
-                  message:
-                      widget
-                          .productionRecordMaterials
-                          ?.productionRecordName ??
-                      'Not Set',
-                ),
-                ItemHistorySectionWidget(
                   title: 'Created Date',
                   message: formatDateWithTime(
-                    widget
-                            .productionRecordMaterials
-                            ?.createdAt ??
+                    widget.materialsUsage?.createdAt ??
                         DateTime.now(),
                   ),
                 ),
                 ItemHistorySectionWidget(
                   title: 'Creator',
                   message:
-                      widget
-                          .productionRecordMaterials
-                          ?.staffName ??
+                      widget.materialsUsage?.staffName ??
                       'Not Set',
                 ),
                 Visibility(
                   visible:
                       (widget
-                          .productionRecordMaterials
+                          .materialsUsage
                           ?.departmentName) !=
                       null,
                   child: ItemHistorySectionWidget(
                     title: 'Department Name',
                     message:
                         widget
-                            .productionRecordMaterials
+                            .materialsUsage
                             ?.departmentName ??
                         'Not Set',
                   ),
@@ -390,12 +415,139 @@ class _MaterialUsageDetailsWidgetState
               ],
             ),
           ),
+          Row(
+            spacing: 10,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: EditButton(
+                  action: () {
+                    showDialog(
+                      context: context,
+                      builder: (confirmDialog) {
+                        bool updateInventory = false;
+                        return StatefulBuilder(
+                          builder:
+                              (
+                                newContext,
+                                setStatee,
+                              ) => DialogTemplate(
+                                theme: theme,
+                                message:
+                                    'You are about to delete this Usage Record, are you sure you want to proceed?',
+                                title:
+                                    'Delete Usage Record?',
+                                action: () async {
+                                  Navigator.of(
+                                    confirmDialog,
+                                  ).pop();
+                                  var res = await returnMaterialsUsageProvider()
+                                      .deleteProductionMaterialsUsage(
+                                        widget
+                                            .materialsUsage!,
+                                        updateInventory,
+                                        true,
+                                      );
+                                  if (res == 1) {
+                                    await returnMaterialsUsageProvider()
+                                        .getProductionMaterialsUsageOffline();
+                                    Navigator.of(
+                                      context,
+                                    ).pop();
+                                  }
+                                },
+                                widget: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(
+                                        horizontal: 20.0,
+                                        vertical: 10,
+                                      ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .spaceBetween,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'Update Item Quantity?',
+                                      ),
+                                      MyToggleButton(
+                                        boolValue:
+                                            updateInventory,
+                                        toggle: () {
+                                          setStatee(() {
+                                            updateInventory =
+                                                !updateInventory;
+                                          });
+                                        },
+                                        theme: theme,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                        );
+                      },
+                    );
+                  },
+                  text: 'Delete',
+                  theme: theme,
+                  icon: Icons.delete_forever_outlined,
+                  color: Colors.redAccent,
+                ),
+              ),
+              Expanded(
+                child: EditButton(
+                  action: () {
+                    showDialog(
+                      context: context,
+                      builder: (confirmContext) {
+                        return ConfirmationAlert(
+                          action: () async {
+                            var res =
+                                await returnMaterialsUsageActionProvider()
+                                    .editMaterialsUsageRecord(
+                                      record:
+                                          widget
+                                              .materialsUsage!,
+                                    );
+                            if (res == 1) {
+                              Navigator.of(
+                                confirmContext,
+                              ).pop();
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (navContext) {
+                                    return CreateMaterialsUsagePage();
+                                  },
+                                ),
+                              );
+                            }
+                          },
+                          message:
+                              'Are you sure you want to Proceed to Edit this Usage Record?',
+                          theme: theme,
+                          title: 'Edit Usage Record',
+                        );
+                      },
+                    );
+                  },
+                  text: 'Edit',
+                  theme: theme,
+                  icon: Icons.edit,
+                ),
+              ),
+            ],
+          ),
           Visibility(
             visible:
                 !widget.fromDetails &&
-                (widget
-                        .productionRecordMaterials
-                        ?.productionRecordId) !=
+                (widget.materialsUsage?.materialUuid) !=
                     null,
             child: MainButtonP(
               themeProvider: theme,
@@ -405,25 +557,25 @@ class _MaterialUsageDetailsWidgetState
                   context,
                   MaterialPageRoute(
                     builder: (context) {
-                      return ProductionDetailsPage(
-                        productionRecordUuid:
+                      return MaterialsDetailsPage(
+                        materialUuid:
                             widget
-                                .productionRecordMaterials
-                                ?.productionRecordId ??
+                                .materialsUsage
+                                ?.materialUuid ??
                             '',
                       );
                     },
                   ),
                 );
               },
-              text: 'View Production Record',
+              text: 'View Material',
             ),
           ),
-          MainButtonTransparent(
-            themeProvider: theme,
-            constraints: BoxConstraints(),
-            text: 'Cancel',
-          ),
+          // MainButtonTransparent(
+          //   themeProvider: theme,
+          //   constraints: BoxConstraints(),
+          //   text: 'Cancel',
+          // ),
         ],
       ),
     );

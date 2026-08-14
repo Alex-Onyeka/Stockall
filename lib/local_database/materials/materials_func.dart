@@ -16,6 +16,7 @@ class MaterialsFunc {
 
   Future<void> init() async {
     try {
+      // await Hive.deleteBoxFromDisk(materialBoxName);
       Hive.registerAdapter(MaterialClassAdapter());
       materialBox = await Hive.openBox(materialBoxName);
       await CreatedMaterialsFunc().init();

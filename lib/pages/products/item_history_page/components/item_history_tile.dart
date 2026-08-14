@@ -9,6 +9,8 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/production/materials_page/materials_details/materials_details_page.dart';
+import 'package:stockall/pages/production/production_items/production_items_details/production_items_details_page.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
 
 class ItemHistoryTile extends StatefulWidget {
@@ -608,17 +610,34 @@ class _ItemHistoryDetailsWidgetState
                   context,
                   MaterialPageRoute(
                     builder: (context) {
-                      return ProductDetailsPage(
-                        productUuid:
-                            widget.itemHistory?.itemUuid ??
-                            widget
-                                .productionItemHistory
-                                ?.itemUuid ??
-                            widget
-                                .materialsItemHistory
-                                ?.itemUuid ??
-                            '',
-                      );
+                      if (widget.materialsItemHistory !=
+                          null) {
+                        return MaterialsDetailsPage(
+                          materialUuid:
+                              widget
+                                  .materialsItemHistory
+                                  ?.itemUuid ??
+                              '',
+                        );
+                      } else if (widget
+                              .productionItemHistory !=
+                          null) {
+                        return ProductionItemsDetailsPage(
+                          productionItemUuid:
+                              widget
+                                  .productionItemHistory
+                                  ?.itemUuid ??
+                              '',
+                        );
+                      } else {
+                        return ProductDetailsPage(
+                          productUuid:
+                              widget
+                                  .itemHistory
+                                  ?.itemUuid ??
+                              '',
+                        );
+                      }
                     },
                   ),
                 );

@@ -44,6 +44,9 @@ import 'package:stockall/local_database/materials/unsync_funcs/deleted_materials
 import 'package:stockall/local_database/materials/unsync_funcs/materials_quantity_update/materials_quantity_update_func.dart';
 import 'package:stockall/local_database/materials/unsync_funcs/updated_materials/updated_materials_func.dart';
 import 'package:stockall/local_database/materials_item_history/unsync_funcs/created_materials_item_histories_func.dart';
+import 'package:stockall/local_database/materials_usage/unsync_funcs/created/created_production_materials_usage_func.dart';
+import 'package:stockall/local_database/materials_usage/unsync_funcs/deleted/deleted_production_materials_usage_func.dart';
+import 'package:stockall/local_database/materials_usage/unsync_funcs/updated/updated_production_materials_usage_func.dart';
 import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/created/created_records_func.dart';
 import 'package:stockall/local_database/production_item_history/unsync_funcs/created_production_item_histories_func.dart';
 import 'package:stockall/local_database/production_items/unsync_funcs/created/created_production_items_func.dart';
@@ -508,6 +511,12 @@ class DataProvider extends ChangeNotifier {
         .clearDeletedProductionRecords();
     await UpdatedProductionRecordsFunc()
         .clearUpdatedProductionRecordsRecord();
+    await CreatedProductionMaterialsUsageFunc()
+        .clearCreatedProductionMaterialsUsage();
+    await UpdatedProductionMaterialsUsageFunc()
+        .clearUpdatedProductionMaterialsUsage();
+    await DeletedProductionMaterialsUsageFunc()
+        .clearDeletedProductionMaterialsUsage();
     notifyListeners();
   }
 
@@ -1163,6 +1172,40 @@ class DataProvider extends ChangeNotifier {
             );
             setSyncProgress(58);
           }
+
+          if (CreatedProductionMaterialsUsageFunc()
+                  .getProductionMaterialsUsage()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnMaterialsUsageProvider()
+                .createProductionMaterialsUsageSync();
+            await mainLocalLog(
+              'Finished Syncing Created Production Materials Usage',
+            );
+            setSyncProgress(59);
+          }
+          if (UpdatedProductionMaterialsUsageFunc()
+                  .getProductionMaterialsUsageIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnMaterialsUsageProvider()
+                .updateProductionMaterialsUsageSync();
+            await mainLocalLog(
+              'Finished Syncing Updated Production Materials Usage',
+            );
+            setSyncProgress(60);
+          }
+          if (DeletedProductionMaterialsUsageFunc()
+                  .getDeletedProductionMaterialsUsageIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnMaterialsUsageProvider()
+                .deleteProductionMaterialsUsageSync();
+            await mainLocalLog(
+              'Finished Syncing Deleted Production Materials Usage',
+            );
+            setSyncProgress(61);
+          }
           toggleSyncing(false);
         } else {
           // await ShopFunc().clearShop();
@@ -1197,7 +1240,7 @@ class DataProvider extends ChangeNotifier {
   bool isSyncing = false;
   double syncProgress = 0;
   void setSyncProgress(int value) {
-    syncProgress = (value / 58) * 100;
+    syncProgress = (value / 61) * 100;
     notifyListeners();
   }
 
@@ -1319,6 +1362,15 @@ class DataProvider extends ChangeNotifier {
               .isEmpty &&
           DeletedProductionRecordsFunc()
               .getProductionIds()
+              .isEmpty &&
+          CreatedProductionMaterialsUsageFunc()
+              .getProductionMaterialsUsage()
+              .isEmpty &&
+          UpdatedProductionMaterialsUsageFunc()
+              .getProductionMaterialsUsageIds()
+              .isEmpty &&
+          DeletedProductionMaterialsUsageFunc()
+              .getDeletedProductionMaterialsUsageIds()
               .isEmpty) {
         return 1;
       } else {
@@ -1846,6 +1898,7 @@ class DataProvider extends ChangeNotifier {
   bool isRefundable = false;
   bool setCustomPrice = false;
   bool isManaged = true;
+  bool useGroupUnit = false;
   String sizeType = '';
   String size = '';
   double costPrice = 0;
@@ -1868,6 +1921,7 @@ class DataProvider extends ChangeNotifier {
     if (setIsManaged == null) {
       isManaged = true;
     }
+    useGroupUnit = false;
     isOpen = false;
     unitValueSet = false;
     colorValueSet = false;
@@ -1888,6 +1942,11 @@ class DataProvider extends ChangeNotifier {
 
   void toggleSetCustomPrice() {
     setCustomPrice = !setCustomPrice;
+    notifyListeners();
+  }
+
+  void toggleUseGroupUnit() {
+    useGroupUnit = !useGroupUnit;
     notifyListeners();
   }
 

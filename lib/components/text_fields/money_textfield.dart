@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -16,6 +15,7 @@ class MoneyTextfield extends StatefulWidget {
   final Function(String)? onSubmitted;
   final bool? showTitle;
   final Function()? onTap;
+  final bool? autoFocus;
 
   const MoneyTextfield({
     super.key,
@@ -28,6 +28,7 @@ class MoneyTextfield extends StatefulWidget {
     this.onSubmitted,
     this.showTitle,
     this.onTap,
+    this.autoFocus,
   });
 
   @override
@@ -127,6 +128,7 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
           ),
         ),
         TextFormField(
+          autofocus: widget.autoFocus ?? false,
           onTap: () {
             if (widget.onTap != null) {
               widget.onTap!();

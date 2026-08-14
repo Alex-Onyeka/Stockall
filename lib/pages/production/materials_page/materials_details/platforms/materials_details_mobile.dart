@@ -343,9 +343,8 @@ class _MaterialsDetailsMobileState
                                           ),
                                           Visibility(
                                             visible:
-                                                shop(
-                                                  context,
-                                                )?.useGroupUnit ==
+                                                material
+                                                    .useGroupUnit ==
                                                 true,
                                             child: SizedBox(
                                               width: 10,
@@ -353,9 +352,8 @@ class _MaterialsDetailsMobileState
                                           ),
                                           Visibility(
                                             visible:
-                                                shop(
-                                                  context,
-                                                )?.useGroupUnit ==
+                                                material
+                                                    .useGroupUnit ==
                                                 true,
                                             child: Expanded(
                                               child: TabContainerMobile(
@@ -596,6 +594,8 @@ class _MaterialsDetailsMobileState
                                                           quantityChange:
                                                               null,
                                                           material: MaterialClass(
+                                                            useGroupUnit:
+                                                                material.useGroupUnit,
                                                             categories:
                                                                 material.categories,
                                                             departmentName:
@@ -748,9 +748,8 @@ class _MaterialsDetailsMobileState
                                 ),
                                 Visibility(
                                   visible:
-                                      returnShopProvider()
-                                          .userShop()
-                                          ?.useGroupUnit ==
+                                      material
+                                          .useGroupUnit ==
                                       true,
                                   child: BottomInfoSection(
                                     theme: widget.theme,
@@ -1232,6 +1231,9 @@ class _MaterialsDetailsMobileState
                                           quantityChange:
                                               null,
                                           material: MaterialClass(
+                                            useGroupUnit:
+                                                material
+                                                    .useGroupUnit,
                                             categories:
                                                 material
                                                     .categories,

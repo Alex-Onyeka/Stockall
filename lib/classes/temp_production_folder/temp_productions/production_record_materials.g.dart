@@ -34,13 +34,17 @@ class ProductionRecordMaterialsAdapter
       productionRecordName: fields[13] as String?,
       unit: fields[14] as String?,
       customCost: fields[15] as double?,
+      customUnit: fields[17] as String?,
+      groupUnit: fields[19] as String?,
+      originalCostPerItem: fields[16] as double?,
+      originalUseGroupQuantity: fields[18] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ProductionRecordMaterials obj) {
     writer
-      ..writeByte(16)
+      ..writeByte(20)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -72,7 +76,15 @@ class ProductionRecordMaterialsAdapter
       ..writeByte(14)
       ..write(obj.unit)
       ..writeByte(15)
-      ..write(obj.customCost);
+      ..write(obj.customCost)
+      ..writeByte(16)
+      ..write(obj.originalCostPerItem)
+      ..writeByte(17)
+      ..write(obj.customUnit)
+      ..writeByte(18)
+      ..write(obj.originalUseGroupQuantity)
+      ..writeByte(19)
+      ..write(obj.groupUnit);
   }
 
   @override

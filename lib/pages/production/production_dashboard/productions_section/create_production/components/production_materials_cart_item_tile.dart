@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_production_folder/temp_production_material_cart_item/production_material_cart_item.dart';
+import 'package:stockall/classes/temp_production_folder/temp_productions_cart/temp_production_material_cart_item/production_material_cart_item.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
@@ -10,9 +11,11 @@ class ProductionMaterialCartItemTile
   const ProductionMaterialCartItemTile({
     super.key,
     required this.productionMaterialCartItem,
+    this.editAction,
   });
   final ProductionMaterialCartItem
   productionMaterialCartItem;
+  final Function()? editAction;
 
   @override
   State<ProductionMaterialCartItemTile> createState() =>
@@ -34,223 +37,240 @@ class ProductionMaterialCartItemTileState
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5.0),
-      child: Ink(
+      padding: const EdgeInsets.symmetric(
+        vertical: 3.0,
+        horizontal: 5,
+      ),
+      child: Container(
+        padding: EdgeInsets.fromLTRB(8, 15, 15, 15),
         decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: const Color.fromARGB(20, 0, 0, 0),
+              blurRadius: 10,
+            ),
+          ],
+          borderRadius: BorderRadius.circular(5),
           color: Colors.white,
-          borderRadius: BorderRadius.circular(5),
-          border: Border.all(color: Colors.grey.shade200),
         ),
-        child: InkWell(
-          mouseCursor: SystemMouseCursors.click,
-          onTap: () {
-            // showDialog(
-            //   context: context,
-            //   builder: (firstContext) {
-            //     return DialogTemplate(
-            //       theme: theme,
-            //       message: 'View Item History Details',
-            //       title: 'Usage Details',
-            //       action: () {},
-            //       showBottomActionButtons: false,
-            //       widget: SizedBox(
-            //         height: screenHeight(context) - 200,
-            //         child: MaterialUsageDetailsWidget(
-            //           productionMaterialCartItem:
-            //               widget.productionMaterialCartItem,
-            //           fromDetails: widget.fromDetails,
-            //         ),
-            //       ),
-            //     );
-            //   },
-            // );
-          },
-          borderRadius: BorderRadius.circular(5),
-          child: Container(
-            padding: EdgeInsets.fromLTRB(8, 15, 15, 15),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 10,
-              children: [
-                Visibility(
-                  visible:
-                      screenWidth(context) >
-                      mobileScreenSmall,
-                  child: Container(
-                    padding: EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color:
-                          theme.lightModeColor.tertColor50,
-                    ),
-                    child: Icon(
-                      color:
-                          theme.lightModeColor.tertColor200,
-                      size: 20,
-                      Icons.border_horizontal_rounded,
-                    ),
-                  ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 10,
+          children: [
+            Visibility(
+              visible:
+                  screenWidth(context) > mobileScreenSmall,
+              child: Container(
+                padding: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: theme.lightModeColor.tertColor50,
                 ),
-                Flexible(
-                  child: Column(
+                child: Icon(
+                  color: theme.lightModeColor.tertColor200,
+                  size: 18,
+                  Icons.border_horizontal_rounded,
+                ),
+              ),
+            ),
+            Flexible(
+              child: Column(
+                children: [
+                  Row(
+                    spacing: 15,
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment:
+                        CrossAxisAlignment.center,
                     children: [
+                      Expanded(
+                        child: Text(
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b2
+                                    .fontSize,
+                          ),
+                          (widget
+                              .productionMaterialCartItem
+                              .name),
+                        ),
+                      ),
                       Row(
-                        spacing: 15,
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        spacing: 5,
                         children: [
-                          Expanded(
-                            child: Row(
-                              spacing: 5,
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    style: TextStyle(
-                                      fontWeight:
-                                          FontWeight.bold,
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
+                          Material(
+                            type: MaterialType.transparency,
+                            child: InkWell(
+                              onTap: widget.editAction,
+                              mouseCursor:
+                                  SystemMouseCursors.click,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(
+                                      vertical: 6.0,
+                                      horizontal: 8,
                                     ),
-                                    (widget
-                                        .productionMaterialCartItem
-                                        .name),
-                                  ),
+                                child: Icon(
+                                  size: 20,
+                                  color:
+                                      Colors.grey.shade400,
+                                  Icons.edit,
                                 ),
-                                Text(
-                                  style: TextStyle(
-                                    fontWeight:
-                                        FontWeight.bold,
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b2
-                                            .fontSize,
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .secColor200,
-                                  ),
-                                  formatLargeNumberDouble(
-                                    widget
-                                        .productionMaterialCartItem
-                                        .quantity,
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ),
-                          Icon(
-                            size: 15,
-                            color: Colors.grey.shade400,
-                            Icons.arrow_forward_ios_rounded,
+                          Material(
+                            type: MaterialType.transparency,
+                            child: InkWell(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (firstContext) {
+                                    return ConfirmationAlert(
+                                      theme: theme,
+                                      message:
+                                          'You are about to remove this material from the cart. Are you sure you want to proceed?',
+                                      title:
+                                          'Remove Material From Cart',
+                                      action: () {
+                                        returnProductionsActionProvider()
+                                            .removeMaterialItemFromCart(
+                                              item:
+                                                  widget
+                                                      .productionMaterialCartItem,
+                                            );
+                                        Navigator.of(
+                                          context,
+                                        ).pop();
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                              mouseCursor:
+                                  SystemMouseCursors.click,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(
+                                      vertical: 6.0,
+                                      horizontal: 8,
+                                    ),
+                                child: Icon(
+                                  size: 20,
+                                  color:
+                                      Colors.red.shade400,
+                                  Icons.clear,
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 5),
-                      Divider(
-                        color: Colors.grey.shade400,
-                        thickness: 0.5,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          // top: 5.0,
-                          // bottom: 5,
-                          right: 15,
-                        ),
+                    ],
+                  ),
+                  SizedBox(height: 5),
+                  Divider(
+                    color: Colors.grey.shade400,
+                    thickness: 0.5,
+                    height: 1,
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
                         child: Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          spacing: 5,
                           children: [
-                            Expanded(
-                              child: Row(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment
-                                        .start,
-                                spacing: 5,
-                                children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b4
-                                              .fontSize,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade600,
-                                    ),
-                                    'Cost:',
-                                  ),
-                                  Flexible(
-                                    child: Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b3
-                                                .fontSize,
-                                        color:
-                                            theme
-                                                .lightModeColor
-                                                .prColor300,
-                                        fontWeight:
-                                            FontWeight.bold,
-                                      ),
-                                      formatMoneyBig(
-                                        amount:
-                                            widget
-                                                .productionMaterialCartItem
-                                                .getCostPrice(),
-                                        context: context,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                                color: Colors.grey.shade600,
                               ),
+                              'Cost:',
                             ),
-                            Row(
-                              spacing: 3,
-                              children: [
-                                Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b4
-                                            .fontSize,
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .prColor300,
-                                    fontWeight:
-                                        FontWeight.bold,
-                                  ),
-                                  formatLargeNumberDouble(
-                                    widget
-                                        .productionMaterialCartItem
-                                        .quantity,
-                                  ),
+                            Flexible(
+                              child: Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b3
+                                          .fontSize,
+                                  color:
+                                      theme
+                                          .lightModeColor
+                                          .prColor300,
+                                  fontWeight:
+                                      FontWeight.bold,
                                 ),
-                              ],
+                                formatMoneyBig(
+                                  amount:
+                                      widget
+                                          .productionMaterialCartItem
+                                          .costPrice ??
+                                      0,
+                                  context: context,
+                                ),
+                              ),
                             ),
                           ],
                         ),
                       ),
+                      Row(
+                        spacing: 5,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              color:
+                                  theme
+                                      .lightModeColor
+                                      .prColor250,
+                            ),
+                            formatLargeNumberDouble(
+                              widget
+                                  .productionMaterialCartItem
+                                  .quantity,
+                            ),
+                          ),
+                          Text(
+                            style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              color: Colors.grey.shade600,
+                            ),
+                            widget
+                                .productionMaterialCartItem
+                                .getUnit(),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

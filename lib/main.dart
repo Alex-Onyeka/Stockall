@@ -44,6 +44,8 @@ import 'package:stockall/providers/nav_provider.dart';
 import 'package:stockall/providers/notifications_provider.dart';
 import 'package:stockall/providers/permission_provider.dart';
 import 'package:stockall/providers/pos_printer/device_service.dart';
+import 'package:stockall/providers/production_folder/materials_usage_action_provider.dart';
+import 'package:stockall/providers/production_folder/materials_usage_provider.dart';
 import 'package:stockall/providers/production_folder/production_item_history_provider.dart';
 import 'package:stockall/providers/production_folder/production_items_provider.dart';
 import 'package:stockall/providers/production_folder/production_items_quantity_update_provider.dart';
@@ -779,6 +781,29 @@ ProductionsActionProvider returnProductionsActionProvider({
   }
 }
 
+MaterialsUsageProvider returnMaterialsUsageProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return MaterialsUsageProvider();
+  } else {
+    return Provider.of<MaterialsUsageProvider>(context);
+  }
+}
+
+MaterialsUsageActionProvider
+returnMaterialsUsageActionProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return MaterialsUsageActionProvider();
+  } else {
+    return Provider.of<MaterialsUsageActionProvider>(
+      context,
+    );
+  }
+}
+
 Widget colorWidget(
   Widget widget,
   bool isPrimary,
@@ -966,6 +991,12 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => ProductionsActionProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => MaterialsUsageProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => MaterialsUsageActionProvider(),
         ),
       ],
       child: MaterialApp(

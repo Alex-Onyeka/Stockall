@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions/production_record.dart';
-import 'package:stockall/classes/temp_production_folder/temp_productions/production_record_materials.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
-import 'package:stockall/pages/production/production_dashboard/productions_section/production_details/platforms/production_details_desktop.dart';
+import 'package:stockall/pages/production/production_dashboard/productions_section/create_production/create_production.dart';
+import 'package:stockall/pages/production/production_dashboard/productions_section/production_details/components/production_material_tile_widget.dart';
 import 'package:stockall/pages/production/production_dashboard/productions_section/production_records_list/production_records_list.dart';
 
 class ProductionDetailsMobile extends StatefulWidget {
@@ -31,13 +33,6 @@ class _ProductionDetailsMobileState
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    List<ProductionRecordMaterials> materials =
-        returnProductionRecordsProvider(context: context)
-            .returnAllProductionRecordMaterials(
-              productionRecords: null,
-              recordUuids: [widget.productionRecordUuid],
-            )
-            .toList();
     var productions =
         returnProductionRecordsProvider(context: context)
             .productionRecords
@@ -251,7 +246,7 @@ class _ProductionDetailsMobileState
                     child: Center(
                       child: returnCompProvider(
                         context,
-                      ).showLoader(message: ''),
+                      ).showLoader(message: 'Loading'),
                     ),
                   ),
                 ],
@@ -389,7 +384,54 @@ class _ProductionDetailsMobileState
                                 PopupMenuItem(
                                   enabled: true,
                                   height: 35,
-                                  onTap: () {},
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (
+                                        confirmDialog,
+                                      ) {
+                                        if (returnProductionsActionProvider()
+                                            .isCartEmpty()) {
+                                          return ConfirmationAlert(
+                                            theme: theme,
+                                            message:
+                                                'You are about to edit this Production Record. Are you sure you want to proceed?',
+                                            title:
+                                                'Edit Production',
+                                            action: () async {
+                                              Navigator.of(
+                                                confirmDialog,
+                                              ).pop();
+                                              await returnProductionsActionProvider()
+                                                  .createProductionsCart(
+                                                    cartItem:
+                                                        productionRecord.toCart(),
+                                                  );
+                                              Navigator.push(
+                                                // ignore: use_build_context_synchronously
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    return CreateProduction();
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        } else {
+                                          return InfoAlert(
+                                            theme: theme,
+                                            message:
+                                                'A Production Creating Process is Currently On. Please Finish Creating the current Production in the Cart before proceeding to edit.',
+                                            title:
+                                                'Production Cart Not Empty',
+                                          );
+                                        }
+                                      },
+                                    );
+                                  },
                                   child: Text(
                                     style: TextStyle(
                                       fontSize:
@@ -576,7 +618,9 @@ class _ProductionDetailsMobileState
                           child: Center(
                             child: returnCompProvider(
                               context,
-                            ).showLoader(message: ''),
+                            ).showLoader(
+                              message: 'Loading',
+                            ),
                           ),
                         );
                       } else {
@@ -790,7 +834,7 @@ class _ProductionDetailsMobileState
                                                           fontWeight:
                                                               FontWeight.bold,
                                                         ),
-                                                        '[ ${formatLargeNumberDouble(productionRecord.quantity ?? 0)} ]',
+                                                        '${formatLargeNumberDouble(productionRecord.quantity ?? 0)} ${productionRecord.getUnit()}',
                                                       ),
                                                     ],
                                                   ),
@@ -874,9 +918,9 @@ class _ProductionDetailsMobileState
                                         spacing: 5,
                                         children: [
                                           Container(
-                                            width:
-                                                double
-                                                    .infinity,
+                                            // width:
+                                            //     double
+                                            //         .infinity,
                                             padding:
                                                 EdgeInsets.all(
                                                   15,
@@ -910,17 +954,84 @@ class _ProductionDetailsMobileState
                                                       MainAxisAlignment
                                                           .spaceBetween,
                                                   children: [
-                                                    Column(
-                                                      spacing:
-                                                          5,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment.start,
-                                                      children: [
-                                                        Visibility(
-                                                          visible:
-                                                              productionRecord.departmentId !=
-                                                              null,
-                                                          child: Row(
+                                                    Expanded(
+                                                      child: Column(
+                                                        spacing:
+                                                            5,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment.start,
+                                                        children: [
+                                                          Visibility(
+                                                            visible:
+                                                                productionRecord.departmentId !=
+                                                                null,
+                                                            child: Row(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment.start,
+                                                              spacing:
+                                                                  5,
+                                                              children: [
+                                                                Text(
+                                                                  style: TextStyle(
+                                                                    fontSize:
+                                                                        theme.mobileTexts.b4.fontSize,
+                                                                    fontWeight:
+                                                                        FontWeight.normal,
+                                                                  ),
+                                                                  'Department:',
+                                                                ),
+                                                                Flexible(
+                                                                  child: Text(
+                                                                    style: TextStyle(
+                                                                      fontSize:
+                                                                          theme.mobileTexts.b4.fontSize,
+                                                                      fontWeight:
+                                                                          FontWeight.bold,
+                                                                    ),
+                                                                    productionRecord.departmentName ??
+                                                                        'Not Set',
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          Row(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment.start,
+                                                            spacing:
+                                                                5,
+                                                            children: [
+                                                              Text(
+                                                                style: TextStyle(
+                                                                  fontSize:
+                                                                      theme.mobileTexts.b4.fontSize,
+                                                                  fontWeight:
+                                                                      FontWeight.normal,
+                                                                  // color:
+                                                                  //     Colors
+                                                                  //         .green,
+                                                                ),
+                                                                'Unit:',
+                                                              ),
+                                                              Flexible(
+                                                                child: Text(
+                                                                  style: TextStyle(
+                                                                    fontSize:
+                                                                        theme.mobileTexts.b4.fontSize,
+                                                                    fontWeight:
+                                                                        FontWeight.bold,
+                                                                    // color:
+                                                                    //     Colors
+                                                                    //         .green,
+                                                                  ),
+                                                                  productionRecord.getUnit(),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          Row(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment.start,
                                                             spacing:
                                                                 5,
                                                             children: [
@@ -931,116 +1042,63 @@ class _ProductionDetailsMobileState
                                                                   fontWeight:
                                                                       FontWeight.normal,
                                                                 ),
-                                                                'Department:',
+                                                                'Materials Qtty:',
                                                               ),
+                                                              Flexible(
+                                                                child: Text(
+                                                                  style: TextStyle(
+                                                                    fontSize:
+                                                                        theme.mobileTexts.b4.fontSize,
+                                                                    fontWeight:
+                                                                        FontWeight.bold,
+                                                                    // color:
+                                                                    //     Colors
+                                                                    //         .green,
+                                                                  ),
+                                                                  formatLargeNumberDouble(
+                                                                    productionRecord.materials.length,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          Row(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment.start,
+                                                            spacing:
+                                                                5,
+                                                            children: [
                                                               Text(
                                                                 style: TextStyle(
                                                                   fontSize:
                                                                       theme.mobileTexts.b4.fontSize,
                                                                   fontWeight:
-                                                                      FontWeight.bold,
+                                                                      FontWeight.normal,
+                                                                  // color:
+                                                                  //     Colors
+                                                                  //         .green,
                                                                 ),
-                                                                productionRecord.departmentName ??
-                                                                    'Not Set',
+                                                                'Comment:',
+                                                              ),
+                                                              Flexible(
+                                                                child: Text(
+                                                                  style: TextStyle(
+                                                                    fontSize:
+                                                                        theme.mobileTexts.b4.fontSize,
+                                                                    fontWeight:
+                                                                        FontWeight.bold,
+                                                                    // color:
+                                                                    //     Colors
+                                                                    //         .green,
+                                                                  ),
+                                                                  productionRecord.comment ??
+                                                                      'Not Set',
+                                                                ),
                                                               ),
                                                             ],
                                                           ),
-                                                        ),
-                                                        Row(
-                                                          spacing:
-                                                              5,
-                                                          children: [
-                                                            Text(
-                                                              style: TextStyle(
-                                                                fontSize:
-                                                                    theme.mobileTexts.b4.fontSize,
-                                                                fontWeight:
-                                                                    FontWeight.normal,
-                                                                // color:
-                                                                //     Colors
-                                                                //         .green,
-                                                              ),
-                                                              'Unit:',
-                                                            ),
-                                                            Text(
-                                                              style: TextStyle(
-                                                                fontSize:
-                                                                    theme.mobileTexts.b4.fontSize,
-                                                                fontWeight:
-                                                                    FontWeight.bold,
-                                                                // color:
-                                                                //     Colors
-                                                                //         .green,
-                                                              ),
-                                                              productionRecord.unit ??
-                                                                  'Unit Not Set',
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        Row(
-                                                          spacing:
-                                                              5,
-                                                          children: [
-                                                            Text(
-                                                              style: TextStyle(
-                                                                fontSize:
-                                                                    theme.mobileTexts.b4.fontSize,
-                                                                fontWeight:
-                                                                    FontWeight.normal,
-                                                                // color:
-                                                                //     Colors
-                                                                //         .green,
-                                                              ),
-                                                              'Materials Qtty:',
-                                                            ),
-                                                            Text(
-                                                              style: TextStyle(
-                                                                fontSize:
-                                                                    theme.mobileTexts.b4.fontSize,
-                                                                fontWeight:
-                                                                    FontWeight.bold,
-                                                                // color:
-                                                                //     Colors
-                                                                //         .green,
-                                                              ),
-                                                              formatLargeNumberDouble(
-                                                                materials.length,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        Row(
-                                                          spacing:
-                                                              5,
-                                                          children: [
-                                                            Text(
-                                                              style: TextStyle(
-                                                                fontSize:
-                                                                    theme.mobileTexts.b4.fontSize,
-                                                                fontWeight:
-                                                                    FontWeight.normal,
-                                                                // color:
-                                                                //     Colors
-                                                                //         .green,
-                                                              ),
-                                                              'Comment:',
-                                                            ),
-                                                            Text(
-                                                              style: TextStyle(
-                                                                fontSize:
-                                                                    theme.mobileTexts.b4.fontSize,
-                                                                fontWeight:
-                                                                    FontWeight.bold,
-                                                                // color:
-                                                                //     Colors
-                                                                //         .green,
-                                                              ),
-                                                              productionRecord.comment ??
-                                                                  'Not Set',
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ],
+                                                        ],
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
@@ -1073,7 +1131,7 @@ class _ProductionDetailsMobileState
                                                       FontWeight
                                                           .bold,
                                                 ),
-                                                'Material Usage Records',
+                                                'Materials Used',
                                               ),
                                             ],
                                           ),
@@ -1108,7 +1166,8 @@ class _ProductionDetailsMobileState
                                               builder: (
                                                 context,
                                               ) {
-                                                if (materials
+                                                if (productionRecord
+                                                    .materials
                                                     .isEmpty) {
                                                   return SizedBox(
                                                     height:
@@ -1156,11 +1215,12 @@ class _ProductionDetailsMobileState
                                                   spacing:
                                                       4,
                                                   children:
-                                                      materials
+                                                      productionRecord
+                                                          .materials
                                                           .map(
                                                             (
                                                               productionMaterial,
-                                                            ) => ProductionMaterialWidget(
+                                                            ) => ProductionMaterialTileWidget(
                                                               productionMaterial:
                                                                   productionMaterial,
                                                             ),

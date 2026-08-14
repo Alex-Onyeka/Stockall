@@ -40,19 +40,27 @@ class ProductionsCartItem extends HiveObject {
   @HiveField(11)
   double? qttyPerGroup;
 
+  @HiveField(12)
+  double? originalCostPerItem;
+
+  @HiveField(13)
+  bool? originalUseGroupQuantity;
+
   ProductionsCartItem({
     required this.uuid,
     required this.itemUuid,
     required this.name,
     required this.quantity,
     this.customPrice,
-    this.setCustomPrice = true,
+    this.setCustomPrice = false,
     required this.addToStock,
     required this.useGroupQuantity,
     this.costPrice,
     this.groupUnit,
     this.qttyPerGroup,
     this.unit,
+    required this.originalCostPerItem,
+    required this.originalUseGroupQuantity,
   });
 
   Map<String, dynamic> toJson() => {
@@ -68,6 +76,8 @@ class ProductionsCartItem extends HiveObject {
     'qtty_per_group': qttyPerGroup,
     'group_unit': groupUnit,
     'cost_price': costPrice,
+    'original_cost_per_item': originalCostPerItem,
+    'original_use_group_quantity': originalUseGroupQuantity,
   };
 
   factory ProductionsCartItem.fromJson(
@@ -86,6 +96,9 @@ class ProductionsCartItem extends HiveObject {
       setCustomPrice: json['set_custom_price'],
       addToStock: json['add_to_stock'],
       useGroupQuantity: json['sell_group'],
+      originalCostPerItem: json['original_cost_per)_item'],
+      originalUseGroupQuantity:
+          json['original_use_group_quantity'],
     );
   }
 
@@ -97,13 +110,26 @@ class ProductionsCartItem extends HiveObject {
     }
   }
 
+  // double getConvertedCostPriceForCartItem() {
+  //   if (setCustomPrice) {
+  //     return (customPrice ?? 0);
+  //   } else {
+  //     return (costPrice ?? 0) *
+  //         getConvertedQuantityForCartItem();
+  //   }
+  // }
+
   double getQttyPerGroup() {
     return qttyPerGroup ?? 1;
   }
 
-  double unitTogetQttyPerGroup() {
-    return quantity / getQttyPerGroup();
-  }
+  // double getConvertedQuantityForCartItem() {
+  //   if (useGroupQuantity == true) {
+  //     return quantity / getQttyPerGroup();
+  //   } else {
+  //     return quantity;
+  //   }
+  // }
 
   double groupToUnitQuantity() {
     return quantity * getQttyPerGroup();
@@ -117,8 +143,46 @@ class ProductionsCartItem extends HiveObject {
     }
   }
 
+  double getRealQuantityForSales({
+    required double qtty,
+    required bool useGroup,
+  }) {
+    if (useGroup == true) {
+      return (qtty) * (qttyPerGroup ?? 1);
+    } else {
+      return qtty;
+    }
+  }
+
+  double getRealCostForSales({
+    required double qtty,
+    required bool useGroup,
+  }) {
+    return (originalCostPerItem ?? 0) *
+        getRealQuantityForSales(
+          qtty: qtty,
+          useGroup: useGroup,
+        );
+  }
+
   String getUnit() {
     if (useGroupQuantity == true) {
+      if (groupUnit == 'Others' || groupUnit == null) {
+        return "Group(s)";
+      } else {
+        return groupUnit ?? 'Group(s)';
+      }
+    } else {
+      if (unit == 'Others') {
+        return "Unit(s)";
+      } else {
+        return unit ?? 'Unit(s)';
+      }
+    }
+  }
+
+  String getUnitForSales({required bool? useGroup}) {
+    if (useGroup == true) {
       if (groupUnit == 'Others' || groupUnit == null) {
         return "Group(s)";
       } else {
@@ -146,6 +210,8 @@ class ProductionsCartItem extends HiveObject {
     double? costPrice,
     String? groupUnit,
     String? unit,
+    double? originalCostPerItem,
+    bool? originalUseGroupQuantity,
   }) {
     return ProductionsCartItem(
       uuid: uuid ?? this.uuid,
@@ -161,6 +227,11 @@ class ProductionsCartItem extends HiveObject {
       groupUnit: groupUnit ?? this.groupUnit,
       qttyPerGroup: qttyPerGroup ?? this.qttyPerGroup,
       unit: unit ?? this.unit,
+      originalCostPerItem:
+          originalCostPerItem ?? this.originalCostPerItem,
+      originalUseGroupQuantity:
+          originalUseGroupQuantity ??
+          this.originalUseGroupQuantity,
     );
   }
 }

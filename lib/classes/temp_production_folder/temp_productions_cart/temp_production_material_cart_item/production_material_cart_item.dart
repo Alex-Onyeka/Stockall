@@ -40,6 +40,21 @@ class ProductionMaterialCartItem extends HiveObject {
   @HiveField(11)
   double? qttyPerGroup;
 
+  @HiveField(12)
+  double? originalCostPerItem;
+
+  @HiveField(13)
+  String? customUnit;
+
+  @HiveField(14)
+  bool? originalUseGroupQuantity;
+
+  @HiveField(15)
+  String? productionItemName;
+
+  @HiveField(16)
+  String? productionItemId;
+
   ProductionMaterialCartItem({
     required this.uuid,
     required this.materialItemUuid,
@@ -53,6 +68,11 @@ class ProductionMaterialCartItem extends HiveObject {
     this.groupUnit,
     this.qttyPerGroup,
     this.unit,
+    required this.originalCostPerItem,
+    required this.customUnit,
+    required this.originalUseGroupQuantity,
+    required this.productionItemId,
+    required this.productionItemName,
   });
 
   Map<String, dynamic> toJson() => {
@@ -68,6 +88,11 @@ class ProductionMaterialCartItem extends HiveObject {
     'qtty_per_group': qttyPerGroup,
     'group_unit': groupUnit,
     'cost_price': costPrice,
+    'original_cost_per_item': originalCostPerItem,
+    'custom_unit': customUnit,
+    'original_use_group_quantity': originalUseGroupQuantity,
+    'production_item_name': productionItemName,
+    'production_item_uuid': productionItemId,
   };
 
   factory ProductionMaterialCartItem.fromJson(
@@ -86,6 +111,12 @@ class ProductionMaterialCartItem extends HiveObject {
       setCustomPrice: json['set_custom_price'],
       addToStock: json['add_to_stock'],
       useGroupQuantity: json['use_group'],
+      originalCostPerItem: json['original_cost_per_item'],
+      customUnit: json['custom_unit'],
+      originalUseGroupQuantity:
+          json['original_use_group_quantity'],
+      productionItemId: json['production_item_uuid'],
+      productionItemName: json['production_item_name'],
     );
   }
 
@@ -118,7 +149,27 @@ class ProductionMaterialCartItem extends HiveObject {
   }
 
   String getUnit() {
-    if (useGroupQuantity == true) {
+    if (customUnit != null) {
+      return customUnit ?? 'Unit(s)';
+    } else {
+      if (useGroupQuantity == true) {
+        if (groupUnit == 'Others' || groupUnit == null) {
+          return "Group(s)";
+        } else {
+          return groupUnit ?? 'Group(s)';
+        }
+      } else {
+        if (unit == 'Others') {
+          return "Unit(s)";
+        } else {
+          return unit ?? 'Unit(s)';
+        }
+      }
+    }
+  }
+
+  String getUnitForSales({required bool? useGroup}) {
+    if (useGroup == true) {
       if (groupUnit == 'Others' || groupUnit == null) {
         return "Group(s)";
       } else {
@@ -146,6 +197,11 @@ class ProductionMaterialCartItem extends HiveObject {
     double? costPrice,
     String? groupUnit,
     String? unit,
+    double? originalCostPerItem,
+    String? customUnit,
+    bool? originalUseGroupQuantity,
+    String? productionItemName,
+    String? productionItemId,
   }) {
     return ProductionMaterialCartItem(
       uuid: uuid ?? this.uuid,
@@ -162,6 +218,16 @@ class ProductionMaterialCartItem extends HiveObject {
       groupUnit: groupUnit ?? this.groupUnit,
       qttyPerGroup: qttyPerGroup ?? this.qttyPerGroup,
       unit: unit ?? this.unit,
+      originalCostPerItem:
+          originalCostPerItem ?? this.originalCostPerItem,
+      customUnit: customUnit ?? this.customUnit,
+      originalUseGroupQuantity:
+          originalUseGroupQuantity ??
+          this.originalUseGroupQuantity,
+      productionItemId:
+          productionItemId ?? this.productionItemId,
+      productionItemName:
+          productionItemName ?? this.productionItemName,
     );
   }
 }

@@ -15,6 +15,7 @@ class GeneralTextField extends StatefulWidget {
   final String? initialValue;
   final FocusNode? focusNode;
   final Function(String)? onSubmitted;
+  final bool? autoFocus;
 
   const GeneralTextField({
     super.key,
@@ -29,6 +30,7 @@ class GeneralTextField extends StatefulWidget {
     this.initialValue,
     this.focusNode,
     this.onSubmitted,
+    this.autoFocus,
   });
 
   @override
@@ -61,6 +63,7 @@ class _GeneralTextFieldState
           widget.title,
         ),
         TextFormField(
+          autofocus: widget.autoFocus ?? false,
           onTap: () {
             if (returnShopProvider()
                 .isOnScreenKeyboardOn()) {

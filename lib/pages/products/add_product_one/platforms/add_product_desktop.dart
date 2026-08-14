@@ -145,10 +145,11 @@ class _AddProductDesktopState
                   isManaged: dataProvider.isManaged,
                   name: widget.nameController.text.trim(),
                   unit:
-                      dataProvider.selectedUnit ?? 'Others',
+                      dataProvider.selectedUnit ??
+                      'Unit(s)',
                   groupUnit:
                       dataProvider.selectedGroupUnit ??
-                      'Others',
+                      'Group(s)',
                   qttyPerGroup:
                       widget
                               .qttyPerGroupController
@@ -1117,7 +1118,7 @@ class _AddProductDesktopState
                                                                 : widget.product?.name ??
                                                                     'Product Name',
                                                         unit:
-                                                            'Others',
+                                                            'Unit(s)',
                                                         isRefundable:
                                                             false,
                                                         costPrice:

@@ -279,7 +279,7 @@ class _AddStorageItemDesktopState
       widget.nameController.text =
           widget.storageProduct?.name ?? '';
       returnData().selectUnit(
-        widget.storageProduct!.unit ?? 'Others',
+        widget.storageProduct!.unit ?? 'Unit(s)',
       );
       returnData().selectGroupUnit(
         unit: widget.storageProduct!.groupUnit,

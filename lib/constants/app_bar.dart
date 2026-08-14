@@ -87,6 +87,6 @@ PreferredSizeWidget appBar({
         }
       },
     ),
-    actions: [widget ?? Container()],
+    actions: widget != null ? [widget] : null,
   );
 }

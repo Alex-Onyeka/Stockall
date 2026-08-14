@@ -777,11 +777,11 @@ class InvoicesProvider extends ChangeNotifier {
 
         TempProductClass productNew = TempProductClass(
           categories: [],
-          groupUnit: 'Others',
+          groupUnit: 'Group(s)',
           storageUuid: null,
           qttyPerGroup: null,
           name: record.productName,
-          unit: record.unit ?? 'Others',
+          unit: record.unit ?? 'Unit(s)',
           isRefundable: false,
           costPrice: costPrice,
           shopId: record.shopId,
@@ -972,7 +972,9 @@ class InvoicesProvider extends ChangeNotifier {
     if (rangeStartDate != null) {
       return departmentInvoices().where((invoice) {
         final created = invoice.createdAt.toLocal();
-        return !created.isBefore(fourAm(rangeStartDate!)) &&
+        return !created.isBefore(
+              fourAm(rangeStartDate ?? DateTime.now()),
+            ) &&
             !created.isAfter(
               fourAmNextDay(rangeEndDate ?? DateTime.now()),
             );
@@ -983,8 +985,12 @@ class InvoicesProvider extends ChangeNotifier {
       return departmentInvoices().where((invoice) {
         final created = invoice.createdAt.toLocal();
         final inRange =
-            !created.isBefore(fourAm(dateSet!)) &&
-            !created.isAfter(fourAmNextDay(dateSet!));
+            !created.isBefore(
+              fourAm(dateSet ?? DateTime.now()),
+            ) &&
+            !created.isAfter(
+              fourAmNextDay(dateSet ?? DateTime.now()),
+            );
 
         return inRange;
       }).toList();

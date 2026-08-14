@@ -15,6 +15,7 @@ class EditCartTextField extends StatefulWidget {
   final Function(String)? onSubmitted;
   final bool? showTitle;
   final Function()? onTap;
+  final bool? autoFocus;
 
   const EditCartTextField({
     super.key,
@@ -28,6 +29,7 @@ class EditCartTextField extends StatefulWidget {
     this.onSubmitted,
     this.showTitle,
     this.onTap,
+    this.autoFocus,
   });
 
   @override
@@ -125,6 +127,7 @@ class _EditCartTextFieldState
         ),
         SizedBox(height: 5),
         TextFormField(
+          autofocus: widget.autoFocus ?? false,
           focusNode: widget.focusNode,
           onFieldSubmitted: widget.onSubmitted,
           onTap: () {
@@ -180,8 +183,8 @@ class _EditCartTextFieldState
             contentPadding: EdgeInsets.only(
               right: 15,
               left: 15,
-              top: 10,
-              bottom: 10,
+              top: 12,
+              bottom: 12,
             ),
             hintStyle: TextStyle(
               color: Colors.grey.shade500,
@@ -202,7 +205,7 @@ class _EditCartTextFieldState
                     widget.theme.lightModeColor.prColor300,
                 width: 1.3,
               ),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(8),
             ),
           ),
           controller: widget.controller,

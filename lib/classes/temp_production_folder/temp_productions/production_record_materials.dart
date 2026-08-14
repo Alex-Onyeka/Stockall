@@ -1,4 +1,7 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/temp_production_folder/temp_productions_cart/temp_production_material_cart_item/production_material_cart_item.dart';
+import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/main.dart';
 
 part 'production_record_materials.g.dart';
 
@@ -52,6 +55,18 @@ class ProductionRecordMaterials extends HiveObject {
   @HiveField(15)
   double? customCost;
 
+  @HiveField(16)
+  double? originalCostPerItem;
+
+  @HiveField(17)
+  String? customUnit;
+
+  @HiveField(18)
+  bool? originalUseGroupQuantity;
+
+  @HiveField(19)
+  String? groupUnit;
+
   ProductionRecordMaterials({
     required this.uuid,
     this.productionRecordId,
@@ -69,6 +84,10 @@ class ProductionRecordMaterials extends HiveObject {
     required this.productionRecordName,
     required this.unit,
     required this.customCost,
+    required this.customUnit,
+    required this.groupUnit,
+    required this.originalCostPerItem,
+    required this.originalUseGroupQuantity,
   });
 
   factory ProductionRecordMaterials.fromJson(
@@ -97,6 +116,13 @@ class ProductionRecordMaterials extends HiveObject {
           json['production_record_name'] as String?,
       unit: json['unit'] as String?,
       customCost: (json['custom_cost'] as num?)?.toDouble(),
+      customUnit: json['custom_unit'] as String?,
+      groupUnit: json['group_unit'] as String?,
+      originalCostPerItem:
+          (json['original_cost_per_item'] as num?)
+              ?.toDouble(),
+      originalUseGroupQuantity:
+          json['original_use_group_quantity'] as bool?,
     );
   }
 
@@ -118,7 +144,75 @@ class ProductionRecordMaterials extends HiveObject {
       'production_record_name': productionRecordName,
       'unit': unit,
       'custom_cost': customCost,
+      'custom_unit': customUnit,
+      'group_unit': groupUnit,
+      'original_use_group_quantity':
+          originalUseGroupQuantity,
+      'original_cost_per_item': originalCostPerItem,
     };
+  }
+
+  static List<ProductionMaterialCartItem>
+  toCartMaterialsItem({
+    required List<ProductionRecordMaterials> items,
+  }) {
+    return items
+        .map(
+          (item) => ProductionMaterialCartItem(
+            uuid: item.uuid,
+            materialItemUuid: item.materialUuid,
+            name: item.materialName,
+            quantity: item.quantity,
+            addToStock: false,
+            useGroupQuantity: item.isGroup,
+            originalCostPerItem: item.originalCostPerItem,
+            customUnit: item.customUnit,
+            originalUseGroupQuantity:
+                item.originalUseGroupQuantity,
+            productionItemId: item.productionRecordId,
+            productionItemName: item.productionRecordName,
+            costPrice: item.totalCost,
+            customPrice: item.customCost,
+            groupUnit: item.groupUnit,
+            qttyPerGroup: item.qttyPerGroup,
+            setCustomPrice: false,
+            unit: item.unit,
+          ),
+        )
+        .toList();
+  }
+
+  static List<ProductionRecordMaterials>
+  fromCartMaterialItem({
+    required List<ProductionMaterialCartItem> items,
+  }) {
+    return items
+        .map(
+          (item) => ProductionRecordMaterials(
+            createdAt: DateTime.now(),
+            customCost: item.customPrice,
+            departmentName: currentDepartment()?.name,
+            departmentUuid: currentDepartment()?.uuid,
+            isGroup: item.useGroupQuantity,
+            materialName: item.name,
+            materialUuid: item.materialItemUuid ?? '',
+            productionRecordName: item.productionItemName,
+            qttyPerGroup: item.qttyPerGroup,
+            quantity: item.quantity,
+            staffName: currentUser().name,
+            staffUuid: currentUser().userId,
+            totalCost: item.costPrice ?? 0,
+            unit: item.unit,
+            uuid: item.uuid ?? uuidGen(),
+            productionRecordId: item.productionItemId,
+            customUnit: item.customUnit,
+            groupUnit: item.groupUnit,
+            originalCostPerItem: item.originalCostPerItem,
+            originalUseGroupQuantity:
+                item.originalUseGroupQuantity,
+          ),
+        )
+        .toList();
   }
 
   ProductionRecordMaterials copyWith({
@@ -138,6 +232,10 @@ class ProductionRecordMaterials extends HiveObject {
     String? productionRecordName,
     String? unit,
     double? customCost,
+    String? customUnit,
+    String? groupUnit,
+    double? originalCostPerItem,
+    bool? originalUseGroupQuantity,
   }) {
     return ProductionRecordMaterials(
       uuid: uuid ?? this.uuid,
@@ -158,10 +256,29 @@ class ProductionRecordMaterials extends HiveObject {
           productionRecordName ?? this.productionRecordName,
       unit: unit ?? this.unit,
       customCost: customCost ?? this.customCost,
+      customUnit: customUnit ?? this.customUnit,
+      groupUnit: groupUnit ?? this.groupUnit,
+      originalCostPerItem:
+          originalCostPerItem ?? this.originalCostPerItem,
+      originalUseGroupQuantity:
+          originalUseGroupQuantity ??
+          this.originalUseGroupQuantity,
     );
   }
 
   double getTotalCost() {
-    return customCost ?? ((totalCost ?? 0) * quantity);
+    return customCost ?? (totalCost ?? 0);
+  }
+
+  String getUnit() {
+    if (isGroup == true) {
+      return groupUnit == 'Others'
+          ? 'Group(s)'
+          : groupUnit ?? 'Group(s)';
+    } else {
+      return unit == 'Others'
+          ? 'Unit(s)'
+          : unit ?? 'Unit(s)';
+    }
   }
 }

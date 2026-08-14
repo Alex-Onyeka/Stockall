@@ -25,10 +25,15 @@ class _ProductionsDashboardMobileState
     extends State<ProductionsDashboardMobile> {
   @override
   Widget build(BuildContext context) {
-    var recordsProv = returnProductionRecordsProvider();
-    var itemsProv = returnProductionItemHistoryProvider();
-    var productionItemsProv =
-        returnProductionItemsProvider();
+    var recordsProv = returnProductionRecordsProvider(
+      context: context,
+    );
+    var itemsProv = returnProductionItemHistoryProvider(
+      context: context,
+    );
+    var productionItemsProv = returnProductionItemsProvider(
+      context: context,
+    );
     var theme = returnTheme(context);
     return Scaffold(
       appBar: appBar(
@@ -174,21 +179,16 @@ class _ProductionsDashboardMobileState
                                       .lightModeColor
                                       .tertColor200,
                               entries:
-                                  recordsProv
-                                      .returnAllProductionRecordMaterials(
-                                        productionRecords:
-                                            null,
+                                  returnMaterialsUsageProvider(
+                                        context: context,
                                       )
+                                      .returnOwnProductionMaterialsUsageByDayOrWeek()
                                       .length,
                               title: 'Materials Used',
                               number:
-                                  recordsProv
-                                      .returnAllProductionRecordMaterials(
-                                        productionRecords:
-                                            null,
-                                      )
-                                      .length
-                                      .toDouble(),
+                                  returnMaterialsUsageProvider(
+                                    context: context,
+                                  ).getTotalMaterialsUsed(),
                               icon:
                                   Icons
                                       .app_registration_rounded,
@@ -197,10 +197,7 @@ class _ProductionsDashboardMobileState
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) {
-                                      return MaterialsUsagePage(
-                                        fromMaterialUsagePage:
-                                            false,
-                                      );
+                                      return MaterialsUsagePage();
                                     },
                                   ),
                                 );
@@ -220,30 +217,35 @@ class _ProductionsDashboardMobileState
                         Authorizations()
                             .addProductionRecords,
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: 500,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 15.0,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: 500,
+                          ),
+                          child: MainButtonP(
+                            themeProvider: theme,
+                            action: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return CreateProduction();
+                                  },
+                                ),
+                              );
+                            },
+                            text: 'RECORD PRODUCTION',
+                          ),
                         ),
-                        child: MainButtonP(
-                          themeProvider: theme,
-                          action: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return CreateProduction();
-                                },
-                              ),
-                            );
-                          },
-                          text: 'RECORD PRODUCTION',
-                        ),
-                      ),
-                      SizedBox(height: 15),
-                    ],
+                        SizedBox(height: 15),
+                      ],
+                    ),
                   ),
                 ),
                 Padding(

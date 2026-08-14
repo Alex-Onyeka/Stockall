@@ -113,20 +113,29 @@ class ProductionItemsProvider extends ChangeNotifier {
         for (var item in tempProductionItems) {
           try {
             // Insert all at once
-            await supabase
-                .from(tableName)
-                .insert(
-                  item.productionItem.toJson(
-                    isIncludeQuantity:
-                        item.includeQuantity ?? false,
-                  ),
-                )
-                .select();
-            count++;
-            await CreatedProductionItemsFunc()
-                .deleteProductionItem(
-                  item.productionItem.uuid!,
-                );
+            var res =
+                await supabase
+                    .from(tableName)
+                    .insert(
+                      item.productionItem.toJson(
+                        isIncludeQuantity:
+                            item.includeQuantity ?? true,
+                      ),
+                    )
+                    .select()
+                    .maybeSingle();
+            if (res != null) {
+              count++;
+              await CreatedProductionItemsFunc()
+                  .deleteProductionItem(
+                    item.productionItem.uuid!,
+                  );
+            } else {
+              await createErrorLog(
+                error:
+                    'Error Synchronizing Created Production Item ${item.productionItem.name}',
+              );
+            }
           } on PostgrestException catch (e) {
             if (e.code == '23505') {
               await CreatedProductionItemsFunc()

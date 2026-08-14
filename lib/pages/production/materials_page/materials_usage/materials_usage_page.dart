@@ -5,13 +5,8 @@ import 'package:stockall/pages/production/materials_page/materials_usage/platfor
 import 'package:stockall/pages/production/materials_page/materials_usage/platforms/materials_usage_desktop.dart';
 
 class MaterialsUsagePage extends StatefulWidget {
-  final String? productionRecordUuid;
-  final bool fromMaterialUsagePage;
-  const MaterialsUsagePage({
-    super.key,
-    this.productionRecordUuid,
-    required this.fromMaterialUsagePage,
-  });
+  final String? materialUuid;
+  const MaterialsUsagePage({super.key, this.materialUuid});
 
   @override
   State<MaterialsUsagePage> createState() =>
@@ -24,8 +19,8 @@ class _MaterialsUsagePageState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      returnProductionRecordsProvider()
-          .getProductionRecords(shopId());
+      returnMaterialsUsageProvider()
+          .getProductionMaterialsUsage(shopId());
     });
   }
 
@@ -33,7 +28,7 @@ class _MaterialsUsagePageState
   void dispose() {
     super.dispose();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      returnProductionRecordsProvider().clearDate();
+      returnMaterialsUsageProvider().clearDate();
     });
   }
 
@@ -43,17 +38,11 @@ class _MaterialsUsagePageState
       builder: (context, constraints) {
         if (constraints.maxWidth < tabletScreenSmall) {
           return MaterialsUsageMobile(
-            productionRecordUuid:
-                widget.productionRecordUuid,
-            fromMaterialUsagePage:
-                widget.fromMaterialUsagePage,
+            materialUuid: widget.materialUuid,
           );
         } else {
           return MaterialsUsageDesktop(
-            productionRecordUuid:
-                widget.productionRecordUuid,
-            fromMaterialUsagePage:
-                widget.fromMaterialUsagePage,
+            materialUuid: widget.materialUuid,
           );
         }
       },

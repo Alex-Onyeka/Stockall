@@ -1317,7 +1317,7 @@ class _ReceiptDetailsContainerState
                                                                 fontWeight:
                                                                     FontWeight.bold,
                                                               ),
-                                                              'Qty: ${productRecord.quantity.toString()} ${productRecord.unit == 'Others' || productRecord.unit == null ? 'Item(s)' : productRecord.unit}',
+                                                              'Qty: ${productRecord.quantity.toString()} ${productRecord.unit == 'Others' || productRecord.unit == null ? 'Unit(s)' : productRecord.unit}',
                                                             ),
                                                           ),
                                                         ],
@@ -1492,7 +1492,7 @@ class _ReceiptDetailsContainerState
                                                                 fontSize:
                                                                     widget.theme.mobileTexts.b4.fontSize,
                                                               ),
-                                                              'Qty: ${productRecord.quantity.toString()} ${productRecord.unit == 'Others' || productRecord.unit == null ? 'Item(s)' : productRecord.unit}',
+                                                              'Qty: ${productRecord.quantity.toString()} ${productRecord.unit == 'Others' || productRecord.unit == null ? 'Unit(s)' : productRecord.unit}',
                                                             ),
                                                           ],
                                                         ),

@@ -39,6 +39,7 @@ class _PinCodeWidgetState extends State<PinCodeWidget> {
   Widget build(BuildContext context) {
     var theme = returnTheme(context, listen: false);
     return PinCodeTextField(
+      autoFocus: true,
       focusNode: widget.focusNode,
       onTap: widget.onTap,
       beforeTextPaste: (text) => true,

@@ -446,7 +446,7 @@ class _ProductionItemsDetailsDesktopState
                                                     fontWeight:
                                                         FontWeight.normal,
                                                   ),
-                                                  'Manage this ProductionItem?',
+                                                  'Manage this Item?',
                                                 ),
                                                 InkWell(
                                                   mouseCursor:
@@ -500,6 +500,8 @@ class _ProductionItemsDetailsDesktopState
                                                                     quantityChange:
                                                                         null,
                                                                     productionItem: ProductionItem(
+                                                                      useGroupUnit:
+                                                                          productionItem.useGroupUnit,
                                                                       categories:
                                                                           productionItem.categories,
                                                                       departmentName:
@@ -646,9 +648,8 @@ class _ProductionItemsDetailsDesktopState
                                           ),
                                           Visibility(
                                             visible:
-                                                returnShopProvider()
-                                                    .userShop()
-                                                    ?.useGroupUnit ==
+                                                productionItem
+                                                    .useGroupUnit ==
                                                 true,
                                             child: BottomInfoSection(
                                               theme:
@@ -1080,7 +1081,7 @@ class _ProductionItemsDetailsDesktopState
             children: [
               Visibility(
                 visible:
-                    shop(context)?.useGroupUnit == true,
+                    productionItem.useGroupUnit == true,
                 child: Expanded(
                   child: TabContainer(
                     isMoney: false,
@@ -1113,7 +1114,7 @@ class _ProductionItemsDetailsDesktopState
               ),
               Visibility(
                 visible:
-                    shop(context)?.useGroupUnit == true,
+                    productionItem.useGroupUnit == true,
                 child: SizedBox(width: 10),
               ),
               Expanded(
@@ -1362,6 +1363,9 @@ class _ProductionItemsDetailsDesktopState
                                                 quantityChange:
                                                     null,
                                                 productionItem: ProductionItem(
+                                                  useGroupUnit:
+                                                      productionItem
+                                                          .useGroupUnit,
                                                   categories:
                                                       productionItem
                                                           .categories,

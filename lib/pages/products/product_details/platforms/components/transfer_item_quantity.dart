@@ -54,12 +54,12 @@ class _TransferItemQuantityWidgetState
       return widget.item.groupUnit == null ||
               widget.item.groupUnit == 'Others'
           ? ''
-          : " Group";
+          : " Group(s)";
     } else {
       return widget.item.unit.isEmpty ||
               widget.item.unit == 'Others'
           ? ''
-          : " Unit";
+          : " Unit(s)";
     }
   }
 

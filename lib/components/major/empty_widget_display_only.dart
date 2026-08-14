@@ -29,114 +29,129 @@ class EmptyWidgetDisplayOnly extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: SizedBox(
-        // width: 300,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Visibility(
-              visible: icon != null,
-              child: Container(
-                padding: EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.grey.shade300,
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    Visibility(
-                      visible: svg != null,
-                      child: SvgPicture.asset(
-                        svg ?? '',
-                        height: height,
-                      ),
-                    ),
-                    Visibility(
-                      visible: icon != null,
-                      child: Icon(
-                        icon,
-                        size: height,
-                        color:
-                            theme.lightModeColor.prColor300,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            SizedBox(height: 15),
-            Text(
-              style: TextStyle(
-                fontSize: theme.mobileTexts.b1.fontSize,
-                fontWeight: FontWeight.bold,
-              ),
-              title,
-            ),
-            SizedBox(height: 5),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Text(
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b2.fontSize,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    subText,
-                  ),
-                ),
-              ],
-            ),
-            Visibility(
-              visible: altAction != null,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Flexible(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 300),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(height: 10),
-                  InkWell(
-                    mouseCursor: SystemMouseCursors.click,
-                    onTap: () {
-                      altAction!();
-                    },
+                  Visibility(
+                    visible: icon != null,
                     child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 50,
-                        vertical: 15,
+                      padding: EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.grey.shade300,
+                        ),
                       ),
-                      child: Row(
-                        spacing: 5,
-                        mainAxisAlignment:
-                            MainAxisAlignment.center,
+                      child: Stack(
                         children: [
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b1
-                                      .fontSize,
+                          Visibility(
+                            visible: svg != null,
+                            child: SvgPicture.asset(
+                              svg ?? '',
+                              height: height,
                             ),
-                            altActionText ?? '',
                           ),
-                          Icon(
-                            size: 18,
-                            altIcon ?? Icons.refresh,
+                          Visibility(
+                            visible: icon != null,
+                            child: Icon(
+                              icon,
+                              size: height,
+                              color:
+                                  theme
+                                      .lightModeColor
+                                      .prColor300,
+                            ),
                           ),
                         ],
                       ),
                     ),
                   ),
+
+                  SizedBox(height: 15),
+                  Text(
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b1.fontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    title,
+                  ),
+                  SizedBox(height: 5),
+                  Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b2
+                                    .fontSize,
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          subText,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Visibility(
+                    visible: altAction != null,
+                    child: Column(
+                      children: [
+                        SizedBox(height: 10),
+                        InkWell(
+                          mouseCursor:
+                              SystemMouseCursors.click,
+                          onTap: () {
+                            altAction!();
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 50,
+                              vertical: 15,
+                            ),
+                            child: Row(
+                              spacing: 5,
+                              mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b1
+                                            .fontSize,
+                                  ),
+                                  altActionText ?? '',
+                                ),
+                                Icon(
+                                  size: 18,
+                                  altIcon ?? Icons.refresh,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

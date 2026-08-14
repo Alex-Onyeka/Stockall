@@ -4,7 +4,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/production/materials_page/add_material/platforms/add_material_desktop.dart';
-import 'package:stockall/pages/production/materials_page/add_material/platforms/add_product_mobile.dart';
+import 'package:stockall/pages/production/materials_page/add_material/platforms/add_material_mobile.dart';
 
 class AddMaterial extends StatefulWidget {
   final MaterialClass? material;

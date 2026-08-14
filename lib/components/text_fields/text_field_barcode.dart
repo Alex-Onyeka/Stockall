@@ -11,6 +11,7 @@ class TextFieldBarcode extends StatefulWidget {
   final Function()? onPressedScan;
   final FocusNode? node;
   final String? hintText;
+  final bool? autoFocus;
 
   const TextFieldBarcode({
     super.key,
@@ -20,6 +21,7 @@ class TextFieldBarcode extends StatefulWidget {
     required this.clearTextField,
     this.hintText,
     this.node,
+    this.autoFocus,
   });
 
   @override
@@ -54,6 +56,7 @@ class _TextFieldBarcodeState
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return TextFormField(
+      autofocus: widget.autoFocus ?? false,
       focusNode: widget.node ?? _node,
       controller: widget.searchController,
       onChanged: widget.onChanged,

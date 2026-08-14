@@ -61,6 +61,9 @@ class MaterialClass {
   @HiveField(18)
   List<String>? categories;
 
+  @HiveField(19)
+  bool? useGroupUnit;
+
   MaterialClass({
     required this.name,
     this.barcode,
@@ -81,6 +84,7 @@ class MaterialClass {
     required this.qttyPerGroup,
     this.categoryUuid,
     required this.categories,
+    required this.useGroupUnit,
   });
 
   factory MaterialClass.fromJson(
@@ -122,6 +126,7 @@ class MaterialClass {
               ?.map((item) => item.toString())
               .toList() ??
           [],
+      useGroupUnit: json['use_group_unit'] as bool?,
     );
   }
 
@@ -149,6 +154,7 @@ class MaterialClass {
         'qtty_per_group': qttyPerGroup,
         'category_uuid': categoryUuid,
         'categories': categories ?? [],
+        'use_group_unit': useGroupUnit,
       };
     } else {
       return {
@@ -170,6 +176,7 @@ class MaterialClass {
         'qtty_per_group': qttyPerGroup,
         'category_uuid': categoryUuid,
         'categories': categories ?? [],
+        'use_group_unit': useGroupUnit,
       };
     }
   }
@@ -194,6 +201,7 @@ class MaterialClass {
     String? categoryUuid,
     bool? isManaged,
     List<String>? categories,
+    bool? useGroupUnit,
   }) {
     return MaterialClass(
       name: name ?? this.name,
@@ -215,6 +223,49 @@ class MaterialClass {
       categoryUuid: categoryUuid ?? this.categoryUuid,
       quantity: quantity ?? this.quantity,
       categories: categories ?? this.categories,
+      useGroupUnit: useGroupUnit ?? this.useGroupUnit,
     );
+  }
+
+  double getRealQuantity() {
+    if (useGroupUnit == true) {
+      return (quantity ?? 0) * (qttyPerGroup ?? 1);
+    } else {
+      return quantity ?? 0;
+    }
+  }
+
+  double getRealQuantityForSales({
+    required double qtty,
+    required bool useGroup,
+  }) {
+    if (useGroup == true) {
+      return (qtty) * (qttyPerGroup ?? 1);
+    } else {
+      return qtty;
+    }
+  }
+
+  String getUnitForSales({required bool useGroup}) {
+    if (useGroup == true) {
+      return groupUnit ?? 'Group(s)';
+    } else {
+      return unit == 'Others' ? 'Unit(s)' : unit;
+    }
+  }
+
+  double getRealCost() {
+    return costPrice * getRealQuantity();
+  }
+
+  double getRealCostForSales({
+    required double qtty,
+    required bool useGroup,
+  }) {
+    return costPrice *
+        getRealQuantityForSales(
+          qtty: qtty,
+          useGroup: useGroup,
+        );
   }
 }

@@ -769,7 +769,7 @@ class _ProductDetailsMobileState
                                                                     product.storageUuid,
                                                               )
                                                               .isNotEmpty
-                                                      ? ' Quantity Of ${returnStorageProductProvider().storageProductListMain.where((storage) => storage.uuid == product.storageUuid).first.unit ?? 'Others'}'
+                                                      ? ' Quantity Of ${returnStorageProductProvider().storageProductListMain.where((storage) => storage.uuid == product.storageUuid).first.unit ?? 'Unit(s)'}'
                                                       : product.unit !=
                                                           'Others'
                                                       ? ' Qtty Of ${product.unit}'
@@ -869,7 +869,7 @@ class _ProductDetailsMobileState
                                                                       product.storageUuid,
                                                                 )
                                                                 .isNotEmpty
-                                                        ? ' Quantity Of ${returnStorageProductProvider().storageProductListMain.where((storage) => storage.uuid == product.storageUuid).first.groupUnit ?? 'Others'}'
+                                                        ? ' Quantity Of ${returnStorageProductProvider().storageProductListMain.where((storage) => storage.uuid == product.storageUuid).first.groupUnit ?? 'Group(s)'}'
                                                         : product.groupUnit !=
                                                                 null &&
                                                             product.groupUnit !=
@@ -1443,7 +1443,7 @@ class _ProductDetailsMobileState
                                                   )
                                                   .first
                                                   .unit ??
-                                              'Others'
+                                              'Unit(s)'
                                           : '${product.unit.substring(0, 1).toUpperCase()}${product.unit.substring(1)}',
                                   text: 'Unit',
                                 ),

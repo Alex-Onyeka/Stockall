@@ -79,7 +79,6 @@ class _AddMaterialDesktopState
         },
       );
     } else {
-      final safeContext = context;
       var samePro = returnMaterialsProvider()
           .materialList()
           .where(
@@ -88,10 +87,10 @@ class _AddMaterialDesktopState
                 widget.nameController.text.toLowerCase(),
           );
       showDialog(
-        context: safeContext,
+        context: context,
         builder: (confirmDialog) {
           return ConfirmationAlert(
-            theme: returnTheme(safeContext),
+            theme: returnTheme(context),
             message:
                 samePro.isNotEmpty
                     ? 'Material with the name  ${widget.nameController.text.toUpperCase()}  already Exists in your Inventory. Are you sure you want to proceed to create a duplicate Material?'
@@ -124,16 +123,18 @@ class _AddMaterialDesktopState
               await materialProvider.createMaterial(
                 materialsItemHistoy: materialsItemHistory,
                 material: MaterialClass(
+                  useGroupUnit: dataProvider.useGroupUnit,
                   categories:
                       dataProvider.selectedCategories
                           .toList(),
                   isManaged: dataProvider.isManaged,
                   name: widget.nameController.text.trim(),
                   unit:
-                      dataProvider.selectedUnit ?? 'Others',
+                      dataProvider.selectedUnit ??
+                      'Unit(s)',
                   groupUnit:
                       dataProvider.selectedGroupUnit ??
-                      'Others',
+                      'Group(s)',
                   qttyPerGroup:
                       widget
                               .qttyPerGroupController
@@ -190,15 +191,15 @@ class _AddMaterialDesktopState
               });
 
               // Clear data before popping
-              if (safeContext.mounted) {
+              if (context.mounted) {
                 dataProvider.clearFields();
               }
 
               Future.delayed(Duration(seconds: 2), () {
                 // Pop current screen
-                if (safeContext.mounted) {
+                if (context.mounted) {
                   Navigator.of(
-                    safeContext,
+                    context,
                   ).pop(); // pop current page
                 }
               });
@@ -210,9 +211,8 @@ class _AddMaterialDesktopState
   }
 
   void updateMaterial() {
-    final safeContext = context;
     showDialog(
-      context: safeContext,
+      context: context,
       builder: (confirmDialog) {
         var theme = returnTheme(context);
         return ConfirmationAlert(
@@ -236,6 +236,7 @@ class _AddMaterialDesktopState
               isQuantityUpdate: false,
               quantityChange: null,
               material: MaterialClass(
+                useGroupUnit: dataProvider.useGroupUnit,
                 categories:
                     dataProvider.selectedCategories
                         .toList(),
@@ -302,12 +303,12 @@ class _AddMaterialDesktopState
                 showSuccess = true;
               });
 
-              if (safeContext.mounted) {
+              if (context.mounted) {
                 dataProvider.clearFields();
               }
 
-              if (safeContext.mounted) {
-                Navigator.of(safeContext).pop();
+              if (context.mounted) {
+                Navigator.of(context).pop();
               }
             }
           },
@@ -366,6 +367,8 @@ class _AddMaterialDesktopState
           widget.material!.costPrice.toString();
 
       returnData().isManaged = widget.material!.isManaged;
+      returnData().useGroupUnit =
+          widget.material!.useGroupUnit ?? false;
       returnData().selectUnit(widget.material!.unit);
       returnData().selectGroupUnit(
         unit: widget.material!.groupUnit,
@@ -1149,6 +1152,78 @@ class _AddMaterialDesktopState
                                         ),
                                         Column(
                                           children: [
+                                            InkWell(
+                                              mouseCursor:
+                                                  SystemMouseCursors
+                                                      .click,
+                                              onTap: () {
+                                                returnData()
+                                                    .toggleUseGroupUnit();
+                                                FocusManager
+                                                    .instance
+                                                    .primaryFocus
+                                                    ?.unfocus();
+                                              },
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Flexible(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                theme.mobileTexts.b1.fontSize,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                          'Use Group Unit?',
+                                                        ),
+                                                        Column(
+                                                          spacing:
+                                                              5,
+                                                          children: [
+                                                            Text(
+                                                              style: TextStyle(
+                                                                fontSize:
+                                                                    10,
+                                                              ),
+                                                              'This Controls if you want to also manage the group unit of this item  (E.g: Single Unit: Bottle, Group Unit: Crate.)',
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Checkbox(
+                                                    activeColor:
+                                                        theme.lightModeColor.secColor100,
+                                                    value:
+                                                        returnData(
+                                                          context:
+                                                              context,
+                                                        ).useGroupUnit,
+                                                    onChanged: (
+                                                      value,
+                                                    ) {
+                                                      returnData()
+                                                          .toggleUseGroupUnit();
+                                                      FocusManager
+                                                          .instance
+                                                          .primaryFocus
+                                                          ?.unfocus();
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
                                             Row(
                                               children: [
                                                 Expanded(
@@ -1206,10 +1281,10 @@ class _AddMaterialDesktopState
                                                 ),
                                                 Visibility(
                                                   visible:
-                                                      returnShopProvider(
+                                                      returnData(
                                                         context:
                                                             context,
-                                                      ).userShop()?.useGroupUnit ==
+                                                      ).useGroupUnit ==
                                                       true,
                                                   child: SizedBox(
                                                     width:
@@ -1218,10 +1293,10 @@ class _AddMaterialDesktopState
                                                 ),
                                                 Visibility(
                                                   visible:
-                                                      returnShopProvider(
+                                                      returnData(
                                                         context:
                                                             context,
-                                                      ).userShop()?.useGroupUnit ==
+                                                      ).useGroupUnit ==
                                                       true,
                                                   child: Expanded(
                                                     child: SubWrapper(
@@ -1284,10 +1359,10 @@ class _AddMaterialDesktopState
                                             ),
                                             Visibility(
                                               visible:
-                                                  returnShopProvider(
+                                                  returnData(
                                                     context:
                                                         context,
-                                                  ).userShop()?.useGroupUnit ==
+                                                  ).useGroupUnit ==
                                                   true,
                                               child: Column(
                                                 children: [

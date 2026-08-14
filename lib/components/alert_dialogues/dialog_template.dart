@@ -14,6 +14,7 @@ class DialogTemplate extends StatelessWidget {
   final bool? showBottomActionButtons;
   final bool? showTopSection;
   final Widget? topRightWidget;
+  final Widget? topLeftWidget;
   const DialogTemplate({
     super.key,
     required this.theme,
@@ -26,6 +27,7 @@ class DialogTemplate extends StatelessWidget {
     this.showBottomActionButtons,
     this.showTopSection,
     this.topRightWidget,
+    this.topLeftWidget,
   });
 
   @override
@@ -66,9 +68,21 @@ class DialogTemplate extends StatelessWidget {
                               MainAxisAlignment
                                   .spaceBetween,
                           children: [
-                            Opacity(
-                              opacity: 0,
-                              child: topRightWidget,
+                            Builder(
+                              builder: (context) {
+                                if (topLeftWidget != null) {
+                                  return topLeftWidget ??
+                                      Container();
+                                } else {
+                                  return IgnorePointer(
+                                    ignoring: true,
+                                    child: Opacity(
+                                      opacity: 0,
+                                      child: topRightWidget,
+                                    ),
+                                  );
+                                }
+                              },
                             ),
                             Text(
                               textAlign: TextAlign.center,

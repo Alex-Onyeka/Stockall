@@ -363,9 +363,8 @@ class _ProductionItemsDetailsMobileState
                                           ),
                                           Visibility(
                                             visible:
-                                                shop(
-                                                  context,
-                                                )?.useGroupUnit ==
+                                                productionItem
+                                                    .useGroupUnit ==
                                                 true,
                                             child: SizedBox(
                                               width: 10,
@@ -373,9 +372,8 @@ class _ProductionItemsDetailsMobileState
                                           ),
                                           Visibility(
                                             visible:
-                                                shop(
-                                                  context,
-                                                )?.useGroupUnit ==
+                                                productionItem
+                                                    .useGroupUnit ==
                                                 true,
                                             child: Expanded(
                                               child: TabContainerMobile(
@@ -582,6 +580,8 @@ class _ProductionItemsDetailsMobileState
                                                           quantityChange:
                                                               null,
                                                           productionItem: ProductionItem(
+                                                            useGroupUnit:
+                                                                productionItem.useGroupUnit,
                                                             categories:
                                                                 productionItem.categories,
                                                             departmentName:
@@ -737,9 +737,8 @@ class _ProductionItemsDetailsMobileState
                                 ),
                                 Visibility(
                                   visible:
-                                      returnShopProvider()
-                                          .userShop()
-                                          ?.useGroupUnit ==
+                                      productionItem
+                                          .useGroupUnit ==
                                       true,
                                   child: BottomInfoSection(
                                     theme: widget.theme,
@@ -1218,6 +1217,9 @@ class _ProductionItemsDetailsMobileState
                                           quantityChange:
                                               null,
                                           productionItem: ProductionItem(
+                                            useGroupUnit:
+                                                productionItem
+                                                    .useGroupUnit,
                                             categories:
                                                 productionItem
                                                     .categories,

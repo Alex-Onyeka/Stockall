@@ -155,7 +155,7 @@ class ProductionsRecordTileState
                                       fontSize:
                                           theme
                                               .mobileTexts
-                                              .b3
+                                              .b4
                                               .fontSize,
                                       fontWeight:
                                           FontWeight.normal,

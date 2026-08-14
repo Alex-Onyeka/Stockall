@@ -121,15 +121,17 @@ class _AddMaterialMobileState
               await materialProvider.createMaterial(
                 materialsItemHistoy: materialsItemHistory,
                 material: MaterialClass(
+                  useGroupUnit: dataProvider.useGroupUnit,
                   categories:
                       dataProvider.selectedCategories,
                   isManaged: dataProvider.isManaged,
                   name: widget.nameController.text.trim(),
                   unit:
-                      dataProvider.selectedUnit ?? 'Others',
+                      dataProvider.selectedUnit ??
+                      'Unit(s)',
                   groupUnit:
                       dataProvider.selectedGroupUnit ??
-                      'Others',
+                      'Group(s)',
                   qttyPerGroup:
                       widget
                               .qttyPerGroupController
@@ -232,6 +234,7 @@ class _AddMaterialMobileState
               isQuantityUpdate: false,
               quantityChange: null,
               material: MaterialClass(
+                useGroupUnit: dataProvider.useGroupUnit,
                 categories: dataProvider.selectedCategories,
                 departmentName:
                     dataProvider.departmentUuid != null
@@ -356,6 +359,8 @@ class _AddMaterialMobileState
           widget.material!.costPrice.toString();
 
       returnData().isManaged = widget.material!.isManaged;
+      returnData().useGroupUnit =
+          widget.material!.useGroupUnit ?? false;
       returnData().selectUnit(widget.material!.unit);
       returnData().selectGroupUnit(
         unit: widget.material!.groupUnit,
@@ -1119,6 +1124,80 @@ class _AddMaterialMobileState
                                           true,
                                       child: Column(
                                         children: [
+                                          InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
+                                            onTap: () {
+                                              returnData()
+                                                  .toggleUseGroupUnit();
+                                              FocusManager
+                                                  .instance
+                                                  .primaryFocus
+                                                  ?.unfocus();
+                                            },
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Flexible(
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              theme.mobileTexts.b1.fontSize,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                        'Use Group Unit?',
+                                                      ),
+                                                      Column(
+                                                        spacing:
+                                                            5,
+                                                        children: [
+                                                          Text(
+                                                            style: TextStyle(
+                                                              fontSize:
+                                                                  10,
+                                                            ),
+                                                            'This Controls if you want to also manage the group unit of this item  (E.g: Single Unit: Bottle, Group Unit: Crate.)',
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Checkbox(
+                                                  activeColor:
+                                                      theme
+                                                          .lightModeColor
+                                                          .secColor100,
+                                                  value:
+                                                      returnData(
+                                                        context:
+                                                            context,
+                                                      ).useGroupUnit,
+                                                  onChanged: (
+                                                    value,
+                                                  ) {
+                                                    returnData()
+                                                        .toggleUseGroupUnit();
+                                                    FocusManager
+                                                        .instance
+                                                        .primaryFocus
+                                                        ?.unfocus();
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
                                           SubWrapper(
                                             isVisible:
                                                 !ItemsAuthAction()
@@ -1171,10 +1250,10 @@ class _AddMaterialMobileState
                                           ),
                                           Visibility(
                                             visible:
-                                                returnShopProvider(
+                                                returnData(
                                                   context:
                                                       context,
-                                                ).userShop()?.useGroupUnit ==
+                                                ).useGroupUnit ==
                                                 true,
                                             child: SubWrapper(
                                               isVisible:
@@ -1231,10 +1310,10 @@ class _AddMaterialMobileState
                                           ),
                                           Visibility(
                                             visible:
-                                                returnShopProvider(
+                                                returnData(
                                                   context:
                                                       context,
-                                                ).userShop()?.useGroupUnit ==
+                                                ).useGroupUnit ==
                                                 true,
                                             child: Column(
                                               children: [

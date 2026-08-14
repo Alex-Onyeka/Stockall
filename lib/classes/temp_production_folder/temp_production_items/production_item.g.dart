@@ -35,13 +35,14 @@ class ProductionItemAdapter extends TypeAdapter<ProductionItem> {
       qttyPerGroup: fields[15] as double?,
       categoryUuid: fields[16] as String?,
       categories: (fields[17] as List?)?.cast<String>(),
+      useGroupUnit: fields[18] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ProductionItem obj) {
     writer
-      ..writeByte(18)
+      ..writeByte(19)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -77,7 +78,9 @@ class ProductionItemAdapter extends TypeAdapter<ProductionItem> {
       ..writeByte(16)
       ..write(obj.categoryUuid)
       ..writeByte(17)
-      ..write(obj.categories);
+      ..write(obj.categories)
+      ..writeByte(18)
+      ..write(obj.useGroupUnit);
   }
 
   @override

@@ -1484,6 +1484,74 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
+  bool manageProductionsStorage = false;
+
+  Future<int> toggleManageProductionsStorage() async {
+    bool isOnline = await connectivity.isOnline();
+    manageProductionsStorage = true;
+    notifyListeners();
+    try {
+      if (isOnline) {
+        Map<String, dynamic>? res =
+            await supabase
+                .from('shops')
+                .update({
+                  'manage_productions_storage':
+                      !userShop()!
+                          .manageProductionsStorage!,
+                })
+                .eq('shop_id', userShop()!.shopId!)
+                .select()
+                .maybeSingle();
+        if (res == null) {
+          await mainLocalLog(
+            'Toggle Manage Productions Storage Update Failed',
+          );
+          manageProductionsStorage = false;
+          notifyListeners();
+          return 0;
+        }
+
+        var shops = await getUserShops();
+        setShops(shops);
+        manageProductionsStorage = false;
+        returnSalesProvider().selectFistMainCart();
+        notifyListeners();
+        return 1;
+      } else {
+        try {
+          userShop()!.updatedAt = DateTime.now();
+          userShop()!.manageProductionsStorage =
+              !userShop()!.manageProductionsStorage!;
+          await ShopFunc().updateShop(userShop()!);
+          if (userShop() != null) {
+            await UpdatedShopFunc().createUpdatedShop(
+              UpdatedShop(shop: userShop()!),
+            );
+            notifyListeners();
+          }
+          manageProductionsStorage = false;
+          notifyListeners();
+          return 1;
+        } catch (e) {
+          await mainLocalLog(
+            "❌ Failed to Update Toggle Manage Productions Storage Offline: ${e.toString()}",
+          );
+          manageProductionsStorage = false;
+          notifyListeners();
+          return 0;
+        }
+      }
+    } catch (e) {
+      await mainLocalLog(
+        "❌ Failed to Update Toggle Manage Productions Storage: ${e.toString()}",
+      );
+      manageProductionsStorage = false;
+      notifyListeners();
+      return 0;
+    }
+  }
+
   bool manageDepartmentsLoading = false;
 
   Future<int> toggleManageDepartments() async {
