@@ -211,7 +211,11 @@ class ProductionRecord {
       staffName: currentUser().name,
       selectedCostPriceOption:
           cartItem.selectCostPriceToUse,
-      originalCostPerItem: cartItem.originalCostPerItem,
+      originalCostPerItem:
+          cartItem
+              .productionsCartItem
+              ?.originalCostPerItem ??
+          0,
       originalUseGroupQuantity:
           cartItem.originalUseGroupQuantity,
       useGroupQuantity:
@@ -232,6 +236,12 @@ class ProductionRecord {
         originalCostPerItem: originalCostPerItem,
         originalUseGroupQuantity:
             originalUseGroupQuantity ?? false,
+        groupUnit: groupUnit,
+        costPrice: totalCost,
+        customPrice: customCost,
+        qttyPerGroup: qttyPerGroup,
+        unit: unit,
+        setCustomPrice: false,
       ),
       staffName: staffName,
       staffId: staffId,
@@ -250,7 +260,7 @@ class ProductionRecord {
       productionUuidEdit: uuid,
       selectCostPriceToUse: selectedCostPriceOption ?? 1,
       uuid: uuid,
-      originalCostPerItem: originalCostPerItem,
+      // originalCostPerItem: originalCostPerItem,
       originalUseGroupQuantity: originalUseGroupQuantity,
     );
   }

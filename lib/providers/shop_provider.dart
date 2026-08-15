@@ -1200,72 +1200,72 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
-  bool isUseGroupUnitLoading = false;
+  // bool isUseGroupUnitLoading = false;
 
-  Future<int> toggleUseGroupUnit() async {
-    bool isOnline = await connectivity.isOnline();
-    isUseGroupUnitLoading = true;
-    notifyListeners();
-    try {
-      if (isOnline) {
-        Map<String, dynamic>? res =
-            await supabase
-                .from('shops')
-                .update({
-                  'use_group_unit':
-                      !userShop()!.useGroupUnit!,
-                })
-                .eq('shop_id', userShop()!.shopId!)
-                .select()
-                .maybeSingle();
-        if (res == null) {
-          await mainLocalLog(
-            'Use Group Unit Update Failed',
-          );
-          isUseGroupUnitLoading = false;
-          notifyListeners();
-          return 0;
-        }
+  // Future<int> toggleUseGroupUnit() async {
+  //   bool isOnline = await connectivity.isOnline();
+  //   isUseGroupUnitLoading = true;
+  //   notifyListeners();
+  //   try {
+  //     if (isOnline) {
+  //       Map<String, dynamic>? res =
+  //           await supabase
+  //               .from('shops')
+  //               .update({
+  //                 'use_group_unit':
+  //                     !userShop()!.useGroupUnit!,
+  //               })
+  //               .eq('shop_id', userShop()!.shopId!)
+  //               .select()
+  //               .maybeSingle();
+  //       if (res == null) {
+  //         await mainLocalLog(
+  //           'Use Group Unit Update Failed',
+  //         );
+  //         isUseGroupUnitLoading = false;
+  //         notifyListeners();
+  //         return 0;
+  //       }
 
-        var shops = await getUserShops();
-        setShops(shops);
-        isUseGroupUnitLoading = false;
-        notifyListeners();
-        return 1;
-      } else {
-        try {
-          userShop()!.updatedAt = DateTime.now();
-          userShop()!.useGroupUnit =
-              !userShop()!.useGroupUnit!;
-          await ShopFunc().updateShop(userShop()!);
-          if (userShop() != null) {
-            await UpdatedShopFunc().createUpdatedShop(
-              UpdatedShop(shop: userShop()!),
-            );
-            // setShops(shop);
-            notifyListeners();
-          }
-          isUseGroupUnitLoading = false;
-          notifyListeners();
-          return 1;
-        } catch (e) {
-          await mainLocalLog(
-            "❌ Failed to Update Use Group Unit Offline: ${e.toString()}",
-          );
-          isUseGroupUnitLoading = false;
-          notifyListeners();
-          return 0;
-        }
-      }
-    } catch (e) {
-      await mainLocalLog(
-        "❌ Failed to Update Use Group Unit: ${e.toString()}",
-      );
-      isUseGroupUnitLoading = false;
-      notifyListeners();
-      return 0;
-    }
-  }
+  //       var shops = await getUserShops();
+  //       setShops(shops);
+  //       isUseGroupUnitLoading = false;
+  //       notifyListeners();
+  //       return 1;
+  //     } else {
+  //       try {
+  //         userShop()!.updatedAt = DateTime.now();
+  //         userShop()!.useGroupUnit =
+  //             !userShop()!.useGroupUnit!;
+  //         await ShopFunc().updateShop(userShop()!);
+  //         if (userShop() != null) {
+  //           await UpdatedShopFunc().createUpdatedShop(
+  //             UpdatedShop(shop: userShop()!),
+  //           );
+  //           // setShops(shop);
+  //           notifyListeners();
+  //         }
+  //         isUseGroupUnitLoading = false;
+  //         notifyListeners();
+  //         return 1;
+  //       } catch (e) {
+  //         await mainLocalLog(
+  //           "❌ Failed to Update Use Group Unit Offline: ${e.toString()}",
+  //         );
+  //         isUseGroupUnitLoading = false;
+  //         notifyListeners();
+  //         return 0;
+  //       }
+  //     }
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       "❌ Failed to Update Use Group Unit: ${e.toString()}",
+  //     );
+  //     isUseGroupUnitLoading = false;
+  //     notifyListeners();
+  //     return 0;
+  //   }
+  // }
 
   bool isTrackCartLoading = false;
 
@@ -1553,6 +1553,73 @@ class ShopProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         "❌ Failed to Update Toggle Manage Productions Storage: ${e.toString()}",
+      );
+      manageProductionsStorage = false;
+      notifyListeners();
+      return 0;
+    }
+  }
+
+  bool manageProductionItems = false;
+
+  Future<int> toggleManageProductionItems() async {
+    bool isOnline = await connectivity.isOnline();
+    manageProductionItems = true;
+    notifyListeners();
+    try {
+      if (isOnline) {
+        Map<String, dynamic>? res =
+            await supabase
+                .from('shops')
+                .update({
+                  'manage_production_items':
+                      !userShop()!.manageProductionItems!,
+                })
+                .eq('shop_id', userShop()!.shopId!)
+                .select()
+                .maybeSingle();
+        if (res == null) {
+          await mainLocalLog(
+            'Toggle Manage Production Items Update Failed',
+          );
+          manageProductionItems = false;
+          notifyListeners();
+          return 0;
+        }
+
+        var shops = await getUserShops();
+        setShops(shops);
+        manageProductionItems = false;
+        returnSalesProvider().selectFistMainCart();
+        notifyListeners();
+        return 1;
+      } else {
+        try {
+          userShop()!.updatedAt = DateTime.now();
+          userShop()!.manageProductionItems =
+              !userShop()!.manageProductionItems!;
+          await ShopFunc().updateShop(userShop()!);
+          if (userShop() != null) {
+            await UpdatedShopFunc().createUpdatedShop(
+              UpdatedShop(shop: userShop()!),
+            );
+            notifyListeners();
+          }
+          manageProductionItems = false;
+          notifyListeners();
+          return 1;
+        } catch (e) {
+          await mainLocalLog(
+            "❌ Failed to Update Toggle Manage Production Items Offline: ${e.toString()}",
+          );
+          manageProductionItems = false;
+          notifyListeners();
+          return 0;
+        }
+      }
+    } catch (e) {
+      await mainLocalLog(
+        "❌ Failed to Update Toggle Manage Production Items: ${e.toString()}",
       );
       manageProductionsStorage = false;
       notifyListeners();

@@ -84,8 +84,7 @@ class _StorageQuantityUpdateWidgetState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (returnShopProvider().userShop()?.useGroupUnit ==
-          true) {
+      if (widget.storageProduct.useGroupUnit == true) {
         returnStorageProductProvider().toggleGroupUnit(
           value: true,
         );
@@ -182,10 +181,7 @@ class _StorageQuantityUpdateWidgetState
         ),
         Visibility(
           visible:
-              returnShopProvider()
-                  .userShop()
-                  ?.useGroupUnit ==
-              true,
+              widget.storageProduct.useGroupUnit == true,
           child: Column(
             children: [
               SizedBox(height: 10),
@@ -850,6 +846,10 @@ class _StorageQuantityUpdateWidgetState
                               TempStorageProducts
                               newProduct =
                                   TempStorageProducts(
+                                    useGroupUnit:
+                                        widget
+                                            .storageProduct
+                                            .useGroupUnit,
                                     shopId: shopId(),
                                     name:
                                         widget

@@ -776,6 +776,7 @@ class InvoicesProvider extends ChangeNotifier {
                     record.quantity;
 
         TempProductClass productNew = TempProductClass(
+          useGroupUnit: false,
           categories: [],
           groupUnit: 'Group(s)',
           storageUuid: null,

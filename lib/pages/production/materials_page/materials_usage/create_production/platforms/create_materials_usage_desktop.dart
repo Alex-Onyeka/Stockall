@@ -6,8 +6,8 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/production/materials_page/materials_usage/create_materials_usage/components/material_usage_cart_item_tile.dart';
-import 'package:stockall/pages/production/materials_page/materials_usage/create_materials_usage/functions/create_materials_usage_functions.dart';
+import 'package:stockall/pages/production/materials_page/materials_usage/create_production/components/material_usage_cart_item_tile.dart';
+import 'package:stockall/pages/production/materials_page/materials_usage/create_production/functions/create_materials_usage_functions.dart';
 
 class CreateMaterialsUsageDesktop extends StatefulWidget {
   const CreateMaterialsUsageDesktop({super.key});
@@ -292,59 +292,64 @@ class _CreateMaterialsUsageDesktopState
                                   ),
                                   'Materials',
                                 ),
-                                Material(
-                                  type:
-                                      MaterialType
-                                          .transparency,
-                                  child: InkWell(
-                                    onTap: () {
-                                      CreateMaterialsUsageFunctions()
-                                          .selectItemForMaterialsUsageCart(
-                                            firstContext:
-                                                context,
-                                          );
-                                    },
-                                    mouseCursor:
-                                        SystemMouseCursors
-                                            .click,
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsets.symmetric(
-                                            vertical: 10.0,
-                                            horizontal: 12,
-                                          ),
-                                      child: Row(
-                                        mainAxisSize:
-                                            MainAxisSize
-                                                .min,
-                                        spacing: 5,
-                                        children: [
-                                          Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b3
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .normal,
+                                Visibility(
+                                  visible: !cartItem.isEdit,
+                                  child: Material(
+                                    type:
+                                        MaterialType
+                                            .transparency,
+                                    child: InkWell(
+                                      onTap: () {
+                                        CreateMaterialsUsageFunctions()
+                                            .selectItemForMaterialsUsageCart(
+                                              firstContext:
+                                                  context,
+                                            );
+                                      },
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.symmetric(
+                                              vertical:
+                                                  10.0,
+                                              horizontal:
+                                                  12,
+                                            ),
+                                        child: Row(
+                                          mainAxisSize:
+                                              MainAxisSize
+                                                  .min,
+                                          spacing: 5,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b3
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .normal,
+                                                color:
+                                                    theme
+                                                        .lightModeColor
+                                                        .secColor200,
+                                              ),
+                                              'Add Material',
+                                            ),
+                                            Icon(
+                                              size: 16,
                                               color:
                                                   theme
                                                       .lightModeColor
                                                       .secColor200,
+                                              Icons.add,
                                             ),
-                                            'Add Material',
-                                          ),
-                                          Icon(
-                                            size: 16,
-                                            color:
-                                                theme
-                                                    .lightModeColor
-                                                    .secColor200,
-                                            Icons.add,
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),

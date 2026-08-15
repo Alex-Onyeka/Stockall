@@ -646,6 +646,8 @@ class _ProductDetailsDesktopState
                                                                                                 quantityChange:
                                                                                                     null,
                                                                                                 product: TempProductClass(
+                                                                                                  useGroupUnit:
+                                                                                                      product.useGroupUnit,
                                                                                                   categories:
                                                                                                       product.categories,
                                                                                                   storageUuid:
@@ -812,12 +814,8 @@ class _ProductDetailsDesktopState
                                         ),
                                         Visibility(
                                           visible:
-                                              returnShopProvider(
-                                                    context:
-                                                        context,
-                                                  )
-                                                  .userShop()
-                                                  ?.useGroupUnit !=
+                                              product
+                                                  .useGroupUnit !=
                                               true,
                                           child: SizedBox(
                                             width: 10,
@@ -825,12 +823,8 @@ class _ProductDetailsDesktopState
                                         ),
                                         Visibility(
                                           visible:
-                                              returnShopProvider(
-                                                    context:
-                                                        context,
-                                                  )
-                                                  .userShop()
-                                                  ?.useGroupUnit !=
+                                              product
+                                                  .useGroupUnit !=
                                               true,
                                           child:
                                               quantityInStockWidget(
@@ -844,12 +838,8 @@ class _ProductDetailsDesktopState
 
                                     Visibility(
                                       visible:
-                                          returnShopProvider(
-                                                context:
-                                                    context,
-                                              )
-                                              .userShop()
-                                              ?.useGroupUnit ==
+                                          product
+                                              .useGroupUnit ==
                                           true,
                                       child: Column(
                                         children: [
@@ -992,6 +982,8 @@ class _ProductDetailsDesktopState
                                                                     product: TempProductClass(
                                                                       categories:
                                                                           product.categories,
+                                                                      useGroupUnit:
+                                                                          product.useGroupUnit,
                                                                       storageUuid:
                                                                           product.storageUuid,
                                                                       departmentName:
@@ -1158,9 +1150,8 @@ class _ProductDetailsDesktopState
                                           ),
                                           Visibility(
                                             visible:
-                                                returnShopProvider()
-                                                    .userShop()
-                                                    ?.useGroupUnit ==
+                                                product
+                                                    .useGroupUnit ==
                                                 true,
                                             child: BottomInfoSection(
                                               theme:
@@ -1646,8 +1637,7 @@ class _ProductDetailsDesktopState
           Row(
             children: [
               Visibility(
-                visible:
-                    shop(context)?.useGroupUnit == true,
+                visible: product.useGroupUnit == true,
                 child: Expanded(
                   child: TabContainer(
                     isMoney: false,
@@ -1720,8 +1710,7 @@ class _ProductDetailsDesktopState
                 ),
               ),
               Visibility(
-                visible:
-                    shop(context)?.useGroupUnit == true,
+                visible: product.useGroupUnit == true,
                 child: SizedBox(width: 10),
               ),
               Expanded(

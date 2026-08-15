@@ -110,26 +110,9 @@ class ProductionsCartItem extends HiveObject {
     }
   }
 
-  // double getConvertedCostPriceForCartItem() {
-  //   if (setCustomPrice) {
-  //     return (customPrice ?? 0);
-  //   } else {
-  //     return (costPrice ?? 0) *
-  //         getConvertedQuantityForCartItem();
-  //   }
-  // }
-
   double getQttyPerGroup() {
     return qttyPerGroup ?? 1;
   }
-
-  // double getConvertedQuantityForCartItem() {
-  //   if (useGroupQuantity == true) {
-  //     return quantity / getQttyPerGroup();
-  //   } else {
-  //     return quantity;
-  //   }
-  // }
 
   double groupToUnitQuantity() {
     return quantity * getQttyPerGroup();

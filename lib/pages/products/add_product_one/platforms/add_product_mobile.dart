@@ -134,6 +134,7 @@ class _AddProductMobileState
               await dataProvider.createProduct(
                 itemHistory: itemHistory,
                 product: TempProductClass(
+                  useGroupUnit: dataProvider.useGroupUnit,
                   categories:
                       dataProvider.selectedCategories
                           .toList(),
@@ -278,6 +279,7 @@ class _AddProductMobileState
               isQuantityUpdate: false,
               quantityChange: null,
               product: TempProductClass(
+                useGroupUnit: provider.useGroupUnit,
                 categories:
                     provider.selectedCategories.toList(),
                 storageUuid: widget.product?.storageUuid,
@@ -461,6 +463,8 @@ class _AddProductMobileState
       returnData().isProductRefundable =
           widget.product!.isRefundable;
       returnData().isManaged = widget.product!.isManaged;
+      returnData().useGroupUnit =
+          widget.product!.useGroupUnit ?? false;
       returnData().setCustomPrice =
           widget.product!.setCustomPrice;
       returnData().selectUnit(widget.product!.unit);
@@ -1110,6 +1114,8 @@ class _AddProductMobileState
                                                       setCustomPrice:
                                                           false,
                                                       isManaged:
+                                                          false,
+                                                      useGroupUnit:
                                                           false,
                                                       uuid:
                                                           widget.product ==
@@ -1776,10 +1782,10 @@ class _AddProductMobileState
                                           ),
                                           Visibility(
                                             visible:
-                                                returnShopProvider(
+                                                returnData(
                                                   context:
                                                       context,
-                                                ).userShop()?.useGroupUnit ==
+                                                ).useGroupUnit ==
                                                 true,
                                             child: SubWrapper(
                                               isVisible:
@@ -1836,10 +1842,10 @@ class _AddProductMobileState
                                           ),
                                           Visibility(
                                             visible:
-                                                returnShopProvider(
+                                                returnData(
                                                   context:
                                                       context,
-                                                ).userShop()?.useGroupUnit ==
+                                                ).useGroupUnit ==
                                                 true,
                                             child: Column(
                                               children: [

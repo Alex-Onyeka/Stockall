@@ -579,6 +579,8 @@ class _ProductDetailsMobileState
                                                                           quantityChange:
                                                                               null,
                                                                           product: TempProductClass(
+                                                                            useGroupUnit:
+                                                                                product.useGroupUnit,
                                                                             categories:
                                                                                 product.categories,
                                                                             storageUuid:
@@ -835,9 +837,7 @@ class _ProductDetailsMobileState
                                                       context,
                                                     )?.manageInventoryStorage !=
                                                     true &&
-                                                shop(
-                                                      context,
-                                                    )?.useGroupUnit ==
+                                                product.useGroupUnit ==
                                                     true,
                                             child: SizedBox(
                                               width: 10,
@@ -849,9 +849,7 @@ class _ProductDetailsMobileState
                                                       context,
                                                     )?.manageInventoryStorage !=
                                                     true &&
-                                                shop(
-                                                      context,
-                                                    )?.useGroupUnit ==
+                                                product.useGroupUnit ==
                                                     true,
                                             child: Expanded(
                                               child: TabContainerMobile(
@@ -1106,6 +1104,8 @@ class _ProductDetailsMobileState
                                                           quantityChange:
                                                               null,
                                                           product: TempProductClass(
+                                                            useGroupUnit:
+                                                                product.useGroupUnit,
                                                             categories:
                                                                 product.categories,
                                                             storageUuid:
@@ -1278,9 +1278,8 @@ class _ProductDetailsMobileState
                                 ),
                                 Visibility(
                                   visible:
-                                      returnShopProvider()
-                                          .userShop()
-                                          ?.useGroupUnit ==
+                                      product
+                                          .useGroupUnit ==
                                       true,
                                   child: BottomInfoSection(
                                     theme: widget.theme,

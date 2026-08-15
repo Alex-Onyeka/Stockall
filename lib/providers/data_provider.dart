@@ -2683,6 +2683,7 @@ class DataProvider extends ChangeNotifier {
             .createStorageProduct(
               isMultiple: true,
               product: TempStorageProducts(
+                useGroupUnit: pr.useGroupUnit,
                 name: pr.name,
                 shopId: pr.shopId,
                 groupUnit: pr.groupUnit,

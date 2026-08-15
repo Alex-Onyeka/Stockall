@@ -98,6 +98,7 @@ class _ShopSetupTwoDesktopState
                 });
                 await shopProvider.createShop(
                   TempShopClass(
+                    manageProductionItems: false,
                     manageProductions: false,
                     manageProductionsStorage: false,
                     manageInventoryStorage: false,
@@ -146,7 +147,7 @@ class _ShopSetupTwoDesktopState
                             ? true
                             : false,
                     applyVAT: false,
-                    useGroupUnit: false,
+                    // useGroupUnit: false,
                     wholeSale: false,
                     manageDepartments: false,
                     printSalesDocket: false,

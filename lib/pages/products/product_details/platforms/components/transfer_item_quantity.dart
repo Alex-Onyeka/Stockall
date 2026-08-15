@@ -248,9 +248,7 @@ class _TransferItemQuantityWidgetState
                         SizedBox(height: 20),
                         Visibility(
                           visible:
-                              returnShopProvider()
-                                  .userShop()
-                                  ?.useGroupUnit ==
+                              widget.item.useGroupUnit ==
                               true,
                           child: Column(
                             children: [

@@ -40,6 +40,9 @@ class TempStorageProducts {
   @HiveField(11)
   double? sellingPrice;
 
+  @HiveField(12)
+  bool? useGroupUnit;
+
   TempStorageProducts({
     this.uuid,
     this.createdAt,
@@ -53,6 +56,7 @@ class TempStorageProducts {
     this.qttyPerGroup,
     required this.costPrice,
     required this.sellingPrice,
+    required this.useGroupUnit,
   });
 
   factory TempStorageProducts.fromJson(
@@ -89,6 +93,7 @@ class TempStorageProducts {
           json['selling_price'] != null
               ? (json['selling_price'] as num).toDouble()
               : null,
+      useGroupUnit: json['use_group_unit'] as bool?,
     );
   }
 
@@ -106,6 +111,7 @@ class TempStorageProducts {
       'qtty_per_group': qttyPerGroup,
       'cost_price': costPrice,
       'selling_price': sellingPrice,
+      'use_group_unit': useGroupUnit,
     };
   }
 
@@ -122,6 +128,7 @@ class TempStorageProducts {
     double? qttyPerGroup,
     double? costPrice,
     double? sellingPrice,
+    bool? useGroupUnit,
   }) {
     return TempStorageProducts(
       uuid: uuid ?? this.uuid,
@@ -136,6 +143,7 @@ class TempStorageProducts {
       qttyPerGroup: qttyPerGroup ?? this.qttyPerGroup,
       costPrice: costPrice ?? this.costPrice,
       sellingPrice: sellingPrice ?? this.sellingPrice,
+      useGroupUnit: useGroupUnit ?? this.useGroupUnit,
     );
   }
 }

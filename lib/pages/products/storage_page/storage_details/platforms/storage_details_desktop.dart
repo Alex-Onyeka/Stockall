@@ -272,8 +272,7 @@ class _StorageDetailsDesktopState
                                       children: [
                                         Row(
                                           spacing:
-                                              shop(context)
-                                                          ?.useGroupUnit ==
+                                              product.useGroupUnit ==
                                                       true
                                                   ? 10
                                                   : 0,
@@ -283,9 +282,8 @@ class _StorageDetailsDesktopState
                                           children: [
                                             Visibility(
                                               visible:
-                                                  shop(
-                                                    context,
-                                                  )?.useGroupUnit ==
+                                                  product
+                                                      .useGroupUnit ==
                                                   true,
                                               child: Expanded(
                                                 child: TabContainer(

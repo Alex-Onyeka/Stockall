@@ -4,6 +4,7 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/production/settings/components/toggle_manage_production_items.dart';
 import 'package:stockall/pages/production/settings/components/toggle_manage_productions_storage.dart';
 
 class ProductionSettingsPageMobile extends StatefulWidget {
@@ -39,6 +40,7 @@ class _ProductionSettingsPageMobileState
                   // spacing: 10,
                   children: [
                     ToggleManageProductionsStorage(),
+                    ToggleManageProductionItems(),
                     Visibility(
                       visible: authorization(
                         authorized:

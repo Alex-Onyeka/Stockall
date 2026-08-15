@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/constants/constants_main.dart';
-import 'package:stockall/pages/production/materials_page/materials_usage/create_materials_usage/platforms/create_materials_usage_desktop.dart';
-import 'package:stockall/pages/production/materials_page/materials_usage/create_materials_usage/platforms/create_materials_usage_mobile.dart';
+import 'package:stockall/pages/production/materials_page/materials_usage/create_production/platforms/create_materials_usage_desktop.dart';
+import 'package:stockall/pages/production/materials_page/materials_usage/create_production/platforms/create_materials_usage_mobile.dart';
 
 class CreateMaterialsUsagePage extends StatefulWidget {
   const CreateMaterialsUsagePage({super.key});

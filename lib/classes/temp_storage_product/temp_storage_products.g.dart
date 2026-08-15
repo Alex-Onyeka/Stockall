@@ -29,13 +29,14 @@ class TempStorageProductsAdapter extends TypeAdapter<TempStorageProducts> {
       qttyPerGroup: fields[9] as double?,
       costPrice: fields[10] as double?,
       sellingPrice: fields[11] as double?,
+      useGroupUnit: fields[12] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempStorageProducts obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -59,7 +60,9 @@ class TempStorageProductsAdapter extends TypeAdapter<TempStorageProducts> {
       ..writeByte(10)
       ..write(obj.costPrice)
       ..writeByte(11)
-      ..write(obj.sellingPrice);
+      ..write(obj.sellingPrice)
+      ..writeByte(12)
+      ..write(obj.useGroupUnit);
   }
 
   @override

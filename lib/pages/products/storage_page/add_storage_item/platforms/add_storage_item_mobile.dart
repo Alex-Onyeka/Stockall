@@ -89,6 +89,7 @@ class AddStorageItemMobileState
               final dataProvider =
                   returnStorageProductProvider();
               var product = TempStorageProducts(
+                useGroupUnit: returnData().useGroupUnit,
                 shopId: shopId(),
                 name: widget.nameController.text.trim(),
                 createdAt: DateTime.now(),
@@ -181,6 +182,7 @@ class AddStorageItemMobileState
                 isQuantityUpdate: false,
                 quantityChange: null,
                 product: TempStorageProducts(
+                  useGroupUnit: returnData().useGroupUnit,
                   createdAt:
                       widget.storageProduct?.createdAt,
                   updatedAt: DateTime.now(),
@@ -273,6 +275,8 @@ class AddStorageItemMobileState
     if (widget.storageProduct != null) {
       widget.nameController.text =
           widget.storageProduct?.name ?? '';
+      returnData().useGroupUnit =
+          widget.storageProduct?.useGroupUnit ?? false;
       returnData().selectUnit(
         widget.storageProduct!.unit ?? 'Others',
       );
@@ -438,12 +442,8 @@ class AddStorageItemMobileState
                                       SizedBox(height: 10),
                                       Visibility(
                                         visible:
-                                            returnShopProvider(
-                                                  context:
-                                                      context,
-                                                )
-                                                .userShop()
-                                                ?.useGroupUnit ==
+                                            returnData()
+                                                .useGroupUnit ==
                                             true,
                                         child: SubWrapper(
                                           isVisible:
@@ -496,12 +496,8 @@ class AddStorageItemMobileState
                                       SizedBox(height: 10),
                                       Visibility(
                                         visible:
-                                            returnShopProvider(
-                                                  context:
-                                                      context,
-                                                )
-                                                .userShop()
-                                                ?.useGroupUnit ==
+                                            returnData()
+                                                .useGroupUnit ==
                                             true,
                                         child: Column(
                                           children: [

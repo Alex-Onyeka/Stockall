@@ -33,7 +33,6 @@ class ProductionsCartAdapter extends TypeAdapter<ProductionsCart> {
       productionUuidEdit: fields[3] as String?,
       materialsCartItems:
           (fields[14] as List).cast<ProductionMaterialCartItem>(),
-      originalCostPerItem: fields[15] as double?,
       originalUseGroupQuantity: fields[16] as bool?,
     );
   }
@@ -41,7 +40,7 @@ class ProductionsCartAdapter extends TypeAdapter<ProductionsCart> {
   @override
   void write(BinaryWriter writer, ProductionsCart obj) {
     writer
-      ..writeByte(17)
+      ..writeByte(16)
       ..writeByte(0)
       ..write(obj.productionsCartItem)
       ..writeByte(1)
@@ -72,8 +71,6 @@ class ProductionsCartAdapter extends TypeAdapter<ProductionsCart> {
       ..write(obj.customPrice)
       ..writeByte(14)
       ..write(obj.materialsCartItems)
-      ..writeByte(15)
-      ..write(obj.originalCostPerItem)
       ..writeByte(16)
       ..write(obj.originalUseGroupQuantity);
   }

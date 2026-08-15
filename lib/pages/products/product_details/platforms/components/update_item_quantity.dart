@@ -293,9 +293,7 @@ class _UpdateItemQuantityWidgetState
                         SizedBox(height: 20),
                         Visibility(
                           visible:
-                              returnShopProvider()
-                                  .userShop()
-                                  ?.useGroupUnit ==
+                              widget.product.useGroupUnit ==
                               true,
                           child: Column(
                             children: [
@@ -612,6 +610,10 @@ class _UpdateItemQuantityWidgetState
                                               widget
                                                   .product
                                                   .categories,
+                                          useGroupUnit:
+                                              widget
+                                                  .product
+                                                  .useGroupUnit,
                                           storageUuid:
                                               widget
                                                   .product

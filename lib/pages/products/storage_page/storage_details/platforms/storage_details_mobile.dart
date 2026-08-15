@@ -214,9 +214,7 @@ class _StorageDetailsMobileState
                             children: [
                               Row(
                                 spacing:
-                                    shop(
-                                              context,
-                                            )?.useGroupUnit ==
+                                    product.useGroupUnit ==
                                             true
                                         ? 10
                                         : 0,
@@ -226,9 +224,8 @@ class _StorageDetailsMobileState
                                 children: [
                                   Visibility(
                                     visible:
-                                        shop(
-                                          context,
-                                        )?.useGroupUnit ==
+                                        product
+                                            .useGroupUnit ==
                                         true,
                                     child: Expanded(
                                       child: TabContainer(

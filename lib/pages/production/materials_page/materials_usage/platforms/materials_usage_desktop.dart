@@ -10,7 +10,7 @@ import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/invoices/invoice_list/platforms/invoice_list_desktop.dart';
 import 'package:stockall/pages/production/materials_page/materials_usage/components/materials_usage_tile.dart';
-import 'package:stockall/pages/production/materials_page/materials_usage/create_materials_usage/create_materials_usage_page.dart';
+import 'package:stockall/pages/production/materials_page/materials_usage/create_production/create_materials_usage_page.dart';
 
 class MaterialsUsageDesktop extends StatefulWidget {
   final String? materialUuid;

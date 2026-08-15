@@ -95,6 +95,7 @@ class _AddStorageItemDesktopState
               final dataProvider =
                   returnStorageProductProvider();
               var product = TempStorageProducts(
+                useGroupUnit: returnData().useGroupUnit,
                 shopId: shopId(),
                 name: widget.nameController.text.trim(),
                 createdAt: DateTime.now(),
@@ -187,6 +188,7 @@ class _AddStorageItemDesktopState
                 isQuantityUpdate: false,
                 quantityChange: null,
                 product: TempStorageProducts(
+                  useGroupUnit: returnData().useGroupUnit,
                   createdAt:
                       widget.storageProduct?.createdAt,
                   updatedAt: DateTime.now(),
@@ -284,6 +286,8 @@ class _AddStorageItemDesktopState
       returnData().selectGroupUnit(
         unit: widget.storageProduct!.groupUnit,
       );
+      returnData().useGroupUnit =
+          widget.storageProduct?.useGroupUnit ?? false;
       widget.qttyPerGroupController.text =
           widget.storageProduct!.qttyPerGroup != null
               ? widget.storageProduct!.qttyPerGroup!
@@ -465,10 +469,8 @@ class _AddStorageItemDesktopState
                                               ),
                                               Visibility(
                                                 visible:
-                                                    returnShopProvider(
-                                                      context:
-                                                          context,
-                                                    ).userShop()?.useGroupUnit ==
+                                                    returnData()
+                                                        .useGroupUnit ==
                                                     true,
                                                 child:
                                                     SizedBox(
@@ -478,10 +480,8 @@ class _AddStorageItemDesktopState
                                               ),
                                               Visibility(
                                                 visible:
-                                                    returnShopProvider(
-                                                      context:
-                                                          context,
-                                                    ).userShop()?.useGroupUnit ==
+                                                    returnData()
+                                                        .useGroupUnit ==
                                                     true,
                                                 child: Expanded(
                                                   child: SubWrapper(
@@ -544,10 +544,8 @@ class _AddStorageItemDesktopState
                                           ),
                                           Visibility(
                                             visible:
-                                                returnShopProvider(
-                                                  context:
-                                                      context,
-                                                ).userShop()?.useGroupUnit ==
+                                                returnData()
+                                                    .useGroupUnit ==
                                                 true,
                                             child: Column(
                                               children: [

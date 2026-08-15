@@ -134,22 +134,29 @@ class _ProductionPageDesktopState
                       'View Production Records You Created.',
                   title: 'Production Records',
                 ),
-                ProductionPageListTileWidget(
-                  action: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: ((context) {
-                          return ProductionItemsPage();
-                        }),
-                      ),
-                    );
-                  },
-                  icon: Icons.api_rounded,
-                  isActive: true,
-                  subText:
-                      'Create and Manage Produced Items',
-                  title: 'Production Items',
+                Visibility(
+                  visible:
+                      shop(
+                        context,
+                      )?.manageProductionItems ==
+                      true,
+                  child: ProductionPageListTileWidget(
+                    action: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: ((context) {
+                            return ProductionItemsPage();
+                          }),
+                        ),
+                      );
+                    },
+                    icon: Icons.api_rounded,
+                    isActive: true,
+                    subText:
+                        'Create and Manage Produced Items',
+                    title: 'Production Items',
+                  ),
                 ),
                 ProductionPageListTileWidget(
                   action: () {

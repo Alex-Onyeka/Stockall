@@ -62,7 +62,6 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       applyVAT: fields[44] as bool?,
       manageInventoryStorage: fields[45] as bool?,
       bulkSale: fields[46] as bool?,
-      useGroupUnit: fields[47] as bool?,
       wholeSale: fields[48] as bool?,
       manageDepartments: fields[49] as bool?,
       printSalesDocket: fields[50] as bool?,
@@ -72,6 +71,7 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       accessPin: fields[54] as String?,
       manageProductions: fields[55] as bool?,
       manageProductionsStorage: fields[56] as bool?,
+      manageProductionItems: fields[57] as bool?,
     );
   }
 
@@ -169,8 +169,6 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       ..write(obj.manageInventoryStorage)
       ..writeByte(46)
       ..write(obj.bulkSale)
-      ..writeByte(47)
-      ..write(obj.useGroupUnit)
       ..writeByte(48)
       ..write(obj.wholeSale)
       ..writeByte(49)
@@ -188,7 +186,9 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       ..writeByte(55)
       ..write(obj.manageProductions)
       ..writeByte(56)
-      ..write(obj.manageProductionsStorage);
+      ..write(obj.manageProductionsStorage)
+      ..writeByte(57)
+      ..write(obj.manageProductionItems);
   }
 
   @override

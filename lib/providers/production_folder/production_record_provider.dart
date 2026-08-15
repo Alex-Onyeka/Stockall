@@ -140,7 +140,7 @@ class ProductionRecordsProvider extends ChangeNotifier {
                   isQuantityUpdate: true,
                   includeQuantity: true,
                   quantityChange:
-                      (productionRecord.quantity ?? 0),
+                      productionRecord.getQuantity(),
                   isIncrement: true,
                   productionItemHistory: itemHistory,
                 );
@@ -419,7 +419,7 @@ class ProductionRecordsProvider extends ChangeNotifier {
             itemName: oldItem.name,
             itemUuid: oldItem.uuid,
             newValue: (newItem.quantity ?? 0).toString(),
-            quantityChange: productionRecord.getQuantity(),
+            quantityChange: -productionRecord.getQuantity(),
           );
           await returnProductionItemsProvider()
               .updateProductionItem(
@@ -427,7 +427,7 @@ class ProductionRecordsProvider extends ChangeNotifier {
                 isQuantityUpdate: true,
                 includeQuantity: true,
                 quantityChange:
-                    productionRecord.quantity ?? 0,
+                    productionRecord.getQuantity(),
                 isIncrement: false,
                 productionItemHistory:
                     productionItemHistory,

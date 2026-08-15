@@ -140,8 +140,8 @@ class TempShopClass {
   @HiveField(46)
   bool? bulkSale;
 
-  @HiveField(47)
-  bool? useGroupUnit;
+  // @HiveField(47)
+  // bool? useGroupUnit;
 
   @HiveField(48)
   bool? wholeSale;
@@ -169,6 +169,9 @@ class TempShopClass {
 
   @HiveField(56)
   bool? manageProductionsStorage;
+
+  @HiveField(57)
+  bool? manageProductionItems;
 
   TempShopClass({
     this.shopId,
@@ -218,7 +221,7 @@ class TempShopClass {
     this.applyVAT,
     required this.manageInventoryStorage,
     this.bulkSale,
-    required this.useGroupUnit,
+    // required this.useGroupUnit,
     required this.wholeSale,
     required this.manageDepartments,
     required this.printSalesDocket,
@@ -228,6 +231,7 @@ class TempShopClass {
     required this.accessPin,
     required this.manageProductions,
     required this.manageProductionsStorage,
+    required this.manageProductionItems,
   });
 
   factory TempShopClass.fromJson(
@@ -291,16 +295,11 @@ class TempShopClass {
       manageInventoryStorage:
           json['manage_inventory_storage'] as bool?,
       bulkSale: json['bulk_sale'] as bool?,
-      useGroupUnit: json['use_group_unit'] as bool?,
+      // useGroupUnit: json['use_group_unit'] as bool?,
       wholeSale: json['whole_sale'] as bool?,
       manageDepartments:
           json['manage_departments'] as bool?,
       printSalesDocket: json['print_sales_docket'] as bool?,
-      // closeSaleTime:
-      //     json['close_sale_time'] != null
-      //         ? parseTimeOfDay(json['close_sale_time'])
-      //             as TimeOfDay?
-      //         : null,
       closeSaleTimeString:
           json['close_sale_time'] as String?,
       trackCart: json['track_cart'] as bool?,
@@ -309,6 +308,8 @@ class TempShopClass {
           json['manage_productions'] as bool?,
       manageProductionsStorage:
           json['manage_productions_storage'] as bool?,
+      manageProductionItems:
+          json['manage_production_items'] as bool?,
     );
   }
 
@@ -360,7 +361,7 @@ class TempShopClass {
       'apply_vat': applyVAT,
       'manage_inventory_storage': manageInventoryStorage,
       'bulk_sale': bulkSale,
-      'use_group_unit': useGroupUnit,
+      // 'use_group_unit': useGroupUnit,
       'whole_sale': wholeSale,
       'manage_departments': manageDepartments,
       'print_sales_docket': printSalesDocket,
@@ -371,6 +372,7 @@ class TempShopClass {
       'manage_productions': manageProductions,
       'manage_productions_storage':
           manageProductionsStorage,
+      'manage_production_items': manageProductionItems,
     };
   }
 
@@ -420,7 +422,7 @@ class TempShopClass {
     bool? applyVAT,
     bool? manageInventoryStorage,
     bool? bulkSale,
-    bool? useGroupUnit,
+    // bool? useGroupUnit,
     bool? wholeSale,
     bool? manageDepartments,
     bool? printSalesDocket,
@@ -430,6 +432,7 @@ class TempShopClass {
     String? accessPin,
     bool? manageProductions,
     bool? manageProductionsStorage,
+    bool? manageProductionItems,
   }) {
     return TempShopClass(
       shopId: shopId ?? this.shopId,
@@ -484,7 +487,7 @@ class TempShopClass {
           manageInventoryStorage ??
           this.manageInventoryStorage,
       bulkSale: bulkSale ?? this.bulkSale,
-      useGroupUnit: useGroupUnit ?? this.useGroupUnit,
+      // useGroupUnit: useGroupUnit ?? this.useGroupUnit,
       wholeSale: wholeSale ?? this.wholeSale,
       manageDepartments:
           manageDepartments ?? this.manageDepartments,
@@ -500,6 +503,9 @@ class TempShopClass {
       manageProductionsStorage:
           manageProductionsStorage ??
           this.manageProductionsStorage,
+      manageProductionItems:
+          manageProductionItems ??
+          this.manageProductionItems,
     );
   }
 }

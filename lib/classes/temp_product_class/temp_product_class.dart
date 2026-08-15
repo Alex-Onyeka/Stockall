@@ -106,6 +106,9 @@ class TempProductClass {
   @HiveField(33)
   List<String>? categories;
 
+  @HiveField(34)
+  bool? useGroupUnit;
+
   TempProductClass({
     this.id,
     required this.name,
@@ -141,6 +144,7 @@ class TempProductClass {
     required this.wholeSalePrice,
     required this.storageUuid,
     required this.categories,
+    required this.useGroupUnit,
   });
 
   factory TempProductClass.fromJson(
@@ -212,6 +216,7 @@ class TempProductClass {
               ?.map((item) => item.toString())
               .toList() ??
           [],
+      useGroupUnit: json['use_group_unit'] as bool?,
     );
   }
 
@@ -256,6 +261,7 @@ class TempProductClass {
         'whole_sale_price': wholeSalePrice,
         'storage_uuid': storageUuid,
         'categories': categories ?? [],
+        'use_group_unit': useGroupUnit,
       };
     } else {
       return {
@@ -295,6 +301,7 @@ class TempProductClass {
         'whole_sale_price': wholeSalePrice,
         'storage_uuid': storageUuid,
         'categories': categories ?? [],
+        'use_group_unit': useGroupUnit,
       };
     }
   }
@@ -334,6 +341,7 @@ class TempProductClass {
     double? wholeSalePrice,
     String? storageUuid,
     List<String>? categories,
+    bool? useGroupUnit,
   }) {
     return TempProductClass(
       id: id ?? this.id,
@@ -373,6 +381,7 @@ class TempProductClass {
       wholeSalePrice: wholeSalePrice ?? this.wholeSalePrice,
       storageUuid: storageUuid ?? this.storageUuid,
       categories: categories ?? this.categories,
+      useGroupUnit: useGroupUnit ?? this.useGroupUnit,
     );
   }
 }

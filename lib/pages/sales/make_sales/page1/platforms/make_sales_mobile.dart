@@ -1242,6 +1242,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         returnSalesProvider()
                                             .setTotalPrice,
                                     item: TempProductClass(
+                                      useGroupUnit: false,
                                       categories: [],
                                       storageUuid: null,
                                       departmentName:
@@ -1329,6 +1330,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       returnSalesProvider()
                                           .setTotalPrice,
                                   item: TempProductClass(
+                                    useGroupUnit: false,
                                     categories: [],
                                     storageUuid: null,
                                     departmentName:
@@ -1444,6 +1446,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                             returnSalesProvider()
                                                 .setTotalPrice,
                                         item: TempProductClass(
+                                          useGroupUnit:
+                                              false,
                                           categories: [],
                                           storageUuid: null,
                                           departmentName:
@@ -1539,6 +1543,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       returnSalesProvider()
                                           .setTotalPrice,
                                   item: TempProductClass(
+                                    useGroupUnit: false,
                                     categories: [],
                                     storageUuid: null,
                                     departmentName:
@@ -1733,6 +1738,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                         setTotalPrice:
                                                             returnSalesProvider().setTotalPrice,
                                                         item: TempProductClass(
+                                                          useGroupUnit:
+                                                              false,
                                                           categories:
                                                               [],
                                                           storageUuid:
@@ -2416,6 +2423,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               setTotalPrice:
                                                                   returnSalesProvider().setTotalPrice,
                                                               item: TempProductClass(
+                                                                useGroupUnit:
+                                                                    false,
                                                                 categories:
                                                                     [],
                                                                 storageUuid:

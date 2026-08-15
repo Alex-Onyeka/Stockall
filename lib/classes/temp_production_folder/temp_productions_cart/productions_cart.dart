@@ -52,8 +52,8 @@ class ProductionsCart extends HiveObject {
   @HiveField(14)
   List<ProductionMaterialCartItem> materialsCartItems;
 
-  @HiveField(15)
-  double? originalCostPerItem;
+  // @HiveField(15)
+  // double? originalCostPerItem;
 
   @HiveField(16)
   bool? originalUseGroupQuantity;
@@ -77,7 +77,7 @@ class ProductionsCart extends HiveObject {
     this.customPrice,
     this.productionUuidEdit,
     required this.materialsCartItems,
-    required this.originalCostPerItem,
+    // required this.originalCostPerItem,
     required this.originalUseGroupQuantity,
     // required this.useGroupQuantity,
   });

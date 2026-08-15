@@ -1332,6 +1332,8 @@ class _MakeSalesDesktopState
                                                   returnSalesProvider()
                                                       .setTotalPrice,
                                               item: TempProductClass(
+                                                useGroupUnit:
+                                                    false,
                                                 categories:
                                                     [],
                                                 storageUuid:
@@ -1467,6 +1469,8 @@ class _MakeSalesDesktopState
                                                     returnSalesProvider()
                                                         .setTotalPrice,
                                                 item: TempProductClass(
+                                                  useGroupUnit:
+                                                      false,
                                                   categories:
                                                       [],
                                                   storageUuid:
@@ -1671,6 +1675,8 @@ class _MakeSalesDesktopState
                                                                       setTotalPrice:
                                                                           returnSalesProvider().setTotalPrice,
                                                                       item: TempProductClass(
+                                                                        useGroupUnit:
+                                                                            false,
                                                                         categories:
                                                                             [],
                                                                         storageUuid:
@@ -2429,6 +2435,8 @@ class _MakeSalesDesktopState
                                                           item: TempProductClass(
                                                             categories:
                                                                 [],
+                                                            useGroupUnit:
+                                                                false,
                                                             storageUuid:
                                                                 null,
                                                             departmentName:

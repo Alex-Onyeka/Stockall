@@ -85,7 +85,7 @@ class ProductionsCartFunc {
             productionUuidEdit: null,
             selectCostPriceToUse: 1,
             isEdit: false,
-            originalCostPerItem: 0,
+            // originalCostPerItem: 0,
             originalUseGroupQuantity: false,
           );
       ProductionsCart newItem =

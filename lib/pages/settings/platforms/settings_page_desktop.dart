@@ -35,7 +35,6 @@ import 'package:stockall/pages/settings/components/toggle_manage_productions.dar
 import 'package:stockall/pages/settings/components/toggle_print_sales_docket.dart';
 import 'package:stockall/pages/settings/components/toggle_track_cart.dart';
 import 'package:stockall/pages/settings/components/toggle_whole_sale_switch.dart';
-import 'package:stockall/pages/settings/components/use_group_unit_toggle.dart';
 import 'package:stockall/pages/settings/components/use_screen_keyboard.dart';
 import 'package:stockall/pages/settings/settings_page.dart';
 import 'package:stockall/pages/shop_setup/edit_receipt_page/edit_receipt.dart';
@@ -295,7 +294,7 @@ class _SettingsPageDesktopState
                                 ),
                               ),
                               ManageInventoryToggleSwitch(),
-                              UseGroupUnitToggle(),
+                              // UseGroupUnitToggle(),
                               ToggleManageProductions(),
                               ToggleWholeSaleSwitch(),
                               ManageDepartmentsToggleSwitch(),

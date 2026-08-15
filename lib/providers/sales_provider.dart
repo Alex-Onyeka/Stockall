@@ -1266,6 +1266,7 @@ class SalesProvider extends ChangeNotifier {
 
                   TempProductClass
                   product = TempProductClass(
+                    useGroupUnit: false,
                     categories: [],
                     storageUuid: null,
                     groupUnit: 'Group(s)',
@@ -1609,6 +1610,7 @@ class SalesProvider extends ChangeNotifier {
 
                   TempProductClass
                   product = TempProductClass(
+                    useGroupUnit: false,
                     categories: [],
                     storageUuid: null,
                     groupUnit: 'Group(s)',
@@ -1903,10 +1905,7 @@ class SalesProvider extends ChangeNotifier {
           if ((cartItem.itemUuid ?? cartItem.item.uuid) ==
               (newCartItem.itemUuid ??
                   newCartItem.item.uuid)) {
-            if (returnShopProvider()
-                    .userShop()
-                    ?.useGroupUnit ==
-                true) {
+            if (newCartItem.useGroupQuantity == true) {
               totalInAllCarts += cartItem.getRealQuantity();
             } else {
               totalInAllCarts += cartItem.quantity;
@@ -1979,8 +1978,7 @@ class SalesProvider extends ChangeNotifier {
     required bool isEdit,
   }) {
     double quantityToAddCalc() {
-      if (returnShopProvider().userShop()?.useGroupUnit ==
-          true) {
+      if (newCartItem.useGroupQuantity == true) {
         return (quantityToAdd *
             (newCartItem.useGroupQuantity == true
                 ? newCartItem.getQttyPerGroup()
@@ -2543,6 +2541,7 @@ class SalesProvider extends ChangeNotifier {
                     record.quantity;
 
         TempProductClass productNew = TempProductClass(
+          useGroupUnit: false,
           categories: [],
           storageUuid: null,
           groupUnit: 'Group(s)',

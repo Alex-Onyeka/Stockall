@@ -90,7 +90,7 @@ class MaterialsUsageProvider extends ChangeNotifier {
           newValue: (newMaterial.quantity ?? 0).toString(),
           oldValue: (oldMaterial.quantity ?? 0).toString(),
           quantityChange:
-              productionMaterialsUsage.getQuantity(),
+              -productionMaterialsUsage.getQuantity(),
           desc: 'This Material Was used.',
           isIncreased: false,
         );
@@ -98,9 +98,10 @@ class MaterialsUsageProvider extends ChangeNotifier {
           material: newMaterial,
           isQuantityUpdate: true,
           includeQuantity: true,
+          isMultipleUpdate: true,
           quantityChange:
               productionMaterialsUsage.getQuantity(),
-          isIncrement: true,
+          isIncrement: false,
           materialsItemHistory: materialsItemHistory,
         );
       }
@@ -389,7 +390,7 @@ class MaterialsUsageProvider extends ChangeNotifier {
         }
       }
 
-      returnData().syncData();
+      // returnData().syncData();
       await getProductionMaterialsUsageOffline();
       await mainLocalLog(
         '✅ ProductionMaterialsUsage successfully Delete.',

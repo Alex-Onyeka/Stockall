@@ -178,6 +178,8 @@ class Authorizations {
       'Toggle Manage Productions';
   String toggleManageProductionsStorage =
       'Toggle Manage Productions Storage';
+  String toggleManageProductionItems =
+      'Toggle Manage Production Items';
   String viewProductions = 'View Productions';
   String manageProductionsStorage =
       'Manage Productions Storage';

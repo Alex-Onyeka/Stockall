@@ -4,6 +4,7 @@ import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widg
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/production/settings/components/toggle_manage_production_items.dart';
 import 'package:stockall/pages/production/settings/components/toggle_manage_productions_storage.dart';
 
 class ProductionSettingsPageDesktop extends StatefulWidget {
@@ -107,6 +108,7 @@ class _ProductionSettingsPageDesktopState
                         // spacing: 10,
                         children: [
                           ToggleManageProductionsStorage(),
+                          ToggleManageProductionItems(),
                           Visibility(
                             visible: authorization(
                               authorized:

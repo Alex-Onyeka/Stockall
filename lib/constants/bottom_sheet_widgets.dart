@@ -719,6 +719,14 @@ void selectProductPurchase({
   bool setCustomPrice = false;
   bool isGroupTemp = false;
 
+  bool useGroupUnit() {
+    if (shop(context)?.manageInventoryStorage == true) {
+      return storageProduct?.useGroupUnit ?? false;
+    } else {
+      return product?.useGroupUnit ?? false;
+    }
+  }
+
   if (purchaseItem != null) {
     isGroupTemp = purchaseItem.isGroup;
     if (purchaseItem.customPrice != null) {
@@ -729,8 +737,7 @@ void selectProductPurchase({
     quantityController.text =
         (purchaseItem.quantity).toString();
   } else {
-    if (returnShopProvider().userShop()?.useGroupUnit ==
-        true) {
+    if (useGroupUnit()) {
       isGroupTemp = true;
     } else {
       isGroupTemp = false;
@@ -869,11 +876,7 @@ void selectProductPurchase({
                       ),
                     ),
                     Visibility(
-                      visible:
-                          returnShopProvider()
-                              .userShop()
-                              ?.useGroupUnit ==
-                          true,
+                      visible: useGroupUnit(),
                       child: Column(
                         children: [
                           SizedBox(height: 20),
@@ -2765,6 +2768,10 @@ void selectProductSales({
   double qqty = 0;
   bool useWholeSalePriceTemp = false;
   bool useGroupQuantityTemp = false;
+  bool useGroupUnit() {
+    return cartItem.item.useGroupUnit ?? false;
+  }
+
   double existingQtty = cartItem.quantity;
   if (isEdit) {
     useWholeSalePriceTemp = cartItem.useWholeSalePrice;
@@ -3126,11 +3133,7 @@ void selectProductSales({
                               ),
                             ),
                             Visibility(
-                              visible:
-                                  returnShopProvider()
-                                      .userShop()
-                                      ?.useGroupUnit ==
-                                  true,
+                              visible: useGroupUnit(),
                               child: Column(
                                 children: [
                                   SizedBox(height: 20),

@@ -138,6 +138,7 @@ class _AddProductDesktopState
               await dataProvider.createProduct(
                 itemHistory: itemHistory,
                 product: TempProductClass(
+                  useGroupUnit: dataProvider.useGroupUnit,
                   categories:
                       dataProvider.selectedCategories
                           .toList(),
@@ -280,6 +281,7 @@ class _AddProductDesktopState
               isQuantityUpdate: false,
               quantityChange: null,
               product: TempProductClass(
+                useGroupUnit: provider.useGroupUnit,
                 categories:
                     provider.selectedCategories
                         .toList()
@@ -471,11 +473,6 @@ class _AddProductDesktopState
           widget.product!.wholeSalePrice != null
               ? widget.product!.wholeSalePrice.toString()
               : '';
-      // widget.quantityController.text =
-      //     widget.product!.quantity == null
-      //         ? ''
-      //         : widget.product!.quantity.toString();
-
       widget.discountController.text =
           widget.product!.discount != null
               ? widget.product!.discount!.toString()
@@ -483,10 +480,10 @@ class _AddProductDesktopState
       returnData().isProductRefundable =
           widget.product!.isRefundable;
       returnData().isManaged = widget.product!.isManaged;
+      returnData().useGroupUnit =
+          widget.product!.useGroupUnit ?? false;
       returnData().setCustomPrice =
           widget.product!.setCustomPrice;
-      // returnData().selectedUnit =
-      //     widget.product!.unit;
       returnData().selectUnit(widget.product!.unit);
       returnData().selectGroupUnit(
         unit: widget.product!.groupUnit,
@@ -1128,6 +1125,8 @@ class _AddProductDesktopState
                                                         setCustomPrice:
                                                             false,
                                                         isManaged:
+                                                            false,
+                                                        useGroupUnit:
                                                             false,
                                                         uuid:
                                                             widget.product ==
@@ -1981,6 +1980,77 @@ class _AddProductDesktopState
                                                   null,
                                           child: Column(
                                             children: [
+                                              SizedBox(
+                                                height: 20,
+                                              ),
+                                              InkWell(
+                                                mouseCursor:
+                                                    SystemMouseCursors
+                                                        .click,
+                                                onTap: () {
+                                                  returnData()
+                                                      .toggleUseGroupUnit();
+                                                  FocusManager
+                                                      .instance
+                                                      .primaryFocus
+                                                      ?.unfocus();
+                                                },
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Flexible(
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment.start,
+                                                        children: [
+                                                          Text(
+                                                            style: TextStyle(
+                                                              fontSize:
+                                                                  theme.mobileTexts.b1.fontSize,
+                                                              fontWeight:
+                                                                  FontWeight.bold,
+                                                            ),
+                                                            'Use Group Unit?',
+                                                          ),
+                                                          Column(
+                                                            spacing:
+                                                                5,
+                                                            children: [
+                                                              Text(
+                                                                style: TextStyle(
+                                                                  fontSize:
+                                                                      10,
+                                                                ),
+                                                                'This Controls if you want to also manage the group unit of this item  (E.g: Single Unit: Bottle, Group Unit: Crate.)',
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    Checkbox(
+                                                      activeColor:
+                                                          theme.lightModeColor.secColor100,
+                                                      value:
+                                                          returnData(
+                                                            context:
+                                                                context,
+                                                          ).useGroupUnit,
+                                                      onChanged: (
+                                                        value,
+                                                      ) {
+                                                        returnData().toggleUseGroupUnit();
+                                                        FocusManager.instance.primaryFocus?.unfocus();
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 10,
+                                              ),
                                               Row(
                                                 children: [
                                                   Expanded(
@@ -2038,10 +2108,10 @@ class _AddProductDesktopState
                                                   ),
                                                   Visibility(
                                                     visible:
-                                                        returnShopProvider(
+                                                        returnData(
                                                           context:
                                                               context,
-                                                        ).userShop()?.useGroupUnit ==
+                                                        ).useGroupUnit ==
                                                         true,
                                                     child: SizedBox(
                                                       width:
@@ -2050,10 +2120,10 @@ class _AddProductDesktopState
                                                   ),
                                                   Visibility(
                                                     visible:
-                                                        returnShopProvider(
+                                                        returnData(
                                                           context:
                                                               context,
-                                                        ).userShop()?.useGroupUnit ==
+                                                        ).useGroupUnit ==
                                                         true,
                                                     child: Expanded(
                                                       child: SubWrapper(
@@ -2116,10 +2186,10 @@ class _AddProductDesktopState
                                               ),
                                               Visibility(
                                                 visible:
-                                                    returnShopProvider(
+                                                    returnData(
                                                       context:
                                                           context,
-                                                    ).userShop()?.useGroupUnit ==
+                                                    ).useGroupUnit ==
                                                     true,
                                                 child: Column(
                                                   children: [
