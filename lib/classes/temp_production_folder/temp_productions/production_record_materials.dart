@@ -67,6 +67,9 @@ class ProductionRecordMaterials extends HiveObject {
   @HiveField(19)
   String? groupUnit;
 
+  @HiveField(20)
+  bool? isManaged;
+
   ProductionRecordMaterials({
     required this.uuid,
     this.productionRecordId,
@@ -88,6 +91,7 @@ class ProductionRecordMaterials extends HiveObject {
     required this.groupUnit,
     required this.originalCostPerItem,
     required this.originalUseGroupQuantity,
+    required this.isManaged,
   });
 
   factory ProductionRecordMaterials.fromJson(
@@ -123,6 +127,7 @@ class ProductionRecordMaterials extends HiveObject {
               ?.toDouble(),
       originalUseGroupQuantity:
           json['original_use_group_quantity'] as bool?,
+      isManaged: json['is_managed'] as bool?,
     );
   }
 
@@ -149,6 +154,7 @@ class ProductionRecordMaterials extends HiveObject {
       'original_use_group_quantity':
           originalUseGroupQuantity,
       'original_cost_per_item': originalCostPerItem,
+      'is_managed': isManaged,
     };
   }
 
@@ -177,6 +183,7 @@ class ProductionRecordMaterials extends HiveObject {
             qttyPerGroup: item.qttyPerGroup,
             setCustomPrice: false,
             unit: item.unit,
+            isManaged: item.isManaged,
           ),
         )
         .toList();
@@ -189,6 +196,7 @@ class ProductionRecordMaterials extends HiveObject {
     return items
         .map(
           (item) => ProductionRecordMaterials(
+            isManaged: item.isManaged,
             createdAt: DateTime.now(),
             customCost: item.customPrice,
             departmentName: currentDepartment()?.name,
@@ -236,6 +244,7 @@ class ProductionRecordMaterials extends HiveObject {
     String? groupUnit,
     double? originalCostPerItem,
     bool? originalUseGroupQuantity,
+    bool? isManaged,
   }) {
     return ProductionRecordMaterials(
       uuid: uuid ?? this.uuid,
@@ -263,6 +272,7 @@ class ProductionRecordMaterials extends HiveObject {
       originalUseGroupQuantity:
           originalUseGroupQuantity ??
           this.originalUseGroupQuantity,
+      isManaged: isManaged ?? this.isManaged,
     );
   }
 

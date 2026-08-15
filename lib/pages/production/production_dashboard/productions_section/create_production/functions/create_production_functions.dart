@@ -954,10 +954,55 @@ class CreateProductionFunctions {
           customUnit = editMaterialItem.customUnit;
         }
 
+        void checkIsManagedAndClearTextFieldAction(
+          bool isTextFieldUse,
+        ) {
+          bool isManaged =
+              (editMaterialItem?.isManaged ??
+                  selectedMaterial?.isManaged ??
+                  false);
+          var materials = returnMaterialsProvider()
+              .materialListMain
+              .where(
+                (item) =>
+                    item.uuid ==
+                    (editMaterialItem?.materialItemUuid ??
+                        selectedMaterial?.uuid),
+              );
+          double quantity = 0;
+          if (materials.isNotEmpty) {
+            quantity = (materials.first.quantity ?? 0);
+          }
+
+          if (isManaged &&
+              (quantityConversion(
+                    isGroup:
+                        isTextFieldUse
+                            ? useGroupUnit
+                            : !useGroupUnit,
+                    quantity:
+                        double.tryParse(
+                          quantityController.text
+                              .replaceAll(',', ''),
+                        ) ??
+                        0,
+                    qttyPerItem:
+                        editMaterialItem?.qttyPerGroup ??
+                        selectedMaterial?.qttyPerGroup,
+                  ) >
+                  quantity)) {
+            quantityController.text = '0';
+          }
+        }
+
         Future<void> onSubmit() async {
           if (quantityController.text.isNotEmpty &&
               quantityController.text != '0') {
             var tempCartItem = ProductionMaterialCartItem(
+              isManaged:
+                  editMaterialItem?.isManaged ??
+                  selectedMaterial?.isManaged ??
+                  false,
               productionItemName:
                   returnProductionsActionProvider()
                       .getProductionsCart()
@@ -1059,6 +1104,9 @@ class CreateProductionFunctions {
                       title: 'Quantity',
                       showTitle: false,
                       onChanged: (p0) {
+                        checkIsManagedAndClearTextFieldAction(
+                          true,
+                        );
                         setState2(() {});
                       },
                       onSubmitted: (p0) {
@@ -1102,6 +1150,9 @@ class CreateProductionFunctions {
                               MyToggleButton(
                                 theme: theme,
                                 toggle: () {
+                                  checkIsManagedAndClearTextFieldAction(
+                                    false,
+                                  );
                                   setState2(() {
                                     useGroupUnit =
                                         !useGroupUnit;

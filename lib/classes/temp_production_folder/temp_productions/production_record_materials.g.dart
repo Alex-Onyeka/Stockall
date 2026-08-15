@@ -38,13 +38,14 @@ class ProductionRecordMaterialsAdapter
       groupUnit: fields[19] as String?,
       originalCostPerItem: fields[16] as double?,
       originalUseGroupQuantity: fields[18] as bool?,
+      isManaged: fields[20] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ProductionRecordMaterials obj) {
     writer
-      ..writeByte(20)
+      ..writeByte(21)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -84,7 +85,9 @@ class ProductionRecordMaterialsAdapter
       ..writeByte(18)
       ..write(obj.originalUseGroupQuantity)
       ..writeByte(19)
-      ..write(obj.groupUnit);
+      ..write(obj.groupUnit)
+      ..writeByte(20)
+      ..write(obj.isManaged);
   }
 
   @override

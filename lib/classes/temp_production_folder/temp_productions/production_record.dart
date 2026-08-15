@@ -3,6 +3,7 @@ import 'package:stockall/classes/temp_production_folder/temp_productions/product
 import 'package:stockall/classes/temp_production_folder/temp_productions_cart/productions_cart.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions_cart/temp_productions_cart_item/productions_cart_item.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/production/production_dashboard/productions_section/create_production/functions/create_production_functions.dart';
 
 part 'production_record.g.dart';
 
@@ -74,6 +75,9 @@ class ProductionRecord {
   @HiveField(21)
   double? originalCostPerItem;
 
+  @HiveField(22)
+  String? groupUnit;
+
   ProductionRecord({
     required this.uuid,
     required this.createdAt,
@@ -87,7 +91,6 @@ class ProductionRecord {
     required this.itemName,
     required this.itemUuid,
     required this.quantity,
-    // required this.isGroup,
     required this.unit,
     required this.qttyPerGroup,
     required this.totalCost,
@@ -97,6 +100,7 @@ class ProductionRecord {
     required this.originalCostPerItem,
     required this.originalUseGroupQuantity,
     required this.useGroupQuantity,
+    required this.groupUnit,
   });
 
   /// FROM JSON
@@ -144,6 +148,7 @@ class ProductionRecord {
       originalUseGroupQuantity:
           json['original_use_group_quantity'] as bool?,
       useGroupQuantity: json['use_group_quantity'] as bool?,
+      groupUnit: json['group_unit'] as String?,
     );
   }
 
@@ -174,6 +179,7 @@ class ProductionRecord {
       'original_use_group_quantity':
           originalUseGroupQuantity,
       'use_group_quantity': useGroupQuantity,
+      'group_unit': groupUnit,
     };
   }
 
@@ -193,8 +199,6 @@ class ProductionRecord {
           cartItem.productionsCartItem?.name ?? 'Not Set',
       itemUuid: cartItem.productionsCartItem?.itemUuid,
       quantity: cartItem.productionsCartItem?.quantity,
-      // isGroup:
-      //     cartItem.productionsCartItem?.useGroupQuantity,
       unit: cartItem.productionsCartItem?.unit,
       qttyPerGroup:
           cartItem.productionsCartItem?.qttyPerGroup,
@@ -212,6 +216,7 @@ class ProductionRecord {
           cartItem.originalUseGroupQuantity,
       useGroupQuantity:
           cartItem.productionsCartItem?.useGroupQuantity,
+      groupUnit: cartItem.productionsCartItem?.groupUnit,
     );
   }
 
@@ -273,6 +278,7 @@ class ProductionRecord {
     double? originalCostPerItem,
     bool? originalUseGroupQuantity,
     bool? useGroupQuantity,
+    String? groupUnit,
   }) {
     return ProductionRecord(
       uuid: uuid ?? this.uuid,
@@ -302,6 +308,7 @@ class ProductionRecord {
           this.originalUseGroupQuantity,
       useGroupQuantity:
           useGroupQuantity ?? this.useGroupQuantity,
+      groupUnit: groupUnit ?? this.groupUnit,
     );
   }
 
@@ -309,11 +316,19 @@ class ProductionRecord {
     return customCost ?? ((totalCost ?? 0));
   }
 
+  double getQuantity() {
+    return quantityConversion(
+      isGroup: useGroupQuantity ?? false,
+      quantity: quantity ?? 0,
+      qttyPerItem: qttyPerGroup,
+    );
+  }
+
   String getUnit() {
     if (useGroupQuantity == true) {
-      return unit == 'Others'
+      return groupUnit == 'Others'
           ? 'Group(s)'
-          : unit ?? 'Group(s)';
+          : groupUnit ?? 'Group(s)';
     } else {
       return unit == 'Others'
           ? 'Unit(s)'

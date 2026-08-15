@@ -264,6 +264,47 @@ class CreateMaterialsUsageFunctions {
               editMaterialItem.selectedCostInt;
         }
 
+        void checkIsManagedAndClearTextFieldAction(
+          bool isTextFieldUse,
+        ) {
+          bool isManaged =
+              (editMaterialItem?.isManaged ??
+                  selectedMaterial?.isManaged ??
+                  false);
+          var materials = returnMaterialsProvider()
+              .materialListMain
+              .where(
+                (item) =>
+                    item.uuid ==
+                    (editMaterialItem?.materialItemUuid ??
+                        selectedMaterial?.uuid),
+              );
+          double quantity = 0;
+          if (materials.isNotEmpty) {
+            quantity = (materials.first.quantity ?? 0);
+          }
+
+          if (isManaged &&
+              (quantityConversion(
+                    isGroup:
+                        isTextFieldUse
+                            ? useGroupUnit
+                            : !useGroupUnit,
+                    quantity:
+                        double.tryParse(
+                          quantityController.text
+                              .replaceAll(',', ''),
+                        ) ??
+                        0,
+                    qttyPerItem:
+                        editMaterialItem?.qttyPerGroup ??
+                        selectedMaterial?.qttyPerGroup,
+                  ) >
+                  quantity)) {
+            quantityController.text = '0';
+          }
+        }
+
         Future<void> onSubmit() async {
           if (quantityController.text.isNotEmpty &&
               quantityController.text != '0') {
@@ -382,37 +423,9 @@ class CreateMaterialsUsageFunctions {
                       title: 'Quantity',
                       showTitle: false,
                       onChanged: (p0) {
-                        bool isManaged =
-                            (editMaterialItem?.isManaged ??
-                                selectedMaterial
-                                    ?.isManaged ??
-                                false);
-                        if (isManaged &&
-                            (quantityConversion(
-                                  isGroup: useGroupUnit,
-                                  quantity:
-                                      double.tryParse(
-                                        quantityController
-                                            .text
-                                            .replaceAll(
-                                              ',',
-                                              '',
-                                            ),
-                                      ) ??
-                                      0,
-                                  qttyPerItem:
-                                      editMaterialItem
-                                          ?.qttyPerGroup ??
-                                      selectedMaterial
-                                          ?.qttyPerGroup,
-                                ) >
-                                (editMaterialItem
-                                        ?.quantity ??
-                                    selectedMaterial
-                                        ?.quantity ??
-                                    0))) {
-                          quantityController.text = '0';
-                        }
+                        checkIsManagedAndClearTextFieldAction(
+                          true,
+                        );
 
                         setState2(() {});
                       },
@@ -457,40 +470,9 @@ class CreateMaterialsUsageFunctions {
                               MyToggleButton(
                                 theme: theme,
                                 toggle: () {
-                                  bool isManaged =
-                                      (editMaterialItem
-                                              ?.isManaged ??
-                                          selectedMaterial
-                                              ?.isManaged ??
-                                          false);
-                                  if (isManaged &&
-                                      (quantityConversion(
-                                            isGroup:
-                                                !useGroupUnit,
-                                            quantity:
-                                                double.tryParse(
-                                                  quantityController
-                                                      .text
-                                                      .replaceAll(
-                                                        ',',
-                                                        '',
-                                                      ),
-                                                ) ??
-                                                0,
-                                            qttyPerItem:
-                                                editMaterialItem
-                                                    ?.qttyPerGroup ??
-                                                selectedMaterial
-                                                    ?.qttyPerGroup,
-                                          ) >
-                                          (editMaterialItem
-                                                  ?.quantity ??
-                                              selectedMaterial
-                                                  ?.quantity ??
-                                              0))) {
-                                    quantityController
-                                        .text = '0';
-                                  }
+                                  checkIsManagedAndClearTextFieldAction(
+                                    false,
+                                  );
 
                                   setState2(() {
                                     useGroupUnit =

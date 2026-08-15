@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/pages/production/production_dashboard/productions_section/create_production/functions/create_production_functions.dart';
 
 part 'production_materials_usage.g.dart';
 
@@ -226,6 +227,14 @@ class ProductionMaterialsUsage extends HiveObject {
         return unit ?? 'Unit(s)';
       }
     }
+  }
+
+  double getQuantity() {
+    return quantityConversion(
+      isGroup: isGroup ?? false,
+      quantity: quantity,
+      qttyPerItem: qttyPerGroup,
+    );
   }
 
   double getTotalCost() {

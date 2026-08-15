@@ -55,6 +55,9 @@ class ProductionMaterialCartItem extends HiveObject {
   @HiveField(16)
   String? productionItemId;
 
+  @HiveField(17)
+  bool? isManaged;
+
   ProductionMaterialCartItem({
     required this.uuid,
     required this.materialItemUuid,
@@ -73,6 +76,7 @@ class ProductionMaterialCartItem extends HiveObject {
     required this.originalUseGroupQuantity,
     required this.productionItemId,
     required this.productionItemName,
+    required this.isManaged,
   });
 
   Map<String, dynamic> toJson() => {
@@ -93,6 +97,7 @@ class ProductionMaterialCartItem extends HiveObject {
     'original_use_group_quantity': originalUseGroupQuantity,
     'production_item_name': productionItemName,
     'production_item_uuid': productionItemId,
+    'is_managed': isManaged,
   };
 
   factory ProductionMaterialCartItem.fromJson(
@@ -117,6 +122,7 @@ class ProductionMaterialCartItem extends HiveObject {
           json['original_use_group_quantity'],
       productionItemId: json['production_item_uuid'],
       productionItemName: json['production_item_name'],
+      isManaged: json['is_managed'],
     );
   }
 
@@ -202,6 +208,7 @@ class ProductionMaterialCartItem extends HiveObject {
     bool? originalUseGroupQuantity,
     String? productionItemName,
     String? productionItemId,
+    bool? isManaged,
   }) {
     return ProductionMaterialCartItem(
       uuid: uuid ?? this.uuid,
@@ -228,6 +235,7 @@ class ProductionMaterialCartItem extends HiveObject {
           productionItemId ?? this.productionItemId,
       productionItemName:
           productionItemName ?? this.productionItemName,
+      isManaged: isManaged ?? this.isManaged,
     );
   }
 }

@@ -38,13 +38,14 @@ class ProductionRecordAdapter extends TypeAdapter<ProductionRecord> {
       originalCostPerItem: fields[21] as double?,
       originalUseGroupQuantity: fields[20] as bool?,
       useGroupQuantity: fields[19] as bool?,
+      groupUnit: fields[22] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ProductionRecord obj) {
     writer
-      ..writeByte(21)
+      ..writeByte(22)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -86,7 +87,9 @@ class ProductionRecordAdapter extends TypeAdapter<ProductionRecord> {
       ..writeByte(20)
       ..write(obj.originalUseGroupQuantity)
       ..writeByte(21)
-      ..write(obj.originalCostPerItem);
+      ..write(obj.originalCostPerItem)
+      ..writeByte(22)
+      ..write(obj.groupUnit);
   }
 
   @override

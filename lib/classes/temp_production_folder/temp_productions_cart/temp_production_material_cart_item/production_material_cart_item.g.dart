@@ -35,13 +35,14 @@ class ProductionMaterialCartItemAdapter
       originalUseGroupQuantity: fields[14] as bool?,
       productionItemId: fields[16] as String?,
       productionItemName: fields[15] as String?,
+      isManaged: fields[17] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ProductionMaterialCartItem obj) {
     writer
-      ..writeByte(17)
+      ..writeByte(18)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -75,7 +76,9 @@ class ProductionMaterialCartItemAdapter
       ..writeByte(15)
       ..write(obj.productionItemName)
       ..writeByte(16)
-      ..write(obj.productionItemId);
+      ..write(obj.productionItemId)
+      ..writeByte(17)
+      ..write(obj.isManaged);
   }
 
   @override

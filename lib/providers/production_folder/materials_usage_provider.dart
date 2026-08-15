@@ -82,14 +82,15 @@ class MaterialsUsageProvider extends ChangeNotifier {
         var newMaterial = oldMaterial.copyWith();
         newMaterial.quantity =
             (newMaterial.quantity ?? 0) -
-            productionMaterialsUsage.quantity;
+            productionMaterialsUsage.getQuantity();
         MaterialsItemHistory
         materialsItemHistory = MaterialsItemHistory(
           shopId: newMaterial.shopId,
           title: 'Material Used',
           newValue: (newMaterial.quantity ?? 0).toString(),
           oldValue: (oldMaterial.quantity ?? 0).toString(),
-          quantityChange: productionMaterialsUsage.quantity,
+          quantityChange:
+              productionMaterialsUsage.getQuantity(),
           desc: 'This Material Was used.',
           isIncreased: false,
         );
@@ -97,7 +98,8 @@ class MaterialsUsageProvider extends ChangeNotifier {
           material: newMaterial,
           isQuantityUpdate: true,
           includeQuantity: true,
-          quantityChange: productionMaterialsUsage.quantity,
+          quantityChange:
+              productionMaterialsUsage.getQuantity(),
           isIncrement: true,
           materialsItemHistory: materialsItemHistory,
         );
@@ -359,7 +361,7 @@ class MaterialsUsageProvider extends ChangeNotifier {
           var newMaterial = oldMaterial.copyWith();
           newMaterial.quantity =
               (newMaterial.quantity ?? 0) +
-              productionMaterialsUsage.quantity;
+              productionMaterialsUsage.getQuantity();
 
           MaterialsItemHistory materialsItemHistory =
               MaterialsItemHistory(
@@ -370,7 +372,7 @@ class MaterialsUsageProvider extends ChangeNotifier {
                 oldValue:
                     (oldMaterial.quantity ?? 0).toString(),
                 quantityChange:
-                    productionMaterialsUsage.quantity,
+                    productionMaterialsUsage.getQuantity(),
                 desc:
                     'This Material Usage Used Was Deleted.',
                 isIncreased: true,
@@ -380,7 +382,7 @@ class MaterialsUsageProvider extends ChangeNotifier {
             isQuantityUpdate: true,
             includeQuantity: true,
             quantityChange:
-                productionMaterialsUsage.quantity,
+                productionMaterialsUsage.getQuantity(),
             isIncrement: true,
             materialsItemHistory: materialsItemHistory,
           );
