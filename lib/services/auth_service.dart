@@ -308,6 +308,36 @@ class AuthService extends ChangeNotifier {
         },
       );
       return 0;
+    } else if (!returnProductionsActionProvider()
+            .isCartEmpty() &&
+        !allowLogout) {
+      showDialog(
+        context: context,
+        builder: (errorContext) {
+          return InfoAlert(
+            theme: returnTheme(context),
+            message:
+                'You currently have some Items in your Productions cart. Please Proceed to complete the The Process clear all the carts, before Logging out.',
+            title: 'Production Cart Not Empty',
+          );
+        },
+      );
+      return 0;
+    } else if (!returnMaterialsUsageActionProvider()
+            .isCartEmpty() &&
+        !allowLogout) {
+      showDialog(
+        context: context,
+        builder: (errorContext) {
+          return InfoAlert(
+            theme: returnTheme(context),
+            message:
+                'You currently have some Items in your Materials Usage cart. Please Proceed to complete the The Process clear all the carts, before Logging out.',
+            title: 'Materials Usage Cart Not Empty',
+          );
+        },
+      );
+      return 0;
     } else {
       returnCustomers(
         context,

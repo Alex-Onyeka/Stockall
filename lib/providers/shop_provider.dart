@@ -794,11 +794,6 @@ class ShopProvider extends ChangeNotifier {
       try {
         var safeContext = context;
         await mainLocalLog('Shop Selection Started');
-        // await returnData(
-        //   context,
-        //   listen: false,
-        // ).clearTotalCache();
-        // await mainLocalLog('Total Cache Cleared');
         var res = await CurrentShopFunc().createCurrentShop(
           TempCurrentShop(currentShopId: shopC.shopId!),
         );
@@ -836,6 +831,19 @@ class ShopProvider extends ChangeNotifier {
       context,
       listen: false,
     ).clearCustomers();
+    returnMaterialsProvider().clearMaterials();
+    returnMaterialsItemHistoryProvider()
+        .clearMaterialsItemHistories();
+    returnMaterialsQuantityUpdateProvider()
+        .clearMaterialQuantityUpdates();
+    returnMaterialsUsageActionProvider()
+        .clearMaterialsUsageMainCart();
+    returnMaterialsUsageProvider()
+        .clearProductionMaterialsUsage();
+    returnProductionItemHistoryProvider()
+        .clearProductionItemHistories();
+    returnProductionsActionProvider()
+        .clearProductionMainCart();
     returnData().clearProducts();
     returnExpensesProvider(
       context,

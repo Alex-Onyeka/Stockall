@@ -49,6 +49,12 @@ class MaterialsUsageActionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> clearMaterialsUsageMainCart() async {
+    await MaterialsUsageCartFunc()
+        .clearMaterialsUsageCart();
+    notifyListeners();
+  }
+
   Future<void> clearMaterialsFromCart() async {
     await MaterialsUsageCartFunc().clearMaterialsFromCart();
     notifyListeners();
@@ -109,6 +115,9 @@ class MaterialsUsageActionProvider extends ChangeNotifier {
       }
       await returnMaterialsUsageProvider()
           .getProductionMaterialsUsageOffline();
+      if (getMaterialsUsageCart()?.isEdit == true) {
+        await MaterialsUsageCartFunc().toggleIsEdit(false);
+      }
       syncData();
       return 1;
     } catch (e) {
@@ -127,6 +136,7 @@ class MaterialsUsageActionProvider extends ChangeNotifier {
         items: [record],
       );
       await addMaterialItemToCart(item: item.first);
+      await MaterialsUsageCartFunc().toggleIsEdit(true);
       return 1;
     } catch (e) {
       await mainLocalLog(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_materials_usage/production_materials_usage.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -503,39 +504,53 @@ class _MaterialUsageDetailsWidgetState
               Expanded(
                 child: EditButton(
                   action: () {
-                    showDialog(
-                      context: context,
-                      builder: (confirmContext) {
-                        return ConfirmationAlert(
-                          action: () async {
-                            var res =
-                                await returnMaterialsUsageActionProvider()
-                                    .editMaterialsUsageRecord(
-                                      record:
-                                          widget
-                                              .materialsUsage!,
-                                    );
-                            if (res == 1) {
-                              Navigator.of(
-                                confirmContext,
-                              ).pop();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (navContext) {
-                                    return CreateMaterialsUsagePage();
-                                  },
-                                ),
-                              );
-                            }
-                          },
-                          message:
-                              'Are you sure you want to Proceed to Edit this Usage Record?',
-                          theme: theme,
-                          title: 'Edit Usage Record',
-                        );
-                      },
-                    );
+                    if (returnMaterialsUsageActionProvider()
+                        .isCartEmpty()) {
+                      showDialog(
+                        context: context,
+                        builder: (confirmContext) {
+                          return ConfirmationAlert(
+                            action: () async {
+                              var res = await returnMaterialsUsageActionProvider()
+                                  .editMaterialsUsageRecord(
+                                    record:
+                                        widget
+                                            .materialsUsage!,
+                                  );
+                              if (res == 1) {
+                                Navigator.of(
+                                  confirmContext,
+                                ).pop();
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (navContext) {
+                                      return CreateMaterialsUsagePage();
+                                    },
+                                  ),
+                                );
+                              }
+                            },
+                            message:
+                                'Are you sure you want to Proceed to Edit this Usage Record?',
+                            theme: theme,
+                            title: 'Edit Usage Record',
+                          );
+                        },
+                      );
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return InfoAlert(
+                            theme: theme,
+                            message:
+                                'Materials Cart it Not Empty.',
+                            title: 'Cart Not Empty',
+                          );
+                        },
+                      );
+                    }
                   },
                   text: 'Edit',
                   theme: theme,

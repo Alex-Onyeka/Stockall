@@ -22,6 +22,12 @@ class ProductionItemHistoryProvider with ChangeNotifier {
 
   List<ProductionItemHistory> productionItemHistories = [];
 
+  void clearProductionItemHistories() {
+    productionItemHistories.clear();
+    mainLocalLog('Production Item Histories Cleared');
+    notifyListeners();
+  }
+
   DateTime? dateSet;
 
   void clearDate() {

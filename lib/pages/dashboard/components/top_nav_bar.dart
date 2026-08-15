@@ -1196,6 +1196,7 @@ class PopoverMenu extends StatelessWidget {
                                   returnConnectivityProvider()
                                       .isConnected;
                               if (!safeContext.mounted)
+                                // ignore: curly_braces_in_flow_control_structures
                                 return;
                               if (returnShopProvider()
                                       .userShop()!

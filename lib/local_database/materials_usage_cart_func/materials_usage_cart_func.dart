@@ -202,6 +202,30 @@ class MaterialsUsageCartFunc {
     }
   }
 
+  Future<int> toggleIsEdit(bool value) async {
+    try {
+      var cartItem = getMaterialsUsageCart();
+      if (cartItem == null) {
+        await initMaterialUsageCart();
+      }
+      cartItem!.isEdit = value;
+      await materialsUsageCartBox.put(
+        cartItem.uuid,
+        cartItem,
+      );
+      await mainLocalLog(
+        'Offline Materials Cart Is Edit Toggle To $value Success',
+      );
+
+      return 1;
+    } catch (e) {
+      await mainLocalLog(
+        'Offline Materials Cart Is Edit Failed: ${e.toString()}',
+      );
+      return 0;
+    }
+  }
+
   Future<int> clearMaterialsFromCart() async {
     try {
       var cartItem = getMaterialsUsageCart();

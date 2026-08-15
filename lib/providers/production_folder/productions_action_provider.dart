@@ -45,10 +45,10 @@ class ProductionsActionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Future<void> clearProductionMainCart() async {
-  //   await ProductionsCartFunc().clearProductionsCart();
-  //   notifyListeners();
-  // }
+  Future<void> clearProductionMainCart() async {
+    await ProductionsCartFunc().clearProductionsCart();
+    notifyListeners();
+  }
 
   Future<void> clearProductionMaterials() async {
     await ProductionsCartFunc().clearMaterialsFromCart();

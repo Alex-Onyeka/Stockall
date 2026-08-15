@@ -23,6 +23,12 @@ class MaterialsItemHistoryProvider with ChangeNotifier {
 
   List<MaterialsItemHistory> materialsItemHistories = [];
 
+  void clearMaterialsItemHistories() {
+    materialsItemHistories.clear();
+    mainLocalLog('Materials Cleared');
+    notifyListeners();
+  }
+
   DateTime? dateSet;
 
   void clearDate() {
