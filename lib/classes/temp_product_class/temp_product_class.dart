@@ -384,4 +384,12 @@ class TempProductClass {
       useGroupUnit: useGroupUnit ?? this.useGroupUnit,
     );
   }
+
+  String getUnitForSales({required bool useGroup}) {
+    if (useGroup == true) {
+      return groupUnit ?? 'Group(s)';
+    } else {
+      return unit == 'Others' ? 'Unit(s)' : unit;
+    }
+  }
 }

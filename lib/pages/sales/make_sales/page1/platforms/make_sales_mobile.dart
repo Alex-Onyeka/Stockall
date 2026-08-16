@@ -762,8 +762,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                       .addToStock;
 
                                               returnSalesProvider().addItemToCart(
-                                                isEdit:
-                                                    false,
+                                                // isEdit:
+                                                //     false,
                                                 context:
                                                     context,
                                                 newItem:
@@ -827,8 +827,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                         .addToStock;
 
                                                 returnSalesProvider().addItemToCart(
-                                                  isEdit:
-                                                      false,
+                                                  // isEdit:
+                                                  //     false,
                                                   context:
                                                       context,
                                                   newItem:
@@ -886,7 +886,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                     .addToStock;
 
                                             returnSalesProvider().addItemToCart(
-                                              isEdit: false,
+                                              // isEdit: false,
                                               context:
                                                   context,
                                               newItem:
@@ -1673,138 +1673,139 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
 
                                             if (allItems
                                                 .isEmpty) {
-                                              return SingleChildScrollView(
-                                                child: EmptyWidgetDisplay(
-                                                  title:
-                                                      'Cart List Empty',
-                                                  subText:
-                                                      'Start Adding Items to Cart To make Sales',
-                                                  buttonText:
-                                                      'Add Item',
-                                                  svg:
-                                                      productIconSvg,
-                                                  theme:
-                                                      theme,
-                                                  height:
-                                                      35,
-                                                  action: () {
-                                                    showGeneralDialog(
-                                                      context:
+                                              return Center(
+                                                child: SingleChildScrollView(
+                                                  child: EmptyWidgetDisplay(
+                                                    title:
+                                                        'Cart List Empty',
+                                                    subText:
+                                                        'Start Adding Items to Cart To make Sales',
+                                                    buttonText:
+                                                        'Add Item',
+                                                    svg:
+                                                        productIconSvg,
+                                                    theme:
+                                                        theme,
+                                                    height:
+                                                        35,
+                                                    action: () {
+                                                      showGeneralDialog(
+                                                        context:
+                                                            context,
+                                                        pageBuilder: (
                                                           context,
-                                                      pageBuilder: (
+                                                          animation,
+                                                          secondaryAnimation,
+                                                        ) {
+                                                          return CustomBottomPanel(
+                                                            searchController:
+                                                                widget.searchController,
+                                                            close: () {
+                                                              Navigator.of(
+                                                                context,
+                                                              ).pop();
+                                                              widget.searchController.clear();
+                                                            },
+                                                            // products:
+                                                            //     products,
+                                                          );
+                                                        },
+                                                      );
+                                                    },
+                                                    altAction: () {
+                                                      returnSalesProvider().toggleAddToStock(
+                                                        false,
                                                         context,
-                                                        animation,
-                                                        secondaryAnimation,
-                                                      ) {
-                                                        return CustomBottomPanel(
-                                                          searchController:
-                                                              widget.searchController,
-                                                          close: () {
-                                                            Navigator.of(
-                                                              context,
-                                                            ).pop();
-                                                            widget.searchController.clear();
-                                                          },
-                                                          // products:
-                                                          //     products,
-                                                        );
-                                                      },
-                                                    );
-                                                  },
-                                                  altAction: () {
-                                                    returnSalesProvider().toggleAddToStock(
-                                                      false,
-                                                      context,
-                                                    );
-                                                    makeCustomSale(
-                                                      closeAction: () {
-                                                        Navigator.of(
-                                                          context,
-                                                        ).pop();
-                                                      },
-                                                      editCartItem: TempCartItem(
-                                                        itemUuid:
-                                                            null,
-                                                        uuid:
-                                                            uuidGen(),
-                                                        isVoid:
-                                                            false,
-                                                        qttyPerGroup:
-                                                            null,
-                                                        useGroupQuantity:
-                                                            false,
-                                                        useWholeSalePrice:
-                                                            false,
-                                                        setTotalPrice:
-                                                            returnSalesProvider().setTotalPrice,
-                                                        item: TempProductClass(
-                                                          useGroupUnit:
-                                                              false,
-                                                          categories:
-                                                              [],
-                                                          storageUuid:
+                                                      );
+                                                      makeCustomSale(
+                                                        closeAction: () {
+                                                          Navigator.of(
+                                                            context,
+                                                          ).pop();
+                                                        },
+                                                        editCartItem: TempCartItem(
+                                                          itemUuid:
                                                               null,
-                                                          departmentName:
-                                                              returnDepartmentProvider().currentDepartment()?.name,
-                                                          departmentUuid:
-                                                              returnDepartmentProvider().currentDepartment()?.uuid,
-                                                          groupUnit:
-                                                              'Group(s)',
-                                                          qttyPerGroup:
-                                                              null,
-                                                          isManaged:
-                                                              false,
                                                           uuid:
                                                               uuidGen(),
-                                                          name:
-                                                              nameC.text,
-                                                          unit:
-                                                              'Unit(s)',
-                                                          isRefundable:
+                                                          isVoid:
                                                               false,
-                                                          costPrice:
-                                                              double.tryParse(
-                                                                costPriceC.text.replaceAll(
-                                                                  ',',
-                                                                  '',
-                                                                ),
-                                                              ) ??
-                                                              0,
-                                                          sellingPrice: double.tryParse(
-                                                            sellingPriceC.text.replaceAll(
-                                                              ',',
-                                                              '',
+                                                          qttyPerGroup:
+                                                              null,
+                                                          useGroupQuantity:
+                                                              false,
+                                                          useWholeSalePrice:
+                                                              false,
+                                                          setTotalPrice:
+                                                              returnSalesProvider().setTotalPrice,
+                                                          item: TempProductClass(
+                                                            useGroupUnit:
+                                                                false,
+                                                            categories:
+                                                                [],
+                                                            storageUuid:
+                                                                null,
+                                                            departmentName:
+                                                                returnDepartmentProvider().currentDepartment()?.name,
+                                                            departmentUuid:
+                                                                returnDepartmentProvider().currentDepartment()?.uuid,
+                                                            groupUnit:
+                                                                'Group(s)',
+                                                            qttyPerGroup:
+                                                                null,
+                                                            isManaged:
+                                                                false,
+                                                            uuid:
+                                                                uuidGen(),
+                                                            name:
+                                                                nameC.text,
+                                                            unit:
+                                                                'Unit(s)',
+                                                            isRefundable:
+                                                                false,
+                                                            costPrice:
+                                                                double.tryParse(
+                                                                  costPriceC.text.replaceAll(
+                                                                    ',',
+                                                                    '',
+                                                                  ),
+                                                                ) ??
+                                                                0,
+                                                            sellingPrice: double.tryParse(
+                                                              sellingPriceC.text.replaceAll(
+                                                                ',',
+                                                                '',
+                                                              ),
                                                             ),
-                                                          ),
-                                                          wholeSalePrice: double.tryParse(
-                                                            wholeSalePriceC.text.replaceAll(
-                                                              ',',
-                                                              '',
+                                                            wholeSalePrice: double.tryParse(
+                                                              wholeSalePriceC.text.replaceAll(
+                                                                ',',
+                                                                '',
+                                                              ),
                                                             ),
+                                                            quantity:
+                                                                0,
+                                                            shopId:
+                                                                returnShopProvider().userShop()!.shopId!,
+                                                            setCustomPrice:
+                                                                true,
                                                           ),
+                                                          addToStock:
+                                                              true,
                                                           quantity:
                                                               0,
-                                                          shopId:
-                                                              returnShopProvider().userShop()!.shopId!,
+                                                          discount:
+                                                              null,
                                                           setCustomPrice:
                                                               true,
                                                         ),
-                                                        addToStock:
-                                                            true,
-                                                        quantity:
-                                                            0,
-                                                        discount:
-                                                            null,
-                                                        setCustomPrice:
-                                                            true,
-                                                      ),
-                                                    );
-                                                  },
-                                                  altActionText:
-                                                      'Add Custom Item',
-                                                  altIcon:
-                                                      Icons
-                                                          .add,
+                                                      );
+                                                    },
+                                                    altActionText:
+                                                        'Add Custom Item',
+                                                    altIcon:
+                                                        Icons.add,
+                                                  ),
                                                 ),
                                               );
                                             } else {
@@ -2141,8 +2142,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               var pro =
                                                                   prod.first;
                                                               returnSalesProvider().addItemToCart(
-                                                                isEdit:
-                                                                    false,
+                                                                // isEdit:
+                                                                //     false,
                                                                 // ignore: use_build_context_synchronously
                                                                 context:
                                                                     context,

@@ -78,6 +78,9 @@ class ProductionRecord {
   @HiveField(22)
   String? groupUnit;
 
+  @HiveField(23)
+  String? salesItemUuid;
+
   ProductionRecord({
     required this.uuid,
     required this.createdAt,
@@ -90,6 +93,7 @@ class ProductionRecord {
     required this.materials,
     required this.itemName,
     required this.itemUuid,
+    required this.salesItemUuid,
     required this.quantity,
     required this.unit,
     required this.qttyPerGroup,
@@ -132,6 +136,7 @@ class ProductionRecord {
               .toList(),
       itemName: json['item_name'] as String?,
       itemUuid: json['item_uuid'] as String?,
+      salesItemUuid: json['sales_item_uuid'],
       quantity: (json['quantity'] as num?)?.toDouble(),
       unit: json['unit'] as String?,
       // isGroup: json['is_group'] as bool?,
@@ -166,6 +171,7 @@ class ProductionRecord {
       'materials':
           materials.map((e) => e.toJson()).toList(),
       'item_uuid': itemUuid,
+      'sales_item_uuid': salesItemUuid,
       'item_name': itemName,
       'quantity': quantity,
       'unit': unit,
@@ -198,6 +204,8 @@ class ProductionRecord {
       itemName:
           cartItem.productionsCartItem?.name ?? 'Not Set',
       itemUuid: cartItem.productionsCartItem?.itemUuid,
+      salesItemUuid:
+          cartItem.productionsCartItem?.salesItemUuid,
       quantity: cartItem.productionsCartItem?.quantity,
       unit: cartItem.productionsCartItem?.unit,
       qttyPerGroup:
@@ -229,6 +237,7 @@ class ProductionRecord {
       productionsCartItem: ProductionsCartItem(
         uuid: uuid,
         itemUuid: itemUuid,
+        salesItemUuid: salesItemUuid,
         name: itemName ?? 'Not Set',
         quantity: quantity ?? 0,
         addToStock: false,
@@ -289,6 +298,7 @@ class ProductionRecord {
     bool? originalUseGroupQuantity,
     bool? useGroupQuantity,
     String? groupUnit,
+    String? salesItemUuid,
   }) {
     return ProductionRecord(
       uuid: uuid ?? this.uuid,
@@ -302,6 +312,7 @@ class ProductionRecord {
       materials: materials ?? this.materials,
       itemName: itemName ?? this.itemName,
       itemUuid: itemUuid ?? this.itemUuid,
+      salesItemUuid: salesItemUuid ?? this.salesItemUuid,
       quantity: quantity ?? this.quantity,
       qttyPerGroup: qttyPerGroup ?? this.qttyPerGroup,
       unit: unit ?? this.unit,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_material_class/material_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_items/production_item.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions_cart/temp_production_material_cart_item/production_material_cart_item.dart';
@@ -144,12 +145,237 @@ class CreateProductionFunctions {
     );
   }
 
+  // void selectSalesItemForProduction({
+  //   required BuildContext firstContext,
+  // }) {
+  //   var theme = returnTheme(firstContext, listen: false);
+  //   final searchController = TextEditingController();
+
+  //   showDialog(
+  //     context: firstContext,
+  //     builder: (secondContext) {
+  //       return StatefulBuilder(
+  //         builder: (statefulContext, setState) {
+  //           return DialogTemplate(
+  //             theme: theme,
+  //             message: 'Select an Item From the List Below',
+  //             title: 'Select Item',
+  //             action: () {
+  //               if (selectedItem != null) {
+  //                 addSelectedItemToCart(
+  //                   secondContext: secondContext,
+  //                   selectedItem: selectedItem,
+  //                 );
+  //               }
+  //             },
+  //             widget: SizedBox(
+  //               height: screenHeight(statefulContext) - 200,
+  //               child: Column(
+  //                 children: [
+  //                   Row(
+  //                     mainAxisAlignment:
+  //                         MainAxisAlignment.center,
+  //                     children: [
+  //                       Expanded(
+  //                         child: ConstrainedBox(
+  //                           constraints: BoxConstraints(
+  //                             maxWidth: 400,
+  //                             maxHeight: 40,
+  //                           ),
+  //                           child: GeneralTextfieldOnly(
+  //                             autoFocus: true,
+  //                             onChanged: (p0) {
+  //                               setState(() {});
+  //                             },
+  //                             hint: 'Search Name',
+  //                             controller: searchController,
+  //                             lines: 1,
+  //                             theme: theme,
+  //                           ),
+  //                         ),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                   SizedBox(height: 5),
+  //                   Expanded(
+  //                     child: SingleChildScrollView(
+  //                       child: Padding(
+  //                         padding:
+  //                             const EdgeInsets.symmetric(
+  //                               horizontal: 5.0,
+  //                               vertical: 10,
+  //                             ),
+  //                         child: Builder(
+  //                           builder: (context) {
+  //                             if (returnData()
+  //                                 .productList()
+  //                                 .where(
+  //                                   (item) => item.name
+  //                                       .toLowerCase()
+  //                                       .contains(
+  //                                         searchController
+  //                                             .text
+  //                                             .toLowerCase(),
+  //                                       ),
+  //                                 )
+  //                                 .isEmpty) {
+  //                               return SizedBox(
+  //                                 height: 400,
+  //                                 child: EmptyWidgetDisplayOnly(
+  //                                   title: 'No Item Found',
+  //                                   subText:
+  //                                       'No item was found.',
+  //                                   theme: theme,
+  //                                   height: 30,
+  //                                   altAction: () async {
+  //                                     await returnData()
+  //                                         .getProducts(
+  //                                           shopId(),
+  //                                         );
+  //                                     setState(() {});
+  //                                   },
+  //                                   altActionText:
+  //                                       'Refresh',
+  //                                   icon: Icons.clear,
+  //                                 ),
+  //                               );
+  //                             } else {
+  //                               return Column(
+  //                                 spacing: 5,
+  //                                 children:
+  //                                     returnData()
+  //                                         .productList()
+  //                                         .where(
+  //                                           (item) => item
+  //                                               .name
+  //                                               .toLowerCase()
+  //                                               .contains(
+  //                                                 searchController
+  //                                                     .text
+  //                                                     .toLowerCase(),
+  //                                               ),
+  //                                         )
+  //                                         .map(
+  //                                           (
+  //                                             item,
+  //                                           ) => Material(
+  //                                             color:
+  //                                                 Colors
+  //                                                     .transparent,
+  //                                             child: InkWell(
+  //                                               mouseCursor:
+  //                                                   SystemMouseCursors
+  //                                                       .click,
+  //                                               onTap: () {
+  //                                                 setState(() {
+  //                                                   if (selectedItem?.uuid ==
+  //                                                       item.uuid) {
+  //                                                     selectedItem =
+  //                                                         null;
+  //                                                   } else {
+  //                                                     selectedItem =
+  //                                                         item;
+  //                                                   }
+  //                                                 });
+  //                                               },
+  //                                               child: Padding(
+  //                                                 padding: const EdgeInsets.symmetric(
+  //                                                   vertical:
+  //                                                       9.0,
+  //                                                   horizontal:
+  //                                                       10,
+  //                                                 ),
+  //                                                 child: Row(
+  //                                                   mainAxisAlignment:
+  //                                                       MainAxisAlignment.spaceBetween,
+  //                                                   children: [
+  //                                                     Text(
+  //                                                       style: TextStyle(
+  //                                                         fontSize:
+  //                                                             theme.mobileTexts.b3.fontSize,
+  //                                                         fontWeight:
+  //                                                             FontWeight.bold,
+  //                                                       ),
+  //                                                       item.name,
+  //                                                     ),
+  //                                                     Row(
+  //                                                       spacing:
+  //                                                           15,
+  //                                                       children: [
+  //                                                         Text(
+  //                                                           style: TextStyle(
+  //                                                             fontSize:
+  //                                                                 theme.mobileTexts.b3.fontSize,
+  //                                                             fontWeight:
+  //                                                                 FontWeight.bold,
+  //                                                           ),
+  //                                                           '${item.quantity ?? 0}',
+  //                                                         ),
+  //                                                         Container(
+  //                                                           padding: EdgeInsets.all(
+  //                                                             2,
+  //                                                           ),
+  //                                                           decoration: BoxDecoration(
+  //                                                             shape:
+  //                                                                 BoxShape.circle,
+  //                                                             border: Border.all(
+  //                                                               color:
+  //                                                                   Colors.grey,
+  //                                                             ),
+  //                                                           ),
+  //                                                           child: Container(
+  //                                                             padding: EdgeInsets.all(
+  //                                                               5,
+  //                                                             ),
+  //                                                             decoration: BoxDecoration(
+  //                                                               shape:
+  //                                                                   BoxShape.circle,
+  //                                                               color:
+  //                                                                   selectedItem?.uuid ==
+  //                                                                           item.uuid
+  //                                                                       ? theme.lightModeColor.prColor250
+  //                                                                       : Colors.transparent,
+  //                                                             ),
+  //                                                           ),
+  //                                                         ),
+  //                                                       ],
+  //                                                     ),
+  //                                                   ],
+  //                                                 ),
+  //                                               ),
+  //                                             ),
+  //                                           ),
+  //                                         )
+  //                                         .toList(),
+  //                               );
+  //                             }
+  //                           },
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
+
   void selectItemForProduction({
     required BuildContext firstContext,
   }) {
     var theme = returnTheme(firstContext, listen: false);
     final searchController = TextEditingController();
     ProductionItem? selectedItem;
+    TempProductClass? selectedSalesItem;
+    bool useProductionItems =
+        returnShopProvider()
+            .userShop()
+            ?.manageProductionItems ??
+        false;
     showDialog(
       context: firstContext,
       builder: (secondContext) {
@@ -160,10 +386,17 @@ class CreateProductionFunctions {
               message: 'Select an Item From the List Below',
               title: 'Select Item',
               action: () {
-                if (selectedItem != null) {
+                if (useProductionItems) {
+                  if (selectedItem != null) {
+                    addSelectedItemToCart(
+                      secondContext: secondContext,
+                      selectedItem: selectedItem,
+                    );
+                  }
+                } else {
                   addSelectedItemToCart(
                     secondContext: secondContext,
-                    selectedItem: selectedItem,
+                    selectedSalesItem: selectedSalesItem,
                   );
                 }
               },
@@ -206,18 +439,39 @@ class CreateProductionFunctions {
                               ),
                           child: Builder(
                             builder: (context) {
-                              if (returnProductionItemsProvider()
-                                  .productionItemList()
-                                  .where(
-                                    (item) => item.name
-                                        .toLowerCase()
-                                        .contains(
-                                          searchController
-                                              .text
-                                              .toLowerCase(),
-                                        ),
-                                  )
-                                  .isEmpty) {
+                              List<TempProductClass>
+                              salesProducts =
+                                  returnData()
+                                      .productList()
+                                      .where(
+                                        (item) => item.name
+                                            .toLowerCase()
+                                            .contains(
+                                              searchController
+                                                  .text
+                                                  .toLowerCase(),
+                                            ),
+                                      )
+                                      .toList();
+
+                              List<ProductionItem>
+                              productionItems =
+                                  returnProductionItemsProvider()
+                                      .productionItemList()
+                                      .where(
+                                        (item) => item.name
+                                            .toLowerCase()
+                                            .contains(
+                                              searchController
+                                                  .text
+                                                  .toLowerCase(),
+                                            ),
+                                      )
+                                      .toList();
+
+                              if (useProductionItems
+                                  ? productionItems.isEmpty
+                                  : salesProducts.isEmpty) {
                                 return SizedBox(
                                   height: 400,
                                   child: EmptyWidgetDisplayOnly(
@@ -227,8 +481,13 @@ class CreateProductionFunctions {
                                     theme: theme,
                                     height: 30,
                                     altAction: () async {
-                                      await returnProductionItemsProvider()
-                                          .getProductionItems();
+                                      useProductionItems
+                                          ? await returnProductionItemsProvider()
+                                              .getProductionItems()
+                                          : await returnData()
+                                              .getProducts(
+                                                shopId(),
+                                              );
                                       setState(() {});
                                     },
                                     altActionText:
@@ -240,64 +499,40 @@ class CreateProductionFunctions {
                                 return Column(
                                   spacing: 5,
                                   children:
-                                      returnProductionItemsProvider()
-                                          .productionItemList()
-                                          .where(
-                                            (item) => item
-                                                .name
-                                                .toLowerCase()
-                                                .contains(
-                                                  searchController
-                                                      .text
-                                                      .toLowerCase(),
-                                                ),
-                                          )
-                                          .map(
-                                            (
-                                              item,
-                                            ) => Material(
-                                              color:
-                                                  Colors
-                                                      .transparent,
-                                              child: InkWell(
-                                                mouseCursor:
-                                                    SystemMouseCursors
-                                                        .click,
-                                                onTap: () {
-                                                  setState(() {
-                                                    if (selectedItem?.uuid ==
-                                                        item.uuid) {
-                                                      selectedItem =
-                                                          null;
-                                                    } else {
-                                                      selectedItem =
-                                                          item;
-                                                    }
-                                                  });
-                                                },
-                                                child: Padding(
-                                                  padding: const EdgeInsets.symmetric(
-                                                    vertical:
-                                                        9.0,
-                                                    horizontal:
-                                                        10,
-                                                  ),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.spaceBetween,
-                                                    children: [
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              theme.mobileTexts.b3.fontSize,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                        item.name,
+                                      useProductionItems
+                                          ? productionItems
+                                              .map(
+                                                (
+                                                  item,
+                                                ) => Material(
+                                                  color:
+                                                      Colors
+                                                          .transparent,
+                                                  child: InkWell(
+                                                    mouseCursor:
+                                                        SystemMouseCursors.click,
+                                                    onTap: () {
+                                                      setState(() {
+                                                        if (selectedItem?.uuid ==
+                                                            item.uuid) {
+                                                          selectedItem =
+                                                              null;
+                                                        } else {
+                                                          selectedItem =
+                                                              item;
+                                                        }
+                                                      });
+                                                    },
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.symmetric(
+                                                        vertical:
+                                                            9.0,
+                                                        horizontal:
+                                                            10,
                                                       ),
-                                                      Row(
-                                                        spacing:
-                                                            15,
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment.spaceBetween,
                                                         children: [
                                                           Text(
                                                             style: TextStyle(
@@ -306,44 +541,149 @@ class CreateProductionFunctions {
                                                               fontWeight:
                                                                   FontWeight.bold,
                                                             ),
-                                                            '${item.quantity ?? 0}',
+                                                            item.name,
                                                           ),
-                                                          Container(
-                                                            padding: EdgeInsets.all(
-                                                              2,
-                                                            ),
-                                                            decoration: BoxDecoration(
-                                                              shape:
-                                                                  BoxShape.circle,
-                                                              border: Border.all(
-                                                                color:
-                                                                    Colors.grey,
+                                                          Row(
+                                                            spacing:
+                                                                15,
+                                                            children: [
+                                                              Text(
+                                                                style: TextStyle(
+                                                                  fontSize:
+                                                                      theme.mobileTexts.b3.fontSize,
+                                                                  fontWeight:
+                                                                      FontWeight.bold,
+                                                                ),
+                                                                '${item.quantity ?? 0}',
                                                               ),
-                                                            ),
-                                                            child: Container(
-                                                              padding: EdgeInsets.all(
-                                                                5,
+                                                              Container(
+                                                                padding: EdgeInsets.all(
+                                                                  2,
+                                                                ),
+                                                                decoration: BoxDecoration(
+                                                                  shape:
+                                                                      BoxShape.circle,
+                                                                  border: Border.all(
+                                                                    color:
+                                                                        Colors.grey,
+                                                                  ),
+                                                                ),
+                                                                child: Container(
+                                                                  padding: EdgeInsets.all(
+                                                                    5,
+                                                                  ),
+                                                                  decoration: BoxDecoration(
+                                                                    shape:
+                                                                        BoxShape.circle,
+                                                                    color:
+                                                                        selectedItem?.uuid ==
+                                                                                item.uuid
+                                                                            ? theme.lightModeColor.prColor250
+                                                                            : Colors.transparent,
+                                                                  ),
+                                                                ),
                                                               ),
-                                                              decoration: BoxDecoration(
-                                                                shape:
-                                                                    BoxShape.circle,
-                                                                color:
-                                                                    selectedItem?.uuid ==
-                                                                            item.uuid
-                                                                        ? theme.lightModeColor.prColor250
-                                                                        : Colors.transparent,
-                                                              ),
-                                                            ),
+                                                            ],
                                                           ),
                                                         ],
                                                       ),
-                                                    ],
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            ),
-                                          )
-                                          .toList(),
+                                              )
+                                              .toList()
+                                          : salesProducts
+                                              .map(
+                                                (
+                                                  item,
+                                                ) => Material(
+                                                  color:
+                                                      Colors
+                                                          .transparent,
+                                                  child: InkWell(
+                                                    mouseCursor:
+                                                        SystemMouseCursors.click,
+                                                    onTap: () {
+                                                      setState(() {
+                                                        if (selectedSalesItem?.uuid ==
+                                                            item.uuid) {
+                                                          selectedSalesItem =
+                                                              null;
+                                                        } else {
+                                                          selectedSalesItem =
+                                                              item;
+                                                        }
+                                                      });
+                                                    },
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.symmetric(
+                                                        vertical:
+                                                            9.0,
+                                                        horizontal:
+                                                            10,
+                                                      ),
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment.spaceBetween,
+                                                        children: [
+                                                          Text(
+                                                            style: TextStyle(
+                                                              fontSize:
+                                                                  theme.mobileTexts.b3.fontSize,
+                                                              fontWeight:
+                                                                  FontWeight.bold,
+                                                            ),
+                                                            item.name,
+                                                          ),
+                                                          Row(
+                                                            spacing:
+                                                                15,
+                                                            children: [
+                                                              Text(
+                                                                style: TextStyle(
+                                                                  fontSize:
+                                                                      theme.mobileTexts.b3.fontSize,
+                                                                  fontWeight:
+                                                                      FontWeight.bold,
+                                                                ),
+                                                                '${item.quantity ?? 0}',
+                                                              ),
+                                                              Container(
+                                                                padding: EdgeInsets.all(
+                                                                  2,
+                                                                ),
+                                                                decoration: BoxDecoration(
+                                                                  shape:
+                                                                      BoxShape.circle,
+                                                                  border: Border.all(
+                                                                    color:
+                                                                        Colors.grey,
+                                                                  ),
+                                                                ),
+                                                                child: Container(
+                                                                  padding: EdgeInsets.all(
+                                                                    5,
+                                                                  ),
+                                                                  decoration: BoxDecoration(
+                                                                    shape:
+                                                                        BoxShape.circle,
+                                                                    color:
+                                                                        selectedSalesItem?.uuid ==
+                                                                                item.uuid
+                                                                            ? theme.lightModeColor.prColor250
+                                                                            : Colors.transparent,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                              .toList(),
                                 );
                               }
                             },
@@ -365,8 +705,14 @@ class CreateProductionFunctions {
     required BuildContext secondContext,
     ProductionsCartItem? editItem,
     ProductionItem? selectedItem,
+    TempProductClass? selectedSalesItem,
   }) {
     var theme = returnTheme(secondContext, listen: false);
+    bool useProductionitems =
+        returnShopProvider()
+            .userShop()
+            ?.manageProductionItems ??
+        false;
 
     showDialog(
       context: secondContext,
@@ -385,19 +731,32 @@ class CreateProductionFunctions {
             var tempCartItem = ProductionsCartItem(
               originalUseGroupQuantity:
                   editItem?.originalUseGroupQuantity ??
-                  selectedItem?.useGroupUnit,
+                  (useProductionitems
+                      ? selectedItem?.useGroupUnit
+                      : selectedSalesItem?.useGroupUnit),
               originalCostPerItem:
                   editItem?.originalCostPerItem ??
-                  selectedItem?.costPrice ??
-                  0,
+                  (useProductionitems
+                      ? selectedItem?.costPrice ?? 0
+                      : selectedSalesItem?.costPrice ?? 0),
               setCustomPrice: false,
               customPrice: null,
               uuid: editItem?.uuid ?? uuidGen(),
               itemUuid:
-                  editItem?.itemUuid ?? selectedItem?.uuid,
+                  useProductionitems
+                      ? (editItem?.itemUuid ??
+                          selectedItem?.uuid)
+                      : null,
+              salesItemUuid:
+                  useProductionitems
+                      ? null
+                      : editItem?.salesItemUuid ??
+                          selectedSalesItem?.uuid,
               name:
                   editItem?.name ??
-                  selectedItem?.name ??
+                  (useProductionitems
+                      ? selectedItem?.name
+                      : selectedSalesItem?.name) ??
                   'Not Set',
               quantity:
                   double.tryParse(
@@ -412,7 +771,9 @@ class CreateProductionFunctions {
               costPrice: costPriceConversion(
                 originalCostPrice:
                     editItem?.originalCostPerItem ??
-                    selectedItem?.costPrice,
+                    (useProductionitems
+                        ? selectedItem?.costPrice
+                        : selectedSalesItem?.costPrice),
                 isGroup: useGroupUnit,
                 quantity:
                     double.tryParse(
@@ -424,19 +785,27 @@ class CreateProductionFunctions {
                     0,
                 qttyPerItem:
                     editItem?.getQttyPerGroup() ??
-                    selectedItem?.qttyPerGroup,
+                    (useProductionitems
+                        ? selectedItem?.qttyPerGroup
+                        : selectedSalesItem?.qttyPerGroup),
               ),
               groupUnit:
                   editItem?.groupUnit ??
-                  selectedItem?.groupUnit ??
+                  (useProductionitems
+                      ? selectedItem?.groupUnit
+                      : selectedSalesItem?.groupUnit) ??
                   'Group(s)',
               qttyPerGroup:
                   editItem?.qttyPerGroup ??
-                  selectedItem?.qttyPerGroup ??
+                  (useProductionitems
+                      ? selectedItem?.qttyPerGroup
+                      : selectedSalesItem?.qttyPerGroup) ??
                   1,
               unit:
                   editItem?.unit ??
-                  selectedItem?.unit ??
+                  (useProductionitems
+                      ? selectedItem?.unit
+                      : selectedSalesItem?.unit) ??
                   'Unit(s)',
             );
             await returnProductionsActionProvider()
@@ -480,7 +849,11 @@ class CreateProductionFunctions {
                       visible:
                           (editItem
                                   ?.originalUseGroupQuantity ??
-                              selectedItem?.useGroupUnit) ==
+                              (useProductionitems
+                                  ? selectedItem
+                                      ?.useGroupUnit
+                                  : selectedSalesItem
+                                      ?.useGroupUnit)) ==
                           true,
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
@@ -613,8 +986,11 @@ class CreateProductionFunctions {
                                     originalCostPrice:
                                         editItem
                                             ?.originalCostPerItem ??
-                                        selectedItem
-                                            ?.costPrice,
+                                        (useProductionitems
+                                            ? selectedItem
+                                                ?.costPrice
+                                            : selectedSalesItem
+                                                ?.costPrice),
                                     isGroup: useGroupUnit,
                                     quantity:
                                         double.tryParse(
@@ -629,8 +1005,11 @@ class CreateProductionFunctions {
                                     qttyPerItem:
                                         editItem
                                             ?.getQttyPerGroup() ??
-                                        selectedItem
-                                            ?.qttyPerGroup,
+                                        (useProductionitems
+                                            ? selectedItem
+                                                ?.qttyPerGroup
+                                            : selectedSalesItem
+                                                ?.qttyPerGroup),
                                   ),
                                   context: context,
                                 ),
@@ -671,11 +1050,17 @@ class CreateProductionFunctions {
                                           useGroup:
                                               useGroupUnit,
                                         )
-                                    : selectedItem
-                                            ?.getUnitForSales(
-                                              useGroup:
-                                                  useGroupUnit,
-                                            ) ??
+                                    : (useProductionitems
+                                            ? selectedItem
+                                                ?.getUnitForSales(
+                                                  useGroup:
+                                                      useGroupUnit,
+                                                )
+                                            : selectedSalesItem
+                                                ?.getUnitForSales(
+                                                  useGroup:
+                                                      useGroupUnit,
+                                                )) ??
                                         'Unit(s)'),
                               ),
                             ],
@@ -954,46 +1339,46 @@ class CreateProductionFunctions {
           customUnit = editMaterialItem.customUnit;
         }
 
-        void checkIsManagedAndClearTextFieldAction(
-          bool isTextFieldUse,
-        ) {
-          bool isManaged =
-              (editMaterialItem?.isManaged ??
-                  selectedMaterial?.isManaged ??
-                  false);
-          var materials = returnMaterialsProvider()
-              .materialListMain
-              .where(
-                (item) =>
-                    item.uuid ==
-                    (editMaterialItem?.materialItemUuid ??
-                        selectedMaterial?.uuid),
-              );
-          double quantity = 0;
-          if (materials.isNotEmpty) {
-            quantity = (materials.first.quantity ?? 0);
-          }
+        // void checkIsManagedAndClearTextFieldAction(
+        //   bool isTextFieldUse,
+        // ) {
+        //   bool isManaged =
+        //       (editMaterialItem?.isManaged ??
+        //           selectedMaterial?.isManaged ??
+        //           false);
+        //   var materials = returnMaterialsProvider()
+        //       .materialListMain
+        //       .where(
+        //         (item) =>
+        //             item.uuid ==
+        //             (editMaterialItem?.materialItemUuid ??
+        //                 selectedMaterial?.uuid),
+        //       );
+        //   double quantity = 0;
+        //   if (materials.isNotEmpty) {
+        //     quantity = (materials.first.quantity ?? 0);
+        //   }
 
-          if (isManaged &&
-              (quantityConversion(
-                    isGroup:
-                        isTextFieldUse
-                            ? useGroupUnit
-                            : !useGroupUnit,
-                    quantity:
-                        double.tryParse(
-                          quantityController.text
-                              .replaceAll(',', ''),
-                        ) ??
-                        0,
-                    qttyPerItem:
-                        editMaterialItem?.qttyPerGroup ??
-                        selectedMaterial?.qttyPerGroup,
-                  ) >
-                  quantity)) {
-            quantityController.text = '0';
-          }
-        }
+        //   if (isManaged &&
+        //       (quantityConversion(
+        //             isGroup:
+        //                 isTextFieldUse
+        //                     ? useGroupUnit
+        //                     : !useGroupUnit,
+        //             quantity:
+        //                 double.tryParse(
+        //                   quantityController.text
+        //                       .replaceAll(',', ''),
+        //                 ) ??
+        //                 0,
+        //             qttyPerItem:
+        //                 editMaterialItem?.qttyPerGroup ??
+        //                 selectedMaterial?.qttyPerGroup,
+        //           ) >
+        //           quantity)) {
+        //     quantityController.text = '0';
+        //   }
+        // }
 
         Future<void> onSubmit() async {
           if (quantityController.text.isNotEmpty &&
@@ -1104,9 +1489,9 @@ class CreateProductionFunctions {
                       title: 'Quantity',
                       showTitle: false,
                       onChanged: (p0) {
-                        checkIsManagedAndClearTextFieldAction(
-                          true,
-                        );
+                        // checkIsManagedAndClearTextFieldAction(
+                        //   true,
+                        // );
                         setState2(() {});
                       },
                       onSubmitted: (p0) {
@@ -1150,9 +1535,9 @@ class CreateProductionFunctions {
                               MyToggleButton(
                                 theme: theme,
                                 toggle: () {
-                                  checkIsManagedAndClearTextFieldAction(
-                                    false,
-                                  );
+                                  // checkIsManagedAndClearTextFieldAction(
+                                  //   false,
+                                  // );
                                   setState2(() {
                                     useGroupUnit =
                                         !useGroupUnit;

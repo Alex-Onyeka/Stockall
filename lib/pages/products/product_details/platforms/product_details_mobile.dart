@@ -13,7 +13,6 @@ import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
-import 'package:stockall/pages/products/item_history_page/item_history_page.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/transfer_item_quantity.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/update_item_quantity.dart';
 import 'package:stockall/pages/products/product_details/platforms/product_details_desktop.dart';
@@ -94,60 +93,8 @@ class _ProductDetailsMobileState
             appBar: appBar(
               context: context,
               title: 'Details',
-              widget: Visibility(
-                visible: !isStoreKeeper(),
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    right: 15.0,
-                  ),
-                  child: InkWell(
-                    mouseCursor: SystemMouseCursors.click,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return ItemHistoryPage(
-                              productUuid:
-                                  widget.productUuid,
-                              fromItemDetails: true,
-                            );
-                          },
-                        ),
-                      );
-                    },
-                    child: Container(
-                      padding: EdgeInsets.only(
-                        right: 15,
-                        left: 15,
-                        top: 5,
-                        bottom: 5,
-                      ),
-                      decoration: BoxDecoration(),
-                      child: Row(
-                        spacing: 3,
-                        children: [
-                          Text(
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize:
-                                  widget
-                                      .theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                            ),
-                            'History',
-                          ),
-                          Icon(
-                            size: 15,
-                            Icons.receipt_long_rounded,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+              widget: ProductDetailsMoreWidget(
+                productUuid: product.uuid ?? '',
               ),
             ),
             body: Padding(

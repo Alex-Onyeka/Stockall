@@ -13,9 +13,11 @@ import 'package:stockall/pages/production/production_dashboard/productions_secti
 
 class ProductionRecordsListMobile extends StatefulWidget {
   final String? productionItemUuid;
+  final String? productUuid;
   const ProductionRecordsListMobile({
     super.key,
     this.productionItemUuid,
+    this.productUuid,
   });
 
   @override
@@ -29,17 +31,20 @@ class _ProductionRecordsListMobileState
   Widget build(BuildContext context) {
     var productionProv = returnProductionRecordsProvider();
     var records =
-        returnProductionRecordsProvider(context: context)
-            .returnProductionRecordsByDayOrWeek()
-            .where((item) {
-              if (widget.productionItemUuid != null) {
-                return item.itemUuid ==
-                    widget.productionItemUuid;
-              } else {
-                return true;
-              }
-            })
-            .toList();
+        returnProductionRecordsProvider(
+          context: context,
+        ).returnProductionRecordsByDayOrWeek().where((
+          item,
+        ) {
+          if (widget.productionItemUuid != null) {
+            return item.itemUuid ==
+                widget.productionItemUuid;
+          } else if (widget.productUuid != null) {
+            return item.salesItemUuid == widget.productUuid;
+          } else {
+            return true;
+          }
+        }).toList();
     var theme = returnTheme(context);
     return GestureDetector(
       onTap: () {

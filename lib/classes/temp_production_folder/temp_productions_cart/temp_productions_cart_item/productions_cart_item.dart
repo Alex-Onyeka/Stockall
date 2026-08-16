@@ -46,9 +46,13 @@ class ProductionsCartItem extends HiveObject {
   @HiveField(13)
   bool? originalUseGroupQuantity;
 
+  @HiveField(14)
+  String? salesItemUuid;
+
   ProductionsCartItem({
     required this.uuid,
     required this.itemUuid,
+    required this.salesItemUuid,
     required this.name,
     required this.quantity,
     this.customPrice,
@@ -78,6 +82,7 @@ class ProductionsCartItem extends HiveObject {
     'cost_price': costPrice,
     'original_cost_per_item': originalCostPerItem,
     'original_use_group_quantity': originalUseGroupQuantity,
+    'sales_item_uuid': salesItemUuid,
   };
 
   factory ProductionsCartItem.fromJson(
@@ -99,6 +104,7 @@ class ProductionsCartItem extends HiveObject {
       originalCostPerItem: json['original_cost_per)_item'],
       originalUseGroupQuantity:
           json['original_use_group_quantity'],
+      salesItemUuid: json['sales_item_uuid'],
     );
   }
 
@@ -195,6 +201,7 @@ class ProductionsCartItem extends HiveObject {
     String? unit,
     double? originalCostPerItem,
     bool? originalUseGroupQuantity,
+    String? salesItemUuid,
   }) {
     return ProductionsCartItem(
       uuid: uuid ?? this.uuid,
@@ -215,6 +222,7 @@ class ProductionsCartItem extends HiveObject {
       originalUseGroupQuantity:
           originalUseGroupQuantity ??
           this.originalUseGroupQuantity,
+      salesItemUuid: salesItemUuid ?? this.salesItemUuid,
     );
   }
 }

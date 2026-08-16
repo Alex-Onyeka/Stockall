@@ -4,6 +4,7 @@ import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/production/materials_page/materials_page.dart';
 import 'package:stockall/pages/production/materials_page/materials_usage/materials_usage_page.dart';
 import 'package:stockall/pages/production/production_dashboard/components/production_total_tab.dart';
 import 'package:stockall/pages/production/production_dashboard/components/productions_record_tile.dart';
@@ -142,34 +143,87 @@ class _ProductionsDashboardMobileState
                             MainAxisAlignment.spaceBetween,
                         children: [
                           Expanded(
-                            child: ProductionTotalTab(
-                              entries:
-                                  productionItemsProv
-                                      .returnRemainingProductionItems()
-                                      .length,
-                              title: 'Remaining Items',
-                              action: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return ProductionItemsPage(
-                                        seeRemainingItems:
-                                            true,
+                            child: Builder(
+                              builder: (context) {
+                                if (shop(
+                                      context,
+                                    )?.manageProductionItems ==
+                                    true) {
+                                  return ProductionTotalTab(
+                                    entries:
+                                        productionItemsProv
+                                            .returnRemainingProductionItems()
+                                            .length,
+                                    title:
+                                        'Remaining Items',
+                                    action: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return ProductionItemsPage(
+                                              seeRemainingItems:
+                                                  true,
+                                            );
+                                          },
+                                        ),
                                       );
                                     },
-                                  ),
-                                );
+                                    number:
+                                        productionItemsProv
+                                            .getTotalRemainingItems(),
+                                    icon: Icons.api_rounded,
+                                    color:
+                                        theme
+                                            .lightModeColor
+                                            .prColor250,
+                                    theme: theme,
+                                  );
+                                } else {
+                                  return ProductionTotalTab(
+                                    entries:
+                                        returnMaterialsProvider()
+                                            .materialList()
+                                            .length,
+                                    title:
+                                        'Production Materials',
+                                    action: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return MaterialsPage();
+                                          },
+                                        ),
+                                      );
+                                    },
+                                    number: returnMaterialsProvider()
+                                        .materialList()
+                                        .map(
+                                          (item) =>
+                                              (item.quantity ??
+                                                  0),
+                                        )
+                                        .fold(
+                                          0,
+                                          (a, b) => a + b,
+                                        ),
+                                    icon:
+                                        Icons
+                                            .app_registration_rounded,
+                                    color:
+                                        theme
+                                            .lightModeColor
+                                            .tertColor200,
+
+                                    theme: theme,
+                                  );
+                                }
                               },
-                              number:
-                                  productionItemsProv
-                                      .getTotalRemainingItems(),
-                              icon: Icons.api_rounded,
-                              color:
-                                  theme
-                                      .lightModeColor
-                                      .prColor250,
-                              theme: theme,
                             ),
                           ),
                           Expanded(
@@ -177,21 +231,21 @@ class _ProductionsDashboardMobileState
                               color:
                                   theme
                                       .lightModeColor
-                                      .tertColor200,
+                                      .prColor250,
                               entries:
                                   returnMaterialsUsageProvider(
                                         context: context,
                                       )
                                       .returnOwnProductionMaterialsUsageByDayOrWeek()
                                       .length,
-                              title: 'Materials Used',
+                              title: 'Materials Usage',
                               number:
                                   returnMaterialsUsageProvider(
                                     context: context,
                                   ).getTotalMaterialsUsed(),
                               icon:
                                   Icons
-                                      .app_registration_rounded,
+                                      .border_horizontal_rounded,
                               action: () {
                                 Navigator.push(
                                   context,

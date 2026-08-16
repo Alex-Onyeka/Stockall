@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_item_history/production_item_history.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_items/production_item.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions/production_record.dart';
@@ -110,40 +112,82 @@ class ProductionRecordsProvider extends ChangeNotifier {
               );
           notifyListeners();
           await getProductionRecordsOffline();
-          var tempItems = returnProductionItemsProvider()
-              .productionItemListMain
-              .where(
-                (item) =>
-                    item.uuid == productionRecord?.itemUuid,
+          if (productionRecord.itemUuid != null) {
+            var tempItems = returnProductionItemsProvider()
+                .productionItemListMain
+                .where(
+                  (item) =>
+                      item.uuid ==
+                      productionRecord?.itemUuid,
+                );
+            if (tempItems.isNotEmpty) {
+              var oldItem = tempItems.first;
+              var item = oldItem.copyWith();
+              item.quantity =
+                  (item.quantity ?? 0) +
+                  productionRecord.getQuantity();
+              ProductionItemHistory itemHistory =
+                  ProductionItemHistory(
+                    shopId: shopId(),
+                    title: 'Item Produced',
+                    oldValue:
+                        (oldItem.quantity ?? 0).toString(),
+                    desc: 'This Item was Produced',
+                    isIncreased: true,
+                    quantityChange:
+                        productionRecord.getQuantity(),
+                    newValue:
+                        (item.quantity ?? 0).toString(),
+                  );
+
+              await returnProductionItemsProvider()
+                  .updateProductionItem(
+                    productionItem: item,
+                    isQuantityUpdate: true,
+                    includeQuantity: true,
+                    quantityChange:
+                        productionRecord.getQuantity(),
+                    isIncrement: true,
+                    productionItemHistory: itemHistory,
+                  );
+            }
+          }
+
+          if (productionRecord.salesItemUuid != null) {
+            var tempItems = returnData().productListMain
+                .where(
+                  (item) =>
+                      item.uuid ==
+                      productionRecord?.salesItemUuid,
+                );
+            if (tempItems.isNotEmpty) {
+              var oldItem = tempItems.first;
+              var item = oldItem.copyWith();
+              item.quantity =
+                  (item.quantity ?? 0) +
+                  productionRecord.getQuantity();
+              ItemHistory itemHistory = ItemHistory(
+                shopId: shopId(),
+                title: 'Item Produced',
+                oldValue:
+                    (oldItem.quantity ?? 0).toString(),
+                desc: 'This Item was Produced',
+                isIncreased: true,
+                quantityChange:
+                    productionRecord.getQuantity(),
+                newValue: (item.quantity ?? 0).toString(),
               );
-          if (tempItems.isNotEmpty) {
-            var oldItem = tempItems.first;
-            var item = oldItem.copyWith();
-            ProductionItemHistory itemHistory =
-                ProductionItemHistory(
-                  shopId: shopId(),
-                  title: 'Item Produced',
-                  oldValue:
-                      (oldItem.quantity ?? 0).toString(),
-                  desc: 'This Item was Produced',
-                  isIncreased: true,
-                  quantityChange:
-                      productionRecord.getQuantity(),
-                  newValue: (item.quantity ?? 0).toString(),
-                );
-            item.quantity =
-                (item.quantity ?? 0) +
-                productionRecord.getQuantity();
-            await returnProductionItemsProvider()
-                .updateProductionItem(
-                  productionItem: item,
-                  isQuantityUpdate: true,
-                  includeQuantity: true,
-                  quantityChange:
-                      productionRecord.getQuantity(),
-                  isIncrement: true,
-                  productionItemHistory: itemHistory,
-                );
+
+              await returnData().updateProduct(
+                product: item,
+                isQuantityUpdate: true,
+                includeQuantity: true,
+                quantityChange:
+                    productionRecord.getQuantity(),
+                isIncrement: true,
+                itemHistory: itemHistory,
+              );
+            }
           }
           returnData().syncData();
           return productionRecord;
@@ -160,86 +204,6 @@ class ProductionRecordsProvider extends ChangeNotifier {
       return null;
     }
   }
-
-  // CREATE a new ProductionRecords
-  // Future<ProductionRecord?> updateProductionRecords(
-  //   ProductionRecord productionRecord,
-  // ) async {
-  //   await mainLocalLog(
-  //     'Inner Production Records Update Started',
-  //   );
-  //   // bool isOnline = await connectivity.isOnline();
-  //   // productionRecord.updatedAt = DateTime.now();
-  //   // if (isOnline) {
-  //   //   try {
-  //   //     final res =
-  //   //         await supabase
-  //   //             .from(tableName)
-  //   //             .upsert(
-  //   //               productionRecord.toJson(),
-  //   //               onConflict: 'uuid',
-  //   //             )
-  //   //             .select()
-  //   //             .single();
-  //   //     final newProductionRecords =
-  //   //         ProductionRecord.fromJson(res);
-  //   //     notifyListeners();
-  //   //     await getProductionRecords(shopId());
-  //   //     return newProductionRecords;
-  //   //   } catch (e) {
-  //   //     await mainLocalLog(
-  //   //       '❌❌ Update Production Records Error Online: ${e.toString()}',
-  //   //     );
-  //   //     return null;
-  //   //   }
-  //   // } else {
-  //   productionRecord.updatedAt = DateTime.now().add(
-  //     Duration(days: 1),
-  //   );
-  //   try {
-  //     var res = await ProductionRecordsFunc()
-  //         .updateProductionRecord(productionRecord);
-  //     if (res == 1) {
-  //       var containsCreated =
-  //           CreatedProductionRecordsFunc()
-  //               .getProductions()
-  //               .where(
-  //                 (createdProduct) =>
-  //                     createdProduct
-  //                         .createdProductionRecord
-  //                         .uuid ==
-  //                     productionRecord.uuid,
-  //               )
-  //               .toList();
-  //       if (containsCreated.isEmpty) {
-  //         await UpdatedProductionRecordsFunc()
-  //             .createUpdatedProductionRecords(
-  //               UpdatedProductionRecord(
-  //                 updatedProductionRecord: productionRecord,
-  //               ),
-  //             );
-  //       } else {
-  //         await CreatedProductionRecordsFunc()
-  //             .createProductions(
-  //               CreatedProductionRecord(
-  //                 createdProductionRecord: productionRecord,
-  //               ),
-  //             );
-  //       }
-  //     } else {
-  //       notifyListeners();
-  //       return null;
-  //     }
-  //     await getProductionRecords(shopId());
-  //     syncData();
-  //     return productionRecord;
-  //   } catch (e) {
-  //     await mainLocalLog(
-  //       '❌❌ Create Production Records Error Offline: ${e.toString()}',
-  //     );
-  //     return null;
-  //   }
-  // }
 
   // READ all ProductionRecords for a shop
   Future<List<ProductionRecord>> getProductionRecords(
@@ -393,45 +357,87 @@ class ProductionRecordsProvider extends ChangeNotifier {
             );
       }
       if (updateInventory == true) {
-        List<ProductionItem> items =
-            returnProductionItemsProvider()
-                .productionItemListMain
-                .where(
-                  (item) =>
-                      item.uuid ==
-                      productionRecord.itemUuid,
-                )
-                .toList();
-        if (items.isNotEmpty) {
-          var oldItem = items.first;
-          ProductionItem newItem = oldItem.copyWith();
-          newItem.quantity =
-              (newItem.quantity ?? 0) -
-              productionRecord.getQuantity();
-          ProductionItemHistory
-          productionItemHistory = ProductionItemHistory(
-            shopId: shopId(),
-            title: 'Production Record Deleted',
-            oldValue: (oldItem.quantity ?? 0).toString(),
-            desc:
-                'Production Record Created Was Deleted, and this Item was updated.',
-            isIncreased: false,
-            itemName: oldItem.name,
-            itemUuid: oldItem.uuid,
-            newValue: (newItem.quantity ?? 0).toString(),
-            quantityChange: -productionRecord.getQuantity(),
-          );
-          await returnProductionItemsProvider()
-              .updateProductionItem(
-                productionItem: newItem,
-                isQuantityUpdate: true,
-                includeQuantity: true,
-                quantityChange:
-                    productionRecord.getQuantity(),
-                isIncrement: false,
-                productionItemHistory:
-                    productionItemHistory,
-              );
+        if (productionRecord.itemUuid != null) {
+          List<ProductionItem> items =
+              returnProductionItemsProvider()
+                  .productionItemListMain
+                  .where(
+                    (item) =>
+                        item.uuid ==
+                        productionRecord.itemUuid,
+                  )
+                  .toList();
+          if (items.isNotEmpty) {
+            var oldItem = items.first;
+            ProductionItem newItem = oldItem.copyWith();
+            newItem.quantity =
+                (newItem.quantity ?? 0) -
+                productionRecord.getQuantity();
+            ProductionItemHistory
+            productionItemHistory = ProductionItemHistory(
+              shopId: shopId(),
+              title: 'Production Record Deleted',
+              oldValue: (oldItem.quantity ?? 0).toString(),
+              desc:
+                  'Production Record Created Was Deleted, and this Item was updated.',
+              isIncreased: false,
+              itemName: oldItem.name,
+              itemUuid: oldItem.uuid,
+              newValue: (newItem.quantity ?? 0).toString(),
+              quantityChange:
+                  -productionRecord.getQuantity(),
+            );
+            await returnProductionItemsProvider()
+                .updateProductionItem(
+                  productionItem: newItem,
+                  isQuantityUpdate: true,
+                  includeQuantity: true,
+                  quantityChange:
+                      productionRecord.getQuantity(),
+                  isIncrement: false,
+                  productionItemHistory:
+                      productionItemHistory,
+                );
+          }
+        }
+        if (productionRecord.salesItemUuid != null) {
+          List<TempProductClass> items =
+              returnData().productListMain
+                  .where(
+                    (item) =>
+                        item.uuid ==
+                        productionRecord.salesItemUuid,
+                  )
+                  .toList();
+          if (items.isNotEmpty) {
+            var oldItem = items.first;
+            TempProductClass newItem = oldItem.copyWith();
+            newItem.quantity =
+                (newItem.quantity ?? 0) -
+                productionRecord.getQuantity();
+            ItemHistory itemHistory = ItemHistory(
+              shopId: shopId(),
+              title: 'Production Record Deleted',
+              oldValue: (oldItem.quantity ?? 0).toString(),
+              desc:
+                  'Production Record Created Was Deleted, and this Item was updated.',
+              isIncreased: false,
+              itemName: oldItem.name,
+              itemUuid: oldItem.uuid,
+              newValue: (newItem.quantity ?? 0).toString(),
+              quantityChange:
+                  -productionRecord.getQuantity(),
+            );
+            await returnData().updateProduct(
+              product: newItem,
+              isQuantityUpdate: true,
+              includeQuantity: true,
+              quantityChange:
+                  productionRecord.getQuantity(),
+              isIncrement: false,
+              itemHistory: itemHistory,
+            );
+          }
         }
       }
       returnData().syncData();

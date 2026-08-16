@@ -6,9 +6,11 @@ import 'package:stockall/pages/production/production_dashboard/productions_secti
 
 class ProductionRecordsList extends StatefulWidget {
   final String? productionItemUuid;
+  final String? productUuid;
   const ProductionRecordsList({
     super.key,
     this.productionItemUuid,
+    this.productUuid,
   });
 
   @override
@@ -41,10 +43,12 @@ class _ProductionRecordsListState
         if (constraints.maxWidth < mobileScreen) {
           return ProductionRecordsListMobile(
             productionItemUuid: widget.productionItemUuid,
+            productUuid: widget.productUuid,
           );
         } else {
           return ProductionRecordsListDesktop(
             productionItemUuid: widget.productionItemUuid,
+            productUuid: widget.productUuid,
           );
         }
       },

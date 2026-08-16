@@ -681,20 +681,20 @@ class SalesProvider extends ChangeNotifier {
   }
 
   // bool useWholeSalePrice = false;
-  void toggleWholeSale({
-    required BuildContext context,
-    required TempCartItem cartItem,
-  }) {
-    ItemsAuthAction().toggleSetWholeSaleAction(
-      context: context,
-      action: () async {
-        cartItem.useWholeSalePrice =
-            !cartItem.useWholeSalePrice;
-        await CartFunc().updateMainCart(currentMainCart());
-        notifyListeners();
-      },
-    );
-  }
+  // void toggleWholeSale({
+  //   required BuildContext context,
+  //   required TempCartItem cartItem,
+  // }) {
+  //   ItemsAuthAction().toggleSetWholeSaleAction(
+  //     context: context,
+  //     action: () async {
+  //       cartItem.useWholeSalePrice =
+  //           !cartItem.useWholeSalePrice;
+  //       await CartFunc().updateMainCart(currentMainCart());
+  //       notifyListeners();
+  //     },
+  //   );
+  // }
 
   void toggleGroupQuantity({
     required BuildContext context,
@@ -1917,44 +1917,6 @@ class SalesProvider extends ChangeNotifier {
     return totalInAllCarts;
   }
 
-  // double totalInAllCartsForEdit({
-  //   required TempCartItem newCartItem,
-  //   required double newQuantity,
-  // }) {
-  //   double totalInAllCarts = 0;
-  //   for (var mainCart in mainCartQueue) {
-  //     for (final cart in mainCart.cartQueue) {
-  //       for (final cartItem in cart.getCartItems()) {
-  //         if (cartItem.item.uuid == newCartItem.item.uuid) {
-  //           if (cartItem == newCartItem) {
-  //             if (returnShopProvider()
-  //                     .userShop()
-  //                     ?.useGroupUnit ==
-  //                 true) {
-  //               totalInAllCarts +=
-  //                   newQuantity *
-  //                   cartItem.getQttyPerGroup();
-  //             } else {
-  //               totalInAllCarts += newQuantity;
-  //             }
-  //           } else {
-  //             if (returnShopProvider()
-  //                     .userShop()
-  //                     ?.useGroupUnit ==
-  //                 true) {
-  //               totalInAllCarts +=
-  //                   cartItem.getRealQuantity();
-  //             } else {
-  //               totalInAllCarts += cartItem.quantity;
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  //   return totalInAllCarts;
-  // }
-
   double remainingQttyInAllCarts({
     required TempCartItem newCartItem,
   }) {
@@ -1975,14 +1937,14 @@ class SalesProvider extends ChangeNotifier {
   bool canAddProductToCart({
     required TempCartItem newCartItem,
     required double quantityToAdd,
-    required bool isEdit,
+    required bool? useGroupUnit,
+    // required bool isEdit,
   }) {
     double quantityToAddCalc() {
-      if (newCartItem.useGroupQuantity == true) {
+      if (useGroupUnit ??
+          newCartItem.useGroupQuantity == true) {
         return (quantityToAdd *
-            (newCartItem.useGroupQuantity == true
-                ? newCartItem.getQttyPerGroup()
-                : 1));
+            (newCartItem.getQttyPerGroup()));
       } else {
         return quantityToAdd;
       }
@@ -2065,9 +2027,11 @@ class SalesProvider extends ChangeNotifier {
   }) async {
     for (var newItem in tempCartItems) {
       if (canAddProductToCart(
+        useGroupUnit: null,
         newCartItem: newItem,
         quantityToAdd: newItem.quantity,
-        isEdit: false,
+        // isEdit: false,
+        // useGroupUnit: newItem.useGroupQuantity ?? false,
       )) {
         final index = currentCart()
             .getCartItems()
@@ -2114,17 +2078,16 @@ class SalesProvider extends ChangeNotifier {
     required BuildContext context,
     required TempCartItem newItem,
     required bool isCustomEdit,
-    required bool isEdit,
+    // required bool isEdit,
   }) async {
     if (canAddProductToCart(
+      useGroupUnit: null,
       newCartItem: newItem,
       quantityToAdd: newItem.quantity,
-      isEdit: isEdit,
+      // isEdit: isEdit,
+      // useGroupUnit: newItem.useGroupQuantity ?? false,
     )) {
       String result = '';
-      // final index = currentCart().getCartItems().indexWhere(
-      //   (item) => item.itemUuid == newItem.itemUuid
-      // );
       var items = currentCart().getCartItems().where(
         (item) =>
             (item.itemUuid ?? item.item.uuid) ==
@@ -2139,7 +2102,7 @@ class SalesProvider extends ChangeNotifier {
                 (newItem.itemUuid ?? newItem.item.uuid),
           );
 
-      if (isCustomEdit && items.isNotEmpty) {
+      if (items.isNotEmpty) {
         var item = items.first;
 
         if (returnShopProvider().userShop()!.trackCart ==
@@ -2159,23 +2122,40 @@ class SalesProvider extends ChangeNotifier {
           }
         }
 
-        item.item.name = newItem.item.name;
-        item.item.sellingPrice = newItem.item.sellingPrice;
-        item.item.costPrice = newItem.item.costPrice;
-        item.item.setCustomPrice =
-            newItem.item.setCustomPrice;
-        item.addToStock = newItem.addToStock;
-        item.customPrice = newItem.customPrice;
-        item.quantity = newItem.quantity;
-        item.setCustomPrice = newItem.setCustomPrice;
-        item.setTotalPrice = newItem.setTotalPrice;
-        item.useWholeSalePrice = newItem.useWholeSalePrice;
-        item.useGroupQuantity = newItem.useGroupQuantity;
-        item.qttyPerGroup = newItem.qttyPerGroup;
-        item.item.unit = newItem.item.unit;
-        // if (newItem.quantity < item.quantity) {
-        //   var copiedItem = item.copyWith();
-        // }
+        if (isCustomEdit) {
+          item.item.name = newItem.item.name;
+          item.item.sellingPrice =
+              newItem.item.sellingPrice;
+          item.item.costPrice = newItem.item.costPrice;
+          item.item.setCustomPrice =
+              newItem.item.setCustomPrice;
+          item.addToStock = newItem.addToStock;
+          item.customPrice = newItem.customPrice;
+          item.quantity = newItem.quantity;
+          item.setCustomPrice = newItem.setCustomPrice;
+          item.setTotalPrice = newItem.setTotalPrice;
+          item.useWholeSalePrice =
+              newItem.useWholeSalePrice;
+          item.useGroupQuantity = newItem.useGroupQuantity;
+          item.qttyPerGroup = newItem.qttyPerGroup;
+          item.item.unit = newItem.item.unit;
+        } else {
+          item.addToStock = newItem.addToStock;
+          item.customPrice = newItem.customPrice;
+          item.discount = newItem.discount;
+          item.fixedDiscount = newItem.fixedDiscount;
+          item.isVoid = newItem.isVoid;
+          item.itemUuid = newItem.itemUuid;
+          item.quantity = newItem.quantity;
+          item.qttyPerGroup = newItem.qttyPerGroup;
+          item.salesRecordId = newItem.salesRecordId;
+          item.setCustomPrice = newItem.setCustomPrice;
+          item.setTotalPrice = newItem.setTotalPrice;
+          item.useWholeSalePrice =
+              newItem.useWholeSalePrice;
+          item.useGroupQuantity = newItem.useGroupQuantity;
+          item.uuid = newItem.uuid;
+        }
         await returnMultiDisplayProvider().updateWindow(
           cartClass: AltCartClass(
             cartId: currentCart().id!,
@@ -2196,52 +2176,51 @@ class SalesProvider extends ChangeNotifier {
         );
         notifyListeners();
       } else {
-        if (items.isNotEmpty) {
-          // currentCart().getCartItemsAll()[index].discount;
-          items.first.quantity += newItem.quantity;
-          await returnMultiDisplayProvider().updateWindow(
-            cartClass: AltCartClass(
-              cartId: currentCart().id!,
-              currency:
-                  returnShopProvider().userShop()!.currency,
-              cartItems:
-                  currentCart()
-                      .getCartItemsAll()
-                      .reversed
-                      .toList(),
-              fixedDiscount: currentCart().fixedDiscount,
-              percentDiscount: currentCart().discount,
-              vat:
-                  returnShopProvider().userShop()!.applyVAT!
-                      ? vat
-                      : 0,
-            ),
-          );
-          notifyListeners();
-          result = 'Item Updated Successfully';
-        } else {
-          currentCart().cartItems.add(newItem);
-          await returnMultiDisplayProvider().updateWindow(
-            cartClass: AltCartClass(
-              cartId: currentCart().id!,
-              currency:
-                  returnShopProvider().userShop()!.currency,
-              cartItems:
-                  currentCart()
-                      .getCartItemsAll()
-                      .reversed
-                      .toList(),
-              fixedDiscount: currentCart().fixedDiscount,
-              percentDiscount: currentCart().discount,
-              vat:
-                  returnShopProvider().userShop()!.applyVAT!
-                      ? vat
-                      : 0,
-            ),
-          );
-          notifyListeners();
-          result = 'Item Added Successfully';
-        }
+        // if (items.isNotEmpty) {
+        //   items.first.quantity += newItem.quantity;
+        //   await returnMultiDisplayProvider().updateWindow(
+        //     cartClass: AltCartClass(
+        //       cartId: currentCart().id!,
+        //       currency:
+        //           returnShopProvider().userShop()!.currency,
+        //       cartItems:
+        //           currentCart()
+        //               .getCartItemsAll()
+        //               .reversed
+        //               .toList(),
+        //       fixedDiscount: currentCart().fixedDiscount,
+        //       percentDiscount: currentCart().discount,
+        //       vat:
+        //           returnShopProvider().userShop()!.applyVAT!
+        //               ? vat
+        //               : 0,
+        //     ),
+        //   );
+        //   notifyListeners();
+        //   result = 'Item Updated Successfully';
+        // } else {
+        currentCart().cartItems.add(newItem);
+        await returnMultiDisplayProvider().updateWindow(
+          cartClass: AltCartClass(
+            cartId: currentCart().id!,
+            currency:
+                returnShopProvider().userShop()!.currency,
+            cartItems:
+                currentCart()
+                    .getCartItemsAll()
+                    .reversed
+                    .toList(),
+            fixedDiscount: currentCart().fixedDiscount,
+            percentDiscount: currentCart().discount,
+            vat:
+                returnShopProvider().userShop()!.applyVAT!
+                    ? vat
+                    : 0,
+          ),
+        );
+        notifyListeners();
+        result = 'Item Added Successfully';
+        // }
       }
       addAnyDiscount();
       await CartFunc().updateMainCart(currentMainCart());
@@ -2270,51 +2249,61 @@ class SalesProvider extends ChangeNotifier {
     required bool setTotalPrice,
     required bool setCustomPrice,
   }) async {
-    if (returnShopProvider().userShop()!.trackCart ==
-            true &&
-        cartItem.quantity > number) {
-      var affectedItems = currentCart().cartItems.where(
-        (item) =>
-            (item.itemUuid ?? item.item.uuid) ==
-                (cartItem.itemUuid ?? cartItem.item.uuid) &&
-            item.isVoid == true,
-      );
-
-      if (affectedItems.isNotEmpty) {
-        var beanItem = affectedItems.first;
-        beanItem.quantity += cartItem.quantity - number;
-      } else {
-        var deletedItem = cartItem.copyWith(
-          quantity: cartItem.quantity - number,
-          isVoid: true,
-          uuid: uuidGen(),
+    if (canAddProductToCart(
+      newCartItem: cartItem,
+      quantityToAdd: number,
+      useGroupUnit: null,
+    )) {
+      if (returnShopProvider().userShop()!.trackCart ==
+              true &&
+          cartItem.quantity > number) {
+        var affectedItems = currentCart().cartItems.where(
+          (item) =>
+              (item.itemUuid ?? item.item.uuid) ==
+                  (cartItem.itemUuid ??
+                      cartItem.item.uuid) &&
+              item.isVoid == true,
         );
-        currentCart().cartItems.add(deletedItem);
+
+        if (affectedItems.isNotEmpty) {
+          var beanItem = affectedItems.first;
+          beanItem.quantity += cartItem.quantity - number;
+        } else {
+          var deletedItem = cartItem.copyWith(
+            quantity: cartItem.quantity - number,
+            isVoid: true,
+            uuid: uuidGen(),
+          );
+          currentCart().cartItems.add(deletedItem);
+        }
       }
+      cartItem.quantity = number;
+      cartItem.customPrice = customPrice;
+      cartItem.setTotalPrice = setTotalPrice;
+      cartItem.setCustomPrice = setCustomPrice;
+      await returnMultiDisplayProvider().updateWindow(
+        cartClass: AltCartClass(
+          cartId: currentCart().id!,
+          currency:
+              returnShopProvider().userShop()!.currency,
+          cartItems:
+              currentCart()
+                  .getCartItemsAll()
+                  .reversed
+                  .toList(),
+          fixedDiscount: currentCart().fixedDiscount,
+          percentDiscount: currentCart().discount,
+          vat:
+              returnShopProvider().userShop()!.applyVAT!
+                  ? vat
+                  : 0,
+        ),
+      );
+      await CartFunc().updateMainCart(currentMainCart());
+      notifyListeners();
+    } else {
+      print('Cannot Add to Cart Because Quantity Ti Wa');
     }
-    cartItem.quantity = number;
-    cartItem.customPrice = customPrice;
-    cartItem.setTotalPrice = setTotalPrice;
-    cartItem.setCustomPrice = setCustomPrice;
-    await returnMultiDisplayProvider().updateWindow(
-      cartClass: AltCartClass(
-        cartId: currentCart().id!,
-        currency: returnShopProvider().userShop()!.currency,
-        cartItems:
-            currentCart()
-                .getCartItemsAll()
-                .reversed
-                .toList(),
-        fixedDiscount: currentCart().fixedDiscount,
-        percentDiscount: currentCart().discount,
-        vat:
-            returnShopProvider().userShop()!.applyVAT!
-                ? vat
-                : 0,
-      ),
-    );
-    await CartFunc().updateMainCart(currentMainCart());
-    notifyListeners();
   }
 
   Future<void> removeItemFromCart(

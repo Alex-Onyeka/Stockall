@@ -19,6 +19,7 @@ class ProductionsCartItemAdapter extends TypeAdapter<ProductionsCartItem> {
     return ProductionsCartItem(
       uuid: fields[0] as String?,
       itemUuid: fields[1] as String?,
+      salesItemUuid: fields[14] as String?,
       name: fields[2] as String,
       quantity: fields[3] as double,
       customPrice: fields[5] as double?,
@@ -37,7 +38,7 @@ class ProductionsCartItemAdapter extends TypeAdapter<ProductionsCartItem> {
   @override
   void write(BinaryWriter writer, ProductionsCartItem obj) {
     writer
-      ..writeByte(14)
+      ..writeByte(15)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -65,7 +66,9 @@ class ProductionsCartItemAdapter extends TypeAdapter<ProductionsCartItem> {
       ..writeByte(12)
       ..write(obj.originalCostPerItem)
       ..writeByte(13)
-      ..write(obj.originalUseGroupQuantity);
+      ..write(obj.originalUseGroupQuantity)
+      ..writeByte(14)
+      ..write(obj.salesItemUuid);
   }
 
   @override

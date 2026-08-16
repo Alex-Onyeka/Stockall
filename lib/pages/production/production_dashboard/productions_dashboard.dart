@@ -40,11 +40,15 @@ Future<void> refreshProductionDashboard() async {
   returnProductionRecordsProvider().getProductionRecords(
     shopId(),
   );
-  returnProductionItemHistoryProvider()
-      .getProductionItemHistories();
-  returnProductionRecordsProvider().getProductionRecords(
-    shopId(),
-  );
+  if (returnShopProvider()
+          .userShop()
+          ?.manageProductionItems ==
+      true) {
+    returnProductionItemHistoryProvider()
+        .getProductionItemHistories();
+    returnProductionItemsProvider().getProductionItems();
+  }
+  returnMaterialsUsageActionProvider().getMaterials();
   returnMaterialsProvider().getMaterials();
   returnMaterialsItemHistoryProvider()
       .getMaterialsItemHistories();

@@ -23,6 +23,7 @@ class ProductionItemCartItem extends StatelessWidget {
     ProductionsCartItem item =
         productionsCartItem ??
         ProductionsCartItem(
+          salesItemUuid: 'salesItemUuid',
           originalUseGroupQuantity: false,
           uuid: uuidGen(),
           originalCostPerItem: 0,

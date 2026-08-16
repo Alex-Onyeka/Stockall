@@ -69,7 +69,7 @@ class _BarcodeAndSearchTextFieldState
                     await playBeep();
                     await returnSalesProvider()
                         .addItemToCart(
-                          isEdit: false,
+                          // isEdit: false,
                           context: context,
                           newItem: TempCartItem(
                             uuid: uuidGen(),

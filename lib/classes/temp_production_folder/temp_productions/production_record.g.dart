@@ -28,6 +28,7 @@ class ProductionRecordAdapter extends TypeAdapter<ProductionRecord> {
       materials: (fields[8] as List).cast<ProductionRecordMaterials>(),
       itemName: fields[10] as String?,
       itemUuid: fields[11] as String?,
+      salesItemUuid: fields[23] as String?,
       quantity: fields[9] as double?,
       unit: fields[14] as String?,
       qttyPerGroup: fields[13] as double?,
@@ -45,7 +46,7 @@ class ProductionRecordAdapter extends TypeAdapter<ProductionRecord> {
   @override
   void write(BinaryWriter writer, ProductionRecord obj) {
     writer
-      ..writeByte(22)
+      ..writeByte(23)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -89,7 +90,9 @@ class ProductionRecordAdapter extends TypeAdapter<ProductionRecord> {
       ..writeByte(21)
       ..write(obj.originalCostPerItem)
       ..writeByte(22)
-      ..write(obj.groupUnit);
+      ..write(obj.groupUnit)
+      ..writeByte(23)
+      ..write(obj.salesItemUuid);
   }
 
   @override

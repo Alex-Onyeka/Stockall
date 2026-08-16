@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/constants/app_bar.dart';
+import 'package:stockall/main.dart';
 import 'package:stockall/pages/production/components/production_page_list_tile_widget.dart';
 import 'package:stockall/pages/production/materials_page/materials_page.dart';
 import 'package:stockall/pages/production/materials_page/materials_usage/materials_usage_page.dart';
@@ -58,7 +59,7 @@ class _ProductionPageMobileState
                       isActive: true,
                       subText:
                           'Create and Track Productions',
-                      title: 'Productions',
+                      title: 'Productions Dashboard',
                     ),
                     ProductionPageListTileWidget(
                       action: () {
@@ -77,22 +78,29 @@ class _ProductionPageMobileState
                           'View Production Records You Created.',
                       title: 'Production Records',
                     ),
-                    ProductionPageListTileWidget(
-                      action: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: ((context) {
-                              return ProductionItemsPage();
-                            }),
-                          ),
-                        );
-                      },
-                      icon: Icons.api_rounded,
-                      isActive: true,
-                      subText:
-                          'Create and Manage Produced Items',
-                      title: 'Production Items',
+                    Visibility(
+                      visible:
+                          shop(
+                            context,
+                          )?.manageProductionItems ==
+                          true,
+                      child: ProductionPageListTileWidget(
+                        action: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: ((context) {
+                                return ProductionItemsPage();
+                              }),
+                            ),
+                          );
+                        },
+                        icon: Icons.api_rounded,
+                        isActive: true,
+                        subText:
+                            'Create and Manage Produced Items',
+                        title: 'Production Items',
+                      ),
                     ),
                     ProductionPageListTileWidget(
                       action: () {

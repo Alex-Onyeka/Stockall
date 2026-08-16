@@ -2800,113 +2800,113 @@ void selectProductSales({
   qttyNode.requestFocus();
 
   String formatSellingPrice(TempCartItem cartItem) {
-    if (isEdit) {
-      if (useGroupQuantityTemp == true) {
-        if (useWholeSalePriceTemp) {
-          return ((qqty * cartItem.getQttyPerGroup()) *
-                  (cartItem.getItem()?.wholeSalePrice ?? 0))
-              .toString();
-        } else if (priceController.text.isNotEmpty) {
-          if (returnSalesProvider().setTotalPrice) {
-            return priceController.text.replaceAll(',', '');
-          } else {
-            return (double.parse(
-                      priceController.text.isNotEmpty
-                          ? priceController.text.replaceAll(
-                            ',',
-                            '',
-                          )
-                          : '0',
-                    ) *
-                    (qqty.toDouble() *
-                        cartItem.getQttyPerGroup()))
-                .toString();
-          }
+    // if (isEdit) {
+    //   if (useGroupQuantityTemp == true) {
+    //     if (useWholeSalePriceTemp) {
+    //       return ((qqty * cartItem.getQttyPerGroup()) *
+    //               (cartItem.getItem()?.wholeSalePrice ?? 0))
+    //           .toString();
+    //     } else if (priceController.text.isNotEmpty) {
+    //       if (returnSalesProvider().setTotalPrice) {
+    //         return priceController.text.replaceAll(',', '');
+    //       } else {
+    //         return (double.parse(
+    //                   priceController.text.isNotEmpty
+    //                       ? priceController.text.replaceAll(
+    //                         ',',
+    //                         '',
+    //                       )
+    //                       : '0',
+    //                 ) *
+    //                 (qqty.toDouble() *
+    //                     cartItem.getQttyPerGroup()))
+    //             .toString();
+    //       }
+    //     } else {
+    //       return ((qqty * cartItem.getQttyPerGroup()) *
+    //               (cartItem.getItem()?.sellingPrice ?? 0))
+    //           .toString();
+    //     }
+    //   } else {
+    //     if (useWholeSalePriceTemp) {
+    //       return (qqty *
+    //               (cartItem.getItem()?.wholeSalePrice ?? 0))
+    //           .toString();
+    //     } else if (priceController.text.isNotEmpty) {
+    //       if (returnSalesProvider().setTotalPrice) {
+    //         return priceController.text.replaceAll(',', '');
+    //       } else {
+    //         return (double.parse(
+    //                   priceController.text.isNotEmpty
+    //                       ? priceController.text.replaceAll(
+    //                         ',',
+    //                         '',
+    //                       )
+    //                       : '0',
+    //                 ) *
+    //                 qqty.toDouble())
+    //             .toString();
+    //       }
+    //     } else {
+    //       return (qqty *
+    //               (cartItem.getItem()?.sellingPrice ?? 0))
+    //           .toString();
+    //     }
+    //   }
+    // } else {
+    if (useGroupQuantityTemp) {
+      if (useWholeSalePriceTemp) {
+        return ((qqty * cartItem.getQttyPerGroup()) *
+                (cartItem.getItem()?.wholeSalePrice ?? 0))
+            .toString();
+      } else if (priceController.text.isNotEmpty) {
+        if (returnSalesProvider().setTotalPrice) {
+          return priceController.text.replaceAll(',', '');
         } else {
-          return ((qqty * cartItem.getQttyPerGroup()) *
-                  (cartItem.getItem()?.sellingPrice ?? 0))
+          return (double.parse(
+                    priceController.text.isNotEmpty
+                        ? priceController.text.replaceAll(
+                          ',',
+                          '',
+                        )
+                        : '0',
+                  ) *
+                  (qqty.toDouble() *
+                      cartItem.getQttyPerGroup()))
               .toString();
         }
       } else {
-        if (useWholeSalePriceTemp) {
-          return (qqty *
-                  (cartItem.getItem()?.wholeSalePrice ?? 0))
-              .toString();
-        } else if (priceController.text.isNotEmpty) {
-          if (returnSalesProvider().setTotalPrice) {
-            return priceController.text.replaceAll(',', '');
-          } else {
-            return (double.parse(
-                      priceController.text.isNotEmpty
-                          ? priceController.text.replaceAll(
-                            ',',
-                            '',
-                          )
-                          : '0',
-                    ) *
-                    qqty.toDouble())
-                .toString();
-          }
-        } else {
-          return (qqty *
-                  (cartItem.getItem()?.sellingPrice ?? 0))
-              .toString();
-        }
+        return ((qqty * cartItem.getQttyPerGroup()) *
+                (cartItem.getItem()?.sellingPrice ?? 0))
+            .toString();
       }
     } else {
-      if (cartItem.useGroupQuantity == true) {
-        if (cartItem.useWholeSalePrice) {
-          return ((qqty * cartItem.getQttyPerGroup()) *
-                  (cartItem.getItem()?.wholeSalePrice ?? 0))
-              .toString();
-        } else if (priceController.text.isNotEmpty) {
-          if (returnSalesProvider().setTotalPrice) {
-            return priceController.text.replaceAll(',', '');
-          } else {
-            return (double.parse(
-                      priceController.text.isNotEmpty
-                          ? priceController.text.replaceAll(
-                            ',',
-                            '',
-                          )
-                          : '0',
-                    ) *
-                    (qqty.toDouble() *
-                        cartItem.getQttyPerGroup()))
-                .toString();
-          }
+      if (useWholeSalePriceTemp) {
+        return (qqty *
+                (cartItem.getItem()?.wholeSalePrice ?? 0))
+            .toString();
+      } else if (priceController.text.isNotEmpty) {
+        if (returnSalesProvider().setTotalPrice) {
+          return priceController.text.replaceAll(',', '');
         } else {
-          return ((qqty * cartItem.getQttyPerGroup()) *
-                  (cartItem.getItem()?.sellingPrice ?? 0))
+          return (double.parse(
+                    priceController.text.isNotEmpty
+                        ? priceController.text.replaceAll(
+                          ',',
+                          '',
+                        )
+                        : '0',
+                  ) *
+                  qqty.toDouble())
               .toString();
         }
       } else {
-        if (cartItem.useWholeSalePrice) {
-          return (qqty *
-                  (cartItem.getItem()?.wholeSalePrice ?? 0))
-              .toString();
-        } else if (priceController.text.isNotEmpty) {
-          if (returnSalesProvider().setTotalPrice) {
-            return priceController.text.replaceAll(',', '');
-          } else {
-            return (double.parse(
-                      priceController.text.isNotEmpty
-                          ? priceController.text.replaceAll(
-                            ',',
-                            '',
-                          )
-                          : '0',
-                    ) *
-                    qqty.toDouble())
-                .toString();
-          }
-        } else {
-          return (qqty *
-                  (cartItem.getItem()?.sellingPrice ?? 0))
-              .toString();
-        }
+        return (qqty *
+                (cartItem.getItem()?.sellingPrice ?? 0))
+            .toString();
       }
     }
+    // }
   }
 
   showDialog(
@@ -3072,11 +3072,13 @@ void selectProductSales({
                                       false) {
                                     if (!returnSalesProvider()
                                         .canAddProductToCart(
-                                          isEdit: isEdit,
+                                          // isEdit: isEdit,
                                           newCartItem:
                                               cartItem,
                                           quantityToAdd:
                                               entered,
+                                          useGroupUnit:
+                                              useGroupQuantityTemp,
                                         )) {
                                       showDialog(
                                         context: context,
@@ -3162,33 +3164,42 @@ void selectProductSales({
                                         ),
                                         MyToggleButton(
                                           boolValue:
-                                              isEdit
-                                                  ? useGroupQuantityTemp
-                                                  : cartItem
-                                                          .useGroupQuantity ??
-                                                      false,
+                                              // isEdit
+                                              //     ?
+                                              useGroupQuantityTemp,
+                                          //     :
+                                          // cartItem
+                                          //     .useGroupQuantity ??
+                                          // false,
                                           toggle: () {
-                                            var salesProvider =
-                                                returnSalesProvider();
+                                            // var salesProvider =
+                                            //     returnSalesProvider();
 
-                                            if (isEdit) {
-                                              setState(() {
-                                                if (useGroupQuantityTemp) {
-                                                  useGroupQuantityTemp =
-                                                      false;
-                                                } else {
-                                                  useGroupQuantityTemp =
-                                                      true;
-                                                }
-                                              });
-                                            } else {
-                                              salesProvider.toggleGroupQuantity(
-                                                cartItem:
-                                                    cartItem,
-                                                context:
-                                                    context,
-                                              );
-                                            }
+                                            // if (isEdit) {
+                                            setState(() {
+                                              if (useGroupQuantityTemp) {
+                                                useGroupQuantityTemp =
+                                                    false;
+                                              } else {
+                                                useGroupQuantityTemp =
+                                                    true;
+                                              }
+                                            });
+                                            // } else {
+                                            // salesProvider
+                                            //     .toggleGroupQuantity(
+                                            //       cartItem:
+                                            //           cartItem,
+                                            //       context:
+                                            //           context,
+                                            //     );
+                                            // setState(() {
+                                            //   quantityController
+                                            //           .text =
+                                            //       "0";
+                                            //   qqty = 0;
+                                            // });
+                                            // }
                                           },
                                           theme: theme,
                                         ),
@@ -3271,18 +3282,18 @@ void selectProductSales({
                             SizedBox(height: 30),
                             Visibility(
                               visible:
-                                  isEdit
-                                      ? (cartItem
-                                                  .getItem()
-                                                  ?.setCustomPrice ??
-                                              false) &&
-                                          !useWholeSalePriceTemp
-                                      : (cartItem
-                                                  .getItem()
-                                                  ?.setCustomPrice ??
-                                              false) &&
-                                          !cartItem
-                                              .useWholeSalePrice,
+                                  // isEdit
+                                  //     ? (cartItem
+                                  //                 .getItem()
+                                  //                 ?.setCustomPrice ??
+                                  //             false) &&
+                                  //         !useWholeSalePriceTemp
+                                  //     :
+                                  (cartItem
+                                          .getItem()
+                                          ?.setCustomPrice ??
+                                      false) &&
+                                  !useWholeSalePriceTemp,
                               child: InkWell(
                                 mouseCursor:
                                     SystemMouseCursors
@@ -3444,27 +3455,28 @@ void selectProductSales({
                                         ),
                                         MyToggleButton(
                                           boolValue:
-                                              isEdit
-                                                  ? useWholeSalePriceTemp
-                                                  : cartItem
-                                                      .useWholeSalePrice,
+                                              // isEdit
+                                              //     ? useWholeSalePriceTemp
+                                              //     :
+                                              useWholeSalePriceTemp,
                                           toggle: () {
                                             var salesProvider =
                                                 returnSalesProvider();
 
-                                            if (isEdit) {
-                                              setState(() {
-                                                useWholeSalePriceTemp =
-                                                    !useWholeSalePriceTemp;
-                                              });
-                                            } else {
-                                              salesProvider.toggleWholeSale(
-                                                cartItem:
-                                                    cartItem,
-                                                context:
-                                                    context,
-                                              );
-                                            }
+                                            // if (isEdit) {
+                                            setState(() {
+                                              useWholeSalePriceTemp =
+                                                  !useWholeSalePriceTemp;
+                                            });
+                                            // } else {
+                                            // salesProvider
+                                            //     .toggleWholeSale(
+                                            //       cartItem:
+                                            //           cartItem,
+                                            //       context:
+                                            //           context,
+                                            //     );
+                                            // }
                                             priceController
                                                 .clear();
                                             salesProvider
@@ -3588,12 +3600,14 @@ void selectProductSales({
                                             false) {
                                           if (!returnSalesProvider()
                                               .canAddProductToCart(
-                                                isEdit:
-                                                    isEdit,
+                                                // isEdit:
+                                                //     isEdit,
                                                 newCartItem:
                                                     cartItem,
                                                 quantityToAdd:
                                                     entered,
+                                                useGroupUnit:
+                                                    useGroupQuantityTemp,
                                               )) {
                                             showDialog(
                                               context:
@@ -3794,17 +3808,17 @@ void selectProductSales({
                                           cartItem.setCustomPrice =
                                               false;
                                         }
-                                        if (isEdit) {
-                                          double getQtty() {
-                                            if (useGroupQuantityTemp) {
-                                              return (qqty *
-                                                  cartItem
-                                                      .quantity);
-                                            } else {
-                                              return qqty;
-                                            }
+                                        double getQtty() {
+                                          if (useGroupQuantityTemp) {
+                                            return (qqty *
+                                                cartItem
+                                                    .quantity);
+                                          } else {
+                                            return qqty;
                                           }
+                                        }
 
+                                        if (isEdit) {
                                           if (returnShopProvider()
                                                       .userShop()
                                                       ?.trackCart ==
@@ -3898,6 +3912,10 @@ void selectProductSales({
                                               qqty.toDouble();
                                           if (returnSalesProvider()
                                               .isAddMultipleItemsToCart) {
+                                            cartItem.useGroupQuantity =
+                                                useGroupQuantityTemp;
+                                            cartItem.useWholeSalePrice =
+                                                useWholeSalePriceTemp;
                                             returnSalesProvider()
                                                 .addItemToTempCart(
                                                   item:
@@ -3958,9 +3976,13 @@ void selectProductSales({
                                                             'Not Set',
                                                       );
                                               if (res) {
+                                                cartItem.useGroupQuantity =
+                                                    useGroupQuantityTemp;
+                                                cartItem.useWholeSalePrice =
+                                                    useWholeSalePriceTemp;
                                                 returnSalesProvider().addItemToCart(
-                                                  isEdit:
-                                                      isEdit,
+                                                  // isEdit:
+                                                  //     isEdit,
                                                   // ignore: use_build_context_synchronously
                                                   context:
                                                       context,
@@ -3984,9 +4006,13 @@ void selectProductSales({
                                                 closeAction();
                                               }
                                             } else {
+                                              cartItem.useGroupQuantity =
+                                                  useGroupQuantityTemp;
+                                              cartItem.useWholeSalePrice =
+                                                  useWholeSalePriceTemp;
                                               returnSalesProvider().addItemToCart(
-                                                isEdit:
-                                                    isEdit,
+                                                // isEdit:
+                                                //     isEdit,
                                                 // ignore: use_build_context_synchronously
                                                 context:
                                                     context,
@@ -4085,12 +4111,14 @@ void selectProductSales({
                                                   ?.isManaged ??
                                               false) {
                                             if (!returnSalesProvider().canAddProductToCart(
-                                              isEdit:
-                                                  isEdit,
+                                              // isEdit:
+                                              //     isEdit,
                                               newCartItem:
                                                   cartItem,
                                               quantityToAdd:
                                                   entered,
+                                              useGroupUnit:
+                                                  useGroupQuantityTemp,
                                             )) {
                                               showDialog(
                                                 context:

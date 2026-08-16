@@ -115,7 +115,7 @@ class _ProductionPageDesktopState
                   icon: Icons.view_in_ar_rounded,
                   isActive: true,
                   subText: 'Create and Track Productions',
-                  title: 'Productions',
+                  title: 'Productions Dashboard',
                 ),
                 ProductionPageListTileWidget(
                   action: () {

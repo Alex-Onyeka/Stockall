@@ -702,8 +702,8 @@ class _MakeSalesDesktopState
                                                       .addToStock;
 
                                               returnSalesProvider().addItemToCart(
-                                                isEdit:
-                                                    false,
+                                                // isEdit:
+                                                //     false,
                                                 context:
                                                     context,
                                                 newItem:
@@ -767,8 +767,8 @@ class _MakeSalesDesktopState
                                                         .addToStock;
 
                                                 returnSalesProvider().addItemToCart(
-                                                  isEdit:
-                                                      false,
+                                                  // isEdit:
+                                                  //     false,
                                                   context:
                                                       context,
                                                   newItem:
@@ -826,7 +826,7 @@ class _MakeSalesDesktopState
                                                     .addToStock;
 
                                             returnSalesProvider().addItemToCart(
-                                              isEdit: false,
+                                              // isEdit: false,
                                               context:
                                                   context,
                                               newItem:
