@@ -95,34 +95,10 @@ class ItemHistoryTileState extends State<ItemHistoryTile> {
                     padding: EdgeInsets.all(5),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color:
-                          (widget
-                                          .itemHistory
-                                          ?.isIncreased ??
-                                      widget
-                                          .productionItemHistory
-                                          ?.isIncreased ??
-                                      widget
-                                          .materialsItemHistory
-                                          ?.isIncreased) ==
-                                  true
-                              ? Colors.green.shade100
-                              : Colors.red.shade100,
+                      color: altColor(),
                     ),
                     child: Icon(
-                      color:
-                          (widget
-                                          .itemHistory
-                                          ?.isIncreased ??
-                                      widget
-                                          .productionItemHistory
-                                          ?.isIncreased ??
-                                      widget
-                                          .materialsItemHistory
-                                          ?.isIncreased) ==
-                                  true
-                              ? Colors.green
-                              : Colors.red,
+                      color: mainColor(),
                       size: 20,
                       (widget.itemHistory?.isIncreased ??
                                   widget
@@ -192,15 +168,7 @@ class ItemHistoryTileState extends State<ItemHistoryTile> {
                                                 .mobileTexts
                                                 .b2
                                                 .fontSize,
-                                        color:
-                                            (widget.itemHistory?.isIncreased ??
-                                                        widget.productionItemHistory?.isIncreased ??
-                                                        widget.materialsItemHistory?.isIncreased) ==
-                                                    true
-                                                ? Colors
-                                                    .green
-                                                : Colors
-                                                    .redAccent,
+                                        color: mainColor(),
                                       ),
                                       returnHistoryQuantity(
                                         quantityChange:
@@ -426,6 +394,42 @@ class ItemHistoryTileState extends State<ItemHistoryTile> {
         ),
       ),
     );
+  }
+
+  Color mainColor() {
+    if ((widget.itemHistory?.quantityChange ??
+            widget.productionItemHistory?.quantityChange ??
+            widget.materialsItemHistory?.quantityChange) ==
+        0) {
+      return Colors.grey.shade700;
+    } else {
+      if ((widget.itemHistory?.isIncreased ??
+              widget.productionItemHistory?.isIncreased ??
+              widget.materialsItemHistory?.isIncreased) ==
+          true) {
+        return Colors.green;
+      } else {
+        return Colors.red;
+      }
+    }
+  }
+
+  Color altColor() {
+    if ((widget.itemHistory?.quantityChange ??
+            widget.productionItemHistory?.quantityChange ??
+            widget.materialsItemHistory?.quantityChange) ==
+        0) {
+      return Colors.grey.shade200;
+    } else {
+      if ((widget.itemHistory?.isIncreased ??
+              widget.productionItemHistory?.isIncreased ??
+              widget.materialsItemHistory?.isIncreased) ==
+          true) {
+        return Colors.green.shade100;
+      } else {
+        return Colors.red.shade100;
+      }
+    }
   }
 }
 
@@ -741,6 +745,10 @@ String returnHistoryQuantity({
   required bool? isIncreased,
 }) {
   final quantity = quantityChange ?? 0;
+
+  if (quantity == 0) {
+    return '${quantity.abs()}';
+  }
 
   if (isIncreased == false) {
     return '-${quantity.abs()}';

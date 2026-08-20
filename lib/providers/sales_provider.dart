@@ -1204,7 +1204,7 @@ class SalesProvider extends ChangeNotifier {
                   shopId: shopId,
                   isIncreased: false,
                   oldValue:
-                      ((cartItem.getItem()!.quantity ?? 0) -
+                      ((cartItem.getItem()!.quantity ?? 0) +
                               cartItem.getRealQuantity())
                           .toString(),
                   title: 'Item Sold In Invoice',
@@ -1225,6 +1225,27 @@ class SalesProvider extends ChangeNotifier {
                       cartItem.getRealQuantity(),
                   isIncrement: false,
                 );
+              } else {
+                ItemHistory itemHistory = ItemHistory(
+                  desc:
+                      '${cartItem.getRealQuantity()} Quantity(s) of This Item was Sold, but Not Deducted Because Item is Not Managed. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
+                  shopId: shopId,
+                  isIncreased: false,
+                  oldValue:
+                      (cartItem.getItem()!.quantity ?? 0)
+                          .toString(),
+                  title: 'Item Sold In Invoice (Unmanaged)',
+                  quantityChange: 0,
+                  newValue:
+                      (cartItem.getItem()!.quantity ?? 0)
+                          .toString(),
+                );
+                itemHistory.itemName =
+                    cartItem.getItem()!.name;
+                itemHistory.itemUuid =
+                    cartItem.getItem()!.uuid;
+                await returnItemHistoryProvider()
+                    .createItemHistory(itemHistory);
               }
             }
 
@@ -1550,7 +1571,7 @@ class SalesProvider extends ChangeNotifier {
                       '${cartItem.getRealQuantity()} Quantity(s) of This Item was Sold. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
                   isIncreased: false,
                   oldValue:
-                      ((cartItem.getItem()!.quantity ?? 0) -
+                      ((cartItem.getItem()!.quantity ?? 0) +
                               cartItem.getRealQuantity())
                           .toString(),
                   title: 'Item Sold In Receipt',
@@ -1571,6 +1592,27 @@ class SalesProvider extends ChangeNotifier {
                       cartItem.getRealQuantity(),
                   isIncrement: false,
                 );
+              } else {
+                ItemHistory itemHistory = ItemHistory(
+                  desc:
+                      '${cartItem.getRealQuantity()} Quantity(s) of This Item was Sold, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
+                  shopId: shopId,
+                  isIncreased: false,
+                  oldValue:
+                      (cartItem.getItem()!.quantity ?? 0)
+                          .toString(),
+                  title: 'Item Sold In Receipt (Unmanaged)',
+                  quantityChange: 0,
+                  newValue:
+                      (cartItem.getItem()!.quantity ?? 0)
+                          .toString(),
+                );
+                itemHistory.itemName =
+                    cartItem.getItem()!.name;
+                itemHistory.itemUuid =
+                    cartItem.getItem()!.uuid;
+                await returnItemHistoryProvider()
+                    .createItemHistory(itemHistory);
               }
             }
 

@@ -470,8 +470,9 @@ class _ItemSalesReportMobileState
                       width:
                           salesRecords.isEmpty
                               ? MediaQuery.of(
-                                context,
-                              ).size.width
+                                    context,
+                                  ).size.width +
+                                  100
                               : MediaQuery.of(
                                     context,
                                   ).size.width <
@@ -493,8 +494,9 @@ class _ItemSalesReportMobileState
                                   ).size.width +
                                   380
                               : MediaQuery.of(
-                                context,
-                              ).size.width,
+                                    context,
+                                  ).size.width +
+                                  100,
                       child: Column(
                         children: [
                           SummaryTableHeadingBar(

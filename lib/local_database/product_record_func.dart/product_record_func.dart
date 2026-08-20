@@ -173,6 +173,32 @@ class ProductRecordFunc {
             );
           }
         }
+        if (record.isProductManaged! == false) {
+          List<TempProductClass> products =
+              returnData().productListMain
+                  .where(
+                    (item) =>
+                        item.uuid == record.productUuid,
+                  )
+                  .toList();
+          if (products.isNotEmpty) {
+            var product = products.first;
+            ItemHistory itemHistory = ItemHistory(
+              shopId: shopId(),
+              title: 'Receipt Deleted (Unmanaged)',
+              desc:
+                  '${record.useGroupQuantity == true ? (record.quantity * (record.qttyPerGroup ?? 1)) : record.quantity} quantities of This Item was Returned, but this item unmanaged when the sales was made, so the quantity did not increase. Receipt Id: #${returnOnlyDigits(receiptUuid)}.',
+              quantityChange: 0,
+              newValue: product.quantity?.toString(),
+              isIncreased: true,
+              oldValue: product.quantity?.toString(),
+            );
+            itemHistory.itemName = product.name;
+            itemHistory.itemUuid = product.uuid;
+            await returnItemHistoryProvider()
+                .createItemHistory(itemHistory);
+          }
+        }
         await productRecordBox.delete(record.uuid);
         var containsCreated = CreatedRecordsFunc()
             .getRecords()
@@ -312,11 +338,32 @@ class ProductRecordFunc {
               isIncrement: true,
             );
           }
-
-          // await ProductsFunc().incrementQuantity(
-          //   quantity: record.quantity,
-          //   uuid: record.productUuid!,
-          // );
+        }
+        if (record.isProductManaged! == false) {
+          List<TempProductClass> products =
+              returnData().productListMain
+                  .where(
+                    (item) =>
+                        item.uuid == record.productUuid,
+                  )
+                  .toList();
+          if (products.isNotEmpty) {
+            var product = products.first;
+            ItemHistory itemHistory = ItemHistory(
+              shopId: shopId(),
+              title: 'Invoice Deleted (Unmanaged)',
+              desc:
+                  '${record.useGroupQuantity == true ? (record.quantity * (record.qttyPerGroup ?? 1)) : record.quantity} quantities of This Item was Returned, but this item unmanaged when the sales was made, so the quantity did not increase. Invoice Id: #${returnOnlyDigits(invoiceUuid)}.',
+              quantityChange: 0,
+              newValue: product.quantity?.toString(),
+              isIncreased: true,
+              oldValue: product.quantity?.toString(),
+            );
+            itemHistory.itemName = product.name;
+            itemHistory.itemUuid = product.uuid;
+            await returnItemHistoryProvider()
+                .createItemHistory(itemHistory);
+          }
         }
         await productRecordBox.delete(record.uuid);
         var containsCreated = CreatedRecordsFunc()

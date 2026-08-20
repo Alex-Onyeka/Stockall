@@ -1418,47 +1418,53 @@ class _SummaryTableHeadingBarState
               ),
             ),
           ),
-          Expanded(
-            flex: 5,
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  right: BorderSide(color: Colors.grey),
-                  left: BorderSide(color: Colors.grey),
+          Visibility(
+            visible: widget.product.isNotEmpty,
+            child: Expanded(
+              flex: 5,
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: BorderSide(color: Colors.grey),
+                    left: BorderSide(color: Colors.grey),
+                  ),
                 ),
-              ),
-              padding: EdgeInsets.symmetric(
-                horizontal: 5,
-                vertical: 10,
-              ),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
+                padding: EdgeInsets.symmetric(
+                  horizontal: 5,
+                  vertical: 10,
+                ),
+                child: Center(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          style: TextStyle(
+                            fontSize:
+                                widget
+                                    .theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          widget.isHeading
+                              ? 'Total-Value'
+                              : '',
                         ),
-                        widget.isHeading
-                            ? 'Total-Value'
-                            : '',
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
           Visibility(
-            visible: authorization(
-              authorized: Authorizations().manageCostPrice,
-            ),
+            visible:
+                authorization(
+                  authorized:
+                      Authorizations().manageCostPrice,
+                ) &&
+                widget.product.isNotEmpty,
             child: Visibility(
               visible: widget.product.isNotEmpty,
               child: Expanded(

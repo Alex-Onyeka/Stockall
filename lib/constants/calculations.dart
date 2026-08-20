@@ -93,7 +93,7 @@ String formatLargeNumber(String numberString) {
 }
 
 String formatLargeNumberDouble(num number) {
-  final formatter = NumberFormat('#,###.#');
+  final formatter = NumberFormat('#,###.###');
   return addZeroAfterDecimalPoint(formatter.format(number));
 }
 

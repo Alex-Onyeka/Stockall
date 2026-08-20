@@ -12,21 +12,21 @@ class MultiDisplayProvider extends ChangeNotifier {
   MultiDisplayProvider._internal();
 
   Future<bool> isAllowed() async {
-    if (returnShopProvider().isDesktop() &&
-        currentUser().role != 'Store Keeper') {
-      var screen = await getAltDisplay();
-      if (screen == null) {
-        return false;
-      }
-      for (var win in windows) {
-        await win.controller.setFrame(
-          screen.visiblePosition! & screen.visibleSize!,
-        );
-      }
-      return true;
-    } else {
-      return false;
-    }
+    // if (returnShopProvider().isDesktop() &&
+    //     currentUser().role != 'Store Keeper') {
+    //   var screen = await getAltDisplay();
+    //   if (screen == null) {
+    //     return false;
+    //   }
+    //   for (var win in windows) {
+    //     await win.controller.setFrame(
+    //       screen.visiblePosition! & screen.visibleSize!,
+    //     );
+    //   }
+    //   return true;
+    // } else {
+    return false;
+    // }
   }
 
   List<WindowInfo> windows = [];
@@ -49,16 +49,16 @@ class MultiDisplayProvider extends ChangeNotifier {
 
   Display? altDisplay;
   Future<Display?> getAltDisplay() async {
-    var displays = await screenRetriever.getAllDisplays();
-    if (displays.length > 1) {
-      altDisplay = displays[1];
-      notifyListeners();
-      return displays[1];
-    } else {
-      altDisplay = null;
-      notifyListeners();
-      return null;
-    }
+    // var displays = await screenRetriever.getAllDisplays();
+    // if (displays.length > 1) {
+    //   altDisplay = displays[1];
+    //   notifyListeners();
+    //   return displays[1];
+    // } else {
+    //   altDisplay = null;
+    //   notifyListeners();
+    return null;
+    // }
   }
 
   bool checkIfWindowExists(String cartId) {

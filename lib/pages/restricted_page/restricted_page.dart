@@ -335,6 +335,8 @@ class _RestrictedPageState extends State<RestrictedPage> {
                                     ),
                                     SizedBox(height: 20),
                                     Text(
+                                      textAlign:
+                                          TextAlign.center,
                                       style: TextStyle(
                                         fontSize:
                                             theme
