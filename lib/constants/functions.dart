@@ -117,6 +117,13 @@ class Authorizations {
   String addCustomer = 'Add Customers';
   String updateCustomer = 'Update Customers';
   String deleteCustomer = 'Delete Customers';
+  String viewCustomersAccount = 'View Customers Account';
+  String deleteCustomersTransactions =
+      'Delete Customers Transactions';
+  String toggleManageCustomersReward =
+      'Toggle Manage Customers Reward';
+  String toggleManageCustomersAccount =
+      'Toggle Manage Customers Account';
   String makeSale = 'Make Sale';
   String deleteSale = 'Delete Sales';
   String updateSale = 'Update Sales';
@@ -1126,6 +1133,17 @@ Future<Uint8List> _buildPdf(
                                                 fontSize: 8,
                                               ),
                                               'Bank: ${formatMoneyMid(amount: receipt.bank, context: context)}',
+                                            );
+                                          } else if (receipt
+                                                  .customerAccount !=
+                                              0) {
+                                            return pw.Text(
+                                              style: pw.TextStyle(
+                                                font:
+                                                    fontRegular,
+                                                fontSize: 8,
+                                              ),
+                                              'Account: ${formatMoneyMid(amount: receipt.customerAccount ?? 0, context: context)}',
                                             );
                                           } else {
                                             return pw.Column(
@@ -2302,6 +2320,17 @@ Future<Uint8List> _buildPdfRoll(
                                                   parTextAlt,
                                             ),
                                             'Bank: ${formatMoneyMid(amount: receipt.bank, context: context)}',
+                                          );
+                                        } else if (receipt
+                                                .customerAccount !=
+                                            0) {
+                                          return pw.Text(
+                                            style: pw.TextStyle(
+                                              font:
+                                                  fontRegular,
+                                              fontSize: 8,
+                                            ),
+                                            'Account: ${formatMoneyMid(amount: receipt.customerAccount ?? 0, context: context)}',
                                           );
                                         } else {
                                           return pw.Column(

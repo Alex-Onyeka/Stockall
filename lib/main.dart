@@ -25,6 +25,7 @@ import 'package:stockall/providers/app_version_provider.dart';
 import 'package:stockall/providers/categories_provider.dart';
 import 'package:stockall/providers/comp_provider.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/providers/customer_account_receipts_provider.dart';
 import 'package:stockall/providers/customers_provider.dart';
 import 'package:stockall/providers/data_provider.dart';
 import 'package:stockall/providers/department_provider.dart';
@@ -804,6 +805,19 @@ returnMaterialsUsageActionProvider({
   }
 }
 
+CustomerAccountReceiptsProvider
+returnCustomerAccountReceiptsProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return CustomerAccountReceiptsProvider();
+  } else {
+    return Provider.of<CustomerAccountReceiptsProvider>(
+      context,
+    );
+  }
+}
+
 Widget colorWidget(
   Widget widget,
   bool isPrimary,
@@ -997,6 +1011,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => MaterialsUsageActionProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CustomerAccountReceiptsProvider(),
         ),
       ],
       child: MaterialApp(

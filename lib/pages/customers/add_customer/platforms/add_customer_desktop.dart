@@ -67,6 +67,8 @@ class _AddCustomerDesktopState
               });
               await customerProvider.addCustomerMain(
                 TempCustomersClass(
+                  balance: 0,
+                  cashReward: 0,
                   updatedAt: DateTime.now(),
                   shopId:
                       returnShopProvider()
@@ -123,6 +125,8 @@ class _AddCustomerDesktopState
               });
               await customerProvider.updateCustomerMain(
                 TempCustomersClass(
+                  balance: widget.customer!.balance,
+                  cashReward: widget.customer!.cashReward,
                   uuid: widget.customer!.uuid,
                   id: widget.customer!.id,
                   shopId:
@@ -150,7 +154,6 @@ class _AddCustomerDesktopState
                   departmentUuid:
                       widget.customer!.departmentUuid,
                 ),
-                context,
               );
               Navigator.of(context).pop();
             },

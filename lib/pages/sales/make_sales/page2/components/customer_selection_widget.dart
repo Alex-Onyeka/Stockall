@@ -11,7 +11,11 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customers_list/customer_list.dart';
 
 class CustomerSelectionWidget extends StatefulWidget {
-  const CustomerSelectionWidget({super.key});
+  final Function()? refreshAction;
+  const CustomerSelectionWidget({
+    super.key,
+    required this.refreshAction,
+  });
 
   @override
   State<CustomerSelectionWidget> createState() =>
@@ -98,6 +102,11 @@ class _CustomerSelectionWidgetState
                                                 },
                                               ),
                                             ).then((_) {
+                                              widget.refreshAction !=
+                                                      null
+                                                  ? widget
+                                                      .refreshAction!()
+                                                  : {};
                                               setState(
                                                 () {},
                                               );
@@ -119,6 +128,11 @@ class _CustomerSelectionWidgetState
                                                 return CreateTemporaryCustomerWidget();
                                               },
                                             ).then((_) {
+                                              widget.refreshAction !=
+                                                      null
+                                                  ? widget
+                                                      .refreshAction!()
+                                                  : {};
                                               setState(
                                                 () {},
                                               );
@@ -254,11 +268,21 @@ class _CustomerSelectionWidgetState
                           : true,
                   child: IconButton(
                     mouseCursor: SystemMouseCursors.click,
-                    onPressed: () {
-                      returnCustomers(
+                    onPressed: () async {
+                      await returnCustomers(
                         context,
                         listen: false,
                       ).clearSelectedCustomer(context);
+                      widget.refreshAction != null
+                          ? widget.refreshAction!()
+                          : {};
+                      if (returnSalesProvider()
+                              .currentCart()
+                              .paymentMethod ==
+                          3) {
+                        await returnSalesProvider()
+                            .resetPaymentMethod();
+                      }
                       setState(() {});
                     },
                     icon: Icon(Icons.clear),

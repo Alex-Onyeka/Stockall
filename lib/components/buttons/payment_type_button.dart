@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/main.dart';
 
 class PaymentTypeButton extends StatelessWidget {
@@ -12,7 +16,53 @@ class PaymentTypeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TempCustomersClass? customersClass;
+    if (index == 3) {
+      if (returnSalesProviderContext(
+            context,
+          ).currentCart().selectedCustomer !=
+          null) {
+        var customerUuid =
+            returnSalesProviderContext(
+              context,
+            ).currentCart().selectedCustomer;
+        List<TempCustomersClass> customers =
+            returnCustomersSingle().customers
+                .where((item) => item.uuid == customerUuid)
+                .toList();
+        if (customers.isNotEmpty) {
+          customersClass = customers.first;
+        }
+      }
+    }
     var theme = returnTheme(context);
+    void selectOptionAction() {
+      if (returnSalesProvider().currentCart().isInvoice &&
+          (index == 2 || index == 3)) {
+        return;
+      } else if (index == 3 &&
+          !returnSalesProvider().isBalanceSufficient()) {
+        showDialog(
+          context: context,
+          builder: (erroContext) {
+            return InfoAlert(
+              theme: theme,
+              message:
+                  'This Customers Balance is not enough to make this Purchase. Please Select Another Payment Method and Proceed.',
+              title: 'Insufficient Balance',
+            );
+          },
+        );
+        return;
+      } else {
+        returnSalesProvider().changeMethod(
+          index: index,
+          context: context,
+        );
+        action != null ? action!() : {};
+      }
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: Ink(
@@ -23,18 +73,7 @@ class PaymentTypeButton extends StatelessWidget {
         child: InkWell(
           mouseCursor: SystemMouseCursors.click,
           onTap: () {
-            if (returnSalesProvider()
-                    .currentCart()
-                    .isInvoice &&
-                index == 2) {
-              return;
-            } else {
-              returnSalesProvider().changeMethod(
-                index: index,
-                context: context,
-              );
-              action != null ? action!() : {};
-            }
+            selectOptionAction();
           },
           child: SizedBox(
             child: Padding(
@@ -67,11 +106,7 @@ class PaymentTypeButton extends StatelessWidget {
                                   ? Colors.grey
                                   : null,
                         ),
-                        returnSalesProviderContext(
-                          context,
-                        ).returnPaymentMethodSalesPage(
-                          index,
-                        )['method'],
+                        "${returnSalesProviderContext(context).returnPaymentMethodSalesPage(index)['method']}${customersClass != null ? " (${formatMoneyBig(amount: customersClass.getBalance(), context: context)})" : ''}",
                       ),
                       Text(
                         style: TextStyle(
@@ -120,17 +155,7 @@ class PaymentTypeButton extends StatelessWidget {
                         ).currentCart().paymentMethod ==
                         index,
                     onChanged: (value) {
-                      if (returnSalesProvider()
-                              .currentCart()
-                              .isInvoice &&
-                          index == 2) {
-                        return;
-                      } else {
-                        returnSalesProvider().changeMethod(
-                          context: context,
-                          index: index,
-                        );
-                      }
+                      selectOptionAction();
                     },
                   ),
                 ],
@@ -163,6 +188,28 @@ class _PaymentTypeDropdownState
 
   @override
   Widget build(BuildContext context) {
+    TempCustomersClass? customersClass;
+    if (returnSalesProviderContext(
+          context,
+        ).currentCart().paymentMethod ==
+        3) {
+      if (returnSalesProviderContext(
+            context,
+          ).currentCart().selectedCustomer !=
+          null) {
+        var customerUuid =
+            returnSalesProviderContext(
+              context,
+            ).currentCart().selectedCustomer;
+        List<TempCustomersClass> customers =
+            returnCustomersSingle().customers
+                .where((item) => item.uuid == customerUuid)
+                .toList();
+        if (customers.isNotEmpty) {
+          customersClass = customers.first;
+        }
+      }
+    }
     var theme = returnTheme(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5.0),
@@ -205,9 +252,7 @@ class _PaymentTypeDropdownState
                                       .fontSize,
                               fontWeight: FontWeight.bold,
                             ),
-                            returnSalesProviderContext(
-                              context,
-                            ).selectedPaymentMethod()['method'],
+                            "${returnSalesProviderContext(context).returnPaymentMethodSalesPage(returnSalesProviderContext(context).currentCart().paymentMethod)['method']}${customersClass != null ? " (${formatMoneyBig(amount: customersClass.getBalance(), context: context)})" : ''}",
                           ),
                           Text(
                             style: TextStyle(
@@ -254,6 +299,23 @@ class _PaymentTypeDropdownState
                   action: () {
                     toggleIsOpen();
                   },
+                ),
+                Visibility(
+                  visible:
+                      GeneralSettingsAuthAction()
+                              .manageCustomersAccountAndPoints(
+                                context: null,
+                              ) ==
+                          true &&
+                      returnShopProvider()
+                              .userShop()
+                              ?.manageCustomerAccount ==
+                          true &&
+                      returnSalesProviderContext(context)
+                              .currentCart()
+                              .selectedCustomer !=
+                          null,
+                  child: PaymentTypeButton(index: 3),
                 ),
                 PaymentTypeButton(
                   index: 2,

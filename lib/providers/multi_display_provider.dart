@@ -49,16 +49,21 @@ class MultiDisplayProvider extends ChangeNotifier {
 
   Display? altDisplay;
   Future<Display?> getAltDisplay() async {
-    // var displays = await screenRetriever.getAllDisplays();
-    // if (displays.length > 1) {
-    //   altDisplay = displays[1];
-    //   notifyListeners();
-    //   return displays[1];
-    // } else {
-    //   altDisplay = null;
-    //   notifyListeners();
-    return null;
-    // }
+    bool yes = await isAllowed();
+    if (yes) {
+      var displays = await screenRetriever.getAllDisplays();
+      if (displays.length > 1) {
+        altDisplay = displays[1];
+        notifyListeners();
+        return displays[1];
+      } else {
+        altDisplay = null;
+        notifyListeners();
+        return null;
+      }
+    } else {
+      return null;
+    }
   }
 
   bool checkIfWindowExists(String cartId) {
@@ -66,9 +71,13 @@ class MultiDisplayProvider extends ChangeNotifier {
       try {
         var displayId =
             windows
-                .firstWhere((win) => win.id == cartId)
-                .controller
-                .windowId;
+                    .where((win) => win.id == cartId)
+                    .isNotEmpty
+                ? windows
+                    .firstWhere((win) => win.id == cartId)
+                    .controller
+                    .windowId
+                : [];
         return displayIds.contains(displayId);
       } catch (e) {
         mainLocalLog(

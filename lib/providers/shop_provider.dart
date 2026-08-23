@@ -1621,7 +1621,141 @@ class ShopProvider extends ChangeNotifier {
       await mainLocalLog(
         "❌ Failed to Update Toggle Manage Production Items: ${e.toString()}",
       );
-      manageProductionsStorage = false;
+      manageProductionItems = false;
+      notifyListeners();
+      return 0;
+    }
+  }
+
+  bool manageCustomerReward = false;
+
+  Future<int> toggleManageCustomerReward() async {
+    bool isOnline = await connectivity.isOnline();
+    manageCustomerReward = true;
+    notifyListeners();
+    try {
+      if (isOnline) {
+        Map<String, dynamic>? res =
+            await supabase
+                .from('shops')
+                .update({
+                  'manage_customer_reward':
+                      !userShop()!.manageCustomerReward!,
+                })
+                .eq('shop_id', userShop()!.shopId!)
+                .select()
+                .maybeSingle();
+        if (res == null) {
+          await mainLocalLog(
+            'Toggle Manage Customer Reward Update Failed',
+          );
+          manageCustomerReward = false;
+          notifyListeners();
+          return 0;
+        }
+
+        var shops = await getUserShops();
+        setShops(shops);
+        manageCustomerReward = false;
+        returnSalesProvider().selectFistMainCart();
+        notifyListeners();
+        return 1;
+      } else {
+        try {
+          userShop()!.updatedAt = DateTime.now();
+          userShop()!.manageCustomerReward =
+              !userShop()!.manageCustomerReward!;
+          await ShopFunc().updateShop(userShop()!);
+          if (userShop() != null) {
+            await UpdatedShopFunc().createUpdatedShop(
+              UpdatedShop(shop: userShop()!),
+            );
+            notifyListeners();
+          }
+          manageCustomerReward = false;
+          notifyListeners();
+          return 1;
+        } catch (e) {
+          await mainLocalLog(
+            "❌ Failed to Update Toggle Manage Customer Reward Offline: ${e.toString()}",
+          );
+          manageCustomerReward = false;
+          notifyListeners();
+          return 0;
+        }
+      }
+    } catch (e) {
+      await mainLocalLog(
+        "❌ Failed to Update Toggle Manage Customer Reward: ${e.toString()}",
+      );
+      manageCustomerReward = false;
+      notifyListeners();
+      return 0;
+    }
+  }
+
+  bool manageCustomerAccount = false;
+
+  Future<int> toggleManageCustomerAccount() async {
+    bool isOnline = await connectivity.isOnline();
+    manageCustomerAccount = true;
+    notifyListeners();
+    try {
+      if (isOnline) {
+        Map<String, dynamic>? res =
+            await supabase
+                .from('shops')
+                .update({
+                  'manage_customer_account':
+                      !userShop()!.manageCustomerAccount!,
+                })
+                .eq('shop_id', userShop()!.shopId!)
+                .select()
+                .maybeSingle();
+        if (res == null) {
+          await mainLocalLog(
+            'Toggle Manage Customer Account Update Failed',
+          );
+          manageCustomerAccount = false;
+          notifyListeners();
+          return 0;
+        }
+
+        var shops = await getUserShops();
+        setShops(shops);
+        manageCustomerAccount = false;
+        returnSalesProvider().selectFistMainCart();
+        notifyListeners();
+        return 1;
+      } else {
+        try {
+          userShop()!.updatedAt = DateTime.now();
+          userShop()!.manageCustomerAccount =
+              !userShop()!.manageCustomerAccount!;
+          await ShopFunc().updateShop(userShop()!);
+          if (userShop() != null) {
+            await UpdatedShopFunc().createUpdatedShop(
+              UpdatedShop(shop: userShop()!),
+            );
+            notifyListeners();
+          }
+          manageCustomerAccount = false;
+          notifyListeners();
+          return 1;
+        } catch (e) {
+          await mainLocalLog(
+            "❌ Failed to Update Toggle Manage Customer Account Offline: ${e.toString()}",
+          );
+          manageCustomerAccount = false;
+          notifyListeners();
+          return 0;
+        }
+      }
+    } catch (e) {
+      await mainLocalLog(
+        "❌ Failed to Update Toggle Manage Customer Account: ${e.toString()}",
+      );
+      manageCustomerAccount = false;
       notifyListeners();
       return 0;
     }

@@ -49,6 +49,8 @@ class PurchaseProvider extends ChangeNotifier {
   List<TempPurchase> get purchases => _purchases;
 
   final String tableName = 'purchases';
+  final String itemPurchaseTableName =
+      'item_purchase_records';
 
   void clearPurchases() {
     _purchases.clear();
@@ -606,14 +608,14 @@ class PurchaseProvider extends ChangeNotifier {
           }
           final remoteData =
               await supabase
-                  .from('purchases')
+                  .from(tableName)
                   .select('uuid, updated_at')
                   .eq('uuid', localPurchases.uuid!)
                   .maybeSingle();
 
           if (remoteData == null) {
             await supabase
-                .from('purchases')
+                .from(tableName)
                 .insert(localPurchases.toJson());
             await mainLocalLog(
               'Inserted product with uuid ${localPurchases.uuid}',
@@ -647,7 +649,7 @@ class PurchaseProvider extends ChangeNotifier {
                   remoteUpdatedAt,
                 )) {
               await supabase
-                  .from('purchases')
+                  .from(tableName)
                   .update(localPurchases.toJson())
                   .eq('uuid', localPurchases.uuid!);
               await mainLocalLog(
@@ -846,7 +848,7 @@ class PurchaseProvider extends ChangeNotifier {
     try {
       if (isOnline && ItemPurchaseFunc().isSynced()) {
         final data = await supabase
-            .from('item_purchase_records')
+            .from(itemPurchaseTableName)
             .select()
             .eq('shop_id', shopId)
             .order('created_at', ascending: false);
@@ -888,7 +890,7 @@ class PurchaseProvider extends ChangeNotifier {
     try {
       if (isOnline) {
         await supabase
-            .from('item_purchase_records')
+            .from(itemPurchaseTableName)
             .delete()
             .eq('uuid', recordUuid);
 
@@ -956,7 +958,7 @@ class PurchaseProvider extends ChangeNotifier {
         // Insert all at once
         final data =
             await supabase
-                .from('item_purchase_records')
+                .from(itemPurchaseTableName)
                 .insert(payload)
                 .select();
 
@@ -1000,7 +1002,7 @@ class PurchaseProvider extends ChangeNotifier {
 
         for (var rec in tempItemPurchases) {
           await supabase
-              .from('item_purchase_records')
+              .from(itemPurchaseTableName)
               .delete()
               .eq('uuid', rec.recordUuid);
           // await DeletedItemPurchaseFunc()

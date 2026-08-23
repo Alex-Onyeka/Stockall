@@ -44,73 +44,72 @@ class CustomersMainTile extends StatelessWidget {
                 mainAxisAlignment:
                     MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    spacing: 10,
-                    children: [
-                      Container(
-                        height: 40,
-                        width: 40,
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.grey.shade100,
-                          // borderRadius:
-                          //     BorderRadius.circular(5),
-                        ),
-                        child: Center(
-                          child: Text(
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              height: 1,
-                              color: Colors.black,
+                  Expanded(
+                    child: Row(
+                      spacing: 10,
+                      children: [
+                        Container(
+                          height: 40,
+                          width: 40,
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.grey.shade100,
+                            // borderRadius:
+                            //     BorderRadius.circular(5),
+                          ),
+                          child: Center(
+                            child: Text(
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                height: 1,
+                                color: Colors.black,
+                              ),
+                              customer.name.characters.first
+                                  .toUpperCase(),
                             ),
-                            customer.name.characters.first
-                                .toUpperCase(),
                           ),
                         ),
-                        // Icon(
-                        //   color:
-                        //       theme
-                        //           .lightModeColor
-                        //           .prColor300,
-                        //   Icons.person,
-                        // ),
-                      ),
-                      Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b1
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b1
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
 
-                            customer.name,
+                                customer.name,
+                              ),
+                              Text(
+                                style: TextStyle(
+                                  color:
+                                      theme
+                                          .lightModeColor
+                                          .secColor200,
+                                  fontWeight:
+                                      FontWeight.normal,
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b2
+                                          .fontSize,
+                                ),
+                                customer.email,
+                              ),
+                            ],
                           ),
-                          Text(
-                            style: TextStyle(
-                              color:
-                                  theme
-                                      .lightModeColor
-                                      .secColor200,
-                              fontWeight: FontWeight.normal,
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b2
-                                      .fontSize,
-                            ),
-                            customer.email,
-                          ),
-                        ],
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
                   Icon(
                     color: theme.lightModeColor.secColor200,

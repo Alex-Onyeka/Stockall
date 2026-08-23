@@ -15,7 +15,7 @@ class QuantityUpdateProvider with ChangeNotifier {
 
   List<QuantityUpdate> quantityUpdates = [];
 
-  final String tableName = 'products';
+  // final String tableName = 'products';
 
   Future<int> createQuantityUpdate({
     required QuantityUpdate quantityUpdate,

@@ -2302,12 +2302,14 @@ class ActionButtonSmall extends StatelessWidget {
   final Color? textColor;
   final String text;
   final bool? isLoading;
+  final Icon? icon;
   const ActionButtonSmall({
     super.key,
     this.textColor,
     required this.action,
     required this.text,
     this.isLoading,
+    this.icon,
   });
 
   @override
@@ -2322,7 +2324,7 @@ class ActionButtonSmall extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.symmetric(
             vertical: 5,
-            horizontal: 20,
+            horizontal: 15,
           ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(3),
@@ -2348,13 +2350,27 @@ class ActionButtonSmall extends StatelessWidget {
                   ),
                 );
               } else {
-                return Text(
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.b3.fontSize,
-                    fontWeight: FontWeight.bold,
-                    color: textColor,
-                  ),
-                  text,
+                return Row(
+                  children: [
+                    Text(
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
+                        fontWeight: FontWeight.bold,
+                        color: textColor,
+                      ),
+                      text,
+                    ),
+                    Visibility(
+                      visible: icon != null,
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          left: 5.0,
+                        ),
+                        child: icon ?? Container(),
+                      ),
+                    ),
+                  ],
                 );
               }
             },

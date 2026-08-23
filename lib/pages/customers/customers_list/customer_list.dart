@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customers_list/platforms/customer_list_desktop.dart';
 import 'package:stockall/pages/customers/customers_list/platforms/customer_list_mobile.dart';
@@ -25,6 +26,15 @@ class _CustomerListState extends State<CustomerList> {
   void initState() {
     super.initState();
     returnNavProvider(context, listen: false).navigate(3);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getCustomerList(context);
+    });
+  }
+
+  Future<void> getCustomerList(BuildContext context) async {
+    await RefreshFunctions(
+      context,
+    ).refreshCustomers(context);
   }
 
   @override

@@ -18,6 +18,10 @@ import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/local_database/category/unsync_funcs/created_categories/created_categories_func.dart';
 import 'package:stockall/local_database/category/unsync_funcs/deleted_categories/deleted_categories_func.dart';
 import 'package:stockall/local_database/category/unsync_funcs/updated_categories/updated_categories_func.dart';
+import 'package:stockall/local_database/customer_account_receipts/unsync_funcs/created/created_customer_account_receipts_func.dart';
+import 'package:stockall/local_database/customer_account_receipts/unsync_funcs/customer_account_updates/customer_account_update_func.dart';
+import 'package:stockall/local_database/customer_account_receipts/unsync_funcs/deleted/deleted_customer_account_receipts_func.dart';
+import 'package:stockall/local_database/customer_account_receipts/unsync_funcs/updated/updated_customer_account_receipts_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/created/created_customers_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/deleted/deleted_customers_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/updated/updated_customers_func.dart';
@@ -440,6 +444,14 @@ class DataProvider extends ChangeNotifier {
     await CreatedCustomersFunc().clearCustomers();
     await UpdatedCustomersFunc().clearupdatedCustomers();
     await DeletedCustomersFunc().clearDeletedCustomers();
+    await CreatedCustomerAccountReceiptsFunc()
+        .clearCustomerAccountReceipts();
+    await UpdatedCustomerAccountReceiptsFunc()
+        .clearUpdatedCustomerAccountReceiptsRecord();
+    await DeletedCustomerAccountReceiptsFunc()
+        .clearDeletedCustomerAccountReceipts();
+    await CustomerAccountUpdateFunc()
+        .clearQuantitiesUpdate();
     await CreatedExpensesFunc().clearExpenses();
     await UpdatedExpensesFunc().clearupdatedExpenses();
     await DeletedExpensesFunc().clearDeletedExpenses();
@@ -1206,6 +1218,50 @@ class DataProvider extends ChangeNotifier {
             );
             setSyncProgress(61);
           }
+          if (CreatedCustomerAccountReceiptsFunc()
+                  .getCustomerAccountReceipts()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnCustomerAccountReceiptsProvider()
+                .createCustomerAccountReceiptsSync();
+            await mainLocalLog(
+              'Finished Syncing Created Customer Account Receipts',
+            );
+            setSyncProgress(62);
+          }
+          if (UpdatedCustomerAccountReceiptsFunc()
+                  .getCustomerAccountReceiptsIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnCustomerAccountReceiptsProvider()
+                .updateCustomerAccountReceiptsSync();
+            await mainLocalLog(
+              'Finished Syncing Updated Customer Account Receipts',
+            );
+            setSyncProgress(63);
+          }
+          if (DeletedCustomerAccountReceiptsFunc()
+                  .getCustomerAccountReceiptsIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnCustomerAccountReceiptsProvider()
+                .deleteCustomerAccountReceiptsSync();
+            await mainLocalLog(
+              'Finished Syncing Deleted Customer Account Receipts',
+            );
+            setSyncProgress(64);
+          }
+          if (CustomerAccountUpdateFunc()
+                  .getQuantitiesUpdate()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnCustomerAccountReceiptsProvider()
+                .customerAccountUpdateSync();
+            await mainLocalLog(
+              'Finished Syncing Customer Account Updates',
+            );
+            setSyncProgress(65);
+          }
           toggleSyncing(false);
         } else {
           // await ShopFunc().clearShop();
@@ -1240,7 +1296,7 @@ class DataProvider extends ChangeNotifier {
   bool isSyncing = false;
   double syncProgress = 0;
   void setSyncProgress(int value) {
-    syncProgress = (value / 61) * 100;
+    syncProgress = (value / 65) * 100;
     notifyListeners();
   }
 
@@ -1272,8 +1328,20 @@ class DataProvider extends ChangeNotifier {
           DeletedExpensesFunc().getExpenseIds().isEmpty &&
           UpdatedExpensesFunc().getExpenses().isEmpty &&
           CreatedCustomersFunc().getCustomers().isEmpty &&
-          UpdatedCustomersFunc().getCustomers().isEmpty &&
+          // UpdatedCustomersFunc().getCustomers().isEmpty &&
           DeletedCustomersFunc().getCustomerIds().isEmpty &&
+          CreatedCustomerAccountReceiptsFunc()
+              .getCustomerAccountReceipts()
+              .isEmpty &&
+          UpdatedCustomerAccountReceiptsFunc()
+              .getCustomerAccountReceiptsIds()
+              .isEmpty &&
+          DeletedCustomerAccountReceiptsFunc()
+              .getCustomerAccountReceiptsIds()
+              .isEmpty &&
+          CustomerAccountUpdateFunc()
+              .getQuantitiesUpdate()
+              .isEmpty &&
           CreatedReceiptsFunc().getReceipts().isEmpty &&
           CreatedRecordsFunc().getRecords().isEmpty &&
           DeletedReceiptsFunc().getReceiptIds().isEmpty &&

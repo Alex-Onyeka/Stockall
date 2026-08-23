@@ -96,8 +96,8 @@ class _TopNavBarState extends State<TopNavBar> {
                       width:
                           screenWidth(context) <
                                   mobileScreen
-                              ? 0
-                              : 10,
+                              ? 10
+                              : 15,
                     ),
                     InkWell(
                       mouseCursor: SystemMouseCursors.click,
@@ -299,25 +299,8 @@ class _TopNavBarState extends State<TopNavBar> {
                                             .subscription
                                             ?.plan !=
                                         0,
-                                    child: SvgPicture.asset(
-                                      // ignore: deprecated_member_use
-                                      color:
-                                          returnSubcsription(
-                                                    context,
-                                                  ).subscription?.plan ==
-                                                  1
-                                              ? Colors.grey
-                                              : returnSubcsription(
-                                                    context,
-                                                  ).subscription?.plan ==
-                                                  2
-                                              ? Colors.blue
-                                              : null,
-                                      checkIconSvg,
-                                      height: 16,
-                                      width: 16,
-                                      fit: BoxFit.contain,
-                                    ),
+                                    child:
+                                        SubscriptionIconWidget(),
                                   ),
                                 ],
                               ),
@@ -1067,6 +1050,58 @@ class _TopNavBarState extends State<TopNavBar> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class SubscriptionIconWidget extends StatelessWidget {
+  const SubscriptionIconWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Builder(
+      builder: (context) {
+        int plan =
+            returnSubcsription(
+              context,
+            ).subscription?.plan ??
+            0;
+        if (plan == 4) {
+          return SizedBox(
+            height: 13,
+            width: 13,
+            child: Image.asset(
+              fit: BoxFit.cover,
+              silverIcon,
+              height: 15,
+            ),
+          );
+        } else if (plan == 5) {
+          return SizedBox(
+            height: 13.5,
+            width: 13.5,
+            child: Image.asset(
+              fit: BoxFit.cover,
+              goldIcon,
+              height: 15,
+            ),
+          );
+        } else {
+          return SvgPicture.asset(
+            // ignore: deprecated_member_use
+            color:
+                plan == 1
+                    ? Colors.grey
+                    : plan == 2
+                    ? Colors.blue
+                    : null,
+            checkIconSvg,
+            height: 16,
+            width: 16,
+            fit: BoxFit.contain,
+          );
+        }
+      },
     );
   }
 }

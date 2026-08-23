@@ -1,6 +1,7 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/checkout_response.dart';
+import 'package:stockall/classes/temp_customer_account_receipts/customer_account_receipts.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_main_receipt/unsynced/created_receipts/created_receipts.dart';
 import 'package:stockall/classes/temp_main_receipt/unsynced/deleted_customers/deleted_receipts.dart';
@@ -82,15 +83,72 @@ class ReceiptsProvider extends ChangeNotifier {
   Future<TempMainReceipt?> createReceipt(
     TempMainReceipt receipt,
   ) async {
-    await mainLocalLog('Inner Receipt Creation Started');
-    var barcode = returnOnlyDigits(uuidGen());
-    receipt.barcode = barcode;
-    await MainReceiptFunc().createReceipt(receipt);
-    await CreatedReceiptsFunc().createReceipts(
-      CreatedReceipts(receipt: receipt),
-    );
-    notifyListeners();
-    return receipt;
+    try {
+      await mainLocalLog('Inner Receipt Creation Started');
+      var barcode = returnOnlyDigits(uuidGen());
+      receipt.barcode = barcode;
+      await MainReceiptFunc().createReceipt(receipt);
+      await CreatedReceiptsFunc().createReceipts(
+        CreatedReceipts(receipt: receipt),
+      );
+      notifyListeners();
+      if (receipt.customerUuid != null) {
+        if (returnShopProvider()
+                .userShop()
+                ?.manageCustomerReward ==
+            true) {
+          CustomerAccountReceipts customerAccountReceipt =
+              CustomerAccountReceipts(
+                receiptUuid: receipt.uuid,
+                isBalance: false,
+                isAdd: true,
+                amount: returnCustomersSingle()
+                    .getCustomerReward(
+                      totalMoney:
+                          receipt.bank +
+                          receipt.cashAlt +
+                          (receipt.customerAccount ?? 0),
+                    ),
+                customerName: receipt.customerName,
+                customerUuid: receipt.customerUuid,
+              );
+          await returnCustomerAccountReceiptsProvider()
+              .createCustomerAccountReceipts(
+                customerAccountReceipt:
+                    customerAccountReceipt,
+              );
+        }
+
+        if (returnShopProvider()
+                    .userShop()
+                    ?.manageCustomerAccount ==
+                true &&
+            receipt.customerAccount != null &&
+            receipt.customerAccount != 0) {
+          CustomerAccountReceipts customerAccountReceipt =
+              CustomerAccountReceipts(
+                receiptUuid: receipt.uuid,
+                isBalance: true,
+                isAdd: false,
+                amount: receipt.customerAccount ?? 0,
+                customerName: receipt.customerName,
+                customerUuid: receipt.customerUuid,
+              );
+          await returnCustomerAccountReceiptsProvider()
+              .createCustomerAccountReceipts(
+                customerAccountReceipt:
+                    customerAccountReceipt,
+              );
+        }
+      }
+
+      return receipt;
+    } catch (e) {
+      await mainLocalLog(
+        'Error Creating Receipt: ${e.toString()}',
+      );
+      return null;
+    }
     // }
   }
 
@@ -382,6 +440,21 @@ class ReceiptsProvider extends ChangeNotifier {
           ),
         );
       }
+      List<CustomerAccountReceipts> accountReceipts =
+          returnCustomerAccountReceiptsProvider()
+              .customerAccountReceipts
+              .where(
+                (item) => item.receiptUuid == receipt.uuid,
+              )
+              .toList();
+      if (receipt.customerUuid != null &&
+          accountReceipts.isNotEmpty) {
+        returnCustomerAccountReceiptsProvider()
+            .deleteCustomerAccountReceipts(
+              customerReceipts: accountReceipts,
+              updateCustomerBalance: true,
+            );
+      }
 
       await mainLocalLog(
         '✅ Receipt and inventory successfully Delete and Updated.',
@@ -411,23 +484,6 @@ class ReceiptsProvider extends ChangeNotifier {
     // BuildContext context,
   ) async {
     await mainLocalLog('Deleting Receipt 2');
-    // bool isOnline = await connectivity.isOnline();
-    // if (isOnline) {
-    //   await mainLocalLog('Deleting Receipt 2 Online');
-    //   await supabase.rpc(
-    //     'delete_receipt_without_updating_inventory',
-    //     params: {'target_receipt_uuid': uuid},
-    //   );
-    //   await mainLocalLog('Finished Deleting Receipt 2 Online');
-    //   var containsUpdate = UpdatedReceiptsFunc()
-    //       .getReceiptIds()
-    //       .where((rec) => rec.receiptUuid == uuid);
-    //   if (containsUpdate.isNotEmpty) {
-    //     await UpdatedReceiptsFunc().deleteUpdatedReceipt(
-    //       uuid,
-    //     );
-    //   }
-    // } else {
     await mainLocalLog('Deleting Receipt Offline');
     await MainReceiptFunc().deleteReceipt(uuid);
     var containsCreated =
@@ -488,10 +544,6 @@ class ReceiptsProvider extends ChangeNotifier {
                   rec.receipt.createdAt.toUtc();
               return rec;
             }).toList();
-        // final payload =
-        //     newReceipts
-        //         .map((p) => p.receipt.toJson())
-        //         .toList();
         int count = 0;
         for (var item in newReceipts) {
           try {
@@ -512,7 +564,7 @@ class ReceiptsProvider extends ChangeNotifier {
             }
             await createErrorLog(
               error:
-                  'Error Synchronizing Receipt ${item.receipt.bank + item.receipt.cashAlt}: $e',
+                  'Error Synchronizing Receipt ${item.receipt.bank + item.receipt.cashAlt + (item.receipt.customerAccount ?? 0)}: $e',
             );
           }
         }
@@ -1105,7 +1157,10 @@ class ReceiptsProvider extends ChangeNotifier {
       group.number++;
       group.totalBalance += receipt.balance ?? 0;
       group.totalOriginalCost += receipt.originalCost ?? 0;
-      group.totalRevenue += receipt.cashAlt + receipt.bank;
+      group.totalRevenue +=
+          receipt.cashAlt +
+          receipt.bank +
+          (receipt.customerAccount ?? 0);
     }
 
     var res = grouped.values.toList();
@@ -1143,7 +1198,10 @@ class ReceiptsProvider extends ChangeNotifier {
       group.number++;
       group.totalBalance += receipt.balance ?? 0;
       group.totalOriginalCost += receipt.originalCost ?? 0;
-      group.totalRevenue += receipt.cashAlt + receipt.bank;
+      group.totalRevenue +=
+          receipt.cashAlt +
+          receipt.bank +
+          (receipt.customerAccount ?? 0);
     }
 
     var res = grouped.values.toList();
@@ -1179,7 +1237,10 @@ class ReceiptsProvider extends ChangeNotifier {
       group.number++;
       group.totalBalance += receipt.balance ?? 0;
       group.totalOriginalCost += receipt.originalCost ?? 0;
-      group.totalRevenue += receipt.cashAlt + receipt.bank;
+      group.totalRevenue +=
+          receipt.cashAlt +
+          receipt.bank +
+          (receipt.customerAccount ?? 0);
     }
 
     var res = grouped.values.toList();
@@ -1214,7 +1275,10 @@ class ReceiptsProvider extends ChangeNotifier {
       group.number++;
       group.totalBalance += receipt.balance ?? 0;
       group.totalOriginalCost += receipt.originalCost ?? 0;
-      group.totalRevenue += receipt.cashAlt + receipt.bank;
+      group.totalRevenue +=
+          receipt.cashAlt +
+          receipt.bank +
+          (receipt.customerAccount ?? 0);
     }
 
     var res = grouped.values.toList();
@@ -1470,7 +1534,10 @@ class ReceiptsProvider extends ChangeNotifier {
   double getTotalMainRevenueReceipt(
     TempMainReceipt receipt,
   ) {
-    var total = ((receipt.bank + receipt.cashAlt));
+    var total =
+        ((receipt.bank +
+            receipt.cashAlt +
+            (receipt.customerAccount ?? 0)));
 
     return total;
   }

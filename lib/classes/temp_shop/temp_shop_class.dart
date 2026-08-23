@@ -173,6 +173,15 @@ class TempShopClass {
   @HiveField(57)
   bool? manageProductionItems;
 
+  @HiveField(58)
+  bool? manageCustomerReward;
+
+  @HiveField(59)
+  double? customerPercentageReward;
+
+  @HiveField(60)
+  bool? manageCustomerAccount;
+
   TempShopClass({
     this.shopId,
     required this.createdAt,
@@ -232,6 +241,9 @@ class TempShopClass {
     required this.manageProductions,
     required this.manageProductionsStorage,
     required this.manageProductionItems,
+    required this.customerPercentageReward,
+    required this.manageCustomerReward,
+    required this.manageCustomerAccount,
   });
 
   factory TempShopClass.fromJson(
@@ -310,6 +322,13 @@ class TempShopClass {
           json['manage_productions_storage'] as bool?,
       manageProductionItems:
           json['manage_production_items'] as bool?,
+      manageCustomerReward:
+          json['manage_customer_reward'] as bool?,
+      customerPercentageReward:
+          (json['customer_percentage_reward'] as num?)
+              ?.toDouble(),
+      manageCustomerAccount:
+          json['manage_customer_account'] as bool?,
     );
   }
 
@@ -373,6 +392,10 @@ class TempShopClass {
       'manage_productions_storage':
           manageProductionsStorage,
       'manage_production_items': manageProductionItems,
+      'manage_customer_reward': manageCustomerReward,
+      'customer_percentage_reward':
+          customerPercentageReward,
+      'manage_customer_account': manageCustomerAccount,
     };
   }
 
@@ -433,6 +456,9 @@ class TempShopClass {
     bool? manageProductions,
     bool? manageProductionsStorage,
     bool? manageProductionItems,
+    bool? manageCustomerReward,
+    double? customerPercentageReward,
+    bool? manageCustomerAccount,
   }) {
     return TempShopClass(
       shopId: shopId ?? this.shopId,
@@ -506,6 +532,14 @@ class TempShopClass {
       manageProductionItems:
           manageProductionItems ??
           this.manageProductionItems,
+      customerPercentageReward:
+          customerPercentageReward ??
+          this.customerPercentageReward,
+      manageCustomerReward:
+          manageCustomerReward ?? this.manageCustomerReward,
+      manageCustomerAccount:
+          manageCustomerAccount ??
+          this.manageCustomerAccount,
     );
   }
 }

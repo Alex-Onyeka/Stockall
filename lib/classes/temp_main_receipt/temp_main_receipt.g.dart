@@ -44,13 +44,14 @@ class TempMainReceiptAdapter extends TypeAdapter<TempMainReceipt> {
       cartName: fields[24] as String?,
       subStaffName: fields[25] as String?,
       comment: fields[26] as String?,
+      customerAccount: fields[27] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempMainReceipt obj) {
     writer
-      ..writeByte(27)
+      ..writeByte(28)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -104,7 +105,9 @@ class TempMainReceiptAdapter extends TypeAdapter<TempMainReceipt> {
       ..writeByte(25)
       ..write(obj.subStaffName)
       ..writeByte(26)
-      ..write(obj.comment);
+      ..write(obj.comment)
+      ..writeByte(27)
+      ..write(obj.customerAccount);
   }
 
   @override

@@ -72,13 +72,16 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       manageProductions: fields[55] as bool?,
       manageProductionsStorage: fields[56] as bool?,
       manageProductionItems: fields[57] as bool?,
+      customerPercentageReward: fields[59] as double?,
+      manageCustomerReward: fields[58] as bool?,
+      manageCustomerAccount: fields[60] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempShopClass obj) {
     writer
-      ..writeByte(55)
+      ..writeByte(58)
       ..writeByte(0)
       ..write(obj.shopId)
       ..writeByte(1)
@@ -188,7 +191,13 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       ..writeByte(56)
       ..write(obj.manageProductionsStorage)
       ..writeByte(57)
-      ..write(obj.manageProductionItems);
+      ..write(obj.manageProductionItems)
+      ..writeByte(58)
+      ..write(obj.manageCustomerReward)
+      ..writeByte(59)
+      ..write(obj.customerPercentageReward)
+      ..writeByte(60)
+      ..write(obj.manageCustomerAccount);
   }
 
   @override

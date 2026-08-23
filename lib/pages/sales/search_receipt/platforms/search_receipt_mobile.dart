@@ -82,7 +82,12 @@ class _SearchReceiptMobileState
             ).returnOwnReceiptsByDayOrWeek().toList();
     double totalRevenue() {
       return receipts
-          .map((rec) => (rec.bank + rec.bank))
+          .map(
+            (rec) =>
+                (rec.bank +
+                    rec.cashAlt +
+                    (rec.customerAccount ?? 0)),
+          )
           .toList()
           .fold(0, (first, second) => first + second);
     }

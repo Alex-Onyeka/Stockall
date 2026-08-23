@@ -14,7 +14,8 @@ import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/add_customer/add_customer.dart';
 import 'package:stockall/pages/customers/components/customer_main_tile.dart';
-import 'package:stockall/pages/customers/customer_page/customer_page.dart';
+import 'package:stockall/pages/customers/customer_details_page/customer_details.dart';
+import 'package:stockall/pages/customers/customer_settings/customer_settings_page.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class CustomerListDesktop extends StatefulWidget {
@@ -41,15 +42,7 @@ class _CustomerListDesktopState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       returnData().showFloatingActionButton();
     });
-    if (returnCustomers(
-      context,
-      listen: false,
-    ).customersMain().isEmpty) {
-      getCustomerList(context);
-    }
   }
-
-  String searchResult = '';
 
   TextEditingController searchController =
       TextEditingController();
@@ -290,6 +283,41 @@ class _CustomerListDesktopState
                             ),
                           ),
                         ),
+                        Visibility(
+                          visible:
+                              widget.isSales == null &&
+                              widget.isWaybill == null,
+                          child: InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return CustomerSettingsPage();
+                                  },
+                                ),
+                              );
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 4,
+                                horizontal: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      10,
+                                    ),
+                              ),
+                              child: Icon(
+                                size: 22,
+                                Icons.settings,
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                     body: Padding(
@@ -351,147 +379,34 @@ class _CustomerListDesktopState
                                     lines: 1,
                                     theme: theme,
                                     onChanged: (value) {
-                                      setState(() {
-                                        searchResult =
-                                            value;
-                                      });
+                                      setState(() {});
                                     },
                                   ),
                                   SizedBox(height: 15),
                                   Expanded(
                                     child: Builder(
                                       builder: (context) {
-                                        if (searchResult !=
-                                            '') {
-                                          return Builder(
-                                            builder: (
-                                              context,
-                                            ) {
-                                              if (customers
-                                                  .where(
-                                                    (
-                                                      customer,
-                                                    ) => customer
-                                                        .name
-                                                        .toLowerCase()
-                                                        .contains(
-                                                          widget.searchController.text.toLowerCase(),
-                                                        ),
-                                                  )
-                                                  .isNotEmpty) {
-                                                return ListView.builder(
-                                                  itemCount:
-                                                      customers
-                                                          .where(
-                                                            (
-                                                              customer,
-                                                            ) => customer.name.toLowerCase().contains(
-                                                              widget.searchController.text.toLowerCase(),
-                                                            ),
-                                                          )
-                                                          .length,
-                                                  itemBuilder: (
-                                                    context,
-                                                    index,
-                                                  ) {
-                                                    TempCustomersClass
-                                                    customer =
-                                                        customers
-                                                            .where(
-                                                              (
-                                                                customer,
-                                                              ) => customer.name.toLowerCase().contains(
-                                                                widget.searchController.text.toLowerCase(),
-                                                              ),
-                                                            )
-                                                            .toList()[index];
-
-                                                    return CustomersMainTile(
-                                                      action: () {
-                                                        if (widget.isSales !=
-                                                            null) {
-                                                          returnCustomers(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).selectCustomer(
-                                                            id:
-                                                                customer.uuid!,
-                                                            name:
-                                                                customer.name,
-                                                            context:
-                                                                context,
-                                                          );
-                                                          Navigator.of(
-                                                            context,
-                                                          ).pop(
-                                                            context,
-                                                          );
-                                                        } else if (widget.isWaybill !=
-                                                            null) {
-                                                          // returnWaybillProvider().selectCustomer(
-                                                          //   customer:
-                                                          //       customer,
-                                                          // );
-                                                          Navigator.of(
-                                                            context,
-                                                          ).pop(
-                                                            context,
-                                                          );
-                                                        } else {
-                                                          Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder: (
-                                                                context,
-                                                              ) {
-                                                                return CustomerPage(
-                                                                  uuid:
-                                                                      customer.uuid!,
-                                                                );
-                                                              },
-                                                            ),
-                                                          );
-                                                        }
-                                                      },
-                                                      theme:
-                                                          theme,
-                                                      customer:
-                                                          customer,
-                                                      isSales:
-                                                          widget.isSales ??
-                                                          widget.isWaybill,
-                                                    );
-                                                  },
-                                                );
-                                              } else {
-                                                return Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment
-                                                          .start,
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        Text(
-                                                          style: TextStyle(
-                                                            fontSize:
-                                                                theme.mobileTexts.b1.fontSize,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                          ),
-                                                          'Returned 0 Customers',
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                );
-                                              }
-                                            },
-                                          );
-                                        } else {
+                                        List<
+                                          TempCustomersClass
+                                        >
+                                        customersMain =
+                                            customers
+                                                .where(
+                                                  (
+                                                    customer,
+                                                  ) => customer
+                                                      .name
+                                                      .toLowerCase()
+                                                      .contains(
+                                                        widget.searchController.text.toLowerCase(),
+                                                      ),
+                                                )
+                                                .toList();
+                                        if (customersMain
+                                            .isNotEmpty) {
                                           return ListView.builder(
                                             itemCount:
-                                                customers
+                                                customersMain
                                                     .length,
                                             itemBuilder: (
                                               context,
@@ -499,7 +414,7 @@ class _CustomerListDesktopState
                                             ) {
                                               TempCustomersClass
                                               customer =
-                                                  customers[index];
+                                                  customersMain[index];
 
                                               return CustomersMainTile(
                                                 action: () {
@@ -526,10 +441,6 @@ class _CustomerListDesktopState
                                                   } else if (widget
                                                           .isWaybill !=
                                                       null) {
-                                                    // returnWaybillProvider().selectCustomer(
-                                                    //   customer:
-                                                    //       customer,
-                                                    // );
                                                     Navigator.of(
                                                       context,
                                                     ).pop(
@@ -542,8 +453,8 @@ class _CustomerListDesktopState
                                                         builder: (
                                                           context,
                                                         ) {
-                                                          return CustomerPage(
-                                                            uuid:
+                                                          return CustomerDetails(
+                                                            customerUuid:
                                                                 customer.uuid!,
                                                           );
                                                         },
@@ -562,6 +473,27 @@ class _CustomerListDesktopState
                                                         .isWaybill,
                                               );
                                             },
+                                          );
+                                        } else {
+                                          return Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment
+                                                    .start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          theme.mobileTexts.b1.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    'Returned 0 Customers',
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
                                           );
                                         }
                                       },

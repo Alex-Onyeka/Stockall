@@ -451,8 +451,13 @@ class EventsLogProvider with ChangeNotifier {
               ?.uuid,
       amount:
           event == 3
-              ? (-1 * (receipt.bank + receipt.cashAlt))
-              : (receipt.bank + receipt.cashAlt),
+              ? (-1 *
+                  (receipt.bank +
+                      receipt.cashAlt +
+                      (receipt.customerAccount ?? 0)))
+              : (receipt.bank +
+                  receipt.cashAlt +
+                  (receipt.customerAccount ?? 0)),
     );
   }
 

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
+import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_main_cart/temp_main_cart.dart';
@@ -967,6 +968,7 @@ class SalesProvider extends ChangeNotifier {
     required String paymentMethod,
     required double cashAlt,
     required double bank,
+    required double customerBalance,
     double? partPayment,
   }) async {
     final createdAt = currentCart().returnDate();
@@ -1416,6 +1418,7 @@ class SalesProvider extends ChangeNotifier {
         staffId: staffUuid(), // staffId,
         staffName: staffName(), // staffName,
         paymentMethod: paymentMethod,
+        customerAccount: customerBalance,
         bank: bank,
         cashAlt: cashAlt,
         isInvoice: salesCartItem.isInvoice,
@@ -1852,6 +1855,32 @@ class SalesProvider extends ChangeNotifier {
         }
       }
       return tempTotalDiscount;
+    }
+  }
+
+  double calcCashBackReward() {
+    return calcFinalTotal() *
+        ((returnShopProvider()
+                    .userShop()
+                    ?.customerPercentageReward ??
+                0) /
+            100);
+  }
+
+  bool isBalanceSufficient() {
+    List<TempCustomersClass> customers =
+        returnCustomersSingle().customers
+            .where(
+              (item) =>
+                  item.uuid ==
+                  currentCart().selectedCustomer,
+            )
+            .toList();
+    if (customers.isNotEmpty) {
+      var customer = customers.first;
+      return customer.getBalance() >= calcFinalTotal();
+    } else {
+      return false;
     }
   }
 
@@ -2395,9 +2424,9 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void resetPaymentMethod() {
+  Future<void> resetPaymentMethod() async {
     currentCart().paymentMethod = 0;
-    CartFunc().updateMainCart(currentMainCart());
+    await CartFunc().updateMainCart(currentMainCart());
     notifyListeners();
   }
 
@@ -2410,12 +2439,17 @@ class SalesProvider extends ChangeNotifier {
     {
       'number': 1,
       'method': 'Pay with Transfer / Atm',
-      'subText': 'Use Bank to Proceed with Payment',
+      'subText': 'Use Bank to Make Payment',
     },
     {
       'number': 2,
       'method': 'Split Payment',
       'subText': 'Use Both Cash and Bank to Pay',
+    },
+    {
+      'number': 3,
+      'method': 'Customer Account',
+      'subText': 'Make Payment From Customer Balace',
     },
   ];
 
@@ -2441,6 +2475,8 @@ class SalesProvider extends ChangeNotifier {
         return 'Bank';
       case 2:
         return 'Split';
+      case 3:
+        return 'Account';
       default:
         return 'Cash';
     }

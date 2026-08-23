@@ -69,6 +69,7 @@ class _ReceiptPageMobileState
       (rec) => rec.uuid! == widget.response.resUuid,
       orElse:
           () => TempMainReceipt(
+            customerAccount: 0,
             comment: null,
             subStaffName: null,
             departmentName:
@@ -1017,6 +1018,43 @@ class _ReceiptDetailsContainerState
                                                         formatMoneyMid(
                                                           amount:
                                                               widget.mainReceipt.bank,
+                                                          context:
+                                                              context,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Visibility(
+                                                  visible:
+                                                      widget
+                                                          .mainReceipt
+                                                          .paymentMethod ==
+                                                      'Account',
+                                                  child: Row(
+                                                    spacing:
+                                                        5,
+                                                    children: [
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              widget.theme.mobileTexts.b4.fontSize,
+                                                          fontWeight:
+                                                              FontWeight.normal,
+                                                        ),
+                                                        'Account:',
+                                                      ),
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              widget.theme.mobileTexts.b4.fontSize,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                        formatMoneyMid(
+                                                          amount:
+                                                              widget.mainReceipt.customerAccount ??
+                                                              0,
                                                           context:
                                                               context,
                                                         ),

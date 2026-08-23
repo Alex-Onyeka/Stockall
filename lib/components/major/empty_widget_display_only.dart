@@ -41,7 +41,7 @@ class EmptyWidgetDisplayOnly extends StatelessWidget {
                   Visibility(
                     visible: icon != null,
                     child: Container(
-                      padding: EdgeInsets.all(15),
+                      padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: Colors.grey.shade100,
                         shape: BoxShape.circle,

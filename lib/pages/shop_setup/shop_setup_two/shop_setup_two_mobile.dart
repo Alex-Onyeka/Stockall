@@ -97,6 +97,9 @@ class _ShopSetupTwoMobileState
                 });
                 await shopProvider.createShop(
                   TempShopClass(
+                    manageCustomerAccount: false,
+                    customerPercentageReward: 0,
+                    manageCustomerReward: false,
                     manageProductionItems: false,
                     manageProductions: false,
                     manageProductionsStorage: false,

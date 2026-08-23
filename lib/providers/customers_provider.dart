@@ -99,37 +99,24 @@ class CustomersProvider extends ChangeNotifier {
               .toList();
 
       await CustomerFunc().insertAllCustomers(customers);
+      await mainLocalLog('Customer Gotten Successfully');
+      await returnCustomerAccountReceiptsProvider()
+          .getCustomerAccountReceipts(shopId);
     } else {
-      customers = CustomerFunc().getCustomers();
+      fetchCustomersOffline();
     }
     notifyListeners();
     return customers;
   }
 
-  Future<List<TempCustomersClass>> fetchCustomersOffline(
-    int shopId,
-  ) async {
-    // bool isOnline = await connectivity.isOnline();
-    // if (isOnline) {
-    //   final data = await supabase
-    //       .from('customers')
-    //       .select()
-    //       .eq('shop_id', shopId)
-    //       .order('name', ascending: true);
-    //   await mainLocalLog(data.length.toString());
-
-    //   customers =
-    //       (data as List)
-    //           .map(
-    //             (json) => TempCustomersClass.fromJson(json),
-    //           )
-    //           .toList();
-
-    //   await CustomerFunc().insertAllCustomers(customers);
-    // } else {
+  Future<List<TempCustomersClass>>
+  fetchCustomersOffline() async {
     customers = CustomerFunc().getCustomers();
     // }
+    await returnCustomerAccountReceiptsProvider()
+        .getCustomerAccountReceiptsOffline();
     notifyListeners();
+
     return customers;
   }
 
@@ -138,35 +125,9 @@ class CustomersProvider extends ChangeNotifier {
     TempCustomersClass customer,
     final BuildContext context,
   ) async {
-    final shopProvider = returnShopProvider();
-    // bool isOnline = await connectivity.isOnline();
     customer.updatedAt = DateTime.now();
     customer.dateAdded = DateTime.now();
     customer.uuid = uuidGen();
-    // if (isOnline) {
-    //   final res =
-    //       await supabase
-    //           .from('customers')
-    //           .insert(customer.toJson())
-    //           .select()
-    //           .single();
-    //   await mainLocalLog(res);
-
-    //   final newCustomer = TempCustomersClass.fromJson(res);
-    //   await CustomerFunc().createCustomer(newCustomer);
-    //   await returnEventsLogProvider(
-    //     // ignore: use_build_context_synchronously
-    //   ).createLog(
-    //     returnEventsLogProvider(
-    //       // ignore: use_build_context_synchronously
-    //       // ignore: use_build_context_synchronously
-    //     ).customerAdapter(customer, 1),
-    //     // ignore: use_build_context_synchronously
-    //   );
-    // } else {
-    // GeneralSettingsAuthAction().allowOfflineUseAction(
-    //   context: context,
-    //   action: () async {
     await CustomerFunc().createCustomer(customer);
     await CreatedCustomersFunc().createCustomers(
       CreatedCustomers(customer: customer),
@@ -174,19 +135,12 @@ class CustomersProvider extends ChangeNotifier {
     await returnEventsLogProvider(
       // ignore: use_build_context_synchronously
     ).createLog(
-      returnEventsLogProvider(
-        // ignore: use_build_context_synchronously
-        // ignore: use_build_context_synchronously
-      ).customerAdapter(customer, 1),
-      // ignore: use_build_context_synchronously
+      returnEventsLogProvider().customerAdapter(
+        customer,
+        1,
+      ),
     );
-    //     },
-    //   );
-    // }
-    // customers.insert(0, newCustomer);
-    await fetchCustomersOffline(
-      shopProvider.userShop()!.shopId!,
-    );
+    await fetchCustomersOffline();
     notifyListeners();
     syncData();
   }
@@ -194,88 +148,49 @@ class CustomersProvider extends ChangeNotifier {
   /// Update a customer by ID
   Future<void> updateCustomerMain(
     TempCustomersClass customer,
-    BuildContext context,
   ) async {
-    final shopProvider = returnShopProvider();
-    // bool isOnline = await connectivity.isOnline();
-    // if (isOnline) {
-    //   customer.updatedAt = DateTime.now();
-    //   await supabase
-    //       .from('customers')
-    //       .update(customer.toJson())
-    //       .eq('uuid', customer.uuid!);
-    //   await returnEventsLogProvider(
-    //     // ignore: use_build_context_synchronously
-    //   ).createLog(
-    //     returnEventsLogProvider(
-    //       // ignore: use_build_context_synchronously
-    //       // ignore: use_build_context_synchronously
-    //     ).customerAdapter(customer, 2),
-    //     // ignore: use_build_context_synchronously
-    //   );
-    // } else {
-    await CustomerFunc().updateCustomer(customer);
-    var containsCreated =
-        CreatedCustomersFunc()
-            .getCustomers()
-            .where(
-              (cus) => cus.customer.uuid == customer.uuid,
-            )
-            .toList();
-    if (containsCreated.isEmpty) {
-      await UpdatedCustomersFunc().createUpdatedCustomer(
-        UpdatedCustomers(customer: customer),
+    try {
+      await CustomerFunc().updateCustomer(customer);
+      var containsCreated =
+          CreatedCustomersFunc()
+              .getCustomers()
+              .where(
+                (cus) => cus.customer.uuid == customer.uuid,
+              )
+              .toList();
+      if (containsCreated.isEmpty) {
+        await UpdatedCustomersFunc().createUpdatedCustomer(
+          UpdatedCustomers(customer: customer),
+        );
+      } else {
+        await CreatedCustomersFunc().updateCustomers(
+          CreatedCustomers(customer: customer),
+        );
+      }
+      await returnEventsLogProvider(
+        // ignore: use_build_context_synchronously
+      ).createLog(
+        returnEventsLogProvider(
+          // ignore: use_build_context_synchronously
+          // ignore: use_build_context_synchronously
+        ).customerAdapter(customer, 1),
+        // ignore: use_build_context_synchronously
       );
-    } else {
-      await CreatedCustomersFunc().updateCustomers(
-        CreatedCustomers(customer: customer),
+      // }
+      await fetchCustomersOffline();
+      notifyListeners();
+      syncData();
+    } catch (e) {
+      await mainLocalLog(
+        'Error Updating Customer: ${e.toString()}',
       );
     }
-    await returnEventsLogProvider(
-      // ignore: use_build_context_synchronously
-    ).createLog(
-      returnEventsLogProvider(
-        // ignore: use_build_context_synchronously
-        // ignore: use_build_context_synchronously
-      ).customerAdapter(customer, 1),
-      // ignore: use_build_context_synchronously
-    );
-    // }
-    await fetchCustomersOffline(
-      shopProvider.userShop()!.shopId!,
-    );
-    notifyListeners();
-    syncData();
   }
 
   /// Delete a customer by ID
   Future<void> deleteCustomerMain(
     TempCustomersClass customer,
-    BuildContext context,
   ) async {
-    final shopProvider = returnShopProvider();
-    // bool isOnline = await connectivity.isOnline();
-    // if (isOnline) {
-    //   await supabase
-    //       .from('customers')
-    //       .delete()
-    //       .eq('uuid', customer.uuid!);
-    //   await mainLocalLog('Customer Deleted');
-    //   var res = await returnEventsLogProvider(
-    //     // ignore: use_build_context_synchronously
-    //   ).createLog(
-    //     returnEventsLogProvider(
-    //       // ignore: use_build_context_synchronously
-    //       // ignore: use_build_context_synchronously
-    //     ).customerAdapter(customer, 3),
-    //     // ignore: use_build_context_synchronously
-    //   );
-    //   if (res == 1) {
-    //     await mainLocalLog('Customer Delete Logged');
-    //   } else {
-    //     await mainLocalLog('Customer Delete Log Failed');
-    //   }
-    // } else {
     var containsCreated =
         CreatedCustomersFunc()
             .getCustomers()
@@ -319,9 +234,7 @@ class CustomersProvider extends ChangeNotifier {
     );
     // }
 
-    await fetchCustomersOffline(
-      shopProvider.userShop()!.shopId!,
-    );
+    await fetchCustomersOffline();
     notifyListeners();
     syncData();
   }
@@ -335,38 +248,15 @@ class CustomersProvider extends ChangeNotifier {
     }
   }
 
-  //
-  //
-  //
-  //
-  //
-  //
-
-  // void updateCustomer({
-  //   required TempCustomersClass mainCustomer,
-  //   required TempCustomersClass setterCustomer,
-  // }) {
-  //   mainCustomer.address = setterCustomer.address;
-  //   mainCustomer.city = setterCustomer.city;
-  //   mainCustomer.country = setterCustomer.country;
-  //   mainCustomer.email = setterCustomer.email;
-  //   mainCustomer.name = setterCustomer.name;
-  //   mainCustomer.phone = setterCustomer.phone;
-  //   mainCustomer.state = setterCustomer.state;
-  //   notifyListeners();
-  // }
-
-  // String? selectedCustomerId;
-  // String? selectedCustomerName;
-  // SalesProvider salesProvider = SalesProvider();
-
-  void clearSelectedCustomer(BuildContext context) {
+  Future<void> clearSelectedCustomer(
+    BuildContext context,
+  ) async {
     returnSalesProvider().currentCart().selectedCustomer =
         null;
     returnSalesProvider()
         .currentCart()
         .selectedCustomerName = null;
-    CartFunc().updateMainCart(
+    await CartFunc().updateMainCart(
       returnSalesProvider().currentMainCart(),
     );
     notifyListeners();
@@ -376,20 +266,21 @@ class CustomersProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void selectCustomer({
+  Future<void> selectCustomer({
     String? id,
     required String name,
     required BuildContext context,
-  }) {
+  }) async {
     returnSalesProvider().currentCart().selectedCustomer =
         id;
     returnSalesProvider()
         .currentCart()
         .selectedCustomerName = name;
-    notifyListeners();
-    CartFunc().updateMainCart(
+
+    await CartFunc().updateMainCart(
       returnSalesProvider().currentMainCart(),
     );
+    notifyListeners();
   }
 
   //
@@ -416,7 +307,11 @@ class CustomersProvider extends ChangeNotifier {
         }
         final payload =
             tempCustomers
-                .map((p) => p.customer.toJson())
+                .map(
+                  (p) => p.customer.toJson(
+                    isMoneyUpdate: true,
+                  ),
+                )
                 .toList();
 
         // Insert all at once
@@ -493,7 +388,11 @@ class CustomersProvider extends ChangeNotifier {
           if (remoteData == null) {
             await supabase
                 .from('customers')
-                .insert(localCustomer.toJson());
+                .insert(
+                  localCustomer.toJson(
+                    isMoneyUpdate: false,
+                  ),
+                );
             await mainLocalLog(
               'Inserted Customer with uuid ${localCustomer.uuid}',
             );
@@ -527,7 +426,11 @@ class CustomersProvider extends ChangeNotifier {
                 )) {
               await supabase
                   .from('customers')
-                  .update(localCustomer.toJson())
+                  .update(
+                    localCustomer.toJson(
+                      isMoneyUpdate: false,
+                    ),
+                  )
                   .eq('uuid', localCustomer.uuid!);
               await mainLocalLog(
                 'Updated customer with uuid ${localCustomer.uuid}',
@@ -620,5 +523,14 @@ class CustomersProvider extends ChangeNotifier {
         error: 'Batch Customers Delete failed ❌: $e',
       );
     }
+  }
+
+  double getCustomerReward({required double totalMoney}) {
+    double value =
+        returnShopProvider()
+            .userShop()
+            ?.customerPercentageReward ??
+        0;
+    return (totalMoney * (value / 100));
   }
 }

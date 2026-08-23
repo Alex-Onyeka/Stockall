@@ -133,7 +133,10 @@ class DialogTemplate extends StatelessWidget {
             ),
             SizedBox(height: 5),
             Visibility(
-              visible: showBottomActionButtons == null,
+              visible:
+                  showBottomActionButtons == null ||
+                  (showBottomActionButtons != null &&
+                      showBottomActionButtons == true),
               child: Column(
                 children: [
                   Row(

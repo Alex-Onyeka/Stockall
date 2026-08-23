@@ -33,6 +33,12 @@ const String shopIconImage =
 const String cctvImage =
     'assets/images/small_images/cctv.png';
 
+const String goldIcon =
+    'assets/images/small_images/gold_icon.png';
+
+const String silverIcon =
+    'assets/images/small_images/silver_icon.png';
+
 //
 //
 //
@@ -148,7 +154,7 @@ const String appDesc =
     'Your smart inventory companion. Track stock, manage sales, and grow your business with ease — all in one place. Let\'s simplify your workflow and boost your efficiency. 🚀';
 
 const String appVersionMobile = '1.1.9+80';
-const String appVersionDesktop = '1.9.80.0';
+const String appVersionDesktop = '1.9.81.0';
 
 String shopRef() {
   String tempId =

@@ -113,7 +113,11 @@ class _MakeSalesMobileTwoState
                           ),
                         ),
                         SizedBox(height: 13),
-                        CustomerSelectionWidget(),
+                        CustomerSelectionWidget(
+                          refreshAction: () {
+                            setState(() {});
+                          },
+                        ),
                         SizedBox(height: 10),
                         SetCustomReceiptCreatedDateWidget(),
                         Divider(
@@ -766,6 +770,24 @@ class _MakeSalesMobileTwoState
                                   );
                                 },
                               );
+                            } else if (returnSalesProvider()
+                                        .currentCart()
+                                        .paymentMethod ==
+                                    3 &&
+                                !returnSalesProvider()
+                                    .isBalanceSufficient()) {
+                              showDialog(
+                                context: context,
+                                builder: (erroContext) {
+                                  return InfoAlert(
+                                    theme: theme,
+                                    message:
+                                        'This Customers Balance is not enough to make this Purchase. Please Select Another Payment Method and Proceed.',
+                                    title:
+                                        'Insufficient Balance',
+                                  );
+                                },
+                              );
                             } else {
                               showDialog(
                                 context: safeContext,
@@ -809,21 +831,17 @@ class _MakeSalesMobileTwoState
                                                     .text,
                                           );
                                       var res = await returnSalesProvider().checkoutMain(
+                                        customerBalance:
+                                            returnSalesProvider()
+                                                        .returnPaymentMethod() ==
+                                                    'Account'
+                                                ? returnSalesProvider()
+                                                    .calcFinalTotal()
+                                                : 0,
                                         context: context,
                                         salesCartItem:
                                             returnSalesProvider()
                                                 .currentCart(),
-                                        // staffId:
-                                        //     AuthService()
-                                        //         .currentUser!,
-                                        // staffName:
-                                        //     returnUserProvider(
-                                        //           context,
-                                        //           listen:
-                                        //               false,
-                                        //         )
-                                        //         .currentUserMain!
-                                        //         .name,
                                         shopId:
                                             returnShopProvider()
                                                 .userShop()!
@@ -858,10 +876,10 @@ class _MakeSalesMobileTwoState
                                                     0
                                                 : returnSalesProvider()
                                                         .returnPaymentMethod() ==
-                                                    'Bank'
-                                                ? 0
-                                                : returnSalesProvider()
-                                                    .calcFinalTotal(),
+                                                    'Cash'
+                                                ? returnSalesProvider()
+                                                    .calcFinalTotal()
+                                                : 0,
                                         paymentMethod:
                                             returnSalesProvider()
                                                 .returnPaymentMethod(),

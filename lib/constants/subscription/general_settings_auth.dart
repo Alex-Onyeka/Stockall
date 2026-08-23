@@ -15,6 +15,7 @@ class GeneralSettingsAuth {
   final bool useOnScreenKeyboard;
   final bool trackCart;
   final bool manageProductions;
+  final bool manageCustomersAccountAndPoints;
 
   GeneralSettingsAuth({
     required this.addSocials,
@@ -28,6 +29,7 @@ class GeneralSettingsAuth {
     required this.useOnScreenKeyboard,
     required this.trackCart,
     required this.manageProductions,
+    required this.manageCustomersAccountAndPoints,
   });
 }
 
@@ -90,6 +92,29 @@ class GeneralSettingsAuthAction {
         .firstWhere((pl) => pl.plan == plan)
         .generalSettingsAuth
         .trackCart) {
+      action == null ? {} : action();
+      return true;
+    } else {
+      if (action != null && context != null) {
+        showUnauthorizedDialog(context);
+      }
+      return false;
+    }
+    // }
+  }
+
+  bool manageCustomersAccountAndPoints({
+    required BuildContext? context,
+    Function()? action,
+  }) {
+    var plan = SubscriptionProvider().subscription?.plan;
+    if (plan == null) {
+      return false;
+    }
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .generalSettingsAuth
+        .manageCustomersAccountAndPoints) {
       action == null ? {} : action();
       return true;
     } else {

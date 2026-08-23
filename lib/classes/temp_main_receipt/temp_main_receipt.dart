@@ -85,6 +85,9 @@ class TempMainReceipt extends HiveObject {
   @HiveField(26)
   String? comment;
 
+  @HiveField(27)
+  double? customerAccount;
+
   TempMainReceipt({
     this.id,
     this.barcode,
@@ -113,6 +116,7 @@ class TempMainReceipt extends HiveObject {
     required this.cartName,
     required this.subStaffName,
     required this.comment,
+    required this.customerAccount,
   });
 
   factory TempMainReceipt.fromJson(
@@ -151,6 +155,8 @@ class TempMainReceipt extends HiveObject {
       cartName: json['cart_name'] as String?,
       subStaffName: json['sub_staff_name'] as String?,
       comment: json['comment'] as String?,
+      customerAccount:
+          (json['customer_account'] as num?)?.toDouble(),
     );
   }
 
@@ -183,6 +189,7 @@ class TempMainReceipt extends HiveObject {
       'cart_name': cartName,
       'sub_staff_name': subStaffName,
       'comment': comment,
+      'customer_account': customerAccount,
     };
   }
 
@@ -214,6 +221,7 @@ class TempMainReceipt extends HiveObject {
     String? cartName,
     String? subStaffName,
     String? comment,
+    double? customerAccount,
   }) {
     return TempMainReceipt(
       id: id ?? this.id,
@@ -245,7 +253,13 @@ class TempMainReceipt extends HiveObject {
       cartName: cartName ?? this.cartName,
       subStaffName: subStaffName ?? this.subStaffName,
       comment: comment ?? this.comment,
+      customerAccount:
+          customerAccount ?? this.customerAccount,
     );
+  }
+
+  double getTotalRevenue() {
+    return bank + cashAlt + (customerAccount ?? 0);
   }
 }
 

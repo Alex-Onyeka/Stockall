@@ -46,6 +46,12 @@ class TempCustomersClass extends HiveObject {
   @HiveField(13)
   DateTime? updatedAt;
 
+  @HiveField(14)
+  double? balance;
+
+  @HiveField(15)
+  double? cashReward;
+
   TempCustomersClass({
     this.country,
     this.id,
@@ -61,6 +67,8 @@ class TempCustomersClass extends HiveObject {
     required this.departmentUuid,
     this.uuid,
     this.updatedAt,
+    required this.balance,
+    required this.cashReward,
   });
 
   factory TempCustomersClass.fromJson(
@@ -84,25 +92,90 @@ class TempCustomersClass extends HiveObject {
           json['updated_at'] != null
               ? DateTime.parse(json['updated_at'])
               : null,
+      balance: (json['balance'] as num?)?.toDouble(),
+      cashReward: (json['cash_reward'] as num?)?.toDouble(),
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      // 'id': id,
-      'date_added': dateAdded.toIso8601String(),
-      'shop_id': shopId,
-      'country': country,
-      'name': name,
-      'email': email,
-      'phone': phone,
-      'address': address,
-      'city': city,
-      'state': state,
-      'department_uuid': departmentUuid,
-      'department_name': departmentName,
-      'uuid': uuid,
-      'updated_at': updatedAt?.toIso8601String(),
-    };
+  Map<String, dynamic> toJson({
+    required bool isMoneyUpdate,
+  }) {
+    if (isMoneyUpdate) {
+      return {
+        'date_added': dateAdded.toIso8601String(),
+        'shop_id': shopId,
+        'country': country,
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'address': address,
+        'city': city,
+        'state': state,
+        'department_uuid': departmentUuid,
+        'department_name': departmentName,
+        'uuid': uuid,
+        'updated_at': updatedAt?.toIso8601String(),
+        'balance': balance,
+        'cash_reward': cashReward,
+      };
+    } else {
+      return {
+        'date_added': dateAdded.toIso8601String(),
+        'shop_id': shopId,
+        'country': country,
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'address': address,
+        'city': city,
+        'state': state,
+        'department_uuid': departmentUuid,
+        'department_name': departmentName,
+        'uuid': uuid,
+        'updated_at': updatedAt?.toIso8601String(),
+        // 'balance': balance,
+        // 'cash_reward': cashReward,
+      };
+    }
+  }
+
+  TempCustomersClass copyWith({
+    DateTime? dateAdded,
+    int? shopId,
+    String? country,
+    String? name,
+    String? email,
+    String? phone,
+    String? address,
+    String? city,
+    String? state,
+    String? departmentName,
+    String? departmentUuid,
+    String? uuid,
+    DateTime? updatedAt,
+    double? balance,
+    double? cashReward,
+  }) {
+    return TempCustomersClass(
+      name: name ?? this.name,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      address: address ?? this.address,
+      city: city ?? this.city,
+      state: state ?? this.state,
+      dateAdded: dateAdded ?? this.dateAdded,
+      shopId: shopId ?? this.shopId,
+      departmentName: departmentName ?? this.departmentName,
+      departmentUuid: departmentUuid ?? this.departmentUuid,
+      balance: balance ?? this.balance,
+      cashReward: cashReward ?? this.cashReward,
+      country: country ?? this.country,
+      updatedAt: updatedAt ?? this.updatedAt,
+      uuid: uuid ?? this.uuid,
+    );
+  }
+
+  double getBalance() {
+    return (balance ?? 0);
   }
 }

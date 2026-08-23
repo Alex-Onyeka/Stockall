@@ -14,6 +14,7 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
@@ -156,7 +157,14 @@ class _MakeSalesDesktopTwoState
                                         SizedBox(
                                           height: 10,
                                         ),
-                                        CustomerSelectionWidget(),
+                                        CustomerSelectionWidget(
+                                          refreshAction:
+                                              () {
+                                                setState(
+                                                  () {},
+                                                );
+                                              },
+                                        ),
                                         SizedBox(
                                           height: 10,
                                         ),
@@ -386,6 +394,27 @@ class _MakeSalesDesktopTwoState
                                             ),
                                             PaymentTypeButton(
                                               index: 1,
+                                            ),
+                                            Visibility(
+                                              visible:
+                                                  GeneralSettingsAuthAction().manageCustomersAccountAndPoints(
+                                                        context:
+                                                            null,
+                                                      ) ==
+                                                      true &&
+                                                  returnShopProvider()
+                                                          .userShop()
+                                                          ?.manageCustomerAccount ==
+                                                      true &&
+                                                  returnSalesProviderContext(
+                                                        context,
+                                                      ).currentCart().selectedCustomer !=
+                                                      null,
+                                              child:
+                                                  PaymentTypeButton(
+                                                    index:
+                                                        3,
+                                                  ),
                                             ),
                                             PaymentTypeButton(
                                               index: 2,
@@ -868,6 +897,80 @@ class _MakeSalesDesktopTwoState
                                     ),
                                   ],
                                 ),
+                                Visibility(
+                                  visible:
+                                      GeneralSettingsAuthAction()
+                                          .manageCustomersAccountAndPoints(
+                                            context: null,
+                                          ) &&
+                                      returnShopProvider()
+                                              .userShop()
+                                              ?.manageCustomerReward ==
+                                          true &&
+                                      returnSalesProviderContext(
+                                                context,
+                                              )
+                                              .currentCart()
+                                              .selectedCustomer !=
+                                          null,
+                                  child: Column(
+                                    children: [
+                                      SizedBox(height: 5),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b4
+                                                          .fontSize,
+                                                  // fontWeight: FontWeight.bold,
+                                                ),
+                                                'Cashback:',
+                                              ),
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b4
+                                                          .fontSize,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                  // fontWeight: FontWeight.bold,
+                                                ),
+                                                ' (${returnShopProvider().userShop()?.customerPercentageReward}%)',
+                                              ),
+                                            ],
+                                          ),
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b4
+                                                      .fontSize,
+                                              // fontWeight: FontWeight.bold,
+                                            ),
+                                            formatMoney(
+                                              returnSalesProviderContext(
+                                                context,
+                                              ).calcCashBackReward(),
+                                              context,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
                                 SizedBox(height: 5),
                                 Row(
                                   mainAxisAlignment:
@@ -941,6 +1044,26 @@ class _MakeSalesDesktopTwoState
                                             );
                                           },
                                         );
+                                      } else if (returnSalesProvider()
+                                                  .currentCart()
+                                                  .paymentMethod ==
+                                              3 &&
+                                          !returnSalesProvider()
+                                              .isBalanceSufficient()) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (
+                                            erroContext,
+                                          ) {
+                                            return InfoAlert(
+                                              theme: theme,
+                                              message:
+                                                  'This Customers Balance is not enough to make this Purchase. Please Select Another Payment Method and Proceed.',
+                                              title:
+                                                  'Insufficient Balance',
+                                            );
+                                          },
+                                        );
                                       } else {
                                         showDialog(
                                           context:
@@ -985,6 +1108,11 @@ class _MakeSalesDesktopTwoState
                                                           .text,
                                                 );
                                                 var res = await returnSalesProvider().checkoutMain(
+                                                  customerBalance:
+                                                      returnSalesProvider().returnPaymentMethod() ==
+                                                              'Account'
+                                                          ? returnSalesProvider().calcFinalTotal()
+                                                          : 0,
                                                   context:
                                                       context,
                                                   salesCartItem:
@@ -1019,9 +1147,9 @@ class _MakeSalesDesktopTwoState
                                                               ) ??
                                                               0
                                                           : returnSalesProvider().returnPaymentMethod() ==
-                                                              'Bank'
-                                                          ? 0
-                                                          : returnSalesProvider().calcFinalTotal(),
+                                                              'Cash'
+                                                          ? returnSalesProvider().calcFinalTotal()
+                                                          : 0,
                                                   paymentMethod:
                                                       returnSalesProvider()
                                                           .returnPaymentMethod(),

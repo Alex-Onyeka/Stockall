@@ -392,6 +392,7 @@ class InvoicesProvider extends ChangeNotifier {
             "${returnUserProviderSingle().currentUserMain!.name} ${returnUserProviderSingle().currentUserMain!.lastName}",
         paymentMethod: 'Bank',
         bank: currentPayment,
+        customerAccount: 0,
         cashAlt: 0,
         isInvoice: true,
         customerName: invoice.customerName,
@@ -1067,7 +1068,10 @@ class InvoicesProvider extends ChangeNotifier {
             .where((rec) => rec.invoiceUuid == invoice.uuid)
             .toList();
     for (var val in receiptsTemp) {
-      tempValue += (val.bank + val.cashAlt);
+      tempValue +=
+          (val.bank +
+              val.cashAlt +
+              (val.customerAccount ?? 0));
     }
     return getTotalMainRevenueInvoice(invoice: invoice) -
         tempValue;

@@ -28,6 +28,8 @@ class CustomerPageDesktop extends StatelessWidget {
         tempCustomer.isNotEmpty
             ? tempCustomer.first
             : TempCustomersClass(
+              balance: 0,
+              cashReward: 0,
               name: 'Name',
               email: 'email@gmail.com',
               phone: '08012323215',
@@ -275,10 +277,7 @@ class DetailsPageContainer extends StatelessWidget {
                             await returnCustomers(
                               context,
                               listen: false,
-                            ).deleteCustomerMain(
-                              customer,
-                              context,
-                            );
+                            ).deleteCustomerMain(customer);
                             await Future.delayed(
                               Duration(microseconds: 500),
                               () {},
