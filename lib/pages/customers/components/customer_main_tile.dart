@@ -81,7 +81,7 @@ class CustomersMainTile extends StatelessWidget {
                                   fontSize:
                                       theme
                                           .mobileTexts
-                                          .b1
+                                          .b2
                                           .fontSize,
                                   fontWeight:
                                       FontWeight.bold,
@@ -100,10 +100,12 @@ class CustomersMainTile extends StatelessWidget {
                                   fontSize:
                                       theme
                                           .mobileTexts
-                                          .b2
+                                          .b3
                                           .fontSize,
                                 ),
-                                customer.email,
+                                customer.email.isEmpty
+                                    ? 'Email not set'
+                                    : customer.email,
                               ),
                             ],
                           ),
