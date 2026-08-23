@@ -135,39 +135,33 @@ class CustomerPurchasesSection extends StatelessWidget {
             ],
           ),
           Divider(color: Colors.grey.shade300, height: 25),
-          Expanded(
-            child: Builder(
-              builder: (context) {
-                if (sales.isEmpty) {
-                  return Center(
-                    child: EmptyWidgetDisplayOnly(
-                      title: 'Empty List',
-                      subText:
-                          'No Purchases Found for Today',
-                      theme: theme,
-                      height: 15,
-                      icon: Icons.clear,
-                    ),
-                  );
-                } else {
-                  return SingleChildScrollView(
-                    child: Column(
-                      spacing: 5,
-                      children:
-                          sales
-                              .map(
-                                (item) =>
-                                    CustomerPurchasesList(
-                                      receipt: item,
-                                      theme: theme,
-                                    ),
-                              )
-                              .toList(),
-                    ),
-                  );
-                }
-              },
-            ),
+          Builder(
+            builder: (context) {
+              if (sales.isEmpty) {
+                return Center(
+                  child: EmptyWidgetDisplayOnly(
+                    title: 'Empty List',
+                    subText: 'No Purchases Found for Today',
+                    theme: theme,
+                    height: 15,
+                    icon: Icons.clear,
+                  ),
+                );
+              } else {
+                return Column(
+                  spacing: 5,
+                  children:
+                      sales
+                          .map(
+                            (item) => CustomerPurchasesList(
+                              receipt: item,
+                              theme: theme,
+                            ),
+                          )
+                          .toList(),
+                );
+              }
+            },
           ),
         ],
       ),
@@ -198,6 +192,7 @@ class CustomerPurchasesList extends StatelessWidget {
               builder: (context) {
                 return ReceiptPage(
                   isMain: false,
+                  isComingFromInvoice: false,
                   response: CheckoutResponse(
                     resUuid: receipt.uuid!,
                     isReceipt: true,

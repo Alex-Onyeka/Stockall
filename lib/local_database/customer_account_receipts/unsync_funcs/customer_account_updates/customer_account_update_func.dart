@@ -71,52 +71,52 @@ class CustomerAccountUpdateFunc {
     CustomerAccountUpdate customerAccountUpdate,
   ) async {
     try {
-      final existingLogs = getQuantitiesUpdate().where(
-        (item) =>
-            item.customerUuid ==
-            customerAccountUpdate.customerUuid,
+      // final existingLogs = getQuantitiesUpdate().where(
+      //   (item) =>
+      //       item.customerUuid ==
+      //       customerAccountUpdate.customerUuid,
+      // );
+
+      // if (existingLogs.isEmpty) {
+      await customerAccountUpdateBox.put(
+        customerAccountUpdate.uuid,
+        customerAccountUpdate,
       );
 
-      if (existingLogs.isEmpty) {
-        await customerAccountUpdateBox.put(
-          customerAccountUpdate.uuid,
-          customerAccountUpdate,
-        );
+      await mainLocalLog(
+        'Offline Customer Account Update inserted successfully ✅',
+      );
+      // } else {
+      //   final existing = existingLogs.first;
 
-        await mainLocalLog(
-          'Offline Customer Account Update inserted successfully ✅',
-        );
-      } else {
-        final existing = existingLogs.first;
+      //   // Convert both values to signed numbers
+      //   final double existingValue =
+      //       existing.isIncrement
+      //           ? existing.amount
+      //           : -existing.amount;
 
-        // Convert both values to signed numbers
-        final double existingValue =
-            existing.isIncrement
-                ? existing.amount
-                : -existing.amount;
+      //   final double incomingValue =
+      //       customerAccountUpdate.isIncrement
+      //           ? customerAccountUpdate.amount
+      //           : -customerAccountUpdate.amount;
 
-        final double incomingValue =
-            customerAccountUpdate.isIncrement
-                ? customerAccountUpdate.amount
-                : -customerAccountUpdate.amount;
+      //   // Calculate the net value
+      //   final double total = existingValue + incomingValue;
 
-        // Calculate the net value
-        final double total = existingValue + incomingValue;
+      //   // Convert back to absolute customerAccount + direction
+      //   existing.amount = total.abs();
+      //   existing.isIncrement = total >= 0;
 
-        // Convert back to absolute customerAccount + direction
-        existing.amount = total.abs();
-        existing.isIncrement = total >= 0;
+      //   // Save to Hive
+      //   await customerAccountUpdateBox.put(
+      //     existing.uuid,
+      //     existing,
+      //   );
 
-        // Save to Hive
-        await customerAccountUpdateBox.put(
-          existing.uuid,
-          existing,
-        );
-
-        await mainLocalLog(
-          'Offline Customer Account Update merged successfully ✅',
-        );
-      }
+      //   await mainLocalLog(
+      //     'Offline Customer Account Update merged successfully ✅',
+      //   );
+      // }
 
       return 1;
     } catch (e) {

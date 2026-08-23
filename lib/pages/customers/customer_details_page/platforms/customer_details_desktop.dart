@@ -245,9 +245,11 @@ class _CustomerDetailsDesktopState
                   );
                 } else {
                   return Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal:
-                          showAccountOrReward() ? 10.0 : 50,
+                    padding: EdgeInsets.fromLTRB(
+                      showAccountOrReward() ? 10.0 : 50,
+                      0,
+                      showAccountOrReward() ? 10.0 : 50,
+                      30,
                     ),
                     child: SingleChildScrollView(
                       child: Column(
@@ -303,57 +305,48 @@ class _CustomerDetailsDesktopState
                               ),
                             ),
                           ),
-                          ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxHeight: 300,
-                            ),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                    horizontal: 10.0,
-                                  ),
-                              child: Row(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment
-                                        .start,
-                                children: [
-                                  Expanded(
-                                    child:
-                                        CustomerPurchasesSection(
-                                          customerUuid:
-                                              customer
-                                                  .uuid ??
-                                              '',
-                                        ),
-                                  ),
-                                  Visibility(
-                                    visible:
-                                        authorization(
-                                          authorized:
-                                              Authorizations()
-                                                  .viewCustomersAccount,
-                                        ) &&
-                                        showAccountOrReward(),
-                                    child: Expanded(
-                                      child: Row(
-                                        children: [
-                                          SizedBox(
-                                            width: 10,
-                                          ),
-                                          Expanded(
-                                            child: CustomerTransactionsSection(
-                                              customerUuid:
-                                                  customer
-                                                      .uuid ??
-                                                  '',
-                                            ),
-                                          ),
-                                        ],
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(
+                                  horizontal: 10.0,
+                                ),
+                            child: Row(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child:
+                                      CustomerPurchasesSection(
+                                        customerUuid:
+                                            customer.uuid ??
+                                            '',
                                       ),
+                                ),
+                                Visibility(
+                                  visible:
+                                      authorization(
+                                        authorized:
+                                            Authorizations()
+                                                .viewCustomersAccount,
+                                      ) &&
+                                      showAccountOrReward(),
+                                  child: Expanded(
+                                    child: Row(
+                                      children: [
+                                        SizedBox(width: 10),
+                                        Expanded(
+                                          child: CustomerTransactionsSection(
+                                            customerUuid:
+                                                customer
+                                                    .uuid ??
+                                                '',
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                           SizedBox(height: 30),

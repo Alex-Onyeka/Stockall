@@ -218,62 +218,76 @@ class _CustomerListMobileState
                                   )
                                   .toList();
                           if (customersMain.isNotEmpty) {
-                            return ListView.builder(
-                              itemCount:
-                                  customersMain.length,
-                              itemBuilder: (
-                                context,
-                                index,
-                              ) {
-                                TempCustomersClass
-                                customer =
-                                    customersMain[index];
-
-                                return CustomersMainTile(
-                                  action: () {
-                                    if (widget.isSales !=
-                                        null) {
-                                      returnCustomers(
-                                        context,
-                                        listen: false,
-                                      ).selectCustomer(
-                                        id: customer.uuid!,
-                                        name: customer.name,
-                                        context: context,
-                                      );
-                                      Navigator.of(
-                                        context,
-                                      ).pop(context);
-                                    } else if (widget
-                                            .isWaybill !=
-                                        null) {
-                                      Navigator.of(
-                                        context,
-                                      ).pop(context);
-                                    } else {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return CustomerDetails(
-                                              customerUuid:
-                                                  customer
-                                                      .uuid!,
-                                            );
-                                          },
-                                        ),
-                                      );
-                                    }
-                                  },
-                                  theme: theme,
-                                  customer: customer,
-                                  isSales:
-                                      widget.isSales ??
-                                      widget.isWaybill,
-                                );
+                            return RefreshIndicator(
+                              onRefresh: () {
+                                return returnCustomersSingle()
+                                    .fetchCustomers(
+                                      shopId(),
+                                    );
                               },
+                              backgroundColor: Colors.white,
+                              color: Colors.amber,
+                              displacement: 10,
+                              child: ListView.builder(
+                                itemCount:
+                                    customersMain.length,
+                                itemBuilder: (
+                                  context,
+                                  index,
+                                ) {
+                                  TempCustomersClass
+                                  customer =
+                                      customersMain[index];
+
+                                  return CustomersMainTile(
+                                    action: () {
+                                      if (widget.isSales !=
+                                          null) {
+                                        returnCustomers(
+                                          context,
+                                          listen: false,
+                                        ).selectCustomer(
+                                          id:
+                                              customer
+                                                  .uuid!,
+                                          name:
+                                              customer.name,
+                                          context: context,
+                                        );
+                                        Navigator.of(
+                                          context,
+                                        ).pop(context);
+                                      } else if (widget
+                                              .isWaybill !=
+                                          null) {
+                                        Navigator.of(
+                                          context,
+                                        ).pop(context);
+                                      } else {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return CustomerDetails(
+                                                customerUuid:
+                                                    customer
+                                                        .uuid!,
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    theme: theme,
+                                    customer: customer,
+                                    isSales:
+                                        widget.isSales ??
+                                        widget.isWaybill,
+                                  );
+                                },
+                              ),
                             );
                           } else {
                             return Column(

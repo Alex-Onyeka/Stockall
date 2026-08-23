@@ -1859,12 +1859,16 @@ class SalesProvider extends ChangeNotifier {
   }
 
   double calcCashBackReward() {
+    // if (currentCart().paymentMethod == 3) {
+    //   return 0;
+    // } else {
     return calcFinalTotal() *
         ((returnShopProvider()
                     .userShop()
                     ?.customerPercentageReward ??
                 0) /
             100);
+    // }
   }
 
   bool isBalanceSufficient() {

@@ -102,13 +102,7 @@ class ReceiptsProvider extends ChangeNotifier {
                 receiptUuid: receipt.uuid,
                 isBalance: false,
                 isAdd: true,
-                amount: returnCustomersSingle()
-                    .getCustomerReward(
-                      totalMoney:
-                          receipt.bank +
-                          receipt.cashAlt +
-                          (receipt.customerAccount ?? 0),
-                    ),
+                amount: receipt.getCustomerReward(),
                 customerName: receipt.customerName,
                 customerUuid: receipt.customerUuid,
               );
@@ -123,8 +117,7 @@ class ReceiptsProvider extends ChangeNotifier {
                     .userShop()
                     ?.manageCustomerAccount ==
                 true &&
-            receipt.customerAccount != null &&
-            receipt.customerAccount != 0) {
+            receipt.paymentMethod == 'Account') {
           CustomerAccountReceipts customerAccountReceipt =
               CustomerAccountReceipts(
                 receiptUuid: receipt.uuid,

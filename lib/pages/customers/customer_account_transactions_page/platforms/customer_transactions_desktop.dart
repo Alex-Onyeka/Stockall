@@ -44,14 +44,36 @@ class _CustomerTransactionsDesktopState
     var theme = returnTheme(context, listen: false);
     List<CustomerAccountReceipts>? accountReceipts =
         returnCustomerAccountReceiptsProvider(
-          context: context,
-        ).returnCustomerAccountReceiptsByDayOrWeek().where((
-          accountReceipt,
-        ) {
-          if (widget.customerUuid != null) {
-            return accountReceipt.customerUuid ==
-                    widget.customerUuid &&
-                (accountReceipt.customerName
+              context: context,
+            )
+            .returnCustomerAccountReceiptsByDayOrWeek()
+            .where((accountReceipt) {
+              if (widget.customerUuid != null) {
+                return accountReceipt.customerUuid ==
+                        widget.customerUuid &&
+                    (accountReceipt.customerName
+                                ?.toLowerCase()
+                                .contains(
+                                  searchController.text
+                                      .toLowerCase(),
+                                ) ==
+                            true ||
+                        accountReceipt.staffName
+                                ?.toLowerCase()
+                                .contains(
+                                  searchController.text
+                                      .toLowerCase(),
+                                ) ==
+                            true ||
+                        accountReceipt.title
+                                ?.toLowerCase()
+                                .contains(
+                                  searchController.text
+                                      .toLowerCase(),
+                                ) ==
+                            true);
+              } else {
+                return (accountReceipt.customerName
                             ?.toLowerCase()
                             .contains(
                               searchController.text
@@ -72,30 +94,23 @@ class _CustomerTransactionsDesktopState
                                   .toLowerCase(),
                             ) ==
                         true);
-          } else {
-            return (accountReceipt.customerName
-                        ?.toLowerCase()
-                        .contains(
-                          searchController.text
-                              .toLowerCase(),
-                        ) ==
-                    true ||
-                accountReceipt.staffName
-                        ?.toLowerCase()
-                        .contains(
-                          searchController.text
-                              .toLowerCase(),
-                        ) ==
-                    true ||
-                accountReceipt.title
-                        ?.toLowerCase()
-                        .contains(
-                          searchController.text
-                              .toLowerCase(),
-                        ) ==
-                    true);
-          }
-        }).toList();
+              }
+            })
+            .where((item) {
+              var shop =
+                  returnShopProvider(
+                    context: context,
+                  ).userShop()!;
+              if (shop.manageCustomerAccount != true) {
+                return item.isBalance == false;
+              } else if (shop.manageCustomerReward !=
+                  true) {
+                return item.isBalance == true;
+              } else {
+                return true;
+              }
+            })
+            .toList();
     return Scaffold(
       key: _scaffoldKey,
       body: Row(

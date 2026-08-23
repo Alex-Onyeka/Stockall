@@ -20,6 +20,7 @@ class CustomerTransactionsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
+    // List<CustomerAccountReceipts> tempReceipts
     List<CustomerAccountReceipts> accountReceipts =
         returnCustomerAccountReceiptsProvider(
                       context: context,
@@ -27,6 +28,22 @@ class CustomerTransactionsSection extends StatelessWidget {
                     .getACustomerReceipts(
                       customerUuid: customerUuid,
                     )
+                    .where((item) {
+                      var shop =
+                          returnShopProvider(
+                            context: context,
+                          ).userShop()!;
+                      if (shop.manageCustomerAccount !=
+                          true) {
+                        return item.isBalance == false;
+                      } else if (shop
+                              .manageCustomerReward !=
+                          true) {
+                        return item.isBalance == true;
+                      } else {
+                        return true;
+                      }
+                    })
                     .length >
                 5
             ? returnCustomerAccountReceiptsProvider(
@@ -35,6 +52,20 @@ class CustomerTransactionsSection extends StatelessWidget {
                 .getACustomerReceipts(
                   customerUuid: customerUuid,
                 )
+                .where((item) {
+                  var shop =
+                      returnShopProvider(
+                        context: context,
+                      ).userShop()!;
+                  if (shop.manageCustomerAccount != true) {
+                    return item.isBalance == false;
+                  } else if (shop.manageCustomerReward !=
+                      true) {
+                    return item.isBalance == true;
+                  } else {
+                    return true;
+                  }
+                })
                 .toList()
                 .sublist(0, 4)
             : returnCustomerAccountReceiptsProvider(
@@ -43,6 +74,20 @@ class CustomerTransactionsSection extends StatelessWidget {
                 .getACustomerReceipts(
                   customerUuid: customerUuid,
                 )
+                .where((item) {
+                  var shop =
+                      returnShopProvider(
+                        context: context,
+                      ).userShop()!;
+                  if (shop.manageCustomerAccount != true) {
+                    return item.isBalance == false;
+                  } else if (shop.manageCustomerReward !=
+                      true) {
+                    return item.isBalance == true;
+                  } else {
+                    return true;
+                  }
+                })
                 .toList();
     return Container(
       margin: EdgeInsets.only(top: 10),
@@ -136,39 +181,35 @@ class CustomerTransactionsSection extends StatelessWidget {
             ],
           ),
           Divider(color: Colors.grey.shade300, height: 25),
-          Expanded(
-            child: Builder(
-              builder: (context) {
-                if (accountReceipts.isEmpty) {
-                  return Center(
-                    child: EmptyWidgetDisplayOnly(
-                      title: 'Empty List',
-                      subText:
-                          'No Transactions Found for Today',
-                      theme: theme,
-                      height: 15,
-                      icon: Icons.clear,
-                    ),
-                  );
-                } else {
-                  return SingleChildScrollView(
-                    child: Column(
-                      spacing: 5,
-                      children:
-                          accountReceipts
-                              .map(
-                                (item) =>
-                                    CustomerTransactionList(
-                                      theme: theme,
-                                      accountReceipt: item,
-                                    ),
-                              )
-                              .toList(),
-                    ),
-                  );
-                }
-              },
-            ),
+          Builder(
+            builder: (context) {
+              if (accountReceipts.isEmpty) {
+                return Center(
+                  child: EmptyWidgetDisplayOnly(
+                    title: 'Empty List',
+                    subText:
+                        'No Transactions Found for Today',
+                    theme: theme,
+                    height: 15,
+                    icon: Icons.clear,
+                  ),
+                );
+              } else {
+                return Column(
+                  spacing: 5,
+                  children:
+                      accountReceipts
+                          .map(
+                            (item) =>
+                                CustomerTransactionList(
+                                  theme: theme,
+                                  accountReceipt: item,
+                                ),
+                          )
+                          .toList(),
+                );
+              }
+            },
           ),
         ],
       ),

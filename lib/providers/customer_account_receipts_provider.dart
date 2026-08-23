@@ -186,7 +186,7 @@ class CustomerAccountReceiptsProvider
             }
             accountUpdate.isIncrement = false;
           }
-          CustomerAccountUpdateFunc()
+          await CustomerAccountUpdateFunc()
               .createCustomerAccountUpdate(accountUpdate);
           await returnCustomersSingle().updateCustomerMain(
             customer,
@@ -467,27 +467,27 @@ class CustomerAccountReceiptsProvider
               .getCustomerAccountReceipts()
               .isNotEmpty &&
           isOnline) {
-        final tempAccountUpdates =
-            CustomerAccountUpdateFunc()
-                .getQuantitiesUpdate()
-                .toList()
-                .map((item) {
-                  return {
-                    "customerUuid": item.customerUuid,
-                    "amount": item.amount,
-                    "isIncrement": item.isIncrement,
-                    'isBalance': item.isBalance,
-                  };
-                })
-                .toList();
+        // final tempAccountUpdates =
+        //     CustomerAccountUpdateFunc()
+        //         .getQuantitiesUpdate()
+        //         .toList()
+        //         .map((item) {
+        //           return {
+        //             "customerUuid": item.customerUuid,
+        //             "amount": item.amount,
+        //             "isIncrement": item.isIncrement,
+        //             'isBalance': item.isBalance,
+        //           };
+        //         })
+        //         .toList();
 
-        await supabase.rpc(
-          'update_customer_account',
-          params: {'updates': tempAccountUpdates},
-        );
+        // await supabase.rpc(
+        //   'update_customer_account',
+        //   params: {'updates': tempAccountUpdates},
+        // );
 
-        await CustomerAccountUpdateFunc()
-            .clearQuantitiesUpdate();
+        // await CustomerAccountUpdateFunc()
+        //     .clearQuantitiesUpdate();
         final tempCustomerAccountReceipts =
             CreatedCustomerAccountReceiptsFunc()
                 .getCustomerAccountReceipts()
@@ -565,6 +565,9 @@ class CustomerAccountReceiptsProvider
                   };
                 })
                 .toList();
+        await mainLocalLog(
+          '❌🔥❌❌🔥❌❌❌❌❌❌❌🔥Customer Updates Length: ${tempAccountUpdates.length}',
+        );
 
         await supabase.rpc(
           'update_customer_account',
@@ -579,11 +582,8 @@ class CustomerAccountReceiptsProvider
         );
 
         await mainLocalLog(
-          'Mounted, refreshing Customer Account Updates ✅',
+          '❌🔥❌❌🔥❌❌❌❌❌❌❌🔥Mounted, refreshing Customer Account Updates ✅',
         );
-        // await getCustomerAccountReceipts(
-        //   returnShopProvider().userShop()!.shopId!,
-        // );
       }
     } catch (e) {
       await mainLocalLog(

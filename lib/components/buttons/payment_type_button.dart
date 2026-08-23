@@ -63,107 +63,229 @@ class PaymentTypeButton extends StatelessWidget {
       }
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5.0),
-      child: Ink(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: Colors.grey.shade300),
-        ),
-        child: InkWell(
-          mouseCursor: SystemMouseCursors.click,
-          onTap: () {
-            selectOptionAction();
-          },
-          child: SizedBox(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                20,
-                7,
-                10,
-                7,
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: 5.0,
+          ),
+          child: Ink(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(
+                color: Colors.grey.shade300,
               ),
-              child: Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+            ),
+            child: InkWell(
+              mouseCursor: SystemMouseCursors.click,
+              onTap: () {
+                selectOptionAction();
+              },
+              child: SizedBox(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    20,
+                    7,
+                    10,
+                    7,
+                  ),
+                  child: Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b3.fontSize,
-                          fontWeight: FontWeight.bold,
-                          color:
-                              returnSalesProviderContext(
-                                            context,
-                                          )
-                                          .currentCart()
-                                          .isInvoice &&
-                                      index == 2
-                                  ? Colors.grey
-                                  : null,
-                        ),
-                        "${returnSalesProviderContext(context).returnPaymentMethodSalesPage(index)['method']}${customersClass != null ? " (${formatMoneyBig(amount: customersClass.getBalance(), context: context)})" : ''}",
+                      Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  returnSalesProviderContext(
+                                                context,
+                                              )
+                                              .currentCart()
+                                              .isInvoice &&
+                                          index == 2
+                                      ? Colors.grey
+                                      : null,
+                            ),
+                            "${returnSalesProviderContext(context).returnPaymentMethodSalesPage(index)['method']}${customersClass != null ? " (${formatMoneyBig(amount: customersClass.getBalance(), context: context)})" : ''}",
+                          ),
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b4
+                                      .fontSize,
+                              fontWeight: FontWeight.normal,
+                              color:
+                                  returnSalesProviderContext(
+                                                context,
+                                              )
+                                              .currentCart()
+                                              .isInvoice &&
+                                          index == 2
+                                      ? Colors.grey
+                                      : theme
+                                          .lightModeColor
+                                          .secColor200,
+                            ),
+                            returnSalesProviderContext(
+                              context,
+                            ).returnPaymentMethodSalesPage(
+                              index,
+                            )['subText'],
+                          ),
+                        ],
                       ),
-                      Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b4.fontSize,
-                          fontWeight: FontWeight.normal,
-                          color:
-                              returnSalesProviderContext(
-                                            context,
-                                          )
-                                          .currentCart()
-                                          .isInvoice &&
-                                      index == 2
-                                  ? Colors.grey
-                                  : theme
-                                      .lightModeColor
-                                      .secColor200,
+                      Checkbox(
+                        activeColor:
+                            returnSalesProviderContext(
+                                          context,
+                                        )
+                                        .currentCart()
+                                        .isInvoice &&
+                                    index == 2
+                                ? Colors.grey
+                                : theme
+                                    .lightModeColor
+                                    .prColor250,
+                        shape: CircleBorder(
+                          side: BorderSide(),
                         ),
-                        returnSalesProviderContext(
-                          context,
-                        ).returnPaymentMethodSalesPage(
-                          index,
-                        )['subText'],
+                        side: BorderSide(
+                          width: 1,
+                          color:
+                              theme
+                                  .lightModeColor
+                                  .secColor200,
+                        ),
+                        value:
+                            returnSalesProviderContext(
+                              context,
+                            ).currentCart().paymentMethod ==
+                            index,
+                        onChanged: (value) {
+                          selectOptionAction();
+                        },
                       ),
                     ],
                   ),
-                  Checkbox(
-                    activeColor:
-                        returnSalesProviderContext(
-                                  context,
-                                ).currentCart().isInvoice &&
-                                index == 2
-                            ? Colors.grey
-                            : theme
-                                .lightModeColor
-                                .prColor250,
-                    shape: CircleBorder(side: BorderSide()),
-                    side: BorderSide(
-                      width: 1,
-                      color:
-                          theme.lightModeColor.secColor200,
-                    ),
-                    value:
-                        returnSalesProviderContext(
-                          context,
-                        ).currentCart().paymentMethod ==
-                        index,
-                    onChanged: (value) {
-                      selectOptionAction();
-                    },
-                  ),
-                ],
+                ),
               ),
             ),
           ),
         ),
-      ),
+        // Visibility(
+        //   visible: index == 3,
+        //   child: Container(
+        //     padding: EdgeInsetsGeometry.only(
+        //       top: 10,
+        //       bottom: 10,
+        //       left: 10,
+        //       right: 10,
+        //     ),
+        //     decoration: BoxDecoration(
+        //       borderRadius: BorderRadius.only(
+        //         bottomLeft: Radius.circular(5),
+        //         bottomRight: Radius.circular(5),
+        //       ),
+        //       color: Colors.grey.shade100,
+        //       border: Border(
+        //         bottom: BorderSide(
+        //           color: Colors.grey.shade300,
+        //         ),
+        //         left: BorderSide(
+        //           color: Colors.grey.shade300,
+        //         ),
+        //         right: BorderSide(
+        //           color: Colors.grey.shade300,
+        //         ),
+        //       ),
+        //     ),
+        //     child: Column(
+        //       spacing: 5,
+        //       children: [
+        //         Row(
+        //           children: [
+        //             Text(
+        //               style: TextStyle(
+        //                 fontSize:
+        //                     theme.mobileTexts.b3.fontSize,
+        //                 fontWeight: FontWeight.bold,
+        //               ),
+        //               'Pay Balance With:',
+        //             ),
+        //           ],
+        //         ),
+        //         Row(
+        //           spacing: 5,
+        //           children: [
+        //             Expanded(
+        //               child: Material(
+        //                 type: MaterialType.transparency,
+        //                 child: Ink(
+        //                   decoration: BoxDecoration(
+        //                     borderRadius:
+        //                         BorderRadius.circular(3),
+        //                     border: Border.all(
+        //                       color: Colors.grey,
+        //                     ),
+        //                   ),
+        //                   child: InkWell(
+        //                     mouseCursor:
+        //                         SystemMouseCursors.click,
+        //                     onTap: () {},
+        //                     child: Container(
+        //                       padding: EdgeInsets.all(5),
+        //                       child: Row(
+        //                         mainAxisAlignment:
+        //                             MainAxisAlignment
+        //                                 .center,
+        //                         children: [
+        //                           Text(
+        //                             style: TextStyle(
+        //                               fontSize:
+        //                                   theme
+        //                                       .mobileTexts
+        //                                       .b4
+        //                                       .fontSize,
+        //                               fontWeight:
+        //                                   FontWeight.bold,
+        //                             ),
+        //                             'Cash',
+        //                           ),
+        //                           Padding(
+        //                             padding:
+        //                                 const EdgeInsets.only(
+        //                                   left: 4.0,
+        //                                 ),
+        //                             child: Icon(
+        //                               size: 14,
+        //                               Icons.check,
+        //                             ),
+        //                           ),
+        //                         ],
+        //                       ),
+        //                     ),
+        //                   ),
+        //                 ),
+        //               ),
+        //             ),
+        //           ],
+        //         ),
+        //       ],
+        //     ),
+        //   ),
+        // ),
+      ],
     );
   }
 }
@@ -291,13 +413,13 @@ class _PaymentTypeDropdownState
                 PaymentTypeButton(
                   index: 0,
                   action: () {
-                    toggleIsOpen();
+                    // toggleIsOpen();
                   },
                 ),
                 PaymentTypeButton(
                   index: 1,
                   action: () {
-                    toggleIsOpen();
+                    // toggleIsOpen();
                   },
                 ),
                 Visibility(
@@ -320,7 +442,7 @@ class _PaymentTypeDropdownState
                 PaymentTypeButton(
                   index: 2,
                   action: () {
-                    toggleIsOpen();
+                    // toggleIsOpen();
                   },
                 ),
               ],

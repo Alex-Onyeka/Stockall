@@ -1761,6 +1761,36 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
+  bool setCustomersRewardPercent = false;
+
+  Future<int> setCustomersRewardPercentAction({
+    required double amount,
+  }) async {
+    setCustomersRewardPercent = true;
+    try {
+      userShop()!.updatedAt = DateTime.now();
+      userShop()!.customerPercentageReward = amount;
+      await ShopFunc().updateShop(userShop()!);
+      if (userShop() != null) {
+        await UpdatedShopFunc().createUpdatedShop(
+          UpdatedShop(shop: userShop()!),
+        );
+        notifyListeners();
+      }
+      setCustomersRewardPercent = false;
+      notifyListeners();
+      syncData();
+      return 1;
+    } catch (e) {
+      await mainLocalLog(
+        "❌ Failed to Update Toggle Manage Customer Account Offline: ${e.toString()}",
+      );
+      setCustomersRewardPercent = false;
+      notifyListeners();
+      return 0;
+    }
+  }
+
   bool manageDepartmentsLoading = false;
 
   Future<int> toggleManageDepartments() async {

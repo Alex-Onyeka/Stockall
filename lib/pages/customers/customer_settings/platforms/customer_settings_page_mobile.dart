@@ -4,6 +4,7 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/customers/customer_settings/components/set_customer_reward_percent.dart';
 import 'package:stockall/pages/customers/customer_settings/components/toggle_manage_customer_account.dart';
 import 'package:stockall/pages/customers/customer_settings/components/toggle_manage_customer_reward.dart';
 
@@ -41,6 +42,7 @@ class _CustomerSettingsPageMobileState
                   children: [
                     ToggleManageCustomerReward(),
                     ToggleManageCustomerAccount(),
+                    SetCustomerRewardPercent(),
                     Visibility(
                       visible: authorization(
                         authorized:

@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/main.dart';
 
 part 'temp_main_receipt.g.dart';
 
@@ -260,6 +261,15 @@ class TempMainReceipt extends HiveObject {
 
   double getTotalRevenue() {
     return bank + cashAlt + (customerAccount ?? 0);
+  }
+
+  double getCustomerReward() {
+    double value =
+        returnShopProvider()
+            .userShop()
+            ?.customerPercentageReward ??
+        0;
+    return (getTotalRevenue() * (value / 100));
   }
 }
 

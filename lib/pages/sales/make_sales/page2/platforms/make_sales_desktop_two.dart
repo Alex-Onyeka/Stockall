@@ -946,7 +946,7 @@ class _MakeSalesDesktopTwoState
                                                           .bold,
                                                   // fontWeight: FontWeight.bold,
                                                 ),
-                                                ' (${returnShopProvider().userShop()?.customerPercentageReward}%)',
+                                                ' (${returnShopProvider().userShop()?.customerPercentageReward ?? 0}%)',
                                               ),
                                             ],
                                           ),

@@ -179,7 +179,7 @@ class CustomersProvider extends ChangeNotifier {
       // }
       await fetchCustomersOffline();
       notifyListeners();
-      syncData();
+      // syncData();
     } catch (e) {
       await mainLocalLog(
         'Error Updating Customer: ${e.toString()}',
@@ -523,14 +523,5 @@ class CustomersProvider extends ChangeNotifier {
         error: 'Batch Customers Delete failed ❌: $e',
       );
     }
-  }
-
-  double getCustomerReward({required double totalMoney}) {
-    double value =
-        returnShopProvider()
-            .userShop()
-            ?.customerPercentageReward ??
-        0;
-    return (totalMoney * (value / 100));
   }
 }

@@ -359,49 +359,45 @@ class _CustomerDetailsMobileState
                                       ],
                                     ),
                                   ),
-                                  SizedBox(
-                                    height: 280,
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: CustomerPurchasesSection(
-                                            customerUuid:
-                                                customer
-                                                    .uuid ??
-                                                '',
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 280,
-                                    child: Row(
-                                      children: [
-                                        Visibility(
-                                          visible:
-                                              authorization(
-                                                authorized:
-                                                    Authorizations()
-                                                        .viewCustomersAccount,
-                                              ) &&
-                                              showAccountOrReward(),
-                                          child: Expanded(
-                                            child: Row(
-                                              children: [
-                                                Expanded(
-                                                  child: CustomerTransactionsSection(
-                                                    customerUuid:
-                                                        customer.uuid ??
-                                                        '',
-                                                  ),
-                                                ),
-                                              ],
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child:
+                                            CustomerPurchasesSection(
+                                              customerUuid:
+                                                  customer
+                                                      .uuid ??
+                                                  '',
                                             ),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Visibility(
+                                        visible:
+                                            authorization(
+                                              authorized:
+                                                  Authorizations()
+                                                      .viewCustomersAccount,
+                                            ) &&
+                                            showAccountOrReward(),
+                                        child: Expanded(
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: CustomerTransactionsSection(
+                                                  customerUuid:
+                                                      customer
+                                                          .uuid ??
+                                                      '',
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                   SizedBox(height: 30),
                                 ],
