@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
-import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/customers/customer_details_page/components/customer_account_details_section_widget.dart';
 
-class PaymentTypeButton extends StatelessWidget {
+class PaymentTypeButton extends StatefulWidget {
   final int index;
   final Function()? action;
   const PaymentTypeButton({
@@ -15,9 +16,18 @@ class PaymentTypeButton extends StatelessWidget {
   });
 
   @override
+  State<PaymentTypeButton> createState() =>
+      _PaymentTypeButtonState();
+}
+
+class _PaymentTypeButtonState
+    extends State<PaymentTypeButton> {
+  TextEditingController topUpController =
+      TextEditingController();
+  @override
   Widget build(BuildContext context) {
     TempCustomersClass? customersClass;
-    if (index == 3) {
+    if (widget.index == 3) {
       if (returnSalesProviderContext(
             context,
           ).currentCart().selectedCustomer !=
@@ -38,28 +48,30 @@ class PaymentTypeButton extends StatelessWidget {
     var theme = returnTheme(context);
     void selectOptionAction() {
       if (returnSalesProvider().currentCart().isInvoice &&
-          (index == 2 || index == 3)) {
+          (widget.index == 2 || widget.index == 3)) {
         return;
-      } else if (index == 3 &&
-          !returnSalesProvider().isBalanceSufficient()) {
-        showDialog(
+      }
+      //  else if (widget.index == 3 &&
+      //     !returnSalesProvider().isBalanceSufficient()) {
+      //   showDialog(
+      //     context: context,
+      //     builder: (erroContext) {
+      //       return InfoAlert(
+      //         theme: theme,
+      //         message:
+      //             'This Customers Balance is not enough to make this Purchase. Please Select Another Payment Method and Proceed.',
+      //         title: 'Insufficient Balance',
+      //       );
+      //     },
+      //   );
+      //   return;
+      // }
+      else {
+        returnSalesProvider().changePaymentMethod(
+          index: widget.index,
           context: context,
-          builder: (erroContext) {
-            return InfoAlert(
-              theme: theme,
-              message:
-                  'This Customers Balance is not enough to make this Purchase. Please Select Another Payment Method and Proceed.',
-              title: 'Insufficient Balance',
-            );
-          },
         );
-        return;
-      } else {
-        returnSalesProvider().changeMethod(
-          index: index,
-          context: context,
-        );
-        action != null ? action!() : {};
+        widget.action != null ? widget.action!() : {};
       }
     }
 
@@ -111,11 +123,11 @@ class PaymentTypeButton extends StatelessWidget {
                                               )
                                               .currentCart()
                                               .isInvoice &&
-                                          index == 2
+                                          widget.index == 2
                                       ? Colors.grey
                                       : null,
                             ),
-                            "${returnSalesProviderContext(context).returnPaymentMethodSalesPage(index)['method']}${customersClass != null ? " (${formatMoneyBig(amount: customersClass.getBalance(), context: context)})" : ''}",
+                            "${returnSalesProviderContext(context).returnPaymentMethodSalesPage(widget.index)['method']}${customersClass != null ? " (${formatMoneyBig(amount: customersClass.getBalance(), context: context)})" : ''}",
                           ),
                           Text(
                             style: TextStyle(
@@ -131,7 +143,7 @@ class PaymentTypeButton extends StatelessWidget {
                                               )
                                               .currentCart()
                                               .isInvoice &&
-                                          index == 2
+                                          widget.index == 2
                                       ? Colors.grey
                                       : theme
                                           .lightModeColor
@@ -140,7 +152,7 @@ class PaymentTypeButton extends StatelessWidget {
                             returnSalesProviderContext(
                               context,
                             ).returnPaymentMethodSalesPage(
-                              index,
+                              widget.index,
                             )['subText'],
                           ),
                         ],
@@ -152,7 +164,7 @@ class PaymentTypeButton extends StatelessWidget {
                                         )
                                         .currentCart()
                                         .isInvoice &&
-                                    index == 2
+                                    widget.index == 2
                                 ? Colors.grey
                                 : theme
                                     .lightModeColor
@@ -171,7 +183,7 @@ class PaymentTypeButton extends StatelessWidget {
                             returnSalesProviderContext(
                               context,
                             ).currentCart().paymentMethod ==
-                            index,
+                            widget.index,
                         onChanged: (value) {
                           selectOptionAction();
                         },
@@ -183,108 +195,158 @@ class PaymentTypeButton extends StatelessWidget {
             ),
           ),
         ),
-        // Visibility(
-        //   visible: index == 3,
-        //   child: Container(
-        //     padding: EdgeInsetsGeometry.only(
-        //       top: 10,
-        //       bottom: 10,
-        //       left: 10,
-        //       right: 10,
-        //     ),
-        //     decoration: BoxDecoration(
-        //       borderRadius: BorderRadius.only(
-        //         bottomLeft: Radius.circular(5),
-        //         bottomRight: Radius.circular(5),
-        //       ),
-        //       color: Colors.grey.shade100,
-        //       border: Border(
-        //         bottom: BorderSide(
-        //           color: Colors.grey.shade300,
-        //         ),
-        //         left: BorderSide(
-        //           color: Colors.grey.shade300,
-        //         ),
-        //         right: BorderSide(
-        //           color: Colors.grey.shade300,
-        //         ),
-        //       ),
-        //     ),
-        //     child: Column(
-        //       spacing: 5,
-        //       children: [
-        //         Row(
-        //           children: [
-        //             Text(
-        //               style: TextStyle(
-        //                 fontSize:
-        //                     theme.mobileTexts.b3.fontSize,
-        //                 fontWeight: FontWeight.bold,
-        //               ),
-        //               'Pay Balance With:',
-        //             ),
-        //           ],
-        //         ),
-        //         Row(
-        //           spacing: 5,
-        //           children: [
-        //             Expanded(
-        //               child: Material(
-        //                 type: MaterialType.transparency,
-        //                 child: Ink(
-        //                   decoration: BoxDecoration(
-        //                     borderRadius:
-        //                         BorderRadius.circular(3),
-        //                     border: Border.all(
-        //                       color: Colors.grey,
-        //                     ),
-        //                   ),
-        //                   child: InkWell(
-        //                     mouseCursor:
-        //                         SystemMouseCursors.click,
-        //                     onTap: () {},
-        //                     child: Container(
-        //                       padding: EdgeInsets.all(5),
-        //                       child: Row(
-        //                         mainAxisAlignment:
-        //                             MainAxisAlignment
-        //                                 .center,
-        //                         children: [
-        //                           Text(
-        //                             style: TextStyle(
-        //                               fontSize:
-        //                                   theme
-        //                                       .mobileTexts
-        //                                       .b4
-        //                                       .fontSize,
-        //                               fontWeight:
-        //                                   FontWeight.bold,
-        //                             ),
-        //                             'Cash',
-        //                           ),
-        //                           Padding(
-        //                             padding:
-        //                                 const EdgeInsets.only(
-        //                                   left: 4.0,
-        //                                 ),
-        //                             child: Icon(
-        //                               size: 14,
-        //                               Icons.check,
-        //                             ),
-        //                           ),
-        //                         ],
-        //                       ),
-        //                     ),
-        //                   ),
-        //                 ),
-        //               ),
-        //             ),
-        //           ],
-        //         ),
-        //       ],
-        //     ),
-        //   ),
-        // ),
+        Visibility(
+          visible:
+              widget.index == 3 &&
+              returnSalesProviderContext(
+                    context,
+                  ).currentCart().paymentMethod ==
+                  3 &&
+              !returnSalesProviderContext(
+                context,
+              ).isBalanceSufficient(),
+          child: Container(
+            padding: EdgeInsetsGeometry.only(
+              top: 10,
+              bottom: 10,
+              left: 10,
+              right: 10,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(5),
+                bottomRight: Radius.circular(5),
+              ),
+              color: Colors.grey.shade100,
+              border: Border(
+                bottom: BorderSide(
+                  color: Colors.grey.shade300,
+                ),
+                left: BorderSide(
+                  color: Colors.grey.shade300,
+                ),
+                right: BorderSide(
+                  color: Colors.grey.shade300,
+                ),
+              ),
+            ),
+            child: Column(
+              spacing: 10,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      'Insufficient Balance. Top Up;',
+                    ),
+                  ],
+                ),
+                Row(
+                  spacing: 5,
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        child: MoneyTextfield(
+                          title: 'title',
+                          hint: 'Enter Amount',
+                          controller: topUpController,
+                          theme: theme,
+                          autoFocus: true,
+                          onSubmitted: (p0) async {
+                            if (returnSalesProvider()
+                                    .currentCart()
+                                    .getCustomer() !=
+                                null) {
+                              await topUpAction(
+                                popSecondContext: false,
+                                context: context,
+                                theme: theme,
+                                moneyTextField:
+                                    topUpController,
+                                customer:
+                                    returnSalesProvider()
+                                        .currentCart()
+                                        .getCustomer()!,
+                              );
+                              widget.action != null
+                                  ? widget.action!()
+                                  : {};
+                            }
+                          },
+                          showTitle: false,
+                        ),
+                      ),
+                    ),
+                    Material(
+                      type: MaterialType.transparency,
+                      child: Ink(
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(3),
+                          gradient:
+                              theme
+                                  .lightModeColor
+                                  .prGradient,
+                          border: Border.all(
+                            color: Colors.grey,
+                          ),
+                        ),
+                        child: InkWell(
+                          mouseCursor:
+                              SystemMouseCursors.click,
+                          onTap: () async {
+                            if (returnSalesProvider()
+                                    .currentCart()
+                                    .getCustomer() !=
+                                null) {
+                              await topUpAction(
+                                popSecondContext: false,
+                                context: context,
+                                theme: theme,
+                                moneyTextField:
+                                    topUpController,
+                                customer:
+                                    returnSalesProvider()
+                                        .currentCart()
+                                        .getCustomer()!,
+                              );
+                              widget.action != null
+                                  ? widget.action!()
+                                  : {};
+                            }
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 8,
+                              horizontal: 15,
+                            ),
+                            child: Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b4
+                                        .fontSize,
+                                fontWeight:
+                                    FontWeight.normal,
+                                color: Colors.white,
+                              ),
+                              'Top Up',
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -437,7 +499,12 @@ class _PaymentTypeDropdownState
                               .currentCart()
                               .selectedCustomer !=
                           null,
-                  child: PaymentTypeButton(index: 3),
+                  child: PaymentTypeButton(
+                    index: 3,
+                    action: () {
+                      setState(() {});
+                    },
+                  ),
                 ),
                 PaymentTypeButton(
                   index: 2,

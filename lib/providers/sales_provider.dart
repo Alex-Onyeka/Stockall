@@ -2457,7 +2457,7 @@ class SalesProvider extends ChangeNotifier {
     },
   ];
 
-  void changeMethod({
+  void changePaymentMethod({
     required int index,
     required BuildContext context,
   }) {

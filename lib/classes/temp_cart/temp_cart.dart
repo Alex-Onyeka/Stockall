@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
+import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
+import 'package:stockall/main.dart';
 
 part 'temp_cart.g.dart';
 
@@ -144,5 +146,15 @@ class TempCart extends HiveObject {
           DateTime.now().minute),
     );
     return newDate;
+  }
+
+  TempCustomersClass? getCustomer() {
+    if (selectedCustomer != null) {
+      var customers = returnCustomersSingle().customers
+          .where((item) => item.uuid == selectedCustomer);
+      return customers.isNotEmpty ? customers.first : null;
+    } else {
+      return null;
+    }
   }
 }

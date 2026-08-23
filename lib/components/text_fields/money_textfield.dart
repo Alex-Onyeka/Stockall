@@ -211,7 +211,7 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
                     widget.theme.lightModeColor.prColor300,
                 width: 1.3,
               ),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(7),
             ),
           ),
           controller: widget.controller,

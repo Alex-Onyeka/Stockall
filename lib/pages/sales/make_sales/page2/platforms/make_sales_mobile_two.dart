@@ -177,7 +177,7 @@ class _MakeSalesMobileTwoState
                                       );
                                 }
                                 returnSalesProvider()
-                                    .changeMethod(
+                                    .changePaymentMethod(
                                       context: context,
                                       index: 0,
                                     );

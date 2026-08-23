@@ -508,6 +508,30 @@ class _CustomterTransactionDetailsWidgetState
                   ),
                 ),
                 CustomterTransactionSectionWidget(
+                  title: 'Old Balance',
+                  message: formatMoneyBig(
+                    amount:
+                        widget.accountReceipt.oldBalance ??
+                        0,
+                    context: context,
+                  ),
+                ),
+                CustomterTransactionSectionWidget(
+                  title: 'New Balance',
+                  message: formatMoneyBig(
+                    amount:
+                        widget.accountReceipt.newBalance ??
+                        0,
+                    context: context,
+                  ),
+                ),
+                CustomterTransactionSectionWidget(
+                  title: 'Customer Name',
+                  message:
+                      widget.accountReceipt.customerName ??
+                      'Not Set',
+                ),
+                CustomterTransactionSectionWidget(
                   title: 'Date/Time',
                   message: formatDateWithTime(
                     widget.accountReceipt.createdAt ??
@@ -529,12 +553,7 @@ class _CustomterTransactionDetailsWidgetState
                           ? 'Top Up'
                           : 'Deducted',
                 ),
-                CustomterTransactionSectionWidget(
-                  title: 'Customer Name',
-                  message:
-                      widget.accountReceipt.customerName ??
-                      'Not Set',
-                ),
+
                 CustomterTransactionSectionWidget(
                   title: 'Comment',
                   message:

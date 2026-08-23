@@ -237,7 +237,7 @@ class _MakeSalesDesktopTwoState
                                                   );
                                                 }
                                                 returnSalesProvider()
-                                                    .changeMethod(
+                                                    .changePaymentMethod(
                                                       context:
                                                           context,
                                                       index:
@@ -410,11 +410,14 @@ class _MakeSalesDesktopTwoState
                                                         context,
                                                       ).currentCart().selectedCustomer !=
                                                       null,
-                                              child:
-                                                  PaymentTypeButton(
-                                                    index:
-                                                        3,
-                                                  ),
+                                              child: PaymentTypeButton(
+                                                index: 3,
+                                                action: () {
+                                                  setState(
+                                                    () {},
+                                                  );
+                                                },
+                                              ),
                                             ),
                                             PaymentTypeButton(
                                               index: 2,

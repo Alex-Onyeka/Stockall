@@ -176,7 +176,9 @@ class _CustomerAccountDetailsSectionWidgetState
                               child: InkWell(
                                 onTap: () {
                                   redeemRewardAction(
-                                    contextt: context,
+                                    context: context,
+                                    customer:
+                                        widget.customer,
                                     theme: theme,
                                   );
                                 },
@@ -249,7 +251,12 @@ class _CustomerAccountDetailsSectionWidgetState
                                   'Top Up Account Balance',
                               action: () {
                                 topUpAction(
-                                  contextt: dialogContext,
+                                  context: dialogContext,
+                                  customer: widget.customer,
+                                  moneyTextField:
+                                      moneyTextField,
+                                  commentTextField:
+                                      commentTextField,
                                   theme: theme,
                                 );
                               },
@@ -269,8 +276,15 @@ class _CustomerAccountDetailsSectionWidgetState
                                       autoFocus: true,
                                       onSubmitted: (p0) {
                                         topUpAction(
-                                          contextt:
+                                          context:
                                               dialogContext,
+                                          customer:
+                                              widget
+                                                  .customer,
+                                          moneyTextField:
+                                              moneyTextField,
+                                          commentTextField:
+                                              commentTextField,
                                           theme: theme,
                                         );
                                       },
@@ -285,8 +299,14 @@ class _CustomerAccountDetailsSectionWidgetState
                                     theme: theme,
                                     onSubmitted: (value) {
                                       topUpAction(
-                                        contextt:
+                                        context:
                                             dialogContext,
+                                        customer:
+                                            widget.customer,
+                                        moneyTextField:
+                                            moneyTextField,
+                                        commentTextField:
+                                            commentTextField,
                                         theme: theme,
                                       );
                                     },
@@ -327,7 +347,12 @@ class _CustomerAccountDetailsSectionWidgetState
                                   'Debit Account Balance',
                               action: () {
                                 debitAction(
-                                  contextt: dialogContext,
+                                  context: dialogContext,
+                                  customer: widget.customer,
+                                  moneyTextField:
+                                      moneyTextField,
+                                  commentTextField:
+                                      commentTextField,
                                   theme: theme,
                                 );
                               },
@@ -365,8 +390,15 @@ class _CustomerAccountDetailsSectionWidgetState
                                       },
                                       onSubmitted: (p0) {
                                         debitAction(
-                                          contextt:
+                                          context:
                                               dialogContext,
+                                          customer:
+                                              widget
+                                                  .customer,
+                                          moneyTextField:
+                                              moneyTextField,
+                                          commentTextField:
+                                              commentTextField,
                                           theme: theme,
                                         );
                                       },
@@ -381,8 +413,14 @@ class _CustomerAccountDetailsSectionWidgetState
                                     theme: theme,
                                     onSubmitted: (value) {
                                       debitAction(
-                                        contextt:
+                                        context:
                                             dialogContext,
+                                        customer:
+                                            widget.customer,
+                                        moneyTextField:
+                                            moneyTextField,
+                                        commentTextField:
+                                            commentTextField,
                                         theme: theme,
                                       );
                                     },
@@ -520,7 +558,12 @@ class _CustomerAccountDetailsSectionWidgetState
                                   'Top Up Account Balance',
                               action: () {
                                 topUpAction(
-                                  contextt: dialogContext,
+                                  context: dialogContext,
+                                  customer: widget.customer,
+                                  moneyTextField:
+                                      moneyTextField,
+                                  commentTextField:
+                                      commentTextField,
                                   theme: theme,
                                 );
                               },
@@ -540,8 +583,15 @@ class _CustomerAccountDetailsSectionWidgetState
                                       autoFocus: true,
                                       onSubmitted: (p0) {
                                         topUpAction(
-                                          contextt:
+                                          context:
                                               dialogContext,
+                                          customer:
+                                              widget
+                                                  .customer,
+                                          moneyTextField:
+                                              moneyTextField,
+                                          commentTextField:
+                                              commentTextField,
                                           theme: theme,
                                         );
                                       },
@@ -556,8 +606,14 @@ class _CustomerAccountDetailsSectionWidgetState
                                     theme: theme,
                                     onSubmitted: (value) {
                                       topUpAction(
-                                        contextt:
+                                        context:
                                             dialogContext,
+                                        customer:
+                                            widget.customer,
+                                        moneyTextField:
+                                            moneyTextField,
+                                        commentTextField:
+                                            commentTextField,
                                         theme: theme,
                                       );
                                     },
@@ -598,7 +654,12 @@ class _CustomerAccountDetailsSectionWidgetState
                                   'Debit Account Balance',
                               action: () {
                                 debitAction(
-                                  contextt: dialogContext,
+                                  context: dialogContext,
+                                  customer: widget.customer,
+                                  moneyTextField:
+                                      moneyTextField,
+                                  commentTextField:
+                                      commentTextField,
                                   theme: theme,
                                 );
                               },
@@ -636,8 +697,15 @@ class _CustomerAccountDetailsSectionWidgetState
                                       },
                                       onSubmitted: (p0) {
                                         debitAction(
-                                          contextt:
+                                          context:
                                               dialogContext,
+                                          customer:
+                                              widget
+                                                  .customer,
+                                          moneyTextField:
+                                              moneyTextField,
+                                          commentTextField:
+                                              commentTextField,
                                           theme: theme,
                                         );
                                       },
@@ -652,8 +720,14 @@ class _CustomerAccountDetailsSectionWidgetState
                                     theme: theme,
                                     onSubmitted: (value) {
                                       debitAction(
-                                        contextt:
+                                        context:
                                             dialogContext,
+                                        customer:
+                                            widget.customer,
+                                        moneyTextField:
+                                            moneyTextField,
+                                        commentTextField:
+                                            commentTextField,
                                         theme: theme,
                                       );
                                     },
@@ -785,7 +859,8 @@ class _CustomerAccountDetailsSectionWidgetState
                       isLoading: false,
                       action: () {
                         redeemRewardAction(
-                          contextt: context,
+                          context: context,
+                          customer: widget.customer,
                           theme: theme,
                         );
                       },
@@ -806,149 +881,156 @@ class _CustomerAccountDetailsSectionWidgetState
       );
     }
   }
+}
 
-  void topUpAction({
-    required BuildContext contextt,
-    required ThemeProvider theme,
-  }) {
-    if (moneyTextField.text.isNotEmpty) {
-      showDialog(
-        context: context,
-        builder: (confirmContext) {
-          return ConfirmationAlert(
-            theme: theme,
-            message:
-                'Are you sure you want to proceed with this action?',
-            title: 'Proceed With Action',
-            action: () {
-              double amount =
-                  double.tryParse(
-                    moneyTextField.text.replaceAll(',', ''),
-                  ) ??
-                  0;
-              Navigator.of(confirmContext).pop();
-              Navigator.of(contextt).pop();
-              CustomerAccountReceipts
-              customerAccountReceipt =
-                  CustomerAccountReceipts(
-                    amount: amount,
-                    customerName: widget.customer.name,
-                    customerUuid: widget.customer.uuid!,
-                    isAdd: true,
-                    isBalance: true,
-                    receiptUuid: null,
-                    oldBalance:
-                        widget.customer.balance ?? 0,
-                    newBalance:
-                        (widget.customer.balance ?? 0) +
-                        amount,
-                    comment:
-                        commentTextField.text.isEmpty
-                            ? null
-                            : commentTextField.text.trim(),
-                  );
-              returnCustomerAccountReceiptsProvider()
-                  .createCustomerAccountReceipts(
-                    customerAccountReceipt:
-                        customerAccountReceipt,
-                  );
-            },
-            actionButtonText: 'Credit Account',
-          );
-        },
-      );
-    }
+Future<void> topUpAction({
+  required BuildContext context,
+  required ThemeProvider theme,
+  required TextEditingController moneyTextField,
+  TextEditingController? commentTextField,
+  required TempCustomersClass customer,
+  bool? popSecondContext,
+}) async {
+  if (moneyTextField.text.isNotEmpty) {
+    await showDialog(
+      context: context,
+      builder: (confirmContext) {
+        return ConfirmationAlert(
+          theme: theme,
+          message:
+              'You are about to top up this customers account balance. Are you sure you want to proceed?',
+          title: 'Credit Account',
+          action: () async {
+            double amount =
+                double.tryParse(
+                  moneyTextField.text.replaceAll(',', ''),
+                ) ??
+                0;
+
+            CustomerAccountReceipts customerAccountReceipt =
+                CustomerAccountReceipts(
+                  amount: amount,
+                  customerName: customer.name,
+                  customerUuid: customer.uuid!,
+                  isAdd: true,
+                  isBalance: true,
+                  receiptUuid: null,
+                  oldBalance: customer.balance ?? 0,
+                  newBalance:
+                      (customer.balance ?? 0) + amount,
+                  comment: commentTextField?.text.trim(),
+                );
+            await returnCustomerAccountReceiptsProvider()
+                .createCustomerAccountReceipts(
+                  customerAccountReceipt:
+                      customerAccountReceipt,
+                );
+            Navigator.of(confirmContext).pop();
+            if (popSecondContext != false) {
+              Navigator.of(context).pop();
+            }
+            Future.delayed(
+              (Duration(microseconds: 500)),
+              () {
+                moneyTextField.clear();
+                commentTextField?.clear();
+              },
+            );
+          },
+          actionButtonText: 'Credit Account',
+        );
+      },
+    );
   }
+}
 
-  void debitAction({
-    required BuildContext contextt,
-    required ThemeProvider theme,
-  }) {
-    if (moneyTextField.text.isNotEmpty) {
-      showDialog(
-        context: context,
-        builder: (confirmContext) {
-          return ConfirmationAlert(
-            theme: theme,
-            message:
-                'Are you sure you want to proceed with this action?',
-            title: 'Proceed With Action',
-            action: () {
-              double amount =
-                  double.tryParse(
-                    moneyTextField.text.replaceAll(',', ''),
-                  ) ??
-                  0;
-              Navigator.of(confirmContext).pop();
-              Navigator.of(contextt).pop();
-              CustomerAccountReceipts
-              customerAccountReceipt =
-                  CustomerAccountReceipts(
-                    amount: amount,
-                    customerName: widget.customer.name,
-                    customerUuid: widget.customer.uuid!,
-                    isAdd: false,
-                    isBalance: true,
-                    receiptUuid: null,
-                    oldBalance:
-                        widget.customer.balance ?? 0,
-                    newBalance:
-                        (widget.customer.balance ?? 0) +
-                        amount,
-                    comment:
-                        commentTextField.text.isEmpty
-                            ? null
-                            : commentTextField.text.trim(),
-                  );
-              returnCustomerAccountReceiptsProvider()
-                  .createCustomerAccountReceipts(
-                    customerAccountReceipt:
-                        customerAccountReceipt,
-                  );
-            },
-            actionButtonText: 'Debit Account',
-          );
-        },
-      );
-    }
+void debitAction({
+  required BuildContext context,
+  required ThemeProvider theme,
+  required TextEditingController moneyTextField,
+  TextEditingController? commentTextField,
+  required TempCustomersClass customer,
+}) {
+  if (moneyTextField.text.isNotEmpty) {
+    showDialog(
+      context: context,
+      builder: (confirmContext) {
+        return ConfirmationAlert(
+          theme: theme,
+          message:
+              'You are about to Debit this customers account balance. Are you sure you want to proceed?',
+          title: 'Debit Account',
+          action: () {
+            double amount =
+                double.tryParse(
+                  moneyTextField.text.replaceAll(',', ''),
+                ) ??
+                0;
+            Navigator.of(confirmContext).pop();
+            Navigator.of(context).pop();
+            CustomerAccountReceipts customerAccountReceipt =
+                CustomerAccountReceipts(
+                  amount: amount,
+                  customerName: customer.name,
+                  customerUuid: customer.uuid!,
+                  isAdd: false,
+                  isBalance: true,
+                  receiptUuid: null,
+                  oldBalance: customer.balance ?? 0,
+                  newBalance:
+                      (customer.balance ?? 0) - amount,
+                  comment: commentTextField?.text.trim(),
+                );
+            returnCustomerAccountReceiptsProvider()
+                .createCustomerAccountReceipts(
+                  customerAccountReceipt:
+                      customerAccountReceipt,
+                );
+          },
+          actionButtonText: 'Debit Account',
+        );
+      },
+    );
   }
+}
 
-  void redeemRewardAction({
-    required BuildContext contextt,
-    required ThemeProvider theme,
-  }) {
-    if (widget.customer.cashReward != null &&
-        widget.customer.cashReward != 0) {
-      showDialog(
-        context: context,
-        builder: (dialogContext) {
-          return ConfirmationAlert(
-            theme: theme,
-            message:
-                'You are about to Redeeem the reward of this Customer. This will empty The Earnings Balance of this Customer. Are you sure you want to proceed?',
-            title: 'Redeem Reward',
-            action: () {
-              Navigator.of(contextt).pop();
-              CustomerAccountReceipts
-              customerAccountReceipt =
-                  CustomerAccountReceipts(
-                    amount: widget.customer.cashReward ?? 0,
-                    customerName: widget.customer.name,
-                    customerUuid: widget.customer.uuid!,
-                    isAdd: false,
-                    isBalance: false,
-                    receiptUuid: null,
-                    title: 'Reward Redeemed',
-                  );
-              returnCustomerAccountReceiptsProvider()
-                  .createCustomerAccountReceipts(
-                    customerAccountReceipt:
-                        customerAccountReceipt,
-                  );
-            },
-          );
-        },
-      );
-    }
+void redeemRewardAction({
+  required BuildContext context,
+  required ThemeProvider theme,
+  required TempCustomersClass customer,
+}) {
+  if (customer.cashReward != null &&
+      customer.cashReward != 0) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return ConfirmationAlert(
+          theme: theme,
+          message:
+              'You are about to Redeeem the reward of this Customer. This will empty The Earnings Balance of this Customer. Are you sure you want to proceed?',
+          title: 'Redeem Reward',
+          action: () {
+            Navigator.of(context).pop();
+            CustomerAccountReceipts customerAccountReceipt =
+                CustomerAccountReceipts(
+                  amount: customer.cashReward ?? 0,
+                  customerName: customer.name,
+                  customerUuid: customer.uuid!,
+                  isAdd: false,
+                  isBalance: false,
+                  receiptUuid: null,
+                  newBalance: 0,
+                  oldBalance: customer.cashReward,
+                  title: 'Reward Redeemed',
+                );
+            returnCustomerAccountReceiptsProvider()
+                .createCustomerAccountReceipts(
+                  customerAccountReceipt:
+                      customerAccountReceipt,
+                );
+          },
+        );
+      },
+    );
   }
 }

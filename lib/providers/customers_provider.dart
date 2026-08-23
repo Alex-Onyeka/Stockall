@@ -179,7 +179,7 @@ class CustomersProvider extends ChangeNotifier {
       // }
       await fetchCustomersOffline();
       notifyListeners();
-      // syncData();
+      syncData();
     } catch (e) {
       await mainLocalLog(
         'Error Updating Customer: ${e.toString()}',

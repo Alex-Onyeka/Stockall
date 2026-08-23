@@ -155,19 +155,29 @@ class CustomerAccountReceiptsProvider
               );
           if (customerAccountReceipt.isAdd) {
             if (customerAccountReceipt.isBalance ?? true) {
+              customerAccountReceipt.oldBalance =
+                  customerOld.balance;
               customer.balance =
                   (customer.balance ?? 0) +
                   (customerAccountReceipt.amount ?? 0);
               accountUpdate.isBalance = true;
+              customerAccountReceipt.newBalance =
+                  customer.balance;
             } else {
+              customerAccountReceipt.oldBalance =
+                  customerOld.cashReward;
               customer.cashReward =
                   (customer.cashReward ?? 0) +
                   (customerAccountReceipt.amount ?? 0);
               accountUpdate.isBalance = false;
+              customerAccountReceipt.newBalance =
+                  customer.cashReward;
             }
             accountUpdate.isIncrement = true;
           } else {
             if (customerAccountReceipt.isBalance ?? true) {
+              customerAccountReceipt.oldBalance =
+                  customerOld.balance;
               double amount =
                   customerAccountReceipt.amount ?? 0;
 
@@ -175,7 +185,11 @@ class CustomerAccountReceiptsProvider
 
               customer.balance = balance - amount;
               accountUpdate.isBalance = true;
+              customerAccountReceipt.newBalance =
+                  customer.balance;
             } else {
+              customerAccountReceipt.oldBalance =
+                  customerOld.cashReward;
               double amount =
                   customerAccountReceipt.amount ?? 0;
 
@@ -183,6 +197,8 @@ class CustomerAccountReceiptsProvider
 
               customer.cashReward = cashReward - amount;
               accountUpdate.isBalance = false;
+              customerAccountReceipt.newBalance =
+                  customer.cashReward;
             }
             accountUpdate.isIncrement = false;
           }
@@ -400,6 +416,8 @@ class CustomerAccountReceiptsProvider
                   );
               if (customerAccountReceipt.isBalance ??
                   true) {
+                customerAccountReceipt.oldBalance =
+                    customerOld.balance;
                 double amount =
                     customerAccountReceipt.amount ?? 0;
 
@@ -415,7 +433,11 @@ class CustomerAccountReceiptsProvider
                   customerAccountUpdate.isIncrement = true;
                 }
                 customerAccountUpdate.amount = amount;
+                customerAccountReceipt.newBalance =
+                    customer.balance;
               } else {
+                customerAccountReceipt.oldBalance =
+                    customerOld.cashReward;
                 double amount =
                     customerAccountReceipt.amount ?? 0;
 
@@ -426,6 +448,8 @@ class CustomerAccountReceiptsProvider
                 customerAccountUpdate.isBalance = false;
                 customerAccountUpdate.isIncrement = false;
                 customerAccountUpdate.amount = amount;
+                customerAccountReceipt.newBalance =
+                    customer.cashReward;
               }
               await CustomerAccountUpdateFunc()
                   .createCustomerAccountUpdate(
