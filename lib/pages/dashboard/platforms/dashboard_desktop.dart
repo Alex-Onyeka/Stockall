@@ -16,6 +16,7 @@ import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/helpers/clean_up_url/clean_up_url.dart';
+import 'package:stockall/local_database/new_feature_pop_up_func/new_feature_pop_up_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customers_list/customer_list.dart';
 import 'package:stockall/pages/dashboard/components/button_tab.dart';
@@ -92,21 +93,21 @@ class _DashboardDesktopState
   void initState() {
     super.initState();
 
-    if (!returnReceiptProvider(
-      context,
-      listen: false,
-    ).isLoaded) {
-      WidgetsBinding.instance.addPostFrameCallback((
-        _,
-      ) async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      NewFeaturePopUpFunc().checkIfIsNew(context: context);
+      if (!returnReceiptProvider(
+        context,
+        listen: false,
+      ).isLoaded) {
         await RefreshFunctions(context).refreshAll(context);
         returnReceiptProvider(
           context,
           listen: false,
         ).load(true);
         await mainLocalLog('Data Loaded');
-      });
-    }
+      }
+    });
+
     // loadSuggestions();
     notificationsFuture = fetchNotifications();
   }
@@ -1616,99 +1617,3 @@ class _DashboardDesktopState
     }
   }
 }
-
-// class DesktopFocusBarcodeWidget extends StatefulWidget {
-//   const DesktopFocusBarcodeWidget({
-//     super.key,
-//     required this.theme,
-//   });
-
-//   final ThemeProvider theme;
-
-//   @override
-//   State<DesktopFocusBarcodeWidget> createState() =>
-//       _DesktopFocusBarcodeWidgetState();
-// }
-
-// class _DesktopFocusBarcodeWidgetState
-//     extends State<DesktopFocusBarcodeWidget> {
-//   @override
-//   void initState() {
-//     super.initState();
-//     returnData().keepNodeFocus();
-//     returnData().startBarcodeTimer();
-//     await mainLocalLog('❌❌✅✅ Barcode Timer Created');
-//   }
-
-//   @override
-//   void didChangeDependencies() {
-//     super.didChangeDependencies();
-//     returnData().keepNodeFocus();
-//   }
-
-//   @override
-//   void dispose() {
-//     super.dispose();
-//     await mainLocalLog('❌❌✅✅Disposed');
-//     returnData().cancelBarcodeTimer();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return SizedBox(
-//       height: 60,
-//       width: 500,
-//       child: GeneralTextField(
-//         title: 'title',
-//         hint: 'hint',
-//         controller: returnData().barcodeController,
-//         lines: 1,
-//         theme: widget.theme,
-//         focusNode: returnData().barcodeNode,
-//         onChanged: (value) {
-//           if (returnData().barcodeController.text.length >
-//               20) {
-//             returnData().clearBarcodeTextField();
-//           } else {
-//             if (value.isNotEmpty) {
-//               var items = returnData().productList().where(
-//                 (product) =>
-//                     product.barcode?.toLowerCase() ==
-//                         value.toLowerCase() ||
-//                     product.name.toLowerCase() ==
-//                         value.toLowerCase(),
-//               );
-//               if (items.isNotEmpty) {
-//                 returnSalesProvider().addItemToCart(
-//                   context: context,
-//                   newItem: TempCartItem(
-//                     setCustomPrice: false,
-//                     item: items.first,
-//                     quantity: 1,
-//                     discount: null,
-//                     addToStock: false,
-//                     setTotalPrice: false,
-//                   ),
-//                   isCustomEdit: false,
-//                 );
-//                 // returnData().clearBarcodeTextField();
-//                 Navigator.push(
-//                   context,
-//                   MaterialPageRoute(
-//                     builder: (context) {
-//                       return MakeSalesPage();
-//                     },
-//                   ),
-//                 );
-//                 // await playBeep();
-//                 // setState(() {});
-//                 // barcodeNode.requestFocus();
-//               }
-//             }
-//           }
-//           await mainLocalLog("Barcode Value: $value");
-//         },
-//       ),
-//     );
-//   }
-// }

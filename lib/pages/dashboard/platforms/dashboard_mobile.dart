@@ -14,6 +14,7 @@ import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/helpers/clean_up_url/clean_up_url.dart';
+import 'package:stockall/local_database/new_feature_pop_up_func/new_feature_pop_up_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/customers/customers_list/customer_list.dart';
@@ -95,21 +96,20 @@ class _DashboardMobileState extends State<DashboardMobile> {
   void initState() {
     super.initState();
 
-    if (!returnReceiptProvider(
-      context,
-      listen: false,
-    ).isLoaded) {
-      WidgetsBinding.instance.addPostFrameCallback((
-        _,
-      ) async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      NewFeaturePopUpFunc().checkIfIsNew(context: context);
+      if (!returnReceiptProvider(
+        context,
+        listen: false,
+      ).isLoaded) {
         await RefreshFunctions(context).refreshAll(context);
         returnReceiptProvider(
           context,
           listen: false,
         ).load(true);
         await mainLocalLog('Data Loaded');
-      });
-    }
+      }
+    });
     // loadSuggestions();
     notificationsFuture = fetchNotifications();
   }

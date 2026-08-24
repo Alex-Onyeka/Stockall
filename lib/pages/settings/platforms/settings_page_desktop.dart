@@ -14,6 +14,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
+import 'package:stockall/constants/new_feature_pop_action.dart';
 import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/multiple_stores_auth.dart';
@@ -1428,6 +1429,20 @@ class _SettingsPageDesktopState
                                 title: 'Go to Website.',
                                 icon:
                                     Icons.language_rounded,
+                              ),
+                              NavListTileDesktopAlt(
+                                height: 18,
+                                action: () async {
+                                  newFeaturesUpdatePopUpAction(
+                                    context: context,
+                                    isFromSettingPage: true,
+                                  );
+                                },
+                                title:
+                                    'View Update Features Info',
+                                icon:
+                                    Icons
+                                        .lightbulb_outlined,
                               ),
                               ClearTotalCacheWidget(),
                               Visibility(

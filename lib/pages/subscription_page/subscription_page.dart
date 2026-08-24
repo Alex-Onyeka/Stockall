@@ -347,40 +347,6 @@ class _SubscriptionPageState
                                   child: Row(
                                     spacing: 5,
                                     children: [
-                                      // Container(
-                                      //   decoration: BoxDecoration(
-                                      //     border: Border.all(
-                                      //       color:
-                                      //           returnSubPaymentProvider(
-                                      //                     context:
-                                      //                         context,
-                                      //                   ).currencyIndex ==
-                                      //                   1
-                                      //               ? Colors
-                                      //                   .transparent
-                                      //               : Colors
-                                      //                   .grey,
-                                      //     ),
-                                      //     color:
-                                      //         returnSubPaymentProvider(
-                                      //                   context:
-                                      //                       context,
-                                      //                 ).currencyIndex ==
-                                      //                 1
-                                      //             ? theme
-                                      //                 .lightModeColor
-                                      //                 .prColor250
-                                      //             : Colors
-                                      //                 .transparent,
-                                      //     shape:
-                                      //         BoxShape.circle,
-                                      //   ),
-                                      //   child: Icon(
-                                      //     size: 14,
-                                      //     color: Colors.white,
-                                      //     Icons.check,
-                                      //   ),
-                                      // ),
                                       Icon(
                                         size: 14,
                                         Icons.call,
