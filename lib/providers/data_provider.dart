@@ -2512,22 +2512,22 @@ class DataProvider extends ChangeNotifier {
   }) {
     double tempTotal = 0;
 
-    if (returnShopProvider()
-            .userShop()
-            ?.manageInventoryStorage ==
-        true) {
-      for (var item in (products ?? productListMain)) {
-        tempTotal +=
-            ((item.wholeSalePrice ?? 0) *
-                ((item.quantity ?? 0) +
-                    (item.totalQttyInStorageDouble ?? 0)));
-      }
-    } else {
-      for (var item in (products ?? productListMain)) {
-        tempTotal +=
-            ((item.wholeSalePrice ?? 0) *
-                (item.quantity ?? 0));
-      }
+    // if (returnShopProvider()
+    //         .userShop()
+    //         ?.manageInventoryStorage ==
+    //     true) {
+    //   for (var item in (products ?? productListMain)) {
+    //     tempTotal +=
+    //         ((item.wholeSalePrice ?? 0) *
+    //             ((item.quantity ?? 0) +
+    //                 (item.totalQttyInStorageDouble ?? 0)));
+    //   }
+    // } else {
+    for (var item in (products ?? productListMain)) {
+      tempTotal +=
+          ((item.wholeSalePrice ?? 0) *
+              (item.quantity ?? 0));
+      // }
     }
     return tempTotal;
   }
@@ -2537,27 +2537,26 @@ class DataProvider extends ChangeNotifier {
   }) {
     double tempTotal = 0;
 
-    if (returnShopProvider()
-            .userShop()
-            ?.manageInventoryStorage ==
-        true) {
-      var storageProducts =
-          returnStorageProductProvider()
-              .storageProductListMain;
-      for (var item in (products ?? productListMain)) {
-        tempTotal +=
-            (item.sellingPrice ?? 0) * (item.quantity ?? 0);
-      }
-      for (var item in storageProducts) {
-        tempTotal +=
-            (item.sellingPrice ?? 0) * (item.quantity ?? 0);
-      }
-    } else {
-      for (var item in (products ?? productListMain)) {
-        tempTotal +=
-            ((item.sellingPrice ?? 0) *
-                (item.quantity ?? 0));
-      }
+    // if (returnShopProvider()
+    //         .userShop()
+    //         ?.manageInventoryStorage ==
+    //     true) {
+    //   var storageProducts =
+    //       returnStorageProductProvider()
+    //           .storageProductListMain;
+    //   for (var item in (products ?? productListMain)) {
+    //     tempTotal +=
+    //         (item.sellingPrice ?? 0) * (item.quantity ?? 0);
+    //   }
+    //   for (var item in storageProducts) {
+    //     tempTotal +=
+    //         (item.sellingPrice ?? 0) * (item.quantity ?? 0);
+    //   }
+    // } else {
+    for (var item in (products ?? productListMain)) {
+      tempTotal +=
+          ((item.sellingPrice ?? 0) * (item.quantity ?? 0));
+      // }
     }
     return tempTotal;
   }
@@ -2566,24 +2565,24 @@ class DataProvider extends ChangeNotifier {
     List<TempProductClass>? products,
   }) {
     double tempTotal = 0;
-    if (returnShopProvider()
-            .userShop()
-            ?.manageInventoryStorage ==
-        true) {
-      var storageProducts =
-          returnStorageProductProvider()
-              .storageProductListMain;
-      for (var item in (products ?? productListMain)) {
-        tempTotal += item.costPrice * (item.quantity ?? 0);
-      }
-      for (var item in storageProducts) {
-        tempTotal +=
-            (item.costPrice ?? 0) * (item.quantity ?? 0);
-      }
-    } else {
-      for (var item in (products ?? productListMain)) {
-        tempTotal += item.costPrice * (item.quantity ?? 0);
-      }
+    // if (returnShopProvider()
+    //         .userShop()
+    //         ?.manageInventoryStorage ==
+    //     true) {
+    //   var storageProducts =
+    //       returnStorageProductProvider()
+    //           .storageProductListMain;
+    //   for (var item in (products ?? productListMain)) {
+    //     tempTotal += item.costPrice * (item.quantity ?? 0);
+    //   }
+    //   for (var item in storageProducts) {
+    //     tempTotal +=
+    //         (item.costPrice ?? 0) * (item.quantity ?? 0);
+    //   }
+    // } else {
+    for (var item in (products ?? productListMain)) {
+      tempTotal += item.costPrice * (item.quantity ?? 0);
+      // }
     }
     return tempTotal;
   }

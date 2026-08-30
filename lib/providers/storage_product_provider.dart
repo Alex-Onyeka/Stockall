@@ -610,6 +610,41 @@ class StorageProductProvider extends ChangeNotifier {
     notifyListeners();
     syncData();
   }
+
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  double getTotalSellingPrice() {
+    double tempTotal = 0;
+    var products = returnData().productListMain;
+    for (var item in products) {
+      tempTotal +=
+          ((item.sellingPrice ?? 0) * (item.quantity ?? 0));
+    }
+    for (var item in storageProductListMain) {
+      tempTotal +=
+          ((item.sellingPrice ?? 0) * (item.quantity ?? 0));
+    }
+    return tempTotal;
+  }
+
+  double getTotalCostPrice() {
+    double tempTotal = 0;
+    var products = returnData().productListMain;
+    for (var item in products) {
+      tempTotal += (item.costPrice * (item.quantity ?? 0));
+    }
+    for (var item in storageProductListMain) {
+      tempTotal +=
+          ((item.costPrice ?? 0) * (item.quantity ?? 0));
+    }
+    return tempTotal;
+  }
 }
 
 class StorageProductInput {

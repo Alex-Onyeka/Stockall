@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
+import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class SummaryTableHeadingBar extends StatefulWidget {
@@ -20,6 +22,24 @@ class SummaryTableHeadingBar extends StatefulWidget {
 
 class _SummaryTableHeadingBarState
     extends State<SummaryTableHeadingBar> {
+  double getTotalInStorage() {
+    return returnStorageProductProvider(context: context)
+        .storageProductListMain
+        .map((item) => item.quantity ?? 0)
+        .fold(0, (a, b) => a + b);
+  }
+
+  double getTotalInSales() {
+    return returnData(context: context).productListMain
+        .where((item) => item.storageUuid != null)
+        .map((item) => item.quantity ?? 0)
+        .fold(0, (a, b) => a + b);
+  }
+
+  double totalOverAll() {
+    return getTotalInStorage() + getTotalInSales();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -64,7 +84,7 @@ class _SummaryTableHeadingBarState
             ),
           ),
           Expanded(
-            flex: widget.product.isNotEmpty ? 9 : 4,
+            flex: 2,
             child: Container(
               padding: EdgeInsets.symmetric(
                 horizontal: 10,
@@ -96,7 +116,144 @@ class _SummaryTableHeadingBarState
                                       .fontSize,
                           fontWeight: FontWeight.bold,
                         ),
-                        widget.isHeading ? 'Item Name' : '',
+                        widget.isHeading
+                            ? 'Item Name'
+                            : 'Total',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: 10,
+              ),
+              decoration: BoxDecoration(
+                border: Border(
+                  left: BorderSide(color: Colors.grey),
+                  // right: BorderSide(color: Colors.grey),
+                ),
+              ),
+              child: Center(
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              widget.isHeading
+                                  ? widget
+                                      .theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize
+                                  : widget
+                                      .theme
+                                      .mobileTexts
+                                      .b2
+                                      .fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        widget.isHeading
+                            ? 'In Storage'
+                            : formatLargeNumberDouble(
+                              getTotalInStorage(),
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: 10,
+              ),
+              decoration: BoxDecoration(
+                border: Border(
+                  left: BorderSide(color: Colors.grey),
+                  // right: BorderSide(color: Colors.grey),
+                ),
+              ),
+              child: Center(
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              widget.isHeading
+                                  ? widget
+                                      .theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize
+                                  : widget
+                                      .theme
+                                      .mobileTexts
+                                      .b2
+                                      .fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        widget.isHeading
+                            ? 'In Sales'
+                            : formatLargeNumberDouble(
+                              getTotalInSales(),
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: 10,
+              ),
+              decoration: BoxDecoration(
+                border: Border(
+                  left: BorderSide(color: Colors.grey),
+                  // right: BorderSide(color: Colors.grey),
+                ),
+              ),
+              child: Center(
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              widget.isHeading
+                                  ? widget
+                                      .theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize
+                                  : widget
+                                      .theme
+                                      .mobileTexts
+                                      .b2
+                                      .fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        widget.isHeading
+                            ? 'Total'
+                            : formatLargeNumberDouble(
+                              totalOverAll(),
+                            ),
                       ),
                     ),
                   ],

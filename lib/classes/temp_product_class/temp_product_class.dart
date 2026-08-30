@@ -392,4 +392,12 @@ class TempProductClass {
       return unit == 'Others' ? 'Unit(s)' : unit;
     }
   }
+
+  double getGroupQuantity() {
+    if (useGroupUnit == true) {
+      return (quantity ?? 0) / (qttyPerGroup ?? 1);
+    } else {
+      return 0;
+    }
+  }
 }

@@ -7,6 +7,7 @@ class MainInfoTab extends StatelessWidget {
   final String number;
   final Function()? action;
   final String icon;
+  final Color? iconColor;
 
   final ThemeProvider theme;
 
@@ -17,6 +18,7 @@ class MainInfoTab extends StatelessWidget {
     this.action,
     required this.icon,
     required this.theme,
+    this.iconColor,
   });
 
   @override
@@ -53,7 +55,10 @@ class MainInfoTab extends StatelessWidget {
                       shape: BoxShape.circle,
                       color: Colors.grey.shade100,
                     ),
-                    child: SvgPicture.asset(icon),
+                    child: SvgPicture.asset(
+                      color: iconColor,
+                      icon,
+                    ),
                   ),
                 ),
                 Text(

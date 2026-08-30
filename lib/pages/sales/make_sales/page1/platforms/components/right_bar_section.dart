@@ -42,6 +42,21 @@ class _RIghtBarSectionState extends State<RIghtBarSection> {
     // });
   }
 
+  String? currentCat;
+
+  void selectCat(String uuid) {
+    setState(() {
+      if (currentCat == uuid) {
+        currentCat = null;
+      } else {
+        currentCat = uuid;
+      }
+    });
+  }
+
+  final ScrollController horizontalController =
+      ScrollController();
+
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -91,341 +106,550 @@ class _RIghtBarSectionState extends State<RIghtBarSection> {
               ),
               Visibility(
                 visible: currentIndex == 1,
-                child: ListView(
-                  children:
-                      returnData()
-                          .productList()
-                          .map(
-                            (
-                              product,
-                            ) => ProductTileCartSearch(
-                              theme: theme,
-                              product: product,
-                              action: () {
-                                if (!product.isManaged) {
-                                  if (returnSalesProvider()
-                                      .currentCart()
-                                      .cartItems
-                                      .where(
-                                        (item) =>
-                                            (item.itemUuid ??
-                                                item
-                                                    .item
-                                                    .uuid) ==
-                                            product.uuid,
-                                      )
-                                      .isNotEmpty) {
-                                    selectProductSales(
-                                      isEdit: false,
-                                      context: context,
-                                      qttyNode: qttyNode,
-                                      priceNode: priceNode,
-                                      quantityController:
-                                          quantityController,
-                                      searchController:
-                                          searchController,
-                                      theme: theme,
-                                      cartItem: TempCartItem(
-                                        uuid:
-                                            returnSalesProvider()
-                                                .currentCart()
-                                                .cartItems
-                                                .firstWhere(
-                                                  (item) =>
-                                                      (item.itemUuid ??
-                                                          item.item.uuid) ==
-                                                      product
-                                                          .uuid!,
-                                                )
-                                                .uuid,
-                                        itemUuid:
-                                            product.uuid,
-                                        isVoid: false,
-                                        qttyPerGroup:
-                                            returnSalesProvider()
-                                                .currentCart()
-                                                .cartItems
-                                                .firstWhere(
-                                                  (item) =>
-                                                      (item.itemUuid ??
-                                                          item.item.uuid) ==
-                                                      product
-                                                          .uuid!,
-                                                )
-                                                .qttyPerGroup,
-                                        useGroupQuantity:
-                                            returnSalesProvider()
-                                                .currentCart()
-                                                .cartItems
-                                                .firstWhere(
-                                                  (item) =>
-                                                      (item.itemUuid ??
-                                                          item.item.uuid) ==
-                                                      product
-                                                          .uuid!,
-                                                )
-                                                .useGroupQuantity,
-                                        setTotalPrice:
-                                            returnSalesProvider()
-                                                .setTotalPrice,
-                                        useWholeSalePrice:
-                                            returnSalesProvider()
-                                                .currentCart()
-                                                .cartItems
-                                                .firstWhere(
-                                                  (item) =>
-                                                      (item.itemUuid ??
-                                                          item.item.uuid) ==
-                                                      product
-                                                          .uuid!,
-                                                )
-                                                .useWholeSalePrice,
-                                        addToStock: false,
-                                        discount:
-                                            product
-                                                .discount,
-                                        item: product,
-                                        quantity:
-                                            returnSalesProvider()
-                                                .currentCart()
-                                                .cartItems
-                                                .firstWhere(
-                                                  (item) =>
-                                                      (item.itemUuid ??
-                                                          item.item.uuid) ==
-                                                      product
-                                                          .uuid!,
-                                                )
-                                                .quantity,
-                                      ),
-                                      closeAction:
-                                          closeAction,
-                                      priceController:
-                                          priceController,
-                                    );
-                                  } else {
-                                    selectProductSales(
-                                      isEdit: false,
-                                      context: context,
-                                      qttyNode: qttyNode,
-                                      priceNode: priceNode,
-                                      quantityController:
-                                          quantityController,
-                                      searchController:
-                                          searchController,
-                                      theme: theme,
-                                      cartItem: TempCartItem(
-                                        uuid: uuidGen(),
-                                        itemUuid:
-                                            product.uuid,
-                                        isVoid: false,
-                                        qttyPerGroup:
-                                            product
-                                                .qttyPerGroup,
-                                        useGroupQuantity:
-                                            false,
-                                        setTotalPrice:
-                                            returnSalesProvider()
-                                                .setTotalPrice,
-                                        useWholeSalePrice:
-                                            false,
-                                        addToStock: false,
-                                        discount:
-                                            product
-                                                .discount,
-                                        item: product,
-                                        quantity:
-                                            double.tryParse(
-                                              quantityController
-                                                  .text
-                                                  .replaceAll(
-                                                    ',',
-                                                    '',
-                                                  )
-                                                  .trim(),
-                                            ) ??
-                                            0.0,
-                                      ),
-                                      closeAction:
-                                          closeAction,
-                                      priceController:
-                                          priceController,
-                                    );
-                                  }
-                                } else {
-                                  if (product.quantity ==
-                                      0) {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        var theme =
-                                            returnTheme(
-                                              context,
-                                              listen: false,
-                                            );
-                                        return InfoAlert(
-                                          theme: theme,
-                                          message:
-                                              'Item Quantity is Zero, Therefore, this item cannot be sold',
-                                          title:
-                                              'Item out of Stock',
-                                        );
-                                      },
-                                    );
-                                  } else if (returnSalesProvider()
-                                      .currentCart()
-                                      .cartItems
-                                      .where(
-                                        (item) =>
-                                            (item.itemUuid ??
-                                                item
-                                                    .item
-                                                    .uuid) ==
-                                            product.uuid,
-                                      )
-                                      .isNotEmpty) {
-                                    selectProductSales(
-                                      isEdit: false,
-                                      context: context,
-                                      qttyNode: qttyNode,
-                                      priceNode: priceNode,
-                                      quantityController:
-                                          quantityController,
-                                      searchController:
-                                          searchController,
-                                      theme: theme,
-                                      cartItem: TempCartItem(
-                                        uuid:
-                                            returnSalesProvider()
-                                                .currentCart()
-                                                .cartItems
-                                                .firstWhere(
-                                                  (item) =>
-                                                      (item.itemUuid ??
-                                                          item.item.uuid) ==
-                                                      product
-                                                          .uuid!,
-                                                )
-                                                .uuid,
-                                        itemUuid:
-                                            product.uuid,
-                                        isVoid: false,
-                                        qttyPerGroup:
-                                            returnSalesProvider()
-                                                .currentCart()
-                                                .cartItems
-                                                .firstWhere(
-                                                  (item) =>
-                                                      (item.itemUuid ??
-                                                          item.item.uuid) ==
-                                                      product
-                                                          .uuid!,
-                                                )
-                                                .qttyPerGroup,
-                                        useGroupQuantity:
-                                            returnSalesProvider()
-                                                .currentCart()
-                                                .cartItems
-                                                .firstWhere(
-                                                  (item) =>
-                                                      (item.itemUuid ??
-                                                          item.item.uuid) ==
-                                                      product
-                                                          .uuid!,
-                                                )
-                                                .useGroupQuantity,
-                                        setTotalPrice:
-                                            returnSalesProvider()
-                                                .setTotalPrice,
-                                        useWholeSalePrice:
-                                            returnSalesProvider()
-                                                .currentCart()
-                                                .cartItems
-                                                .firstWhere(
-                                                  (item) =>
-                                                      (item.itemUuid ??
-                                                          item.item.uuid) ==
-                                                      product
-                                                          .uuid!,
-                                                )
-                                                .useWholeSalePrice,
-                                        addToStock: false,
-                                        discount:
-                                            product
-                                                .discount,
-                                        item: product,
-                                        quantity:
-                                            returnSalesProvider()
-                                                .currentCart()
-                                                .cartItems
-                                                .firstWhere(
-                                                  (item) =>
-                                                      (item.itemUuid ??
-                                                          item.item.uuid) ==
-                                                      product
-                                                          .uuid!,
-                                                )
-                                                .quantity,
-                                      ),
-                                      closeAction:
-                                          closeAction,
-                                      priceController:
-                                          priceController,
-                                    );
-                                  } else {
-                                    selectProductSales(
-                                      isEdit: false,
-                                      context: context,
-                                      qttyNode: qttyNode,
-                                      priceNode: priceNode,
-                                      quantityController:
-                                          quantityController,
-                                      searchController:
-                                          searchController,
-                                      theme: theme,
-                                      cartItem: TempCartItem(
-                                        uuid: uuidGen(),
-                                        itemUuid:
-                                            product.uuid,
-                                        isVoid: false,
-                                        qttyPerGroup:
-                                            product
-                                                .qttyPerGroup,
-                                        useGroupQuantity:
-                                            false,
-                                        setTotalPrice:
-                                            returnSalesProvider()
-                                                .setTotalPrice,
-                                        useWholeSalePrice:
-                                            false,
-                                        addToStock: false,
-                                        discount:
-                                            product
-                                                .discount,
-                                        item: product,
-                                        quantity:
-                                            double.tryParse(
-                                              quantityController
-                                                  .text
-                                                  .replaceAll(
-                                                    ',',
-                                                    '',
-                                                  )
-                                                  .trim(),
-                                            ) ??
-                                            0.0,
-                                      ),
-                                      closeAction:
-                                          closeAction,
-                                      priceController:
-                                          priceController,
-                                    );
-                                  }
-                                }
-                              },
+                child: Column(
+                  children: [
+                    Visibility(
+                      visible:
+                          returnCategoriesProvider(
+                            context: context,
+                          ).categories().isNotEmpty,
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          bottom: 10.0,
+                        ),
+                        child: Center(
+                          child: Scrollbar(
+                            controller:
+                                horizontalController,
+                            thumbVisibility: true,
+                            trackVisibility: true,
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                bottom: 15,
+                              ),
+                              child: SingleChildScrollView(
+                                controller:
+                                    horizontalController,
+                                scrollDirection:
+                                    Axis.horizontal,
+                                child: Row(
+                                  mainAxisSize:
+                                      MainAxisSize.min,
+                                  spacing: 3,
+                                  children:
+                                      returnCategoriesProvider(
+                                            context:
+                                                context,
+                                          )
+                                          .categories()
+                                          .map(
+                                            (
+                                              item,
+                                            ) => Material(
+                                              type:
+                                                  MaterialType
+                                                      .transparency,
+                                              child: Ink(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                        5,
+                                                      ),
+                                                  color:
+                                                      currentCat ==
+                                                              item.uuid
+                                                          ? theme.lightModeColor.tertColor200
+                                                          : theme.lightModeColor.tertColor50,
+                                                ),
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    selectCat(
+                                                      item.uuid,
+                                                    );
+                                                  },
+                                                  mouseCursor:
+                                                      SystemMouseCursors
+                                                          .click,
+                                                  child: Container(
+                                                    padding: EdgeInsets.symmetric(
+                                                      vertical:
+                                                          7,
+                                                      horizontal:
+                                                          10,
+                                                    ),
+                                                    child: Center(
+                                                      child: Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              theme.mobileTexts.b4.fontSize,
+                                                          color:
+                                                              currentCat ==
+                                                                      item.uuid
+                                                                  ? Colors.white
+                                                                  : Colors.grey.shade600,
+                                                        ),
+                                                        item.name,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                          .toList(),
+                                ),
+                              ),
                             ),
-                          )
-                          .toList(),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: 5.0,
+                            ),
+                            child: Row(
+                              spacing: 3,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b4
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                  'Items Found:',
+                                ),
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                  returnData()
+                                      .productList()
+                                      .where((item) {
+                                        if (currentCat ==
+                                            null) {
+                                          return true;
+                                        } else {
+                                          return item
+                                                  .categories
+                                                  ?.contains(
+                                                    currentCat,
+                                                  ) ==
+                                              true;
+                                        }
+                                      })
+                                      .length
+                                      .toString(),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: ListView(
+                              children:
+                                  returnData()
+                                      .productList()
+                                      .where((item) {
+                                        if (currentCat ==
+                                            null) {
+                                          return true;
+                                        } else {
+                                          return item
+                                                  .categories
+                                                  ?.contains(
+                                                    currentCat,
+                                                  ) ==
+                                              true;
+                                        }
+                                      })
+                                      .map(
+                                        (
+                                          product,
+                                        ) => ProductTileCartSearch(
+                                          theme: theme,
+                                          product: product,
+                                          action: () {
+                                            if (!product
+                                                .isManaged) {
+                                              if (returnSalesProvider()
+                                                  .currentCart()
+                                                  .cartItems
+                                                  .where(
+                                                    (
+                                                      item,
+                                                    ) =>
+                                                        (item.itemUuid ??
+                                                            item.item.uuid) ==
+                                                        product.uuid,
+                                                  )
+                                                  .isNotEmpty) {
+                                                selectProductSales(
+                                                  isEdit:
+                                                      false,
+                                                  context:
+                                                      context,
+                                                  qttyNode:
+                                                      qttyNode,
+                                                  priceNode:
+                                                      priceNode,
+                                                  quantityController:
+                                                      quantityController,
+                                                  searchController:
+                                                      searchController,
+                                                  theme:
+                                                      theme,
+                                                  cartItem: TempCartItem(
+                                                    uuid:
+                                                        returnSalesProvider()
+                                                            .currentCart()
+                                                            .cartItems
+                                                            .firstWhere(
+                                                              (
+                                                                item,
+                                                              ) =>
+                                                                  (item.itemUuid ??
+                                                                      item.item.uuid) ==
+                                                                  product.uuid!,
+                                                            )
+                                                            .uuid,
+                                                    itemUuid:
+                                                        product.uuid,
+                                                    isVoid:
+                                                        false,
+                                                    qttyPerGroup:
+                                                        returnSalesProvider()
+                                                            .currentCart()
+                                                            .cartItems
+                                                            .firstWhere(
+                                                              (
+                                                                item,
+                                                              ) =>
+                                                                  (item.itemUuid ??
+                                                                      item.item.uuid) ==
+                                                                  product.uuid!,
+                                                            )
+                                                            .qttyPerGroup,
+                                                    useGroupQuantity:
+                                                        returnSalesProvider()
+                                                            .currentCart()
+                                                            .cartItems
+                                                            .firstWhere(
+                                                              (
+                                                                item,
+                                                              ) =>
+                                                                  (item.itemUuid ??
+                                                                      item.item.uuid) ==
+                                                                  product.uuid!,
+                                                            )
+                                                            .useGroupQuantity,
+                                                    setTotalPrice:
+                                                        returnSalesProvider().setTotalPrice,
+                                                    useWholeSalePrice:
+                                                        returnSalesProvider()
+                                                            .currentCart()
+                                                            .cartItems
+                                                            .firstWhere(
+                                                              (
+                                                                item,
+                                                              ) =>
+                                                                  (item.itemUuid ??
+                                                                      item.item.uuid) ==
+                                                                  product.uuid!,
+                                                            )
+                                                            .useWholeSalePrice,
+                                                    addToStock:
+                                                        false,
+                                                    discount:
+                                                        product.discount,
+                                                    item:
+                                                        product,
+                                                    quantity:
+                                                        returnSalesProvider()
+                                                            .currentCart()
+                                                            .cartItems
+                                                            .firstWhere(
+                                                              (
+                                                                item,
+                                                              ) =>
+                                                                  (item.itemUuid ??
+                                                                      item.item.uuid) ==
+                                                                  product.uuid!,
+                                                            )
+                                                            .quantity,
+                                                  ),
+                                                  closeAction:
+                                                      closeAction,
+                                                  priceController:
+                                                      priceController,
+                                                );
+                                              } else {
+                                                selectProductSales(
+                                                  isEdit:
+                                                      false,
+                                                  context:
+                                                      context,
+                                                  qttyNode:
+                                                      qttyNode,
+                                                  priceNode:
+                                                      priceNode,
+                                                  quantityController:
+                                                      quantityController,
+                                                  searchController:
+                                                      searchController,
+                                                  theme:
+                                                      theme,
+                                                  cartItem: TempCartItem(
+                                                    uuid:
+                                                        uuidGen(),
+                                                    itemUuid:
+                                                        product.uuid,
+                                                    isVoid:
+                                                        false,
+                                                    qttyPerGroup:
+                                                        product.qttyPerGroup,
+                                                    useGroupQuantity:
+                                                        false,
+                                                    setTotalPrice:
+                                                        returnSalesProvider().setTotalPrice,
+                                                    useWholeSalePrice:
+                                                        false,
+                                                    addToStock:
+                                                        false,
+                                                    discount:
+                                                        product.discount,
+                                                    item:
+                                                        product,
+                                                    quantity:
+                                                        double.tryParse(
+                                                          quantityController.text
+                                                              .replaceAll(
+                                                                ',',
+                                                                '',
+                                                              )
+                                                              .trim(),
+                                                        ) ??
+                                                        0.0,
+                                                  ),
+                                                  closeAction:
+                                                      closeAction,
+                                                  priceController:
+                                                      priceController,
+                                                );
+                                              }
+                                            } else {
+                                              if (product
+                                                      .quantity ==
+                                                  0) {
+                                                showDialog(
+                                                  context:
+                                                      context,
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    var theme = returnTheme(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    );
+                                                    return InfoAlert(
+                                                      theme:
+                                                          theme,
+                                                      message:
+                                                          'Item Quantity is Zero, Therefore, this item cannot be sold',
+                                                      title:
+                                                          'Item out of Stock',
+                                                    );
+                                                  },
+                                                );
+                                              } else if (returnSalesProvider()
+                                                  .currentCart()
+                                                  .cartItems
+                                                  .where(
+                                                    (
+                                                      item,
+                                                    ) =>
+                                                        (item.itemUuid ??
+                                                            item.item.uuid) ==
+                                                        product.uuid,
+                                                  )
+                                                  .isNotEmpty) {
+                                                selectProductSales(
+                                                  isEdit:
+                                                      false,
+                                                  context:
+                                                      context,
+                                                  qttyNode:
+                                                      qttyNode,
+                                                  priceNode:
+                                                      priceNode,
+                                                  quantityController:
+                                                      quantityController,
+                                                  searchController:
+                                                      searchController,
+                                                  theme:
+                                                      theme,
+                                                  cartItem: TempCartItem(
+                                                    uuid:
+                                                        returnSalesProvider()
+                                                            .currentCart()
+                                                            .cartItems
+                                                            .firstWhere(
+                                                              (
+                                                                item,
+                                                              ) =>
+                                                                  (item.itemUuid ??
+                                                                      item.item.uuid) ==
+                                                                  product.uuid!,
+                                                            )
+                                                            .uuid,
+                                                    itemUuid:
+                                                        product.uuid,
+                                                    isVoid:
+                                                        false,
+                                                    qttyPerGroup:
+                                                        returnSalesProvider()
+                                                            .currentCart()
+                                                            .cartItems
+                                                            .firstWhere(
+                                                              (
+                                                                item,
+                                                              ) =>
+                                                                  (item.itemUuid ??
+                                                                      item.item.uuid) ==
+                                                                  product.uuid!,
+                                                            )
+                                                            .qttyPerGroup,
+                                                    useGroupQuantity:
+                                                        returnSalesProvider()
+                                                            .currentCart()
+                                                            .cartItems
+                                                            .firstWhere(
+                                                              (
+                                                                item,
+                                                              ) =>
+                                                                  (item.itemUuid ??
+                                                                      item.item.uuid) ==
+                                                                  product.uuid!,
+                                                            )
+                                                            .useGroupQuantity,
+                                                    setTotalPrice:
+                                                        returnSalesProvider().setTotalPrice,
+                                                    useWholeSalePrice:
+                                                        returnSalesProvider()
+                                                            .currentCart()
+                                                            .cartItems
+                                                            .firstWhere(
+                                                              (
+                                                                item,
+                                                              ) =>
+                                                                  (item.itemUuid ??
+                                                                      item.item.uuid) ==
+                                                                  product.uuid!,
+                                                            )
+                                                            .useWholeSalePrice,
+                                                    addToStock:
+                                                        false,
+                                                    discount:
+                                                        product.discount,
+                                                    item:
+                                                        product,
+                                                    quantity:
+                                                        returnSalesProvider()
+                                                            .currentCart()
+                                                            .cartItems
+                                                            .firstWhere(
+                                                              (
+                                                                item,
+                                                              ) =>
+                                                                  (item.itemUuid ??
+                                                                      item.item.uuid) ==
+                                                                  product.uuid!,
+                                                            )
+                                                            .quantity,
+                                                  ),
+                                                  closeAction:
+                                                      closeAction,
+                                                  priceController:
+                                                      priceController,
+                                                );
+                                              } else {
+                                                selectProductSales(
+                                                  isEdit:
+                                                      false,
+                                                  context:
+                                                      context,
+                                                  qttyNode:
+                                                      qttyNode,
+                                                  priceNode:
+                                                      priceNode,
+                                                  quantityController:
+                                                      quantityController,
+                                                  searchController:
+                                                      searchController,
+                                                  theme:
+                                                      theme,
+                                                  cartItem: TempCartItem(
+                                                    uuid:
+                                                        uuidGen(),
+                                                    itemUuid:
+                                                        product.uuid,
+                                                    isVoid:
+                                                        false,
+                                                    qttyPerGroup:
+                                                        product.qttyPerGroup,
+                                                    useGroupQuantity:
+                                                        false,
+                                                    setTotalPrice:
+                                                        returnSalesProvider().setTotalPrice,
+                                                    useWholeSalePrice:
+                                                        false,
+                                                    addToStock:
+                                                        false,
+                                                    discount:
+                                                        product.discount,
+                                                    item:
+                                                        product,
+                                                    quantity:
+                                                        double.tryParse(
+                                                          quantityController.text
+                                                              .replaceAll(
+                                                                ',',
+                                                                '',
+                                                              )
+                                                              .trim(),
+                                                        ) ??
+                                                        0.0,
+                                                  ),
+                                                  closeAction:
+                                                      closeAction,
+                                                  priceController:
+                                                      priceController,
+                                                );
+                                              }
+                                            }
+                                          },
+                                        ),
+                                      )
+                                      .toList(),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

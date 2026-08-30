@@ -1458,10 +1458,6 @@ class _ProductDetailsDesktopState
                                                   product:
                                                       product,
                                                 );
-                                                // await provider
-                                                //     .getProducts(
-                                                //       shopId,
-                                                //     );
                                                 setState(() {
                                                   isLoading =
                                                       false;
@@ -1727,29 +1723,49 @@ class _ProductDetailsDesktopState
               ),
             ],
           ),
-          Visibility(
-            visible:
-                authorization(
-                  authorized:
-                      Authorizations().updateProduct,
-                ) &&
-                authorization(
-                  authorized:
-                      Authorizations().updateItemQuantity,
-                ) &&
-                product.storageUuid == null,
-            child: Row(
-              children: [
-                Expanded(
-                  child: EditButton(
-                    theme: widget.theme,
-                    action: () {
-                      updateItemQuantity(context, product);
-                    },
-                    text: 'Edit Unit Qtty',
+          IgnorePointer(
+            ignoring:
+                !(authorization(
+                      authorized:
+                          Authorizations().updateProduct,
+                    ) &&
+                    authorization(
+                      authorized:
+                          Authorizations()
+                              .updateItemQuantity,
+                    ) &&
+                    product.storageUuid == null),
+            child: Opacity(
+              opacity:
+                  (authorization(
+                            authorized:
+                                Authorizations()
+                                    .updateProduct,
+                          ) &&
+                          authorization(
+                            authorized:
+                                Authorizations()
+                                    .updateItemQuantity,
+                          ) &&
+                          product.storageUuid == null)
+                      ? 1
+                      : 0,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: EditButton(
+                      theme: widget.theme,
+                      action: () {
+                        updateItemQuantity(
+                          context,
+                          product,
+                        );
+                      },
+                      text: 'Edit Unit Qtty',
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],

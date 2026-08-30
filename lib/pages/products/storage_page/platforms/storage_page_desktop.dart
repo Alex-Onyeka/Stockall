@@ -15,6 +15,7 @@ import 'package:stockall/pages/products/storage_page/add_storage_item/add_storag
 import 'package:stockall/pages/products/storage_page/components/inventory_update_widget.dart';
 import 'package:stockall/pages/products/storage_page/components/summary_table_heading_bar.dart';
 import 'package:stockall/pages/products/storage_page/components/table_row_widget.dart';
+import 'package:stockall/providers/theme_provider.dart';
 
 class StoragePageDesktop extends StatefulWidget {
   final String? itemName;
@@ -395,438 +396,132 @@ class StoragePageDesktopState
                             child: Builder(
                               builder: (context) {
                                 if (sortIndex == 1) {
-                                  return ListView(
-                                    primary: false,
-                                    scrollDirection:
-                                        Axis.horizontal,
-                                    children: [
-                                      SizedBox(
-                                        width:
-                                            screenWidth(
-                                              context,
-                                            ) -
-                                            120,
-                                        child: RefreshIndicator(
-                                          onRefresh: () {
-                                            return getProducts();
-                                          },
-                                          backgroundColor:
-                                              Colors.white,
-                                          color:
-                                              theme
-                                                  .lightModeColor
-                                                  .prColor300,
-                                          displacement: 10,
-                                          child: ListView(
-                                            children: [
-                                              SummaryTableHeadingBar(
-                                                isHeading:
-                                                    true,
-                                                theme:
-                                                    theme,
-                                                product:
-                                                    products,
-                                              ),
-                                              Builder(
-                                                builder: (
-                                                  context,
-                                                ) {
-                                                  if (products
-                                                      .isEmpty) {
-                                                    return Padding(
-                                                      padding: const EdgeInsets.only(
-                                                        top:
-                                                            100.0,
-                                                      ),
-                                                      child: EmptyWidgetDisplayOnly(
-                                                        title:
-                                                            'Empty List',
-                                                        subText:
-                                                            'No Item has been recorded yet',
-                                                        theme:
-                                                            theme,
-                                                        height:
-                                                            35,
-                                                        icon:
-                                                            Icons.clear,
-                                                      ),
-                                                    );
-                                                  } else {
-                                                    return RefreshIndicator(
-                                                      onRefresh: () {
-                                                        return getProducts();
-                                                      },
-                                                      backgroundColor:
-                                                          Colors.white,
-                                                      color:
-                                                          theme.lightModeColor.prColor300,
-                                                      displacement:
-                                                          10,
-                                                      child: SingleChildScrollView(
-                                                        primary:
-                                                            true,
-                                                        child: Column(
-                                                          children: [
-                                                            ListView.builder(
-                                                              shrinkWrap:
-                                                                  true,
-                                                              itemCount:
-                                                                  products.length,
-                                                              physics:
-                                                                  NeverScrollableScrollPhysics(),
-
-                                                              itemBuilder: (
-                                                                context,
-                                                                index,
-                                                              ) {
-                                                                var product =
-                                                                    products[index];
-                                                                return TableRowRecordWidget(
-                                                                  theme:
-                                                                      theme,
-                                                                  product:
-                                                                      product,
-                                                                );
-                                                              },
-                                                            ),
-                                                            SummaryTableHeadingBar(
-                                                              isHeading:
-                                                                  false,
-                                                              theme:
-                                                                  theme,
-                                                              product:
-                                                                  products,
-                                                            ),
-                                                            SizedBox(
-                                                              height:
-                                                                  20,
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    );
-                                                  }
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                } else if (sortIndex == 2) {
-                                  return SizedBox(
-                                    child: Column(
+                                  return Center(
+                                    child: ListView(
+                                      primary: false,
+                                      scrollDirection:
+                                          Axis.horizontal,
                                       children: [
-                                        Visibility(
-                                          visible:
-                                              !isStoreKeeper(),
-                                          child: Column(
-                                            children: [
-                                              Container(
-                                                width:
-                                                    double
-                                                        .infinity,
-                                                height: 1.5,
-                                                color:
-                                                    Colors
-                                                        .grey
-                                                        .shade200,
-                                              ),
-                                              SizedBox(
-                                                height: 15,
-                                              ),
-                                              Column(
-                                                children: [
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.center,
-                                                    children: [
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              theme.mobileTexts.b2.fontSize,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                        'Finance',
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(
-                                                    height:
-                                                        8,
-                                                  ),
-                                                  Row(
-                                                    spacing:
-                                                        10,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.center,
-                                                    children: [
-                                                      Expanded(
-                                                        child: TabContainer(
-                                                          priceTextSize:
-                                                              theme.mobileTexts.h3.fontSize,
-                                                          isMoney:
-                                                              true,
-                                                          text:
-                                                              'Total Cost Value',
-                                                          price:
-                                                              returnData(
-                                                                context:
-                                                                    context,
-                                                              ).getTotalCostPrice(),
-                                                          theme:
-                                                              theme,
-                                                          backGround: const Color.fromARGB(
-                                                            11,
-                                                            15,
-                                                            4,
-                                                            114,
-                                                          ),
-                                                          border: const Color.fromARGB(
-                                                            32,
-                                                            45,
-                                                            3,
-                                                            255,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Expanded(
-                                                        child: TabContainer(
-                                                          priceTextSize:
-                                                              theme.mobileTexts.h3.fontSize,
-                                                          isMoney:
-                                                              true,
-                                                          text:
-                                                              'Total Selling Value',
-                                                          price:
-                                                              returnData(
-                                                                context:
-                                                                    context,
-                                                              ).getTotalSellingPrice(),
-                                                          theme:
-                                                              theme,
-                                                          backGround: const Color.fromARGB(
-                                                            18,
-                                                            2,
-                                                            163,
-                                                            31,
-                                                          ),
-                                                          border: const Color.fromARGB(
-                                                            63,
-                                                            2,
-                                                            163,
-                                                            31,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(
-                                                height: 20,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Container(
-                                          width:
-                                              double
-                                                  .infinity,
-                                          height: 1.5,
-                                          color:
-                                              Colors
-                                                  .grey
-                                                  .shade200,
-                                        ),
                                         SizedBox(
-                                          height: 20,
-                                        ),
-                                        Column(
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .center,
+                                          width:
+                                              screenWidth(
+                                                context,
+                                              ) -
+                                              40,
+                                          child: RefreshIndicator(
+                                            onRefresh: () {
+                                              return getProducts();
+                                            },
+                                            backgroundColor:
+                                                Colors
+                                                    .white,
+                                            color:
+                                                theme
+                                                    .lightModeColor
+                                                    .prColor300,
+                                            displacement:
+                                                10,
+                                            child: ListView(
                                               children: [
-                                                Text(
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        theme.mobileTexts.b2.fontSize,
-                                                    fontWeight:
-                                                        FontWeight.bold,
-                                                  ),
-                                                  'ITEMS',
+                                                SummaryTableHeadingBar(
+                                                  isHeading:
+                                                      true,
+                                                  theme:
+                                                      theme,
+                                                  product:
+                                                      products,
                                                 ),
-                                              ],
-                                            ),
-                                            SizedBox(
-                                              height: 8,
-                                            ),
-                                            Row(
-                                              spacing: 0,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .center,
-                                              children: [
-                                                Expanded(
-                                                  child: TabContainer(
-                                                    isMoney:
-                                                        false,
-                                                    text:
-                                                        'Total Items',
-                                                    price:
-                                                        returnData(
-                                                          context:
-                                                              context,
-                                                        ).productList().length.toDouble(),
-                                                    theme:
-                                                        theme,
-                                                    backGround:
-                                                        const Color.fromARGB(
-                                                          11,
-                                                          15,
-                                                          4,
-                                                          114,
+                                                Builder(
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    if (products
+                                                        .isEmpty) {
+                                                      return Padding(
+                                                        padding: const EdgeInsets.only(
+                                                          top:
+                                                              100.0,
                                                         ),
-                                                    border: const Color.fromARGB(
-                                                      32,
-                                                      45,
-                                                      3,
-                                                      255,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            Row(
-                                              spacing: 10,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .center,
-                                              children: [
-                                                Expanded(
-                                                  child: TabContainer(
-                                                    isMoney:
-                                                        false,
-                                                    text:
-                                                        'In Stock',
-                                                    price:
-                                                        returnData(
-                                                              context:
-                                                                  context,
-                                                            )
-                                                            .productList()
-                                                            .where(
-                                                              (
-                                                                item,
-                                                              ) =>
-                                                                  item.quantity !=
-                                                                      null &&
-                                                                  item.quantity !=
-                                                                      0,
-                                                            )
-                                                            .length
-                                                            .toDouble(),
-                                                    theme:
-                                                        theme,
-                                                    backGround:
-                                                        const Color.fromARGB(
-                                                          18,
-                                                          2,
-                                                          163,
-                                                          31,
+                                                        child: EmptyWidgetDisplayOnly(
+                                                          title:
+                                                              'Empty List',
+                                                          subText:
+                                                              'No Item has been recorded yet',
+                                                          theme:
+                                                              theme,
+                                                          height:
+                                                              35,
+                                                          icon:
+                                                              Icons.clear,
                                                         ),
-                                                    border: const Color.fromARGB(
-                                                      63,
-                                                      2,
-                                                      163,
-                                                      31,
-                                                    ),
-                                                  ),
-                                                ),
-                                                Expanded(
-                                                  child: TabContainer(
-                                                    isMoney:
-                                                        false,
-                                                    text:
-                                                        'Out Of Stock',
-                                                    price:
-                                                        returnData(
-                                                              context:
+                                                      );
+                                                    } else {
+                                                      return RefreshIndicator(
+                                                        onRefresh: () {
+                                                          return getProducts();
+                                                        },
+                                                        backgroundColor:
+                                                            Colors.white,
+                                                        color:
+                                                            theme.lightModeColor.prColor300,
+                                                        displacement:
+                                                            10,
+                                                        child: SingleChildScrollView(
+                                                          primary:
+                                                              true,
+                                                          child: Column(
+                                                            children: [
+                                                              ListView.builder(
+                                                                shrinkWrap:
+                                                                    true,
+                                                                itemCount:
+                                                                    products.length,
+                                                                physics:
+                                                                    NeverScrollableScrollPhysics(),
+
+                                                                itemBuilder: (
                                                                   context,
-                                                            )
-                                                            .productList()
-                                                            .where(
-                                                              (
-                                                                item,
-                                                              ) =>
-                                                                  item.quantity !=
-                                                                      null &&
-                                                                  item.quantity ==
-                                                                      0,
-                                                            )
-                                                            .length
-                                                            .toDouble(),
-                                                    theme:
-                                                        theme,
-                                                    backGround: const Color.fromARGB(
-                                                      25,
-                                                      235,
-                                                      150,
-                                                      3,
-                                                    ),
-                                                    border: const Color.fromARGB(
-                                                      74,
-                                                      232,
-                                                      148,
-                                                      3,
-                                                    ),
-                                                  ),
-                                                ),
-                                                Expanded(
-                                                  child: TabContainer(
-                                                    isMoney:
-                                                        false,
-                                                    text:
-                                                        'Un-Managed Items',
-                                                    price:
-                                                        returnData(
-                                                              context:
-                                                                  context,
-                                                            )
-                                                            .productList()
-                                                            .where(
-                                                              (
-                                                                item,
-                                                              ) =>
-                                                                  !item.isManaged,
-                                                            )
-                                                            .length
-                                                            .toDouble(),
-                                                    theme:
-                                                        theme,
-                                                    backGround: const Color.fromARGB(
-                                                      141,
-                                                      245,
-                                                      245,
-                                                      245,
-                                                    ),
-                                                    border:
-                                                        Colors.grey.shade300,
-                                                  ),
+                                                                  index,
+                                                                ) {
+                                                                  var product =
+                                                                      products[index];
+                                                                  return TableRowRecordWidget(
+                                                                    theme:
+                                                                        theme,
+                                                                    product:
+                                                                        product,
+                                                                  );
+                                                                },
+                                                              ),
+                                                              SummaryTableHeadingBar(
+                                                                isHeading:
+                                                                    false,
+                                                                theme:
+                                                                    theme,
+                                                                product:
+                                                                    products,
+                                                              ),
+                                                              SizedBox(
+                                                                height:
+                                                                    20,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      );
+                                                    }
+                                                  },
                                                 ),
                                               ],
                                             ),
-                                          ],
+                                          ),
                                         ),
                                       ],
                                     ),
+                                  );
+                                } else if (sortIndex == 2) {
+                                  return StorageSummaryWidget(
+                                    theme: theme,
                                   );
                                 } else {
                                   return SizedBox(
@@ -1690,6 +1385,439 @@ class StoragePageDesktopState
           ),
         ),
       ],
+    );
+  }
+}
+
+class StorageSummaryWidget extends StatelessWidget {
+  const StorageSummaryWidget({
+    super.key,
+    required this.theme,
+  });
+
+  final ThemeProvider theme;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      child: Column(
+        children: [
+          Visibility(
+            visible: !isStoreKeeper(),
+            child: Column(
+              children: [
+                Container(
+                  width: double.infinity,
+                  height: 1.5,
+                  color: Colors.grey.shade200,
+                ),
+                SizedBox(height: 15),
+                Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b2
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          'FINANCE',
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Row(
+                      spacing: 10,
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: TabContainer(
+                            priceTextSize:
+                                theme
+                                    .mobileTexts
+                                    .h3
+                                    .fontSize,
+                            isMoney: true,
+                            text: 'Total Cost Value',
+                            price:
+                                returnStorageProductProvider(
+                                  context: context,
+                                ).getTotalCostPrice(),
+                            theme: theme,
+                            backGround:
+                                const Color.fromARGB(
+                                  11,
+                                  15,
+                                  4,
+                                  114,
+                                ),
+                            border: const Color.fromARGB(
+                              32,
+                              45,
+                              3,
+                              255,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: TabContainer(
+                            priceTextSize:
+                                theme
+                                    .mobileTexts
+                                    .h3
+                                    .fontSize,
+                            isMoney: true,
+                            text: 'Total Selling Value',
+                            price:
+                                returnStorageProductProvider(
+                                  context: context,
+                                ).getTotalSellingPrice(),
+                            theme: theme,
+                            backGround:
+                                const Color.fromARGB(
+                                  18,
+                                  2,
+                                  163,
+                                  31,
+                                ),
+                            border: const Color.fromARGB(
+                              63,
+                              2,
+                              163,
+                              31,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20),
+              ],
+            ),
+          ),
+          Container(
+            width: double.infinity,
+            height: 1.5,
+            color: Colors.grey.shade200,
+          ),
+          SizedBox(height: 20),
+          Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b2.fontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    'STORAGE ITEMS',
+                  ),
+                ],
+              ),
+              SizedBox(height: 8),
+              Row(
+                spacing: 0,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: TabContainer(
+                      isMoney: false,
+                      text: 'Total Items',
+                      price:
+                          returnStorageProductProvider(
+                                context: context,
+                              )
+                              .storageProductListMain
+                              .length
+                              .toDouble(),
+                      theme: theme,
+                      backGround: const Color.fromARGB(
+                        11,
+                        15,
+                        4,
+                        114,
+                      ),
+                      border: const Color.fromARGB(
+                        32,
+                        45,
+                        3,
+                        255,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Row(
+                spacing: 10,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: TabContainer(
+                      isMoney: false,
+                      text: 'In Stock',
+                      price:
+                          returnStorageProductProvider(
+                                context: context,
+                              ).storageProductListMain
+                              .where(
+                                (item) =>
+                                    item.quantity != null &&
+                                    item.quantity != 0,
+                              )
+                              .length
+                              .toDouble(),
+                      theme: theme,
+                      backGround: const Color.fromARGB(
+                        18,
+                        2,
+                        163,
+                        31,
+                      ),
+                      border: const Color.fromARGB(
+                        63,
+                        2,
+                        163,
+                        31,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: TabContainer(
+                      isMoney: false,
+                      text: 'Out Of Stock',
+                      price:
+                          returnStorageProductProvider(
+                                context: context,
+                              ).storageProductListMain
+                              .where(
+                                (item) =>
+                                    item.quantity != null &&
+                                    item.quantity == 0,
+                              )
+                              .length
+                              .toDouble(),
+                      theme: theme,
+                      backGround: const Color.fromARGB(
+                        25,
+                        235,
+                        150,
+                        3,
+                      ),
+                      border: const Color.fromARGB(
+                        74,
+                        232,
+                        148,
+                        3,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: TabContainer(
+                      isMoney: false,
+                      text: 'Total Quantity',
+                      price: returnStorageProductProvider(
+                            context: context,
+                          ).storageProductListMain
+                          .where(
+                            (item) => item.quantity != null,
+                          )
+                          .map((item) => item.quantity)
+                          .fold(0, (a, b) => a + (b ?? 0)),
+                      theme: theme,
+                      backGround: const Color.fromARGB(
+                        141,
+                        245,
+                        245,
+                        245,
+                      ),
+                      border: Colors.grey.shade300,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          SizedBox(height: 20),
+          Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b2.fontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    'ITEMS',
+                  ),
+                ],
+              ),
+              SizedBox(height: 8),
+              Row(
+                spacing: 0,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: TabContainer(
+                      isMoney: false,
+                      text: 'Total Items',
+                      price:
+                          returnData(
+                            context: context,
+                          ).productList().length.toDouble(),
+                      theme: theme,
+                      backGround: const Color.fromARGB(
+                        11,
+                        15,
+                        4,
+                        114,
+                      ),
+                      border: const Color.fromARGB(
+                        32,
+                        45,
+                        3,
+                        255,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Row(
+                spacing: 10,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: TabContainer(
+                      isMoney: false,
+                      text: 'In Stock',
+                      price:
+                          returnData(context: context)
+                              .productList()
+                              .where(
+                                (item) =>
+                                    item.quantity != null &&
+                                    item.quantity != 0,
+                              )
+                              .length
+                              .toDouble(),
+                      theme: theme,
+                      backGround: const Color.fromARGB(
+                        18,
+                        2,
+                        163,
+                        31,
+                      ),
+                      border: const Color.fromARGB(
+                        63,
+                        2,
+                        163,
+                        31,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: TabContainer(
+                      isMoney: false,
+                      text: 'Out Of Stock',
+                      price:
+                          returnData(context: context)
+                              .productList()
+                              .where(
+                                (item) =>
+                                    item.quantity != null &&
+                                    item.quantity == 0,
+                              )
+                              .length
+                              .toDouble(),
+                      theme: theme,
+                      backGround: const Color.fromARGB(
+                        25,
+                        235,
+                        150,
+                        3,
+                      ),
+                      border: const Color.fromARGB(
+                        74,
+                        232,
+                        148,
+                        3,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: TabContainer(
+                      isMoney: false,
+                      text: 'Un-Managed Items',
+                      price:
+                          returnData(context: context)
+                              .productList()
+                              .where(
+                                (item) => !item.isManaged,
+                              )
+                              .length
+                              .toDouble(),
+                      theme: theme,
+                      backGround: const Color.fromARGB(
+                        141,
+                        245,
+                        245,
+                        245,
+                      ),
+                      border: Colors.grey.shade300,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: TabContainer(
+                      isMoney: false,
+                      text: 'Total Quantity',
+                      price: returnData(context: context)
+                          .productList()
+                          .where(
+                            (item) => item.quantity != null,
+                          )
+                          .map((item) => item.quantity)
+                          .fold(0, (a, b) => a + (b ?? 0)),
+                      theme: theme,
+                      backGround: const Color.fromARGB(
+                        141,
+                        245,
+                        245,
+                        245,
+                      ),
+                      border: Colors.grey.shade300,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

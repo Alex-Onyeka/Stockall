@@ -18,6 +18,9 @@ class _StoragePageState extends State<StoragePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       returnInventoryUpdatesProvider().clearDate();
+      returnStorageProductProvider().getStorageProducts(
+        shopId(),
+      );
     });
   }
 

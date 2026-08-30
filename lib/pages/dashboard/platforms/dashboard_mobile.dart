@@ -30,6 +30,7 @@ import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/production/production_page.dart';
+import 'package:stockall/pages/products/storage_page/storage_page.dart';
 import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -317,36 +318,30 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                       visible:
                                           isStoreKeeper(),
                                       child: Expanded(
-                                        child: Row(
-                                          children: [
-                                            ButtonTab(
-                                              theme: theme,
-                                              icon:
-                                                  reportIconSvg,
-                                              title:
-                                                  'Report',
-                                              action: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (
-                                                      context,
-                                                    ) {
-                                                      return ReportPage();
-                                                    },
-                                                  ),
-                                                ).then((
+                                        child: MainInfoTab(
+                                          iconColor:
+                                              theme
+                                                  .lightModeColor
+                                                  .tertColor200,
+                                          theme: theme,
+                                          icon:
+                                              productIconSvg,
+                                          number:
+                                              '${returnStorageProductProvider(context: context).storageProductListMain.length}',
+                                          title:
+                                              'Storage Items',
+                                          action: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
                                                   context,
                                                 ) {
-                                                  setState(
-                                                    () {
-                                                      clearDate();
-                                                    },
-                                                  );
-                                                });
-                                              },
-                                            ),
-                                          ],
+                                                  return StoragePage();
+                                                },
+                                              ),
+                                            );
+                                          },
                                         ),
                                       ),
                                     ),
@@ -448,6 +443,43 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                       ),
                                     ),
                                   ],
+                                ),
+                                Visibility(
+                                  visible: isStoreKeeper(),
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.only(
+                                          top: 10.0,
+                                        ),
+                                    child: Row(
+                                      children: [
+                                        ButtonTab(
+                                          theme: theme,
+                                          icon:
+                                              reportIconSvg,
+                                          title: 'Report',
+                                          action: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return ReportPage();
+                                                },
+                                              ),
+                                            ).then((
+                                              context,
+                                            ) {
+                                              setState(() {
+                                                clearDate();
+                                              });
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                                 SizedBox(height: 20),
                                 Visibility(

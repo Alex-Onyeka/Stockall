@@ -30,6 +30,7 @@ import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/production/production_page.dart';
+import 'package:stockall/pages/products/storage_page/storage_page.dart';
 import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -468,6 +469,46 @@ class _DashboardDesktopState
                                                               10,
                                                         ),
                                                       ],
+                                                    ),
+                                                  ),
+                                                  Visibility(
+                                                    visible:
+                                                        isStoreKeeper(),
+                                                    child: Expanded(
+                                                      child: Row(
+                                                        children: [
+                                                          Expanded(
+                                                            child: MainInfoTab(
+                                                              theme:
+                                                                  theme,
+                                                              iconColor:
+                                                                  theme.lightModeColor.tertColor200,
+                                                              icon:
+                                                                  productIconSvg,
+                                                              number:
+                                                                  '${returnStorageProductProvider(context: context).storageProductListMain.length}',
+                                                              title:
+                                                                  'Storage Items',
+                                                              action: () {
+                                                                Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                    builder: (
+                                                                      context,
+                                                                    ) {
+                                                                      return StoragePage();
+                                                                    },
+                                                                  ),
+                                                                );
+                                                              },
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            width:
+                                                                10,
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
                                                   Visibility(
