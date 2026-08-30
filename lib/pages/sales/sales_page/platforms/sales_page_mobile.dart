@@ -473,10 +473,6 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                                   response: CheckoutResponse(
                                                     receipt:
                                                         mainReceipt,
-                                                    resUuid:
-                                                        mainReceipt.uuid!,
-                                                    isReceipt:
-                                                        true,
                                                   ),
                                                   isMain:
                                                       false,

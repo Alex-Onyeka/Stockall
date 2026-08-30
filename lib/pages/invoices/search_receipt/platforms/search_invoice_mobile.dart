@@ -221,15 +221,11 @@ class _SearchInvoiceMobileState
                                       MaterialPageRoute(
                                         builder: (context) {
                                           return ReceiptPage(
-                                            response: CheckoutResponse(
-                                              invoice:
-                                                  invoice,
-                                              isReceipt:
-                                                  false,
-                                              resUuid:
-                                                  invoice
-                                                      .uuid!,
-                                            ),
+                                            response:
+                                                CheckoutResponse(
+                                                  invoice:
+                                                      invoice,
+                                                ),
                                             isMain: false,
                                           );
                                         },

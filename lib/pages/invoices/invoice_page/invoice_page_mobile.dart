@@ -48,7 +48,7 @@ class _InvoicePageMobileState
               .firstWhere(
                 (inv) =>
                     inv.uuid ==
-                    widget.checkoutResponse.resUuid,
+                    widget.checkoutResponse.invoice?.uuid,
               );
           paymentController.text = returnInvoicesProvider()
               .getBalance(invoice: invoice)
@@ -78,14 +78,15 @@ class _InvoicePageMobileState
             .where(
               (record) =>
                   record.invoiceUuid ==
-                  widget.checkoutResponse.resUuid,
+                  widget.checkoutResponse.invoice?.uuid,
             )
             .toList();
     TempInvoice? invoice = returnInvoicesProvider()
         .invoicesMain
         .firstWhere(
           (inv) =>
-              inv.uuid == widget.checkoutResponse.resUuid,
+              inv.uuid ==
+              widget.checkoutResponse.invoice?.uuid,
           orElse: () {
             return TempInvoice(
               comment: null,
@@ -270,7 +271,8 @@ class _InvoicePageMobileState
                                               rec.invoiceUuid ==
                                               widget
                                                   .checkoutResponse
-                                                  .resUuid,
+                                                  .invoice
+                                                  ?.uuid,
                                         )
                                         .isEmpty &&
                                     authorization(
@@ -411,7 +413,7 @@ class _InvoicePageMobileState
                                                   .where(
                                                     (rec) =>
                                                         rec.invoiceUuid ==
-                                                        widget.checkoutResponse.resUuid,
+                                                        widget.checkoutResponse.invoice?.uuid,
                                                   )
                                                   .toList(),
                                           records:
@@ -455,7 +457,7 @@ class _InvoicePageMobileState
                                                                 rec,
                                                               ) =>
                                                                   rec.invoiceUuid ==
-                                                                  widget.checkoutResponse.resUuid,
+                                                                  widget.checkoutResponse.invoice?.uuid,
                                                             )
                                                             .toList(),
                                                     records:
@@ -2050,7 +2052,8 @@ class _InvoicePageMobileState
                                                       rec.invoiceUuid ==
                                                       widget
                                                           .checkoutResponse
-                                                          .resUuid,
+                                                          .invoice
+                                                          ?.uuid,
                                                 )
                                                 .isEmpty) {
                                               return SizedBox(
@@ -2106,7 +2109,7 @@ class _InvoicePageMobileState
                                                           rec,
                                                         ) =>
                                                             rec.invoiceUuid ==
-                                                            widget.checkoutResponse.resUuid,
+                                                            widget.checkoutResponse.invoice?.uuid,
                                                       )
                                                       .map(
                                                         (
@@ -2125,15 +2128,9 @@ class _InvoicePageMobileState
                                                                     response: CheckoutResponse(
                                                                       receipt:
                                                                           receipt,
-                                                                      resUuid:
-                                                                          receipt.uuid!,
-                                                                      isReceipt:
-                                                                          true,
                                                                     ),
                                                                     isMain:
                                                                         false,
-                                                                    isComingFromInvoice:
-                                                                        true,
                                                                   );
                                                                 },
                                                               ),

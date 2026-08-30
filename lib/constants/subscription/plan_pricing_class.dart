@@ -4,6 +4,7 @@ class PlanPricingClass {
   final String planName;
   final String planDesc;
   final int plan;
+  final int oldPlan;
   final double price;
   final int duration;
   final double? discount;
@@ -23,6 +24,7 @@ class PlanPricingClass {
     required this.planName,
     required this.planDesc,
     required this.plan,
+    required this.oldPlan,
     required this.price,
     required this.duration,
     this.discount,

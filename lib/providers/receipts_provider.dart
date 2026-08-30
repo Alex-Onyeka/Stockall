@@ -22,7 +22,6 @@ import 'package:stockall/pages/report/general_report/class/general_report_class.
 import 'package:stockall/pages/report/receipt_sales_report/platforms/receipt_sales_report_desktop.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
-import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 // // //
@@ -555,9 +554,8 @@ class ReceiptsProvider extends ChangeNotifier {
                 item.receipt.uuid!,
               );
             }
-            await createErrorLog(
-              error:
-                  'Error Synchronizing Receipt ${item.receipt.bank + item.receipt.cashAlt + (item.receipt.customerAccount ?? 0)}: $e',
+            await mainLocalLog(
+              'Error Synchronizing Receipt ${item.receipt.bank + item.receipt.cashAlt + (item.receipt.customerAccount ?? 0)}: $e',
             );
           }
         }
@@ -577,9 +575,6 @@ class ReceiptsProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Receipts Insert failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Receipts Insert failed ❌: $e',
       );
     }
   }
@@ -636,9 +631,6 @@ class ReceiptsProvider extends ChangeNotifier {
       await mainLocalLog(
         'Batch Receipts Delete failed ❌: $e',
       );
-      await createErrorLog(
-        error: 'Batch Receipts Delete failed ❌: $e',
-      );
     }
   }
   //
@@ -683,9 +675,6 @@ class ReceiptsProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Receipts Update failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Receipts Update failed ❌: $e',
       );
     }
   }
@@ -916,10 +905,6 @@ class ReceiptsProvider extends ChangeNotifier {
             await mainLocalLog(
               '🎶🎶🤦‍♀️💖💋✅Error Synchronizing Product Sales Record ${item.record.productName}: $e',
             );
-            await createErrorLog(
-              error:
-                  'Error Synchronizing Product Sales Record ${item.record.productName}: $e',
-            );
           }
         }
 
@@ -932,9 +917,6 @@ class ReceiptsProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Sales Records insert failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Sales Records Insert failed ❌: $e',
       );
     }
   }
@@ -2313,8 +2295,7 @@ class ReceiptsProvider extends ChangeNotifier {
                     builder: (context) {
                       return ReceiptPage(
                         response: CheckoutResponse(
-                          resUuid: item.uuid!,
-                          isReceipt: true,
+                          receipt: item,
                         ),
                         isMain: false,
                       );

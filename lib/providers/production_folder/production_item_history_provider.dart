@@ -9,7 +9,6 @@ import 'package:stockall/local_database/production_item_history/production_item_
 import 'package:stockall/local_database/production_item_history/unsync_funcs/created_production_item_histories_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
-import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProductionItemHistoryProvider with ChangeNotifier {
@@ -338,10 +337,6 @@ class ProductionItemHistoryProvider with ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Production Item Histories insert failed ❌: $e',
-      );
-      await createErrorLog(
-        error:
-            'Batch Production Item Histories insert failed ❌: $e',
       );
     }
   }

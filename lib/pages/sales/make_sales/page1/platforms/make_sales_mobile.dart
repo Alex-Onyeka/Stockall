@@ -1000,8 +1000,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                     ).currentCart().isReceiptEdit
                     ? 'Edit Receipt'
                     : returnSalesProviderContext(
-                      context,
-                    ).currentCart().isInvoice
+                          context,
+                        ).currentCart().cartItemTypeIndex ==
+                        2
                     ? 'Credit Sale'
                     : 'Cart Items',
             widget: Stack(
@@ -1107,18 +1108,19 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                     mouseCursor: SystemMouseCursors.click,
                     onTap: () async {
                       if (returnSalesProvider()
-                          .currentCart()
-                          .isInvoice) {
+                              .currentCart()
+                              .cartItemTypeIndex ==
+                          2) {
                         returnSalesProvider()
                             .switchInvoiceSale(
                               context: context,
-                              value: false,
+                              value: 1,
                             );
                       } else {
                         returnSalesProvider()
                             .switchInvoiceSale(
                               context: context,
-                              value: true,
+                              value: 2,
                             );
                       }
                     },
@@ -1151,10 +1153,11 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                 shape: BoxShape.circle,
                                 color:
                                     returnSalesProviderContext(
-                                              context,
-                                            )
-                                            .currentCart()
-                                            .isInvoice
+                                                  context,
+                                                )
+                                                .currentCart()
+                                                .cartItemTypeIndex ==
+                                            2
                                         ? theme
                                             .lightModeColor
                                             .prColor250
@@ -1162,10 +1165,11 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                 border: Border.all(
                                   color:
                                       returnSalesProviderContext(
-                                                context,
-                                              )
-                                              .currentCart()
-                                              .isInvoice
+                                                    context,
+                                                  )
+                                                  .currentCart()
+                                                  .cartItemTypeIndex ==
+                                              2
                                           ? theme
                                               .lightModeColor
                                               .prColor250
@@ -1176,10 +1180,11 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                 size: 14,
                                 color:
                                     returnSalesProviderContext(
-                                              context,
-                                            )
-                                            .currentCart()
-                                            .isInvoice
+                                                  context,
+                                                )
+                                                .currentCart()
+                                                .cartItemTypeIndex ==
+                                            2
                                         ? Colors.white
                                         : Colors
                                             .grey

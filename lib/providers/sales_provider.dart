@@ -131,8 +131,9 @@ class SalesProvider extends ChangeNotifier {
               staffName:
                   "${currentUser().name} ${currentUser().lastName}",
               cartItems: [],
-              isInvoice: false,
+              cartItemTypeIndex: 1,
               id: cartId,
+              orderUuidEdit: null,
             ),
           ],
           mainCartId: mainCartId,
@@ -251,8 +252,9 @@ class SalesProvider extends ChangeNotifier {
                   staffName:
                       "${currentUser().name} ${currentUser().lastName}",
                   cartItems: [],
-                  isInvoice: false,
+                  cartItemTypeIndex: 1,
                   id: cartId,
+                  orderUuidEdit: null,
                 ),
               );
           await CartFunc().updateMainCart(
@@ -292,7 +294,7 @@ class SalesProvider extends ChangeNotifier {
     //   await mainLocalLog('Error Occoured: ${e.toString()}');
     //   return TempCart(
     //     cartItems: [],
-    //     isInvoice: false,
+    //     cartItemTypeIndex: 1,
     //     staffName: 'Alex',
     //     staffId: 'staffId',
     //     departmentName: 'departmentName',
@@ -510,8 +512,9 @@ class SalesProvider extends ChangeNotifier {
           staffName:
               "${currentUser().name} ${currentUser().lastName}",
           cartItems: [],
-          isInvoice: false,
+          cartItemTypeIndex: 1,
           id: uuidGen(),
+          orderUuidEdit: null,
         ),
       );
       try {
@@ -646,20 +649,20 @@ class SalesProvider extends ChangeNotifier {
   // }
 
   void switchInvoiceSale({
-    required bool value,
+    required int value,
     required BuildContext context,
   }) {
-    if (value) {
+    if (value == 2) {
       SalesAuthAction().invoiceManagementAction(
         context: context,
         action: () {
-          currentCart().isInvoice = value;
+          currentCart().cartItemTypeIndex = value;
           CartFunc().updateMainCart(currentMainCart());
           notifyListeners();
         },
       );
     } else {
-      currentCart().isInvoice = value;
+      currentCart().cartItemTypeIndex = value;
       CartFunc().updateMainCart(currentMainCart());
       notifyListeners();
     }
@@ -713,12 +716,12 @@ class SalesProvider extends ChangeNotifier {
   }
 
   // void offInvoice() {
-  //   currentCart().isInvoice = false;
+  //   currentCart().cartItemTypeIndex == 2 = false;
   //   notifyListeners();
   // }
 
   // void onInvoice() {
-  //   currentCart().isInvoice = true;
+  //   currentCart().cartItemTypeIndex == 2 = true;
   //   notifyListeners();
   // }
 
@@ -973,7 +976,7 @@ class SalesProvider extends ChangeNotifier {
   }) async {
     final createdAt = currentCart().returnDate();
 
-    if (currentCart().isInvoice) {
+    if (currentCart().cartItemTypeIndex == 2) {
       await mainLocalLog('Current Sale is Invoice');
       TempInvoice invoice = TempInvoice(
         comment: currentCart().comment,
@@ -1219,7 +1222,19 @@ class SalesProvider extends ChangeNotifier {
                           .toString(),
                 );
                 await returnData().updateProduct(
-                  itemHistory: itemHistory,
+                  itemHistory:
+                      returnData()
+                              .productList()
+                              .where(
+                                (pro) =>
+                                    pro.name ==
+                                    cartItem
+                                        .getItem()
+                                        ?.name,
+                              )
+                              .isEmpty
+                          ? null
+                          : itemHistory,
                   includeQuantity: false,
                   product: cartItem.getItem()!,
                   isQuantityUpdate: true,
@@ -1228,26 +1243,36 @@ class SalesProvider extends ChangeNotifier {
                   isIncrement: false,
                 );
               } else {
-                ItemHistory itemHistory = ItemHistory(
-                  desc:
-                      '${cartItem.getRealQuantity()} Quantity(s) of This Item was Sold, but Not Deducted Because Item is Not Managed. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
-                  shopId: shopId,
-                  isIncreased: false,
-                  oldValue:
-                      (cartItem.getItem()!.quantity ?? 0)
-                          .toString(),
-                  title: 'Item Sold In Invoice (Unmanaged)',
-                  quantityChange: 0,
-                  newValue:
-                      (cartItem.getItem()!.quantity ?? 0)
-                          .toString(),
-                );
-                itemHistory.itemName =
-                    cartItem.getItem()!.name;
-                itemHistory.itemUuid =
-                    cartItem.getItem()!.uuid;
-                await returnItemHistoryProvider()
-                    .createItemHistory(itemHistory);
+                if (returnData()
+                    .productList()
+                    .where(
+                      (pro) =>
+                          pro.name ==
+                          cartItem.getItem()?.name,
+                    )
+                    .isNotEmpty) {
+                  ItemHistory itemHistory = ItemHistory(
+                    desc:
+                        '${cartItem.getRealQuantity()} Quantity(s) of This Item was Sold, but Not Deducted Because Item is Not Managed. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
+                    shopId: shopId,
+                    isIncreased: false,
+                    oldValue:
+                        (cartItem.getItem()!.quantity ?? 0)
+                            .toString(),
+                    title:
+                        'Item Sold In Invoice (Unmanaged)',
+                    quantityChange: 0,
+                    newValue:
+                        (cartItem.getItem()!.quantity ?? 0)
+                            .toString(),
+                  );
+                  itemHistory.itemName =
+                      cartItem.getItem()!.name;
+                  itemHistory.itemUuid =
+                      cartItem.getItem()!.uuid;
+                  await returnItemHistoryProvider()
+                      .createItemHistory(itemHistory);
+                }
               }
             }
 
@@ -1319,7 +1344,7 @@ class SalesProvider extends ChangeNotifier {
                     sizeType: null,
                     startDate: null,
                     updatedAt: DateTime.now(),
-                    uuid: uuidGen(),
+                    uuid: record.productUuid,
                   );
                   if (context.mounted) {
                     ItemHistory itemHistory = ItemHistory(
@@ -1373,11 +1398,7 @@ class SalesProvider extends ChangeNotifier {
               }
               notifyListeners();
               returnData().syncData();
-              return CheckoutResponse(
-                resUuid: invoiceRes!.uuid!,
-                invoice: invoiceRes,
-                isReceipt: false,
-              );
+              return CheckoutResponse(invoice: invoiceRes);
             } catch (e) {
               await mainLocalLog(
                 'Error Step 4: ${e.toString()}',
@@ -1400,6 +1421,8 @@ class SalesProvider extends ChangeNotifier {
         await mainLocalLog('Error Step 1: ${e.toString()}');
         return null;
       }
+    } else if (currentCart().cartItemTypeIndex == 3) {
+      return null;
     } else {
       final uuid =
           currentCart().receiptUuidEdit ??
@@ -1407,6 +1430,7 @@ class SalesProvider extends ChangeNotifier {
           uuidGen();
       await mainLocalLog('🌹🌹 Created Date: $createdAt');
       TempMainReceipt receipt = TempMainReceipt(
+        orderUuid: null,
         comment: currentCart().comment,
         subStaffName:
             currentCart().subStaffName ??
@@ -1421,7 +1445,7 @@ class SalesProvider extends ChangeNotifier {
         customerAccount: customerBalance,
         bank: bank,
         cashAlt: cashAlt,
-        isInvoice: salesCartItem.isInvoice,
+        isInvoice: salesCartItem.cartItemTypeIndex == 2,
         customerName: customerName(),
         customerUuid: customerUuid(),
         uuid: uuid,
@@ -1587,7 +1611,19 @@ class SalesProvider extends ChangeNotifier {
                           .toString(),
                 );
                 await returnData().updateProduct(
-                  itemHistory: itemHistory,
+                  itemHistory:
+                      returnData()
+                              .productList()
+                              .where(
+                                (pro) =>
+                                    pro.name ==
+                                    cartItem
+                                        .getItem()
+                                        ?.name,
+                              )
+                              .isEmpty
+                          ? null
+                          : itemHistory,
                   includeQuantity: false,
                   product: cartItem.getItem()!,
                   isQuantityUpdate: true,
@@ -1596,26 +1632,36 @@ class SalesProvider extends ChangeNotifier {
                   isIncrement: false,
                 );
               } else {
-                ItemHistory itemHistory = ItemHistory(
-                  desc:
-                      '${cartItem.getRealQuantity()} Quantity(s) of This Item was Sold, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
-                  shopId: shopId,
-                  isIncreased: false,
-                  oldValue:
-                      (cartItem.getItem()!.quantity ?? 0)
-                          .toString(),
-                  title: 'Item Sold In Receipt (Unmanaged)',
-                  quantityChange: 0,
-                  newValue:
-                      (cartItem.getItem()!.quantity ?? 0)
-                          .toString(),
-                );
-                itemHistory.itemName =
-                    cartItem.getItem()!.name;
-                itemHistory.itemUuid =
-                    cartItem.getItem()!.uuid;
-                await returnItemHistoryProvider()
-                    .createItemHistory(itemHistory);
+                if (returnData()
+                    .productList()
+                    .where(
+                      (pro) =>
+                          pro.name ==
+                          cartItem.getItem()?.name,
+                    )
+                    .isNotEmpty) {
+                  ItemHistory itemHistory = ItemHistory(
+                    desc:
+                        '${cartItem.getRealQuantity()} Quantity(s) of This Item was Sold, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
+                    shopId: shopId,
+                    isIncreased: false,
+                    oldValue:
+                        (cartItem.getItem()!.quantity ?? 0)
+                            .toString(),
+                    title:
+                        'Item Sold In Receipt (Unmanaged)',
+                    quantityChange: 0,
+                    newValue:
+                        (cartItem.getItem()!.quantity ?? 0)
+                            .toString(),
+                  );
+                  itemHistory.itemName =
+                      cartItem.getItem()!.name;
+                  itemHistory.itemUuid =
+                      cartItem.getItem()!.uuid;
+                  await returnItemHistoryProvider()
+                      .createItemHistory(itemHistory);
+                }
               }
             }
 
@@ -1685,7 +1731,7 @@ class SalesProvider extends ChangeNotifier {
                     sizeType: null,
                     startDate: null,
                     updatedAt: DateTime.now(),
-                    uuid: uuidGen(),
+                    uuid: record.productUuid,
                   );
                   if (context.mounted) {
                     ItemHistory itemHistory = ItemHistory(
@@ -1739,11 +1785,7 @@ class SalesProvider extends ChangeNotifier {
               }
               returnData().syncData();
               notifyListeners();
-              return CheckoutResponse(
-                resUuid: receipt.uuid!,
-                isReceipt: true,
-                receipt: receipt,
-              );
+              return CheckoutResponse(receipt: receipt);
             } catch (e) {
               await mainLocalLog(
                 'Error Step 4: ${e.toString()}',
@@ -1795,7 +1837,7 @@ class SalesProvider extends ChangeNotifier {
 
   Future<void> clearCart() async {
     currentCart().cartItems.clear();
-    currentCart().isInvoice = false;
+    currentCart().cartItemTypeIndex = 1;
     currentCart().selectedCustomer = null;
     currentCart().selectedCustomerName = null;
     currentCart().paymentMethod = 0;
@@ -2684,6 +2726,7 @@ class SalesProvider extends ChangeNotifier {
             .isEmpty) {
           var newId = uuidGen();
           var tempCart = TempCart(
+            orderUuidEdit: null,
             comment: receipt.comment,
             timeOfDay: null,
             hasPrintedDocket: false,
@@ -2698,7 +2741,12 @@ class SalesProvider extends ChangeNotifier {
             fixedDiscount: receipt.fixedDiscount,
             createdDate: receipt.createdAt,
             cartItems: cartItems,
-            isInvoice: receipt.isInvoice,
+            cartItemTypeIndex:
+                receipt.invoiceUuid != null
+                    ? 2
+                    : receipt.orderUuid != null
+                    ? 3
+                    : 1,
             discount: receipt.generalDiscount,
             receiptUuidEdit: receipt.uuid,
             paymentMethod:
@@ -2775,11 +2823,12 @@ class SalesProvider extends ChangeNotifier {
                     departmentName: null,
                     departmentUuid: null,
                     cartItems: [],
-                    isInvoice: false,
+                    cartItemTypeIndex: 1,
                     staffId: currentUser().userId,
                     staffName:
                         "${currentUser().name} ${currentUser().lastName}",
                     id: uuidGen(),
+                    orderUuidEdit: null,
                   ),
                 );
               }

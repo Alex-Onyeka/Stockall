@@ -1737,10 +1737,7 @@ class _ProductDetailsDesktopState
                   authorized:
                       Authorizations().updateItemQuantity,
                 ) &&
-                returnShopProvider()
-                        .userShop()
-                        ?.manageInventoryStorage !=
-                    true,
+                product.storageUuid == null,
             child: Row(
               children: [
                 Expanded(

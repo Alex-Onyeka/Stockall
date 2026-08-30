@@ -51,6 +51,9 @@ import 'package:stockall/local_database/materials_item_history/unsync_funcs/crea
 import 'package:stockall/local_database/materials_usage/unsync_funcs/created/created_production_materials_usage_func.dart';
 import 'package:stockall/local_database/materials_usage/unsync_funcs/deleted/deleted_production_materials_usage_func.dart';
 import 'package:stockall/local_database/materials_usage/unsync_funcs/updated/updated_production_materials_usage_func.dart';
+import 'package:stockall/local_database/orders_func/unsync_funcs/created/created_orders_func.dart';
+import 'package:stockall/local_database/orders_func/unsync_funcs/deleted/deleted_orders_func.dart';
+import 'package:stockall/local_database/orders_func/unsync_funcs/updated/updated_orders_func.dart';
 import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/created/created_records_func.dart';
 import 'package:stockall/local_database/production_item_history/unsync_funcs/created_production_item_histories_func.dart';
 import 'package:stockall/local_database/production_items/unsync_funcs/created/created_production_items_func.dart';
@@ -86,7 +89,6 @@ import 'package:stockall/local_database/waybills/unsync_funcs/updated/updated_wa
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/department_provider.dart';
-import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DataProvider extends ChangeNotifier {
@@ -214,9 +216,8 @@ class DataProvider extends ChangeNotifier {
                 item.product.uuid!,
               );
             }
-            await createErrorLog(
-              error:
-                  'Error Synchronizing Product ${item.product.name}: $e',
+            await mainLocalLog(
+              'Error Synchronizing Product ${item.product.name}: $e',
             );
           }
         }
@@ -237,9 +238,6 @@ class DataProvider extends ChangeNotifier {
       }
     } catch (e) {
       await mainLocalLog('Batch Items insert failed ❌: $e');
-      await createErrorLog(
-        error: 'Batch Items insert failed ❌: $e',
-      );
     }
   }
 
@@ -284,9 +282,6 @@ class DataProvider extends ChangeNotifier {
       }
     } catch (e) {
       await mainLocalLog('Batch Items delete failed ❌: $e');
-      await createErrorLog(
-        error: 'Batch Items delete failed ❌: $e',
-      );
     }
   }
 
@@ -347,9 +342,8 @@ class DataProvider extends ChangeNotifier {
                       localProduct.uuid ?? '',
                     );
               }
-              await createErrorLog(
-                error:
-                    'Error Synchronizing Receipt ${localProduct.name}: $e',
+              await mainLocalLog(
+                'Error Synchronizing Receipt ${localProduct.name}: $e',
               );
             }
           } else {
@@ -400,9 +394,8 @@ class DataProvider extends ChangeNotifier {
                         localProduct.uuid ?? '',
                       );
                 }
-                await createErrorLog(
-                  error:
-                      'Error Synchronizing Receipt ${localProduct.name}: $e',
+                await mainLocalLog(
+                  'Error Synchronizing Receipt ${localProduct.name}: $e',
                 );
               }
             } else {
@@ -427,9 +420,6 @@ class DataProvider extends ChangeNotifier {
       }
     } catch (e) {
       await mainLocalLog('Batch Items update failed ❌: $e');
-      await createErrorLog(
-        error: 'Batch Items Update failed ❌: $e',
-      );
     }
   }
 
@@ -444,6 +434,7 @@ class DataProvider extends ChangeNotifier {
     await CreatedCustomersFunc().clearCustomers();
     await UpdatedCustomersFunc().clearupdatedCustomers();
     await DeletedCustomersFunc().clearDeletedCustomers();
+
     await CreatedCustomerAccountReceiptsFunc()
         .clearCustomerAccountReceipts();
     await UpdatedCustomerAccountReceiptsFunc()
@@ -452,55 +443,70 @@ class DataProvider extends ChangeNotifier {
         .clearDeletedCustomerAccountReceipts();
     await CustomerAccountUpdateFunc()
         .clearQuantitiesUpdate();
+
     await CreatedExpensesFunc().clearExpenses();
     await UpdatedExpensesFunc().clearupdatedExpenses();
     await DeletedExpensesFunc().clearDeletedExpenses();
-    await CreatedReceiptsFunc().clearReceipts();
-    await CreatedRecordsFunc().clearRecords();
+
     await CreatedProductFunc().clearProducts();
     await UpdatedProductsFunc().clearupdatedProducts();
     await DeletedProductsFunc().clearDeletedProducts();
     await CreatedInventoryUpdatesFunc()
         .clearInventoryUpdate();
-    await DeletedReceiptsFunc().clearDeletedReceipts();
     await QuantityUpdateFunc().clearQuantitiesUpdate();
+
+    await CreatedReceiptsFunc().clearReceipts();
+    await CreatedRecordsFunc().clearRecords();
+    await DeletedReceiptsFunc().clearDeletedReceipts();
     await UpdatedReceiptsFunc().clearUpdatedReceipts();
+
     await UpdatedShopFunc().clearUpdatedShop();
     await CreatedShopLogosFunc().clearCreatedLogos();
+
     await CreatedEventsLogFunc().clearEvents();
+
     await CreatedDepartmentsFunc().clearDepartment();
     await UpdatedDepartmentFunc().clearupdatedDepartments();
     await DeletedDepartmentsFunc()
         .clearDeletedDepartments();
+
     await CreatedSubStaffFunc().clearSubStaffs();
     await UpdatedSubStaffFunc().clearUpdatedSubStaff();
     await DeletedSubStaffFunc().clearDeletedSubStaff();
+
     await CreatedCategoriesFunc().clearCategories();
     await UpdatedCategoriesFunc().clearUpdatedCategory();
     await DeletedCategoriesFunc().clearDeletedCategories();
+
     await CreatedSupplierFunc().clearSuppliers();
     await UpdatedSupplierFunc().clearUpdatedSuppliers();
     await DeletedSupplierFunc().clearDeletedSupplier();
+
     await CreatedPurchasesFunc().clearPurchases();
     await UpdatedPurchasesFunc().clearUpdatedPurchases();
     await DeletedPurchasesFunc().clearDeletedPurchases();
     await CreatedItemPurchaseFunc().clearRecords();
     await DeletedItemPurchaseFunc()
         .clearDeletedItemRecords();
+
     await CreatedStorageProductsFunc()
         .clearCreatedStorageProducts();
     await UpdatedStorageProductsFunc()
         .clearUpdatedStorageProduct();
     await DeletedStorageProductsFunc()
         .clearDeletedStorageProduct();
+
     await CreatedWaybillsFunc().clearWaybills();
     await UpdatedWaybillsFunc().clearUpdatedWaybills();
     await DeletedWaybillsFunc().clearDeletedWaybills();
+
     await CreatedInvoicesFunc().clearInvoices();
     await DeletedInvoicesFunc().clearDeletedInvoices();
     await UpdatedInvoicesFunc()
         .clearupdatedInvoiceUpdatedInvoices();
+
     await CreatedItemHistoriesFunc().clearItemHistory();
+
     await CreatedMaterialsFunc().clearMaterials();
     await DeletedMaterialsFunc().clearDeletedMaterial();
     await UpdatedMaterialsFunc().clearupdatedMaterials();
@@ -508,6 +514,7 @@ class DataProvider extends ChangeNotifier {
         .clearMaterialsQuantitiesUpdate();
     await CreatedMaterialsItemHistoriesFunc()
         .clearMaterialsItemHistory();
+
     await CreatedProductionItemsFunc()
         .clearProductionItems();
     await DeletedProductionItemsFunc()
@@ -518,17 +525,23 @@ class DataProvider extends ChangeNotifier {
         .clearProductionItemsQuantitiesUpdate();
     await CreatedProductionItemHistoriesFunc()
         .clearProductionItemHistory();
+
     await CreatedProductionRecordsFunc().clearProductions();
     await DeletedProductionRecordsFunc()
         .clearDeletedProductionRecords();
     await UpdatedProductionRecordsFunc()
         .clearUpdatedProductionRecordsRecord();
+
     await CreatedProductionMaterialsUsageFunc()
         .clearCreatedProductionMaterialsUsage();
     await UpdatedProductionMaterialsUsageFunc()
         .clearUpdatedProductionMaterialsUsage();
     await DeletedProductionMaterialsUsageFunc()
         .clearDeletedProductionMaterialsUsage();
+
+    await CreatedOrdersFunc().clearOrders();
+    await UpdatedOrdersFunc().clearUpdatedOrders();
+    await DeletedOrdersFunc().clearDeletedOrders();
     notifyListeners();
   }
 
@@ -1262,6 +1275,34 @@ class DataProvider extends ChangeNotifier {
             );
             setSyncProgress(65);
           }
+          if (CreatedOrdersFunc().getOrders().isNotEmpty &&
+              isOnline) {
+            await returnOrdersProvider().createOrdersSync();
+            await mainLocalLog(
+              'Finished Syncing Created Orders',
+            );
+            setSyncProgress(66);
+          }
+          if (UpdatedOrdersFunc()
+                  .getOrderIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnOrdersProvider().updateOrdersSync();
+            await mainLocalLog(
+              'Finished Syncing Updated Orders',
+            );
+            setSyncProgress(67);
+          }
+          if (DeletedOrdersFunc()
+                  .getOrderIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnOrdersProvider().deleteOrdersSync();
+            await mainLocalLog(
+              'Finished Syncing Deleted Orders',
+            );
+            setSyncProgress(68);
+          }
           toggleSyncing(false);
         } else {
           // await ShopFunc().clearShop();
@@ -1296,7 +1337,7 @@ class DataProvider extends ChangeNotifier {
   bool isSyncing = false;
   double syncProgress = 0;
   void setSyncProgress(int value) {
-    syncProgress = (value / 65) * 100;
+    syncProgress = (value / 68) * 100;
     notifyListeners();
   }
 
@@ -1439,7 +1480,10 @@ class DataProvider extends ChangeNotifier {
               .isEmpty &&
           DeletedProductionMaterialsUsageFunc()
               .getDeletedProductionMaterialsUsageIds()
-              .isEmpty) {
+              .isEmpty &&
+          CreatedOrdersFunc().getOrders().isEmpty &&
+          UpdatedOrdersFunc().getOrderIds().isEmpty &&
+          DeletedOrdersFunc().getOrderIds().isEmpty) {
         return 1;
       } else {
         return 0;

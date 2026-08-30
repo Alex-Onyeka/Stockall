@@ -7,7 +7,6 @@ import 'package:stockall/local_database/inventory_updates/inventory_updates_func
 import 'package:stockall/local_database/inventory_updates/unsync_funcs/created_inventory_updates_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
-import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class InventoryUpdatesProvider with ChangeNotifier {
@@ -273,10 +272,6 @@ class InventoryUpdatesProvider with ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Inventory Updates insert failed ❌: $e',
-      );
-      await createErrorLog(
-        error:
-            'Batch Inventory Updates insert failed ❌: $e',
       );
     }
   }

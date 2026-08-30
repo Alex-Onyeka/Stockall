@@ -15,7 +15,6 @@ import 'package:stockall/local_database/materials/unsync_funcs/deleted_materials
 import 'package:stockall/local_database/materials/unsync_funcs/updated_materials/updated_materials_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
-import 'package:stockall/providers/error_log_provider.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -124,10 +123,6 @@ class MaterialsProvider extends ChangeNotifier {
                 item.material.uuid!,
               );
             }
-            await createErrorLog(
-              error:
-                  'Error Synchronizing Material ${item.material.name}: $e',
-            );
           }
         }
 
@@ -146,9 +141,6 @@ class MaterialsProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Materials insert failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Materials insert failed ❌: $e',
       );
     }
   }
@@ -193,9 +185,6 @@ class MaterialsProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Materials delete failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Materials delete failed ❌: $e',
       );
     }
   }
@@ -259,10 +248,6 @@ class MaterialsProvider extends ChangeNotifier {
                       localMaterial.uuid ?? '',
                     );
               }
-              await createErrorLog(
-                error:
-                    'Error Synchronizing Materials ${localMaterial.name}: $e',
-              );
             }
           } else {
             final remoteUpdatedAtRaw =
@@ -312,10 +297,6 @@ class MaterialsProvider extends ChangeNotifier {
                         localMaterial.uuid ?? '',
                       );
                 }
-                await createErrorLog(
-                  error:
-                      'Error Synchronizing Materials ${localMaterial.name}: $e',
-                );
               }
             } else {
               await mainLocalLog(
@@ -338,9 +319,6 @@ class MaterialsProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Materials update failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Materials Update failed ❌: $e',
       );
     }
   }

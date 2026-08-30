@@ -98,6 +98,7 @@ class _StorageDetailsMobileState
                         color: Colors.grey.shade600,
                         Icons.history,
                       ),
+                      SizedBox(width: 10),
                     ],
                   ),
                 ),

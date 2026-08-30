@@ -47,7 +47,10 @@ class _PaymentTypeButtonState
     }
     var theme = returnTheme(context);
     void selectOptionAction() {
-      if (returnSalesProvider().currentCart().isInvoice &&
+      if (returnSalesProvider()
+                  .currentCart()
+                  .cartItemTypeIndex ==
+              2 &&
           (widget.index == 2 || widget.index == 3)) {
         return;
       }
@@ -119,10 +122,11 @@ class _PaymentTypeButtonState
                               fontWeight: FontWeight.bold,
                               color:
                                   returnSalesProviderContext(
-                                                context,
-                                              )
-                                              .currentCart()
-                                              .isInvoice &&
+                                                    context,
+                                                  )
+                                                  .currentCart()
+                                                  .cartItemTypeIndex ==
+                                              2 &&
                                           widget.index == 2
                                       ? Colors.grey
                                       : null,
@@ -139,10 +143,11 @@ class _PaymentTypeButtonState
                               fontWeight: FontWeight.normal,
                               color:
                                   returnSalesProviderContext(
-                                                context,
-                                              )
-                                              .currentCart()
-                                              .isInvoice &&
+                                                    context,
+                                                  )
+                                                  .currentCart()
+                                                  .cartItemTypeIndex ==
+                                              2 &&
                                           widget.index == 2
                                       ? Colors.grey
                                       : theme
@@ -160,10 +165,11 @@ class _PaymentTypeButtonState
                       Checkbox(
                         activeColor:
                             returnSalesProviderContext(
-                                          context,
-                                        )
-                                        .currentCart()
-                                        .isInvoice &&
+                                              context,
+                                            )
+                                            .currentCart()
+                                            .cartItemTypeIndex ==
+                                        2 &&
                                     widget.index == 2
                                 ? Colors.grey
                                 : theme

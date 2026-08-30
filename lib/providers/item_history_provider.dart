@@ -8,7 +8,6 @@ import 'package:stockall/local_database/item_history/item_histories_func.dart';
 import 'package:stockall/local_database/item_history/unsync_funcs/created_item_histories_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
-import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ItemHistoryProvider with ChangeNotifier {
@@ -280,9 +279,6 @@ class ItemHistoryProvider with ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Item Histories insert failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Item Histories insert failed ❌: $e',
       );
     }
   }

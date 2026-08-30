@@ -15,7 +15,6 @@ import 'package:stockall/local_database/production_items/unsync_funcs/deleted/de
 import 'package:stockall/local_database/production_items/unsync_funcs/updated/updated_production_items_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
-import 'package:stockall/providers/error_log_provider.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -131,9 +130,8 @@ class ProductionItemsProvider extends ChangeNotifier {
                     item.productionItem.uuid!,
                   );
             } else {
-              await createErrorLog(
-                error:
-                    'Error Synchronizing Created Production Item ${item.productionItem.name}',
+              await mainLocalLog(
+                'Error Synchronizing Created Production Item ${item.productionItem.name}',
               );
             }
           } on PostgrestException catch (e) {
@@ -143,9 +141,8 @@ class ProductionItemsProvider extends ChangeNotifier {
                     item.productionItem.uuid!,
                   );
             }
-            await createErrorLog(
-              error:
-                  'Error Synchronizing ProductionItem ${item.productionItem.name}: $e',
+            await mainLocalLog(
+              'Error Synchronizing ProductionItem ${item.productionItem.name}: $e',
             );
           }
         }
@@ -167,9 +164,6 @@ class ProductionItemsProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch ProductionItems insert failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch ProductionItems insert failed ❌: $e',
       );
     }
   }
@@ -215,9 +209,6 @@ class ProductionItemsProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch ProductionItems delete failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch ProductionItems delete failed ❌: $e',
       );
     }
   }
@@ -283,9 +274,8 @@ class ProductionItemsProvider extends ChangeNotifier {
                       localProductionItem.uuid ?? '',
                     );
               }
-              await createErrorLog(
-                error:
-                    'Error Synchronizing ProductionItems ${localProductionItem.name}: $e',
+              await mainLocalLog(
+                'Error Synchronizing ProductionItems ${localProductionItem.name}: $e',
               );
             }
           } else {
@@ -337,9 +327,8 @@ class ProductionItemsProvider extends ChangeNotifier {
                         localProductionItem.uuid ?? '',
                       );
                 }
-                await createErrorLog(
-                  error:
-                      'Error Synchronizing ProductionItems ${localProductionItem.name}: $e',
+                await mainLocalLog(
+                  'Error Synchronizing ProductionItems ${localProductionItem.name}: $e',
                 );
               }
             } else {
@@ -363,9 +352,6 @@ class ProductionItemsProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch ProductionItems update failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch ProductionItems Update failed ❌: $e',
       );
     }
   }

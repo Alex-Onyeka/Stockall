@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stockall/constants/bottom_sheet_widgets.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -127,7 +129,11 @@ class _EditCartTextFieldState
         ),
         SizedBox(height: 5),
         TextFormField(
-          autofocus: widget.autoFocus ?? false,
+          autofocus:
+              widget.autoFocus ??
+              (screenWidth(context) > mobileScreen
+                  ? true
+                  : false),
           focusNode: widget.focusNode,
           onFieldSubmitted: widget.onSubmitted,
           onTap: () {

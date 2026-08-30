@@ -11,7 +11,6 @@ import 'package:stockall/local_database/expenses/unsync_funcs/deleted_expenses/d
 import 'package:stockall/local_database/expenses/unsync_funcs/updated_expenses/updated_expenses_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
-import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ExpensesProvider extends ChangeNotifier {
@@ -509,9 +508,8 @@ class ExpensesProvider extends ChangeNotifier {
                 item.expenses.uuid!,
               );
             }
-            await createErrorLog(
-              error:
-                  'Error Synchronizing Created Expenses ${item.expenses.name}: $e',
+            await mainLocalLog(
+              'Error Synchronizing Created Expenses ${item.expenses.name}: $e',
             );
           }
         }
@@ -531,9 +529,6 @@ class ExpensesProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Expenses insert failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Expenses insert failed ❌: $e',
       );
     }
   }
@@ -586,9 +581,6 @@ class ExpensesProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Expenses delete failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Expenses delete failed ❌: $e',
       );
     }
   }
@@ -698,9 +690,6 @@ class ExpensesProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Expenses update failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Expenses update failed ❌: $e',
       );
     }
   }

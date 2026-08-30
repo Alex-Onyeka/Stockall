@@ -520,10 +520,6 @@ class _SalesPageDesktopState
                                                                 response: CheckoutResponse(
                                                                   receipt:
                                                                       mainReceipt,
-                                                                  resUuid:
-                                                                      mainReceipt.uuid!,
-                                                                  isReceipt:
-                                                                      true,
                                                                 ),
                                                                 isMain:
                                                                     false,

@@ -425,7 +425,8 @@ class _CartQueueMobileState extends State<CartQueueMobile> {
                           staffName:
                               "${currentUser().name} ${currentUser().lastName}",
                           cartItems: [],
-                          isInvoice: false,
+                          cartItemTypeIndex: 1,
+                          orderUuidEdit: null,
                         ),
                       );
                     },

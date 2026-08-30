@@ -187,7 +187,7 @@ class _CustomerSelectionWidgetState
                                     .b3
                                     .fontSize,
                           ),
-                          'Select Customer ${returnSalesProviderContext(context).currentCart().isInvoice ? '' : '(Optional)'}',
+                          'Select Customer ${returnSalesProviderContext(context).currentCart().cartItemTypeIndex != 1 ? '' : '(Optional)'}',
                         ),
                         Icon(
                           color: Colors.grey,

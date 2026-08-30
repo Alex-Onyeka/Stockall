@@ -229,15 +229,11 @@ class _SearchReceiptMobileState
                                       MaterialPageRoute(
                                         builder: (context) {
                                           return ReceiptPage(
-                                            response: CheckoutResponse(
-                                              receipt:
-                                                  receipt,
-                                              resUuid:
-                                                  receipt
-                                                      .uuid!,
-                                              isReceipt:
-                                                  true,
-                                            ),
+                                            response:
+                                                CheckoutResponse(
+                                                  receipt:
+                                                      receipt,
+                                                ),
                                             isMain: false,
                                           );
                                         },

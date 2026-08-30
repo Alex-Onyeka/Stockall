@@ -16,12 +16,10 @@ import 'package:stockall/services/sub_payment_serice.dart/sub_payment_service.da
 
 class PricingContainerWidget extends StatefulWidget {
   final GlobalKey fullComparisonSection;
-  // final PlanPricingClass pricingClass;
   final int plan;
   const PricingContainerWidget({
     super.key,
     required this.fullComparisonSection,
-    // required this.pricingClass,
     required this.plan,
   });
 
@@ -43,14 +41,15 @@ class _PricingContainerWidgetState
     }
   }
 
-  Future<void> startPayment(
-    BuildContext context,
-    String userId,
-    String email,
-    int plan,
-    double amount,
-    int duration,
-  ) async {
+  Future<void> startPayment({
+    required BuildContext context,
+    required String userId,
+    required String email,
+    required int plan,
+    required int oldPlan,
+    required double amount,
+    required int duration,
+  }) async {
     await mainLocalLog('Payment Process Begins');
 
     if (plan != 0) {
@@ -67,6 +66,7 @@ class _PricingContainerWidgetState
               userId: userId,
               email: email,
               plan: plan,
+              oldPlan: oldPlan,
               amount: amount,
               duration: duration,
               callbackUrl: callbackUrl,
@@ -107,7 +107,7 @@ class _PricingContainerWidgetState
       await returnSubcsription(
         context,
         listen: false,
-      ).subscribe(context: context);
+      ).subscribe(context: context, oldPlan: oldPlan);
       // ignore: use_build_context_synchronously
       Navigator.of(context).pop();
     }
@@ -138,6 +138,9 @@ class _PricingContainerWidgetState
               .firstWhere((pl) => pl.plan == widget.plan)
               .onlineDataBackupDuration,
       plan: widget.plan,
+      oldPlan:
+          returnSubcsription(context).subscription?.plan ??
+          widget.plan,
       planName:
           subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
@@ -270,7 +273,7 @@ class _PricingContainerWidgetState
                   fontSize: theme.mobileTexts.b3.fontSize,
                   fontWeight: FontWeight.normal,
                 ),
-                duration(),
+                "${duration()} | ${pricingClass.oldPlan}",
               ),
             ],
           ),
@@ -399,17 +402,26 @@ class _PricingContainerWidgetState
                                       ).pop();
                                       toggleLoading(true);
                                       await startPayment(
-                                        context,
-                                        returnShopProvider()
-                                            .userShop()!
-                                            .userId,
-                                        AuthService()
-                                            .currentUserEmail!,
-                                        pricingClass.plan,
-                                        pricingClass
-                                            .finalPrice(),
-                                        pricingClass
-                                            .duration,
+                                        context: context,
+                                        userId:
+                                            returnShopProvider()
+                                                .userShop()!
+                                                .userId,
+                                        email:
+                                            AuthService()
+                                                .currentUserEmail!,
+                                        plan:
+                                            pricingClass
+                                                .plan,
+                                        oldPlan:
+                                            pricingClass
+                                                .oldPlan,
+                                        amount:
+                                            pricingClass
+                                                .finalPrice(),
+                                        duration:
+                                            pricingClass
+                                                .duration,
                                       );
                                       if (context.mounted) {
                                         toggleLoading(

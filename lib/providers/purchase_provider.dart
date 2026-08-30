@@ -22,7 +22,6 @@ import 'package:stockall/local_database/purchases/unsync_funcs/deleted/deleted_p
 import 'package:stockall/local_database/purchases/unsync_funcs/updated/updated_purchases_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
-import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PurchaseProvider extends ChangeNotifier {
@@ -507,9 +506,6 @@ class PurchaseProvider extends ChangeNotifier {
       await mainLocalLog(
         'Batch Purchases insert failed ❌: $e',
       );
-      await createErrorLog(
-        error: 'Batch Purchases insert failed ❌: $e',
-      );
     }
   }
 
@@ -566,9 +562,6 @@ class PurchaseProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Purchases Deleted failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Purchases Delete failed ❌: $e',
       );
     }
   }
@@ -682,9 +675,6 @@ class PurchaseProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Purchases update failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Purchases Update failed ❌: $e',
       );
     }
   }
@@ -975,10 +965,6 @@ class PurchaseProvider extends ChangeNotifier {
       await mainLocalLog(
         'Batch Created Purchase Records insert failed ❌: $e',
       );
-      await createErrorLog(
-        error:
-            'Batch Created Purchase Records insert failed ❌: $e',
-      );
     }
   }
 
@@ -1028,10 +1014,6 @@ class PurchaseProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Purchase Item Records Deleted failed ❌: $e',
-      );
-      await createErrorLog(
-        error:
-            'Batch Purchase Item Records Deleted failed ❌: $e',
       );
     }
   }

@@ -47,7 +47,7 @@ class _InvoicePageDesktopState
               .firstWhere(
                 (inv) =>
                     inv.uuid ==
-                    widget.checkoutResponse.resUuid,
+                    widget.checkoutResponse.invoice?.uuid,
               );
           paymentController.text =
               returnInvoicesProvider()
@@ -73,7 +73,7 @@ class _InvoicePageDesktopState
   //   super.initState();
   //   WidgetsBinding.instance.addPostFrameCallback((_) async {
   //     await returnInvoicesProvider().loadSingleInvoice(
-  //       uuid: widget.checkoutResponse.resUuid,
+  //       uuid: widget.checkoutResponse.invoice?.uuid,
   //     );
   //     setState(() {});
   //   });
@@ -88,14 +88,15 @@ class _InvoicePageDesktopState
             .where(
               (record) =>
                   record.invoiceUuid ==
-                  widget.checkoutResponse.resUuid,
+                  widget.checkoutResponse.invoice?.uuid,
             )
             .toList();
     TempInvoice? invoice = returnInvoicesProvider()
         .invoicesMain
         .firstWhere(
           (inv) =>
-              inv.uuid == widget.checkoutResponse.resUuid,
+              inv.uuid ==
+              widget.checkoutResponse.invoice?.uuid,
           orElse: () {
             return TempInvoice(
               comment: null,
@@ -297,7 +298,8 @@ class _InvoicePageDesktopState
                                                       rec.invoiceUuid ==
                                                       widget
                                                           .checkoutResponse
-                                                          .resUuid,
+                                                          .invoice
+                                                          ?.uuid,
                                                 )
                                                 .toList(),
                                         records:
@@ -330,7 +332,8 @@ class _InvoicePageDesktopState
                                                       rec.invoiceUuid ==
                                                       widget
                                                           .checkoutResponse
-                                                          .resUuid,
+                                                          .invoice
+                                                          ?.uuid,
                                                 )
                                                 .toList(),
                                         records:
@@ -396,7 +399,7 @@ class _InvoicePageDesktopState
                                                         rec,
                                                       ) =>
                                                           rec.invoiceUuid ==
-                                                          widget.checkoutResponse.resUuid,
+                                                          widget.checkoutResponse.invoice?.uuid,
                                                     )
                                                     .toList(),
                                             records:
@@ -420,7 +423,7 @@ class _InvoicePageDesktopState
                                                         rec,
                                                       ) =>
                                                           rec.invoiceUuid ==
-                                                          widget.checkoutResponse.resUuid,
+                                                          widget.checkoutResponse.invoice?.uuid,
                                                     )
                                                     .toList(),
                                             records:
@@ -464,7 +467,8 @@ class _InvoicePageDesktopState
                                         rec.invoiceUuid ==
                                         widget
                                             .checkoutResponse
-                                            .resUuid,
+                                            .invoice
+                                            ?.uuid,
                                   )
                                   .isEmpty &&
                               authorization(
@@ -2069,7 +2073,8 @@ class _InvoicePageDesktopState
                                               rec.invoiceUuid ==
                                               widget
                                                   .checkoutResponse
-                                                  .resUuid,
+                                                  .invoice
+                                                  ?.uuid,
                                         )
                                         .isEmpty) {
                                       return SizedBox(
@@ -2133,7 +2138,8 @@ class _InvoicePageDesktopState
                                                     rec.invoiceUuid ==
                                                     widget
                                                         .checkoutResponse
-                                                        .resUuid,
+                                                        .invoice
+                                                        ?.uuid,
                                               )
                                               .map(
                                                 (
@@ -2153,15 +2159,9 @@ class _InvoicePageDesktopState
                                                             response: CheckoutResponse(
                                                               receipt:
                                                                   receipt,
-                                                              resUuid:
-                                                                  receipt.uuid!,
-                                                              isReceipt:
-                                                                  true,
                                                             ),
                                                             isMain:
                                                                 false,
-                                                            isComingFromInvoice:
-                                                                true,
                                                           );
                                                         },
                                                       ),

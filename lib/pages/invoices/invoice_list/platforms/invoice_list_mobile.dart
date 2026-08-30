@@ -119,7 +119,9 @@ class InvoiceListMobileState
                   context,
                   MaterialPageRoute(
                     builder: (context) {
-                      return MakeSalesPage(isInvoice: true);
+                      return MakeSalesPage(
+                        cartItemTypeIndex: 2,
+                      );
                     },
                   ),
                 ).then((_) {
@@ -391,62 +393,62 @@ class _InvoiceListBodyMobileState
                               children: [
                                 ProductsFilterButton(
                                   action: () {
-                                    returnReceiptProviderSingle()
-                                        .selectPaymentMethod(
+                                    returnInvoicesProvider()
+                                        .selectPaymentStatus(
                                           0,
                                         );
                                   },
                                   currentSelected:
-                                      returnReceiptProvider(
-                                        context,
-                                      ).paymentMethod,
+                                      returnInvoicesProvider(
+                                        context: context,
+                                      ).invoicePaymentStatusIndex,
                                   number: 0,
-                                  title: 'All',
+                                  title: 'Unpaid',
                                   theme: theme,
                                 ),
                                 ProductsFilterButton(
                                   action: () {
-                                    returnReceiptProviderSingle()
-                                        .selectPaymentMethod(
+                                    returnInvoicesProvider()
+                                        .selectPaymentStatus(
                                           1,
                                         );
                                   },
                                   currentSelected:
-                                      returnReceiptProvider(
-                                        context,
-                                      ).paymentMethod,
+                                      returnInvoicesProvider(
+                                        context: context,
+                                      ).invoicePaymentStatusIndex,
                                   number: 1,
-                                  title: 'Cash',
+                                  title: 'Paid',
                                   theme: theme,
                                 ),
                                 ProductsFilterButton(
                                   action: () {
-                                    returnReceiptProviderSingle()
-                                        .selectPaymentMethod(
+                                    returnInvoicesProvider()
+                                        .selectPaymentStatus(
                                           2,
                                         );
                                   },
                                   currentSelected:
-                                      returnReceiptProvider(
-                                        context,
-                                      ).paymentMethod,
+                                      returnInvoicesProvider(
+                                        context: context,
+                                      ).invoicePaymentStatusIndex,
                                   number: 2,
-                                  title: 'Bank',
+                                  title: 'Partial',
                                   theme: theme,
                                 ),
                                 ProductsFilterButton(
                                   currentSelected:
-                                      returnReceiptProvider(
-                                        context,
-                                      ).paymentMethod,
+                                      returnInvoicesProvider(
+                                        context: context,
+                                      ).invoicePaymentStatusIndex,
                                   action: () {
-                                    returnReceiptProviderSingle()
-                                        .selectPaymentMethod(
+                                    returnInvoicesProvider()
+                                        .selectPaymentStatus(
                                           3,
                                         );
                                   },
                                   number: 3,
-                                  title: 'Split',
+                                  title: 'All',
                                   theme: theme,
                                 ),
                               ],
@@ -694,9 +696,6 @@ class _InvoiceListBodyMobileState
                                     response:
                                         CheckoutResponse(
                                           invoice: invoice,
-                                          resUuid:
-                                              invoice.uuid!,
-                                          isReceipt: false,
                                         ),
                                     isMain: false,
                                   );

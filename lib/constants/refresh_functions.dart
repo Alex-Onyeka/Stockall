@@ -634,6 +634,9 @@ class RefreshFunctions {
                       .getProductionItems();
                   await returnProductionRecordsProvider()
                       .getProductionRecords(shopId());
+                  await returnOrdersProvider().loadOrders(
+                    shopId(),
+                  );
                 },
               );
             },
@@ -682,6 +685,7 @@ class RefreshFunctions {
           await returnMaterialsProvider().getMaterials();
           await returnProductionRecordsProvider()
               .getProductionRecords(shopId());
+          await returnOrdersProvider().loadOrders(shopId());
         }
       }
 

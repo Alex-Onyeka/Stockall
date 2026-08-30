@@ -14,7 +14,6 @@ import 'package:stockall/local_database/customer_account_receipts/unsync_funcs/d
 import 'package:stockall/local_database/customer_account_receipts/unsync_funcs/updated/updated_customer_account_receipts_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
-import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CustomerAccountReceiptsProvider
@@ -561,10 +560,6 @@ class CustomerAccountReceiptsProvider
       await mainLocalLog(
         'Batch Customer Account Receipts insert failed ❌: $e',
       );
-      await createErrorLog(
-        error:
-            'Batch Customer Account Receipts insert failed ❌: $e',
-      );
     }
   }
 
@@ -612,10 +607,6 @@ class CustomerAccountReceiptsProvider
     } catch (e) {
       await mainLocalLog(
         'Batch Customer Account Updates insert failed ❌: $e',
-      );
-      await createErrorLog(
-        error:
-            'Batch Customer Account Updates insert failed ❌: $e',
       );
     }
   }
@@ -671,10 +662,6 @@ class CustomerAccountReceiptsProvider
     } catch (e) {
       await mainLocalLog(
         'Batch Customer Account Receipts Deleted failed ❌: $e',
-      );
-      await createErrorLog(
-        error:
-            'Batch Customer Account Receipts Delete failed ❌: $e',
       );
     }
   }
@@ -801,10 +788,6 @@ class CustomerAccountReceiptsProvider
     } catch (e) {
       await mainLocalLog(
         'Batch Customer Account Receipts update failed ❌: $e',
-      );
-      await createErrorLog(
-        error:
-            'Batch Customer Account Receipts Update failed ❌: $e',
       );
     }
   }

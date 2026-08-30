@@ -22,6 +22,7 @@ import 'package:stockall/pages/customers/customers_list/customer_list.dart';
 import 'package:stockall/pages/dashboard/components/button_tab.dart';
 import 'package:stockall/pages/dashboard/components/expiry_sub_popup_desktop.dart';
 import 'package:stockall/pages/dashboard/components/main_info_tab.dart';
+import 'package:stockall/pages/dashboard/components/store_keeper_department_switch_widget.dart';
 import 'package:stockall/pages/dashboard/components/top_nav_bar.dart';
 import 'package:stockall/pages/dashboard/components/total_sales_banner.dart';
 import 'package:stockall/pages/employees/employee_list/employee_list_page.dart';
@@ -429,10 +430,10 @@ class _DashboardDesktopState
                                                   ],
                                                 ),
                                               ),
-
                                               SizedBox(
                                                 height: 20,
                                               ),
+                                              StoreKeeperDepartmentSwitchWidget(),
                                               Row(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment
@@ -510,49 +511,47 @@ class _DashboardDesktopState
                                                     child: Expanded(
                                                       child: Row(
                                                         children: [
-                                                          Expanded(
-                                                            child: ButtonTab(
-                                                              theme:
-                                                                  theme,
-                                                              icon:
-                                                                  reportIconSvg,
-                                                              title:
-                                                                  'Report',
-                                                              action: () {
-                                                                returnNavProvider(
-                                                                  context,
-                                                                  listen:
-                                                                      false,
-                                                                ).navigate(
-                                                                  6,
-                                                                );
-                                                                Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                    builder: (
-                                                                      context,
-                                                                    ) {
-                                                                      return ReportPage();
-                                                                    },
-                                                                  ),
-                                                                ).then(
-                                                                  (
+                                                          ButtonTab(
+                                                            theme:
+                                                                theme,
+                                                            icon:
+                                                                reportIconSvg,
+                                                            title:
+                                                                'Report',
+                                                            action: () {
+                                                              returnNavProvider(
+                                                                context,
+                                                                listen:
+                                                                    false,
+                                                              ).navigate(
+                                                                6,
+                                                              );
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder: (
                                                                     context,
                                                                   ) {
-                                                                    setState(
-                                                                      () {
-                                                                        clearDate();
-                                                                      },
-                                                                    );
+                                                                    return ReportPage();
                                                                   },
-                                                                );
-                                                              },
-                                                            ),
+                                                                ),
+                                                              ).then(
+                                                                (
+                                                                  context,
+                                                                ) {
+                                                                  setState(
+                                                                    () {
+                                                                      clearDate();
+                                                                    },
+                                                                  );
+                                                                },
+                                                              );
+                                                            },
                                                           ),
-                                                          SizedBox(
-                                                            width:
-                                                                10,
-                                                          ),
+                                                          // SizedBox(
+                                                          //   width:
+                                                          //       10,
+                                                          // ),
                                                         ],
                                                       ),
                                                     ),

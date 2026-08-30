@@ -202,7 +202,7 @@ List<SubplanClass> subPlans = [
       manageInventoryStorage: true,
       useGroupUnit: true,
       setWholeSale: true,
-      trackItemHistory: false,
+      trackItemHistory: true,
     ),
     salesAuth: SalesAuth(
       useOfBarcode: true,

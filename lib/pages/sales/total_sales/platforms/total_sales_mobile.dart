@@ -159,7 +159,7 @@ class _TotalSalesMobileState
                       MaterialPageRoute(
                         builder: (context) {
                           return MakeSalesPage(
-                            isInvoice: true,
+                            cartItemTypeIndex: 2,
                           );
                         },
                       ),
@@ -658,15 +658,11 @@ class _TotalSalesMobileState
                                             context,
                                           ) {
                                             return ReceiptPage(
-                                              response: CheckoutResponse(
-                                                receipt:
-                                                    receipt,
-                                                resUuid:
-                                                    receipt
-                                                        .uuid!,
-                                                isReceipt:
-                                                    true,
-                                              ),
+                                              response:
+                                                  CheckoutResponse(
+                                                    receipt:
+                                                        receipt,
+                                                  ),
                                               isMain: false,
                                             );
                                           },

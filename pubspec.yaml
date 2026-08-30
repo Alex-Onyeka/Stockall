@@ -115,7 +115,7 @@ msix_config:
   display_name: Stockall
   publisher_display_name: Stockall Solutions
   identity_name: StockallSolutions.Stockall
-  msix_version: 1.9.85.0
+  msix_version: 1.9.86.0
   logo_path: assets/images/logos/fav_icon.png
   start_menu_icon_path: assets/images/logos/fav_icon.png
   tile_icon_path: assets/images/logos/fav_icon.png

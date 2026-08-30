@@ -70,7 +70,7 @@ class MaterialsUsageTileState
                     icon: Icon(size: 26, Icons.clear),
                   ),
                   widget: SizedBox(
-                    height: screenHeight(context) - 200,
+                    height: screenHeight(context) - 270,
                     child: MaterialUsageDetailsWidget(
                       materialsUsage: widget.materialsUsage,
                       fromDetails: widget.fromDetails,

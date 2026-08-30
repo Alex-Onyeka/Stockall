@@ -21,6 +21,7 @@ class SubscriptionProvider extends ChangeNotifier {
       ConnectivityProvider();
   final SupabaseClient supabase = Supabase.instance.client;
   final NavProvider navProvider = NavProvider();
+
   SubscriptionClass? subscription;
 
   DateTime? lastPayment() {
@@ -78,6 +79,7 @@ class SubscriptionProvider extends ChangeNotifier {
       var newSub = SubscriptionClass(
         createdAt: DateTime.now().toUtc(),
         plan: 3,
+        oldPlan: 3,
         nextPayment: DateTime.now().add(Duration(days: 30)),
         lastPayment: DateTime.now().toUtc(),
         subscriptionId: uuidGen(),
@@ -161,39 +163,11 @@ class SubscriptionProvider extends ChangeNotifier {
     }
   }
 
-  // List<TempSub> subs = [
-  //   TempSub(planName: 'Free', plan: 0),
-  //   TempSub(planName: 'Basic', plan: 1),
-  //   TempSub(planName: 'Standard', plan: 2),
-  //   TempSub(planName: 'Premium', plan: 3),
-  // ];
-
-  // int? selected;
-
-  // void select(int sub) {
-  //   selected = sub;
-  //   notifyListeners();
-  // }
-
-  //   double? subscriptionAmount(int plan) {
-  //     if (plan == 0) {
-  //       return null;
-  //     } else if (plan == 1) {
-  //       return 2500;
-  //     } else if (plan == 2) {
-  //       return 3500;
-  //     } else {
-  //       return 5000;
-  //     }
-  //   }
-
   Future<int> subscribe({
-    // required int plan,
+    required int oldPlan,
     required BuildContext context,
   }) async {
     var shop = await userShop(context);
-    // var nextPayment = null;
-    // : DateTime.now().add(Duration(days: 30));
     try {
       var res =
           await supabase
@@ -205,6 +179,7 @@ class SubscriptionProvider extends ChangeNotifier {
                         .toUtc()
                         .toIso8601String(),
                 'plan': 0,
+                'old_plan': oldPlan,
                 'amount': 0,
               })
               .eq('user_id', shop!.userId)
@@ -241,18 +216,11 @@ class SubscriptionProvider extends ChangeNotifier {
                           subPayment.userId == shop.userId,
                     )
                     .first;
-            // var nextPayment =
-            //     plan == 0
-            //         ? null
-            //         : DateTime.now().add(
-            //           Duration(days: 30),
-            //         );
-            // tempP.plan == plan;
-            // tempP.amount == subscriptionAmount(plan);
             await supabase
                 .from('subscription_payments')
                 .update({
                   'plan': 0,
+                  'old_plan': oldPlan,
                   'amount': 0,
                   'last_payment':
                       DateTime.now()

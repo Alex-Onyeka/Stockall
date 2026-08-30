@@ -256,36 +256,36 @@ class _TotalSalesDesktopState
                       visible: returnInvoice,
                       child: FloatingActionButtonMain(
                         action: () {
-                          SalesAuthAction()
-                              .invoiceManagementAction(
-                                context: context,
-                                action: () {
-                                  if (authorization(
-                                    authorized:
-                                        Authorizations()
-                                            .makeSale,
-                                  )) {
-                                    returnNavProvider(
-                                      context,
-                                      listen: false,
-                                    ).navigate(2);
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return MakeSalesPage(
-                                            isInvoice: true,
-                                          );
-                                        },
-                                      ),
-                                    ).then((_) {
-                                      setState(() {
-                                        // getProductList(context);
-                                      });
-                                    });
-                                  }
-                                },
-                              );
+                          SalesAuthAction().invoiceManagementAction(
+                            context: context,
+                            action: () {
+                              if (authorization(
+                                authorized:
+                                    Authorizations()
+                                        .makeSale,
+                              )) {
+                                returnNavProvider(
+                                  context,
+                                  listen: false,
+                                ).navigate(2);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return MakeSalesPage(
+                                        cartItemTypeIndex:
+                                            2,
+                                      );
+                                    },
+                                  ),
+                                ).then((_) {
+                                  setState(() {
+                                    // getProductList(context);
+                                  });
+                                });
+                              }
+                            },
+                          );
                         },
                         color:
                             theme
@@ -830,10 +830,6 @@ class _TotalSalesDesktopState
                                                           response: CheckoutResponse(
                                                             receipt:
                                                                 receipt,
-                                                            resUuid:
-                                                                receipt.uuid!,
-                                                            isReceipt:
-                                                                true,
                                                           ),
                                                           isMain:
                                                               false,

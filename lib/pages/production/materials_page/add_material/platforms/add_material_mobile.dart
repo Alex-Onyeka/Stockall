@@ -1116,92 +1116,147 @@ class _AddMaterialMobileState
                                       ],
                                     ),
                                     SizedBox(height: 10),
-                                    Visibility(
-                                      visible:
-                                          returnShopProvider()
-                                              .userShop()
-                                              ?.manageInventoryStorage !=
-                                          true,
-                                      child: Column(
-                                        children: [
-                                          InkWell(
-                                            mouseCursor:
-                                                SystemMouseCursors
-                                                    .click,
-                                            onTap: () {
-                                              returnData()
-                                                  .toggleUseGroupUnit();
-                                              FocusManager
-                                                  .instance
-                                                  .primaryFocus
-                                                  ?.unfocus();
-                                            },
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Flexible(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment.start,
-                                                    children: [
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              theme.mobileTexts.b1.fontSize,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                        'Use Group Unit?',
+                                    Column(
+                                      children: [
+                                        SizedBox(
+                                          height: 15,
+                                        ),
+                                        InkWell(
+                                          mouseCursor:
+                                              SystemMouseCursors
+                                                  .click,
+                                          onTap: () {
+                                            returnData()
+                                                .toggleUseGroupUnit();
+                                            FocusManager
+                                                .instance
+                                                .primaryFocus
+                                                ?.unfocus();
+                                          },
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .spaceBetween,
+                                            children: [
+                                              Flexible(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment
+                                                          .start,
+                                                  children: [
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            theme.mobileTexts.b1.fontSize,
+                                                        fontWeight:
+                                                            FontWeight.bold,
                                                       ),
-                                                      Column(
-                                                        spacing:
-                                                            5,
-                                                        children: [
-                                                          Text(
-                                                            style: TextStyle(
-                                                              fontSize:
-                                                                  10,
-                                                            ),
-                                                            'This Controls if you want to also manage the group unit of this item  (E.g: Single Unit: Bottle, Group Unit: Crate.)',
+                                                      'Use Group Unit?',
+                                                    ),
+                                                    Column(
+                                                      spacing:
+                                                          5,
+                                                      children: [
+                                                        Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                10,
                                                           ),
-                                                        ],
-                                                      ),
-                                                    ],
+                                                          'This Controls if you want to also manage the group unit of this item  (E.g: Single Unit: Bottle, Group Unit: Crate.)',
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Checkbox(
+                                                activeColor:
+                                                    theme
+                                                        .lightModeColor
+                                                        .secColor100,
+                                                value:
+                                                    returnData(
+                                                      context:
+                                                          context,
+                                                    ).useGroupUnit,
+                                                onChanged: (
+                                                  value,
+                                                ) {
+                                                  returnData()
+                                                      .toggleUseGroupUnit();
+                                                  FocusManager
+                                                      .instance
+                                                      .primaryFocus
+                                                      ?.unfocus();
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        SubWrapper(
+                                          isVisible:
+                                              !ItemsAuthAction()
+                                                  .applyVariationsAction(
+                                                    context:
+                                                        context,
                                                   ),
-                                                ),
-                                                Checkbox(
-                                                  activeColor:
-                                                      theme
-                                                          .lightModeColor
-                                                          .secColor100,
-                                                  value:
-                                                      returnData(
-                                                        context:
-                                                            context,
-                                                      ).useGroupUnit,
-                                                  onChanged: (
-                                                    value,
-                                                  ) {
-                                                    returnData()
-                                                        .toggleUseGroupUnit();
-                                                    FocusManager
-                                                        .instance
-                                                        .primaryFocus
-                                                        ?.unfocus();
-                                                  },
-                                                ),
-                                              ],
-                                            ),
+                                          mainWidget: MainDropdown(
+                                            valueSet:
+                                                returnData(
+                                                  context:
+                                                      context,
+                                                ).unitValueSet,
+                                            onTap: () {
+                                              ItemsAuthAction().applyVariationsAction(
+                                                context:
+                                                    context,
+                                                action: () {
+                                                  unitsBottomSheet(
+                                                    context,
+                                                    () {
+                                                      setState(() {
+                                                        isOpenUnit =
+                                                            !isOpenUnit;
+                                                      });
+                                                    },
+                                                  );
+                                                  setState(() {
+                                                    isOpenUnit =
+                                                        !isOpenUnit;
+                                                  });
+                                                },
+                                              );
+                                            },
+                                            isOpen:
+                                                isOpenUnit,
+                                            title:
+                                                'Material Unit (Optional)',
+                                            hint:
+                                                returnData(
+                                                  context:
+                                                      context,
+                                                ).selectedUnit ??
+                                                'Select Material Unit',
+                                            theme: theme,
                                           ),
-                                          SizedBox(
-                                            height: 10,
-                                          ),
-                                          SubWrapper(
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        Visibility(
+                                          visible:
+                                              returnData(
+                                                context:
+                                                    context,
+                                              ).useGroupUnit ==
+                                              true,
+                                          child: SubWrapper(
                                             isVisible:
                                                 !ItemsAuthAction()
-                                                    .applyVariationsAction(
+                                                    .useGroupUnitAction(
                                                       context:
                                                           context,
                                                     ),
@@ -1210,133 +1265,72 @@ class _AddMaterialMobileState
                                                   returnData(
                                                     context:
                                                         context,
-                                                  ).unitValueSet,
+                                                  ).groupUnitValueSet,
                                               onTap: () {
-                                                ItemsAuthAction().applyVariationsAction(
+                                                ItemsAuthAction().useGroupUnitAction(
                                                   context:
                                                       context,
                                                   action: () {
-                                                    unitsBottomSheet(
+                                                    groupUnitsBottomSheet(
                                                       context,
                                                       () {
                                                         setState(() {
-                                                          isOpenUnit =
-                                                              !isOpenUnit;
+                                                          isOpenGroupUnit =
+                                                              !isOpenGroupUnit;
                                                         });
                                                       },
                                                     );
                                                     setState(() {
-                                                      isOpenUnit =
-                                                          !isOpenUnit;
+                                                      isOpenGroupUnit =
+                                                          !isOpenGroupUnit;
                                                     });
                                                   },
                                                 );
                                               },
                                               isOpen:
-                                                  isOpenUnit,
+                                                  isOpenGroupUnit,
                                               title:
-                                                  'Material Unit (Optional)',
+                                                  'Material Group Unit (Optional)',
                                               hint:
                                                   returnData(
                                                     context:
                                                         context,
-                                                  ).selectedUnit ??
-                                                  'Select Material Unit',
+                                                  ).selectedGroupUnit ??
+                                                  'Select Material Group Unit',
                                               theme: theme,
                                             ),
                                           ),
-                                          SizedBox(
-                                            height: 10,
-                                          ),
-                                          Visibility(
-                                            visible:
-                                                returnData(
-                                                  context:
-                                                      context,
-                                                ).useGroupUnit ==
-                                                true,
-                                            child: SubWrapper(
-                                              isVisible:
-                                                  !ItemsAuthAction().useGroupUnitAction(
-                                                    context:
-                                                        context,
-                                                  ),
-                                              mainWidget: MainDropdown(
-                                                valueSet:
-                                                    returnData(
-                                                      context:
-                                                          context,
-                                                    ).groupUnitValueSet,
-                                                onTap: () {
-                                                  ItemsAuthAction().useGroupUnitAction(
-                                                    context:
-                                                        context,
-                                                    action: () {
-                                                      groupUnitsBottomSheet(
-                                                        context,
-                                                        () {
-                                                          setState(
-                                                            () {
-                                                              isOpenGroupUnit =
-                                                                  !isOpenGroupUnit;
-                                                            },
-                                                          );
-                                                        },
-                                                      );
-                                                      setState(() {
-                                                        isOpenGroupUnit =
-                                                            !isOpenGroupUnit;
-                                                      });
-                                                    },
-                                                  );
-                                                },
-                                                isOpen:
-                                                    isOpenGroupUnit,
-                                                title:
-                                                    'Material Group Unit (Optional)',
-                                                hint:
-                                                    returnData(
-                                                      context:
-                                                          context,
-                                                    ).selectedGroupUnit ??
-                                                    'Select Material Group Unit',
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        Visibility(
+                                          visible:
+                                              returnData(
+                                                context:
+                                                    context,
+                                              ).useGroupUnit ==
+                                              true,
+                                          child: Column(
+                                            children: [
+                                              EditCartTextField(
                                                 theme:
                                                     theme,
+                                                hint:
+                                                    'Enter Material Quantity in Group',
+                                                title:
+                                                    'Quantity in Group (Optional)',
+                                                controller:
+                                                    widget
+                                                        .qttyPerGroupController,
                                               ),
-                                            ),
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                            ],
                                           ),
-                                          SizedBox(
-                                            height: 10,
-                                          ),
-                                          Visibility(
-                                            visible:
-                                                returnData(
-                                                  context:
-                                                      context,
-                                                ).useGroupUnit ==
-                                                true,
-                                            child: Column(
-                                              children: [
-                                                EditCartTextField(
-                                                  theme:
-                                                      theme,
-                                                  hint:
-                                                      'Enter Material Quantity in Group',
-                                                  title:
-                                                      'Quantity in Group (Optional)',
-                                                  controller:
-                                                      widget
-                                                          .qttyPerGroupController,
-                                                ),
-                                                SizedBox(
-                                                  height:
-                                                      10,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
                                     Column(
                                       children: [

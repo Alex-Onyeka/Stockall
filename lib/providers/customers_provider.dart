@@ -12,7 +12,6 @@ import 'package:stockall/local_database/customers/unsync_funcs/deleted/deleted_c
 import 'package:stockall/local_database/customers/unsync_funcs/updated/updated_customers_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
-import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CustomersProvider extends ChangeNotifier {
@@ -337,9 +336,6 @@ class CustomersProvider extends ChangeNotifier {
       await mainLocalLog(
         'Batch Customers insert failed ❌: $e',
       );
-      await createErrorLog(
-        error: 'Batch Customers insert failed ❌: $e',
-      );
     }
   }
 
@@ -463,9 +459,6 @@ class CustomersProvider extends ChangeNotifier {
       await mainLocalLog(
         'Batch Customers update failed ❌: $e',
       );
-      await createErrorLog(
-        error: 'Batch Customers Update failed ❌: $e',
-      );
     }
   }
 
@@ -518,9 +511,6 @@ class CustomersProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Customers Delete failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Customers Delete failed ❌: $e',
       );
     }
   }

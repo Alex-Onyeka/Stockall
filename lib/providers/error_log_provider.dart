@@ -331,13 +331,13 @@ class ErrorLogProvider with ChangeNotifier {
       await mainLocalLog(
         'Batch Error Logs insert failed ❌: $e',
       );
-      await createErrorLog(
-        error: 'Batch Error Logs insert failed ❌: $e',
-      );
+      // await createErrorLog(
+      //   error: 'Batch Error Logs insert failed ❌: $e',
+      // );
     }
   }
 }
 
-Future<void> createErrorLog({required String error}) async {
-  // await returnErrorLogProvider().createLog(error: error);
-}
+// Future<void> createErrorLog({required String error}) async {
+//   // await returnErrorLogProvider().createLog(error: error);
+// }

@@ -12,7 +12,6 @@ import 'package:stockall/local_database/suppliers_func/unsync_funcs/deleted/dele
 import 'package:stockall/local_database/suppliers_func/unsync_funcs/updated/updated_supplier_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
-import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SuppliersProvider extends ChangeNotifier {
@@ -375,9 +374,6 @@ class SuppliersProvider extends ChangeNotifier {
       await mainLocalLog(
         'Batch Suppliers Insert failed ❌: $e',
       );
-      await createErrorLog(
-        error: 'Batch Suppliers Insert failed ❌: $e',
-      );
     }
   }
 
@@ -491,9 +487,6 @@ class SuppliersProvider extends ChangeNotifier {
       await mainLocalLog(
         'Batch Suppliers Update failed ❌: $e',
       );
-      await createErrorLog(
-        error: 'Batch Suppliers Update failed ❌: $e',
-      );
     }
   }
 
@@ -546,9 +539,6 @@ class SuppliersProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Suppliers Delete failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Suppliers Delete failed ❌: $e',
       );
     }
   }

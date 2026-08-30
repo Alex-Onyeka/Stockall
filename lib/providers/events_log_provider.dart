@@ -13,7 +13,6 @@ import 'package:stockall/local_database/events_log/events_log_func.dart';
 import 'package:stockall/local_database/events_log/unsync_funcs/created_events_log_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
-import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class EventsLogProvider with ChangeNotifier {
@@ -564,9 +563,6 @@ class EventsLogProvider with ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Event Logs insert failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Event Logs insert failed ❌: $e',
       );
     }
   }

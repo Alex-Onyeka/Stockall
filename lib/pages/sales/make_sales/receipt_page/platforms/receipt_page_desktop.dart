@@ -22,12 +22,10 @@ import 'package:stockall/services/printing/import_helper.dart'
 class ReceiptPageDesktop extends StatefulWidget {
   final bool isMain;
   final CheckoutResponse response;
-  final bool? isComingFromInvoice;
   const ReceiptPageDesktop({
     super.key,
     required this.response,
     required this.isMain,
-    this.isComingFromInvoice,
   });
 
   @override
@@ -56,9 +54,10 @@ class _ReceiptPageDesktopState
     TempMainReceipt mainReceipt = returnReceiptProvider(
       context,
     ).receipts.firstWhere(
-      (rec) => rec.uuid! == widget.response.resUuid,
+      (rec) => rec.uuid! == widget.response.receipt?.uuid,
       orElse:
           () => TempMainReceipt(
+            orderUuid: null,
             customerAccount: 0,
             comment: null,
             subStaffName: null,
@@ -346,7 +345,9 @@ class _ReceiptPageDesktopState
                               return ReceiptDetailsContainer(
                                 isComingFromInvoice:
                                     widget
-                                        .isComingFromInvoice,
+                                        .response
+                                        .invoice !=
+                                    null,
                                 isMain: widget.isMain,
                                 shop: shop!,
                                 mainReceipt: mainReceipt,

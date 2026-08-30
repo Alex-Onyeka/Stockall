@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/constants/bottom_sheet_widgets.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -60,7 +62,11 @@ class _GeneralTextfieldOnlyState
     return Form(
       key: widget.formState,
       child: TextFormField(
-        autofocus: widget.autoFocus ?? false,
+        autofocus:
+            widget.autoFocus ??
+            (screenWidth(context) > mobileScreen
+                ? true
+                : false),
         onFieldSubmitted: widget.onSubmitted,
         onTapOutside: widget.onTapOutside,
         textInputAction:

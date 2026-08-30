@@ -1062,10 +1062,11 @@ class _MakeSalesDesktopState
                                             .isReceiptEdit
                                         ? 'Edit Receipt'
                                         : returnSalesProviderContext(
-                                              context,
-                                            )
-                                            .currentCart()
-                                            .isInvoice
+                                                  context,
+                                                )
+                                                .currentCart()
+                                                .cartItemTypeIndex ==
+                                            2
                                         ? 'Credit Sale'
                                         : 'Cart Items',
                                 widget: Stack(
@@ -1195,22 +1196,21 @@ class _MakeSalesDesktopState
                                                 .click,
                                         onTap: () async {
                                           if (returnSalesProvider()
-                                              .currentCart()
-                                              .isInvoice) {
+                                                  .currentCart()
+                                                  .cartItemTypeIndex ==
+                                              2) {
                                             returnSalesProvider()
                                                 .switchInvoiceSale(
                                                   context:
                                                       context,
-                                                  value:
-                                                      false,
+                                                  value: 1,
                                                 );
                                           } else {
                                             returnSalesProvider()
                                                 .switchInvoiceSale(
                                                   context:
                                                       context,
-                                                  value:
-                                                      true,
+                                                  value: 2,
                                                 );
                                           }
                                         },
@@ -1247,15 +1247,17 @@ class _MakeSalesDesktopState
                                                         BoxShape.circle,
                                                     color:
                                                         returnSalesProviderContext(
-                                                              context,
-                                                            ).currentCart().isInvoice
+                                                                  context,
+                                                                ).currentCart().cartItemTypeIndex ==
+                                                                2
                                                             ? theme.lightModeColor.prColor250
                                                             : null,
                                                     border: Border.all(
                                                       color:
                                                           returnSalesProviderContext(
-                                                                context,
-                                                              ).currentCart().isInvoice
+                                                                    context,
+                                                                  ).currentCart().cartItemTypeIndex ==
+                                                                  2
                                                               ? theme.lightModeColor.prColor250
                                                               : Colors.grey,
                                                     ),
@@ -1265,8 +1267,9 @@ class _MakeSalesDesktopState
                                                         14,
                                                     color:
                                                         returnSalesProviderContext(
-                                                              context,
-                                                            ).currentCart().isInvoice
+                                                                  context,
+                                                                ).currentCart().cartItemTypeIndex ==
+                                                                2
                                                             ? Colors.white
                                                             : Colors.grey.shade400,
                                                     Icons
@@ -2232,8 +2235,10 @@ class _MakeSalesDesktopState
                                                               "${currentUser().name} ${currentUser().lastName}",
                                                           cartItems:
                                                               [],
-                                                          isInvoice:
-                                                              false,
+                                                          cartItemTypeIndex:
+                                                              1,
+                                                          orderUuidEdit:
+                                                              null,
                                                         ),
                                                       );
                                                       returnSalesProvider()

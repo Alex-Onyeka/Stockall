@@ -220,20 +220,21 @@ class _MakeSalesDesktopTwoState
                                                       .click,
                                               onTap: () async {
                                                 if (returnSalesProvider()
-                                                    .currentCart()
-                                                    .isInvoice) {
+                                                        .currentCart()
+                                                        .cartItemTypeIndex ==
+                                                    2) {
                                                   returnSalesProvider().switchInvoiceSale(
                                                     context:
                                                         context,
                                                     value:
-                                                        false,
+                                                        1,
                                                   );
                                                 } else {
                                                   returnSalesProvider().switchInvoiceSale(
                                                     context:
                                                         context,
                                                     value:
-                                                        true,
+                                                        2,
                                                   );
                                                 }
                                                 returnSalesProvider()
@@ -263,23 +264,22 @@ class _MakeSalesDesktopTwoState
                                                   border: Border.all(
                                                     color:
                                                         returnSalesProviderContext(
-                                                              context,
-                                                            ).currentCart().isInvoice
+                                                                  context,
+                                                                ).currentCart().cartItemTypeIndex ==
+                                                                2
                                                             ? theme.lightModeColor.prColor250
                                                             : Colors.grey,
                                                   ),
                                                   color:
-                                                      returnSalesProviderContext(
-                                                            context,
-                                                          ).currentCart().isInvoice
+                                                      returnSalesProviderContext(context).currentCart().cartItemTypeIndex ==
+                                                              2
                                                           ? theme.lightModeColor.prColor250
                                                           : Colors.grey.shade200,
                                                 ),
                                                 child: Row(
                                                   mainAxisAlignment:
-                                                      returnSalesProviderContext(
-                                                            context,
-                                                          ).currentCart().isInvoice
+                                                      returnSalesProviderContext(context).currentCart().cartItemTypeIndex ==
+                                                              2
                                                           ? MainAxisAlignment.end
                                                           : MainAxisAlignment.start,
                                                   children: [
@@ -293,8 +293,9 @@ class _MakeSalesDesktopTwoState
                                                             BoxShape.circle,
                                                         color:
                                                             returnSalesProviderContext(
-                                                                  context,
-                                                                ).currentCart().isInvoice
+                                                                      context,
+                                                                    ).currentCart().cartItemTypeIndex ==
+                                                                    2
                                                                 ? Colors.white
                                                                 : Colors.grey.shade600,
                                                       ),
@@ -324,7 +325,8 @@ class _MakeSalesDesktopTwoState
                                                     context,
                                                   )
                                                   .currentCart()
-                                                  .isInvoice,
+                                                  .cartItemTypeIndex ==
+                                              2,
                                           child: Column(
                                             children: [
                                               MoneyTextfield(
@@ -704,8 +706,10 @@ class _MakeSalesDesktopTwoState
                                                           "${currentUser().name} ${currentUser().lastName}",
                                                       cartItems:
                                                           [],
-                                                      isInvoice:
-                                                          false,
+                                                      cartItemTypeIndex:
+                                                          1,
+                                                      orderUuidEdit:
+                                                          null,
                                                     ),
                                                   );
                                                 },
@@ -1027,8 +1031,9 @@ class _MakeSalesDesktopTwoState
                                       BuildContext
                                       safeContext = context;
                                       if (returnSalesProvider()
-                                              .currentCart()
-                                              .isInvoice &&
+                                                  .currentCart()
+                                                  .cartItemTypeIndex ==
+                                              2 &&
                                           returnSalesProvider()
                                                   .currentCart()
                                                   .selectedCustomerName ==
@@ -1079,9 +1084,8 @@ class _MakeSalesDesktopTwoState
                                                           .currentCart()
                                                           .isReceiptEdit
                                                       ? "You are about to update this sales Receipt, are you sure you want to Proceed?"
-                                                      : returnSalesProvider()
-                                                          .currentCart()
-                                                          .isInvoice
+                                                      : returnSalesProvider().currentCart().cartItemTypeIndex ==
+                                                          2
                                                       ? 'You are about to record a Sale on Credit, are you sure you want to proceed?'
                                                       : 'You are about to record a Sale, are you sure you want to proceed?',
                                               title:
@@ -1089,9 +1093,8 @@ class _MakeSalesDesktopTwoState
                                                           .currentCart()
                                                           .isReceiptEdit
                                                       ? 'Update Receipt?'
-                                                      : returnSalesProvider()
-                                                          .currentCart()
-                                                          .isInvoice
+                                                      : returnSalesProvider().currentCart().cartItemTypeIndex ==
+                                                          2
                                                       ? 'Sell on Credit?'
                                                       : 'Are you sure?',
                                               action: () async {

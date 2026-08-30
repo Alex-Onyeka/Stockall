@@ -17,7 +17,6 @@ import 'package:stockall/local_database/productions/unsync_funcs/deleted/deleted
 import 'package:stockall/local_database/productions/unsync_funcs/updated/updated_production_records_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
-import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProductionRecordsProvider extends ChangeNotifier {
@@ -513,10 +512,6 @@ class ProductionRecordsProvider extends ChangeNotifier {
       await mainLocalLog(
         'Batch Production Records insert failed ❌: $e',
       );
-      await createErrorLog(
-        error:
-            'Batch Production Records insert failed ❌: $e',
-      );
     }
   }
 
@@ -573,10 +568,6 @@ class ProductionRecordsProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Production Records Deleted failed ❌: $e',
-      );
-      await createErrorLog(
-        error:
-            'Batch Production Records Delete failed ❌: $e',
       );
     }
   }
@@ -693,10 +684,6 @@ class ProductionRecordsProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Production Records update failed ❌: $e',
-      );
-      await createErrorLog(
-        error:
-            'Batch Production Records Update failed ❌: $e',
       );
     }
   }

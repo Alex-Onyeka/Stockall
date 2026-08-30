@@ -2235,15 +2235,9 @@ class _InvoicePageMobileState
                                                                       response: CheckoutResponse(
                                                                         receipt:
                                                                             receipt,
-                                                                        resUuid:
-                                                                            receipt.uuid!,
-                                                                        isReceipt:
-                                                                            true,
                                                                       ),
                                                                       isMain:
                                                                           false,
-                                                                      isComingFromInvoice:
-                                                                          true,
                                                                     );
                                                                   },
                                                                 ),

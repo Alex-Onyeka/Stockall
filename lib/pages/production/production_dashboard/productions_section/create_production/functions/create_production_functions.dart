@@ -401,7 +401,7 @@ class CreateProductionFunctions {
                 }
               },
               widget: SizedBox(
-                height: screenHeight(statefulContext) - 200,
+                height: screenHeight(statefulContext) - 270,
                 child: Column(
                   children: [
                     Row(
@@ -1124,7 +1124,7 @@ class CreateProductionFunctions {
                 }
               },
               widget: SizedBox(
-                height: screenHeight(statefulContext) - 200,
+                height: screenHeight(statefulContext) - 270,
                 child: Column(
                   children: [
                     Row(
@@ -1896,7 +1896,7 @@ class CreateProductionFunctions {
                 ),
                 showBottomActionButtons: false,
                 widget: SizedBox(
-                  height: screenHeight(context) - 180,
+                  height: screenHeight(context) - 250,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(

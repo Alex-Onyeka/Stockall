@@ -58,7 +58,7 @@ class ProductionMaterialUsageTileState
                   action: () {},
                   showBottomActionButtons: false,
                   widget: SizedBox(
-                    height: screenHeight(context) - 200,
+                    height: screenHeight(context) - 250,
                     child: MaterialUsageDetailsWidget(
                       productionRecordMaterials:
                           widget.productionRecordMaterials,

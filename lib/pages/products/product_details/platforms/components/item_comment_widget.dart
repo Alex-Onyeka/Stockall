@@ -23,15 +23,6 @@ class ItemCommentWidget extends StatefulWidget {
 
 class _ItemCommentWidgetState
     extends State<ItemCommentWidget> {
-  // bool isEdit = false;
-
-  // void toggleIsEdit(bool value) {
-  //   setState(() {
-  //     isEdit = value;
-  //     widget.commentController.clear();
-  //   });
-  // }
-
   @override
   void dispose() {
     super.dispose();

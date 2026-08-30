@@ -11,7 +11,6 @@ import 'package:stockall/local_database/sub_staff/unsync_funcs/deleted/deleted_s
 import 'package:stockall/local_database/sub_staff/unsync_funcs/updated/updated_sub_staff_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
-import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SubStaffProvider extends ChangeNotifier {
@@ -371,9 +370,6 @@ class SubStaffProvider extends ChangeNotifier {
       await mainLocalLog(
         'Batch Sub Staffs Insert failed ❌: $e',
       );
-      await createErrorLog(
-        error: 'Batch Sub Staffs Insert failed ❌: $e',
-      );
     }
   }
 
@@ -423,9 +419,6 @@ class SubStaffProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Sub Staffs Delete failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Sub Staffs Delete failed ❌: $e',
       );
     }
   }
@@ -533,9 +526,6 @@ class SubStaffProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Sub Staffs Update failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Sub Staffs Update failed ❌: $e',
       );
     }
   }

@@ -9,7 +9,6 @@ import 'package:stockall/local_database/materials_item_history/materials_item_hi
 import 'package:stockall/local_database/materials_item_history/unsync_funcs/created_materials_item_histories_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
-import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MaterialsItemHistoryProvider with ChangeNotifier {
@@ -316,10 +315,6 @@ class MaterialsItemHistoryProvider with ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Materials Item Histories insert failed ❌: $e',
-      );
-      await createErrorLog(
-        error:
-            'Batch Materials Item Histories insert failed ❌: $e',
       );
     }
   }

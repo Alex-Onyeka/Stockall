@@ -1094,6 +1094,8 @@ class SubscriptionIconWidget extends StatelessWidget {
                     ? Colors.grey
                     : plan == 2
                     ? Colors.blue
+                    : plan == 0
+                    ? Colors.transparent
                     : null,
             checkIconSvg,
             height: 16,

@@ -11,8 +11,6 @@ import 'package:stockall/local_database/storage_product/unsync_funcs/deleted/del
 import 'package:stockall/local_database/storage_product/unsync_funcs/updated/updated_storage_products_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
-import 'package:stockall/providers/error_log_provider.dart';
-
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class StorageProductProvider extends ChangeNotifier {
@@ -142,9 +140,8 @@ class StorageProductProvider extends ChangeNotifier {
                     item.storageProduct.uuid!,
                   );
             }
-            await createErrorLog(
-              error:
-                  'Error Synchronizing Storage Product ${item.storageProduct.name}: $e',
+            await mainLocalLog(
+              'Error Synchronizing Storage Product ${item.storageProduct.name}: $e',
             );
           }
         }
@@ -167,9 +164,6 @@ class StorageProductProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Storage Products Insert failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Storage Products Insert failed ❌: $e',
       );
     }
   }
@@ -217,9 +211,6 @@ class StorageProductProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Storage Products Delete failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Storage Products Delete failed ❌: $e',
       );
     }
   }
@@ -330,9 +321,6 @@ class StorageProductProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Storage Products Update failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Storage Products Update failed ❌: $e',
       );
     }
   }

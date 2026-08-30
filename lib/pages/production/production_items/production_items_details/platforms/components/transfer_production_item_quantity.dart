@@ -547,7 +547,7 @@ void selectDepartmentProductionItems({
                 },
                 widget: SizedBox(
                   height:
-                      screenHeight(statefulContext) - 200,
+                      screenHeight(statefulContext) - 270,
                   child: SingleChildScrollView(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -873,7 +873,7 @@ void selectItemInADepartmentsProduction({
                 },
                 widget: SizedBox(
                   height:
-                      screenHeight(statefulContext) - 200,
+                      screenHeight(statefulContext) - 270,
                   child: Column(
                     children: [
                       Row(
@@ -1128,7 +1128,7 @@ void selectShopsProductionItems({
               }
             },
             widget: SizedBox(
-              height: screenHeight(statefulContext) - 200,
+              height: screenHeight(statefulContext) - 270,
               child: SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -1441,7 +1441,7 @@ void selectItemInAShopProduction({
               }
             },
             widget: SizedBox(
-              height: screenHeight(statefulContext) - 200,
+              height: screenHeight(statefulContext) - 270,
               child: Column(
                 children: [
                   Row(

@@ -241,15 +241,9 @@ class _SearchInvoiceDesktopState
                                                     context,
                                                   ) {
                                                     return ReceiptPage(
-                                                      isComingFromInvoice:
-                                                          true,
                                                       response: CheckoutResponse(
                                                         invoice:
                                                             invoice,
-                                                        isReceipt:
-                                                            false,
-                                                        resUuid:
-                                                            invoice.uuid!,
                                                       ),
                                                       isMain:
                                                           false,

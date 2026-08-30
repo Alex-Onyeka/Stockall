@@ -392,6 +392,80 @@ class AddStorageItemMobileState
                                 children: [
                                   Column(
                                     children: [
+                                      SizedBox(height: 15),
+                                      InkWell(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
+                                        onTap: () {
+                                          returnData()
+                                              .toggleUseGroupUnit();
+                                          FocusManager
+                                              .instance
+                                              .primaryFocus
+                                              ?.unfocus();
+                                        },
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .spaceBetween,
+                                          children: [
+                                            Flexible(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment
+                                                        .start,
+                                                children: [
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          theme.mobileTexts.b1.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    'Use Group Unit?',
+                                                  ),
+                                                  Column(
+                                                    spacing:
+                                                        5,
+                                                    children: [
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              10,
+                                                        ),
+                                                        'This Controls if you want to also manage the group unit of this item  (E.g: Single Unit: Bottle, Group Unit: Crate.)',
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Checkbox(
+                                              activeColor:
+                                                  theme
+                                                      .lightModeColor
+                                                      .secColor100,
+                                              value:
+                                                  returnData(
+                                                    context:
+                                                        context,
+                                                  ).useGroupUnit,
+                                              onChanged: (
+                                                value,
+                                              ) {
+                                                returnData()
+                                                    .toggleUseGroupUnit();
+                                                FocusManager
+                                                    .instance
+                                                    .primaryFocus
+                                                    ?.unfocus();
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(height: 5),
                                       SubWrapper(
                                         isVisible:
                                             !ItemsAuthAction()

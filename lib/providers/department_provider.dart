@@ -13,7 +13,6 @@ import 'package:stockall/local_database/department_func/unsync_funcs/deleted_dep
 import 'package:stockall/local_database/department_func/unsync_funcs/updated_department/updated_department_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
-import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DepartmentProvider with ChangeNotifier {
@@ -428,9 +427,6 @@ class DepartmentProvider with ChangeNotifier {
       await mainLocalLog(
         'Batch Departments insert failed ❌: $e',
       );
-      await createErrorLog(
-        error: 'Batch Departments insert failed ❌: $e',
-      );
     }
   }
 
@@ -481,9 +477,6 @@ class DepartmentProvider with ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Departments delete failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Departments delete failed ❌: $e',
       );
     }
   }
@@ -590,9 +583,6 @@ class DepartmentProvider with ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Departments update failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Departments update failed ❌: $e',
       );
     }
   }

@@ -12,7 +12,6 @@ import 'package:stockall/local_database/materials_usage/unsync_funcs/deleted/del
 import 'package:stockall/local_database/materials_usage/unsync_funcs/updated/updated_production_materials_usage_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
-import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MaterialsUsageProvider extends ChangeNotifier {
@@ -118,66 +117,6 @@ class MaterialsUsageProvider extends ChangeNotifier {
       return null;
     }
   }
-
-  // // CREATE a new ProductionMaterialsUsage
-  // Future<ProductionMaterialsUsage?>
-  // updateProductionMaterialsUsage(
-  //   ProductionMaterialsUsage productionMaterialsUsage,
-  // ) async {
-  //   await mainLocalLog(
-  //     'Inner ProductionMaterialsUsage Update Started',
-  //   );
-  //   productionMaterialsUsage.updatedAt = DateTime.now().add(
-  //     Duration(days: 1),
-  //   );
-  //   try {
-  //     var res = await ProductionMaterialsUsageFunc()
-  //         .createProductionMaterialsUsage(
-  //           productionMaterialsUsage,
-  //         );
-  //     if (res == 1) {
-  //       var containsCreated =
-  //           CreatedProductionMaterialsUsageFunc()
-  //               .getProductionMaterialsUsage()
-  //               .where(
-  //                 (createdProduct) =>
-  //                     createdProduct
-  //                         .createdProductionMaterialsUsage
-  //                         .uuid ==
-  //                     productionMaterialsUsage.uuid,
-  //               )
-  //               .toList();
-  //       if (containsCreated.isEmpty) {
-  //         await UpdatedProductionMaterialsUsageFunc()
-  //             .createUpdatedProductionMaterialsUsage(
-  //               UpdatedProductionMaterialsUsage(
-  //                 updatedProductionMaterialsUsage:
-  //                     productionMaterialsUsage,
-  //               ),
-  //             );
-  //       } else {
-  //         await CreatedProductionMaterialsUsageFunc()
-  //             .createProductionMaterialsUsage(
-  //               CreatedProductionMaterialsUsage(
-  //                 createdProductionMaterialsUsage:
-  //                     productionMaterialsUsage,
-  //               ),
-  //             );
-  //       }
-  //     } else {
-  //       notifyListeners();
-  //       return null;
-  //     }
-  //     await getProductionMaterialsUsageOffline();
-  //     syncData();
-  //     return productionMaterialsUsage;
-  //   } catch (e) {
-  //     await mainLocalLog(
-  //       '❌❌ Create Production Materials Usage Error Offline: ${e.toString()}',
-  //     );
-  //     return null;
-  //   }
-  // }
 
   // READ all ProductionMaterialsUsage for a shop
   Future<List<ProductionMaterialsUsage>>
@@ -468,10 +407,6 @@ class MaterialsUsageProvider extends ChangeNotifier {
       await mainLocalLog(
         'Batch Production Materials Usage insert failed ❌: $e',
       );
-      await createErrorLog(
-        error:
-            'Batch Production Material sUsage insert failed ❌: $e',
-      );
     }
   }
 
@@ -526,10 +461,6 @@ class MaterialsUsageProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Production Materials Usage Deleted failed ❌: $e',
-      );
-      await createErrorLog(
-        error:
-            'Batch Production Materials Usage Delete failed ❌: $e',
       );
     }
   }
@@ -651,10 +582,6 @@ class MaterialsUsageProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Production Materials Usage update failed ❌: $e',
-      );
-      await createErrorLog(
-        error:
-            'Batch ProductionMaterialsUsage Update failed ❌: $e',
       );
     }
   }

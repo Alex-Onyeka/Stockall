@@ -31,12 +31,16 @@ class SubscriptionClass extends HiveObject {
   @HiveField(8)
   String? email;
 
+  @HiveField(9)
+  int? oldPlan;
+
   SubscriptionClass({
     this.subscriptionId,
     this.createdAt,
     this.userId,
     this.nextPayment,
     this.plan,
+    required this.oldPlan,
     this.lastPayment,
     this.userName,
     this.amount,
@@ -47,6 +51,10 @@ class SubscriptionClass extends HiveObject {
     Map<String, dynamic> json,
   ) {
     return SubscriptionClass(
+      oldPlan:
+          json['old_plan'] != null
+              ? json['old_plan'] as int
+              : 0,
       subscriptionId: json['subscription_id'] as String?,
       createdAt:
           json['created_at'] != null
@@ -75,6 +83,7 @@ class SubscriptionClass extends HiveObject {
       'user_id': userId,
       'next_payment': nextPayment?.toIso8601String(),
       'plan': plan,
+      'old_plan': oldPlan,
       'last_payment': lastPayment?.toIso8601String(),
       'user_name': userName,
       'amount': amount,

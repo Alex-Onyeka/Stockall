@@ -26,7 +26,6 @@ import 'package:stockall/pages/report/invoice_sales_report/platforms/invoice_sal
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
-import 'package:stockall/providers/error_log_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -383,6 +382,7 @@ class InvoicesProvider extends ChangeNotifier {
       final createdAt = DateTime.now().toUtc();
 
       TempMainReceipt receipt = TempMainReceipt(
+        orderUuid: null,
         comment: null,
         subStaffName: invoice.subStaffName,
         createdAt: createdAt,
@@ -641,7 +641,8 @@ class InvoicesProvider extends ChangeNotifier {
             fixedDiscount: invoice.fixedDiscount,
             createdDate: invoice.createdAt,
             cartItems: cartItems,
-            isInvoice: true,
+            cartItemTypeIndex: 2,
+            orderUuidEdit: null,
             discount: invoice.generalDiscount,
             invoiceUuidEdit: invoice.uuid,
             paymentMethod:
@@ -849,7 +850,8 @@ class InvoicesProvider extends ChangeNotifier {
                     departmentName: null,
                     departmentUuid: null,
                     cartItems: [],
-                    isInvoice: false,
+                    cartItemTypeIndex: 2,
+                    orderUuidEdit: null,
                     staffId: currentUser().userId,
                     staffName:
                         "${currentUser().name} ${currentUser().lastName}",
@@ -960,7 +962,22 @@ class InvoicesProvider extends ChangeNotifier {
 
   List<TempInvoice> returnUnpaidInvoices() {
     return returnInvoicesByDayOrWeekAll()
-        .where((inv) => getBalance(invoice: inv) != 0)
+        .where(
+          (inv) =>
+              (inv.bank + inv.cashAlt) ==
+              getBalance(invoice: inv),
+        )
+        .toList();
+  }
+
+  List<TempInvoice> returnPartiallyPaidInvoices() {
+    return returnInvoicesByDayOrWeekAll()
+        .where(
+          (inv) =>
+              getBalance(invoice: inv) != 0 &&
+              (inv.bank + inv.cashAlt) >
+                  getBalance(invoice: inv),
+        )
         .toList();
   }
 
@@ -970,7 +987,14 @@ class InvoicesProvider extends ChangeNotifier {
         .toList();
   }
 
-  List<TempInvoice> returnInvoicesBasedOnPaymentMethod() {
+  int invoicePaymentStatusIndex = 0;
+
+  void selectPaymentStatus(int index) {
+    invoicePaymentStatusIndex = index;
+    notifyListeners();
+  }
+
+  List<TempInvoice> returnInvoicesBasedOnPaymentStatus() {
     if (rangeStartDate != null) {
       return departmentInvoices().where((invoice) {
         final created = invoice.createdAt.toLocal();
@@ -1001,24 +1025,29 @@ class InvoicesProvider extends ChangeNotifier {
   }
 
   List<TempInvoice> returnInvoicesByDayOrWeekAll() {
-    if (returnReceiptProviderSingle().paymentMethod == 3) {
-      return returnInvoicesBasedOnPaymentMethod()
-          .where((rec) => rec.paymentMethod == 'Split')
+    if (invoicePaymentStatusIndex == 0) {
+      return returnInvoicesBasedOnPaymentStatus()
+          .where(
+            (inv) =>
+                (inv.bank + inv.cashAlt) ==
+                getBalance(invoice: inv),
+          )
           .toList();
-    } else if (returnReceiptProviderSingle()
-            .paymentMethod ==
-        1) {
-      return returnInvoicesBasedOnPaymentMethod()
-          .where((rec) => rec.paymentMethod == 'Cash')
+    } else if (invoicePaymentStatusIndex == 1) {
+      return returnInvoicesBasedOnPaymentStatus()
+          .where((inv) => getBalance(invoice: inv) == 0)
           .toList();
-    } else if (returnReceiptProviderSingle()
-            .paymentMethod ==
-        2) {
-      return returnInvoicesBasedOnPaymentMethod()
-          .where((rec) => rec.paymentMethod == 'Bank')
+    } else if (invoicePaymentStatusIndex == 2) {
+      return returnInvoicesBasedOnPaymentStatus()
+          .where(
+            (inv) =>
+                getBalance(invoice: inv) != 0 &&
+                (inv.bank + inv.cashAlt) >
+                    getBalance(invoice: inv),
+          )
           .toList();
     } else {
-      return returnInvoicesBasedOnPaymentMethod().toList();
+      return returnInvoicesBasedOnPaymentStatus().toList();
     }
   }
 
@@ -1156,9 +1185,8 @@ class InvoicesProvider extends ChangeNotifier {
                 item.invoice.uuid!,
               );
             }
-            await createErrorLog(
-              error:
-                  'Error Synchronizing Invoice ${item.invoice.bank + item.invoice.cashAlt}: $e',
+            await mainLocalLog(
+              'Error Synchronizing Invoice ${item.invoice.bank + item.invoice.cashAlt}: $e',
             );
           }
         }
@@ -1176,9 +1204,6 @@ class InvoicesProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Invoices insert failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Invoices insert failed ❌: $e',
       );
     }
   }
@@ -1219,9 +1244,8 @@ class InvoicesProvider extends ChangeNotifier {
           } catch (e) {
             await DeletedInvoicesFunc()
                 .deletedDeletedInvoices(inv.invoiceUuid);
-            createErrorLog(
-              error:
-                  'Error Syncing Deleted Invoice: ${e.toString()}',
+            await mainLocalLog(
+              'Error Syncing Deleted Invoice: ${e.toString()}',
             );
           }
         }
@@ -1243,9 +1267,6 @@ class InvoicesProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Invoices Deleted failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Invoices Delete failed ❌: $e',
       );
     }
   }
@@ -1361,9 +1382,6 @@ class InvoicesProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         'Batch Invoices update failed ❌: $e',
-      );
-      await createErrorLog(
-        error: 'Batch Invoices update failed ❌: $e',
       );
     }
   }
@@ -1797,8 +1815,6 @@ class InvoicesProvider extends ChangeNotifier {
                         builder: (context) {
                           return ReceiptPage(
                             response: CheckoutResponse(
-                              resUuid: item.uuid!,
-                              isReceipt: false,
                               invoice: item,
                             ),
                             isMain: false,

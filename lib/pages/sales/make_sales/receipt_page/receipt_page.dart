@@ -10,12 +10,12 @@ import 'package:stockall/pages/sales/make_sales/receipt_page/platforms/receipt_p
 class ReceiptPage extends StatefulWidget {
   final CheckoutResponse response;
   final bool isMain;
-  final bool? isComingFromInvoice;
+  // final bool? isComingFromInvoice;
   const ReceiptPage({
     super.key,
     required this.response,
     required this.isMain,
-    this.isComingFromInvoice,
+    // this.isComingFromInvoice,
   });
 
   @override
@@ -31,10 +31,16 @@ class _ReceiptPageState extends State<ReceiptPage> {
         returnReceiptProvider(
           context,
           listen: false,
-        ).loadSingleReceipt(uuid: widget.response.resUuid);
-      } else {
+        ).loadSingleReceipt(
+          uuid: widget.response.receipt?.uuid ?? '',
+        );
+      } else if (widget.response.invoice != null) {
         returnInvoicesProvider().loadSingleInvoice(
-          uuid: widget.response.resUuid,
+          uuid: widget.response.invoice?.uuid ?? '',
+        );
+      } else if (widget.response.order != null) {
+        returnOrdersProvider().loadSingleOrder(
+          uuid: widget.response.order?.uuid ?? '',
         );
       }
       setState(() {});
@@ -46,30 +52,40 @@ class _ReceiptPageState extends State<ReceiptPage> {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth < mobileScreen) {
-          if (widget.response.isReceipt) {
+          if (widget.response.receipt != null) {
             return ReceiptPageMobile(
               isMain: widget.isMain,
               response: widget.response,
-              isComingFromInvoice:
-                  widget.isComingFromInvoice,
             );
-          } else {
+          }
+          if (widget.response.invoice != null) {
             return InvoicePageMobile(
               checkoutResponse: widget.response,
             );
+          } else {
+            // return ReceiptPageMobile(
+            //   isMain: widget.isMain,
+            //   response: widget.response,
+            // );
+            return Scaffold();
           }
         } else {
-          if (widget.response.isReceipt) {
+          if (widget.response.receipt != null) {
             return ReceiptPageDesktop(
               isMain: widget.isMain,
               response: widget.response,
-              isComingFromInvoice:
-                  widget.isComingFromInvoice,
             );
-          } else {
+          }
+          if (widget.response.invoice != null) {
             return InvoicePageDesktop(
               checkoutResponse: widget.response,
             );
+          } else {
+            // return ReceiptPageMobile(
+            //   isMain: widget.isMain,
+            //   response: widget.response,
+            // );
+            return Scaffold();
           }
         }
       },

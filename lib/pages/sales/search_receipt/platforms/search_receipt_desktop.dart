@@ -252,10 +252,6 @@ class _SearchReceiptDesktopState
                                                       response: CheckoutResponse(
                                                         receipt:
                                                             receipt,
-                                                        resUuid:
-                                                            receipt.uuid!,
-                                                        isReceipt:
-                                                            true,
                                                       ),
                                                       isMain:
                                                           false,

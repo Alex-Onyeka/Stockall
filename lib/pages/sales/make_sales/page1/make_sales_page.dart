@@ -9,11 +9,11 @@ import 'package:stockall/pages/sales/make_sales/page1/platforms/make_sales_mobil
 
 class MakeSalesPage extends StatefulWidget {
   final bool? isMain;
-  final bool? isInvoice;
+  final int? cartItemTypeIndex;
   const MakeSalesPage({
     super.key,
     this.isMain,
-    this.isInvoice,
+    this.cartItemTypeIndex,
   });
 
   @override
@@ -32,7 +32,7 @@ class _MakeSalesPageState extends State<MakeSalesPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await returnMultiDisplayProvider().getAllSubWindows();
       await returnSalesProvider().fetchMainCart();
-      if (widget.isInvoice == true) {
+      if (widget.cartItemTypeIndex == 2) {
         if (returnSalesProvider()
             .currentCart()
             .cartItems
@@ -52,13 +52,15 @@ class _MakeSalesPageState extends State<MakeSalesPage> {
               staffName:
                   "${currentUser().name} ${currentUser().lastName}",
               cartItems: [],
-              isInvoice: true,
               id: uuidGen(),
+              cartItemTypeIndex:
+                  widget.cartItemTypeIndex ?? 1,
+              orderUuidEdit: null,
             ),
           );
         } else {
           returnSalesProvider().switchInvoiceSale(
-            value: true,
+            value: 2,
             context: context,
           );
         }
@@ -124,7 +126,6 @@ class _MakeSalesPageState extends State<MakeSalesPage> {
         builder: (context, constraints) {
           if (constraints.maxWidth < mobileScreen) {
             return MakeSalesMobile(
-              // isInvoice: widget.isInvoice,
               isMain: widget.isMain,
               searchController: searchController,
             );

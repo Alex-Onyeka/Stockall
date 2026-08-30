@@ -158,7 +158,7 @@ class _ProductionMaterialTileWidgetState
                                       screenHeight(
                                         context,
                                       ) -
-                                      200,
+                                      250,
                                   child: MaterialUsageDetailsWidget(
                                     productionRecordMaterials:
                                         widget

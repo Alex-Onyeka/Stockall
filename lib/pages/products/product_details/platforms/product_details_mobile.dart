@@ -780,10 +780,8 @@ class _ProductDetailsMobileState
                                           ),
                                           Visibility(
                                             visible:
-                                                shop(
-                                                      context,
-                                                    )?.manageInventoryStorage !=
-                                                    true &&
+                                                product.storageUuid ==
+                                                    null &&
                                                 product.useGroupUnit ==
                                                     true,
                                             child: SizedBox(
@@ -792,10 +790,8 @@ class _ProductDetailsMobileState
                                           ),
                                           Visibility(
                                             visible:
-                                                shop(
-                                                      context,
-                                                    )?.manageInventoryStorage !=
-                                                    true &&
+                                                product.storageUuid ==
+                                                    null &&
                                                 product.useGroupUnit ==
                                                     true,
                                             child: Expanded(
@@ -909,10 +905,8 @@ class _ProductDetailsMobileState
                                                   Authorizations()
                                                       .updateItemQuantity,
                                             ) &&
-                                            returnShopProvider()
-                                                    .userShop()
-                                                    ?.manageInventoryStorage !=
-                                                true,
+                                            product.storageUuid ==
+                                                null,
                                         child: Row(
                                           children: [
                                             Expanded(

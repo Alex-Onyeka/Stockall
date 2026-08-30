@@ -50,8 +50,6 @@ class MainReceiptFunc {
   }
 
   Future<int> createReceipt(TempMainReceipt rec) async {
-    // var newRec = rec.copyWith();
-    // newRec.createdAt.add(Duration(hours: 1));
     try {
       await receiptBox.put(rec.uuid, rec);
       await mainLocalLog('Offline Receipt Created');
@@ -72,32 +70,6 @@ class MainReceiptFunc {
     } catch (e) {
       await mainLocalLog(
         'Offline Delete Failed: ${e.toString()}',
-      );
-      return 0;
-    }
-  }
-
-  Future<int> payCredit(String uuid) async {
-    try {
-      var receipt = receiptBox.get(uuid);
-      if (receipt != null) {
-        receipt.isInvoice = false;
-        receipt.createdAt = DateTime.now();
-
-        // Save back into Hive explicitly
-        await receiptBox.put(uuid, receipt);
-
-        await mainLocalLog(
-          'Offline Receipt Sale Updated Successfully',
-        );
-        return 1;
-      } else {
-        await mainLocalLog('receipt not found in box ❌');
-        return 0;
-      }
-    } catch (e) {
-      await mainLocalLog(
-        'Offline Receipt Sale Update Failed: ${e.toString()}',
       );
       return 0;
     }

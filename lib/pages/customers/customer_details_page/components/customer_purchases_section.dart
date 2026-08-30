@@ -192,10 +192,8 @@ class CustomerPurchasesList extends StatelessWidget {
               builder: (context) {
                 return ReceiptPage(
                   isMain: false,
-                  isComingFromInvoice: false,
                   response: CheckoutResponse(
-                    resUuid: receipt.uuid!,
-                    isReceipt: true,
+                    receipt: receipt,
                   ),
                 );
               },

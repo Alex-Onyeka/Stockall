@@ -43,12 +43,13 @@ class ProductsFilterButton extends StatelessWidget {
           onTap: action,
           child: Container(
             padding: EdgeInsets.symmetric(
-              horizontal: 13,
+              horizontal: title.length > 5 ? 10 : 13,
               vertical: 3,
             ),
 
             child: Center(
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     style: TextStyle(
