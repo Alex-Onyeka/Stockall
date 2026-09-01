@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/main.dart';
 
 part 'temp_product_class.g.dart';
 
@@ -383,6 +384,43 @@ class TempProductClass {
       categories: categories ?? this.categories,
       useGroupUnit: useGroupUnit ?? this.useGroupUnit,
     );
+  }
+
+  bool canSelectForCart() {
+    if (!isManaged) {
+      return true;
+    } else {
+      if (currentCart().cartItemTypeIndex == 3) {
+        return true;
+      } else {
+        if (quantity == null || (quantity ?? 0) <= 0) {
+          return false;
+        } else {
+          return true;
+        }
+      }
+    }
+  }
+
+  bool isExpired() {
+    if (isManaged) {
+      if (currentCart().cartItemTypeIndex == 3) {
+        return false;
+      } else {
+        if (expiryDate != null) {
+          if (expiryDate?.isBefore(DateTime.now()) ==
+              true) {
+            return true;
+          } else {
+            return false;
+          }
+        } else {
+          return false;
+        }
+      }
+    } else {
+      return false;
+    }
   }
 
   String getUnitForSales({required bool useGroup}) {

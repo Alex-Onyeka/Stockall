@@ -12,6 +12,7 @@ import 'package:stockall/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
+import 'package:stockall/pages/orders/invoice_list/order_list_page.dart';
 import 'package:stockall/pages/production/production_page.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
 import 'package:stockall/pages/purchases/purchase_list/purchase_list.dart';
@@ -322,6 +323,29 @@ class _MyDrawerWidgetMobileState
                                 icon:
                                     Icons
                                         .view_in_ar_rounded,
+                              ),
+                            ),
+                            Visibility(
+                              visible: authorization(
+                                authorized:
+                                    Authorizations()
+                                        .manageOrders,
+                              ),
+                              child: NavListTileAlt(
+                                height: 14,
+                                action: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return OrderListPage();
+                                      },
+                                    ),
+                                  );
+                                },
+                                title: 'Orders',
+                                icon:
+                                    Icons.article_outlined,
                               ),
                             ),
                             SizedBox(height: 5),

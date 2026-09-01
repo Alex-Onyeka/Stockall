@@ -1027,7 +1027,7 @@ class _MakeSalesDesktopState
                               tabletScreen,
                           child: Expanded(
                             flex: 5,
-                            child: RIghtBarSection(),
+                            child: RightBarSection(),
                           ),
                         ),
                         Visibility(
@@ -1055,234 +1055,121 @@ class _MakeSalesDesktopState
                                 // isMain: widget.isMain,
                                 context: context,
                                 title:
-                                    returnSalesProviderContext(
-                                              context,
-                                            )
-                                            .currentCart()
-                                            .isReceiptEdit
-                                        ? 'Edit Receipt'
-                                        : returnSalesProviderContext(
-                                                  context,
-                                                )
-                                                .currentCart()
-                                                .cartItemTypeIndex ==
-                                            2
-                                        ? 'Credit Sale'
-                                        : 'Cart Items',
-                                widget: Stack(
-                                  children: [
-                                    Visibility(
-                                      visible:
-                                          returnSalesProviderContext(
-                                                context,
-                                              )
-                                              .currentCart()
-                                              .cartItems
-                                              .isNotEmpty,
-                                      child: InkWell(
-                                        mouseCursor:
-                                            SystemMouseCursors
-                                                .click,
-                                        onTap: () {
-                                          showDialog(
-                                            context:
-                                                context,
-                                            builder: (
-                                              context,
-                                            ) {
-                                              return ConfirmationAlert(
-                                                theme:
-                                                    theme,
-                                                message:
-                                                    'You are about to clear the items in your cart, are you sure you want to proceed?',
-                                                title:
-                                                    'Are you sure?',
-                                                action: () async {
-                                                  if (returnSalesProvider()
-                                                      .currentCart()
-                                                      .cartItems
-                                                      .isNotEmpty) {
-                                                    if (returnShopProvider().userShop()?.trackCart ==
-                                                        true) {
-                                                      var res = await pinCodeAction(
-                                                        isMain:
-                                                            true,
-                                                        context:
-                                                            context,
-                                                      );
-                                                      if (res) {
-                                                        returnSalesProvider().clearCart();
-                                                        Navigator.of(
-                                                          context,
-                                                        ).pop();
-                                                      }
-                                                    } else {
-                                                      returnSalesProvider()
-                                                          .clearCart();
-                                                      Navigator.of(
+                                    currentCart(
+                                      context: context,
+                                    ).getEditText(),
+                                widget: Visibility(
+                                  visible:
+                                      returnSalesProviderContext(
+                                            context,
+                                          )
+                                          .currentCart()
+                                          .cartItems
+                                          .isNotEmpty,
+                                  child: InkWell(
+                                    mouseCursor:
+                                        SystemMouseCursors
+                                            .click,
+                                    onTap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return ConfirmationAlert(
+                                            theme: theme,
+                                            message:
+                                                'You are about to clear the items in your cart, are you sure you want to proceed?',
+                                            title:
+                                                'Are you sure?',
+                                            action: () async {
+                                              if (returnSalesProvider()
+                                                  .currentCart()
+                                                  .cartItems
+                                                  .isNotEmpty) {
+                                                if (returnShopProvider()
+                                                        .userShop()
+                                                        ?.trackCart ==
+                                                    true) {
+                                                  var res = await pinCodeAction(
+                                                    isMain:
+                                                        true,
+                                                    context:
                                                         context,
-                                                      ).pop();
-                                                    }
-                                                  } else {
+                                                  );
+                                                  if (res) {
                                                     returnSalesProvider()
                                                         .clearCart();
                                                     Navigator.of(
                                                       context,
                                                     ).pop();
                                                   }
-                                                },
-                                              );
+                                                } else {
+                                                  returnSalesProvider()
+                                                      .clearCart();
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pop();
+                                                }
+                                              } else {
+                                                returnSalesProvider()
+                                                    .clearCart();
+                                                Navigator.of(
+                                                  context,
+                                                ).pop();
+                                              }
                                             },
                                           );
                                         },
-                                        child: Container(
-                                          height: 35,
-                                          margin:
-                                              EdgeInsets.only(
-                                                right: 10,
+                                      );
+                                    },
+                                    child: Container(
+                                      height: 35,
+                                      margin:
+                                          EdgeInsets.only(
+                                            right: 10,
+                                          ),
+                                      padding:
+                                          EdgeInsets.only(
+                                            // vertical: 10,
+                                            left: 10,
+                                            right: 5,
+                                          ),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color:
+                                              Colors
+                                                  .grey
+                                                  .shade100,
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b3
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
                                               ),
-                                          padding:
-                                              EdgeInsets.only(
-                                                // vertical: 10,
-                                                left: 10,
-                                                right: 5,
-                                              ),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
+                                              'Clear Cart',
+                                            ),
+                                            Icon(
+                                              size: 18,
                                               color:
                                                   Colors
                                                       .grey
-                                                      .shade100,
+                                                      .shade600,
+                                              Icons.clear,
                                             ),
-                                          ),
-                                          child: Center(
-                                            child: Row(
-                                              children: [
-                                                Text(
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        theme.mobileTexts.b3.fontSize,
-                                                    fontWeight:
-                                                        FontWeight.bold,
-                                                  ),
-                                                  'Clear Cart',
-                                                ),
-                                                Icon(
-                                                  size: 18,
-                                                  color:
-                                                      Colors
-                                                          .grey
-                                                          .shade600,
-                                                  Icons
-                                                      .clear,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
+                                          ],
                                         ),
                                       ),
                                     ),
-                                    Visibility(
-                                      visible:
-                                          returnSalesProviderContext(
-                                                context,
-                                              )
-                                              .currentCart()
-                                              .cartItems
-                                              .isEmpty,
-                                      child: InkWell(
-                                        mouseCursor:
-                                            SystemMouseCursors
-                                                .click,
-                                        onTap: () async {
-                                          if (returnSalesProvider()
-                                                  .currentCart()
-                                                  .cartItemTypeIndex ==
-                                              2) {
-                                            returnSalesProvider()
-                                                .switchInvoiceSale(
-                                                  context:
-                                                      context,
-                                                  value: 1,
-                                                );
-                                          } else {
-                                            returnSalesProvider()
-                                                .switchInvoiceSale(
-                                                  context:
-                                                      context,
-                                                  value: 2,
-                                                );
-                                          }
-                                        },
-                                        child: SizedBox(
-                                          height: 35,
-                                          child: Padding(
-                                            padding:
-                                                const EdgeInsets.only(
-                                                  right:
-                                                      15.0,
-                                                  top: 3,
-                                                  bottom: 3,
-                                                  left: 5,
-                                                ),
-                                            child: Row(
-                                              spacing: 5,
-                                              children: [
-                                                Text(
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        theme.mobileTexts.b3.fontSize,
-                                                    fontWeight:
-                                                        FontWeight.bold,
-                                                  ),
-                                                  'Sale Credit',
-                                                ),
-                                                Container(
-                                                  padding:
-                                                      EdgeInsets.all(
-                                                        2,
-                                                      ),
-                                                  decoration: BoxDecoration(
-                                                    shape:
-                                                        BoxShape.circle,
-                                                    color:
-                                                        returnSalesProviderContext(
-                                                                  context,
-                                                                ).currentCart().cartItemTypeIndex ==
-                                                                2
-                                                            ? theme.lightModeColor.prColor250
-                                                            : null,
-                                                    border: Border.all(
-                                                      color:
-                                                          returnSalesProviderContext(
-                                                                    context,
-                                                                  ).currentCart().cartItemTypeIndex ==
-                                                                  2
-                                                              ? theme.lightModeColor.prColor250
-                                                              : Colors.grey,
-                                                    ),
-                                                  ),
-                                                  child: Icon(
-                                                    size:
-                                                        14,
-                                                    color:
-                                                        returnSalesProviderContext(
-                                                                  context,
-                                                                ).currentCart().cartItemTypeIndex ==
-                                                                2
-                                                            ? Colors.white
-                                                            : Colors.grey.shade400,
-                                                    Icons
-                                                        .check,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ),
                               body: Builder(
@@ -2000,6 +1887,7 @@ class _MakeSalesDesktopState
                                                   ),
                                                 ),
                                               ),
+                                              SalesTypeSwitchContainer(),
                                             ],
                                           ),
                                         ),
@@ -2271,16 +2159,6 @@ class _MakeSalesDesktopState
                                       ),
                                     ),
                                     SubStaffSelectionWidget(),
-                                    SizedBox(height: 10),
-                                    // SubWrapper(
-                                    //   isVisible:
-                                    //       !SalesAuthAction()
-                                    //           .useBarcodeAction(
-                                    //             context:
-                                    //                 context,
-                                    //           ),
-                                    //   mainWidget:
-                                    // ),
                                     BarcodeAndSearchTextField(
                                       searchController:
                                           widget
@@ -2292,11 +2170,7 @@ class _MakeSalesDesktopState
                                           priceController,
                                       quantityController:
                                           quantityController,
-                                      close: () {
-                                        // Navigator.of(
-                                        //   context,
-                                        // ).pop();
-                                      },
+                                      close: () {},
                                     ),
                                     SizedBox(height: 10),
                                     Material(
@@ -3080,6 +2954,190 @@ class _MakeSalesDesktopState
       ),
     );
     // return Scaffold(appBar: AppBar());
+  }
+}
+
+class SalesTypeSwitchContainer extends StatefulWidget {
+  const SalesTypeSwitchContainer({super.key});
+
+  @override
+  State<SalesTypeSwitchContainer> createState() =>
+      _SalesTypeSwitchContainerState();
+}
+
+class _SalesTypeSwitchContainerState
+    extends State<SalesTypeSwitchContainer> {
+  ScrollController scrollController = ScrollController();
+  @override
+  Widget build(BuildContext context) {
+    return Visibility(
+      visible: !currentCart(context: context).isReceiptEdit,
+      child: Scrollbar(
+        controller: scrollController,
+        trackVisibility: true,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(
+            10,
+            10,
+            10,
+            10,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            color: Colors.grey.shade100,
+          ),
+          child: SingleChildScrollView(
+            controller: scrollController,
+            scrollDirection: Axis.horizontal,
+            child: Material(
+              color: Colors.transparent,
+              child: Row(
+                spacing: 8,
+                children: [
+                  SalesTypeSwitchButton(
+                    action: null,
+                    index: 1,
+                  ),
+                  SalesTypeSwitchButton(
+                    action: null,
+                    index: 2,
+                  ),
+                  Visibility(
+                    visible: authorization(
+                      authorized:
+                          Authorizations().manageOrders,
+                    ),
+                    child: SalesTypeSwitchButton(
+                      action: null,
+                      index: 3,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class SalesTypeSwitchButton extends StatelessWidget {
+  final int index;
+  final Function()? action;
+  final String? title;
+  const SalesTypeSwitchButton({
+    super.key,
+    required this.action,
+    this.title,
+    required this.index,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context);
+    return SubWrapper(
+      mainWidget: Material(
+        type: MaterialType.transparency,
+        child: Ink(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(3),
+            color: currentCart(
+              context: context,
+            ).getCartColor(index: index, theme: theme),
+          ),
+          child: InkWell(
+            onTap: () {
+              if (action != null) {
+                action!();
+              }
+              // print(
+              //   'Main Cart Length: ${returnSalesProvider().mainCartQueue.length}',
+              // );
+              // for (var cartItem
+              //     in returnSalesProvider().mainCartQueue) {
+              //   print(
+              //     'Main Cart: ${cartItem.cartQueue.length}',
+              //   );
+              //   for (var item in cartItem.cartQueue.where(
+              //     (item) => item.cartItemTypeIndex != 3,
+              //   )) {
+              //     print(item.cartItems.length);
+              //     print('Type: ${item.cartItemTypeIndex}');
+              //   }
+              // }
+
+              returnSalesProvider().switchInvoiceSale(
+                value: index,
+                context: context,
+              );
+            },
+            mouseCursor: SystemMouseCursors.click,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                vertical: 5,
+                horizontal: 15,
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b3.fontSize,
+                      color: currentCart(
+                        context: context,
+                      ).getCartTextColor(
+                        index: index,
+                        theme: theme,
+                      ),
+                      fontWeight:
+                          currentCart(
+                                    context: context,
+                                  ).cartItemTypeIndex ==
+                                  index
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                    ),
+                    title ??
+                        currentCart(
+                          context: context,
+                        ).getSpecificSalesType(
+                          index: index,
+                        ),
+                  ),
+                  Visibility(
+                    visible:
+                        currentCart().cartItemTypeIndex ==
+                        index,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        left: 10.0,
+                      ),
+                      child: Icon(
+                        size: 16,
+                        color: Colors.white,
+                        Icons.check,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+      isVisible:
+          index == 2
+              ? !SalesAuthAction().invoiceManagementAction(
+                context: context,
+              )
+              : index == 3
+              ? !SalesAuthAction().manageOrdersAction(
+                context: context,
+              )
+              : false,
+    );
   }
 }
 

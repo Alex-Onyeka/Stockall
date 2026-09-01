@@ -9,6 +9,8 @@ import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_main_cart/temp_main_cart.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
+import 'package:stockall/classes/temp_orders/order_items.dart';
+import 'package:stockall/classes/temp_orders/orders.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_sub_staff/temp_sub_staff.dart';
@@ -638,33 +640,128 @@ class SalesProvider extends ChangeNotifier {
     scanBarcodeCartPageNode.requestFocus();
   }
 
-  // void unfocusScanBarcodeCartPage() {
-  //   scanBarcodeCartPageNode.unfocus();
-  // }
+  TempProductClass? getStockConflictForCartSwitch() {
+    final Map<String, double> cartQuantities = {};
 
-  // void keepBarcodeFocused() {
-  //   if (!scanBarcodeCartPageNode.hasFocus) {
-  //     scanBarcodeCartPageNode.requestFocus();
-  //   }
-  // }
+    final currentCartType = currentCart().cartItemTypeIndex;
+
+    for (final mainCart in mainCartQueue) {
+      for (final cart in mainCart.cartQueue) {
+        if (currentCartType == 3 &&
+            cart.cartItemTypeIndex == 3 &&
+            cart != currentCart()) {
+          continue;
+        }
+
+        if (currentCartType != 3 &&
+            cart.cartItemTypeIndex == 3) {
+          continue;
+        }
+
+        for (final cartItem in cart.getCartItems()) {
+          final itemUuid =
+              cartItem.itemUuid ?? cartItem.item.uuid;
+
+          if (itemUuid == null) {
+            continue;
+          }
+
+          final quantity =
+              cartItem.useGroupQuantity == true
+                  ? cartItem.getRealQuantity()
+                  : cartItem.quantity;
+
+          cartQuantities[itemUuid] =
+              (cartQuantities[itemUuid] ?? 0) + quantity;
+        }
+      }
+    }
+
+    for (final entry in cartQuantities.entries) {
+      final product =
+          returnData().productListMain
+              .where((item) => item.uuid == entry.key)
+              .firstOrNull;
+
+      // Custom item — no stock restriction.
+      if (product == null) {
+        continue;
+      }
+
+      // Unmanaged product — no stock restriction.
+      if (!product.isManaged) {
+        continue;
+      }
+
+      final availableQuantity = product.quantity ?? 0;
+      final totalQuantity = entry.value;
+
+      if (totalQuantity > availableQuantity) {
+        // Only return the conflict if this product
+        // exists in the current cart.
+        final existsInCurrentCart = currentCart()
+            .getCartItems()
+            .any(
+              (item) =>
+                  (item.itemUuid ?? item.item.uuid) ==
+                  product.uuid,
+            );
+
+        if (existsInCurrentCart) {
+          return product;
+        }
+      }
+    }
+
+    return null;
+  }
 
   void switchInvoiceSale({
     required int value,
     required BuildContext context,
   }) {
-    if (value == 2) {
-      SalesAuthAction().invoiceManagementAction(
-        context: context,
-        action: () {
-          currentCart().cartItemTypeIndex = value;
-          CartFunc().updateMainCart(currentMainCart());
-          notifyListeners();
-        },
-      );
-    } else {
+    if (currentCart().cartItemTypeIndex == 3 &&
+        (value == 1 || value == 2)) {
+      final conflict = getStockConflictForCartSwitch();
+
+      if (conflict != null) {
+        showDialog(
+          context: context,
+          builder: (errorContext) {
+            return InfoAlert(
+              theme: returnTheme(context, listen: false),
+              message:
+                  'Product: [ ${conflict.name} ] has a quantity '
+                  'that exceeds the available stock. '
+                  'Please reduce the quantity or remove this item '
+                  'before switching Sale Type.',
+              title: 'Insufficient Stock',
+            );
+          },
+        );
+
+        return;
+      }
+    }
+
+    void performAction() {
       currentCart().cartItemTypeIndex = value;
       CartFunc().updateMainCart(currentMainCart());
       notifyListeners();
+    }
+
+    if (value == 2) {
+      SalesAuthAction().invoiceManagementAction(
+        context: context,
+        action: performAction,
+      );
+    } else if (value == 3) {
+      SalesAuthAction().manageOrdersAction(
+        context: context,
+        action: performAction,
+      );
+    } else {
+      performAction();
     }
   }
 
@@ -684,22 +781,6 @@ class SalesProvider extends ChangeNotifier {
     }
   }
 
-  // bool useWholeSalePrice = false;
-  // void toggleWholeSale({
-  //   required BuildContext context,
-  //   required TempCartItem cartItem,
-  // }) {
-  //   ItemsAuthAction().toggleSetWholeSaleAction(
-  //     context: context,
-  //     action: () async {
-  //       cartItem.useWholeSalePrice =
-  //           !cartItem.useWholeSalePrice;
-  //       await CartFunc().updateMainCart(currentMainCart());
-  //       notifyListeners();
-  //     },
-  //   );
-  // }
-
   void toggleGroupQuantity({
     required BuildContext context,
     required TempCartItem cartItem,
@@ -714,16 +795,6 @@ class SalesProvider extends ChangeNotifier {
       },
     );
   }
-
-  // void offInvoice() {
-  //   currentCart().cartItemTypeIndex == 2 = false;
-  //   notifyListeners();
-  // }
-
-  // void onInvoice() {
-  //   currentCart().cartItemTypeIndex == 2 = true;
-  //   notifyListeners();
-  // }
 
   List<int> fixedDiscounts = [
     1000,
@@ -976,7 +1047,414 @@ class SalesProvider extends ChangeNotifier {
   }) async {
     final createdAt = currentCart().returnDate();
 
-    if (currentCart().cartItemTypeIndex == 2) {
+    if (currentCart().cartItemTypeIndex == 1) {
+      final uuid =
+          currentCart().receiptUuidEdit ??
+          currentCart().id ??
+          uuidGen();
+      await mainLocalLog('🌹🌹 Created Date: $createdAt');
+      TempMainReceipt receipt = TempMainReceipt(
+        orderUuid: null,
+        comment: currentCart().comment,
+        subStaffName:
+            currentCart().subStaffName ??
+            currentMainCart().subStaff?.staffName,
+        departmentName: departmentName(),
+        departmentUuidNew: departmentUuid(),
+        createdAt: createdAt,
+        shopId: shopId,
+        staffId: staffUuid(), // staffId,
+        staffName: staffName(), // staffName,
+        paymentMethod: paymentMethod,
+        customerAccount: customerBalance,
+        bank: bank,
+        cashAlt: cashAlt,
+        isInvoice: salesCartItem.cartItemTypeIndex == 2,
+        customerName: customerName(),
+        customerUuid: customerUuid(),
+        uuid: uuid,
+        generalDiscount: currentCart().discount,
+        fixedDiscount: currentCart().fixedDiscount,
+        vat:
+            returnShopProvider().userShop()?.applyVAT ==
+                    true
+                ? vat
+                : null,
+        originalCost: calcSubTotal(),
+        balance: null,
+        subStaffUuid: currentMainCart().subStaff?.uuid,
+        cartName: currentCart().cartName,
+      );
+      if (currentCart().receiptUuidEdit != null) {
+        await mainLocalLog(
+          'Receipt UUid is not null: ${currentCart().receiptUuidEdit}',
+        );
+        try {
+          await returnReceiptProvider(
+            context,
+            listen: false,
+          ).deleteReceipt(receipt, []);
+          await returnEventsLogProvider().createLog(
+            returnEventsLogProvider().receiptAdapter(
+              receipt,
+              salesCartItem
+                  .getCartItems()
+                  .map(
+                    (item) =>
+                        item.getItem()?.name ?? 'Item Name',
+                  )
+                  .toList(),
+              2,
+            ),
+          );
+        } catch (e) {
+          await mainLocalLog(
+            'Error Deleting Receipt: ${e.toString()}',
+          );
+          return null;
+        }
+      } else {
+        await returnEventsLogProvider().createLog(
+          returnEventsLogProvider().receiptAdapter(
+            receipt,
+            salesCartItem
+                .getCartItems()
+                .map(
+                  (item) =>
+                      item.getItem()?.name ?? 'Item Name',
+                )
+                .toList(),
+            1,
+          ),
+        );
+        await mainLocalLog('Receipt Uuid is null');
+      }
+
+      await mainLocalLog('Checkout Started');
+
+      try {
+        final receiptRes =
+            await returnReceiptProviderSingle()
+                .createReceipt(receipt);
+        await mainLocalLog('Receipt Created');
+
+        final receiptId = receiptRes!.id;
+        final receiptUuid = receiptRes.uuid;
+
+        try {
+          // Step 2: Create product sale records
+          final productSaleRecords =
+              salesCartItem.getCartItemsAll().map((
+                cartItem,
+              ) {
+                final product = cartItem.getItem();
+
+                mainLocalLog(
+                  'Sales Record about to be Created: ${cartItem.getItem()?.name}',
+                );
+
+                return TempProductSaleRecord(
+                  isVoid: cartItem.isVoid ?? false,
+                  qttyPerGroup: cartItem.qttyPerGroup,
+                  useGroupQuantity:
+                      cartItem.useGroupQuantity,
+                  customPriceSet: cartItem.setCustomPrice,
+                  useWholeSalePrice:
+                      cartItem.useWholeSalePrice,
+                  createdAt: createdAt,
+                  productId: product?.id ?? 0,
+                  productUuid: product?.uuid,
+                  productName: product?.name ?? 'Item Name',
+                  shopId: product?.shopId ?? shopId,
+                  staffId: staffUuid(), // staffId,
+                  staffName: staffName(), // staffName,
+                  customerUuid: customerUuid(),
+                  customerName: customerName(),
+                  recepitId: receiptId ?? 0,
+                  receiptUuid: receiptUuid,
+                  quantity: cartItem.quantity,
+                  revenue: cartItem.revenue(),
+                  discountedAmount: cartItem.discountCost(),
+                  originalCost: cartItem.totalCost(),
+                  discount:
+                      cartItem.discount ??
+                      cartItem.getItem()?.discount,
+                  fixedDiscount: cartItem.fixedDiscount,
+                  costPrice: cartItem.costPrice(),
+                  addToStock: cartItem.addToStock,
+                  departmentName: departmentName(),
+                  departmentUuid: departmentUuid(),
+                  uuid: cartItem.uuid ?? uuidGen(),
+                  isProductManaged:
+                      cartItem.getItem()?.isManaged,
+                  setTotalPrice: cartItem.setTotalPrice,
+                  unit: cartItem.getUnit(),
+                );
+              }).toList();
+
+          if (context.mounted) {
+            await mainLocalLog(
+              'Creating Record Sales About to Start: ${productSaleRecords.length}',
+            );
+            await returnReceiptProvider(
+              context,
+              listen: false,
+            ).createProductSaleRecord(
+              records: productSaleRecords,
+              isPartPayment: false,
+            );
+          }
+          await mainLocalLog('Sales Record Inserted');
+
+          try {
+            for (final cartItem
+                in salesCartItem.getCartItems()) {
+              if (((cartItem.getItem()?.quantity ?? 0) >
+                      0) &&
+                  (cartItem.getItem()?.isManaged ??
+                      false)) {
+                cartItem.getItem()!.quantity =
+                    (cartItem.getItem()!.quantity ?? 0) -
+                    cartItem.getRealQuantity();
+                ItemHistory itemHistory = ItemHistory(
+                  shopId: shopId,
+                  desc:
+                      '${cartItem.getRealQuantity()} Quantity(s) of This Item was Sold. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
+                  isIncreased: false,
+                  oldValue:
+                      ((cartItem.getItem()!.quantity ?? 0) +
+                              cartItem.getRealQuantity())
+                          .toString(),
+                  title: 'Item Sold In Receipt',
+                  quantityChange:
+                      -cartItem.getRealQuantity(),
+                  newValue:
+                      cartItem
+                          .getItem()!
+                          .quantity
+                          .toString(),
+                );
+                await returnData().updateProduct(
+                  itemHistory:
+                      returnData()
+                              .productList()
+                              .where(
+                                (pro) =>
+                                    pro.name ==
+                                    cartItem
+                                        .getItem()
+                                        ?.name,
+                              )
+                              .isEmpty
+                          ? null
+                          : itemHistory,
+                  includeQuantity: false,
+                  product: cartItem.getItem()!,
+                  isQuantityUpdate: true,
+                  quantityChange:
+                      cartItem.getRealQuantity(),
+                  isIncrement: false,
+                );
+              } else {
+                if (returnData()
+                    .productList()
+                    .where(
+                      (pro) =>
+                          pro.name ==
+                          cartItem.getItem()?.name,
+                    )
+                    .isNotEmpty) {
+                  ItemHistory itemHistory = ItemHistory(
+                    desc:
+                        '${cartItem.getRealQuantity()} Quantity(s) of This Item was Sold, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
+                    shopId: shopId,
+                    isIncreased: false,
+                    oldValue:
+                        (cartItem.getItem()!.quantity ?? 0)
+                            .toString(),
+                    title:
+                        'Item Sold In Receipt (Unmanaged)',
+                    quantityChange: 0,
+                    newValue:
+                        (cartItem.getItem()!.quantity ?? 0)
+                            .toString(),
+                  );
+                  itemHistory.itemName =
+                      cartItem.getItem()!.name;
+                  itemHistory.itemUuid =
+                      cartItem.getItem()!.uuid;
+                  await returnItemHistoryProvider()
+                      .createItemHistory(itemHistory);
+                }
+              }
+            }
+
+            try {
+              await mainLocalLog(
+                'Products Decrementation Done',
+              );
+
+              // Step 4: Create new product for items with addToStock == true
+              for (final record in productSaleRecords) {
+                if (record.addToStock == true &&
+                    returnData()
+                        .productList()
+                        .where(
+                          (pro) =>
+                              pro.name ==
+                              record.productName,
+                        )
+                        .isEmpty) {
+                  final double costPrice =
+                      (record.costPrice == null ||
+                              record.costPrice == 0)
+                          ? 0
+                          : record.costPrice!;
+
+                  final double sellingPrice =
+                      record.discount == null
+                          ? record.revenue / record.quantity
+                          : (record.originalCost ?? 0) /
+                              record.quantity;
+
+                  final double wholeSalePrice =
+                      record.discount == null
+                          ? record.revenue / record.quantity
+                          : (record.originalCost ?? 0) /
+                              record.quantity;
+
+                  TempProductClass
+                  product = TempProductClass(
+                    useGroupUnit: false,
+                    categories: [],
+                    storageUuid: null,
+                    groupUnit: 'Group(s)',
+                    qttyPerGroup: null,
+                    name: record.productName,
+                    unit: 'Unit(s)',
+                    isRefundable: false,
+                    costPrice: costPrice,
+                    shopId: record.shopId,
+                    setCustomPrice: true,
+                    isManaged: false,
+                    barcode: null,
+                    brand: null,
+                    // categoryUuid: null,
+                    color: null,
+                    createdAt: DateTime.now(),
+                    departmentUuid: record.departmentUuid,
+                    departmentName: record.departmentName,
+                    discount: null,
+                    endDate: null,
+                    expiryDate: null,
+                    lowQtty: 10,
+                    quantity: null,
+                    sellingPrice: sellingPrice,
+                    wholeSalePrice: wholeSalePrice,
+                    size: null,
+                    sizeType: null,
+                    startDate: null,
+                    updatedAt: DateTime.now(),
+                    uuid: record.productUuid,
+                  );
+                  if (context.mounted) {
+                    ItemHistory itemHistory = ItemHistory(
+                      shopId: shopId,
+                      title: 'Item Created',
+                      quantityChange: 0,
+                      newValue: '0',
+                      desc: 'Item Created Now',
+                      isIncreased: true,
+                      oldValue: '0',
+                    );
+                    await returnData().createProduct(
+                      itemHistory: itemHistory,
+                      product: product,
+                    );
+                  } else {
+                    await mainLocalLog(
+                      'Context Not Mounted to Created New Product',
+                    );
+                  }
+                }
+              }
+              // Step 5: Reset state
+              // resetPaymentMethod();
+              try {
+                await deleteCart(
+                  cartId: cartIdCache,
+                  context: context,
+                );
+              } catch (e) {
+                await mainLocalLog(
+                  "Error Deleting Cart Inside Checkout Function: ${e.toString()}",
+                );
+              }
+
+              if (context.mounted) {
+                returnCustomers(
+                  context,
+                  listen: false,
+                ).clearSelectedCustomer(context);
+                await returnReceiptProvider(
+                  context,
+                  listen: false,
+                ).loadReceiptsOffline(shopId);
+                if (context.mounted) {
+                  returnNavProvider(
+                    context,
+                    listen: false,
+                  ).navigate(0);
+                }
+              }
+              returnData().syncData();
+              notifyListeners();
+              return CheckoutResponse(receipt: receipt);
+            } catch (e) {
+              await mainLocalLog(
+                'Error Step 4: ${e.toString()}',
+              );
+              await returnReceiptProvider(
+                // ignore: use_build_context_synchronously
+                context,
+                listen: false,
+              ).deleteReceipt(
+                receipt,
+                productSaleRecords
+                    .map((rec) => rec.productName)
+                    .toList(),
+              );
+              return null;
+            }
+          } catch (e) {
+            await mainLocalLog(
+              'Error Step 3: ${e.toString()}',
+            );
+            await returnReceiptProvider(
+              // ignore: use_build_context_synchronously
+              context,
+              listen: false,
+            ).deleteReceiptWithoutUpdatingInventory(
+              receiptUuid!,
+            );
+            return null;
+          }
+        } catch (e) {
+          await mainLocalLog(
+            'Error Step 2: ${e.toString()}',
+          );
+          await returnReceiptProvider(
+            // ignore: use_build_context_synchronously
+            context,
+            listen: false,
+          ).deleteReceipt(receipt, []);
+          return null;
+        }
+      } catch (e) {
+        await mainLocalLog('Error Step 1: ${e.toString()}');
+        return null;
+      }
+    } else if (currentCart().cartItemTypeIndex == 2) {
       await mainLocalLog('Current Sale is Invoice');
       TempInvoice invoice = TempInvoice(
         comment: currentCart().comment,
@@ -1421,33 +1899,29 @@ class SalesProvider extends ChangeNotifier {
         await mainLocalLog('Error Step 1: ${e.toString()}');
         return null;
       }
-    } else if (currentCart().cartItemTypeIndex == 3) {
-      return null;
     } else {
+      await mainLocalLog('Order Creation Begin');
       final uuid =
-          currentCart().receiptUuidEdit ??
+          currentCart().orderUuidEdit ??
           currentCart().id ??
           uuidGen();
       await mainLocalLog('🌹🌹 Created Date: $createdAt');
-      TempMainReceipt receipt = TempMainReceipt(
-        orderUuid: null,
+      Orders order = Orders(
+        barcode: null,
+        orderItems: [],
+        updatedAt: DateTime.now(),
         comment: currentCart().comment,
         subStaffName:
             currentCart().subStaffName ??
             currentMainCart().subStaff?.staffName,
         departmentName: departmentName(),
-        departmentUuidNew: departmentUuid(),
+        departmentUuid: departmentUuid(),
         createdAt: createdAt,
         shopId: shopId,
         staffId: staffUuid(), // staffId,
         staffName: staffName(), // staffName,
-        paymentMethod: paymentMethod,
-        customerAccount: customerBalance,
-        bank: bank,
-        cashAlt: cashAlt,
-        isInvoice: salesCartItem.cartItemTypeIndex == 2,
         customerName: customerName(),
-        customerUuid: customerUuid(),
+        customerId: customerUuid(),
         uuid: uuid,
         generalDiscount: currentCart().discount,
         fixedDiscount: currentCart().fixedDiscount,
@@ -1460,218 +1934,144 @@ class SalesProvider extends ChangeNotifier {
         balance: null,
         subStaffUuid: currentMainCart().subStaff?.uuid,
         cartName: currentCart().cartName,
+        total: calcFinalTotal(),
       );
-      if (currentCart().receiptUuidEdit != null) {
+      if (currentCart().orderUuidEdit != null) {
         await mainLocalLog(
-          'Receipt UUid is not null: ${currentCart().receiptUuidEdit}',
+          'Order UUid is not null: ${currentCart().orderUuidEdit}',
         );
         try {
-          await returnReceiptProvider(
-            context,
-            listen: false,
-          ).deleteReceipt(receipt, []);
-          await returnEventsLogProvider().createLog(
-            returnEventsLogProvider().receiptAdapter(
-              receipt,
-              salesCartItem
-                  .getCartItems()
-                  .map(
-                    (item) =>
-                        item.getItem()?.name ?? 'Item Name',
-                  )
-                  .toList(),
-              2,
-            ),
+          await returnOrdersProvider().deleteOrder(
+            order,
+            [],
           );
+          // await returnEventsLogProvider().createLog(
+          //   returnEventsLogProvider().receiptAdapter(
+          //     receipt,
+          //     salesCartItem
+          //         .getCartItems()
+          //         .map(
+          //           (item) =>
+          //               item.getItem()?.name ?? 'Item Name',
+          //         )
+          //         .toList(),
+          //     2,
+          //   ),
+          // );
         } catch (e) {
           await mainLocalLog(
-            'Error Deleting Receipt: ${e.toString()}',
+            'Error Deleting Order: ${e.toString()}',
           );
           return null;
         }
       } else {
-        await returnEventsLogProvider().createLog(
-          returnEventsLogProvider().receiptAdapter(
-            receipt,
-            salesCartItem
-                .getCartItems()
-                .map(
-                  (item) =>
-                      item.getItem()?.name ?? 'Item Name',
-                )
-                .toList(),
-            1,
-          ),
-        );
-        await mainLocalLog('Receipt Uuid is null');
+        // await returnEventsLogProvider().createLog(
+        //   returnEventsLogProvider().receiptAdapter(
+        //     receipt,
+        //     salesCartItem
+        //         .getCartItems()
+        //         .map(
+        //           (item) =>
+        //               item.getItem()?.name ?? 'Item Name',
+        //         )
+        //         .toList(),
+        //     1,
+        //   ),
+        // );
+        await mainLocalLog('Order Uuid is null');
       }
 
-      await mainLocalLog('Checkout Started');
+      await mainLocalLog('Order Checkout Started');
 
       try {
-        final receiptRes =
-            await returnReceiptProviderSingle()
-                .createReceipt(receipt);
-        await mainLocalLog('Receipt Created');
+        // Step 2: Create product sale records
+        final orderItems =
+            salesCartItem.getCartItemsAll().map((cartItem) {
+              final product = cartItem.getItem();
 
-        final receiptId = receiptRes!.id;
-        final receiptUuid = receiptRes.uuid;
+              mainLocalLog(
+                'Sales Record about to be Created: ${cartItem.getItem()?.name}',
+              );
+
+              return OrderItems(
+                qttyPerGroup: cartItem.qttyPerGroup,
+                useGroupQuantity: cartItem.useGroupQuantity,
+                customPriceSet: cartItem.setCustomPrice,
+                useWholeSalePrice:
+                    cartItem.useWholeSalePrice,
+                createdAt: createdAt,
+                productUuid: product?.uuid ?? '',
+                productName: product?.name ?? 'Item Name',
+                staffId: staffUuid(), // staffId,
+                staffName: staffName(), // staffName,
+                customerUuid: customerUuid(),
+                customerName: customerName(),
+                quantity: cartItem.quantity,
+                revenue: cartItem.revenue(),
+                discountedAmount: cartItem.discountCost(),
+                originalCost: cartItem.totalCost(),
+                discount:
+                    cartItem.discount ??
+                    cartItem.getItem()?.discount,
+                fixedDiscount: cartItem.fixedDiscount,
+                costPrice: cartItem.costPrice(),
+                addToStock: cartItem.addToStock,
+                departmentName: departmentName(),
+                departmentUuid: departmentUuid(),
+                uuid: cartItem.uuid ?? uuidGen(),
+                isProductManaged:
+                    cartItem.getItem()?.isManaged,
+                setTotalPrice: cartItem.setTotalPrice,
+                unit: cartItem.getUnit(),
+                groupUnit:
+                    cartItem.getItem()?.groupUnit ??
+                    'Group(s)',
+                orderId: order.uuid!,
+              );
+            }).toList();
 
         try {
-          // Step 2: Create product sale records
-          final productSaleRecords =
-              salesCartItem.getCartItemsAll().map((
-                cartItem,
-              ) {
-                final product = cartItem.getItem();
+          //
+          //
+          //
+          //
+          order.orderItems = orderItems;
+          await returnOrdersProvider().createOrder(order);
+          await mainLocalLog('Order Created');
 
-                mainLocalLog(
-                  'Sales Record about to be Created: ${cartItem.getItem()?.name}',
-                );
-
-                return TempProductSaleRecord(
-                  isVoid: cartItem.isVoid ?? false,
-                  qttyPerGroup: cartItem.qttyPerGroup,
-                  useGroupQuantity:
-                      cartItem.useGroupQuantity,
-                  customPriceSet: cartItem.setCustomPrice,
-                  useWholeSalePrice:
-                      cartItem.useWholeSalePrice,
-                  createdAt: createdAt,
-                  productId: product?.id ?? 0,
-                  productUuid: product?.uuid,
-                  productName: product?.name ?? 'Item Name',
-                  shopId: product?.shopId ?? shopId,
-                  staffId: staffUuid(), // staffId,
-                  staffName: staffName(), // staffName,
-                  customerUuid: customerUuid(),
-                  customerName: customerName(),
-                  recepitId: receiptId ?? 0,
-                  receiptUuid: receiptUuid,
-                  quantity: cartItem.quantity,
-                  revenue: cartItem.revenue(),
-                  discountedAmount: cartItem.discountCost(),
-                  originalCost: cartItem.totalCost(),
-                  discount:
-                      cartItem.discount ??
-                      cartItem.getItem()?.discount,
-                  fixedDiscount: cartItem.fixedDiscount,
-                  costPrice: cartItem.costPrice(),
-                  addToStock: cartItem.addToStock,
-                  departmentName: departmentName(),
-                  departmentUuid: departmentUuid(),
-                  uuid: cartItem.uuid ?? uuidGen(),
-                  isProductManaged:
-                      cartItem.getItem()?.isManaged,
-                  setTotalPrice: cartItem.setTotalPrice,
-                  unit: cartItem.getUnit(),
-                );
-              }).toList();
-
-          if (context.mounted) {
-            await mainLocalLog(
-              'Creating Record Sales About to Start: ${productSaleRecords.length}',
-            );
-            await returnReceiptProvider(
-              context,
-              listen: false,
-            ).createProductSaleRecord(
-              records: productSaleRecords,
-              isPartPayment: false,
-            );
-          }
-          await mainLocalLog('Sales Record Inserted');
-
+          //
+          //
+          //
+          //
           try {
             for (final cartItem
                 in salesCartItem.getCartItems()) {
-              if (((cartItem.getItem()?.quantity ?? 0) >
-                      0) &&
-                  (cartItem.getItem()?.isManaged ??
-                      false)) {
-                cartItem.getItem()!.quantity =
-                    (cartItem.getItem()!.quantity ?? 0) -
-                    cartItem.getRealQuantity();
-                ItemHistory itemHistory = ItemHistory(
-                  shopId: shopId,
-                  desc:
-                      '${cartItem.getRealQuantity()} Quantity(s) of This Item was Sold. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
-                  isIncreased: false,
-                  oldValue:
-                      ((cartItem.getItem()!.quantity ?? 0) +
-                              cartItem.getRealQuantity())
-                          .toString(),
-                  title: 'Item Sold In Receipt',
-                  quantityChange:
-                      -cartItem.getRealQuantity(),
-                  newValue:
-                      cartItem
-                          .getItem()!
-                          .quantity
-                          .toString(),
-                );
-                await returnData().updateProduct(
-                  itemHistory:
-                      returnData()
-                              .productList()
-                              .where(
-                                (pro) =>
-                                    pro.name ==
-                                    cartItem
-                                        .getItem()
-                                        ?.name,
-                              )
-                              .isEmpty
-                          ? null
-                          : itemHistory,
-                  includeQuantity: false,
-                  product: cartItem.getItem()!,
-                  isQuantityUpdate: true,
-                  quantityChange:
-                      cartItem.getRealQuantity(),
-                  isIncrement: false,
-                );
-              } else {
-                if (returnData()
-                    .productList()
-                    .where(
-                      (pro) =>
-                          pro.name ==
-                          cartItem.getItem()?.name,
-                    )
-                    .isNotEmpty) {
-                  ItemHistory itemHistory = ItemHistory(
-                    desc:
-                        '${cartItem.getRealQuantity()} Quantity(s) of This Item was Sold, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
-                    shopId: shopId,
-                    isIncreased: false,
-                    oldValue:
-                        (cartItem.getItem()!.quantity ?? 0)
-                            .toString(),
-                    title:
-                        'Item Sold In Receipt (Unmanaged)',
-                    quantityChange: 0,
-                    newValue:
-                        (cartItem.getItem()!.quantity ?? 0)
-                            .toString(),
-                  );
-                  itemHistory.itemName =
-                      cartItem.getItem()!.name;
-                  itemHistory.itemUuid =
-                      cartItem.getItem()!.uuid;
-                  await returnItemHistoryProvider()
-                      .createItemHistory(itemHistory);
-                }
-              }
+              ItemHistory itemHistory = ItemHistory(
+                desc:
+                    '${cartItem.getRealQuantity()} Quantity(s) of This Item was Ordered for, but Not Deducted. Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
+                shopId: shopId,
+                isIncreased: false,
+                oldValue:
+                    (cartItem.getItem()!.quantity ?? 0)
+                        .toString(),
+                title: 'Order Created',
+                quantityChange:
+                    (cartItem.getItem()!.quantity ?? 0),
+                newValue:
+                    (cartItem.getItem()!.quantity ?? 0)
+                        .toString(),
+              );
+              itemHistory.itemName =
+                  cartItem.getItem()!.name;
+              itemHistory.itemUuid =
+                  cartItem.getItem()!.uuid;
+              await returnItemHistoryProvider()
+                  .createItemHistory(itemHistory);
             }
 
             try {
-              await mainLocalLog(
-                'Products Decrementation Done',
-              );
-
               // Step 4: Create new product for items with addToStock == true
-              for (final record in productSaleRecords) {
+              for (final record in orderItems) {
                 if (record.addToStock == true &&
                     returnData()
                         .productList()
@@ -1710,7 +2110,7 @@ class SalesProvider extends ChangeNotifier {
                     unit: 'Unit(s)',
                     isRefundable: false,
                     costPrice: costPrice,
-                    shopId: record.shopId,
+                    shopId: shopId,
                     setCustomPrice: true,
                     isManaged: false,
                     barcode: null,
@@ -1772,10 +2172,8 @@ class SalesProvider extends ChangeNotifier {
                   context,
                   listen: false,
                 ).clearSelectedCustomer(context);
-                await returnReceiptProvider(
-                  context,
-                  listen: false,
-                ).loadReceiptsOffline(shopId);
+                await returnOrdersProvider()
+                    .loadOrdersOffline(shopId);
                 if (context.mounted) {
                   returnNavProvider(
                     context,
@@ -1785,20 +2183,14 @@ class SalesProvider extends ChangeNotifier {
               }
               returnData().syncData();
               notifyListeners();
-              return CheckoutResponse(receipt: receipt);
+              return CheckoutResponse(order: order);
             } catch (e) {
               await mainLocalLog(
                 'Error Step 4: ${e.toString()}',
               );
-              await returnReceiptProvider(
-                // ignore: use_build_context_synchronously
-                context,
-                listen: false,
-              ).deleteReceipt(
-                receipt,
-                productSaleRecords
-                    .map((rec) => rec.productName)
-                    .toList(),
+              await returnOrdersProvider().deleteOrder(
+                order,
+                [],
               );
               return null;
             }
@@ -1806,12 +2198,9 @@ class SalesProvider extends ChangeNotifier {
             await mainLocalLog(
               'Error Step 3: ${e.toString()}',
             );
-            await returnReceiptProvider(
-              // ignore: use_build_context_synchronously
-              context,
-              listen: false,
-            ).deleteReceiptWithoutUpdatingInventory(
-              receiptUuid!,
+            await returnOrdersProvider().deleteOrder(
+              order,
+              [],
             );
             return null;
           }
@@ -1819,11 +2208,10 @@ class SalesProvider extends ChangeNotifier {
           await mainLocalLog(
             'Error Step 2: ${e.toString()}',
           );
-          await returnReceiptProvider(
-            // ignore: use_build_context_synchronously
-            context,
-            listen: false,
-          ).deleteReceipt(receipt, []);
+          await returnOrdersProvider().deleteOrder(
+            order,
+            [],
+          );
           return null;
         }
       } catch (e) {
@@ -2015,7 +2403,9 @@ class SalesProvider extends ChangeNotifier {
   }) {
     double totalInAllCarts = 0;
     for (var mainCart in mainCartQueue) {
-      for (final cart in mainCart.cartQueue) {
+      for (final cart in mainCart.cartQueue.where(
+        (item) => item.cartItemTypeIndex != 3,
+      )) {
         for (final cartItem in cart.getCartItems().where(
           (item) => item != newCartItem,
         )) {
@@ -2051,53 +2441,128 @@ class SalesProvider extends ChangeNotifier {
     }
   }
 
+  // bool canAddProductToCart({
+  //   required TempCartItem newCartItem,
+  //   required double quantityToAdd,
+  //   required bool? useGroupUnit,
+  //   // required bool isEdit,
+  // }) {
+  //   if (currentCart().cartItemTypeIndex == 3) {
+  //     return true;
+  //   } else {
+  //     double quantityToAddCalc() {
+  //       if (useGroupUnit ??
+  //           newCartItem.useGroupQuantity == true) {
+  //         return (quantityToAdd *
+  //             (newCartItem.getQttyPerGroup()));
+  //       } else {
+  //         return quantityToAdd;
+  //       }
+  //     }
+
+  //     double newTotal =
+  //         totalInAllCarts(newCartItem: newCartItem) +
+  //         quantityToAddCalc();
+
+  //     double availableQty() {
+  //       var tempProducts = returnData().productListMain
+  //           .where(
+  //             (item) =>
+  //                 item.uuid ==
+  //                 (newCartItem.itemUuid ??
+  //                     newCartItem.item.uuid),
+  //           );
+  //       if (tempProducts.isNotEmpty) {
+  //         var product = tempProducts.first;
+  //         return product.quantity ?? 0;
+  //       } else {
+  //         return newCartItem.getItem()?.quantity ?? 0;
+  //       }
+  //     }
+
+  //     double remainingQtty =
+  //         availableQty() -
+  //         totalInAllCarts(newCartItem: newCartItem);
+  //     if (newTotal > availableQty() &&
+  //         returnData().productList().contains(
+  //           newCartItem.getItem(),
+  //         ) &&
+  //         (newCartItem.getItem()?.isManaged ?? false)) {
+  //       mainLocalLog(
+  //         'Cannot add — total ($newTotal) exceeds available stock ($remainingQtty) : Avaliable Quantity: ${availableQty()}',
+  //       );
+  //       return false;
+  //     }
+  //     return true;
+  //   }
+  // }
+
   bool canAddProductToCart({
     required TempCartItem newCartItem,
     required double quantityToAdd,
-    required bool? useGroupUnit,
-    // required bool isEdit,
+    bool? useGroupUnit,
   }) {
-    double quantityToAddCalc() {
-      if (useGroupUnit ??
-          newCartItem.useGroupQuantity == true) {
-        return (quantityToAdd *
-            (newCartItem.getQttyPerGroup()));
-      } else {
-        return quantityToAdd;
-      }
+    // This cart type does not have stock restrictions.
+    if (currentCart().cartItemTypeIndex == 3) {
+      return true;
     }
 
-    double newTotal =
-        totalInAllCarts(newCartItem: newCartItem) +
-        quantityToAddCalc();
+    final itemUuid =
+        newCartItem.itemUuid ?? newCartItem.item.uuid;
 
-    double availableQty() {
-      var tempProducts = returnData().productListMain.where(
-        (item) =>
-            item.uuid ==
-            (newCartItem.itemUuid ?? newCartItem.item.uuid),
-      );
-      if (tempProducts.isNotEmpty) {
-        var product = tempProducts.first;
-        return product.quantity ?? 0;
-      } else {
-        return newCartItem.getItem()?.quantity ?? 0;
-      }
+    // Find the actual product in stock.
+    final product = returnData().productListMain
+        .cast<TempProductClass?>()
+        .firstWhere(
+          (item) => item?.uuid == itemUuid,
+          orElse: () => null,
+        );
+
+    // Item doesn't exist in stock → custom item.
+    // Custom items have no quantity restriction.
+    if (product == null) {
+      return true;
     }
 
-    double remainingQtty =
-        availableQty() -
-        totalInAllCarts(newCartItem: newCartItem);
-    if (newTotal > availableQty() &&
-        returnData().productList().contains(
-          newCartItem.getItem(),
-        ) &&
-        (newCartItem.getItem()?.isManaged ?? false)) {
-      mainLocalLog(
-        'Cannot add — total ($newTotal) exceeds available stock ($remainingQtty) : Avaliable Quantity: ${availableQty()}',
-      );
+    // Product exists but inventory management is disabled.
+    // Therefore, quantity doesn't matter.
+    if (!product.isManaged) {
+      return true;
+    }
+
+    if (product.isExpired()) {
+      mainLocalLog('Cannot add Expired Item');
       return false;
     }
+
+    // From this point onward, we KNOW:
+    // - It is a real stock product.
+    // - It is managed.
+    // Therefore stock restrictions apply.
+
+    final availableQuantity = product.quantity ?? 0;
+
+    final currentQuantity = totalInAllCarts(
+      newCartItem: newCartItem,
+    );
+
+    final quantityToAddInStock =
+        (useGroupUnit ??
+                newCartItem.useGroupQuantity == true)
+            ? quantityToAdd * newCartItem.getQttyPerGroup()
+            : quantityToAdd;
+
+    final newTotal = currentQuantity + quantityToAddInStock;
+
+    if (newTotal > availableQuantity) {
+      mainLocalLog(
+        'Cannot add — requested total ($newTotal) exceeds '
+        'available stock ($availableQuantity).',
+      );
+
+      return false;
+    }
+
     return true;
   }
 

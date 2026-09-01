@@ -4,6 +4,8 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/invoices/invoice_page/invoice_page_desktop.dart';
 import 'package:stockall/pages/invoices/invoice_page/invoice_page_mobile.dart';
+import 'package:stockall/pages/orders/order_page/order_page_desktop.dart';
+import 'package:stockall/pages/orders/order_page/order_page_mobile.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/platforms/receipt_page_desktop.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/platforms/receipt_page_mobile.dart';
 
@@ -63,11 +65,9 @@ class _ReceiptPageState extends State<ReceiptPage> {
               checkoutResponse: widget.response,
             );
           } else {
-            // return ReceiptPageMobile(
-            //   isMain: widget.isMain,
-            //   response: widget.response,
-            // );
-            return Scaffold();
+            return OrderPageMobile(
+              checkoutResponse: widget.response,
+            );
           }
         } else {
           if (widget.response.receipt != null) {
@@ -81,11 +81,9 @@ class _ReceiptPageState extends State<ReceiptPage> {
               checkoutResponse: widget.response,
             );
           } else {
-            // return ReceiptPageMobile(
-            //   isMain: widget.isMain,
-            //   response: widget.response,
-            // );
-            return Scaffold();
+            return OrderPageDesktop(
+              checkoutResponse: widget.response,
+            );
           }
         }
       },

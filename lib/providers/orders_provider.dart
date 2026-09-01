@@ -1,21 +1,28 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/checkout_response.dart';
+import 'package:stockall/classes/temp_cart/temp_cart.dart';
+import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
+import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_orders/order_items.dart';
 import 'package:stockall/classes/temp_orders/orders.dart';
 import 'package:stockall/classes/temp_orders/unsynced/created/created_orders.dart';
 import 'package:stockall/classes/temp_orders/unsynced/deleted/deleted_orders.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
+import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/local_database/orders_func/orders_func.dart';
 import 'package:stockall/local_database/orders_func/unsync_funcs/created/created_orders_func.dart';
 import 'package:stockall/local_database/orders_func/unsync_funcs/deleted/deleted_orders_func.dart';
 import 'package:stockall/local_database/orders_func/unsync_funcs/updated/updated_orders_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/alt_display/alt_display.dart';
 import 'package:stockall/pages/report/general_report/class/general_report_class.dart';
 import 'package:stockall/pages/report/invoice_sales_report/platforms/invoice_sales_report_desktop.dart';
+import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -412,7 +419,7 @@ class OrdersProvider extends ChangeNotifier {
         final tempOrders =
             UpdatedOrdersFunc().getOrderIds().toList();
         for (var rec in tempOrders) {
-          final updateData = {'is_invoice': false};
+          final updateData = {'is_order': false};
           await supabase
               .from(tableName)
               .update(updateData)
@@ -437,6 +444,284 @@ class OrdersProvider extends ChangeNotifier {
         'Batch Orders Update failed ❌: $e',
       );
     }
+  }
+
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+
+  Future<void> onEditOrder({
+    required Orders order,
+    required BuildContext context,
+  }) async {
+    SalesAuthAction().editReceiptAction(
+      context: context,
+      action: () async {
+        // Convert them back to cart items
+        final cartItems = convertOrderToCartItems(
+          order: order,
+          saleRecords: order.orderItems,
+          context: context,
+        );
+
+        if (returnSalesProvider()
+            .currentMainCart()
+            .cartQueue
+            .where(
+              (cart) =>
+                  cart.orderUuidEdit != null &&
+                  cart.orderUuidEdit == order.uuid,
+            )
+            .isEmpty) {
+          var newId = uuidGen();
+          var tempCart = TempCart(
+            comment: order.comment,
+            timeOfDay: null,
+            hasPrintedDocket: false,
+            subStaffName: order.subStaffName,
+            customDate: null,
+            departmentName: order.departmentName,
+            departmentUuid: order.departmentUuid,
+            staffId: order.staffId,
+            staffName: order.staffName,
+            id: newId,
+            fixedDiscount: order.fixedDiscount,
+            createdDate: order.createdAt,
+            cartItems: cartItems,
+            cartItemTypeIndex: 3,
+            orderUuidEdit: order.uuid,
+            discount: order.generalDiscount,
+            paymentMethod: 0,
+            selectedCustomer: order.customerId,
+            selectedCustomerName: order.customerName,
+            isReceiptEdit: true,
+            subStaffUuid: order.subStaffUuid,
+          );
+          await returnSalesProvider().addNewCart(
+            context,
+            tempCart,
+          );
+          await returnMultiDisplayProvider().updateWindow(
+            cartClass: AltCartClass(
+              cartId: tempCart.id!,
+              cartItems:
+                  tempCart.cartItems.reversed.toList(),
+              fixedDiscount: order.fixedDiscount,
+              percentDiscount: order.generalDiscount,
+              vat: order.vat ?? 0,
+              currency:
+                  returnShopProvider().userShop()!.currency,
+            ),
+          );
+          notifyListeners();
+        } else {
+          await returnSalesProvider().selectCart(
+            returnSalesProvider()
+                .currentMainCart()
+                .cartQueue
+                .where(
+                  (cart) =>
+                      cart.orderUuidEdit == order.uuid,
+                )
+                .first
+                .id!,
+          );
+        }
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return MakeSalesPage(isMain: true);
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  // EDIT Order
+  TempCartItem saleRecordToCartItem({
+    required OrderItems record,
+    required TempProductClass product,
+  }) {
+    double tempRev = 0;
+    if (record.customPriceSet) {
+      if (record.setTotalPrice != null &&
+          record.setTotalPrice == true) {
+        tempRev = record.originalCost ?? 0;
+      } else {
+        tempRev =
+            (record.originalCost ?? 0) / record.quantity;
+      }
+    }
+    return TempCartItem(
+      uuid: record.uuid,
+      itemUuid: product.uuid,
+      isVoid: false,
+      item: product,
+      quantity: record.quantity,
+      discount: record.discount,
+      customPrice: record.customPriceSet ? tempRev : null,
+      addToStock: record.addToStock ?? false,
+      setCustomPrice: record.customPriceSet,
+      setTotalPrice: record.setTotalPrice ?? false,
+      // salesRecordId: record.uuid,
+      useWholeSalePrice: record.useWholeSalePrice ?? false,
+      useGroupQuantity: record.useGroupQuantity ?? false,
+      qttyPerGroup: record.qttyPerGroup,
+    );
+  }
+
+  List<TempCartItem> convertOrderToCartItems({
+    required Orders order,
+    required List<OrderItems> saleRecords,
+    required BuildContext context,
+  }) {
+    List<TempCartItem> cartItems = [];
+
+    for (var record in saleRecords) {
+      var product = returnData().productList().where(
+        (p) => p.uuid == record.productUuid,
+      );
+
+      if (product.isNotEmpty) {
+        var newRecord = record.copyWith();
+        if (newRecord.discount != null) {
+          newRecord.revenue = newRecord.originalCost!;
+          // record.discount = 0;
+        }
+        final cartItem = saleRecordToCartItem(
+          record: newRecord,
+          product: product.first,
+        );
+        cartItems.add(cartItem);
+      } else {
+        var newRecord = record.copyWith();
+        if (newRecord.discount != null) {
+          newRecord.revenue = newRecord.originalCost!;
+          // record.discount = 0;
+        }
+        final double costPrice =
+            (record.costPrice == null ||
+                    record.costPrice == 0)
+                ? 0
+                : record.costPrice!;
+
+        final double sellingPrice =
+            record.discount == null
+                ? record.revenue / record.quantity
+                : (record.originalCost ?? 0) /
+                    record.quantity;
+        final double wholeSalePrice =
+            record.discount == null
+                ? record.revenue / record.quantity
+                : (record.originalCost ?? 0) /
+                    record.quantity;
+
+        TempProductClass productNew = TempProductClass(
+          useGroupUnit: false,
+          categories: [],
+          groupUnit: 'Group(s)',
+          storageUuid: null,
+          qttyPerGroup: null,
+          name: record.productName,
+          unit: record.unit ?? 'Unit(s)',
+          isRefundable: false,
+          costPrice: costPrice,
+          shopId: shopId(),
+          setCustomPrice: true,
+          isManaged: false,
+          barcode: null,
+          brand: null,
+          color: null,
+          createdAt: DateTime.now(),
+          departmentUuid: record.departmentUuid,
+          departmentName: record.departmentName,
+          discount: null,
+          endDate: null,
+          expiryDate: null,
+          lowQtty: 10,
+          quantity: null,
+          sellingPrice: sellingPrice,
+          wholeSalePrice: wholeSalePrice,
+          size: null,
+          sizeType: null,
+          startDate: null,
+          updatedAt: DateTime.now(),
+          uuid: uuidGen(),
+        );
+        final cartItem = saleRecordToCartItem(
+          record: newRecord,
+          product: productNew,
+        );
+        cartItems.add(cartItem);
+      }
+    }
+
+    return cartItems;
+  }
+
+  Future<dynamic> cancelOrderEdit(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return ConfirmationAlert(
+          theme: returnTheme(context, listen: false),
+          message:
+              'You are currently editing this order, are you sure you want to cancel this edit?',
+          title: 'Cancel Edit?',
+          action: () async {
+            if (returnSalesProvider()
+                .currentCart()
+                .isReceiptEdit) {
+              if (returnSalesProvider()
+                      .currentMainCart()
+                      .cartQueue
+                      .length ==
+                  1) {
+                await returnSalesProvider().addNewCart(
+                  context,
+                  TempCart(
+                    comment: null,
+                    timeOfDay: null,
+                    // createdDate: DateTime.now(),
+                    hasPrintedDocket: false,
+                    subStaffName: null,
+                    customDate: null,
+                    departmentName: null,
+                    departmentUuid: null,
+                    cartItems: [],
+                    cartItemTypeIndex: 2,
+                    orderUuidEdit: null,
+                    staffId: currentUser().userId,
+                    staffName:
+                        "${currentUser().name} ${currentUser().lastName}",
+                    id: uuidGen(),
+                  ),
+                );
+              }
+
+              await returnSalesProvider().deleteCart(
+                cartId: returnSalesProvider().cartIdCache,
+                context: context,
+              );
+              // await selectCart(cartIndex - 1);
+              notifyListeners();
+              if (context.mounted) {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              }
+            } else {
+              Navigator.of(context).pop();
+            }
+          },
+        );
+      },
+    );
   }
 
   //
@@ -489,107 +774,185 @@ class OrdersProvider extends ChangeNotifier {
     }
   }
 
-  List<Orders> returnOwnOrdersByDayOrWeek() {
-    if (returnShopProvider()
-            .userShop()
-            ?.manageDepartments ==
-        true) {
-      if (rangeStartDate != null) {
-        return departmentOrders().where((order) {
-          final created = order.createdAt.toLocal();
-          return !created.isBefore(
-                fourAm(rangeStartDate!),
-              ) &&
-              created.isBefore(
-                fourAmNextDay(
-                  rangeEndDate ??
-                      resolveBusinessDate(DateTime.now()),
-                ),
-              );
-        }).toList();
-      } else {
-        // final currentDate = dateSet ?? DateTime.now();
-        final currentDate =
-            dateSet ?? resolveBusinessDate(DateTime.now());
-
-        return departmentOrders()
-            .where(
-              (order) =>
-                  !order.createdAt.isBefore(
-                    fourAm(currentDate),
-                  ) &&
-                  order.createdAt.isBefore(
-                    fourAmNextDay(currentDate),
-                  ),
-            )
-            .toList();
-      }
+  List<Orders> returnAllOrSetDateOrders() {
+    if (dateSet == null &&
+        rangeEndDate == null &&
+        rangeStartDate == null) {
+      return orders;
     } else {
-      if (rangeStartDate != null) {
-        if (authorization(
-          authorized:
-              Authorizations().viewAllTransactionRecords,
-        )) {
-          return orders.where((order) {
-            final created = order.createdAt.toLocal();
-            return !created.isBefore(
-                  fourAm(rangeStartDate!),
-                ) &&
-                created.isBefore(
-                  fourAmNextDay(
-                    rangeEndDate ??
-                        resolveBusinessDate(DateTime.now()),
-                  ),
-                );
-          }).toList();
-        } else {
-          return orders.where((order) {
-            final created = order.createdAt.toLocal();
-            return !created.isBefore(
-                  fourAm(rangeStartDate!),
-                ) &&
-                created.isBefore(
-                  fourAmNextDay(
-                    rangeEndDate ??
-                        resolveBusinessDate(DateTime.now()),
-                  ),
-                ) &&
-                order.staffId == currentUser().userId;
-          }).toList();
-        }
-      } else {
-        final currentDate = dateSet ?? DateTime.now();
+      return returnOrdersByDayOrWeekAll();
+    }
+  }
 
-        if (authorization(
-          authorized:
-              Authorizations().viewAllTransactionRecords,
-        )) {
-          return orders
-              .where(
-                (order) =>
-                    !order.createdAt.isBefore(
-                      fourAm(currentDate),
-                    ) &&
-                    !order.createdAt.isAfter(
-                      fourAmNextDay(currentDate),
-                    ),
-              )
-              .toList();
-        } else {
-          return orders
-              .where(
-                (order) =>
-                    !order.createdAt.isBefore(
-                      fourAm(currentDate),
-                    ) &&
-                    !order.createdAt.isAfter(
-                      fourAmNextDay(currentDate),
-                    ) &&
-                    order.staffId == currentUser().userId,
-              )
-              .toList();
-        }
-      }
+  List<Orders> returnUnpaidOrders() {
+    return returnOrdersByDayOrWeekAll()
+        .where(
+          (order) =>
+              (order.total ?? 0) ==
+              getBalance(order: order),
+        )
+        .toList();
+  }
+
+  List<Orders> returnPartiallyPaidOrders() {
+    return returnOrdersByDayOrWeekAll()
+        .where(
+          (order) =>
+              getBalance(order: order) != 0 &&
+              (order.total ?? 0) > getBalance(order: order),
+        )
+        .toList();
+  }
+
+  List<Orders> returnPaidOrders() {
+    return returnOrdersByDayOrWeekAll()
+        .where((order) => getBalance(order: order) == 0)
+        .toList();
+  }
+
+  int orderPaymentStatusIndex = 0;
+
+  void selectPaymentStatus(int index) {
+    orderPaymentStatusIndex = index;
+    notifyListeners();
+  }
+
+  List<Orders> returnOrdersBasedOnPaymentStatus() {
+    if (rangeStartDate != null) {
+      return departmentOrders().where((order) {
+        final created = order.createdAt.toLocal();
+        return !created.isBefore(
+              fourAm(rangeStartDate ?? DateTime.now()),
+            ) &&
+            !created.isAfter(
+              fourAmNextDay(rangeEndDate ?? DateTime.now()),
+            );
+      }).toList();
+    }
+
+    if (dateSet != null) {
+      return departmentOrders().where((order) {
+        final created = order.createdAt.toLocal();
+        final inRange =
+            !created.isBefore(
+              fourAm(dateSet ?? DateTime.now()),
+            ) &&
+            !created.isAfter(
+              fourAmNextDay(dateSet ?? DateTime.now()),
+            );
+
+        return inRange;
+      }).toList();
+    }
+    return departmentOrders();
+  }
+
+  List<Orders> returnOrdersByDayOrWeekAll() {
+    if (orderPaymentStatusIndex == 0) {
+      return returnOrdersBasedOnPaymentStatus()
+          .where(
+            (order) =>
+                (order.total ?? 0) ==
+                getBalance(order: order),
+          )
+          .toList();
+    } else if (orderPaymentStatusIndex == 1) {
+      return returnOrdersBasedOnPaymentStatus()
+          .where((order) => getBalance(order: order) == 0)
+          .toList();
+    } else if (orderPaymentStatusIndex == 2) {
+      return returnOrdersBasedOnPaymentStatus()
+          .where(
+            (order) =>
+                getBalance(order: order) != 0 &&
+                (order.total ?? 0) >
+                    getBalance(order: order),
+          )
+          .toList();
+    } else {
+      return returnOrdersBasedOnPaymentStatus().toList();
+    }
+  }
+
+  double getTotalRevenueForSelectedDayAll({
+    String? staffId,
+    String? customerId,
+    String? subStaffId,
+  }) {
+    double tempTotalRevenue = 0;
+
+    for (var order
+        in (staffId != null
+            ? returnOrdersByDayOrWeekAll().where(
+              (rec) => rec.staffId == staffId,
+            )
+            : subStaffId != null
+            ? returnOrdersByDayOrWeekAll().where(
+              (rec) => rec.subStaffUuid == subStaffId,
+            )
+            : customerId != null
+            ? returnOrdersByDayOrWeekAll().where(
+              (rec) => rec.customerId == customerId,
+            )
+            : returnOrdersByDayOrWeekAll())) {
+      tempTotalRevenue += getBalance(order: order);
+    }
+
+    return tempTotalRevenue;
+  }
+  //
+  //
+  //
+  //
+
+  double getTotalMainRevenueOrder({required Orders order}) {
+    var total = ((order.total ?? 0));
+
+    return total;
+  }
+
+  double getAmountPaid({required Orders order}) {
+    return getTotalMainRevenueOrder(order: order) -
+        getBalance(order: order);
+  }
+
+  double getBalance({required Orders order}) {
+    double tempValue = 0;
+    List<TempMainReceipt> receiptsTemp =
+        returnReceiptProviderSingle().receipts
+            .where((rec) => rec.orderUuid == order.uuid)
+            .toList();
+    for (var val in receiptsTemp) {
+      tempValue +=
+          (val.bank +
+              val.cashAlt +
+              (val.customerAccount ?? 0));
+    }
+    return getTotalMainRevenueOrder(order: order) -
+        tempValue;
+  }
+
+  int getOrderStatus({required Orders order}) {
+    if (getBalance(order: order) ==
+        getTotalMainRevenueOrder(order: order)) {
+      return 0;
+    } else if (getBalance(order: order) <
+            getTotalMainRevenueOrder(order: order) &&
+        getBalance(order: order) > 0) {
+      return 1;
+    } else {
+      return 2;
+    }
+  }
+
+  double getDiscountAmountForOrder(Orders order) {
+    if (order.fixedDiscount != null) {
+      return (order.fixedDiscount ?? 0);
+    } else if (order.generalDiscount != null) {
+      return (getOriginalCostOrder(order) *
+          ((order.generalDiscount ?? 0) / 100));
+    } else {
+      return 0;
     }
   }
 
@@ -667,35 +1030,15 @@ class OrdersProvider extends ChangeNotifier {
   double getTotalRevenueForSelectedDay() {
     double tempTotalRevenue = 0;
 
-    for (var order in returnOwnOrdersByDayOrWeek()) {
-      tempTotalRevenue += getTotalMainRevenueOrder(order);
+    for (var order in returnOrdersByDayOrWeekAll()) {
+      tempTotalRevenue += getTotalMainRevenueOrder(
+        order: order,
+      );
     }
 
     return tempTotalRevenue;
   }
 
-  double getTotalRevenueForSelectedDayAll({
-    String? staffId,
-    String? customerId,
-  }) {
-    double tempTotalRevenue = 0;
-
-    for (var order
-        in (staffId != null
-            ? returnOwnOrdersByDayOrWeek().where(
-              (rec) => rec.staffId == staffId,
-            )
-            : customerId != null
-            ? returnOwnOrdersByDayOrWeek().where(
-              (rec) => rec.customerId == customerId,
-            )
-            : returnOwnOrdersByDayOrWeek())) {
-      tempTotalRevenue += getTotalMainRevenueOrder(order);
-    }
-
-    return tempTotalRevenue;
-  }
-  //
   //
   //
   //
@@ -709,9 +1052,9 @@ class OrdersProvider extends ChangeNotifier {
     return order.originalCost ?? 0;
   }
 
-  double getTotalMainRevenueOrder(Orders order) {
-    return order.total ?? 0;
-  }
+  // double getTotalMainRevenueOrder(Orders order) {
+  //   return order.total ?? 0;
+  // }
 
   String unitText({required OrderItems record}) {
     if (record.useGroupQuantity == true) {
@@ -732,7 +1075,7 @@ class OrdersProvider extends ChangeNotifier {
   List<StaffGroupOrders> groupOrdersByStaff() {
     final Map<String?, StaffGroupOrders> grouped = {};
 
-    for (final order in returnOwnOrdersByDayOrWeek()) {
+    for (final order in returnOrdersByDayOrWeekAll()) {
       final String? staffUuid = order.staffId;
 
       if (!grouped.containsKey(staffUuid)) {
@@ -770,7 +1113,7 @@ class OrdersProvider extends ChangeNotifier {
   List<CustomerGroupOrders> groupOrdersByCustomer() {
     final Map<String?, CustomerGroupOrders> grouped = {};
 
-    for (final order in returnOwnOrdersByDayOrWeek()) {
+    for (final order in returnOrdersByDayOrWeekAll()) {
       final String? customerId = order.customerId;
 
       if (!grouped.containsKey(customerId)) {
@@ -809,7 +1152,7 @@ class OrdersProvider extends ChangeNotifier {
   List<DepartmentGroupOrders> groupOrdersByDepartment() {
     final Map<String?, DepartmentGroupOrders> grouped = {};
 
-    for (final order in returnOwnOrdersByDayOrWeek()) {
+    for (final order in returnOrdersByDayOrWeekAll()) {
       final String? departmentUuid = order.departmentUuid;
 
       if (!grouped.containsKey(departmentUuid)) {
@@ -1331,21 +1674,21 @@ class OrdersProvider extends ChangeNotifier {
   }
 
   double rowTotalTotalBalance() {
-    return returnOwnOrdersByDayOrWeek()
+    return returnOrdersByDayOrWeekAll()
         .map((item) => (item.balance ?? 0))
         .toList()
         .fold(0, (p, n) => p + n);
   }
 
   double rowTotalTotalCostPrice() {
-    return returnOwnOrdersByDayOrWeek()
+    return returnOrdersByDayOrWeekAll()
         .map((item) => (item.originalCost ?? 0))
         .toList()
         .fold(0, (p, n) => p + n);
   }
 
   double rowTotalTotalRevenue() {
-    return returnOwnOrdersByDayOrWeek()
+    return returnOrdersByDayOrWeekAll()
         .map((item) => (item.total ?? 0))
         .toList()
         .fold(0, (p, n) => p + n);
@@ -1353,7 +1696,7 @@ class OrdersProvider extends ChangeNotifier {
 
   List<DataRow> _rowTotal({required BuildContext context}) {
     return [
-      ...returnOwnOrdersByDayOrWeek().toList().map((item) {
+      ...returnOrdersByDayOrWeekAll().toList().map((item) {
         return DataRow2(
           specificRowHeight:
               (item.staffName ?? '').length > 18 ||

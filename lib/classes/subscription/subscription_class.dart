@@ -90,4 +90,20 @@ class SubscriptionClass extends HiveObject {
       'email': email,
     };
   }
+
+  String getPlanName() {
+    if (plan == 1) {
+      return 'Basic';
+    } else if (plan == 2) {
+      return 'Standard';
+    } else if (plan == 3) {
+      return 'Premium';
+    } else if (plan == 4) {
+      return 'Silver';
+    } else if (plan == 5) {
+      return 'Gold';
+    } else {
+      return 'Free';
+    }
+  }
 }

@@ -83,7 +83,7 @@ class _DiscountSetterWidgetState
                                             .fixedDiscount !=
                                         null
                                 ? 'Cancel'
-                                : 'Add Discount:',
+                                : '${screenWidth(context) > mobileScreen ? 'Add ' : ''}Discount:',
                           ),
                           Visibility(
                             visible:

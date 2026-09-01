@@ -974,14 +974,6 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
       child: PopScope(
         canPop: false,
         child: Scaffold(
-          // appBar: AppBar(
-          //   title: InkWell( mouseCursor: SystemMouseCursors.click,
-          //     onTap: () {
-          //       Navigator.of(context).pop();
-          //     },
-          //     child: Icon(Icons.back_hand),
-          //   ),
-          // ),
           appBar: appBar(
             backAction:
                 returnSalesProvider()
@@ -995,210 +987,93 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
             // isMain: widget.isMain,
             context: context,
             title:
-                returnSalesProviderContext(
-                      context,
-                    ).currentCart().isReceiptEdit
-                    ? 'Edit Receipt'
-                    : returnSalesProviderContext(
-                          context,
-                        ).currentCart().cartItemTypeIndex ==
-                        2
-                    ? 'Credit Sale'
-                    : 'Cart Items',
-            widget: Stack(
-              children: [
-                Visibility(
-                  visible:
-                      returnSalesProviderContext(
-                        context,
-                      ).currentCart().cartItems.isNotEmpty,
-                  child: InkWell(
-                    mouseCursor: SystemMouseCursors.click,
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return ConfirmationAlert(
-                            theme: theme,
-                            message:
-                                'You are about to clear the items in your cart, are you sure you want to proceed?',
-                            title: 'Are you sure?',
-                            action: () async {
-                              if (returnSalesProvider()
-                                  .currentCart()
-                                  .cartItems
-                                  .isNotEmpty) {
-                                if (returnShopProvider()
-                                        .userShop()
-                                        ?.trackCart ==
-                                    true) {
-                                  var res =
-                                      await pinCodeAction(
-                                        isMain: true,
-                                        context: context,
-                                      );
-                                  if (res) {
-                                    returnSalesProvider()
-                                        .clearCart();
-                                    Navigator.of(
-                                      context,
-                                    ).pop();
-                                  }
-                                } else {
-                                  returnSalesProvider()
-                                      .clearCart();
-                                  Navigator.of(
-                                    context,
-                                  ).pop();
-                                }
-                              } else {
+                currentCart(context: context).getEditText(),
+            widget: Visibility(
+              visible:
+                  returnSalesProviderContext(
+                    context,
+                  ).currentCart().cartItems.isNotEmpty,
+              child: InkWell(
+                mouseCursor: SystemMouseCursors.click,
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return ConfirmationAlert(
+                        theme: theme,
+                        message:
+                            'You are about to clear the items in your cart, are you sure you want to proceed?',
+                        title: 'Are you sure?',
+                        action: () async {
+                          if (returnSalesProvider()
+                              .currentCart()
+                              .cartItems
+                              .isNotEmpty) {
+                            if (returnShopProvider()
+                                    .userShop()
+                                    ?.trackCart ==
+                                true) {
+                              var res = await pinCodeAction(
+                                isMain: true,
+                                context: context,
+                              );
+                              if (res) {
                                 returnSalesProvider()
                                     .clearCart();
                                 Navigator.of(context).pop();
                               }
-                            },
-                          );
+                            } else {
+                              returnSalesProvider()
+                                  .clearCart();
+                              Navigator.of(context).pop();
+                            }
+                          } else {
+                            returnSalesProvider()
+                                .clearCart();
+                            Navigator.of(context).pop();
+                          }
                         },
                       );
                     },
-                    child: Container(
-                      height: 35,
-                      margin: EdgeInsets.only(right: 10),
-                      padding: EdgeInsets.only(
-                        // vertical: 10,
-                        left: 10,
-                        right: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.grey.shade100,
+                  );
+                },
+                child: Container(
+                  height: 35,
+                  margin: EdgeInsets.only(right: 10),
+                  padding: EdgeInsets.only(
+                    // vertical: 10,
+                    left: 10,
+                    right: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.grey.shade100,
+                    ),
+                  ),
+                  child: Center(
+                    child: Row(
+                      children: [
+                        Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          'Clear Cart',
                         ),
-                      ),
-                      child: Center(
-                        child: Row(
-                          children: [
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              'Clear Cart',
-                            ),
-                            Icon(
-                              size: 18,
-                              color: Colors.grey.shade600,
-                              Icons.clear,
-                            ),
-                          ],
+                        Icon(
+                          size: 18,
+                          color: Colors.grey.shade600,
+                          Icons.clear,
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ),
-                Visibility(
-                  visible:
-                      returnSalesProviderContext(
-                        context,
-                      ).currentCart().cartItems.isEmpty,
-                  child: InkWell(
-                    mouseCursor: SystemMouseCursors.click,
-                    onTap: () async {
-                      if (returnSalesProvider()
-                              .currentCart()
-                              .cartItemTypeIndex ==
-                          2) {
-                        returnSalesProvider()
-                            .switchInvoiceSale(
-                              context: context,
-                              value: 1,
-                            );
-                      } else {
-                        returnSalesProvider()
-                            .switchInvoiceSale(
-                              context: context,
-                              value: 2,
-                            );
-                      }
-                    },
-                    child: SizedBox(
-                      height: 35,
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          right: 15.0,
-                          top: 3,
-                          bottom: 3,
-                          left: 5,
-                        ),
-                        child: Row(
-                          spacing: 5,
-                          children: [
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              'Sale Credit',
-                            ),
-                            Container(
-                              padding: EdgeInsets.all(2),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color:
-                                    returnSalesProviderContext(
-                                                  context,
-                                                )
-                                                .currentCart()
-                                                .cartItemTypeIndex ==
-                                            2
-                                        ? theme
-                                            .lightModeColor
-                                            .prColor250
-                                        : null,
-                                border: Border.all(
-                                  color:
-                                      returnSalesProviderContext(
-                                                    context,
-                                                  )
-                                                  .currentCart()
-                                                  .cartItemTypeIndex ==
-                                              2
-                                          ? theme
-                                              .lightModeColor
-                                              .prColor250
-                                          : Colors.grey,
-                                ),
-                              ),
-                              child: Icon(
-                                size: 14,
-                                color:
-                                    returnSalesProviderContext(
-                                                  context,
-                                                )
-                                                .currentCart()
-                                                .cartItemTypeIndex ==
-                                            2
-                                        ? Colors.white
-                                        : Colors
-                                            .grey
-                                            .shade400,
-                                Icons.check,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
           body: Stack(
@@ -2228,7 +2103,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               fontWeight:
                                                                   FontWeight.bold,
                                                             ),
-                                                            'Scan Barcode',
+                                                            'Scan',
                                                           ),
                                                           Icon(
                                                             size:
@@ -2243,6 +2118,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                   ),
                                                 ),
                                               ),
+                                              SwitchSaleTypeWidgetMobile(),
                                               DiscountSetterWidget(
                                                 discountPercentController:
                                                     discountPercentController,
@@ -3006,6 +2882,235 @@ class EmptyCartBottomWidget extends StatelessWidget {
             ),
             SizedBox(height: 40),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class SwitchSaleTypeWidgetMobile extends StatefulWidget {
+  const SwitchSaleTypeWidgetMobile({super.key});
+
+  @override
+  State<SwitchSaleTypeWidgetMobile> createState() =>
+      _SwitchSaleTypeWidgetMobileState();
+}
+
+class _SwitchSaleTypeWidgetMobileState
+    extends State<SwitchSaleTypeWidgetMobile> {
+  void switchAction(int index) {
+    returnSalesProvider().switchInvoiceSale(
+      value: index,
+      context: context,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context, listen: false);
+    return Visibility(
+      visible: !currentCart(context: context).isReceiptEdit,
+      child: Container(
+        margin: EdgeInsets.only(bottom: 5),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(3),
+        ),
+        child: Material(
+          type: MaterialType.transparency,
+          child: PopupMenuButton(
+            offset: Offset(-100, 10),
+            color: Colors.white,
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem(
+                  mouseCursor: SystemMouseCursors.click,
+                  onTap: () {
+                    switchAction(1);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      left: 5.0,
+                      right: 15,
+                    ),
+                    child: Row(
+                      spacing: 10,
+                      children: [
+                        Icon(
+                          size: 16,
+                          color:
+                              theme
+                                  .lightModeColor
+                                  .prColor250,
+                          Icons.receipt_outlined,
+                        ),
+                        Expanded(
+                          child: Text(
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                            ),
+                            'Create Real Sales',
+                          ),
+                        ),
+                        Visibility(
+                          visible:
+                              currentCart()
+                                  .cartItemTypeIndex ==
+                              1,
+                          child: Icon(
+                            size: 16,
+                            color:
+                                theme
+                                    .lightModeColor
+                                    .prColor250,
+                            Icons.check,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                PopupMenuItem(
+                  enabled: SalesAuthAction()
+                      .invoiceManagementAction(
+                        context: context,
+                      ),
+                  mouseCursor: SystemMouseCursors.click,
+                  onTap: () {
+                    switchAction(2);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      left: 5.0,
+                      right: 15,
+                    ),
+                    child: Row(
+                      spacing: 10,
+                      children: [
+                        Icon(
+                          size: 16,
+                          color:
+                              theme
+                                  .lightModeColor
+                                  .secColor200,
+                          Icons.receipt_long_rounded,
+                        ),
+                        Expanded(
+                          child: Text(
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                            ),
+                            'Create Credit/Invoice Sales',
+                          ),
+                        ),
+                        Visibility(
+                          visible:
+                              currentCart()
+                                  .cartItemTypeIndex ==
+                              2,
+                          child: Icon(
+                            size: 16,
+                            color:
+                                theme
+                                    .lightModeColor
+                                    .secColor200,
+                            Icons.check,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                PopupMenuItem(
+                  enabled:
+                      authorization(
+                        authorized:
+                            Authorizations().manageOrders,
+                      ) &&
+                      SalesAuthAction().manageOrdersAction(
+                        context: context,
+                      ),
+                  mouseCursor: SystemMouseCursors.click,
+                  onTap: () {
+                    switchAction(3);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      left: 5.0,
+                      right: 15,
+                    ),
+                    child: Row(
+                      spacing: 10,
+                      children: [
+                        Icon(
+                          size: 16,
+                          color:
+                              theme
+                                  .lightModeColor
+                                  .tertColor200,
+                          Icons.view_in_ar_rounded,
+                        ),
+                        Expanded(
+                          child: Text(
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                            ),
+                            'Create Order',
+                          ),
+                        ),
+                        Visibility(
+                          visible:
+                              currentCart()
+                                  .cartItemTypeIndex ==
+                              3,
+                          child: Icon(
+                            size: 16,
+                            color:
+                                theme
+                                    .lightModeColor
+                                    .tertColor200,
+                            Icons.check,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ];
+            },
+            child: Container(
+              padding: EdgeInsets.fromLTRB(15, 5, 5, 5),
+              child: Row(
+                spacing: 5,
+                children: [
+                  Text(
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b4.fontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    'Sale Type',
+                  ),
+                  Icon(Icons.keyboard_arrow_down_rounded),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );

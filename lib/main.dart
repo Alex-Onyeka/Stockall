@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:stockall/classes/subscription/subscription_class.dart';
+import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_departments_class/department_class.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
@@ -243,6 +245,26 @@ TempUserClass currentUser() {
 
 DepartmentClass? currentDepartment() {
   return returnDepartmentProvider().currentDepartment();
+}
+
+SubscriptionClass? currentSubscription({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return SubscriptionProvider().subscription;
+  } else {
+    return returnSubcsription(context).subscription;
+  }
+}
+
+TempCart currentCart({BuildContext? context}) {
+  if (context == null) {
+    return returnSalesProvider().currentCart();
+  } else {
+    return returnSalesProviderContext(
+      context,
+    ).currentCart();
+  }
 }
 
 bool isStoreKeeper() {

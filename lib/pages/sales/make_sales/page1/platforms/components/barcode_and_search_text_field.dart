@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/text_fields/text_field_barcode.dart';
-import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/play_sounds.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/sales/make_sales/page1/platforms/components/right_bar_section.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class BarcodeAndSearchTextField extends StatefulWidget {
@@ -192,60 +192,26 @@ class _BarcodeAndSearchTextFieldState
                                           SystemMouseCursors
                                               .click,
                                       onTap: () {
-                                        selectProductSales(
-                                          isEdit: false,
+                                        addItemToCartFromCartItemList(
+                                          closeAction:
+                                              () {},
                                           context: context,
-                                          qttyNode:
+                                          priceController:
                                               widget
-                                                  .qtyNode,
+                                                  .priceController,
                                           priceNode:
                                               widget
                                                   .priceNode,
+                                          product: item,
+                                          qttyNode:
+                                              widget
+                                                  .qtyNode,
                                           quantityController:
                                               widget
                                                   .quantityController,
                                           searchController:
                                               widget
                                                   .searchController,
-                                          theme:
-                                              widget.theme,
-                                          cartItem: TempCartItem(
-                                            uuid: uuidGen(),
-                                            itemUuid:
-                                                item.uuid,
-                                            isVoid: false,
-                                            qttyPerGroup:
-                                                item.qttyPerGroup,
-                                            useGroupQuantity:
-                                                false,
-                                            setTotalPrice:
-                                                returnSalesProvider()
-                                                    .setTotalPrice,
-                                            useWholeSalePrice:
-                                                false,
-                                            addToStock:
-                                                false,
-                                            discount:
-                                                item.discount,
-                                            item: item,
-                                            quantity:
-                                                double.tryParse(
-                                                  widget
-                                                      .quantityController
-                                                      .text
-                                                      .replaceAll(
-                                                        ',',
-                                                        '',
-                                                      )
-                                                      .trim(),
-                                                ) ??
-                                                0.0,
-                                          ),
-                                          closeAction:
-                                              widget.close,
-                                          priceController:
-                                              widget
-                                                  .priceController,
                                         );
                                       },
                                       child: Container(

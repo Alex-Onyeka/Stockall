@@ -2,37 +2,33 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
-import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
-import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
+import 'package:stockall/classes/temp_orders/order_items.dart';
+import 'package:stockall/classes/temp_orders/orders.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
-import 'package:stockall/constants/invoice_print_and_download.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
-import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
+import 'package:stockall/pages/orders/invoice_list/order_list_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/services/auth_service.dart';
-import 'package:stockall/services/printing/printer_service_mobile.dart';
 
-class InvoicePageMobile extends StatefulWidget {
+class OrderPageMobile extends StatefulWidget {
   final CheckoutResponse checkoutResponse;
-  const InvoicePageMobile({
+  const OrderPageMobile({
     super.key,
     required this.checkoutResponse,
   });
 
   @override
-  State<InvoicePageMobile> createState() =>
-      _InvoicePageMobileState();
+  State<OrderPageMobile> createState() =>
+      _OrderPageMobileState();
 }
 
-class _InvoicePageMobileState
-    extends State<InvoicePageMobile> {
+class _OrderPageMobileState extends State<OrderPageMobile> {
   int? paymentSelected;
 
   void selectPayment(int index) {
@@ -43,15 +39,14 @@ class _InvoicePageMobileState
       } else {
         paymentSelected = index;
         if (index == 2) {
-          TempInvoice invoice = returnInvoicesProvider()
-              .invoicesMain
+          Orders order = returnOrdersProvider().orders
               .firstWhere(
                 (inv) =>
                     inv.uuid ==
-                    widget.checkoutResponse.invoice?.uuid,
+                    widget.checkoutResponse.order?.uuid,
               );
-          paymentController.text = returnInvoicesProvider()
-              .getBalance(invoice: invoice)
+          paymentController.text = returnOrdersProvider()
+              .getBalance(order: order)
               .toStringAsFixed(0);
         }
         paymentNode.requestFocus();
@@ -67,35 +62,33 @@ class _InvoicePageMobileState
   bool isDeleteLoading = false;
   bool isPrintLoading = false;
   bool isDownloadLoading = false;
-  bool isPrintingInvoice = false;
+  bool isPrintingOrder = false;
 
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    List<TempProductSaleRecord> saleRecords =
-        returnReceiptProvider(context, listen: false)
-            .getProductRecordsNoVoid()
-            .where(
-              (record) =>
-                  record.invoiceUuid ==
-                  widget.checkoutResponse.invoice?.uuid,
-            )
-            .toList();
-    TempInvoice? invoice = returnInvoicesProvider()
-        .invoicesMain
+
+    Orders? order = returnOrdersProvider().orders
         .firstWhere(
           (inv) =>
               inv.uuid ==
-              widget.checkoutResponse.invoice?.uuid,
+              widget.checkoutResponse.order?.uuid,
           orElse: () {
-            return TempInvoice(
+            return Orders(
+              fixedDiscount: null,
+              updatedAt: DateTime.now(),
+              vat: 0,
+              originalCost: 0,
+              generalDiscount: 0,
+              subStaffUuid: '',
+              orderItems: [],
               comment: null,
               subStaffName: null,
               departmentName:
                   returnDepartmentProvider()
                       .currentDepartment()
                       ?.name,
-              departmentUuidNew:
+              departmentUuid:
                   returnDepartmentProvider()
                       .currentDepartment()
                       ?.uuid,
@@ -104,23 +97,26 @@ class _InvoicePageMobileState
               shopId: shopId(),
               staffId: AuthService().currentUser!,
               staffName: 'Staff Name',
-              paymentMethod: 'Cash',
-              bank: 0,
-              cashAlt: 0,
+              balance: 0,
+              barcode: '',
+              customerName: 'Customer Name',
               cartName: 'Cart 1',
             );
           },
         );
+    List<OrderItems> saleRecords =
+        order.orderItems.toList();
+
     String? customer;
     TempCustomersClass? customersClass;
 
     var customers = returnCustomers(context)
         .customersMain()
-        .where((c) => c.uuid == invoice.customerUuid);
+        .where((c) => c.uuid == order.customerId);
     if (customers.isNotEmpty) {
       customersClass = customers.first;
     } else {
-      customer = invoice.customerName;
+      customer = order.customerName;
     }
 
     return Builder(
@@ -218,7 +214,7 @@ class _InvoicePageMobileState
                                               .b3
                                               .fontSize,
                                     ),
-                                    'Invoice',
+                                    'Order',
                                   ),
                                   Text(
                                     style: TextStyle(
@@ -230,7 +226,7 @@ class _InvoicePageMobileState
                                       fontWeight:
                                           FontWeight.bold,
                                     ),
-                                    "[ #${invoice.barcode ?? returnOnlyDigits(invoice.uuid ?? '')} ]",
+                                    "[ #${order.barcode ?? returnOnlyDigits(order.uuid ?? '')} ]",
                                   ),
                                 ],
                               ),
@@ -270,17 +266,17 @@ class _InvoicePageMobileState
                                         .returnOwnReceiptsByDayOrWeek()
                                         .where(
                                           (rec) =>
-                                              rec.invoiceUuid ==
+                                              rec.orderUuid ==
                                               widget
                                                   .checkoutResponse
-                                                  .invoice
+                                                  .order
                                                   ?.uuid,
                                         )
                                         .isEmpty &&
                                     authorization(
                                       authorized:
                                           Authorizations()
-                                              .updateInvoice,
+                                              .updateOrders,
                                     ),
                                 height: 35,
                                 onTap: () {
@@ -295,17 +291,16 @@ class _InvoicePageMobileState
                                           listen: false,
                                         ),
                                         message:
-                                            'You are about to edit this Invoice. Are you sure you want to proceed?',
-                                        title:
-                                            'Edit Invoice',
+                                            'You are about to edit this Order. Are you sure you want to proceed?',
+                                        title: 'Edit Order',
                                         action: () {
                                           Navigator.of(
                                             confirmDialog,
                                           ).pop();
-                                          returnInvoicesProvider()
-                                              .onEditInvoice(
-                                                invoice:
-                                                    invoice,
+                                          returnOrdersProvider()
+                                              .onEditOrder(
+                                                order:
+                                                    order,
                                                 context:
                                                     context,
                                               );
@@ -334,49 +329,49 @@ class _InvoicePageMobileState
                                   SalesAuthAction().printReceiptAction(
                                     context: context,
                                     action: () async {
-                                      var safeContext =
-                                          context;
-                                      showDialog(
-                                        context: context,
-                                        builder: (
-                                          confirmDialog,
-                                        ) {
-                                          return ConfirmationAlert(
-                                            theme: theme,
-                                            message:
-                                                'You are about to Print This Invoice. Are you sure you want to Proceed?',
-                                            title:
-                                                'Print Invoice',
-                                            action: () async {
-                                              setState(() {
-                                                isPrintingInvoice =
-                                                    true;
-                                              });
-                                              scanBluetoothPrintersinvoice(
-                                                invoice:
-                                                    invoice,
-                                                records:
-                                                    saleRecords,
-                                                shop:
-                                                    shopSingle()!,
-                                                context:
-                                                    context,
-                                              );
-                                              Navigator.of(
-                                                confirmDialog,
-                                              ).pop();
-                                            },
-                                          );
-                                        },
-                                      ).then((_) {
-                                        if (safeContext
-                                            .mounted) {
-                                          setState(() {
-                                            isPrintingInvoice =
-                                                false;
-                                          });
-                                        }
-                                      });
+                                      // var safeContext =
+                                      //     context;
+                                      // showDialog(
+                                      //   context: context,
+                                      //   builder: (
+                                      //     confirmDialog,
+                                      //   ) {
+                                      //     return ConfirmationAlert(
+                                      //       theme: theme,
+                                      //       message:
+                                      //           'You are about to Print This Order. Are you sure you want to Proceed?',
+                                      //       title:
+                                      //           'Print Order',
+                                      //       action: () async {
+                                      //         setState(() {
+                                      //           isPrintingOrder =
+                                      //               true;
+                                      //         });
+                                      //         scanBluetoothPrintersorder(
+                                      //           order:
+                                      //               order,
+                                      //           records:
+                                      //               saleRecords,
+                                      //           shop:
+                                      //               shopSingle()!,
+                                      //           context:
+                                      //               context,
+                                      //         );
+                                      //         Navigator.of(
+                                      //           confirmDialog,
+                                      //         ).pop();
+                                      //       },
+                                      //     );
+                                      //   },
+                                      // ).then((_) {
+                                      //   if (safeContext
+                                      //       .mounted) {
+                                      //     setState(() {
+                                      //       isPrintingOrder =
+                                      //           false;
+                                      //     });
+                                      //   }
+                                      // });
                                     },
                                   );
                                 },
@@ -402,74 +397,74 @@ class _InvoicePageMobileState
                                       var safeContext =
                                           context;
                                       if (!kIsWeb) {
-                                        await generateAndPreviewPdfInvoice(
-                                          invoice: invoice,
-                                          staffName:
-                                              invoice
-                                                  .staffName,
-                                          context:
-                                              safeContext,
-                                          receipts:
-                                              returnReceiptProviderSingle()
-                                                  .returnOwnReceiptsByDayOrWeek()
-                                                  .where(
-                                                    (rec) =>
-                                                        rec.invoiceUuid ==
-                                                        widget.checkoutResponse.invoice?.uuid,
-                                                  )
-                                                  .toList(),
-                                          records:
-                                              saleRecords,
-                                        );
+                                        // await generateAndPreviewPdfOrder(
+                                        //   order: order,
+                                        //   staffName:
+                                        //       order
+                                        //           .staffName,
+                                        //   context:
+                                        //       safeContext,
+                                        //   receipts:
+                                        //       returnReceiptProviderSingle()
+                                        //           .returnOwnReceiptsByDayOrWeek()
+                                        //           .where(
+                                        //             (rec) =>
+                                        //                 rec.orderUuid ==
+                                        //                 widget.checkoutResponse.order?.uuid,
+                                        //           )
+                                        //           .toList(),
+                                        //   records:
+                                        //       saleRecords,
+                                        // );
                                       } else {
-                                        showDialog(
-                                          context: context,
-                                          builder: (
-                                            confirmDialog,
-                                          ) {
-                                            return ConfirmationAlert(
-                                              theme: theme,
-                                              message:
-                                                  'You are about to download This Invoice. Are you sure you want to Proceed?',
-                                              title:
-                                                  'Download Invoice',
-                                              action: () async {
-                                                setState(() {
-                                                  isDownloadLoading =
-                                                      true;
-                                                });
-                                                Navigator.of(
-                                                  confirmDialog,
-                                                ).pop();
-                                                if (kIsWeb) {
-                                                  downloadPdfWebInvoice(
-                                                    invoice:
-                                                        invoice,
-                                                    staffName:
-                                                        invoice.staffName,
-                                                    filename:
-                                                        'Stockall_Invoice_${invoice.uuid}.pdf',
-                                                    context:
-                                                        safeContext,
-                                                    receipts:
-                                                        returnReceiptProviderSingle()
-                                                            .returnOwnReceiptsByDayOrWeek()
-                                                            .where(
-                                                              (
-                                                                rec,
-                                                              ) =>
-                                                                  rec.invoiceUuid ==
-                                                                  widget.checkoutResponse.invoice?.uuid,
-                                                            )
-                                                            .toList(),
-                                                    records:
-                                                        saleRecords,
-                                                  );
-                                                }
-                                              },
-                                            );
-                                          },
-                                        );
+                                        // showDialog(
+                                        //   context: context,
+                                        //   builder: (
+                                        //     confirmDialog,
+                                        //   ) {
+                                        //     return ConfirmationAlert(
+                                        //       theme: theme,
+                                        //       message:
+                                        //           'You are about to download This Order. Are you sure you want to Proceed?',
+                                        //       title:
+                                        //           'Download Order',
+                                        //       action: () async {
+                                        //         setState(() {
+                                        //           isDownloadLoading =
+                                        //               true;
+                                        //         });
+                                        //         Navigator.of(
+                                        //           confirmDialog,
+                                        //         ).pop();
+                                        //         if (kIsWeb) {
+                                        //           downloadPdfWebOrder(
+                                        //             order:
+                                        //                 order,
+                                        //             staffName:
+                                        //                 order.staffName,
+                                        //             filename:
+                                        //                 'Stockall_Order_${order.uuid}.pdf',
+                                        //             context:
+                                        //                 safeContext,
+                                        //             receipts:
+                                        //                 returnReceiptProviderSingle()
+                                        //                     .returnOwnReceiptsByDayOrWeek()
+                                        //                     .where(
+                                        //                       (
+                                        //                         rec,
+                                        //                       ) =>
+                                        //                           rec.orderUuid ==
+                                        //                           widget.checkoutResponse.order?.uuid,
+                                        //                     )
+                                        //                     .toList(),
+                                        //             records:
+                                        //                 saleRecords,
+                                        //           );
+                                        //         }
+                                        //       },
+                                        //     );
+                                        //   },
+                                        // );
                                       }
                                       if (safeContext
                                           .mounted) {
@@ -500,7 +495,7 @@ class _InvoicePageMobileState
                                 enabled: authorization(
                                   authorized:
                                       Authorizations()
-                                          .deleteInvoice,
+                                          .deleteOrders,
                                 ),
                                 height: 35,
                                 onTap: () {
@@ -512,9 +507,9 @@ class _InvoicePageMobileState
                                       return ConfirmationAlert(
                                         theme: theme,
                                         message:
-                                            'You are about to delete this Invoice, are you sure you want to proceed?',
+                                            'You are about to delete this Order, are you sure you want to proceed?',
                                         title:
-                                            'Delete Invoice?',
+                                            'Delete Order?',
                                         action: () async {
                                           Navigator.of(
                                             confirmDialog,
@@ -523,9 +518,9 @@ class _InvoicePageMobileState
                                             isDeleteLoading =
                                                 true;
                                           });
-                                          var res = await returnInvoicesProvider()
-                                              .deleteInvoice(
-                                                invoice,
+                                          var res = await returnOrdersProvider()
+                                              .deleteOrder(
+                                                order,
                                                 saleRecords
                                                     .map(
                                                       (
@@ -568,7 +563,7 @@ class _InvoicePageMobileState
                                                   builder: (
                                                     context,
                                                   ) {
-                                                    return InvoiceListPage();
+                                                    return OrderListPage();
                                                   },
                                                 ),
                                               );
@@ -695,8 +690,8 @@ class _InvoicePageMobileState
                                                       fontWeight:
                                                           FontWeight.normal,
                                                     ),
-                                                    invoice
-                                                        .staffName,
+                                                    order.staffName ??
+                                                        'Not Set',
                                                   ),
                                                 ],
                                               ),
@@ -729,7 +724,7 @@ class _InvoicePageMobileState
                                                             fontWeight:
                                                                 FontWeight.normal,
                                                           ),
-                                                          "${formatDateTime(invoice.createdAt)}  |  ${formatTime(invoice.createdAt)}",
+                                                          "${formatDateTime(order.createdAt)}  |  ${formatTime(order.createdAt)}",
                                                         ),
                                                       ),
                                                     ],
@@ -873,9 +868,9 @@ class _InvoicePageMobileState
                                                                   ),
                                                                   formatMoneyBig(
                                                                     amount:
-                                                                        (invoice.fixedDiscount ==
+                                                                        (order.fixedDiscount ==
                                                                                         null &&
-                                                                                    invoice.generalDiscount ==
+                                                                                    order.generalDiscount ==
                                                                                         null) &&
                                                                                 record.discount !=
                                                                                     null
@@ -894,9 +889,9 @@ class _InvoicePageMobileState
                                                                       record.discount !=
                                                                           null &&
                                                                       !record.customPriceSet &&
-                                                                      (invoice.fixedDiscount ==
+                                                                      (order.fixedDiscount ==
                                                                               null &&
-                                                                          invoice.generalDiscount ==
+                                                                          order.generalDiscount ==
                                                                               null),
                                                                   child: Text(
                                                                     style: TextStyle(
@@ -972,7 +967,7 @@ class _InvoicePageMobileState
                                                     ),
                                                     formatMoneyBig(
                                                       amount:
-                                                          invoice.originalCost ??
+                                                          order.originalCost ??
                                                           0,
                                                       context:
                                                           context,
@@ -983,7 +978,7 @@ class _InvoicePageMobileState
                                             ),
                                             Visibility(
                                               visible:
-                                                  invoice
+                                                  order
                                                       .vat !=
                                                   null,
                                               child: Row(
@@ -1012,7 +1007,7 @@ class _InvoicePageMobileState
                                                             fontWeight:
                                                                 FontWeight.normal,
                                                           ),
-                                                          '[ ${invoice.vat ?? 0}% ]',
+                                                          '[ ${order.vat ?? 0}% ]',
                                                         ),
                                                       ],
                                                     ),
@@ -1027,9 +1022,8 @@ class _InvoicePageMobileState
                                                             FontWeight.bold,
                                                       ),
                                                       formatMoneyBig(
-                                                        amount: returnInvoicesProvider().getVATInvoice(
-                                                          invoice:
-                                                              invoice,
+                                                        amount: returnOrdersProvider().getVATForOrder(
+                                                          order,
                                                         ),
                                                         context:
                                                             context,
@@ -1041,9 +1035,9 @@ class _InvoicePageMobileState
                                             ),
                                             Visibility(
                                               visible:
-                                                  invoice.fixedDiscount !=
+                                                  order.fixedDiscount !=
                                                       null ||
-                                                  invoice.generalDiscount !=
+                                                  order.generalDiscount !=
                                                       null,
                                               child: Row(
                                                 mainAxisAlignment:
@@ -1066,7 +1060,7 @@ class _InvoicePageMobileState
                                                         ),
                                                         Visibility(
                                                           visible:
-                                                              invoice.generalDiscount !=
+                                                              order.generalDiscount !=
                                                               null,
                                                           child: Text(
                                                             style: TextStyle(
@@ -1075,7 +1069,7 @@ class _InvoicePageMobileState
                                                               fontWeight:
                                                                   FontWeight.normal,
                                                             ),
-                                                            '[ ${invoice.generalDiscount}% ]',
+                                                            '[ ${order.generalDiscount}% ]',
                                                           ),
                                                         ),
                                                       ],
@@ -1091,8 +1085,8 @@ class _InvoicePageMobileState
                                                             FontWeight.bold,
                                                       ),
                                                       formatMoneyBig(
-                                                        amount: returnInvoicesProvider().getDiscountAmountForInvoice(
-                                                          invoice,
+                                                        amount: returnOrdersProvider().getDiscountAmountForOrder(
+                                                          order,
                                                         ),
                                                         context:
                                                             context,
@@ -1137,9 +1131,9 @@ class _InvoicePageMobileState
                                                           FontWeight.bold,
                                                     ),
                                                     formatMoneyBig(
-                                                      amount: returnInvoicesProvider().getTotalMainRevenueInvoice(
-                                                        invoice:
-                                                            invoice,
+                                                      amount: returnOrdersProvider().getTotalMainRevenueOrder(
+                                                        order:
+                                                            order,
                                                       ),
                                                       context:
                                                           context,
@@ -1234,9 +1228,9 @@ class _InvoicePageMobileState
                                                               //         .green,
                                                             ),
                                                             formatMoneyMid(
-                                                              amount: returnInvoicesProvider().getTotalMainRevenueInvoice(
-                                                                invoice:
-                                                                    invoice,
+                                                              amount: returnOrdersProvider().getTotalMainRevenueOrder(
+                                                                order:
+                                                                    order,
                                                               ),
                                                               context:
                                                                   context,
@@ -1273,9 +1267,9 @@ class _InvoicePageMobileState
                                                               //         .green,
                                                             ),
                                                             formatMoneyMid(
-                                                              amount: returnInvoicesProvider().getAmountPaid(
-                                                                invoice:
-                                                                    invoice,
+                                                              amount: returnOrdersProvider().getAmountPaid(
+                                                                order:
+                                                                    order,
                                                               ),
                                                               context:
                                                                   context,
@@ -1312,9 +1306,9 @@ class _InvoicePageMobileState
                                                               //         .green,
                                                             ),
                                                             formatMoneyMid(
-                                                              amount: returnInvoicesProvider().getBalance(
-                                                                invoice:
-                                                                    invoice,
+                                                              amount: returnOrdersProvider().getBalance(
+                                                                order:
+                                                                    order,
                                                               ),
                                                               context:
                                                                   context,
@@ -1338,21 +1332,21 @@ class _InvoicePageMobileState
                                                           ),
                                                       border: Border.all(
                                                         color:
-                                                            returnInvoicesProvider(
+                                                            returnOrdersProvider(
                                                                       context:
                                                                           context,
-                                                                    ).getInvoiceStatus(
-                                                                      invoice:
-                                                                          invoice,
+                                                                    ).getOrderStatus(
+                                                                      order:
+                                                                          order,
                                                                     ) ==
                                                                     0
                                                                 ? Colors.red
-                                                                : returnInvoicesProvider(
+                                                                : returnOrdersProvider(
                                                                       context:
                                                                           context,
-                                                                    ).getInvoiceStatus(
-                                                                      invoice:
-                                                                          invoice,
+                                                                    ).getOrderStatus(
+                                                                      order:
+                                                                          order,
                                                                     ) ==
                                                                     1
                                                                 ? const Color.fromARGB(
@@ -1371,21 +1365,21 @@ class _InvoicePageMobileState
                                                         fontWeight:
                                                             FontWeight.bold,
                                                         color:
-                                                            returnInvoicesProvider(
+                                                            returnOrdersProvider(
                                                                       context:
                                                                           context,
-                                                                    ).getInvoiceStatus(
-                                                                      invoice:
-                                                                          invoice,
+                                                                    ).getOrderStatus(
+                                                                      order:
+                                                                          order,
                                                                     ) ==
                                                                     0
                                                                 ? Colors.red
-                                                                : returnInvoicesProvider(
+                                                                : returnOrdersProvider(
                                                                       context:
                                                                           context,
-                                                                    ).getInvoiceStatus(
-                                                                      invoice:
-                                                                          invoice,
+                                                                    ).getOrderStatus(
+                                                                      order:
+                                                                          order,
                                                                     ) ==
                                                                     1
                                                                 ? const Color.fromARGB(
@@ -1396,21 +1390,21 @@ class _InvoicePageMobileState
                                                                 )
                                                                 : Colors.green,
                                                       ),
-                                                      returnInvoicesProvider(
+                                                      returnOrdersProvider(
                                                                 context:
                                                                     context,
-                                                              ).getInvoiceStatus(
-                                                                invoice:
-                                                                    invoice,
+                                                              ).getOrderStatus(
+                                                                order:
+                                                                    order,
                                                               ) ==
                                                               0
                                                           ? 'Unpaid'
-                                                          : returnInvoicesProvider(
+                                                          : returnOrdersProvider(
                                                                 context:
                                                                     context,
-                                                              ).getInvoiceStatus(
-                                                                invoice:
-                                                                    invoice,
+                                                              ).getOrderStatus(
+                                                                order:
+                                                                    order,
                                                               ) ==
                                                               1
                                                           ? 'Partial'
@@ -1519,9 +1513,9 @@ class _InvoicePageMobileState
                                               ),
                                               Visibility(
                                                 visible:
-                                                    invoice.comment !=
+                                                    order.comment !=
                                                         null &&
-                                                    invoice.comment?.isNotEmpty ==
+                                                    order.comment?.isNotEmpty ==
                                                         true,
                                                 child: Column(
                                                   spacing:
@@ -1554,7 +1548,7 @@ class _InvoicePageMobileState
                                                               fontSize:
                                                                   theme.mobileTexts.b4.fontSize,
                                                             ),
-                                                            invoice.comment ??
+                                                            order.comment ??
                                                                 'Comment Not Set',
                                                           ),
                                                         ),
@@ -1740,15 +1734,15 @@ class _InvoicePageMobileState
                                                               ),
                                                             ) ??
                                                             0) >=
-                                                        returnInvoicesProvider().getBalance(
-                                                          invoice:
-                                                              invoice,
+                                                        returnOrdersProvider().getBalance(
+                                                          order:
+                                                              order,
                                                         )) {
                                                       paymentController
-                                                          .text = returnInvoicesProvider()
+                                                          .text = returnOrdersProvider()
                                                           .getBalance(
-                                                            invoice:
-                                                                invoice,
+                                                            order:
+                                                                order,
                                                           )
                                                           .toStringAsFixed(
                                                             0,
@@ -1765,9 +1759,9 @@ class _InvoicePageMobileState
                                                               ),
                                                             ) ??
                                                             0) <
-                                                        returnInvoicesProvider().getBalance(
-                                                          invoice:
-                                                              invoice,
+                                                        returnOrdersProvider().getBalance(
+                                                          order:
+                                                              order,
                                                         )) {
                                                       setState(() {
                                                         paymentSelected =
@@ -1810,150 +1804,145 @@ class _InvoicePageMobileState
                                                         paymentController.text !=
                                                             '0' &&
                                                         !isLoading) {
-                                                      showDialog(
-                                                        context:
-                                                            context,
-                                                        builder: (
-                                                          confirmDialog,
-                                                        ) {
-                                                          return ConfirmationAlert(
-                                                            theme:
-                                                                theme,
-                                                            message:
-                                                                'You are about to pay for an invoice. Are you sure you want to proceed?',
-                                                            title:
-                                                                'Make Payment',
-                                                            action: () async {
-                                                              Navigator.of(
-                                                                confirmDialog,
-                                                              ).pop();
-                                                              setState(
-                                                                () {
-                                                                  isLoading =
-                                                                      true;
-                                                                },
-                                                              );
-                                                              var tempInvoice = TempInvoice(
-                                                                comment:
-                                                                    invoice.comment,
-                                                                subStaffName:
-                                                                    invoice.subStaffName,
-                                                                departmentUuidNew:
-                                                                    invoice.departmentUuidNew,
-                                                                uuid:
-                                                                    invoice.uuid,
-                                                                createdAt:
-                                                                    invoice.createdAt,
-                                                                shopId:
-                                                                    invoice.shopId,
-                                                                staffId:
-                                                                    invoice.staffId,
-                                                                staffName:
-                                                                    invoice.staffName,
-                                                                paymentMethod:
-                                                                    invoice.paymentMethod,
-                                                                bank:
-                                                                    (invoice.bank),
-                                                                cashAlt:
-                                                                    (invoice.cashAlt),
-                                                                customerName:
-                                                                    invoice.customerName,
-                                                                customerUuid:
-                                                                    invoice.customerUuid,
-                                                                departmentName:
-                                                                    invoice.departmentName,
-                                                                departmentUuid:
-                                                                    invoice.departmentUuid,
-                                                                fixedDiscount:
-                                                                    invoice.fixedDiscount,
-                                                                generalDiscount:
-                                                                    invoice.generalDiscount,
-                                                                originalCost:
-                                                                    invoice.originalCost,
-                                                                vat:
-                                                                    invoice.vat,
-                                                                subStaffUuid:
-                                                                    invoice.subStaffUuid,
-                                                                cartName:
-                                                                    invoice.cartName,
-                                                              );
+                                                      // showDialog(
+                                                      //   context:
+                                                      //       context,
+                                                      //   builder: (
+                                                      //     confirmDialog,
+                                                      //   ) {
+                                                      //     return ConfirmationAlert(
+                                                      //       theme:
+                                                      //           theme,
+                                                      //       message:
+                                                      //           'You are about to pay for an order. Are you sure you want to proceed?',
+                                                      //       title:
+                                                      //           'Make Payment',
+                                                      //       action: () async {
+                                                      //         Navigator.of(
+                                                      //           confirmDialog,
+                                                      //         ).pop();
+                                                      //         setState(
+                                                      //           () {
+                                                      //             isLoading =
+                                                      //                 true;
+                                                      //           },
+                                                      //         );
+                                                      //         var tempOrder = Orders(
+                                                      //           comment:
+                                                      //               order.comment,
+                                                      //           subStaffName:
+                                                      //               order.subStaffName,
+                                                      //           departmentUuid:
+                                                      //               order.departmentUuid,
+                                                      //           uuid:
+                                                      //               order.uuid,
+                                                      //           createdAt:
+                                                      //               order.createdAt,
+                                                      //           shopId:
+                                                      //               order.shopId,
+                                                      //           staffId:
+                                                      //               order.staffId,
+                                                      //           staffName:
+                                                      //               order.staffName,
 
-                                                              var res = await returnInvoicesProvider().makeInvoicePayment(
-                                                                invoice:
-                                                                    tempInvoice,
-                                                                salesRecords:
-                                                                    saleRecords,
-                                                                currentPayment:
-                                                                    (double.tryParse(
-                                                                          paymentController.text.replaceAll(
-                                                                            ',',
-                                                                            '',
-                                                                          ),
-                                                                        ) ??
-                                                                        0),
-                                                              );
+                                                      //           customerName:
+                                                      //               order.customerName,
+                                                      //           customerId:
+                                                      //               order.customerId,
+                                                      //           departmentName:
+                                                      //               order.departmentName,
+                                                      //           departmentUuid:
+                                                      //               order.departmentUuid,
+                                                      //           fixedDiscount:
+                                                      //               order.fixedDiscount,
+                                                      //           generalDiscount:
+                                                      //               order.generalDiscount,
+                                                      //           originalCost:
+                                                      //               order.originalCost,
+                                                      //           vat:
+                                                      //               order.vat,
+                                                      //           subStaffUuid:
+                                                      //               order.subStaffUuid,
+                                                      //           cartName:
+                                                      //               order.cartName,
+                                                      //         );
 
-                                                              if (res ==
-                                                                  0) {
-                                                                setState(
-                                                                  () {
-                                                                    isLoading =
-                                                                        false;
-                                                                  },
-                                                                );
-                                                                showDialog(
-                                                                  // ignore: use_build_context_synchronously
-                                                                  context:
-                                                                      context,
-                                                                  builder: (
-                                                                    popDialog,
-                                                                  ) {
-                                                                    return InfoAlert(
-                                                                      theme:
-                                                                          theme,
-                                                                      message:
-                                                                          'An Error Occoured while making this payment. Please try again.',
-                                                                      title:
-                                                                          'An Error Occoured',
-                                                                    );
-                                                                  },
-                                                                );
-                                                              } else {
-                                                                setState(
-                                                                  () {
-                                                                    isLoading =
-                                                                        false;
-                                                                  },
-                                                                );
-                                                                actionResultDialog(
-                                                                  // ignore: use_build_context_synchronously
-                                                                  context:
-                                                                      context,
-                                                                  isSuccess:
-                                                                      res ==
-                                                                              0
-                                                                          ? false
-                                                                          : true,
-                                                                  message:
-                                                                      res ==
-                                                                              0
-                                                                          ? 'An error Occoured'
-                                                                          : 'Payment Successful',
-                                                                );
-                                                                if (context.mounted) {
-                                                                  paymentController.clear();
-                                                                }
-                                                                setState(
-                                                                  () {
-                                                                    paymentSelected =
-                                                                        null;
-                                                                  },
-                                                                );
-                                                              }
-                                                            },
-                                                          );
-                                                        },
-                                                      );
+                                                      //         var res = await returnOrdersProvider().makeOrderPayment(
+                                                      //           order:
+                                                      //               tempOrder,
+                                                      //           salesRecords:
+                                                      //               saleRecords,
+                                                      //           currentPayment:
+                                                      //               (double.tryParse(
+                                                      //                     paymentController.text.replaceAll(
+                                                      //                       ',',
+                                                      //                       '',
+                                                      //                     ),
+                                                      //                   ) ??
+                                                      //                   0),
+                                                      //         );
+
+                                                      //         if (res ==
+                                                      //             0) {
+                                                      //           setState(
+                                                      //             () {
+                                                      //               isLoading =
+                                                      //                   false;
+                                                      //             },
+                                                      //           );
+                                                      //           showDialog(
+                                                      //             // ignore: use_build_context_synchronously
+                                                      //             context:
+                                                      //                 context,
+                                                      //             builder: (
+                                                      //               popDialog,
+                                                      //             ) {
+                                                      //               return InfoAlert(
+                                                      //                 theme:
+                                                      //                     theme,
+                                                      //                 message:
+                                                      //                     'An Error Occoured while making this payment. Please try again.',
+                                                      //                 title:
+                                                      //                     'An Error Occoured',
+                                                      //               );
+                                                      //             },
+                                                      //           );
+                                                      //         } else {
+                                                      //           setState(
+                                                      //             () {
+                                                      //               isLoading =
+                                                      //                   false;
+                                                      //             },
+                                                      //           );
+                                                      //           actionResultDialog(
+                                                      //             // ignore: use_build_context_synchronously
+                                                      //             context:
+                                                      //                 context,
+                                                      //             isSuccess:
+                                                      //                 res ==
+                                                      //                         0
+                                                      //                     ? false
+                                                      //                     : true,
+                                                      //             message:
+                                                      //                 res ==
+                                                      //                         0
+                                                      //                     ? 'An error Occoured'
+                                                      //                     : 'Payment Successful',
+                                                      //           );
+                                                      //           if (context.mounted) {
+                                                      //             paymentController.clear();
+                                                      //           }
+                                                      //           setState(
+                                                      //             () {
+                                                      //               paymentSelected =
+                                                      //                   null;
+                                                      //             },
+                                                      //           );
+                                                      //         }
+                                                      //       },
+                                                      //     );
+                                                      //   },
+                                                      // );
                                                     } else {
                                                       paymentNode
                                                           .requestFocus();
@@ -2051,10 +2040,10 @@ class _InvoicePageMobileState
                                                 ).receipts
                                                 .where(
                                                   (rec) =>
-                                                      rec.invoiceUuid ==
+                                                      rec.orderUuid ==
                                                       widget
                                                           .checkoutResponse
-                                                          .invoice
+                                                          .order
                                                           ?.uuid,
                                                 )
                                                 .isEmpty) {
@@ -2110,8 +2099,8 @@ class _InvoicePageMobileState
                                                         (
                                                           rec,
                                                         ) =>
-                                                            rec.invoiceUuid ==
-                                                            widget.checkoutResponse.invoice?.uuid,
+                                                            rec.orderUuid ==
+                                                            widget.checkoutResponse.order?.uuid,
                                                       )
                                                       .map(
                                                         (

@@ -3,6 +3,7 @@ import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/providers/theme_provider.dart';
 
 part 'temp_cart.g.dart';
 
@@ -163,6 +164,85 @@ class TempCart extends HiveObject {
       return customers.isNotEmpty ? customers.first : null;
     } else {
       return null;
+    }
+  }
+
+  Color getCartColor({
+    required int index,
+    required ThemeProvider theme,
+  }) {
+    if (index == 1) {
+      if (index == cartItemTypeIndex) {
+        return theme.lightModeColor.prColor300;
+      } else {
+        return theme.lightModeColor.prColor100;
+      }
+    } else if (index == 2) {
+      if (index == cartItemTypeIndex) {
+        return theme.lightModeColor.secColor200;
+      } else {
+        return Color.fromRGBO(255, 226, 205, 1);
+      }
+    }
+    if (index == 3) {
+      if (index == cartItemTypeIndex) {
+        return theme.lightModeColor.tertColor200;
+      } else {
+        return theme.lightModeColor.tertColor100;
+      }
+    } else {
+      return Colors.amber;
+    }
+  }
+
+  Color getCartTextColor({
+    required int index,
+    required ThemeProvider theme,
+  }) {
+    if (index == cartItemTypeIndex) {
+      return Colors.white;
+    } else {
+      return Colors.black;
+    }
+  }
+
+  String getSpecificSalesType({required index}) {
+    if (index == 1) {
+      return 'Real Sales';
+    } else if (index == 2) {
+      return 'Credit Sales';
+    } else if (index == 3) {
+      return 'Order';
+    } else {
+      return 'Sales';
+    }
+  }
+
+  String getGeneralSalesType() {
+    if (cartItemTypeIndex == 1) {
+      return 'Real Sales';
+    } else if (cartItemTypeIndex == 2) {
+      return 'Credit Sales';
+    } else if (cartItemTypeIndex == 3) {
+      return 'Create Order';
+    } else {
+      return 'Sales';
+    }
+  }
+
+  String getEditText() {
+    if (isReceiptEdit) {
+      if (cartItemTypeIndex == 1) {
+        return 'Edit Sales';
+      } else if (cartItemTypeIndex == 2) {
+        return 'Edit Invoice';
+      } else if (cartItemTypeIndex == 3) {
+        return 'Edit Order';
+      } else {
+        return 'Sales';
+      }
+    } else {
+      return getGeneralSalesType();
     }
   }
 }

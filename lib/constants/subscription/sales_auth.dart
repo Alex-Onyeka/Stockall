@@ -19,6 +19,7 @@ class SalesAuth {
   final bool addStockallNameOnReceipt;
   final bool bulkSale;
   final int numberOfMainCarts;
+  final bool manageOrders;
 
   SalesAuth({
     required this.useOfBarcode,
@@ -26,6 +27,7 @@ class SalesAuth {
     required this.applyDiscount,
     // required this.useOfCalculator,
     required this.invoiceManagement,
+    required this.manageOrders,
     required this.paymentMethodSelection,
     required this.addCustomerToSell,
     required this.downloadReceipt,
@@ -97,6 +99,41 @@ class SalesAuthAction {
         .firstWhere((pl) => pl.plan == plan)
         .salesAuth
         .bulkSale) {
+      action == null ? {} : action();
+      return true;
+    } else {
+      if (action != null) {
+        showUnauthorizedDialog(context);
+        if (failAction != null) {
+          failAction();
+        }
+      }
+      return false;
+    }
+    // }
+  }
+
+  bool manageOrdersAction({
+    required BuildContext context,
+    Function()? action,
+    Function()? failAction,
+  }) {
+    var plan =
+        returnSubcsription(
+          context,
+          listen: false,
+        ).subscription?.plan;
+    if (plan == null) {
+      return false;
+    }
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .salesAuth
+        .manageOrders) {
       action == null ? {} : action();
       return true;
     } else {

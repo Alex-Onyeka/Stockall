@@ -177,12 +177,11 @@ class _ProductTileCartSearchState
                               MainAxisAlignment
                                   .spaceBetween,
                           children: [
-                            Flexible(
+                            Expanded(
                               child: Row(
                                 spacing: 5,
                                 children: [
-                                  Visibility(
-                                    visible: true,
+                                  Expanded(
                                     child: Text(
                                       style: TextStyle(
                                         fontSize:

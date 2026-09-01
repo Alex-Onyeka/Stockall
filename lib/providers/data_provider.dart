@@ -1275,13 +1275,23 @@ class DataProvider extends ChangeNotifier {
             );
             setSyncProgress(65);
           }
+          if (DeletedOrdersFunc()
+                  .getOrderIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnOrdersProvider().deleteOrdersSync();
+            await mainLocalLog(
+              'Finished Syncing Deleted Orders',
+            );
+            setSyncProgress(66);
+          }
           if (CreatedOrdersFunc().getOrders().isNotEmpty &&
               isOnline) {
             await returnOrdersProvider().createOrdersSync();
             await mainLocalLog(
               'Finished Syncing Created Orders',
             );
-            setSyncProgress(66);
+            setSyncProgress(67);
           }
           if (UpdatedOrdersFunc()
                   .getOrderIds()
@@ -1291,18 +1301,9 @@ class DataProvider extends ChangeNotifier {
             await mainLocalLog(
               'Finished Syncing Updated Orders',
             );
-            setSyncProgress(67);
-          }
-          if (DeletedOrdersFunc()
-                  .getOrderIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnOrdersProvider().deleteOrdersSync();
-            await mainLocalLog(
-              'Finished Syncing Deleted Orders',
-            );
             setSyncProgress(68);
           }
+
           toggleSyncing(false);
         } else {
           // await ShopFunc().clearShop();

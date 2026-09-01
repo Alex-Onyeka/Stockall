@@ -213,6 +213,10 @@ class Authorizations {
   String addMaterialsUsage = 'Add Materials Usage';
   String updateMaterialsUsage = 'Update Materials Usage';
   String deleteMaterialsUsage = 'Delete Materials Usage';
+  String manageOrders = 'Manage Orders';
+  String addOrders = 'Add Orders';
+  String updateOrders = 'Update Orders';
+  String deleteOrders = 'Delete Orders';
 }
 
 bool authorization({required String authorized}) {

@@ -719,7 +719,7 @@ class InvoicesProvider extends ChangeNotifier {
       isVoid: record.isVoid ?? false,
       item: product,
       quantity: record.quantity,
-      discount: 0,
+      discount: record.discount,
       customPrice: record.customPriceSet ? tempRev : null,
       addToStock: record.addToStock ?? false,
       setCustomPrice: record.customPriceSet,

@@ -178,136 +178,136 @@ class _MakeSalesDesktopTwoState
                                                   .isReceiptEdit,
                                           child: Column(
                                             children: [
-                                              Divider(
-                                                color:
-                                                    Colors
-                                                        .grey
-                                                        .shade300,
-                                              ),
-                                              SizedBox(
-                                                height: 10,
-                                              ),
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          theme.mobileTexts.b2.fontSize,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                    'Create Invoice (Credit Sale)',
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(
-                                                height: 5,
-                                              ),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          theme.mobileTexts.b3.fontSize,
-                                                      fontWeight:
-                                                          FontWeight.normal,
-                                                    ),
-                                                    'Is this Sale On Credit (Invoice?',
-                                                  ),
-                                                  InkWell(
-                                                    mouseCursor:
-                                                        SystemMouseCursors.click,
-                                                    onTap: () async {
-                                                      if (returnSalesProvider().currentCart().cartItemTypeIndex ==
-                                                          2) {
-                                                        returnSalesProvider().switchInvoiceSale(
-                                                          context:
-                                                              context,
-                                                          value:
-                                                              1,
-                                                        );
-                                                      } else {
-                                                        returnSalesProvider().switchInvoiceSale(
-                                                          context:
-                                                              context,
-                                                          value:
-                                                              2,
-                                                        );
-                                                      }
-                                                      returnSalesProvider().changePaymentMethod(
-                                                        context:
-                                                            context,
-                                                        index:
-                                                            0,
-                                                      );
-                                                      widget
-                                                          .partPaymentController
-                                                          .clear();
-                                                    },
-                                                    child: Container(
-                                                      width:
-                                                          50,
-                                                      padding: EdgeInsets.symmetric(
-                                                        horizontal:
-                                                            10,
-                                                        vertical:
-                                                            5,
-                                                      ),
-                                                      decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(
-                                                          20,
-                                                        ),
-                                                        border: Border.all(
-                                                          color:
-                                                              returnSalesProviderContext(
-                                                                        context,
-                                                                      ).currentCart().cartItemTypeIndex ==
-                                                                      2
-                                                                  ? theme.lightModeColor.prColor250
-                                                                  : Colors.grey,
-                                                        ),
-                                                        color:
-                                                            returnSalesProviderContext(
-                                                                      context,
-                                                                    ).currentCart().cartItemTypeIndex ==
-                                                                    2
-                                                                ? theme.lightModeColor.prColor250
-                                                                : Colors.grey.shade200,
-                                                      ),
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            returnSalesProviderContext(
-                                                                      context,
-                                                                    ).currentCart().cartItemTypeIndex ==
-                                                                    2
-                                                                ? MainAxisAlignment.end
-                                                                : MainAxisAlignment.start,
-                                                        children: [
-                                                          Container(
-                                                            padding: EdgeInsets.all(
-                                                              5,
-                                                            ),
-                                                            decoration: BoxDecoration(
-                                                              shape:
-                                                                  BoxShape.circle,
-                                                              color:
-                                                                  returnSalesProviderContext(
-                                                                            context,
-                                                                          ).currentCart().cartItemTypeIndex ==
-                                                                          2
-                                                                      ? Colors.white
-                                                                      : Colors.grey.shade600,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
+                                              // Divider(
+                                              //   color:
+                                              //       Colors
+                                              //           .grey
+                                              //           .shade300,
+                                              // ),
+                                              // SizedBox(
+                                              //   height: 10,
+                                              // ),
+                                              // Row(
+                                              //   children: [
+                                              //     Text(
+                                              //       style: TextStyle(
+                                              //         fontSize:
+                                              //             theme.mobileTexts.b2.fontSize,
+                                              //         fontWeight:
+                                              //             FontWeight.bold,
+                                              //       ),
+                                              //       'Create Invoice (Credit Sale)',
+                                              //     ),
+                                              //   ],
+                                              // ),
+                                              // SizedBox(
+                                              //   height: 5,
+                                              // ),
+                                              // Row(
+                                              //   mainAxisAlignment:
+                                              //       MainAxisAlignment
+                                              //           .spaceBetween,
+                                              //   children: [
+                                              //     Text(
+                                              //       style: TextStyle(
+                                              //         fontSize:
+                                              //             theme.mobileTexts.b3.fontSize,
+                                              //         fontWeight:
+                                              //             FontWeight.normal,
+                                              //       ),
+                                              //       'Is this Sale On Credit (Invoice?',
+                                              //     ),
+                                              //     InkWell(
+                                              //       mouseCursor:
+                                              //           SystemMouseCursors.click,
+                                              //       onTap: () async {
+                                              //         if (returnSalesProvider().currentCart().cartItemTypeIndex ==
+                                              //             2) {
+                                              //           returnSalesProvider().switchInvoiceSale(
+                                              //             context:
+                                              //                 context,
+                                              //             value:
+                                              //                 1,
+                                              //           );
+                                              //         } else {
+                                              //           returnSalesProvider().switchInvoiceSale(
+                                              //             context:
+                                              //                 context,
+                                              //             value:
+                                              //                 2,
+                                              //           );
+                                              //         }
+                                              //         returnSalesProvider().changePaymentMethod(
+                                              //           context:
+                                              //               context,
+                                              //           index:
+                                              //               0,
+                                              //         );
+                                              //         widget
+                                              //             .partPaymentController
+                                              //             .clear();
+                                              //       },
+                                              //       child: Container(
+                                              //         width:
+                                              //             50,
+                                              //         padding: EdgeInsets.symmetric(
+                                              //           horizontal:
+                                              //               10,
+                                              //           vertical:
+                                              //               5,
+                                              //         ),
+                                              //         decoration: BoxDecoration(
+                                              //           borderRadius: BorderRadius.circular(
+                                              //             20,
+                                              //           ),
+                                              //           border: Border.all(
+                                              //             color:
+                                              //                 returnSalesProviderContext(
+                                              //                           context,
+                                              //                         ).currentCart().cartItemTypeIndex ==
+                                              //                         2
+                                              //                     ? theme.lightModeColor.prColor250
+                                              //                     : Colors.grey,
+                                              //           ),
+                                              //           color:
+                                              //               returnSalesProviderContext(
+                                              //                         context,
+                                              //                       ).currentCart().cartItemTypeIndex ==
+                                              //                       2
+                                              //                   ? theme.lightModeColor.prColor250
+                                              //                   : Colors.grey.shade200,
+                                              //         ),
+                                              //         child: Row(
+                                              //           mainAxisAlignment:
+                                              //               returnSalesProviderContext(
+                                              //                         context,
+                                              //                       ).currentCart().cartItemTypeIndex ==
+                                              //                       2
+                                              //                   ? MainAxisAlignment.end
+                                              //                   : MainAxisAlignment.start,
+                                              //           children: [
+                                              //             Container(
+                                              //               padding: EdgeInsets.all(
+                                              //                 5,
+                                              //               ),
+                                              //               decoration: BoxDecoration(
+                                              //                 shape:
+                                              //                     BoxShape.circle,
+                                              //                 color:
+                                              //                     returnSalesProviderContext(
+                                              //                               context,
+                                              //                             ).currentCart().cartItemTypeIndex ==
+                                              //                             2
+                                              //                         ? Colors.white
+                                              //                         : Colors.grey.shade600,
+                                              //               ),
+                                              //             ),
+                                              //           ],
+                                              //         ),
+                                              //       ),
+                                              //     ),
+                                              //   ],
+                                              // ),
                                               Visibility(
                                                 visible:
                                                     returnSalesProviderContext(
@@ -1041,10 +1041,14 @@ class _MakeSalesDesktopTwoState
                                     action: () {
                                       BuildContext
                                       safeContext = context;
-                                      if (returnSalesProvider()
-                                                  .currentCart()
-                                                  .cartItemTypeIndex ==
-                                              2 &&
+                                      if ((returnSalesProvider()
+                                                      .currentCart()
+                                                      .cartItemTypeIndex ==
+                                                  2 ||
+                                              returnSalesProvider()
+                                                      .currentCart()
+                                                      .cartItemTypeIndex ==
+                                                  3) &&
                                           returnSalesProvider()
                                                   .currentCart()
                                                   .selectedCustomerName ==

@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/temp_orders/order_items.dart';
 import 'package:stockall/classes/temp_orders/orders.dart';
 import 'package:stockall/local_database/orders_func/unsync_funcs/created/created_orders_func.dart';
 import 'package:stockall/local_database/orders_func/unsync_funcs/deleted/deleted_orders_func.dart';
@@ -14,6 +15,7 @@ class OrdersFunc {
 
   Future<void> init() async {
     Hive.registerAdapter(OrdersAdapter());
+    Hive.registerAdapter(OrderItemsAdapter());
     orderBox = await Hive.openBox(orderBoxName);
     await CreatedOrdersFunc().init();
     await DeletedOrdersFunc().init();
