@@ -13,6 +13,7 @@ class SalesAuth {
   final bool downloadReceipt;
   final bool editReceipt;
   final bool printReceipt;
+  final bool printDocket;
   // final int salesRecordTimeLimit;
   final bool addItemToStockAfterCustomSale;
   final bool addCustomItemToCart;
@@ -33,6 +34,7 @@ class SalesAuth {
     required this.downloadReceipt,
     required this.editReceipt,
     required this.printReceipt,
+    required this.printDocket,
     // required this.salesRecordTimeLimit,
     required this.addItemToStockAfterCustomSale,
     required this.addCustomItemToCart,
@@ -449,6 +451,37 @@ class SalesAuthAction {
         .firstWhere((pl) => pl.plan == plan)
         .salesAuth
         .printReceipt) {
+      action == null ? {} : action();
+      return true;
+    } else {
+      if (action != null) {
+        showUnauthorizedDialog(context);
+      }
+      return false;
+    }
+    // }
+  }
+
+  bool printDocketAction({
+    required BuildContext context,
+    Function()? action,
+  }) {
+    var plan =
+        returnSubcsription(
+          context,
+          listen: false,
+        ).subscription?.plan;
+    if (plan == null) {
+      return false;
+    }
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .salesAuth
+        .printDocket) {
       action == null ? {} : action();
       return true;
     } else {

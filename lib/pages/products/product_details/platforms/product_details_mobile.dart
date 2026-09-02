@@ -707,22 +707,8 @@ class _ProductDetailsMobileState
                                               isMoney:
                                                   false,
                                               text:
-                                                  product.storageUuid !=
-                                                              null &&
-                                                          returnStorageProductProvider().storageProductListMain
-                                                              .where(
-                                                                (
-                                                                  storage,
-                                                                ) =>
-                                                                    storage.uuid ==
-                                                                    product.storageUuid,
-                                                              )
-                                                              .isNotEmpty
-                                                      ? ' Quantity Of ${returnStorageProductProvider().storageProductListMain.where((storage) => storage.uuid == product.storageUuid).first.unit ?? 'Unit(s)'}'
-                                                      : product.unit !=
-                                                          'Others'
-                                                      ? ' Qtty Of ${product.unit}'
-                                                      : 'Unit Qtty',
+                                                  product
+                                                      .getSingleUnit(),
                                               price:
                                                   product
                                                       .quantity ??
@@ -780,8 +766,8 @@ class _ProductDetailsMobileState
                                           ),
                                           Visibility(
                                             visible:
-                                                product.storageUuid ==
-                                                    null &&
+                                                product
+                                                    .isPartOfStorage() &&
                                                 product.useGroupUnit ==
                                                     true,
                                             child: SizedBox(
@@ -790,8 +776,8 @@ class _ProductDetailsMobileState
                                           ),
                                           Visibility(
                                             visible:
-                                                product.storageUuid ==
-                                                    null &&
+                                                product
+                                                    .isPartOfStorage() &&
                                                 product.useGroupUnit ==
                                                     true,
                                             child: Expanded(
@@ -799,24 +785,8 @@ class _ProductDetailsMobileState
                                                 isMoney:
                                                     false,
                                                 text:
-                                                    product.storageUuid !=
-                                                                null &&
-                                                            returnStorageProductProvider().storageProductListMain
-                                                                .where(
-                                                                  (
-                                                                    storage,
-                                                                  ) =>
-                                                                      storage.uuid ==
-                                                                      product.storageUuid,
-                                                                )
-                                                                .isNotEmpty
-                                                        ? ' Quantity Of ${returnStorageProductProvider().storageProductListMain.where((storage) => storage.uuid == product.storageUuid).first.groupUnit ?? 'Group(s)'}'
-                                                        : product.groupUnit !=
-                                                                null &&
-                                                            product.groupUnit !=
-                                                                'Others'
-                                                        ? ' Qtty Of ${product.groupUnit}'
-                                                        : 'Group Qtty',
+                                                    product
+                                                        .getGroupUnit(),
                                                 price: returnData(
                                                   context:
                                                       context,
@@ -895,18 +865,8 @@ class _ProductDetailsMobileState
                                       ),
                                       Visibility(
                                         visible:
-                                            authorization(
-                                              authorized:
-                                                  Authorizations()
-                                                      .updateProduct,
-                                            ) &&
-                                            authorization(
-                                              authorized:
-                                                  Authorizations()
-                                                      .updateItemQuantity,
-                                            ) &&
-                                            product.storageUuid ==
-                                                null,
+                                            product
+                                                .canUpdateQuantity(),
                                         child: Row(
                                           children: [
                                             Expanded(
@@ -1360,31 +1320,8 @@ class _ProductDetailsMobileState
                                 BottomInfoSection(
                                   theme: widget.theme,
                                   mainText:
-                                      product.storageUuid !=
-                                                  null &&
-                                              returnStorageProductProvider()
-                                                  .storageProductListMain
-                                                  .where(
-                                                    (
-                                                      storage,
-                                                    ) =>
-                                                        storage.uuid ==
-                                                        product.storageUuid,
-                                                  )
-                                                  .isNotEmpty
-                                          ? returnStorageProductProvider()
-                                                  .storageProductListMain
-                                                  .where(
-                                                    (
-                                                      storage,
-                                                    ) =>
-                                                        storage.uuid ==
-                                                        product.storageUuid,
-                                                  )
-                                                  .first
-                                                  .unit ??
-                                              'Unit(s)'
-                                          : '${product.unit.substring(0, 1).toUpperCase()}${product.unit.substring(1)}',
+                                      product
+                                          .getSingleUnit(),
                                   text: 'Unit',
                                 ),
                                 Visibility(

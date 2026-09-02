@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class ProductTileCartSearch extends StatefulWidget {
@@ -26,6 +27,52 @@ class _ProductTileCartSearchState
     extends State<ProductTileCartSearch> {
   bool isManaged() {
     return widget.product.isManaged;
+  }
+
+  final quantityController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    quantityController.text = '0';
+  }
+
+  double quantity = 0;
+
+  void addQuantity() {
+    if (widget.product.canSelectForCart() &&
+        !widget.product.isExpired() &&
+        (widget.product.quantity ?? 0) >
+            (returnSalesProvider()
+                    .totalItemQuantityInAllCarts(
+                      product: widget.product,
+                    ) +
+                quantity)) {
+      setState(() {
+        quantity++;
+        quantityController.text = quantity.toString();
+      });
+    }
+  }
+
+  void deductQuantity() {
+    if (quantity > 0) {
+      setState(() {
+        quantity--;
+        quantityController.text = quantity.toString();
+      });
+    }
+  }
+
+  void addItemToCart() {
+    if (widget.product.canSelectForCart() &&
+        !widget.product.isExpired() &&
+        (widget.product.quantity ?? 0) >
+            (returnSalesProvider()
+                    .totalItemQuantityInAllCarts(
+                      product: widget.product,
+                    ) +
+                quantity)) {}
   }
 
   @override
@@ -58,7 +105,7 @@ class _ProductTileCartSearchState
             onTap: widget.action,
             child: Container(
               padding: EdgeInsets.symmetric(
-                horizontal: 10,
+                horizontal: 5,
                 vertical: 5,
               ),
 
@@ -67,7 +114,7 @@ class _ProductTileCartSearchState
                 children: [
                   Container(
                     height: 50,
-                    width: 50,
+                    width: 30,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(
                         5,
@@ -156,116 +203,6 @@ class _ProductTileCartSearchState
                                           ),
                                         ),
                                       ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            IconButton(
-                              mouseCursor:
-                                  SystemMouseCursors.click,
-                              onPressed: widget.action,
-                              icon: Icon(
-                                size: 16,
-                                Icons.add,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Row(
-                                spacing: 5,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            widget
-                                                .theme
-                                                .mobileTexts
-                                                .b3
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
-                                        color:
-                                            widget
-                                                .theme
-                                                .lightModeColor
-                                                .prColor300,
-                                      ),
-                                      widget
-                                                  .product
-                                                  .discount ==
-                                              null
-                                          ? (widget
-                                                      .product
-                                                      .sellingPrice !=
-                                                  null
-                                              ? formatMoneyMid(
-                                                amount:
-                                                    widget
-                                                        .product
-                                                        .sellingPrice ??
-                                                    0,
-                                                context:
-                                                    context,
-                                              )
-                                              : 'Price Not Set')
-                                          : formatMoneyMid(
-                                            amount:
-                                                ((widget.product.sellingPrice ??
-                                                        0.0) -
-                                                    ((widget.product.sellingPrice ??
-                                                            0.0) *
-                                                        (widget.product.discount! /
-                                                            100))),
-                                            context:
-                                                context,
-                                          ),
-                                    ),
-                                  ),
-                                  Visibility(
-                                    visible:
-                                        widget
-                                            .product
-                                            .discount !=
-                                        null,
-                                    child: Text('/'),
-                                  ),
-                                  Visibility(
-                                    visible:
-                                        widget
-                                            .product
-                                            .discount !=
-                                        null,
-                                    child: Text(
-                                      style: TextStyle(
-                                        decoration:
-                                            TextDecoration
-                                                .lineThrough,
-                                        fontSize:
-                                            widget
-                                                .theme
-                                                .mobileTexts
-                                                .b3
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
-                                        color: Colors.grey,
-                                      ),
-                                      formatMoneyMid(
-                                        amount:
-                                            widget
-                                                .product
-                                                .sellingPrice ??
-                                            0,
-                                        context: context,
-                                      ),
                                     ),
                                   ),
                                 ],
@@ -484,6 +421,235 @@ class _ProductTileCartSearchState
                                 ),
                               ),
                             ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Row(
+                                spacing: 5,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            widget
+                                                .theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        color:
+                                            widget
+                                                .theme
+                                                .lightModeColor
+                                                .prColor300,
+                                      ),
+                                      widget
+                                                  .product
+                                                  .discount ==
+                                              null
+                                          ? (widget
+                                                      .product
+                                                      .sellingPrice !=
+                                                  null
+                                              ? formatMoneyMid(
+                                                amount:
+                                                    widget
+                                                        .product
+                                                        .sellingPrice ??
+                                                    0,
+                                                context:
+                                                    context,
+                                              )
+                                              : 'Price Not Set')
+                                          : formatMoneyMid(
+                                            amount:
+                                                ((widget.product.sellingPrice ??
+                                                        0.0) -
+                                                    ((widget.product.sellingPrice ??
+                                                            0.0) *
+                                                        (widget.product.discount! /
+                                                            100))),
+                                            context:
+                                                context,
+                                          ),
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible:
+                                        widget
+                                            .product
+                                            .discount !=
+                                        null,
+                                    child: Text('/'),
+                                  ),
+                                  Visibility(
+                                    visible:
+                                        widget
+                                            .product
+                                            .discount !=
+                                        null,
+                                    child: Text(
+                                      style: TextStyle(
+                                        decoration:
+                                            TextDecoration
+                                                .lineThrough,
+                                        fontSize:
+                                            widget
+                                                .theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        color: Colors.grey,
+                                      ),
+                                      formatMoneyMid(
+                                        amount:
+                                            widget
+                                                .product
+                                                .sellingPrice ??
+                                            0,
+                                        context: context,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // Row(
+                            //   children: [
+                            //     Row(
+                            //       spacing: 3,
+                            //       mainAxisSize:
+                            //           MainAxisSize.min,
+                            //       children: [
+                            //         InkWell(
+                            //           mouseCursor:
+                            //               SystemMouseCursors
+                            //                   .click,
+                            //           onTap: () {
+                            //             deductQuantity();
+                            //           },
+                            //           child: Padding(
+                            //             padding:
+                            //                 const EdgeInsets.symmetric(
+                            //                   vertical: 5.0,
+                            //                   horizontal: 5,
+                            //                 ),
+                            //             child: Icon(
+                            //               size: 22,
+                            //               Icons
+                            //                   .keyboard_arrow_left_rounded,
+                            //             ),
+                            //           ),
+                            //         ),
+                            //         SizedBox(
+                            //           height: 35,
+                            //           width: 45,
+                            //           child: NumberTextField(
+                            //             title: 'title',
+                            //             hint: '#',
+                            //             controller:
+                            //                 quantityController,
+                            //             theme: widget.theme,
+                            //             autoFocus: false,
+                            //             onChanged: (value) {
+                            //               var qtty =
+                            //                   double.tryParse(
+                            //                     quantityController
+                            //                         .text
+                            //                         .replaceAll(
+                            //                           ',',
+                            //                           '',
+                            //                         ),
+                            //                   ) ??
+                            //                   0;
+                            //               if (widget.product
+                            //                       .canSelectForCart() &&
+                            //                   !widget
+                            //                       .product
+                            //                       .isExpired() &&
+                            //                   (widget.product.quantity ??
+                            //                           0) >
+                            //                       (returnSalesProvider().totalItemQuantityInAllCarts(
+                            //                             product:
+                            //                                 widget.product,
+                            //                           ) +
+                            //                           qtty)) {
+                            //               } else {
+                            //                 setState(() {
+                            //                   quantity = 0;
+                            //                   quantityController
+                            //                           .text =
+                            //                       '0';
+                            //                 });
+                            //               }
+                            //             },
+                            //             showTitle: false,
+                            //           ),
+                            //         ),
+                            //         InkWell(
+                            //           mouseCursor:
+                            //               SystemMouseCursors
+                            //                   .click,
+                            //           onTap: () {
+                            //             addQuantity();
+                            //           },
+                            //           child: Padding(
+                            //             padding:
+                            //                 const EdgeInsets.symmetric(
+                            //                   vertical: 5.0,
+                            //                   horizontal: 5,
+                            //                 ),
+                            //             child: Icon(
+                            //               size: 22,
+                            //               Icons
+                            //                   .keyboard_arrow_right_rounded,
+                            //             ),
+                            //           ),
+                            //         ),
+                            //       ],
+                            //     ),
+                            //     Ink(
+                            //       decoration: BoxDecoration(
+                            //         borderRadius:
+                            //             BorderRadius.circular(
+                            //               3,
+                            //             ),
+                            //         gradient:
+                            //             returnTheme(context)
+                            //                 .lightModeColor
+                            //                 .prGradient,
+                            //       ),
+                            //       child: InkWell(
+                            //         mouseCursor:
+                            //             SystemMouseCursors
+                            //                 .click,
+                            //         onTap: () {
+                            //           deductQuantity();
+                            //         },
+                            //         child: Container(
+                            //           padding:
+                            //               const EdgeInsets.symmetric(
+                            //                 vertical: 7.0,
+                            //                 horizontal: 11,
+                            //               ),
+                            //           child: Icon(
+                            //             size: 12,
+                            //             color: Colors.white,
+                            //             Icons.send,
+                            //           ),
+                            //         ),
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
                           ],
                         ),
                       ],

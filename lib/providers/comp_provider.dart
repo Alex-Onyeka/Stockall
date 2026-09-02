@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/local_database/continuous_print_docket/continuous_print_docket_func.dart';
 import 'package:stockall/local_database/visibility_box/visibility_box.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -290,5 +291,18 @@ class CompProvider extends ChangeNotifier {
     await VisibilityBox().toggleDataVisibility();
     isVisible = !isVisible;
     notifyListeners();
+  }
+
+  Future<void> toggleContinuousPrintDocket() async {
+    await ContinuousPrintDocketFunc()
+        .toggleContinuousPrintDocket();
+    notifyListeners();
+  }
+
+  bool getContinuousPrintDocket() {
+    return ContinuousPrintDocketFunc()
+            .getContinuousPrintDocket()
+            ?.isOn ??
+        false;
   }
 }

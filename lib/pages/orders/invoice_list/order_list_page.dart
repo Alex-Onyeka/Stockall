@@ -23,7 +23,10 @@ class _OrderListPageState extends State<OrderListPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // returnNavProvider(context, listen: false).navigate(7);
+      returnNavProvider(
+        context,
+        listen: false,
+      ).navigate(10);
       returnOrdersProvider().loadOrders(shopId());
     });
   }

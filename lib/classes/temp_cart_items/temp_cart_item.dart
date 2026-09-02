@@ -52,6 +52,12 @@ class TempCartItem extends HiveObject {
   @HiveField(14)
   String? uuid;
 
+  @HiveField(15)
+  double? remainingQuantity;
+
+  @HiveField(16)
+  double? remainingBalance;
+
   TempCartItem({
     required this.item,
     required this.itemUuid,
@@ -68,6 +74,8 @@ class TempCartItem extends HiveObject {
     required this.qttyPerGroup,
     required this.isVoid,
     required this.uuid,
+    this.remainingQuantity,
+    this.remainingBalance,
   });
 
   Map<String, dynamic> toJson() => {
@@ -86,6 +94,8 @@ class TempCartItem extends HiveObject {
     'qtty_per_group': qttyPerGroup,
     'is_void': isVoid,
     'uuid': uuid,
+    'remaining_quantity': remainingQuantity,
+    'remaining_balance': remainingBalance,
   };
 
   factory TempCartItem.fromJson(Map<String, dynamic> json) {
@@ -105,6 +115,8 @@ class TempCartItem extends HiveObject {
       useGroupQuantity: json['sell_group'],
       qttyPerGroup: json['qtty_per_group'],
       isVoid: json['is_void'],
+      remainingBalance: json['remaining_balance'],
+      remainingQuantity: json['remaining_quantity'],
     );
   }
 

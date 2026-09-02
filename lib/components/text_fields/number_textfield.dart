@@ -1,156 +1,205 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter/services.dart';
-// import 'package:intl/intl.dart';
-// import 'package:stockall/providers/theme_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:stockall/constants/bottom_sheet_widgets.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
+import 'package:stockall/main.dart';
+import 'package:stockall/providers/theme_provider.dart';
 
-// class NumberTextfield extends StatefulWidget {
-//   final String title;
-//   final String hint;
-//   final TextEditingController controller;
-//   final Function(String)? onChanged;
-//   final ThemeProvider theme;
+class NumberTextField extends StatefulWidget {
+  final String title;
+  final String hint;
+  final TextEditingController controller;
+  final ThemeProvider theme;
+  final Function(String)? onChanged;
+  final FocusNode? focusNode;
+  final Function(String)? onSubmitted;
+  final bool? showTitle;
+  final Function()? onTap;
+  final bool? autoFocus;
 
-//   const NumberTextfield({
-//     super.key,
-//     required this.title,
-//     required this.hint,
-//     required this.controller,
-//     required this.theme,
-//     this.onChanged,
-//   });
+  const NumberTextField({
+    super.key,
+    required this.title,
+    required this.hint,
+    required this.controller,
+    required this.theme,
+    this.onChanged,
+    this.focusNode,
+    this.onSubmitted,
+    this.showTitle,
+    this.onTap,
+    this.autoFocus,
+  });
 
-//   @override
-//   State<NumberTextfield> createState() =>
-//       _NumberTextfieldState();
-// }
+  @override
+  State<NumberTextField> createState() =>
+      _NumberTextFieldState();
+}
 
-// class _NumberTextfieldState extends State<NumberTextfield> {
-//   final NumberFormat _formatter =
-//       NumberFormat.decimalPattern('en_NG');
+class _NumberTextFieldState extends State<NumberTextField> {
+  final NumberFormat _formatter =
+      NumberFormat.decimalPattern('en_NG');
 
-//   String _rawValue = '';
-//   bool _isEditing = false;
+  String _rawValue = '';
+  bool _isEditing = false;
 
-//   @override
-//   void initState() {
-//     super.initState();
+  @override
+  void initState() {
+    super.initState();
 
-//     widget.controller.addListener(() {
-//       if (_isEditing) return;
+    widget.controller.addListener(() {
+      if (_isEditing) return;
+      final input = widget.controller.text;
+      // await mainLocalLog('Input: $input');
+      String normalized = input
+          .replaceAll(',', '')
+          .replaceAll(RegExp(r'[^0-9.]'), '');
+      // await mainLocalLog('Normalized: $normalized');
 
-//       // Keep only digits
-//       final rawText = widget.controller.text.replaceAll(
-//         RegExp(r'[^0-9]'),
-//         '',
-//       );
+      // prevent multiple dots
+      final parts = normalized.split('.');
+      if (parts.length > 2) {
+        normalized =
+            '${parts[0]}.${parts.sublist(1).join('')}';
+      }
+      // await mainLocalLog('Raw: $_rawValue');
+      // if (normalized != _rawValue) {
+      _rawValue = normalized;
 
-//       // Remove leading zeros (but leave a single zero if the field is empty)
-//       final cleaned = rawText.replaceFirst(
-//         RegExp(r'^0+'),
-//         '',
-//       );
+      final String amount =
+          _rawValue.isEmpty ? '' : _rawValue;
+      // await mainLocalLog('Amount: $amount');
+      String formatted = '';
+      if (amount.isEmpty) {
+        _isEditing = true;
+        widget.controller.value = const TextEditingValue(
+          text: '',
+          selection: TextSelection.collapsed(offset: 0),
+        );
+        _isEditing = false;
+        return;
+      }
 
-//       if (cleaned != _rawValue) {
-//         _rawValue = cleaned;
+      if (amount.contains('.')) {
+        final part = amount.split('.');
+        if (part[1].isNotEmpty && part[1].length > 3) {
+          formatted =
+              "${_formatter.format((double.tryParse(part[0]) ?? 0))}.${part[1].substring(0, part[1].length - 1)}";
+        } else {
+          formatted =
+              "${_formatter.format((double.tryParse(part[0]) ?? 0))}.${part[1]}";
+        }
+      } else {
+        formatted = _formatter.format(
+          double.tryParse(amount) ?? 0,
+        );
+      }
 
-//         final int amount =
-//             int.tryParse(
-//               _rawValue.isEmpty ? '0' : _rawValue,
-//             ) ??
-//             0;
-//         final formatted =
-//             amount == 0 ? '' : _formatter.format(amount);
+      // await mainLocalLog('Formatted: $formatted');
 
-//         _isEditing = true;
-//         widget.controller.value = TextEditingValue(
-//           text: formatted,
-//           selection: TextSelection.collapsed(
-//             offset: formatted.length,
-//           ),
-//         );
-//         _isEditing = false;
-//       }
-//     });
-//   }
+      _isEditing = true;
+      widget.controller.value = TextEditingValue(
+        text: formatted,
+        selection: TextSelection.collapsed(
+          offset: formatted.length,
+        ),
+      );
+      _isEditing = false;
+      // }
+    });
+  }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       mainAxisSize: MainAxisSize.min,
-//       children: [
-//         Text(
-//           widget.title,
-//           style: widget.theme.mobileTexts.b3.textStyleBold,
-//         ),
-//         SizedBox(height: 5),
-//         TextFormField(
-//           inputFormatters: [
-//             FilteringTextInputFormatter.digitsOnly,
-//           ],
-//           onChanged: widget.onChanged,
-//           style: TextStyle(
-//             fontSize: widget.theme.mobileTexts.b2.fontSize,
-//             fontWeight: FontWeight.bold,
-//             color: Colors.grey.shade700,
-//           ),
-//           keyboardType: TextInputType.number,
-//           autocorrect: false,
-//           enableSuggestions: false,
-//           decoration: InputDecoration(
-//             isCollapsed: true,
-//             prefixIcon: Padding(
-//               padding: const EdgeInsets.only(
-//                 left: 15.0,
-//                 right: 5,
-//               ),
-//               child: Text(
-//                 style: TextStyle(
-//                   fontSize: 16,
-//                   fontWeight: FontWeight.bold,
-//                   color: Colors.grey,
-//                 ),
-//                 '#',
-//               ),
-//             ),
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Visibility(
+          visible: widget.showTitle != false,
+          child: Text(
+            widget.title,
+            style:
+                widget.theme.mobileTexts.b3.textStyleBold,
+          ),
+        ),
+        SizedBox(height: 5),
+        TextFormField(
+          autofocus:
+              widget.autoFocus ??
+              (screenWidth(context) > mobileScreen
+                  ? true
+                  : false),
+          focusNode: widget.focusNode,
+          onFieldSubmitted: widget.onSubmitted,
+          onTap: () {
+            if (widget.onTap != null) {
+              widget.onTap!();
+            }
+            if (returnShopProvider()
+                .isOnScreenKeyboardOn()) {
+              showOnScreenKeyboard();
+            }
+          },
+          onChanged: (value) {
+            if (widget.controller.text == '.') {
+              widget.controller.text = '';
+            } else {
+              widget.onChanged != null
+                  ? widget.onChanged!(value)
+                  : {};
+              setState(() {});
+            }
+          },
+          keyboardType: TextInputType.numberWithOptions(
+            decimal: true,
+          ),
+          autocorrect: false,
+          enableSuggestions: false,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey.shade700,
+          ),
+          decoration: InputDecoration(
+            isCollapsed: true,
+            prefixIconConstraints: BoxConstraints(
+              minWidth: 0,
+              minHeight: 0,
+            ),
 
-//             prefixIconConstraints: BoxConstraints(
-//               minHeight: 0,
-//               minWidth: 0,
-//             ),
-
-//             contentPadding: EdgeInsets.only(
-//               right: 20,
-//               left: 15,
-//               top: 12,
-//               bottom: 12,
-//             ),
-//             hintText: widget.hint,
-//             hintStyle: TextStyle(
-//               color: Colors.grey.shade500,
-//               fontWeight: FontWeight.normal,
-//               fontSize:
-//                   widget.theme.mobileTexts.b2.fontSize,
-//             ),
-//             enabledBorder: OutlineInputBorder(
-//               borderSide: BorderSide(
-//                 color: Colors.grey,
-//                 width: 1,
-//               ),
-//               borderRadius: BorderRadius.circular(5),
-//             ),
-//             focusedBorder: OutlineInputBorder(
-//               borderSide: BorderSide(
-//                 color:
-//                     widget.theme.lightModeColor.prColor300,
-//                 width: 1.3,
-//               ),
-//               borderRadius: BorderRadius.circular(10),
-//             ),
-//           ),
-//           controller: widget.controller,
-//         ),
-//       ],
-//     );
-//   }
-// }
+            contentPadding: EdgeInsets.only(
+              right: 5,
+              left: 5,
+              top: 8,
+              bottom: 8,
+            ),
+            hintStyle: TextStyle(
+              color: Colors.grey.shade500,
+              fontWeight: FontWeight.normal,
+              fontSize: 12,
+            ),
+            hintText: widget.hint,
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.grey.shade200,
+                width: 1,
+              ),
+              borderRadius: BorderRadius.circular(3),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color:
+                    widget.theme.lightModeColor.prColor300,
+                width: 1.3,
+              ),
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ),
+          controller: widget.controller,
+        ),
+      ],
+    );
+  }
+}

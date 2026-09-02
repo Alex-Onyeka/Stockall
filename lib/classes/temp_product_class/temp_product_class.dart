@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 
 part 'temp_product_class.g.dart';
@@ -436,6 +437,76 @@ class TempProductClass {
       return (quantity ?? 0) / (qttyPerGroup ?? 1);
     } else {
       return 0;
+    }
+  }
+
+  String getSingleUnit() {
+    if (storageUuid != null) {
+      if (returnShopProvider()
+              .userShop()
+              ?.manageInventoryStorage ==
+          true) {
+        return returnStorageProductProvider()
+                .storageProductListMain
+                .where(
+                  (storage) => storage.uuid == storageUuid,
+                )
+                .first
+                .unit ??
+            'Unit(s)';
+      } else {
+        return '${unit.substring(0, 1).toUpperCase()}${unit.substring(1)}';
+      }
+    } else {
+      return '${unit.substring(0, 1).toUpperCase()}${unit.substring(1)}';
+    }
+  }
+
+  String getGroupUnit() {
+    if (storageUuid != null) {
+      if (returnShopProvider()
+              .userShop()
+              ?.manageInventoryStorage ==
+          true) {
+        return returnStorageProductProvider()
+                .storageProductListMain
+                .where(
+                  (storage) => storage.uuid == storageUuid,
+                )
+                .first
+                .groupUnit ??
+            'Group(s)';
+      } else {
+        return '${groupUnit?.substring(0, 1).toUpperCase()}${groupUnit?.substring(1) ?? 'Unit(s)'}';
+      }
+    } else {
+      return '${groupUnit?.substring(0, 1).toUpperCase()}${groupUnit?.substring(1) ?? 'Unit(s)'}';
+    }
+  }
+
+  bool canUpdateQuantity() {
+    if (authorization(
+          authorized: Authorizations().updateProduct,
+        ) &&
+        authorization(
+          authorized: Authorizations().updateItemQuantity,
+        ) &&
+        !isPartOfStorage()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool isPartOfStorage() {
+    if (storageUuid != null &&
+        returnShopProvider()
+                .userShop()
+                ?.manageInventoryStorage ==
+            true) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

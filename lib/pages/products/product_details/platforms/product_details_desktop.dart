@@ -1283,29 +1283,8 @@ class _ProductDetailsDesktopState
                                                 widget
                                                     .theme,
                                             mainText:
-                                                product.storageUuid !=
-                                                            null &&
-                                                        returnStorageProductProvider().storageProductListMain
-                                                            .where(
-                                                              (
-                                                                storage,
-                                                              ) =>
-                                                                  storage.uuid ==
-                                                                  product.storageUuid,
-                                                            )
-                                                            .isNotEmpty
-                                                    ? returnStorageProductProvider().storageProductListMain
-                                                            .where(
-                                                              (
-                                                                storage,
-                                                              ) =>
-                                                                  storage.uuid ==
-                                                                  product.storageUuid,
-                                                            )
-                                                            .first
-                                                            .unit ??
-                                                        'Unit(s)'
-                                                    : '${product.unit.substring(0, 1).toUpperCase()}${product.unit.substring(1)}',
+                                                product
+                                                    .getSingleUnit(),
                                             text: 'Unit',
                                           ),
                                           Visibility(
@@ -1584,23 +1563,7 @@ class _ProductDetailsDesktopState
                 child: Expanded(
                   child: TabContainer(
                     isMoney: false,
-                    text:
-                        product.storageUuid != null &&
-                                returnStorageProductProvider()
-                                    .storageProductListMain
-                                    .where(
-                                      (storage) =>
-                                          storage.uuid ==
-                                          product
-                                              .storageUuid,
-                                    )
-                                    .isNotEmpty
-                            ? ' Quantity Of ${returnStorageProductProvider().storageProductListMain.where((storage) => storage.uuid == product.storageUuid).first.groupUnit ?? 'Group(s)'}'
-                            : product.groupUnit != null &&
-                                product.groupUnit !=
-                                    'Others'
-                            ? ' Quantity Of ${product.groupUnit}'
-                            : 'Group Quantity',
+                    text: product.getGroupUnit(),
                     price: returnData(
                       context: context,
                     ).returnGroupQuantityValue(product),
@@ -1659,20 +1622,7 @@ class _ProductDetailsDesktopState
               Expanded(
                 child: TabContainer(
                   isMoney: false,
-                  text:
-                      product.storageUuid != null &&
-                              returnStorageProductProvider()
-                                  .storageProductListMain
-                                  .where(
-                                    (storage) =>
-                                        storage.uuid ==
-                                        product.storageUuid,
-                                  )
-                                  .isNotEmpty
-                          ? ' Quantity Of ${returnStorageProductProvider().storageProductListMain.where((storage) => storage.uuid == product.storageUuid).first.unit ?? 'Unit(s)'}'
-                          : product.unit != 'Others'
-                          ? ' Quantity Of ${product.unit}'
-                          : 'Unit Quantity',
+                  text: product.getSingleUnit(),
                   price: product.quantity ?? 0,
                   theme: widget.theme,
                   backGround:
@@ -1724,32 +1674,9 @@ class _ProductDetailsDesktopState
             ],
           ),
           IgnorePointer(
-            ignoring:
-                !(authorization(
-                      authorized:
-                          Authorizations().updateProduct,
-                    ) &&
-                    authorization(
-                      authorized:
-                          Authorizations()
-                              .updateItemQuantity,
-                    ) &&
-                    product.storageUuid == null),
+            ignoring: !product.canUpdateQuantity(),
             child: Opacity(
-              opacity:
-                  (authorization(
-                            authorized:
-                                Authorizations()
-                                    .updateProduct,
-                          ) &&
-                          authorization(
-                            authorized:
-                                Authorizations()
-                                    .updateItemQuantity,
-                          ) &&
-                          product.storageUuid == null)
-                      ? 1
-                      : 0,
+              opacity: product.canUpdateQuantity() ? 1 : 0,
               child: Row(
                 children: [
                   Expanded(

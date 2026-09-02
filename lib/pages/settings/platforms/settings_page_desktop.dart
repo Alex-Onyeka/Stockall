@@ -33,6 +33,7 @@ import 'package:stockall/pages/settings/components/manage_inventory_switch_toggl
 import 'package:stockall/pages/settings/components/set_closing_time.dart';
 import 'package:stockall/pages/settings/components/toggle_bulk_sale.dart';
 import 'package:stockall/pages/settings/components/toggle_manage_productions.dart';
+import 'package:stockall/pages/settings/components/toggle_print_continuous_docket.dart';
 import 'package:stockall/pages/settings/components/toggle_print_sales_docket.dart';
 import 'package:stockall/pages/settings/components/toggle_track_cart.dart';
 import 'package:stockall/pages/settings/components/toggle_whole_sale_switch.dart';
@@ -300,6 +301,7 @@ class _SettingsPageDesktopState
                               ToggleWholeSaleSwitch(),
                               ManageDepartmentsToggleSwitch(),
                               TogglePrintSalesDocket(),
+                              TogglePrintContinuousDocket(),
                               UseScreenKeyboard(),
                               ToggleTrackCart(),
                               SetClosingTime(),

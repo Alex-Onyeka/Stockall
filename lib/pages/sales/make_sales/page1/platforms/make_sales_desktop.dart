@@ -11,7 +11,6 @@ import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/buttons/toggle_total_price.dart';
 import 'package:stockall/components/cart_queue/cart_queue_desktop.dart';
 import 'package:stockall/components/discount_setter.dart/discount_setter_widget.dart';
-import 'package:stockall/components/major/desktop_page_container.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/my_calculator.dart';
@@ -1038,8 +1037,32 @@ class _MakeSalesDesktopState
                         ),
                         Expanded(
                           flex: 10,
-                          child: DesktopPageContainer(
-                            widget: Scaffold(
+                          child: Container(
+                            margin: EdgeInsets.fromLTRB(
+                              0,
+                              10,
+                              0,
+                              0,
+                            ),
+                            padding: EdgeInsets.all(15),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius:
+                                  BorderRadius.circular(15),
+                              boxShadow: [
+                                BoxShadow(
+                                  color:
+                                      const Color.fromARGB(
+                                        39,
+                                        4,
+                                        1,
+                                        41,
+                                      ),
+                                  blurRadius: 10,
+                                ),
+                              ],
+                            ),
+                            child: Scaffold(
                               appBar: appBar(
                                 backAction:
                                     returnSalesProvider()
@@ -3004,10 +3027,11 @@ class _SalesTypeSwitchContainerState
                     index: 2,
                   ),
                   Visibility(
-                    visible: authorization(
-                      authorized:
-                          Authorizations().manageOrders,
-                    ),
+                    visible: false,
+                    // authorization(
+                    //   authorized:
+                    //       Authorizations().manageOrders,
+                    // ),
                     child: SalesTypeSwitchButton(
                       action: null,
                       index: 3,

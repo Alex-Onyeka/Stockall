@@ -14,7 +14,8 @@ class OrderItemsAdapter extends TypeAdapter<OrderItems> {
   OrderItems read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++)
+        reader.readByte(): reader.read(),
     };
     return OrderItems(
       uuid: fields[0] as String,
@@ -44,13 +45,15 @@ class OrderItemsAdapter extends TypeAdapter<OrderItems> {
       isProductManaged: fields[19] as bool?,
       originalCost: fields[13] as double?,
       setTotalPrice: fields[20] as bool?,
+      remainingBalance: fields[28] as double?,
+      remainingQuantity: fields[27] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, OrderItems obj) {
     writer
-      ..writeByte(27)
+      ..writeByte(29)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -104,7 +107,11 @@ class OrderItemsAdapter extends TypeAdapter<OrderItems> {
       ..writeByte(25)
       ..write(obj.useGroupQuantity)
       ..writeByte(26)
-      ..write(obj.qttyPerGroup);
+      ..write(obj.qttyPerGroup)
+      ..writeByte(27)
+      ..write(obj.remainingQuantity)
+      ..writeByte(28)
+      ..write(obj.remainingBalance);
   }
 
   @override

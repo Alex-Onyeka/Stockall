@@ -36,13 +36,6 @@ class _RightBarSectionState extends State<RightBarSection> {
   TextEditingController searchController =
       TextEditingController();
 
-  void closeAction() {
-    // setState(() {
-    //   Navigator.of(context).pop();
-    //   searchController.clear();
-    // });
-  }
-
   String? currentCat;
 
   void selectCat(String uuid) {
@@ -114,95 +107,182 @@ class _RightBarSectionState extends State<RightBarSection> {
                           returnCategoriesProvider(
                             context: context,
                           ).categories().isNotEmpty,
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          bottom: 10.0,
-                        ),
-                        child: Center(
-                          child: Scrollbar(
-                            controller:
-                                horizontalController,
-                            thumbVisibility: true,
-                            trackVisibility: true,
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                bottom: 15,
-                              ),
-                              child: SingleChildScrollView(
-                                controller:
-                                    horizontalController,
-                                scrollDirection:
-                                    Axis.horizontal,
+                      child: Column(
+                        children: [
+                          Material(
+                            type: MaterialType.transparency,
+                            child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
+                              onTap: () {
+                                returnSalesProvider()
+                                    .toggleCategory();
+                              },
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(
+                                      vertical: 3.0,
+                                    ),
                                 child: Row(
-                                  mainAxisSize:
-                                      MainAxisSize.min,
-                                  spacing: 3,
-                                  children:
-                                      returnCategoriesProvider(
-                                            context:
-                                                context,
-                                          )
-                                          .categories()
-                                          .map(
-                                            (
-                                              item,
-                                            ) => Material(
-                                              type:
-                                                  MaterialType
-                                                      .transparency,
-                                              child: Ink(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                        5,
-                                                      ),
-                                                  color:
-                                                      currentCat ==
-                                                              item.uuid
-                                                          ? theme.lightModeColor.tertColor200
-                                                          : theme.lightModeColor.tertColor50,
-                                                ),
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    selectCat(
-                                                      item.uuid,
-                                                    );
-                                                  },
-                                                  mouseCursor:
-                                                      SystemMouseCursors
-                                                          .click,
-                                                  child: Container(
-                                                    padding: EdgeInsets.symmetric(
-                                                      vertical:
-                                                          7,
-                                                      horizontal:
-                                                          10,
-                                                    ),
-                                                    child: Center(
-                                                      child: Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              theme.mobileTexts.b4.fontSize,
-                                                          color:
-                                                              currentCat ==
-                                                                      item.uuid
-                                                                  ? Colors.white
-                                                                  : Colors.grey.shade600,
-                                                        ),
-                                                        item.name,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          )
-                                          .toList(),
+                                  spacing: 5,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .spaceBetween,
+                                  children: [
+                                    Container(
+                                      padding:
+                                          EdgeInsets.all(5),
+                                      decoration: BoxDecoration(
+                                        shape:
+                                            BoxShape.circle,
+                                        color:
+                                            returnSalesProviderContext(
+                                                  context,
+                                                ).openCategory
+                                                ? Colors
+                                                    .grey
+                                                : Colors
+                                                    .amber,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b4
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        returnSalesProviderContext(
+                                              context,
+                                            ).openCategory
+                                            ? 'Hide Categories'
+                                            : 'Show Categories',
+                                      ),
+                                    ),
+                                    Icon(
+                                      size: 20,
+                                      returnSalesProviderContext(
+                                            context,
+                                          ).openCategory
+                                          ? Icons
+                                              .keyboard_double_arrow_up_rounded
+                                          : Icons
+                                              .keyboard_double_arrow_down_rounded,
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
                           ),
-                        ),
+                          Visibility(
+                            visible:
+                                !returnSalesProviderContext(
+                                  context,
+                                ).openCategory,
+                            child: Divider(),
+                          ),
+                          Visibility(
+                            visible:
+                                returnSalesProviderContext(
+                                  context,
+                                ).openCategory,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(
+                                    bottom: 10.0,
+                                  ),
+                              child: Center(
+                                child: Scrollbar(
+                                  controller:
+                                      horizontalController,
+                                  thumbVisibility: true,
+                                  trackVisibility: true,
+                                  child: Padding(
+                                    padding:
+                                        EdgeInsets.only(
+                                          bottom: 15,
+                                        ),
+                                    child: SingleChildScrollView(
+                                      controller:
+                                          horizontalController,
+                                      scrollDirection:
+                                          Axis.horizontal,
+                                      child: Row(
+                                        mainAxisSize:
+                                            MainAxisSize
+                                                .min,
+                                        spacing: 3,
+                                        children:
+                                            returnCategoriesProvider(
+                                                  context:
+                                                      context,
+                                                )
+                                                .categories()
+                                                .map(
+                                                  (
+                                                    item,
+                                                  ) => Material(
+                                                    type:
+                                                        MaterialType.transparency,
+                                                    child: Ink(
+                                                      decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(
+                                                          5,
+                                                        ),
+                                                        color:
+                                                            currentCat ==
+                                                                    item.uuid
+                                                                ? theme.lightModeColor.tertColor200
+                                                                : theme.lightModeColor.tertColor50,
+                                                      ),
+                                                      child: InkWell(
+                                                        onTap: () {
+                                                          selectCat(
+                                                            item.uuid,
+                                                          );
+                                                        },
+                                                        mouseCursor:
+                                                            SystemMouseCursors.click,
+                                                        child: Container(
+                                                          padding: EdgeInsets.symmetric(
+                                                            vertical:
+                                                                7,
+                                                            horizontal:
+                                                                10,
+                                                          ),
+                                                          child: Center(
+                                                            child: Text(
+                                                              style: TextStyle(
+                                                                fontSize:
+                                                                    theme.mobileTexts.b4.fontSize,
+                                                                color:
+                                                                    currentCat ==
+                                                                            item.uuid
+                                                                        ? Colors.white
+                                                                        : Colors.grey.shade600,
+                                                              ),
+                                                              item.name,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                )
+                                                .toList(),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     Expanded(

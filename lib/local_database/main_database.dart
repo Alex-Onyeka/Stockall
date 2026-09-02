@@ -9,6 +9,7 @@ import 'package:stockall/local_database/barcode_printer_func/price_and_barcode_l
 import 'package:stockall/local_database/barcode_printer_func/price_tag_printer_func.dart';
 import 'package:stockall/local_database/cart_func/cart_func.dart';
 import 'package:stockall/local_database/category/category_func.dart';
+import 'package:stockall/local_database/continuous_print_docket/continuous_print_docket_func.dart';
 import 'package:stockall/local_database/countries/countries_func.dart';
 import 'package:stockall/local_database/customer_account_receipts/customer_account_receipts_func.dart';
 import 'package:stockall/local_database/customers/customer_func.dart';
@@ -129,6 +130,7 @@ class MainDatabase extends ChangeNotifier {
       await MaterialsUsageCartFunc().init();
       await NewFeaturePopUpFunc().init();
       await OrdersFunc().init();
+      await ContinuousPrintDocketFunc().init();
       await mainLocalLog('init Complete');
     } catch (e, s) {
       await mainLocalLog(
@@ -140,4 +142,4 @@ class MainDatabase extends ChangeNotifier {
   }
 }
 
-int highestHiveClassIndex = 137;
+int highestHiveClassIndex = 138;

@@ -3,7 +3,6 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_desktop.dart';
 import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/functions.dart';
-import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
@@ -23,13 +22,13 @@ class TogglePrintSalesDocket extends StatelessWidget {
           !isStoreKeeper(),
       child: SubWrapper(
         isVisible:
-            !SalesAuthAction().printReceiptAction(
+            !SalesAuthAction().printDocketAction(
               context: context,
             ),
         mainWidget: NavListTileDesktopAlt(
           height: 18,
           action: () {
-            SalesAuthAction().printReceiptAction(
+            SalesAuthAction().printDocketAction(
               context: context,
               action: () {
                 var shopProvider = returnShopProvider();
@@ -42,8 +41,8 @@ class TogglePrintSalesDocket extends StatelessWidget {
                           shopProvider
                                   .userShop()!
                                   .printSalesDocket!
-                              ? 'You can no Longer Generate and Printer Sales Docket, are you sure you want to proceed?'
-                              : 'You can now Generate and Printer Sales Docket, are you sure you want to proceed?',
+                              ? 'You can no Longer Generate and Print Sales Docket, are you sure you want to proceed?'
+                              : 'You can now Generate and Print Sales Docket, are you sure you want to proceed?',
                       title:
                           shopProvider
                                   .userShop()!
@@ -83,7 +82,7 @@ class TogglePrintSalesDocket extends StatelessWidget {
                       ).userShop()?.printSalesDocket ??
                       true,
                   toggle: () {
-                    GeneralSettingsAuthAction().manageDeparmtmentsAction(
+                    SalesAuthAction().printDocketAction(
                       context: context,
                       action: () {
                         var shopProvider =
@@ -97,8 +96,8 @@ class TogglePrintSalesDocket extends StatelessWidget {
                                   shopProvider
                                           .userShop()!
                                           .printSalesDocket!
-                                      ? 'You can no Longer Generate and Printer Sales Docket, are you sure you want to proceed?'
-                                      : 'You can now Generate and Printer Sales Docket, are you sure you want to proceed?',
+                                      ? 'You can no Longer Generate and Print Sales Docket, are you sure you want to proceed?'
+                                      : 'You can now Generate and Print Sales Docket, are you sure you want to proceed?',
                               title:
                                   shopProvider
                                           .userShop()!

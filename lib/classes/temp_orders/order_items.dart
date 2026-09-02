@@ -85,6 +85,12 @@ class OrderItems extends HiveObject {
   @HiveField(26)
   double? qttyPerGroup;
 
+  @HiveField(27)
+  double? remainingQuantity;
+
+  @HiveField(28)
+  double? remainingBalance;
+
   OrderItems({
     required this.uuid,
     required this.orderId,
@@ -113,6 +119,8 @@ class OrderItems extends HiveObject {
     required this.isProductManaged,
     required this.originalCost,
     required this.setTotalPrice,
+    required this.remainingBalance,
+    required this.remainingQuantity,
   });
 
   factory OrderItems.fromJson(Map<String, dynamic> json) {
@@ -149,6 +157,10 @@ class OrderItems extends HiveObject {
       originalCost:
           (json['original_cost'] as num?)?.toDouble(),
       setTotalPrice: json['set_total_price'] as bool,
+      remainingBalance:
+          (json['remaining_balance'] as num?)?.toDouble(),
+      remainingQuantity:
+          (json['remaining_quantity'] as num?)?.toDouble(),
     );
   }
 
@@ -181,6 +193,8 @@ class OrderItems extends HiveObject {
       'is_product_managed': isProductManaged,
       'original_cost': originalCost,
       'set_total_price': setTotalPrice,
+      'remaining_balance': remainingBalance,
+      'remaining_quantity': remainingQuantity,
     };
   }
 
@@ -212,6 +226,8 @@ class OrderItems extends HiveObject {
     bool? isProductManaged,
     double? originalCost,
     bool? setTotalPrice,
+    double? remainingBalance,
+    double? remainingQuantity,
   }) {
     return OrderItems(
       uuid: uuid ?? this.uuid,
@@ -245,7 +261,15 @@ class OrderItems extends HiveObject {
           isProductManaged ?? this.isProductManaged,
       originalCost: originalCost ?? this.originalCost,
       setTotalPrice: setTotalPrice ?? this.setTotalPrice,
+      remainingQuantity:
+          remainingQuantity ?? this.remainingQuantity,
+      remainingBalance:
+          remainingBalance ?? this.remainingBalance,
     );
+  }
+
+  double getRemainingBalance() {
+    return ((remainingQuantity ?? 0) * (revenue));
   }
 }
 

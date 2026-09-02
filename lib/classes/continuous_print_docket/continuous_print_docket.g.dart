@@ -1,32 +1,35 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'deleted_orders.dart';
+part of 'continuous_print_docket.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class DeletedOrdersAdapter extends TypeAdapter<DeletedOrders> {
+class ContinuousPrintDocketAdapter extends TypeAdapter<ContinuousPrintDocket> {
   @override
-  final int typeId = 136;
+  final int typeId = 138;
 
   @override
-  DeletedOrders read(BinaryReader reader) {
+  ContinuousPrintDocket read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return DeletedOrders(
-      orderUuid: fields[0] as String,
+    return ContinuousPrintDocket(
+      id: fields[0] as int,
+      isOn: fields[1] as bool,
     );
   }
 
   @override
-  void write(BinaryWriter writer, DeletedOrders obj) {
+  void write(BinaryWriter writer, ContinuousPrintDocket obj) {
     writer
-      ..writeByte(1)
+      ..writeByte(2)
       ..writeByte(0)
-      ..write(obj.orderUuid);
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.isOn);
   }
 
   @override
@@ -35,7 +38,7 @@ class DeletedOrdersAdapter extends TypeAdapter<DeletedOrders> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is DeletedOrdersAdapter &&
+      other is ContinuousPrintDocketAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

@@ -5,7 +5,8 @@ import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_orders/order_items.dart';
 import 'package:stockall/classes/temp_orders/orders.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockall/components/text_fields/money_textfield.dart';
+import 'package:stockall/components/alert_dialogues/dialog_template.dart';
+import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
@@ -13,6 +14,7 @@ import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/pages/orders/invoice_list/order_list_page.dart';
+import 'package:stockall/pages/orders/order_page/components/order_item_deliver_list_widget.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -30,51 +32,10 @@ class OrderPageDesktop extends StatefulWidget {
 
 class _OrderPageDesktopState
     extends State<OrderPageDesktop> {
-  int? paymentSelected;
-
-  void selectPayment(int index) {
-    paymentController.clear();
-    setState(() {
-      if (paymentSelected == index) {
-        paymentSelected = null;
-      } else {
-        paymentSelected = index;
-        if (index == 2) {
-          Orders order = returnOrdersProvider().orders
-              .firstWhere(
-                (inv) =>
-                    inv.uuid ==
-                    widget.checkoutResponse.order?.uuid,
-              );
-          paymentController.text =
-              returnOrdersProvider()
-                  .getBalance(order: order)
-                  .toString();
-        }
-        paymentNode.requestFocus();
-      }
-    });
-  }
-
-  final paymentController = TextEditingController();
-
-  FocusNode paymentNode = FocusNode();
-
   bool isLoading = false;
   bool isDeleteLoading = false;
   bool isPrintLoading = false;
   bool isDownloadLoading = false;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   WidgetsBinding.instance.addPostFrameCallback((_) async {
-  //     await returnOrdersProvider().loadSingleOrder(
-  //       uuid: widget.checkoutResponse.order?.uuid,
-  //     );
-  //     setState(() {});
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -775,12 +736,25 @@ class _OrderPageDesktopState
                                             .map(
                                               (
                                                 record,
-                                              ) => Padding(
-                                                padding:
-                                                    const EdgeInsets.only(
-                                                      top:
-                                                          15.0,
+                                              ) => Container(
+                                                margin:
+                                                    EdgeInsets.symmetric(
+                                                      vertical:
+                                                          4,
                                                     ),
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                      15.0,
+                                                      10.0,
+                                                      15.0,
+                                                      10.0,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade100,
+                                                ),
                                                 child: Row(
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment
@@ -811,25 +785,66 @@ class _OrderPageDesktopState
                                                           ),
                                                           Row(
                                                             spacing:
-                                                                3,
+                                                                8,
                                                             children: [
-                                                              Text(
-                                                                style: TextStyle(
-                                                                  fontSize:
-                                                                      theme.mobileTexts.b3.fontSize,
-                                                                  fontWeight:
-                                                                      FontWeight.normal,
-                                                                ),
-                                                                'Qtty: ',
+                                                              Row(
+                                                                spacing:
+                                                                    3,
+                                                                children: [
+                                                                  Text(
+                                                                    style: TextStyle(
+                                                                      fontSize:
+                                                                          theme.mobileTexts.b4.fontSize,
+                                                                      fontWeight:
+                                                                          FontWeight.normal,
+                                                                    ),
+                                                                    'Original Qtty: ',
+                                                                  ),
+                                                                  Text(
+                                                                    style: TextStyle(
+                                                                      fontSize:
+                                                                          theme.mobileTexts.b3.fontSize,
+                                                                      fontWeight:
+                                                                          FontWeight.bold,
+                                                                    ),
+                                                                    formatLargeNumberDouble(
+                                                                      record.quantity,
+                                                                    ),
+                                                                  ),
+                                                                ],
                                                               ),
-                                                              Text(
-                                                                style: TextStyle(
-                                                                  fontSize:
-                                                                      theme.mobileTexts.b3.fontSize,
-                                                                  fontWeight:
-                                                                      FontWeight.bold,
+                                                              Visibility(
+                                                                visible:
+                                                                    (record.quantity >
+                                                                        (record.remainingQuantity ??
+                                                                            0)),
+                                                                child: Row(
+                                                                  spacing:
+                                                                      3,
+                                                                  children: [
+                                                                    Text(
+                                                                      style: TextStyle(
+                                                                        fontSize:
+                                                                            theme.mobileTexts.b4.fontSize,
+                                                                        fontWeight:
+                                                                            FontWeight.normal,
+                                                                      ),
+                                                                      '|    Remaining Qtty: ',
+                                                                    ),
+                                                                    Text(
+                                                                      style: TextStyle(
+                                                                        fontSize:
+                                                                            theme.mobileTexts.b3.fontSize,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                      ),
+                                                                      formatLargeNumberDouble(
+                                                                        record.remainingQuantity ??
+                                                                            0,
+                                                                      ),
+                                                                    ),
+                                                                  ],
                                                                 ),
-                                                                '[ ${formatLargeNumberDouble(record.quantity)} ]',
                                                               ),
                                                             ],
                                                           ),
@@ -1581,445 +1596,71 @@ class _OrderPageDesktopState
                                   ),
                                 ),
                                 SizedBox(height: 15),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .spaceBetween,
-                                  spacing: 4,
-                                  children: [
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b3
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
-                                      ),
-                                      'Make Payment',
-                                    ),
-                                    Row(
-                                      spacing: 5,
-                                      children: [
-                                        InkWell(
-                                          mouseCursor:
-                                              SystemMouseCursors
-                                                  .click,
-                                          onTap: () {
-                                            selectPayment(
-                                              1,
-                                            );
-                                          },
-                                          child: Padding(
-                                            padding:
-                                                const EdgeInsets.all(
-                                                  4,
-                                                ),
-                                            child: Row(
-                                              spacing: 4,
-                                              children: [
-                                                Text(
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        theme.mobileTexts.b4.fontSize,
-                                                    fontWeight:
-                                                        paymentSelected ==
-                                                                1
-                                                            ? FontWeight.bold
-                                                            : null,
-                                                  ),
-                                                  'Part',
-                                                ),
-                                                Container(
-                                                  padding:
-                                                      EdgeInsets.all(
-                                                        1.5,
-                                                      ),
-                                                  decoration: BoxDecoration(
-                                                    shape:
-                                                        BoxShape.circle,
-                                                    border: Border.all(
-                                                      color:
-                                                          Colors.grey.shade400,
-                                                    ),
-                                                  ),
-                                                  child: Container(
-                                                    padding:
-                                                        EdgeInsets.all(
-                                                          3,
-                                                        ),
-                                                    decoration: BoxDecoration(
-                                                      shape:
-                                                          BoxShape.circle,
-                                                      color:
-                                                          paymentSelected ==
-                                                                  1
-                                                              ? theme.lightModeColor.prColor250
-                                                              : null,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
+                                Ink(
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          2,
                                         ),
-                                        InkWell(
-                                          mouseCursor:
-                                              SystemMouseCursors
-                                                  .click,
-                                          onTap: () {
-                                            selectPayment(
-                                              2,
-                                            );
-                                          },
-                                          child: Padding(
-                                            padding:
-                                                const EdgeInsets.all(
-                                                  4,
-                                                ),
-                                            child: Row(
-                                              spacing: 4,
-                                              children: [
-                                                Text(
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        theme.mobileTexts.b4.fontSize,
-                                                    fontWeight:
-                                                        paymentSelected ==
-                                                                2
-                                                            ? FontWeight.bold
-                                                            : null,
-                                                  ),
-                                                  'Full',
-                                                ),
-                                                Container(
-                                                  padding:
-                                                      EdgeInsets.all(
-                                                        1.5,
-                                                      ),
-                                                  decoration: BoxDecoration(
-                                                    shape:
-                                                        BoxShape.circle,
-                                                    border: Border.all(
-                                                      color:
-                                                          Colors.grey.shade400,
-                                                    ),
-                                                  ),
-                                                  child: Container(
-                                                    padding:
-                                                        EdgeInsets.all(
-                                                          3,
-                                                        ),
-                                                    decoration: BoxDecoration(
-                                                      shape:
-                                                          BoxShape.circle,
-                                                      color:
-                                                          paymentSelected ==
-                                                                  2
-                                                              ? theme.lightModeColor.prColor250
-                                                              : null,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.only(
-                                        top: 10.0,
-                                      ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .center,
-                                    spacing: 5,
-                                    children: [
-                                      Expanded(
-                                        child: MoneyTextfield(
-                                          onChanged: (
-                                            value,
-                                          ) {
-                                            if ((double.tryParse(
-                                                      value.replaceAll(
-                                                        ',',
-                                                        '',
-                                                      ),
-                                                    ) ??
-                                                    0) >=
-                                                returnOrdersProvider()
-                                                    .getBalance(
-                                                      order:
-                                                          order,
-                                                    )) {
-                                              paymentController
-                                                  .text = returnOrdersProvider()
-                                                  .getBalance(
-                                                    order:
-                                                        order,
-                                                  )
-                                                  .toStringAsFixed(
-                                                    0,
-                                                  );
-                                              setState(() {
-                                                paymentSelected =
-                                                    2;
-                                              });
-                                            }
-                                            if ((double.tryParse(
-                                                      value.replaceAll(
-                                                        ',',
-                                                        '',
-                                                      ),
-                                                    ) ??
-                                                    0) <
-                                                returnOrdersProvider()
-                                                    .getBalance(
-                                                      order:
-                                                          order,
-                                                    )) {
-                                              setState(() {
-                                                paymentSelected =
-                                                    1;
-                                              });
-                                            }
-                                          },
-                                          showTitle: false,
-                                          title: 'Amount',
-                                          hint:
-                                              'Enter Amount',
-                                          controller:
-                                              paymentController,
-                                          theme: theme,
-                                          focusNode:
-                                              paymentNode,
-                                        ),
-                                      ),
-                                      Ink(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(
-                                                2,
-                                              ),
 
-                                          gradient:
-                                              theme
-                                                  .lightModeColor
-                                                  .prGradient,
-                                        ),
-                                        child: InkWell(
-                                          mouseCursor:
-                                              SystemMouseCursors
-                                                  .click,
-                                          onTap: () {
-                                            mainLocalLog(
-                                              order
-                                                  .subStaffUuid,
-                                            );
-                                            if (paymentController
-                                                    .text
-                                                    .isNotEmpty &&
-                                                paymentController
-                                                        .text !=
-                                                    '0' &&
-                                                !isLoading) {
-                                              // showDialog(
-                                              //   context:
-                                              //       context,
-                                              //   builder: (
-                                              //     confirmDialog,
-                                              //   ) {
-                                              //     return ConfirmationAlert(
-                                              //       theme:
-                                              //           theme,
-                                              //       message:
-                                              //           'You are about to pay for an order. Are you sure you want to proceed?',
-                                              //       title:
-                                              //           'Make Payment',
-                                              //       action: () async {
-                                              //         Navigator.of(
-                                              //           confirmDialog,
-                                              //         ).pop();
-                                              //         setState(() {
-                                              //           isLoading =
-                                              //               true;
-                                              //         });
-                                              //         var tempOrder = Orders(
-                                              //           comment:
-                                              //               order.comment,
-                                              //           subStaffName:
-                                              //               order.subStaffName,
-                                              //           departmentUuidNew:
-                                              //               order.departmentUuidNew,
-                                              //           uuid:
-                                              //               order.uuid,
-                                              //           createdAt:
-                                              //               order.createdAt,
-                                              //           shopId:
-                                              //               order.shopId,
-                                              //           staffId:
-                                              //               order.staffId,
-                                              //           staffName:
-                                              //               order.staffName,
-                                              //           paymentMethod:
-                                              //               order.paymentMethod,
-                                              //           bank:
-                                              //               (order.bank),
-                                              //           cashAlt:
-                                              //               (order.cashAlt),
-                                              //           customerName:
-                                              //               order.customerName,
-                                              //           customerId:
-                                              //               order.customerId,
-                                              //           departmentName:
-                                              //               order.departmentName,
-                                              //           departmentUuid:
-                                              //               order.departmentUuid,
-                                              //           fixedDiscount:
-                                              //               order.fixedDiscount,
-                                              //           generalDiscount:
-                                              //               order.generalDiscount,
-                                              //           originalCost:
-                                              //               order.originalCost,
-                                              //           vat:
-                                              //               order.vat,
-                                              //           subStaffUuid:
-                                              //               order.subStaffUuid,
-                                              //           cartName:
-                                              //               order.cartName,
-                                              //         );
-
-                                              //         var res = await returnOrdersProvider().makeOrderPayment(
-                                              //           order:
-                                              //               tempOrder,
-                                              //           salesRecords:
-                                              //               orderItems,
-                                              //           currentPayment:
-                                              //               (double.tryParse(
-                                              //                     paymentController.text.replaceAll(
-                                              //                       ',',
-                                              //                       '',
-                                              //                     ),
-                                              //                   ) ??
-                                              //                   0),
-                                              //         );
-
-                                              //         if (res ==
-                                              //             0) {
-                                              //           setState(() {
-                                              //             isLoading =
-                                              //                 false;
-                                              //           });
-                                              //           showDialog(
-                                              //             // ignore: use_build_context_synchronously
-                                              //             context:
-                                              //                 context,
-                                              //             builder: (
-                                              //               popDialog,
-                                              //             ) {
-                                              //               return InfoAlert(
-                                              //                 theme:
-                                              //                     theme,
-                                              //                 message:
-                                              //                     'An Error Occoured while making this payment. Please try again.',
-                                              //                 title:
-                                              //                     'An Error Occoured',
-                                              //               );
-                                              //             },
-                                              //           );
-                                              //         } else {
-                                              //           setState(() {
-                                              //             isLoading =
-                                              //                 false;
-                                              //           });
-                                              //           actionResultDialog(
-                                              //             // ignore: use_build_context_synchronously
-                                              //             context:
-                                              //                 context,
-                                              //             isSuccess:
-                                              //                 res ==
-                                              //                         0
-                                              //                     ? false
-                                              //                     : true,
-                                              //             message:
-                                              //                 res ==
-                                              //                         0
-                                              //                     ? 'An error Occoured'
-                                              //                     : 'Payment Successful',
-                                              //           );
-                                              //           if (context.mounted) {
-                                              //             paymentController.clear();
-                                              //           }
-                                              //           setState(() {
-                                              //             paymentSelected =
-                                              //                 null;
-                                              //           });
-                                              //         }
-                                              //       },
-                                              //     );
-                                              //   },
-                                              // );
-                                            } else {
-                                              paymentNode
-                                                  .requestFocus();
-                                            }
-                                          },
-                                          child: Container(
-                                            padding:
-                                                EdgeInsets.symmetric(
-                                                  vertical:
-                                                      7.5,
-                                                  horizontal:
-                                                      25,
-                                                ),
-                                            child: Builder(
-                                              builder: (
-                                                context,
-                                              ) {
-                                                if (!isLoading) {
-                                                  return Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          theme.mobileTexts.b3.fontSize,
-                                                      color:
-                                                          Colors.white,
-                                                    ),
-                                                    'Pay',
-                                                  );
-                                                } else {
-                                                  return SizedBox(
-                                                    height:
-                                                        15,
-                                                    width:
-                                                        15,
-                                                    child: CircularProgressIndicator(
-                                                      color:
-                                                          Colors.white,
-                                                      strokeWidth:
-                                                          2,
-                                                    ),
-                                                  );
-                                                }
-                                              },
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                    gradient:
+                                        theme
+                                            .lightModeColor
+                                            .prGradient,
                                   ),
-                                ),
-                                Visibility(
-                                  visible:
-                                      paymentSelected !=
-                                      null,
-                                  child: SizedBox(
-                                    height: 5,
+                                  child: InkWell(
+                                    mouseCursor:
+                                        SystemMouseCursors
+                                            .click,
+                                    onTap: () {
+                                      deliverItemsAction(
+                                        order: order,
+                                        context: context,
+                                      );
+                                    },
+                                    child: Container(
+                                      padding:
+                                          EdgeInsets.symmetric(
+                                            vertical: 9,
+                                            horizontal: 25,
+                                          ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .center,
+                                        children: [
+                                          Builder(
+                                            builder: (
+                                              context,
+                                            ) {
+                                              if (!isLoading) {
+                                                return Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        theme.mobileTexts.b3.fontSize,
+                                                    color:
+                                                        Colors.white,
+                                                  ),
+                                                  'Deliver Items',
+                                                );
+                                              } else {
+                                                return SizedBox(
+                                                  height:
+                                                      15,
+                                                  width: 15,
+                                                  child: CircularProgressIndicator(
+                                                    color:
+                                                        Colors.white,
+                                                    strokeWidth:
+                                                        2,
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
                                 ),
                                 Divider(
@@ -2281,6 +1922,146 @@ class _OrderPageDesktopState
       },
     );
   }
+}
+
+void deliverItemsAction({
+  required BuildContext context,
+  required Orders order,
+}) {
+  var theme = returnTheme(context, listen: false);
+  List<OrderItems> list = [];
+  bool showTotal = false;
+
+  showDialog(
+    context: context,
+    builder: (firstContext) {
+      final commentController = TextEditingController();
+      return StatefulBuilder(
+        builder: (secondContext, setState) {
+          return DialogTemplate(
+            theme: theme,
+            message:
+                'Select Items to Deliver From this Order Receipt',
+            title: 'Select Item(s)',
+            action: () {
+              showDialog(
+                context: context,
+                builder: (confirmContext) {
+                  return ConfirmationAlert(
+                    theme: theme,
+                    message:
+                        'You are about to Deliver the Selected Items, and Generate Payment Receipts. Are you sure you want to proceed?',
+                    title: 'Record Delivery',
+                    action: () async {
+                      Navigator.of(confirmContext).pop();
+                      if (list.isEmpty) {
+                        list.addAll(order.orderItems);
+                      }
+                      await returnOrdersProvider()
+                          .makeOrderPayment(
+                            order: order,
+                            orderItemsNew: list,
+                            currentPayment: list
+                                .map(
+                                  (item) =>
+                                      item.getRemainingBalance(),
+                                )
+                                .fold(0, (a, b) => a + b),
+                            comment:
+                                commentController.text
+                                    .trim(),
+                          );
+                    },
+                  );
+                },
+              );
+            },
+            widget: SizedBox(
+              height: screenHeight(context) - 300,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20.0,
+                          vertical: 15,
+                        ),
+                        child: Column(
+                          spacing: 5,
+                          children:
+                              order.orderItems
+                                  .map(
+                                    (item) =>
+                                        OrderItemDeliverListWidget(
+                                          action: () {
+                                            setState(() {
+                                              showTotal =
+                                                  false;
+                                            });
+                                          },
+                                          item: item,
+                                          list: list,
+                                          theme: theme,
+                                        ),
+                                  )
+                                  .toList(),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          'Deliver All Remaining Items',
+                        ),
+                        MyToggleButton(
+                          boolValue: showTotal,
+                          toggle: () {
+                            setState(() {
+                              if (showTotal == true) {
+                                showTotal = false;
+                                list.clear();
+                              } else {
+                                showTotal = true;
+                                list.clear();
+                                list.addAll(
+                                  order.orderItems,
+                                );
+                              }
+                            });
+                          },
+                          theme: theme,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  ).then((_) {});
 }
 
 class ActionButtonSmall extends StatelessWidget {

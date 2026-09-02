@@ -45,6 +45,12 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool openCategory = false;
+  void toggleCategory() {
+    openCategory = !openCategory;
+    notifyListeners();
+  }
+
   // List<TempCart> cartQueue = [];
 
   bool checkIfCartExists(String cartId) {
@@ -1994,6 +2000,14 @@ class SalesProvider extends ChangeNotifier {
               );
 
               return OrderItems(
+                remainingBalance:
+                    currentCart().isReceiptEdit
+                        ? cartItem.remainingBalance
+                        : cartItem.revenue(),
+                remainingQuantity:
+                    currentCart().isReceiptEdit
+                        ? cartItem.remainingQuantity
+                        : cartItem.quantity,
                 qttyPerGroup: cartItem.qttyPerGroup,
                 useGroupQuantity: cartItem.useGroupQuantity,
                 customPriceSet: cartItem.setCustomPrice,
@@ -2438,6 +2452,39 @@ class SalesProvider extends ChangeNotifier {
     } else {
       return (newCartItem.getItem()?.quantity ?? 0) -
           totalInAllCarts(newCartItem: newCartItem);
+    }
+  }
+
+  double totalItemQuantityInAllCarts({
+    required TempProductClass product,
+  }) {
+    double totalInAllCarts = 0;
+    for (var mainCart in mainCartQueue) {
+      for (final cart in mainCart.cartQueue.where(
+        (item) => item.cartItemTypeIndex != 3,
+      )) {
+        for (final cartItem in cart.getCartItems().where(
+          (item) => item.getItem()?.uuid == product.uuid,
+        )) {
+          totalInAllCarts += cartItem.getRealQuantity();
+        }
+      }
+    }
+    return totalInAllCarts;
+  }
+
+  double remainingItemQttyInAllCarts({
+    required TempProductClass product,
+  }) {
+    var tempList = returnData().productListMain.where(
+      (item) => item.uuid == (product.uuid ?? item.uuid),
+    );
+    if (tempList.isNotEmpty) {
+      return (tempList.first.quantity ?? 0) -
+          totalItemQuantityInAllCarts(product: product);
+    } else {
+      return (product.quantity ?? 0) -
+          totalItemQuantityInAllCarts(product: product);
     }
   }
 

@@ -3031,66 +3031,66 @@ class _SwitchSaleTypeWidgetMobileState
                     ),
                   ),
                 ),
-                PopupMenuItem(
-                  enabled:
-                      authorization(
-                        authorized:
-                            Authorizations().manageOrders,
-                      ) &&
-                      SalesAuthAction().manageOrdersAction(
-                        context: context,
-                      ),
-                  mouseCursor: SystemMouseCursors.click,
-                  onTap: () {
-                    switchAction(3);
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      left: 5.0,
-                      right: 15,
-                    ),
-                    child: Row(
-                      spacing: 10,
-                      children: [
-                        Icon(
-                          size: 16,
-                          color:
-                              theme
-                                  .lightModeColor
-                                  .tertColor200,
-                          Icons.view_in_ar_rounded,
-                        ),
-                        Expanded(
-                          child: Text(
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                            ),
-                            'Create Order',
-                          ),
-                        ),
-                        Visibility(
-                          visible:
-                              currentCart()
-                                  .cartItemTypeIndex ==
-                              3,
-                          child: Icon(
-                            size: 16,
-                            color:
-                                theme
-                                    .lightModeColor
-                                    .tertColor200,
-                            Icons.check,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                // PopupMenuItem(
+                //   enabled:
+                //       authorization(
+                //         authorized:
+                //             Authorizations().manageOrders,
+                //       ) &&
+                //       SalesAuthAction().manageOrdersAction(
+                //         context: context,
+                //       ),
+                //   mouseCursor: SystemMouseCursors.click,
+                //   onTap: () {
+                //     switchAction(3);
+                //   },
+                //   child: Padding(
+                //     padding: const EdgeInsets.only(
+                //       left: 5.0,
+                //       right: 15,
+                //     ),
+                //     child: Row(
+                //       spacing: 10,
+                //       children: [
+                //         Icon(
+                //           size: 16,
+                //           color:
+                //               theme
+                //                   .lightModeColor
+                //                   .tertColor200,
+                //           Icons.view_in_ar_rounded,
+                //         ),
+                //         Expanded(
+                //           child: Text(
+                //             style: TextStyle(
+                //               fontWeight: FontWeight.bold,
+                //               fontSize:
+                //                   theme
+                //                       .mobileTexts
+                //                       .b3
+                //                       .fontSize,
+                //             ),
+                //             'Create Order',
+                //           ),
+                //         ),
+                //         Visibility(
+                //           visible:
+                //               currentCart()
+                //                   .cartItemTypeIndex ==
+                //               3,
+                //           child: Icon(
+                //             size: 16,
+                //             color:
+                //                 theme
+                //                     .lightModeColor
+                //                     .tertColor200,
+                //             Icons.check,
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
               ];
             },
             child: Container(

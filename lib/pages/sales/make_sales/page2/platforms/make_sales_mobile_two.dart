@@ -334,203 +334,223 @@ class _MakeSalesMobileTwoState
                           ),
                         ),
                         SizedBox(height: 10),
-                        Divider(
-                          color: Colors.grey.shade300,
-                        ),
-                        SizedBox(height: 5),
-                        Column(
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b2
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
-                                  ),
-                                  'Select Payment Method',
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 5),
-                            PaymentTypeDropdown(),
-                          ],
-                        ),
-                        SizedBox(height: 5),
                         Visibility(
                           visible:
-                              returnSalesProviderContext(
-                                    context,
-                                  )
-                                  .currentCart()
-                                  .paymentMethod ==
-                              2,
+                              currentCart(
+                                context: context,
+                              ).cartItemTypeIndex !=
+                              3,
                           child: Column(
                             children: [
-                              Row(
-                                spacing: 10,
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .center,
+                              Divider(
+                                color: Colors.grey.shade300,
+                              ),
+                              SizedBox(height: 5),
+                              Column(
                                 children: [
-                                  Expanded(
-                                    child: EditCartTextField(
-                                      title: 'Cash',
-                                      hint: 'Cash Amount',
-                                      controller:
-                                          widget
-                                              .cashController,
-                                      theme: theme,
-                                      onChanged: (value) {
-                                        if (isUpdating)
-                                          // ignore: curly_braces_in_flow_control_structures
-                                          return;
-                                        isUpdating = true;
-
-                                        double cash =
-                                            double.tryParse(
-                                              value
-                                                  .replaceAll(
-                                                    ',',
-                                                    '',
-                                                  ),
-                                            ) ??
-                                            0;
-                                        if (cash >
-                                            widget
-                                                .totalAmount) {
-                                          showDialog(
-                                            context:
-                                                context,
-                                            builder: (
-                                              context,
-                                            ) {
-                                              var theme =
-                                                  Provider.of<
-                                                    ThemeProvider
-                                                  >(
-                                                    context,
-                                                  );
-                                              return InfoAlert(
-                                                theme:
-                                                    theme,
-                                                message:
-                                                    'Cash cannot exceed total amount.',
-                                                title:
-                                                    'Overpayment',
-                                              );
-                                            },
-                                          );
-                                          // Reset to max allowed
-                                          widget
-                                              .cashController
-                                              .text = widget
-                                              .totalAmount
-                                              .toStringAsFixed(
-                                                2,
-                                              );
-                                          widget
-                                              .bankController
-                                              .text = '0.00';
-                                        } else {
-                                          double bank =
-                                              widget
-                                                  .totalAmount -
-                                              cash;
-                                          widget
-                                              .bankController
-                                              .text = bank
-                                              .toStringAsFixed(
-                                                2,
-                                              );
-                                        }
-
-                                        isUpdating = false;
-                                      },
-                                    ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'Select Payment Method',
+                                      ),
+                                    ],
                                   ),
-                                  Expanded(
-                                    child: EditCartTextField(
-                                      title: 'Bank',
-                                      hint: 'Bank Amount',
-                                      controller:
-                                          widget
-                                              .bankController,
-                                      theme: theme,
-                                      onChanged: (value) {
-                                        if (isUpdating)
-                                          // ignore: curly_braces_in_flow_control_structures
-                                          return;
-                                        isUpdating = true;
-
-                                        double bank =
-                                            double.tryParse(
-                                              value
-                                                  .replaceAll(
-                                                    ',',
-                                                    '',
-                                                  ),
-                                            ) ??
-                                            0;
-                                        if (bank >
-                                            widget
-                                                .totalAmount) {
-                                          showDialog(
-                                            context:
-                                                context,
-                                            builder: (
-                                              context,
-                                            ) {
-                                              var theme =
-                                                  Provider.of<
-                                                    ThemeProvider
-                                                  >(
-                                                    context,
-                                                  );
-                                              return InfoAlert(
-                                                theme:
-                                                    theme,
-                                                message:
-                                                    'Bank cannot exceed total amount.',
-                                                title:
-                                                    'Overpayment',
-                                              );
-                                            },
-                                          );
-                                          widget
-                                              .bankController
-                                              .text = widget
-                                              .totalAmount
-                                              .toStringAsFixed(
-                                                2,
-                                              );
-                                          widget
-                                              .cashController
-                                              .text = '0.00';
-                                        } else {
-                                          double cash =
-                                              widget
-                                                  .totalAmount -
-                                              bank;
-                                          widget
-                                              .cashController
-                                              .text = cash
-                                              .toStringAsFixed(
-                                                2,
-                                              );
-                                        }
-
-                                        isUpdating = false;
-                                      },
-                                    ),
-                                  ),
+                                  SizedBox(height: 5),
+                                  PaymentTypeDropdown(),
                                 ],
                               ),
                               SizedBox(height: 5),
+                              Visibility(
+                                visible:
+                                    returnSalesProviderContext(
+                                          context,
+                                        )
+                                        .currentCart()
+                                        .paymentMethod ==
+                                    2,
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      spacing: 10,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .center,
+                                      children: [
+                                        Expanded(
+                                          child: EditCartTextField(
+                                            title: 'Cash',
+                                            hint:
+                                                'Cash Amount',
+                                            controller:
+                                                widget
+                                                    .cashController,
+                                            theme: theme,
+                                            onChanged: (
+                                              value,
+                                            ) {
+                                              if (isUpdating)
+                                                // ignore: curly_braces_in_flow_control_structures
+                                                return;
+                                              isUpdating =
+                                                  true;
+
+                                              double cash =
+                                                  double.tryParse(
+                                                    value.replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
+                                                  ) ??
+                                                  0;
+                                              if (cash >
+                                                  widget
+                                                      .totalAmount) {
+                                                showDialog(
+                                                  context:
+                                                      context,
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    var theme = Provider.of<
+                                                      ThemeProvider
+                                                    >(
+                                                      context,
+                                                    );
+                                                    return InfoAlert(
+                                                      theme:
+                                                          theme,
+                                                      message:
+                                                          'Cash cannot exceed total amount.',
+                                                      title:
+                                                          'Overpayment',
+                                                    );
+                                                  },
+                                                );
+                                                // Reset to max allowed
+                                                widget
+                                                    .cashController
+                                                    .text = widget
+                                                    .totalAmount
+                                                    .toStringAsFixed(
+                                                      2,
+                                                    );
+                                                widget
+                                                    .bankController
+                                                    .text = '0.00';
+                                              } else {
+                                                double
+                                                bank =
+                                                    widget
+                                                        .totalAmount -
+                                                    cash;
+                                                widget
+                                                    .bankController
+                                                    .text = bank
+                                                    .toStringAsFixed(
+                                                      2,
+                                                    );
+                                              }
+
+                                              isUpdating =
+                                                  false;
+                                            },
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: EditCartTextField(
+                                            title: 'Bank',
+                                            hint:
+                                                'Bank Amount',
+                                            controller:
+                                                widget
+                                                    .bankController,
+                                            theme: theme,
+                                            onChanged: (
+                                              value,
+                                            ) {
+                                              if (isUpdating)
+                                                // ignore: curly_braces_in_flow_control_structures
+                                                return;
+                                              isUpdating =
+                                                  true;
+
+                                              double bank =
+                                                  double.tryParse(
+                                                    value.replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
+                                                  ) ??
+                                                  0;
+                                              if (bank >
+                                                  widget
+                                                      .totalAmount) {
+                                                showDialog(
+                                                  context:
+                                                      context,
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    var theme = Provider.of<
+                                                      ThemeProvider
+                                                    >(
+                                                      context,
+                                                    );
+                                                    return InfoAlert(
+                                                      theme:
+                                                          theme,
+                                                      message:
+                                                          'Bank cannot exceed total amount.',
+                                                      title:
+                                                          'Overpayment',
+                                                    );
+                                                  },
+                                                );
+                                                widget
+                                                    .bankController
+                                                    .text = widget
+                                                    .totalAmount
+                                                    .toStringAsFixed(
+                                                      2,
+                                                    );
+                                                widget
+                                                    .cashController
+                                                    .text = '0.00';
+                                              } else {
+                                                double
+                                                cash =
+                                                    widget
+                                                        .totalAmount -
+                                                    bank;
+                                                widget
+                                                    .cashController
+                                                    .text = cash
+                                                    .toStringAsFixed(
+                                                      2,
+                                                    );
+                                              }
+
+                                              isUpdating =
+                                                  false;
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 5),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),

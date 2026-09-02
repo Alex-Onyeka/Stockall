@@ -305,7 +305,7 @@ class _OrderListDesktopState
                                 MaterialPageRoute(
                                   builder: (context) {
                                     return MakeSalesPage(
-                                      cartItemTypeIndex: 2,
+                                      cartItemTypeIndex: 3,
                                     );
                                   },
                                 ),

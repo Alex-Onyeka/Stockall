@@ -32,11 +32,16 @@ class _MakeSalesPageState extends State<MakeSalesPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await returnMultiDisplayProvider().getAllSubWindows();
       await returnSalesProvider().fetchMainCart();
-      if (widget.cartItemTypeIndex == 2) {
+      if (widget.cartItemTypeIndex != 1 &&
+          widget.cartItemTypeIndex != null) {
         if (returnSalesProvider()
-            .currentCart()
-            .cartItems
-            .isNotEmpty) {
+                .currentCart()
+                .cartItems
+                .isNotEmpty &&
+            returnSalesProvider()
+                    .currentCart()
+                    .cartItemTypeIndex !=
+                2) {
           returnSalesProvider().addNewCart(
             context,
             TempCart(
@@ -60,7 +65,7 @@ class _MakeSalesPageState extends State<MakeSalesPage> {
           );
         } else {
           returnSalesProvider().switchInvoiceSale(
-            value: 2,
+            value: widget.cartItemTypeIndex ?? 1,
             context: context,
           );
         }

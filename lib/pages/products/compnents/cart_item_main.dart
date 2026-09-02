@@ -58,7 +58,7 @@ class _CartItemMainState extends State<CartItemMain> {
                   : Colors.white,
           child: Container(
             padding: EdgeInsets.symmetric(
-              horizontal: 10,
+              horizontal: 5,
               vertical: 5,
             ),
 
@@ -66,7 +66,7 @@ class _CartItemMainState extends State<CartItemMain> {
               children: [
                 Container(
                   height: 50,
-                  width: 50,
+                  width: 30,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
                     color:

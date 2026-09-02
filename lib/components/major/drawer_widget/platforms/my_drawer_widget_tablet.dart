@@ -14,7 +14,6 @@ import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
-import 'package:stockall/pages/orders/invoice_list/order_list_page.dart';
 import 'package:stockall/pages/production/production_page.dart';
 import 'package:stockall/pages/purchases/purchase_list/purchase_list.dart';
 import 'package:stockall/pages/report/report_page.dart';
@@ -447,32 +446,32 @@ class _MyDrawerWidgetTabletState
                                           .view_in_ar_rounded,
                                 ),
                               ),
-                              Visibility(
-                                visible: authorization(
-                                  authorized:
-                                      Authorizations()
-                                          .manageOrders,
-                                ),
-                                child: NavListTileTablet(
-                                  itemIndex: 10,
-                                  height: 14,
-                                  action: () {
-                                    checkNavigate(context);
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return OrderListPage();
-                                        },
-                                      ),
-                                    );
-                                  },
-                                  title: 'Orders',
-                                  icon:
-                                      Icons
-                                          .article_outlined,
-                                ),
-                              ),
+                              // Visibility(
+                              //   visible: authorization(
+                              //     authorized:
+                              //         Authorizations()
+                              //             .manageOrders,
+                              //   ),
+                              //   child: NavListTileTablet(
+                              //     itemIndex: 10,
+                              //     height: 14,
+                              //     action: () {
+                              //       checkNavigate(context);
+                              //       Navigator.push(
+                              //         context,
+                              //         MaterialPageRoute(
+                              //           builder: (context) {
+                              //             return OrderListPage();
+                              //           },
+                              //         ),
+                              //       );
+                              //     },
+                              //     title: 'Orders',
+                              //     icon:
+                              //         Icons
+                              //             .article_outlined,
+                              //   ),
+                              // ),
                               SizedBox(height: 5),
                               Divider(
                                 height:

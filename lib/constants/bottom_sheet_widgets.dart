@@ -2300,93 +2300,6 @@ void selectProductSales({
                                   });
                                 },
                                 focusNode: qttyNode,
-                                // onSubmitted: (value) {
-                                //   if (cartItem.item.sellingPrice ==
-                                //           null &&
-                                //       priceController
-                                //           .text
-                                //           .isEmpty) {
-                                //     showDialog(
-                                //       context: context,
-                                //       builder: (context) {
-                                //         return InfoAlert(
-                                //           theme: theme,
-                                //           message:
-                                //               'Custom Price Must be set before Item can be added to cart.',
-                                //           title:
-                                //               'Custom Price Not Set',
-                                //         );
-                                //       },
-                                //     ).then((_) {
-                                //       qttyNode.requestFocus();
-                                //     });
-                                //   } else {
-                                //     if (quantityController
-                                //             .text
-                                //             .isEmpty ||
-                                //         qqty == 0) {
-                                //       // Navigator.of(context).pop();
-
-                                //       showDialog(
-                                //         context: context,
-                                //         builder: (context) {
-                                //           return InfoAlert(
-                                //             theme: theme,
-                                //             message:
-                                //                 'Item quantity cannot be set to (0)',
-                                //             title:
-                                //                 'Invalid Quantity',
-                                //           );
-                                //         },
-                                //       ).then((_) {
-                                //         qttyNode.requestFocus();
-                                //       });
-                                //       ;
-                                //     } else {
-                                //       if (priceController
-                                //           .text
-                                //           .isNotEmpty) {
-                                //         cartItem.customPrice =
-                                //             double.tryParse(
-                                //               priceController.text
-                                //                   .replaceAll(
-                                //                     ',',
-                                //                     '',
-                                //                   ),
-                                //             );
-                                //         cartItem.setCustomPrice =
-                                //             true;
-                                //       } else {
-                                //         cartItem.setCustomPrice =
-                                //             false;
-                                //       }
-                                //       cartItem.setTotalPrice =
-                                //           returnSalesProvider()
-                                //               .setTotalPrice;
-                                //       cartItem.quantity =
-                                //           qqty.toDouble();
-                                //       returnSalesProvider()
-                                //           .addItemToCart(
-                                //             context: context,
-                                //             newItem: cartItem,
-                                //             isCustomEdit:
-                                //                 returnData()
-                                //                     .productList()
-                                //                     .where(
-                                //                       (product) =>
-                                //                           product
-                                //                               .uuid ==
-                                //                           cartItem
-                                //                               .item
-                                //                               .uuid,
-                                //                     )
-                                //                     .isEmpty,
-                                //           );
-                                //       Navigator.of(context).pop();
-                                //       closeAction();
-                                //     }
-                                //   }
-                                // },
                                 onChanged: (value) {
                                   double entered =
                                       double.tryParse(
@@ -2515,21 +2428,6 @@ void selectProductSales({
                                                     true;
                                               }
                                             });
-                                            // } else {
-                                            // salesProvider
-                                            //     .toggleGroupQuantity(
-                                            //       cartItem:
-                                            //           cartItem,
-                                            //       context:
-                                            //           context,
-                                            //     );
-                                            // setState(() {
-                                            //   quantityController
-                                            //           .text =
-                                            //       "0";
-                                            //   qqty = 0;
-                                            // });
-                                            // }
                                           },
                                           theme: theme,
                                         ),
@@ -2989,57 +2887,6 @@ void selectProductSales({
                                         setState(() {
                                           qqty = entered;
                                         });
-                                        // if (cartItem
-                                        //     .item
-                                        //     .isManaged) {
-                                        //   if (!returnSalesProvider().canAddProductToCart(
-                                        //     isEdit: isEdit,
-                                        //     newCartItem:
-                                        //         cartItem,
-                                        //     quantityToAdd:
-                                        //         isEdit
-                                        //             ? (qqty +
-                                        //                 1)
-                                        //             : (qqty +
-                                        //                     1) -
-                                        //                 existingQtty,
-                                        //   )) {
-                                        //     showDialog(
-                                        //       context:
-                                        //           context,
-                                        //       builder:
-                                        //           (
-                                        //             _,
-                                        //           ) => InfoAlert(
-                                        //             title:
-                                        //                 "Quantity Limit Reached",
-                                        //             message:
-                                        //                 "Only (${returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem)}) items available in stock.",
-                                        //             theme:
-                                        //                 theme,
-                                        //           ),
-                                        //     );
-                                        //     return;
-                                        //   } else {
-                                        //     setState(() {
-                                        //       qqty++;
-                                        //       quantityController
-                                        //               .text =
-                                        //           qqty.toString();
-                                        //       isOnscreenKeyboardClicked =
-                                        //           false;
-                                        //     });
-                                        //   }
-                                        // } else {
-                                        //   setState(() {
-                                        //     qqty++;
-                                        //     quantityController
-                                        //             .text =
-                                        //         qqty.toString();
-                                        //     isOnscreenKeyboardClicked =
-                                        //         false;
-                                        //   });
-                                        // }
                                       },
 
                                       child: SizedBox(
@@ -3257,6 +3104,11 @@ void selectProductSales({
                                                         .userShop()
                                                         ?.printSalesDocket ==
                                                     true &&
+                                                returnCompProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).getContinuousPrintDocket() &&
                                                 screenWidth(
                                                       context,
                                                     ) >
@@ -3917,14 +3769,6 @@ class _CustomBottomPanelState
                                               );
                                           if (items
                                               .isNotEmpty) {
-                                            // setState(() {
-                                            //   scanResult =
-                                            //       result;
-                                            //   productResults
-                                            //       .addAll(
-                                            //         items,
-                                            //       );
-                                            // });
                                             await playBeep();
                                           }
                                           setState(() {});
@@ -4259,8 +4103,11 @@ class _CustomBottomPanelState
                                                   return ProductTileCartSearch(
                                                     action: () {
                                                       addItemToCartFromCartItemList(
-                                                        closeAction:
-                                                            () {},
+                                                        closeAction: () {
+                                                          Navigator.of(
+                                                            context,
+                                                          ).pop();
+                                                        },
                                                         context:
                                                             context,
                                                         priceController:
@@ -4903,6 +4750,10 @@ class MultipleTemporaryCartItems extends StatelessWidget {
                                       .userShop()
                                       ?.printSalesDocket ==
                                   true &&
+                              returnCompProvider(
+                                context,
+                                listen: false,
+                              ).getContinuousPrintDocket() &&
                               screenWidth(context) >
                                   tabletScreenSmall) {
                             var res =

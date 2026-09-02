@@ -9,6 +9,7 @@ import 'package:stockall/classes/temp_orders/orders.dart';
 import 'package:stockall/classes/temp_orders/unsynced/created/created_orders.dart';
 import 'package:stockall/classes/temp_orders/unsynced/deleted/deleted_orders.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
@@ -25,6 +26,7 @@ import 'package:stockall/pages/report/invoice_sales_report/platforms/invoice_sal
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 // // //
@@ -101,6 +103,34 @@ class OrdersProvider extends ChangeNotifier {
       return null;
     }
     // }
+  }
+
+  Future<int> updateOrder({required Orders order}) async {
+    order.updatedAt = DateTime.now();
+    try {
+      await OrdersFunc().createOrder(order);
+      var containsCreated =
+          CreatedOrdersFunc()
+              .getOrders()
+              .where((exp) => exp.order.uuid == order.uuid)
+              .toList();
+      if (containsCreated.isEmpty) {
+        await UpdatedOrdersFunc().createUpdatedOrder(order);
+      } else {
+        await CreatedOrdersFunc().createOrders(
+          CreatedOrders(order: order),
+        );
+      }
+      notifyListeners();
+      await loadOrdersOffline(shopId());
+      return 1;
+    } catch (e) {
+      await mainLocalLog(
+        'Error Updating Orders: ${e.toString()}',
+      );
+      notifyListeners();
+      return 0;
+    }
   }
 
   Future<void> loadSingleOrder({
@@ -419,10 +449,9 @@ class OrdersProvider extends ChangeNotifier {
         final tempOrders =
             UpdatedOrdersFunc().getOrderIds().toList();
         for (var rec in tempOrders) {
-          final updateData = {'is_order': false};
           await supabase
               .from(tableName)
-              .update(updateData)
+              .update(rec.order.toJson())
               .eq('uuid', rec.order.uuid ?? '');
           await UpdatedOrdersFunc().deleteUpdatedOrder(
             rec.order.uuid ?? '',
@@ -562,6 +591,8 @@ class OrdersProvider extends ChangeNotifier {
       uuid: record.uuid,
       itemUuid: product.uuid,
       isVoid: false,
+      remainingBalance: record.remainingBalance,
+      remainingQuantity: record.remainingQuantity,
       item: product,
       quantity: record.quantity,
       discount: record.discount,
@@ -722,6 +753,224 @@ class OrdersProvider extends ChangeNotifier {
         );
       },
     );
+  }
+
+  //
+  //
+  //
+  //
+  //
+
+  double calcSalesRecordRevenue({
+    required double invoceTotalAmount,
+    required double receiptPayment,
+    required double salesRecodRevenue,
+  }) {
+    double paymentPercent =
+        ((receiptPayment * 100) / invoceTotalAmount);
+    double result =
+        ((paymentPercent * salesRecodRevenue) / 100);
+    return result;
+  }
+
+  double calcSalesRecordCostPrice({
+    required double invoceTotalAmount,
+    required double receiptPayment,
+    required double salesRecodCostPrice,
+  }) {
+    double paymentPercent =
+        ((receiptPayment * 100) / invoceTotalAmount);
+    double result =
+        ((paymentPercent * salesRecodCostPrice) / 100);
+    return result;
+  }
+
+  double calcSalesRecordDiscountedAmount({
+    required double invoceTotalAmount,
+    required double receiptPayment,
+    required double salesRecodDiscountedAmount,
+  }) {
+    double paymentPercent =
+        ((receiptPayment * 100) / invoceTotalAmount);
+    double result =
+        ((paymentPercent * salesRecodDiscountedAmount) /
+            100);
+    return result;
+  }
+
+  double calcSalesRecordOriginalCost({
+    required double invoceTotalAmount,
+    required double receiptPayment,
+    required double salesRecodOriginalCost,
+  }) {
+    double paymentPercent =
+        ((receiptPayment * 100) / invoceTotalAmount);
+    double result =
+        ((paymentPercent * salesRecodOriginalCost) / 100);
+    return result;
+  }
+  //
+
+  Future<int> makeOrderPayment({
+    required Orders order,
+    required List<OrderItems> orderItemsNew,
+    required double currentPayment,
+    required String comment,
+  }) async {
+    try {
+      final createdAt = DateTime.now().toUtc();
+
+      TempMainReceipt receipt = TempMainReceipt(
+        isInvoice: false,
+        orderUuid: order.uuid,
+        comment: comment,
+        subStaffName: order.subStaffName,
+        createdAt: createdAt,
+        shopId: order.shopId,
+        staffId: AuthService().currentUser!,
+        staffName:
+            "${returnUserProviderSingle().currentUserMain!.name} ${returnUserProviderSingle().currentUserMain!.lastName}",
+        paymentMethod: 'Bank',
+        bank: currentPayment,
+        customerAccount: 0,
+        cashAlt: 0,
+        customerName: order.customerName,
+        customerUuid: order.customerId,
+        departmentName: order.departmentName,
+        departmentUuidNew: order.departmentUuid,
+        uuid: uuidGen(),
+        generalDiscount: order.generalDiscount,
+        fixedDiscount: order.fixedDiscount,
+        vat: order.vat,
+        originalCost: order.originalCost,
+        balance: getBalance(order: order) - currentPayment,
+        subStaffUuid: order.subStaffUuid,
+        cartName: order.cartName,
+      );
+
+      await mainLocalLog('Checkout Started');
+      var res = await returnReceiptProviderSingle()
+          .createReceipt(receipt);
+      if (res != null) {
+        await mainLocalLog('Receipt Created');
+        final productSaleRecords =
+            orderItemsNew.map((record) {
+              mainLocalLog(
+                'Sales Record about to be Created',
+              );
+              return TempProductSaleRecord(
+                isVoid: false,
+                customPriceSet: record.customPriceSet,
+                createdAt: createdAt,
+                productId: 0,
+                productUuid: record.productUuid,
+                productName: record.productName,
+                shopId: shopId(),
+                staffId: AuthService().currentUser!,
+                staffName:
+                    "${returnUserProviderSingle().currentUserMain!.name} ${returnUserProviderSingle().currentUserMain!.lastName}",
+                // customerId: customerId,
+                customerUuid: order.customerId,
+                customerName: order.customerName,
+                recepitId: 0,
+                receiptUuid: res.uuid,
+                quantity: record.remainingQuantity ?? 0,
+                revenue: calcSalesRecordRevenue(
+                  invoceTotalAmount:
+                      getTotalMainRevenueOrder(
+                        order: order,
+                      ),
+                  receiptPayment: currentPayment,
+                  salesRecodRevenue: record.revenue,
+                ),
+                costPrice: calcSalesRecordCostPrice(
+                  invoceTotalAmount:
+                      getTotalMainRevenueOrder(
+                        order: order,
+                      ),
+                  receiptPayment: currentPayment,
+                  salesRecodCostPrice:
+                      (record.costPrice ?? 0),
+                ),
+                discountedAmount:
+                    calcSalesRecordDiscountedAmount(
+                      invoceTotalAmount:
+                          getTotalMainRevenueOrder(
+                            order: order,
+                          ),
+                      receiptPayment: currentPayment,
+                      salesRecodDiscountedAmount:
+                          (record.discountedAmount ?? 0),
+                    ),
+                originalCost: calcSalesRecordOriginalCost(
+                  invoceTotalAmount:
+                      getTotalMainRevenueOrder(
+                        order: order,
+                      ),
+                  receiptPayment: currentPayment,
+                  salesRecodOriginalCost:
+                      (record.originalCost ?? 0),
+                ),
+                discount: record.discount,
+                fixedDiscount: record.fixedDiscount,
+
+                addToStock: record.addToStock,
+                departmentName:
+                    record.departmentName ??
+                    returnDepartmentProvider()
+                        .currentDepartment()
+                        ?.name,
+                departmentUuid:
+                    record.departmentUuid ??
+                    returnDepartmentProvider()
+                        .currentDepartment()
+                        ?.uuid,
+                uuid: uuidGen(),
+                isProductManaged: record.isProductManaged,
+                setTotalPrice: record.setTotalPrice,
+                unit: record.unit,
+                useWholeSalePrice: record.useWholeSalePrice,
+                useGroupQuantity: record.useGroupQuantity,
+                qttyPerGroup: record.qttyPerGroup,
+                // orderUuid: order.uuid,
+              );
+            }).toList();
+
+        await mainLocalLog(
+          'Creating Record Sales About to Start',
+        );
+        await returnReceiptProviderSingle()
+            .createProductSaleRecord(
+              records: productSaleRecords,
+              isPartPayment: true,
+            );
+        for (var item in orderItemsNew) {
+          var newItem = order.orderItems.firstWhere(
+            (itemm) => itemm.uuid == item.uuid,
+          );
+          newItem.remainingBalance =
+              (newItem.remainingBalance ?? 0) -
+              (item.remainingBalance ?? 0);
+        }
+        order.balance = (order.total ?? 0) - currentPayment;
+
+        await updateOrder(order: order);
+        loadOrdersOffline(shopId());
+        returnData().syncData();
+        notifyListeners();
+        return 1;
+      } else {
+        await mainLocalLog(
+          'Failed to Create Receipt From Order',
+        );
+        return 0;
+      }
+    } catch (e) {
+      await mainLocalLog(
+        'Error Creating Receipt From Order: ${e.toString()}',
+      );
+      return 0;
+    }
   }
 
   //
