@@ -223,6 +223,7 @@ class CustomerAccountReceiptsProvider
   // READ all CustomerAccountReceipts for a shop
   Future<List<CustomerAccountReceipts>>
   getCustomerAccountReceipts(int shopId) async {
+    await getCustomerAccountReceiptsOffline();
     bool isOnline = await connectivity.isOnline();
     if (isOnline &&
         CustomerAccountReceiptsFunc().isSynced() &&

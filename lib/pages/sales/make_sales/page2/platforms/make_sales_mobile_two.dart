@@ -9,6 +9,7 @@ import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/item_comment_widget.dart';
 import 'package:stockall/pages/sales/make_sales/page1/platforms/components/sub_staff_selection_widget.dart';
@@ -758,62 +759,79 @@ class _MakeSalesMobileTwoState
                                   ),
                                 ],
                               ),
-                              Column(
-                                children: [
-                                  SizedBox(height: 5),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b4
-                                                      .fontSize,
-                                              // fontWeight: FontWeight.bold,
+                              Visibility(
+                                visible:
+                                    GeneralSettingsAuthAction()
+                                        .manageCustomersAccountAndPoints(
+                                          context: null,
+                                        ) &&
+                                    returnShopProvider()
+                                            .userShop()
+                                            ?.manageCustomerReward ==
+                                        true &&
+                                    returnSalesProviderContext(
+                                              context,
+                                            )
+                                            .currentCart()
+                                            .selectedCustomer !=
+                                        null,
+                                child: Column(
+                                  children: [
+                                    SizedBox(height: 5),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b4
+                                                        .fontSize,
+                                                // fontWeight: FontWeight.bold,
+                                              ),
+                                              'Cashback:',
                                             ),
-                                            'Cashback:',
-                                          ),
-                                          Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b4
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
-                                              // fontWeight: FontWeight.bold,
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b4
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                                // fontWeight: FontWeight.bold,
+                                              ),
+                                              ' (${returnShopProvider().userShop()?.customerPercentageReward ?? 0}%)',
                                             ),
-                                            ' (${returnShopProvider().userShop()?.customerPercentageReward ?? 0}%)',
-                                          ),
-                                        ],
-                                      ),
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b4
-                                                  .fontSize,
+                                          ],
                                         ),
-                                        formatMoney(
-                                          returnSalesProviderContext(
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b4
+                                                    .fontSize,
+                                          ),
+                                          formatMoney(
+                                            returnSalesProviderContext(
+                                              context,
+                                            ).calcCashBackReward(),
                                             context,
-                                          ).calcCashBackReward(),
-                                          context,
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 5),
-                                ],
+                                      ],
+                                    ),
+                                    SizedBox(height: 5),
+                                  ],
+                                ),
                               ),
                               Row(
                                 mainAxisAlignment:

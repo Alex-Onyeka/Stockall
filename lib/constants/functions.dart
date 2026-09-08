@@ -42,7 +42,9 @@ Future<void> copyToClipboard({
 }
 
 void openWhatsApp() async {
-  final phone = '2347048507587'; // your number
+  final phone = getContactPhoneNumber(
+    formatIndex: 2,
+  ).substring(1); // your number
   final message = Uri.encodeComponent(
     "Hello, Stockall Solutions; ",
   );
@@ -65,12 +67,12 @@ Future<void> launchUrlMain(url) async {
 void phoneCall() async {
   final Uri uri = Uri(
     scheme: 'tel',
-    path: '+2347048507587',
+    path: getContactPhoneNumber(formatIndex: 2),
   );
   if (await canLaunchUrl(uri)) {
     await launchUrl(uri);
   } else {
-    throw 'Could not launch +2347048507587';
+    throw 'Could not launch ${getContactPhoneNumber(formatIndex: 2)}';
   }
 }
 
@@ -123,6 +125,11 @@ class Authorizations {
       'Toggle Manage Customers Reward';
   String toggleManageCustomersAccount =
       'Toggle Manage Customers Account';
+  String redeemCustomersReward = 'Redeem Customers Reward';
+  String debitOrCreditCustomersAccount =
+      'Debit Or Credit Customers Account';
+  String makeSalesFromCustomersAccount =
+      'Make Sales From Customers Account';
   String makeSale = 'Make Sale';
   String deleteSale = 'Delete Sales';
   String updateSale = 'Update Sales';

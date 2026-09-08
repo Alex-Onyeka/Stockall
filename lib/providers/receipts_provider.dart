@@ -261,6 +261,7 @@ class ReceiptsProvider extends ChangeNotifier {
   Future<List<TempMainReceipt>> loadReceipts(
     int shopId,
   ) async {
+    await loadReceiptsOffline(shopId);
     bool isOnline = await connectivity.isOnline();
     List<Map<String, dynamic>> tempList = [];
     if (isOnline && MainReceiptFunc().isSynced()) {

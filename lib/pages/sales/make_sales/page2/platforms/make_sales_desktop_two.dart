@@ -432,7 +432,11 @@ class _MakeSalesDesktopTwoState
                                                         returnSalesProviderContext(
                                                               context,
                                                             ).currentCart().selectedCustomer !=
-                                                            null,
+                                                            null &&
+                                                        authorization(
+                                                          authorized:
+                                                              Authorizations().makeSalesFromCustomersAccount,
+                                                        ),
                                                     child: PaymentTypeButton(
                                                       index:
                                                           3,

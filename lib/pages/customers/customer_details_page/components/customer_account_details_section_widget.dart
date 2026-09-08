@@ -6,6 +6,7 @@ import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/invoices/invoice_page/invoice_page_desktop.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -81,7 +82,7 @@ class _CustomerAccountDetailsSectionWidgetState
                         fontSize:
                             theme.mobileTexts.b4.fontSize,
                         fontWeight: FontWeight.normal,
-                        color: Colors.grey.shade300,
+                        color: Colors.grey.shade200,
                       ),
                       'Account Details'.toUpperCase(),
                     ),
@@ -110,7 +111,7 @@ class _CustomerAccountDetailsSectionWidgetState
                                     .h2
                                     .fontSize,
                             fontWeight: FontWeight.bold,
-                            color: Colors.grey.shade200,
+                            color: Colors.grey.shade100,
                           ),
                           formatMoneyBig(
                             amount:
@@ -132,7 +133,7 @@ class _CustomerAccountDetailsSectionWidgetState
                                     .b4
                                     .fontSize,
                             fontWeight: FontWeight.normal,
-                            color: Colors.grey.shade400,
+                            color: Colors.grey.shade200,
                           ),
                           "Reward Earnings:",
                         ),
@@ -144,7 +145,7 @@ class _CustomerAccountDetailsSectionWidgetState
                                     .b4
                                     .fontSize,
                             fontWeight: FontWeight.bold,
-                            color: Colors.grey.shade300,
+                            color: Colors.grey.shade100,
                           ),
                           formatMoneyBig(
                             amount:
@@ -155,71 +156,80 @@ class _CustomerAccountDetailsSectionWidgetState
                             context: context,
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 10.0,
+                        Visibility(
+                          visible: authorization(
+                            authorized:
+                                Authorizations()
+                                    .redeemCustomersReward,
                           ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: Ink(
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      2,
-                                    ),
-                                border: Border.all(
-                                  color:
-                                      Colors.grey.shade400,
-                                ),
-                                // color: Colors.grey.shade100,
-                              ),
-                              child: InkWell(
-                                onTap: () {
-                                  redeemRewardAction(
-                                    context: context,
-                                    customer:
-                                        widget.customer,
-                                    theme: theme,
-                                  );
-                                },
-                                mouseCursor:
-                                    SystemMouseCursors
-                                        .click,
-                                child: Container(
-                                  padding:
-                                      EdgeInsets.symmetric(
-                                        vertical: 2,
-                                        horizontal: 6,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              left: 10.0,
+                            ),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: Ink(
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        2,
                                       ),
-                                  child: Row(
-                                    spacing: 4,
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b4
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                  border: Border.all(
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade400,
+                                  ),
+                                  // color: Colors.grey.shade100,
+                                ),
+                                child: InkWell(
+                                  onTap: () {
+                                    redeemRewardAction(
+                                      context: context,
+                                      customer:
+                                          widget.customer,
+                                      theme: theme,
+                                    );
+                                  },
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
+                                  child: Container(
+                                    padding:
+                                        EdgeInsets.symmetric(
+                                          vertical: 2,
+                                          horizontal: 6,
+                                        ),
+                                    child: Row(
+                                      spacing: 4,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b4
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                            color:
+                                                Colors
+                                                    .grey
+                                                    .shade300,
+                                          ),
+                                          'Redeem',
+                                        ),
+                                        Icon(
+                                          size: 12,
                                           color:
                                               Colors
                                                   .grey
                                                   .shade300,
+                                          Icons.check,
                                         ),
-                                        'Redeem',
-                                      ),
-                                      Icon(
-                                        size: 12,
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade300,
-                                        Icons.check,
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -231,50 +241,82 @@ class _CustomerAccountDetailsSectionWidgetState
                   ],
                 ),
                 // SizedBox(height: 5),
-                Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.start,
-                  spacing: 10,
-                  children: [
-                    SizedBox(width: 10),
-                    ActionButtonSmall(
-                      isLoading: false,
-                      action: () {
-                        showDialog(
-                          context: context,
-                          builder: (dialogContext) {
-                            return DialogTemplate(
-                              theme: theme,
-                              message:
-                                  'You are about to Top up this Customers Account Balance.',
-                              title:
-                                  'Top Up Account Balance',
-                              action: () {
-                                topUpAction(
-                                  context: dialogContext,
-                                  customer: widget.customer,
-                                  moneyTextField:
-                                      moneyTextField,
-                                  commentTextField:
-                                      commentTextField,
-                                  theme: theme,
-                                );
-                              },
-                              widget: Column(
-                                spacing: 10,
-                                children: [
-                                  SizedBox(
-                                    height: 40,
-                                    // width: 200,
-                                    child: MoneyTextfield(
-                                      title: 'title',
-                                      hint: 'Enter Amount',
+                Visibility(
+                  visible: authorization(
+                    authorized:
+                        Authorizations()
+                            .debitOrCreditCustomersAccount,
+                  ),
+                  child: Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.start,
+                    spacing: 10,
+                    children: [
+                      SizedBox(width: 10),
+                      ActionButtonSmall(
+                        isLoading: false,
+                        action: () {
+                          showDialog(
+                            context: context,
+                            builder: (dialogContext) {
+                              return DialogTemplate(
+                                theme: theme,
+                                message:
+                                    'You are about to Top up this Customers Account Balance.',
+                                title:
+                                    'Top Up Account Balance',
+                                action: () {
+                                  topUpAction(
+                                    context: dialogContext,
+                                    customer:
+                                        widget.customer,
+                                    moneyTextField:
+                                        moneyTextField,
+                                    commentTextField:
+                                        commentTextField,
+                                    theme: theme,
+                                  );
+                                },
+                                widget: Column(
+                                  spacing: 10,
+                                  children: [
+                                    SizedBox(
+                                      height: 40,
+                                      // width: 200,
+                                      child: MoneyTextfield(
+                                        title: 'title',
+                                        hint:
+                                            'Enter Amount',
+                                        controller:
+                                            moneyTextField,
+                                        theme: theme,
+                                        showTitle: false,
+                                        autoFocus: true,
+                                        onSubmitted: (p0) {
+                                          topUpAction(
+                                            context:
+                                                dialogContext,
+                                            customer:
+                                                widget
+                                                    .customer,
+                                            moneyTextField:
+                                                moneyTextField,
+                                            commentTextField:
+                                                commentTextField,
+                                            theme: theme,
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    GeneralTextfieldOnly(
+                                      hint:
+                                          'Leave a Comment',
                                       controller:
-                                          moneyTextField,
+                                          commentTextField,
+                                      minLines: 3,
+                                      lines: 5,
                                       theme: theme,
-                                      showTitle: false,
-                                      autoFocus: true,
-                                      onSubmitted: (p0) {
+                                      onSubmitted: (value) {
                                         topUpAction(
                                           context:
                                               dialogContext,
@@ -289,106 +331,112 @@ class _CustomerAccountDetailsSectionWidgetState
                                         );
                                       },
                                     ),
-                                  ),
-                                  GeneralTextfieldOnly(
-                                    hint: 'Leave a Comment',
-                                    controller:
-                                        commentTextField,
-                                    minLines: 3,
-                                    lines: 5,
-                                    theme: theme,
-                                    onSubmitted: (value) {
-                                      topUpAction(
-                                        context:
-                                            dialogContext,
-                                        customer:
-                                            widget.customer,
-                                        moneyTextField:
-                                            moneyTextField,
-                                        commentTextField:
-                                            commentTextField,
-                                        theme: theme,
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ).then((_) {
-                          Future.delayed(
-                            (Duration(microseconds: 500)),
-                            () {
-                              commentTextField.clear();
-                              moneyTextField.clear();
+                                  ],
+                                ),
+                              );
                             },
-                          );
-                        });
-                      },
-                      text: 'Credit',
-                      textColor: Colors.grey.shade300,
-                      icon: Icon(
-                        size: 16,
-                        color: Colors.green.shade600,
-                        Icons.add,
-                      ),
-                    ),
-                    ActionButtonSmall(
-                      isLoading: false,
-                      action: () {
-                        showDialog(
-                          context: context,
-                          builder: (dialogContext) {
-                            return DialogTemplate(
-                              theme: theme,
-                              message:
-                                  'You are about to Debit this Customers Account Balance.',
-                              title:
-                                  'Debit Account Balance',
-                              action: () {
-                                debitAction(
-                                  context: dialogContext,
-                                  customer: widget.customer,
-                                  moneyTextField:
-                                      moneyTextField,
-                                  commentTextField:
-                                      commentTextField,
-                                  theme: theme,
-                                );
+                          ).then((_) {
+                            Future.delayed(
+                              (Duration(microseconds: 500)),
+                              () {
+                                commentTextField.clear();
+                                moneyTextField.clear();
                               },
-                              widget: Column(
-                                spacing: 10,
-                                children: [
-                                  SizedBox(
-                                    height: 40,
-                                    // width: 200,
-                                    child: MoneyTextfield(
-                                      title: '',
-                                      hint: 'Enter Amount',
+                            );
+                          });
+                        },
+                        text: 'Credit',
+                        textColor: Colors.grey.shade200,
+                        icon: Icon(
+                          size: 16,
+                          color: Colors.green.shade600,
+                          Icons.add,
+                        ),
+                      ),
+                      ActionButtonSmall(
+                        isLoading: false,
+                        action: () {
+                          showDialog(
+                            context: context,
+                            builder: (dialogContext) {
+                              return DialogTemplate(
+                                theme: theme,
+                                message:
+                                    'You are about to Debit this Customers Account Balance.',
+                                title:
+                                    'Debit Account Balance',
+                                action: () {
+                                  debitAction(
+                                    context: dialogContext,
+                                    customer:
+                                        widget.customer,
+                                    moneyTextField:
+                                        moneyTextField,
+                                    commentTextField:
+                                        commentTextField,
+                                    theme: theme,
+                                  );
+                                },
+                                widget: Column(
+                                  spacing: 10,
+                                  children: [
+                                    SizedBox(
+                                      height: 40,
+                                      // width: 200,
+                                      child: MoneyTextfield(
+                                        title: '',
+                                        hint:
+                                            'Enter Amount',
+                                        controller:
+                                            moneyTextField,
+                                        theme: theme,
+                                        showTitle: false,
+                                        autoFocus: true,
+                                        onChanged: (p0) {
+                                          if (widget
+                                                  .customer
+                                                  .getBalance() <
+                                              (double.tryParse(
+                                                    moneyTextField
+                                                        .text
+                                                        .replaceAll(
+                                                          ',',
+                                                          '',
+                                                        ),
+                                                  ) ??
+                                                  0)) {
+                                            setState(() {
+                                              moneyTextField
+                                                      .text =
+                                                  '0';
+                                            });
+                                          }
+                                        },
+                                        onSubmitted: (p0) {
+                                          debitAction(
+                                            context:
+                                                dialogContext,
+                                            customer:
+                                                widget
+                                                    .customer,
+                                            moneyTextField:
+                                                moneyTextField,
+                                            commentTextField:
+                                                commentTextField,
+                                            theme: theme,
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    GeneralTextfieldOnly(
+                                      hint:
+                                          'Leave a Comment',
                                       controller:
-                                          moneyTextField,
+                                          commentTextField,
+                                      minLines: 3,
+                                      lines: 5,
                                       theme: theme,
-                                      showTitle: false,
-                                      autoFocus: true,
-                                      onChanged: (p0) {
-                                        if (widget.customer
-                                                .getBalance() <
-                                            (double.tryParse(
-                                                  moneyTextField
-                                                      .text
-                                                      .replaceAll(
-                                                        ',',
-                                                        '',
-                                                      ),
-                                                ) ??
-                                                0)) {
-                                          setState(() {
-                                            moneyTextField
-                                                .text = '0';
-                                          });
-                                        }
-                                      },
-                                      onSubmitted: (p0) {
+                                      onSubmitted: (value) {
                                         debitAction(
                                           context:
                                               dialogContext,
@@ -403,51 +451,30 @@ class _CustomerAccountDetailsSectionWidgetState
                                         );
                                       },
                                     ),
-                                  ),
-                                  GeneralTextfieldOnly(
-                                    hint: 'Leave a Comment',
-                                    controller:
-                                        commentTextField,
-                                    minLines: 3,
-                                    lines: 5,
-                                    theme: theme,
-                                    onSubmitted: (value) {
-                                      debitAction(
-                                        context:
-                                            dialogContext,
-                                        customer:
-                                            widget.customer,
-                                        moneyTextField:
-                                            moneyTextField,
-                                        commentTextField:
-                                            commentTextField,
-                                        theme: theme,
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ).then((_) {
-                          Future.delayed(
-                            (Duration(microseconds: 500)),
-                            () {
-                              commentTextField.clear();
-                              moneyTextField.clear();
+                                  ],
+                                ),
+                              );
                             },
-                          );
-                        });
-                      },
-                      text: 'Debit',
-                      textColor: Colors.grey.shade300,
-                      icon: Icon(
-                        size: 16,
-                        color: Colors.red.shade400,
-                        Icons.remove,
+                          ).then((_) {
+                            Future.delayed(
+                              (Duration(microseconds: 500)),
+                              () {
+                                commentTextField.clear();
+                                moneyTextField.clear();
+                              },
+                            );
+                          });
+                        },
+                        text: 'Debit',
+                        textColor: Colors.grey.shade200,
+                        icon: Icon(
+                          size: 16,
+                          color: Colors.red.shade400,
+                          Icons.remove,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -538,50 +565,82 @@ class _CustomerAccountDetailsSectionWidgetState
                   ],
                 ),
                 // SizedBox(height: 5),
-                Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.start,
-                  spacing: 10,
-                  children: [
-                    SizedBox(width: 10),
-                    ActionButtonSmall(
-                      isLoading: false,
-                      action: () {
-                        showDialog(
-                          context: context,
-                          builder: (dialogContext) {
-                            return DialogTemplate(
-                              theme: theme,
-                              message:
-                                  'You are about to Top up this Customers Account Balance.',
-                              title:
-                                  'Top Up Account Balance',
-                              action: () {
-                                topUpAction(
-                                  context: dialogContext,
-                                  customer: widget.customer,
-                                  moneyTextField:
-                                      moneyTextField,
-                                  commentTextField:
-                                      commentTextField,
-                                  theme: theme,
-                                );
-                              },
-                              widget: Column(
-                                spacing: 10,
-                                children: [
-                                  SizedBox(
-                                    height: 40,
-                                    // width: 200,
-                                    child: MoneyTextfield(
-                                      title: 'title',
-                                      hint: 'Enter Amount',
+                Visibility(
+                  visible: authorization(
+                    authorized:
+                        Authorizations()
+                            .debitOrCreditCustomersAccount,
+                  ),
+                  child: Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.start,
+                    spacing: 10,
+                    children: [
+                      SizedBox(width: 10),
+                      ActionButtonSmall(
+                        isLoading: false,
+                        action: () {
+                          showDialog(
+                            context: context,
+                            builder: (dialogContext) {
+                              return DialogTemplate(
+                                theme: theme,
+                                message:
+                                    'You are about to Top up this Customers Account Balance.',
+                                title:
+                                    'Top Up Account Balance',
+                                action: () {
+                                  topUpAction(
+                                    context: dialogContext,
+                                    customer:
+                                        widget.customer,
+                                    moneyTextField:
+                                        moneyTextField,
+                                    commentTextField:
+                                        commentTextField,
+                                    theme: theme,
+                                  );
+                                },
+                                widget: Column(
+                                  spacing: 10,
+                                  children: [
+                                    SizedBox(
+                                      height: 40,
+                                      // width: 200,
+                                      child: MoneyTextfield(
+                                        title: 'title',
+                                        hint:
+                                            'Enter Amount',
+                                        controller:
+                                            moneyTextField,
+                                        theme: theme,
+                                        showTitle: false,
+                                        autoFocus: true,
+                                        onSubmitted: (p0) {
+                                          topUpAction(
+                                            context:
+                                                dialogContext,
+                                            customer:
+                                                widget
+                                                    .customer,
+                                            moneyTextField:
+                                                moneyTextField,
+                                            commentTextField:
+                                                commentTextField,
+                                            theme: theme,
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    GeneralTextfieldOnly(
+                                      hint:
+                                          'Leave a Comment',
                                       controller:
-                                          moneyTextField,
+                                          commentTextField,
+                                      minLines: 3,
+                                      lines: 5,
                                       theme: theme,
-                                      showTitle: false,
-                                      autoFocus: true,
-                                      onSubmitted: (p0) {
+                                      onSubmitted: (value) {
                                         topUpAction(
                                           context:
                                               dialogContext,
@@ -596,106 +655,112 @@ class _CustomerAccountDetailsSectionWidgetState
                                         );
                                       },
                                     ),
-                                  ),
-                                  GeneralTextfieldOnly(
-                                    hint: 'Leave a Comment',
-                                    controller:
-                                        commentTextField,
-                                    minLines: 3,
-                                    lines: 5,
-                                    theme: theme,
-                                    onSubmitted: (value) {
-                                      topUpAction(
-                                        context:
-                                            dialogContext,
-                                        customer:
-                                            widget.customer,
-                                        moneyTextField:
-                                            moneyTextField,
-                                        commentTextField:
-                                            commentTextField,
-                                        theme: theme,
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ).then((_) {
-                          Future.delayed(
-                            (Duration(microseconds: 500)),
-                            () {
-                              commentTextField.clear();
-                              moneyTextField.clear();
+                                  ],
+                                ),
+                              );
                             },
-                          );
-                        });
-                      },
-                      text: 'Credit',
-                      textColor: Colors.grey.shade300,
-                      icon: Icon(
-                        size: 16,
-                        color: Colors.green.shade600,
-                        Icons.add,
-                      ),
-                    ),
-                    ActionButtonSmall(
-                      isLoading: false,
-                      action: () {
-                        showDialog(
-                          context: context,
-                          builder: (dialogContext) {
-                            return DialogTemplate(
-                              theme: theme,
-                              message:
-                                  'You are about to Debit this Customers Account Balance.',
-                              title:
-                                  'Debit Account Balance',
-                              action: () {
-                                debitAction(
-                                  context: dialogContext,
-                                  customer: widget.customer,
-                                  moneyTextField:
-                                      moneyTextField,
-                                  commentTextField:
-                                      commentTextField,
-                                  theme: theme,
-                                );
+                          ).then((_) {
+                            Future.delayed(
+                              (Duration(microseconds: 500)),
+                              () {
+                                commentTextField.clear();
+                                moneyTextField.clear();
                               },
-                              widget: Column(
-                                spacing: 10,
-                                children: [
-                                  SizedBox(
-                                    height: 40,
-                                    // width: 200,
-                                    child: MoneyTextfield(
-                                      title: '',
-                                      hint: 'Enter Amount',
+                            );
+                          });
+                        },
+                        text: 'Credit',
+                        textColor: Colors.grey.shade200,
+                        icon: Icon(
+                          size: 16,
+                          color: Colors.green.shade600,
+                          Icons.add,
+                        ),
+                      ),
+                      ActionButtonSmall(
+                        isLoading: false,
+                        action: () {
+                          showDialog(
+                            context: context,
+                            builder: (dialogContext) {
+                              return DialogTemplate(
+                                theme: theme,
+                                message:
+                                    'You are about to Debit this Customers Account Balance.',
+                                title:
+                                    'Debit Account Balance',
+                                action: () {
+                                  debitAction(
+                                    context: dialogContext,
+                                    customer:
+                                        widget.customer,
+                                    moneyTextField:
+                                        moneyTextField,
+                                    commentTextField:
+                                        commentTextField,
+                                    theme: theme,
+                                  );
+                                },
+                                widget: Column(
+                                  spacing: 10,
+                                  children: [
+                                    SizedBox(
+                                      height: 40,
+                                      // width: 200,
+                                      child: MoneyTextfield(
+                                        title: '',
+                                        hint:
+                                            'Enter Amount',
+                                        controller:
+                                            moneyTextField,
+                                        theme: theme,
+                                        showTitle: false,
+                                        autoFocus: true,
+                                        onChanged: (p0) {
+                                          if (widget
+                                                  .customer
+                                                  .getBalance() <
+                                              (double.tryParse(
+                                                    moneyTextField
+                                                        .text
+                                                        .replaceAll(
+                                                          ',',
+                                                          '',
+                                                        ),
+                                                  ) ??
+                                                  0)) {
+                                            setState(() {
+                                              moneyTextField
+                                                      .text =
+                                                  '0';
+                                            });
+                                          }
+                                        },
+                                        onSubmitted: (p0) {
+                                          debitAction(
+                                            context:
+                                                dialogContext,
+                                            customer:
+                                                widget
+                                                    .customer,
+                                            moneyTextField:
+                                                moneyTextField,
+                                            commentTextField:
+                                                commentTextField,
+                                            theme: theme,
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    GeneralTextfieldOnly(
+                                      hint:
+                                          'Leave a Comment',
                                       controller:
-                                          moneyTextField,
+                                          commentTextField,
+                                      minLines: 3,
+                                      lines: 5,
                                       theme: theme,
-                                      showTitle: false,
-                                      autoFocus: true,
-                                      onChanged: (p0) {
-                                        if (widget.customer
-                                                .getBalance() <
-                                            (double.tryParse(
-                                                  moneyTextField
-                                                      .text
-                                                      .replaceAll(
-                                                        ',',
-                                                        '',
-                                                      ),
-                                                ) ??
-                                                0)) {
-                                          setState(() {
-                                            moneyTextField
-                                                .text = '0';
-                                          });
-                                        }
-                                      },
-                                      onSubmitted: (p0) {
+                                      onSubmitted: (value) {
                                         debitAction(
                                           context:
                                               dialogContext,
@@ -710,51 +775,30 @@ class _CustomerAccountDetailsSectionWidgetState
                                         );
                                       },
                                     ),
-                                  ),
-                                  GeneralTextfieldOnly(
-                                    hint: 'Leave a Comment',
-                                    controller:
-                                        commentTextField,
-                                    minLines: 3,
-                                    lines: 5,
-                                    theme: theme,
-                                    onSubmitted: (value) {
-                                      debitAction(
-                                        context:
-                                            dialogContext,
-                                        customer:
-                                            widget.customer,
-                                        moneyTextField:
-                                            moneyTextField,
-                                        commentTextField:
-                                            commentTextField,
-                                        theme: theme,
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ).then((_) {
-                          Future.delayed(
-                            (Duration(microseconds: 500)),
-                            () {
-                              commentTextField.clear();
-                              moneyTextField.clear();
+                                  ],
+                                ),
+                              );
                             },
-                          );
-                        });
-                      },
-                      text: 'Debit',
-                      textColor: Colors.grey.shade300,
-                      icon: Icon(
-                        size: 16,
-                        color: Colors.red.shade400,
-                        Icons.remove,
+                          ).then((_) {
+                            Future.delayed(
+                              (Duration(microseconds: 500)),
+                              () {
+                                commentTextField.clear();
+                                moneyTextField.clear();
+                              },
+                            );
+                          });
+                        },
+                        text: 'Debit',
+                        textColor: Colors.grey.shade200,
+                        icon: Icon(
+                          size: 16,
+                          color: Colors.red.shade400,
+                          Icons.remove,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -849,30 +893,37 @@ class _CustomerAccountDetailsSectionWidgetState
                   ],
                 ),
                 // SizedBox(height: 5),
-                Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.start,
-                  spacing: 10,
-                  children: [
-                    SizedBox(width: 10),
-                    ActionButtonSmall(
-                      isLoading: false,
-                      action: () {
-                        redeemRewardAction(
-                          context: context,
-                          customer: widget.customer,
-                          theme: theme,
-                        );
-                      },
-                      text: 'Redeem Reward',
-                      textColor: Colors.grey.shade300,
-                      icon: Icon(
-                        size: 16,
-                        color: Colors.green.shade600,
-                        Icons.check,
+                Visibility(
+                  visible: authorization(
+                    authorized:
+                        Authorizations()
+                            .redeemCustomersReward,
+                  ),
+                  child: Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.start,
+                    spacing: 10,
+                    children: [
+                      SizedBox(width: 10),
+                      ActionButtonSmall(
+                        isLoading: false,
+                        action: () {
+                          redeemRewardAction(
+                            context: context,
+                            customer: widget.customer,
+                            theme: theme,
+                          );
+                        },
+                        text: 'Redeem Reward',
+                        textColor: Colors.grey.shade300,
+                        icon: Icon(
+                          size: 16,
+                          color: Colors.green.shade600,
+                          Icons.check,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),

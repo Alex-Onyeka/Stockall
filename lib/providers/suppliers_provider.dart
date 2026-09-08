@@ -82,6 +82,8 @@ class SuppliersProvider extends ChangeNotifier {
   Future<List<SuppliersClass>> fetchSuppliers(
     int shopId,
   ) async {
+    suppliers = SuppliersFunc().getSuppliers();
+    notifyListeners();
     bool isOnline = await connectivity.isOnline();
     if (isOnline && SuppliersFunc().isSynced()) {
       final data = await supabase
@@ -125,15 +127,6 @@ class SuppliersProvider extends ChangeNotifier {
 
       final newSupplier = SuppliersClass.fromJson(res);
       await SuppliersFunc().createSupplier(newSupplier);
-      // await returnEventsLogProvider(
-      //   // ignore: use_build_context_synchronously
-      // ).createLog(
-      //   returnEventsLogProvider(
-      //     // ignore: use_build_context_synchronously
-      //     // ignore: use_build_context_synchronously
-      //   ).supplierAdapter(supplier, 1),
-      //   // ignore: use_build_context_synchronously
-      // );
     } else {
       GeneralSettingsAuthAction().allowOfflineUseAction(
         context: context,
@@ -142,15 +135,6 @@ class SuppliersProvider extends ChangeNotifier {
           await CreatedSupplierFunc().createSuppliers(
             CreatedSuppliers(supplier: supplier),
           );
-          // await returnEventsLogProvider(
-          //   // ignore: use_build_context_synchronously
-          // ).createLog(
-          //   returnEventsLogProvider(
-          //     // ignore: use_build_context_synchronously
-          //     // ignore: use_build_context_synchronously
-          //   ).supplierAdapter(supplier, 1),
-          //   // ignore: use_build_context_synchronously
-          // );
         },
       );
     }
@@ -172,15 +156,6 @@ class SuppliersProvider extends ChangeNotifier {
           .from(tableName)
           .update(supplier.toJson())
           .eq('uuid', supplier.uuid!);
-      // await returnEventsLogProvider(
-      //   // ignore: use_build_context_synchronously
-      // ).createLog(
-      //   returnEventsLogProvider(
-      //     // ignore: use_build_context_synchronously
-      //     // ignore: use_build_context_synchronously
-      //   ).SupplierAdapter(Supplier, 2),
-      //   // ignore: use_build_context_synchronously
-      // );
     } else {
       await SuppliersFunc().updateSupplier(supplier);
       var containsCreated =
@@ -199,15 +174,6 @@ class SuppliersProvider extends ChangeNotifier {
           CreatedSuppliers(supplier: supplier),
         );
       }
-      // await returnEventsLogProvider(
-      //   // ignore: use_build_context_synchronously
-      // ).createLog(
-      //   returnEventsLogProvider(
-      //     // ignore: use_build_context_synchronously
-      //     // ignore: use_build_context_synchronously
-      //   ).SupplierAdapter(Supplier, 1),
-      //   // ignore: use_build_context_synchronously
-      // );
     }
     await fetchSuppliers(shopProvider.userShop()!.shopId!);
     notifyListeners();
@@ -226,20 +192,6 @@ class SuppliersProvider extends ChangeNotifier {
           .delete()
           .eq('uuid', supplier.uuid!);
       await mainLocalLog('Supplier Deleted');
-      // var res = await returnEventsLogProvider(
-      //   // ignore: use_build_context_synchronously
-      // ).createLog(
-      //   returnEventsLogProvider(
-      //     // ignore: use_build_context_synchronously
-      //     // ignore: use_build_context_synchronously
-      //   ).SupplierAdapter(Supplier, 3),
-      //   // ignore: use_build_context_synchronously
-      // );
-      // if (res == 1) {
-      //   await mainLocalLog('Supplier Delete Logged');
-      // } else {
-      //   await mainLocalLog('Supplier Delete Log Failed');
-      // }
     } else {
       var containsCreated =
           CreatedSupplierFunc()
@@ -272,15 +224,6 @@ class SuppliersProvider extends ChangeNotifier {
           supplier.uuid!,
         );
       }
-      // await returnEventsLogProvider(
-      //   // ignore: use_build_context_synchronously
-      // ).createLog(
-      //   returnEventsLogProvider(
-      //     // ignore: use_build_context_synchronously
-      //     // ignore: use_build_context_synchronously
-      //   ).SupplierAdapter(Supplier, 3),
-      //   // ignore: use_build_context_synchronously
-      // );
     }
 
     await fetchSuppliers(shopProvider.userShop()!.shopId!);

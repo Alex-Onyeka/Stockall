@@ -114,6 +114,8 @@ class SubscriptionProvider extends ChangeNotifier {
   Future<SubscriptionClass?> getSubscription(
     BuildContext context,
   ) async {
+    subscription = SubscriptionFunc().getSubscription();
+    notifyListeners();
     var isOnline = await connectivity.isOnline();
     await mainLocalLog('Getting Subscription Inside');
     // ignore: use_build_context_synchronously

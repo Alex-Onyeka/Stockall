@@ -8,12 +8,11 @@ class AuthLandingTexts {
 
   final String authLandingLogin = 'Login';
 
-  final String authLandingAlreadyHaveAnAccount =
-      'Already Have an account? Login';
+  final String authLandingAlreadyHaveAnAccount = 'Login';
 }
 
 class CheckAgreeTexts {
-  final String iHaveRead = "I've read and Agreed with the ";
+  final String iHaveRead = "I've Read and Agreed with the ";
 
   final String termsAndConditions = 'Terms and Conditions ';
 

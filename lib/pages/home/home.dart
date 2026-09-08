@@ -81,6 +81,9 @@ class _HomeState extends State<Home> {
           true) {
         returnDepartmentProvider().clearDepartments();
       }
+      if (currentUser().email == 'stockalltest@gmail.com') {
+        returnNavProvider(context, listen: false).verify();
+      }
     });
   }
 

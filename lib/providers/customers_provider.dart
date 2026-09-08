@@ -81,6 +81,7 @@ class CustomersProvider extends ChangeNotifier {
   Future<List<TempCustomersClass>> fetchCustomers(
     int shopId,
   ) async {
+    await fetchCustomersOffline();
     bool isOnline = await connectivity.isOnline();
     if (isOnline && CustomerFunc().isSynced()) {
       final data = await supabase

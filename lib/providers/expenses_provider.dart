@@ -29,31 +29,8 @@ class ExpensesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addExpense(
-    TempExpensesClass expense,
-    // BuildContext context,
-  ) async {
-    // bool isOnline =  connectivity.isOnline();
+  Future<void> addExpense(TempExpensesClass expense) async {
     expense.updatedAt = DateTime.now();
-    // if (isOnline) {
-    //   Map<String, dynamic> res =
-    //       await supabase
-    //           .from('expenses')
-    //           .insert(expense.toJson())
-    //           .select()
-    //           .single();
-
-    //   TempExpensesClass exp = TempExpensesClass.fromJson(
-    //     res,
-    //   );
-    //   await ExpensesFunc().createExpenses(exp);
-    //   await returnEventsLogProvider().createLog(
-    //     returnEventsLogProvider(
-    //       // ignore: use_build_context_synchronously
-    //     ).expensesAdapter(expense, 1),
-    //     // ignore: use_build_context_synchronously
-    //   );
-    // } else {
     expense.createdDate ??= DateTime.now();
     await ExpensesFunc().createExpenses(expense);
     await CreatedExpensesFunc().createExpenses(
@@ -65,13 +42,8 @@ class ExpensesProvider extends ChangeNotifier {
       ).expensesAdapter(expense, 1),
       // ignore: use_build_context_synchronously
     );
-    // }
-    // if (context.mounted) {
     await mainLocalLog('Mounted: Add Expense');
     await getExpensesOffline(shopId());
-    // } else {
-    //   await mainLocalLog('Context not Mounted for create Expenses');
-    // }
     notifyListeners();
     syncData();
   }
@@ -88,6 +60,7 @@ class ExpensesProvider extends ChangeNotifier {
   Future<List<TempExpensesClass>> getExpenses(
     int shopId,
   ) async {
+    await getExpensesOffline(shopId);
     bool isOnline = await connectivity.isOnline();
     if (isOnline && ExpensesFunc().isSynced()) {
       try {

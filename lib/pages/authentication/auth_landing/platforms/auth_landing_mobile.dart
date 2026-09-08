@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/pages/authentication/explore_page/explore_page.dart';
 import 'package:stockall/pages/authentication/login/login_page.dart';
 import 'package:stockall/pages/authentication/sign_up/sign_up_page.dart';
 import 'package:stockall/pages/authentication/translations/auth_texts_en.dart';
@@ -177,7 +178,31 @@ class AuthLandingMobile extends StatelessWidget {
                                           builder: (
                                             context,
                                           ) {
-                                            return LoginPage();
+                                            return LoginPage(
+                                              useDemoLogin:
+                                                  false,
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  SizedBox(height: 10),
+                                  MainButtonTransparent(
+                                    themeProvider:
+                                        themeProvider,
+                                    constraints:
+                                        constraints,
+                                    text:
+                                        'Contact Support/Login Test Demo',
+                                    action: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return ExplorePage();
                                           },
                                         ),
                                       );

@@ -130,6 +130,7 @@ class ItemHistoryProvider with ChangeNotifier {
   }
 
   Future<List<ItemHistory>> getItemHistories() async {
+    await getItemHistoriesOffline();
     bool isOnline = await ConnectivityProvider().isOnline();
     var shop = returnShopProvider().userShop()!;
     var shopId = shop.shopId!;

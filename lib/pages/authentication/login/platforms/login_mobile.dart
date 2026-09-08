@@ -21,12 +21,14 @@ class LoginMobile extends StatefulWidget {
   final ThemeProvider theme;
   final TextEditingController emailController;
   final TextEditingController passwordController;
+  final bool useDemoLogin;
 
   const LoginMobile({
     super.key,
     required this.theme,
     required this.emailController,
     required this.passwordController,
+    required this.useDemoLogin,
   });
 
   @override
@@ -170,6 +172,19 @@ class _LoginMobileState extends State<LoginMobile> {
   }
 
   FocusNode passwordNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.useDemoLogin) {
+        widget.passwordController.text = 'test123';
+        widget.emailController.text =
+            'stockalltest@gmail.com';
+        checkInputs();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

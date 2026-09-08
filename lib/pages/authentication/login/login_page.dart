@@ -6,7 +6,8 @@ import 'package:stockall/pages/authentication/login/platforms/login_mobile.dart'
 import 'package:stockall/providers/theme_provider.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final bool useDemoLogin;
+  const LoginPage({super.key, required this.useDemoLogin});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -38,12 +39,14 @@ class _LoginPageState extends State<LoginPage> {
         builder: (context, constraints) {
           if (constraints.maxWidth < mobileScreen) {
             return LoginMobile(
+              useDemoLogin: widget.useDemoLogin,
               theme: theme,
               emailController: emailController,
               passwordController: passwordController,
             );
           } else {
             return LoginDesktop(
+              useDemoLogin: widget.useDemoLogin,
               theme: theme,
               emailController: emailController,
               passwordController: passwordController,

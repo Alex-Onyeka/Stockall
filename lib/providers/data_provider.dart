@@ -1585,7 +1585,7 @@ class DataProvider extends ChangeNotifier {
     int shopId,
   ) async {
     bool isOnline = await connectivity.isOnline();
-    await mainLocalLog('✅✅ Products List Cleared');
+    await getProductsOffline(shopId);
     if (isOnline && ProductsFunc().isSynced()) {
       final data = await supabase
           .from('products')

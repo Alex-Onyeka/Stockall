@@ -18,6 +18,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class LoginDesktop extends StatefulWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
+  final bool useDemoLogin;
 
   final ThemeProvider theme;
   const LoginDesktop({
@@ -25,6 +26,7 @@ class LoginDesktop extends StatefulWidget {
     required this.theme,
     required this.emailController,
     required this.passwordController,
+    required this.useDemoLogin,
   });
 
   @override
@@ -177,6 +179,19 @@ class _LoginDesktopState extends State<LoginDesktop> {
   }
 
   FocusNode passwordNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.useDemoLogin) {
+        widget.passwordController.text = 'test123';
+        widget.emailController.text =
+            'stockalltest@gmail.com';
+        checkInputs();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

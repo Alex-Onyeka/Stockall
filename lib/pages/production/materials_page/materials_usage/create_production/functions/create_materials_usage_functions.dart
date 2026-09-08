@@ -41,7 +41,7 @@ class CreateMaterialsUsageFunctions {
                 }
               },
               widget: SizedBox(
-                height: screenHeight(statefulContext) - 200,
+                height: screenHeight(statefulContext) - 270,
                 child: Column(
                   children: [
                     Row(
@@ -905,7 +905,7 @@ class CreateMaterialsUsageFunctions {
                 ),
                 showBottomActionButtons: false,
                 widget: SizedBox(
-                  height: screenHeight(context) - 180,
+                  height: screenHeight(context) - 270,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(

@@ -183,6 +183,7 @@ class PurchaseProvider extends ChangeNotifier {
   Future<List<TempPurchase>> loadPurchases(
     int shopId,
   ) async {
+    await loadItemPurchaseRecords(shopId);
     bool isOnline = await connectivity.isOnline();
     if (isOnline && PurchaseFunc().isSynced()) {
       await PurchaseFunc().clearPurchases();

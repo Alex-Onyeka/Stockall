@@ -141,6 +141,7 @@ class InvoicesProvider extends ChangeNotifier {
 
   // READ all Invoices for a shop
   Future<List<TempInvoice>> loadInvoices(int shopId) async {
+    await loadInvoicesOffline(shopId);
     bool isOnline = await connectivity.isOnline();
     if (isOnline && InvoicesFunc().isSynced()) {
       await InvoicesFunc().clearInvoices();

@@ -109,6 +109,7 @@ class CategoriesProvider extends ChangeNotifier {
     int shopId,
   ) async {
     bool isOnline = await connectivity.isOnline();
+    await getCategoriesOffline(shopId);
     if (isOnline && CategoryFunc().isSynced()) {
       try {
         final response = await supabase

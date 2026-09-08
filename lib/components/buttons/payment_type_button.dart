@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_account_details_section_widget.dart';
@@ -504,7 +505,12 @@ class _PaymentTypeDropdownState
                       returnSalesProviderContext(context)
                               .currentCart()
                               .selectedCustomer !=
-                          null,
+                          null &&
+                      authorization(
+                        authorized:
+                            Authorizations()
+                                .makeSalesFromCustomersAccount,
+                      ),
                   child: PaymentTypeButton(
                     index: 3,
                     action: () {

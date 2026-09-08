@@ -273,7 +273,7 @@ class _PricingContainerWidgetState
                   fontSize: theme.mobileTexts.b3.fontSize,
                   fontWeight: FontWeight.normal,
                 ),
-                "${duration()} | ${pricingClass.oldPlan}",
+                duration(),
               ),
             ],
           ),

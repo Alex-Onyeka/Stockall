@@ -187,6 +187,7 @@ class OrdersProvider extends ChangeNotifier {
 
   // READ all orders for a shop
   Future<List<Orders>> loadOrders(int shopId) async {
+    await loadOrdersOffline(shopId);
     bool isOnline = await connectivity.isOnline();
     List<Map<String, dynamic>> tempList = [];
     if (isOnline && OrdersFunc().isSynced()) {

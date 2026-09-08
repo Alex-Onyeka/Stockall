@@ -19,8 +19,9 @@ List<SubplanClass> subPlans = [
     plan: 5,
     price:
         returnUtilityConstantProvider()
-            .utilityConstants!
-            .goldPlan,
+            .utilityConstants
+            ?.goldPlan ??
+        20000,
     onlineDataBackupDuration: 12,
     planName: 'Gold',
     planDesc: 'For Running High End Business',
@@ -106,7 +107,7 @@ List<SubplanClass> subPlans = [
         returnUtilityConstantProvider()
             .utilityConstants
             ?.silverPlan ??
-        13000,
+        13500,
     onlineDataBackupDuration: 12,
     planName: 'Silver',
     planDesc: 'For Running Large Business',
@@ -279,7 +280,7 @@ List<SubplanClass> subPlans = [
         returnUtilityConstantProvider()
             .utilityConstants
             ?.standardPlan ??
-        4000,
+        4500,
     onlineDataBackupDuration: 12,
     planName: 'Standard',
     planDesc: 'Perfect for Running Moderate Business',

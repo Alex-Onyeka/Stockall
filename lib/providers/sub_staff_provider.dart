@@ -74,37 +74,10 @@ class SubStaffProvider extends ChangeNotifier {
   }
 
   Future<int> createSubStaff(TempSubStaff subStaff) async {
-    // bool isOnline = await connectivity.isOnline();
     try {
       subStaff.updatedAt = DateTime.now();
       subStaff.createdAt = DateTime.now();
       subStaff.uuid = uuidGen();
-      // if (isOnline) {
-      //   Map<String, dynamic>? res =
-      //       await supabase
-      //           .from(tableName)
-      //           .insert(subStaff.toJson())
-      //           .select()
-      //           .maybeSingle();
-
-      //   if (res == null) {
-      //     await mainLocalLog('Failed to Create Sub Staff');
-      //     return 0;
-      //   }
-
-      //   TempSubStaff exp = TempSubStaff.fromJson(res);
-      //   await SubStaffFunc().createSubStaff(exp);
-      //   await returnEventsLogProvider().createLog(
-      //     returnEventsLogProvider(
-      //       // ignore: use_build_context_synchronously
-      //     ).subStaffAdapter(exp, 1),
-      //     // ignore: use_build_context_synchronously
-      //   );
-      //   await mainLocalLog('Created Sub Staff Online');
-      //   await getSubStaffs();
-      //   notifyListeners();
-      //   return 1;
-      // } else {
       await SubStaffFunc().createSubStaff(subStaff);
       await CreatedSubStaffFunc().createSubStaff(
         CreatedSubStaff(subStaff: subStaff),
@@ -119,7 +92,6 @@ class SubStaffProvider extends ChangeNotifier {
       await getSubStaffsOffline();
       notifyListeners();
       return 1;
-      // }
     } catch (e) {
       await mainLocalLog(
         'Error Creating Sub Staff: ${e.toString()}',
@@ -138,6 +110,7 @@ class SubStaffProvider extends ChangeNotifier {
   //
 
   Future<List<TempSubStaff>> getSubStaffs() async {
+    await getSubStaffsOffline();
     bool isOnline = await connectivity.isOnline();
     if (isOnline && SubStaffFunc().isSynced()) {
       final response = await supabase

@@ -133,333 +133,366 @@ class _DashboardDesktopState
         ).showLoader(message: 'Loading User Data'),
       );
     } else {
-      if (!returnReceiptProvider(context).isLoaded) {
-        return returnCompProvider(
-          context,
-          listen: false,
-        ).showLoader(message: 'Loading Shop Data');
-      } else {
-        return Scaffold(
-          key: _scaffoldKey,
-          drawer: MyDrawerWidgetDesktopMain(
-            action: () {
-              var safeContext = context;
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return ConfirmationAlert(
-                    theme: theme,
-                    message: 'You are about to Logout',
-                    title: 'Are you Sure?',
-                    action: () async {
-                      Navigator.of(context).pop();
-                      setState(() {
-                        isLoading = true;
-                      });
-                      if (safeContext.mounted) {
-                        var res = await AuthService()
-                            .signOut(
-                              context: safeContext,
-                              allowLogout: false,
-                            );
-                        if (res == 0 &&
-                            safeContext.mounted) {
-                          setState(() {
-                            isLoading = false;
-                          });
-                        }
-                      }
-                    },
-                  );
-                },
-              );
-            },
-            theme: theme,
-            notifications:
-                returnNotificationProvider(
-                      context,
-                    ).notifications().isEmpty
-                    ? []
-                    : returnNotificationProvider(
-                      context,
-                    ).notifications(),
-            globalKey: _scaffoldKey,
-          ),
-          body: Stack(
-            children: [
-              Row(
-                spacing: 15,
-                children: [
-                  MyDrawerWidget(
-                    globalKey: _scaffoldKey,
-                    action: () {
-                      var safeContext = context;
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return ConfirmationAlert(
-                            theme: theme,
-                            message:
-                                'You are about to Logout',
-                            title: 'Are you Sure?',
-                            action: () async {
-                              Navigator.of(context).pop();
-                              setState(() {
-                                isLoading = true;
-                              });
-                              if (safeContext.mounted) {
-                                var res =
-                                    await AuthService()
-                                        .signOut(
-                                          context:
-                                              safeContext,
-                                          allowLogout:
-                                              false,
-                                        );
-                                if (res == 0 &&
-                                    safeContext.mounted) {
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                }
-                              }
-                            },
-                          );
-                        },
+      // if (returnReceiptProvider(context).isLoaded) {
+      //   return returnCompProvider(
+      //     context,
+      //     listen: false,
+      //   ).showLoader(message: 'Loading Shop Data');
+      // } else {
+      return Scaffold(
+        key: _scaffoldKey,
+        drawer: MyDrawerWidgetDesktopMain(
+          action: () {
+            var safeContext = context;
+            showDialog(
+              context: context,
+              builder: (context) {
+                return ConfirmationAlert(
+                  theme: theme,
+                  message: 'You are about to Logout',
+                  title: 'Are you Sure?',
+                  action: () async {
+                    Navigator.of(context).pop();
+                    setState(() {
+                      isLoading = true;
+                    });
+                    if (safeContext.mounted) {
+                      var res = await AuthService().signOut(
+                        context: safeContext,
+                        allowLogout: false,
                       );
-                    },
-                    theme: theme,
-                    notifications:
-                        returnNotificationProvider(
-                              context,
-                            ).notifications().isEmpty
-                            ? []
-                            : returnNotificationProvider(
-                              context,
-                            ).notifications(),
-                  ),
-                  Expanded(
-                    child: DesktopPageContainer(
-                      widget: Stack(
-                        children: [
-                          Scaffold(
-                            body: Stack(
-                              children: [
-                                Column(
-                                  children: [
-                                    FutureBuilder(
-                                      future:
-                                          notificationsFuture,
-                                      builder: (
-                                        context,
-                                        snapshot,
-                                      ) {
-                                        return TopNavBar(
-                                          refreshAction: () async {
-                                            await RefreshFunctions(
-                                              context,
-                                            ).refreshAll(
-                                              context,
-                                            );
-                                            // setState(() {});
-                                          },
-                                          action: () {
-                                            returnNavProvider(
-                                              context,
-                                              listen: false,
-                                            ).navigate(8);
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (
-                                                  context,
-                                                ) {
-                                                  return NotificationsPage();
-                                                },
-                                              ),
-                                            );
-                                          },
-                                          openSideBar:
-                                              () {},
-                                          theme: theme,
-                                        );
-                                      },
-                                    ),
-                                    Expanded(
-                                      child: RefreshIndicator(
-                                        onRefresh: () async {
-                                          return await RefreshFunctions(
+                      if (res == 0 && safeContext.mounted) {
+                        setState(() {
+                          isLoading = false;
+                        });
+                      }
+                    }
+                  },
+                );
+              },
+            );
+          },
+          theme: theme,
+          notifications:
+              returnNotificationProvider(
+                    context,
+                  ).notifications().isEmpty
+                  ? []
+                  : returnNotificationProvider(
+                    context,
+                  ).notifications(),
+          globalKey: _scaffoldKey,
+        ),
+        body: Stack(
+          children: [
+            Row(
+              spacing: 15,
+              children: [
+                MyDrawerWidget(
+                  globalKey: _scaffoldKey,
+                  action: () {
+                    var safeContext = context;
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return ConfirmationAlert(
+                          theme: theme,
+                          message:
+                              'You are about to Logout',
+                          title: 'Are you Sure?',
+                          action: () async {
+                            Navigator.of(context).pop();
+                            setState(() {
+                              isLoading = true;
+                            });
+                            if (safeContext.mounted) {
+                              var res = await AuthService()
+                                  .signOut(
+                                    context: safeContext,
+                                    allowLogout: false,
+                                  );
+                              if (res == 0 &&
+                                  safeContext.mounted) {
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              }
+                            }
+                          },
+                        );
+                      },
+                    );
+                  },
+                  theme: theme,
+                  notifications:
+                      returnNotificationProvider(
+                            context,
+                          ).notifications().isEmpty
+                          ? []
+                          : returnNotificationProvider(
+                            context,
+                          ).notifications(),
+                ),
+                Expanded(
+                  child: DesktopPageContainer(
+                    widget: Stack(
+                      children: [
+                        Scaffold(
+                          body: Stack(
+                            children: [
+                              Column(
+                                children: [
+                                  FutureBuilder(
+                                    future:
+                                        notificationsFuture,
+                                    builder: (
+                                      context,
+                                      snapshot,
+                                    ) {
+                                      return TopNavBar(
+                                        refreshAction: () async {
+                                          await RefreshFunctions(
                                             context,
                                           ).refreshAll(
                                             context,
                                           );
+                                          // setState(() {});
                                         },
-                                        backgroundColor:
-                                            Colors.white,
-                                        color:
-                                            theme
-                                                .lightModeColor
-                                                .prColor300,
-                                        displacement: 10,
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.symmetric(
-                                                horizontal:
-                                                    15.0,
-                                              ),
-                                          child: ListView(
-                                            children: [
-                                              SizedBox(
-                                                height: 10,
-                                              ),
-                                              Visibility(
-                                                visible:
-                                                    !isStoreKeeper(),
-                                                child: Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: DashboardTotalSalesBanner(
-                                                        // expenses:
-                                                        //     expensesLocal,
-                                                        userValue: returnReceiptProvider(
-                                                          context,
-                                                        ).getTotalRevenueForSelectedDayAll(
-                                                          staffId:
-                                                              userGeneral(
-                                                                context,
-                                                              ).userId,
-                                                        ),
-                                                        theme:
-                                                            theme,
-                                                        value:
-                                                            returnReceiptProvider(
+                                        action: () {
+                                          returnNavProvider(
+                                            context,
+                                            listen: false,
+                                          ).navigate(8);
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return NotificationsPage();
+                                              },
+                                            ),
+                                          );
+                                        },
+                                        openSideBar: () {},
+                                        theme: theme,
+                                      );
+                                    },
+                                  ),
+                                  Expanded(
+                                    child: RefreshIndicator(
+                                      onRefresh: () async {
+                                        return await RefreshFunctions(
+                                          context,
+                                        ).refreshAll(
+                                          context,
+                                        );
+                                      },
+                                      backgroundColor:
+                                          Colors.white,
+                                      color:
+                                          theme
+                                              .lightModeColor
+                                              .prColor300,
+                                      displacement: 10,
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.symmetric(
+                                              horizontal:
+                                                  15.0,
+                                            ),
+                                        child: ListView(
+                                          children: [
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            Visibility(
+                                              visible:
+                                                  !isStoreKeeper(),
+                                              child: Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: DashboardTotalSalesBanner(
+                                                      // expenses:
+                                                      //     expensesLocal,
+                                                      userValue: returnReceiptProvider(
+                                                        context,
+                                                      ).getTotalRevenueForSelectedDayAll(
+                                                        staffId:
+                                                            userGeneral(
                                                               context,
-                                                            ).getTotalRevenueForSelectedDay(),
+                                                            ).userId,
                                                       ),
+                                                      theme:
+                                                          theme,
+                                                      value:
+                                                          returnReceiptProvider(
+                                                            context,
+                                                          ).getTotalRevenueForSelectedDay(),
                                                     ),
-                                                    Visibility(
-                                                      visible: authorization(
-                                                        authorized:
-                                                            Authorizations().makeSale,
+                                                  ),
+                                                  Visibility(
+                                                    visible: authorization(
+                                                      authorized:
+                                                          Authorizations().makeSale,
+                                                    ),
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.only(
+                                                        left:
+                                                            15.0,
                                                       ),
-                                                      child: Padding(
-                                                        padding: const EdgeInsets.only(
-                                                          left:
-                                                              15.0,
-                                                        ),
-                                                        child: Material(
-                                                          child: Ink(
-                                                            decoration: BoxDecoration(
-                                                              boxShadow: [
-                                                                BoxShadow(
-                                                                  color: const Color.fromARGB(
-                                                                    24,
-                                                                    0,
-                                                                    0,
-                                                                    0,
-                                                                  ),
-                                                                  blurRadius:
-                                                                      10,
+                                                      child: Material(
+                                                        child: Ink(
+                                                          decoration: BoxDecoration(
+                                                            boxShadow: [
+                                                              BoxShadow(
+                                                                color: const Color.fromARGB(
+                                                                  24,
+                                                                  0,
+                                                                  0,
+                                                                  0,
                                                                 ),
-                                                              ],
-                                                              color:
-                                                                  theme.lightModeColor.prColor300,
-                                                              borderRadius: BorderRadius.circular(
-                                                                10,
+                                                                blurRadius:
+                                                                    10,
                                                               ),
+                                                            ],
+                                                            color:
+                                                                theme.lightModeColor.prColor300,
+                                                            borderRadius: BorderRadius.circular(
+                                                              10,
                                                             ),
-                                                            child: InkWell(
-                                                              borderRadius: BorderRadius.circular(
-                                                                10,
+                                                          ),
+                                                          child: InkWell(
+                                                            borderRadius: BorderRadius.circular(
+                                                              10,
+                                                            ),
+                                                            mouseCursor:
+                                                                SystemMouseCursors.click,
+                                                            onTap: () {
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder: (
+                                                                    context,
+                                                                  ) {
+                                                                    return MakeSalesPage();
+                                                                  },
+                                                                ),
+                                                              );
+                                                            },
+                                                            child: Container(
+                                                              padding: EdgeInsets.symmetric(
+                                                                horizontal:
+                                                                    30,
+                                                                vertical:
+                                                                    returnShopProvider().userShop()?.manageDepartments ==
+                                                                            true
+                                                                        ? 49
+                                                                        : 41,
                                                               ),
-                                                              mouseCursor:
-                                                                  SystemMouseCursors.click,
-                                                              onTap: () {
-                                                                Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                    builder: (
-                                                                      context,
-                                                                    ) {
-                                                                      return MakeSalesPage();
-                                                                    },
+                                                              child: Column(
+                                                                spacing:
+                                                                    5,
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment.center,
+                                                                children: [
+                                                                  SvgPicture.asset(
+                                                                    plusIconSvg,
+                                                                    color:
+                                                                        theme.lightModeColor.secColor200,
+                                                                    height:
+                                                                        20,
                                                                   ),
-                                                                );
-                                                              },
-                                                              child: Container(
-                                                                padding: EdgeInsets.symmetric(
-                                                                  horizontal:
-                                                                      30,
-                                                                  vertical:
-                                                                      returnShopProvider().userShop()?.manageDepartments ==
-                                                                              true
-                                                                          ? 49
-                                                                          : 41,
-                                                                ),
-                                                                child: Column(
-                                                                  spacing:
-                                                                      5,
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment.center,
-                                                                  children: [
-                                                                    SvgPicture.asset(
-                                                                      plusIconSvg,
+                                                                  Text(
+                                                                    style: TextStyle(
                                                                       color:
-                                                                          theme.lightModeColor.secColor200,
-                                                                      height:
-                                                                          20,
+                                                                          Colors.white,
+                                                                      fontWeight:
+                                                                          FontWeight.bold,
+                                                                      fontSize:
+                                                                          theme.mobileTexts.b3.fontSize,
                                                                     ),
-                                                                    Text(
-                                                                      style: TextStyle(
-                                                                        color:
-                                                                            Colors.white,
-                                                                        fontWeight:
-                                                                            FontWeight.bold,
-                                                                        fontSize:
-                                                                            theme.mobileTexts.b3.fontSize,
-                                                                      ),
-                                                                      'Make Sale',
-                                                                    ),
-                                                                  ],
-                                                                ),
+                                                                    'Make Sale',
+                                                                  ),
+                                                                ],
                                                               ),
                                                             ),
                                                           ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 20,
+                                            ),
+                                            StoreKeeperDepartmentSwitchWidget(),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .center,
+                                              children: [
+                                                Expanded(
+                                                  child: Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: MainInfoTab(
+                                                          theme:
+                                                              theme,
+                                                          icon:
+                                                              productIconSvg,
+                                                          number:
+                                                              '${productsLocal.length}',
+                                                          title:
+                                                              'All Items',
+                                                          action: () {
+                                                            returnNavProvider(
+                                                              context,
+                                                              listen:
+                                                                  false,
+                                                            ).navigate(
+                                                              1,
+                                                            );
+                                                          },
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        width:
+                                                            10,
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                              SizedBox(
-                                                height: 20,
-                                              ),
-                                              StoreKeeperDepartmentSwitchWidget(),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .center,
-                                                children: [
-                                                  Expanded(
+                                                Visibility(
+                                                  visible:
+                                                      isStoreKeeper(),
+                                                  child: Expanded(
                                                     child: Row(
                                                       children: [
                                                         Expanded(
                                                           child: MainInfoTab(
                                                             theme:
                                                                 theme,
+                                                            iconColor:
+                                                                theme.lightModeColor.tertColor200,
                                                             icon:
                                                                 productIconSvg,
                                                             number:
-                                                                '${productsLocal.length}',
+                                                                '${returnStorageProductProvider(context: context).storageProductListMain.length}',
                                                             title:
-                                                                'All Items',
+                                                                'Storage Items',
                                                             action: () {
-                                                              returnNavProvider(
+                                                              Navigator.push(
                                                                 context,
-                                                                listen:
-                                                                    false,
-                                                              ).navigate(
-                                                                1,
+                                                                MaterialPageRoute(
+                                                                  builder: (
+                                                                    context,
+                                                                  ) {
+                                                                    return StoragePage();
+                                                                  },
+                                                                ),
                                                               );
                                                             },
                                                           ),
@@ -471,101 +504,120 @@ class _DashboardDesktopState
                                                       ],
                                                     ),
                                                   ),
-                                                  Visibility(
-                                                    visible:
-                                                        isStoreKeeper(),
-                                                    child: Expanded(
-                                                      child: Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child: MainInfoTab(
-                                                              theme:
-                                                                  theme,
-                                                              iconColor:
-                                                                  theme.lightModeColor.tertColor200,
-                                                              icon:
-                                                                  productIconSvg,
-                                                              number:
-                                                                  '${returnStorageProductProvider(context: context).storageProductListMain.length}',
-                                                              title:
-                                                                  'Storage Items',
-                                                              action: () {
-                                                                Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                    builder: (
-                                                                      context,
-                                                                    ) {
-                                                                      return StoragePage();
-                                                                    },
-                                                                  ),
-                                                                );
-                                                              },
-                                                            ),
-                                                          ),
-                                                          SizedBox(
-                                                            width:
-                                                                10,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Visibility(
-                                                    visible:
-                                                        !isStoreKeeper(),
-                                                    child: Expanded(
-                                                      child: Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child: MainInfoTab(
-                                                              theme:
-                                                                  theme,
-                                                              icon:
-                                                                  salesIconSvg,
-                                                              number:
-                                                                  '${returnReceiptProvider(context).returnOwnReceiptsByDayOrWeek().length}',
-                                                              title:
-                                                                  'Sales',
-                                                              action: () {
-                                                                returnNavProvider(
-                                                                  context,
-                                                                  listen:
-                                                                      false,
-                                                                ).navigate(
-                                                                  2,
-                                                                );
-                                                              },
-                                                            ),
-                                                          ),
-                                                          SizedBox(
-                                                            width:
-                                                                10,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Visibility(
-                                                    visible:
-                                                        isStoreKeeper(),
-                                                    child: Expanded(
-                                                      child: Row(
-                                                        children: [
-                                                          ButtonTab(
+                                                ),
+                                                Visibility(
+                                                  visible:
+                                                      !isStoreKeeper(),
+                                                  child: Expanded(
+                                                    child: Row(
+                                                      children: [
+                                                        Expanded(
+                                                          child: MainInfoTab(
                                                             theme:
                                                                 theme,
                                                             icon:
-                                                                reportIconSvg,
+                                                                salesIconSvg,
+                                                            number:
+                                                                '${returnReceiptProvider(context).returnOwnReceiptsByDayOrWeek().length}',
                                                             title:
-                                                                'Report',
+                                                                'Sales',
                                                             action: () {
                                                               returnNavProvider(
                                                                 context,
                                                                 listen:
                                                                     false,
                                                               ).navigate(
-                                                                6,
+                                                                2,
+                                                              );
+                                                            },
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          width:
+                                                              10,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                                Visibility(
+                                                  visible:
+                                                      isStoreKeeper(),
+                                                  child: Expanded(
+                                                    child: Row(
+                                                      children: [
+                                                        ButtonTab(
+                                                          theme:
+                                                              theme,
+                                                          icon:
+                                                              reportIconSvg,
+                                                          title:
+                                                              'Report',
+                                                          action: () {
+                                                            returnNavProvider(
+                                                              context,
+                                                              listen:
+                                                                  false,
+                                                            ).navigate(
+                                                              6,
+                                                            );
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder: (
+                                                                  context,
+                                                                ) {
+                                                                  return ReportPage();
+                                                                },
+                                                              ),
+                                                            ).then(
+                                                              (
+                                                                context,
+                                                              ) {
+                                                                setState(
+                                                                  () {
+                                                                    clearDate();
+                                                                  },
+                                                                );
+                                                              },
+                                                            );
+                                                          },
+                                                        ),
+                                                        // SizedBox(
+                                                        //   width:
+                                                        //       10,
+                                                        // ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                                Visibility(
+                                                  visible:
+                                                      screenWidth(
+                                                            context,
+                                                          ) >
+                                                          tabletScreen &&
+                                                      !isStoreKeeper(),
+                                                  child: Expanded(
+                                                    child: Row(
+                                                      children: [
+                                                        Expanded(
+                                                          child: MainInfoTab(
+                                                            theme:
+                                                                theme,
+                                                            icon:
+                                                                expensesIconSvg,
+                                                            number:
+                                                                '${returnExpensesProvider(context).returnExpensesByDayOrWeek(context).length}',
+                                                            title:
+                                                                'Expenses',
+                                                            action: () {
+                                                              returnNavProvider(
+                                                                context,
+                                                                listen:
+                                                                    false,
+                                                              ).navigate(
+                                                                4,
                                                               );
                                                               Navigator.push(
                                                                 context,
@@ -573,7 +625,10 @@ class _DashboardDesktopState
                                                                   builder: (
                                                                     context,
                                                                   ) {
-                                                                    return ReportPage();
+                                                                    return ExpensesPage(
+                                                                      isMain:
+                                                                          true,
+                                                                    );
                                                                   },
                                                                 ),
                                                               ).then(
@@ -589,35 +644,324 @@ class _DashboardDesktopState
                                                               );
                                                             },
                                                           ),
-                                                          // SizedBox(
-                                                          //   width:
-                                                          //       10,
-                                                          // ),
-                                                        ],
+                                                        ),
+                                                        SizedBox(
+                                                          width:
+                                                              10,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                                Visibility(
+                                                  visible:
+                                                      !isStoreKeeper(),
+                                                  child: Expanded(
+                                                    child: SubWrapper(
+                                                      isVisible:
+                                                          !SalesAuthAction().invoiceManagementAction(
+                                                            context:
+                                                                context,
+                                                          ),
+                                                      mainWidget: MainInfoTab(
+                                                        theme:
+                                                            theme,
+                                                        icon:
+                                                            custBookIconSvg,
+                                                        number:
+                                                            '${returnInvoicesProvider(context: context).returnUnpaidInvoices().length}',
+                                                        title:
+                                                            'Invoices',
+                                                        action: () {
+                                                          SalesAuthAction().invoiceManagementAction(
+                                                            context:
+                                                                context,
+                                                            action: () {
+                                                              returnNavProvider(
+                                                                context,
+                                                                listen:
+                                                                    false,
+                                                              ).navigate(
+                                                                5,
+                                                              );
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder: (
+                                                                    context,
+                                                                  ) {
+                                                                    return InvoiceListPage();
+                                                                  },
+                                                                ),
+                                                              );
+                                                            },
+                                                          );
+                                                        },
                                                       ),
                                                     ),
                                                   ),
-                                                  Visibility(
-                                                    visible:
-                                                        screenWidth(
-                                                              context,
-                                                            ) >
-                                                            tabletScreen &&
-                                                        !isStoreKeeper(),
-                                                    child: Expanded(
-                                                      child: Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child: MainInfoTab(
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 20,
+                                            ),
+                                            Visibility(
+                                              visible:
+                                                  !isStoreKeeper(),
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              theme.mobileTexts.b1.fontSize,
+                                                          fontWeight:
+                                                              theme.mobileTexts.b1.fontWeightBold,
+                                                        ),
+                                                        'Quick Actions',
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(
+                                                    height:
+                                                        15,
+                                                  ),
+
+                                                  SizedBox(
+                                                    width:
+                                                        double.infinity,
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment.center,
+                                                      spacing:
+                                                          10,
+                                                      children: [
+                                                        Row(
+                                                          spacing:
+                                                              10,
+                                                          children: [
+                                                            Builder(
+                                                              builder: (
+                                                                context,
+                                                              ) {
+                                                                if (authorization(
+                                                                      authorized:
+                                                                          Authorizations().viewProductions,
+                                                                    ) &&
+                                                                    returnShopProvider().userShop()?.manageProductions ==
+                                                                        true) {
+                                                                  return ButtonTab(
+                                                                    theme:
+                                                                        theme,
+                                                                    iconWidget: Icon(
+                                                                      color:
+                                                                          theme.lightModeColor.secColor200,
+                                                                      size:
+                                                                          21,
+                                                                      Icons.view_in_ar_rounded,
+                                                                    ),
+                                                                    title:
+                                                                        'Production',
+                                                                    action: () {
+                                                                      Navigator.push(
+                                                                        context,
+                                                                        MaterialPageRoute(
+                                                                          builder: (
+                                                                            context,
+                                                                          ) {
+                                                                            return ProductionPage();
+                                                                          },
+                                                                        ),
+                                                                      );
+                                                                    },
+                                                                  );
+                                                                } else {
+                                                                  return ButtonTab(
+                                                                    theme:
+                                                                        theme,
+                                                                    icon:
+                                                                        productIconSvg,
+                                                                    title:
+                                                                        'Items',
+                                                                    action: () {
+                                                                      returnNavProvider(
+                                                                        context,
+                                                                        listen:
+                                                                            false,
+                                                                      ).navigate(
+                                                                        1,
+                                                                      );
+                                                                    },
+                                                                  );
+                                                                }
+                                                              },
+                                                            ),
+                                                            ButtonTab(
+                                                              theme:
+                                                                  theme,
+                                                              iconWidget: Icon(
+                                                                size:
+                                                                    23,
+                                                                color:
+                                                                    theme.lightModeColor.prColor250,
+                                                                Icons.people_alt_outlined,
+                                                              ),
+                                                              title:
+                                                                  'Customers',
+                                                              action: () {
+                                                                Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                    builder: (
+                                                                      context,
+                                                                    ) {
+                                                                      return CustomerList();
+                                                                    },
+                                                                  ),
+                                                                );
+                                                              },
+                                                            ),
+                                                            ButtonTab(
+                                                              theme:
+                                                                  theme,
+                                                              icon:
+                                                                  reportIconSvg,
+                                                              title:
+                                                                  'Report',
+                                                              action: () {
+                                                                returnNavProvider(
+                                                                  context,
+                                                                  listen:
+                                                                      false,
+                                                                ).navigate(
+                                                                  6,
+                                                                );
+                                                                Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                    builder: (
+                                                                      context,
+                                                                    ) {
+                                                                      return ReportPage();
+                                                                    },
+                                                                  ),
+                                                                ).then(
+                                                                  (
+                                                                    context,
+                                                                  ) {
+                                                                    setState(
+                                                                      () {
+                                                                        clearDate();
+                                                                      },
+                                                                    );
+                                                                  },
+                                                                );
+                                                              },
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment.start,
+                                                          children: [
+                                                            Visibility(
+                                                              visible: authorization(
+                                                                authorized:
+                                                                    Authorizations().employeePage,
+                                                              ),
+                                                              child: ButtonTab(
+                                                                theme:
+                                                                    theme,
+                                                                icon:
+                                                                    employeesIconSvg,
+                                                                iconColor:
+                                                                    theme.lightModeColor.prColor250,
+                                                                title:
+                                                                    'Staffs',
+                                                                action: () {
+                                                                  returnNavProvider(
+                                                                    context,
+                                                                    listen:
+                                                                        false,
+                                                                  ).navigate(
+                                                                    7,
+                                                                  );
+                                                                  Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                      builder: (
+                                                                        context,
+                                                                      ) {
+                                                                        return EmployeeListPage(
+                                                                          empId:
+                                                                              userGeneral(
+                                                                                context,
+                                                                              ).userId!,
+                                                                        );
+                                                                      },
+                                                                    ),
+                                                                  );
+                                                                },
+                                                              ),
+                                                            ),
+                                                            Visibility(
+                                                              visible: authorization(
+                                                                authorized:
+                                                                    Authorizations().employeePage,
+                                                              ),
+                                                              child: SizedBox(
+                                                                width:
+                                                                    10,
+                                                              ),
+                                                            ),
+
+                                                            ButtonTab(
+                                                              theme:
+                                                                  theme,
+                                                              icon:
+                                                                  custBookIconSvg,
+                                                              title:
+                                                                  'Invoices',
+                                                              action: () {
+                                                                SalesAuthAction().invoiceManagementAction(
+                                                                  context:
+                                                                      context,
+                                                                  action: () {
+                                                                    returnNavProvider(
+                                                                      context,
+                                                                      listen:
+                                                                          false,
+                                                                    ).navigate(
+                                                                      5,
+                                                                    );
+                                                                    Navigator.push(
+                                                                      context,
+                                                                      MaterialPageRoute(
+                                                                        builder: (
+                                                                          context,
+                                                                        ) {
+                                                                          return InvoiceListPage();
+                                                                        },
+                                                                      ),
+                                                                    );
+                                                                  },
+                                                                );
+                                                              },
+                                                            ),
+                                                            SizedBox(
+                                                              width:
+                                                                  10,
+                                                            ),
+                                                            ButtonTab(
                                                               theme:
                                                                   theme,
                                                               icon:
                                                                   expensesIconSvg,
-                                                              number:
-                                                                  '${returnExpensesProvider(context).returnExpensesByDayOrWeek(context).length}',
                                                               title:
                                                                   'Expenses',
-                                                              action: () {
+                                                              action: () async {
                                                                 returnNavProvider(
                                                                   context,
                                                                   listen:
@@ -650,1010 +994,659 @@ class _DashboardDesktopState
                                                                 );
                                                               },
                                                             ),
-                                                          ),
-                                                          SizedBox(
-                                                            width:
-                                                                10,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Visibility(
-                                                    visible:
-                                                        !isStoreKeeper(),
-                                                    child: Expanded(
-                                                      child: SubWrapper(
-                                                        isVisible:
-                                                            !SalesAuthAction().invoiceManagementAction(
-                                                              context:
-                                                                  context,
-                                                            ),
-                                                        mainWidget: MainInfoTab(
-                                                          theme:
-                                                              theme,
-                                                          icon:
-                                                              custBookIconSvg,
-                                                          number:
-                                                              '${returnInvoicesProvider(context: context).returnUnpaidInvoices().length}',
-                                                          title:
-                                                              'Invoices',
-                                                          action: () {
-                                                            SalesAuthAction().invoiceManagementAction(
-                                                              context:
-                                                                  context,
-                                                              action: () {
-                                                                returnNavProvider(
-                                                                  context,
-                                                                  listen:
-                                                                      false,
-                                                                ).navigate(
-                                                                  5,
-                                                                );
-                                                                Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                    builder: (
-                                                                      context,
-                                                                    ) {
-                                                                      return InvoiceListPage();
-                                                                    },
-                                                                  ),
-                                                                );
-                                                              },
-                                                            );
-                                                          },
+                                                          ],
                                                         ),
-                                                      ),
+                                                      ],
                                                     ),
                                                   ),
                                                 ],
                                               ),
-                                              SizedBox(
-                                                height: 20,
-                                              ),
-                                              Visibility(
-                                                visible:
-                                                    !isStoreKeeper(),
-                                                child: Column(
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        Text(
-                                                          style: TextStyle(
-                                                            fontSize:
-                                                                theme.mobileTexts.b1.fontSize,
-                                                            fontWeight:
-                                                                theme.mobileTexts.b1.fontWeightBold,
-                                                          ),
-                                                          'Quick Actions',
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    SizedBox(
-                                                      height:
-                                                          15,
-                                                    ),
-
-                                                    SizedBox(
-                                                      width:
-                                                          double.infinity,
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment.center,
-                                                        spacing:
-                                                            10,
-                                                        children: [
-                                                          Row(
-                                                            spacing:
-                                                                10,
-                                                            children: [
-                                                              Builder(
-                                                                builder: (
-                                                                  context,
-                                                                ) {
-                                                                  if (authorization(
-                                                                        authorized:
-                                                                            Authorizations().viewProductions,
-                                                                      ) &&
-                                                                      returnShopProvider().userShop()?.manageProductions ==
-                                                                          true) {
-                                                                    return ButtonTab(
-                                                                      theme:
-                                                                          theme,
-                                                                      iconWidget: Icon(
-                                                                        color:
-                                                                            theme.lightModeColor.secColor200,
-                                                                        size:
-                                                                            21,
-                                                                        Icons.view_in_ar_rounded,
-                                                                      ),
-                                                                      title:
-                                                                          'Production',
-                                                                      action: () {
-                                                                        Navigator.push(
-                                                                          context,
-                                                                          MaterialPageRoute(
-                                                                            builder: (
-                                                                              context,
-                                                                            ) {
-                                                                              return ProductionPage();
-                                                                            },
-                                                                          ),
-                                                                        );
-                                                                      },
-                                                                    );
-                                                                  } else {
-                                                                    return ButtonTab(
-                                                                      theme:
-                                                                          theme,
-                                                                      icon:
-                                                                          productIconSvg,
-                                                                      title:
-                                                                          'Items',
-                                                                      action: () {
-                                                                        returnNavProvider(
-                                                                          context,
-                                                                          listen:
-                                                                              false,
-                                                                        ).navigate(
-                                                                          1,
-                                                                        );
-                                                                      },
-                                                                    );
-                                                                  }
-                                                                },
-                                                              ),
-                                                              ButtonTab(
-                                                                theme:
-                                                                    theme,
-                                                                iconWidget: Icon(
-                                                                  size:
-                                                                      23,
-                                                                  color:
-                                                                      theme.lightModeColor.prColor250,
-                                                                  Icons.people_alt_outlined,
-                                                                ),
-                                                                title:
-                                                                    'Customers',
-                                                                action: () {
-                                                                  Navigator.push(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                      builder: (
-                                                                        context,
-                                                                      ) {
-                                                                        return CustomerList();
-                                                                      },
-                                                                    ),
-                                                                  );
-                                                                },
-                                                              ),
-                                                              ButtonTab(
-                                                                theme:
-                                                                    theme,
-                                                                icon:
-                                                                    reportIconSvg,
-                                                                title:
-                                                                    'Report',
-                                                                action: () {
-                                                                  returnNavProvider(
-                                                                    context,
-                                                                    listen:
-                                                                        false,
-                                                                  ).navigate(
-                                                                    6,
-                                                                  );
-                                                                  Navigator.push(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                      builder: (
-                                                                        context,
-                                                                      ) {
-                                                                        return ReportPage();
-                                                                      },
-                                                                    ),
-                                                                  ).then(
-                                                                    (
-                                                                      context,
-                                                                    ) {
-                                                                      setState(
-                                                                        () {
-                                                                          clearDate();
-                                                                        },
-                                                                      );
-                                                                    },
-                                                                  );
-                                                                },
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment.start,
-                                                            children: [
-                                                              Visibility(
-                                                                visible: authorization(
-                                                                  authorized:
-                                                                      Authorizations().employeePage,
-                                                                ),
-                                                                child: ButtonTab(
-                                                                  theme:
-                                                                      theme,
-                                                                  icon:
-                                                                      employeesIconSvg,
-                                                                  iconColor:
-                                                                      theme.lightModeColor.prColor250,
-                                                                  title:
-                                                                      'Staffs',
-                                                                  action: () {
-                                                                    returnNavProvider(
-                                                                      context,
-                                                                      listen:
-                                                                          false,
-                                                                    ).navigate(
-                                                                      7,
-                                                                    );
-                                                                    Navigator.push(
-                                                                      context,
-                                                                      MaterialPageRoute(
-                                                                        builder: (
-                                                                          context,
-                                                                        ) {
-                                                                          return EmployeeListPage(
-                                                                            empId:
-                                                                                userGeneral(
-                                                                                  context,
-                                                                                ).userId!,
-                                                                          );
-                                                                        },
-                                                                      ),
-                                                                    );
-                                                                  },
-                                                                ),
-                                                              ),
-                                                              Visibility(
-                                                                visible: authorization(
-                                                                  authorized:
-                                                                      Authorizations().employeePage,
-                                                                ),
-                                                                child: SizedBox(
-                                                                  width:
-                                                                      10,
-                                                                ),
-                                                              ),
-
-                                                              ButtonTab(
-                                                                theme:
-                                                                    theme,
-                                                                icon:
-                                                                    custBookIconSvg,
-                                                                title:
-                                                                    'Invoices',
-                                                                action: () {
-                                                                  SalesAuthAction().invoiceManagementAction(
-                                                                    context:
-                                                                        context,
-                                                                    action: () {
-                                                                      returnNavProvider(
-                                                                        context,
-                                                                        listen:
-                                                                            false,
-                                                                      ).navigate(
-                                                                        5,
-                                                                      );
-                                                                      Navigator.push(
-                                                                        context,
-                                                                        MaterialPageRoute(
-                                                                          builder: (
-                                                                            context,
-                                                                          ) {
-                                                                            return InvoiceListPage();
-                                                                          },
-                                                                        ),
-                                                                      );
-                                                                    },
-                                                                  );
-                                                                },
-                                                              ),
-                                                              SizedBox(
-                                                                width:
-                                                                    10,
-                                                              ),
-                                                              ButtonTab(
-                                                                theme:
-                                                                    theme,
-                                                                icon:
-                                                                    expensesIconSvg,
-                                                                title:
-                                                                    'Expenses',
-                                                                action: () async {
-                                                                  returnNavProvider(
-                                                                    context,
-                                                                    listen:
-                                                                        false,
-                                                                  ).navigate(
-                                                                    4,
-                                                                  );
-                                                                  Navigator.push(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                      builder: (
-                                                                        context,
-                                                                      ) {
-                                                                        return ExpensesPage(
-                                                                          isMain:
-                                                                              true,
-                                                                        );
-                                                                      },
-                                                                    ),
-                                                                  ).then(
-                                                                    (
-                                                                      context,
-                                                                    ) {
-                                                                      setState(
-                                                                        () {
-                                                                          clearDate();
-                                                                        },
-                                                                      );
-                                                                    },
-                                                                  );
-                                                                },
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                height: 30,
-                                              ),
-                                            ],
-                                          ),
+                                            ),
+                                            SizedBox(
+                                              height: 30,
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
-                                  ],
-                                ),
-                                Visibility(
-                                  visible: authorization(
-                                    authorized:
-                                        Authorizations()
-                                            .contactStockall,
                                   ),
-                                  child: Align(
-                                    alignment: Alignment(
-                                      1,
-                                      isFloatOpen
-                                          ? 1
-                                          : 0.94,
-                                    ),
-                                    child: Material(
-                                      elevation: 2,
-                                      color:
-                                          Colors
-                                              .transparent,
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          if (isFloatOpen) {
-                                            setState(() {
-                                              isFloatOpen =
-                                                  false;
-                                            });
-                                          } else {
-                                            setState(() {
-                                              isFloatOpen =
-                                                  true;
-                                            });
-                                          }
-                                        },
-                                        child: Container(
-                                          padding:
-                                              EdgeInsets.fromLTRB(
-                                                10,
-                                                15,
-                                                isFloatOpen
-                                                    ? 30
-                                                    : 10,
-                                                15,
+                                ],
+                              ),
+                              Visibility(
+                                visible: authorization(
+                                  authorized:
+                                      Authorizations()
+                                          .contactStockall,
+                                ),
+                                child: Align(
+                                  alignment: Alignment(
+                                    1,
+                                    isFloatOpen ? 1 : 0.94,
+                                  ),
+                                  child: Material(
+                                    elevation: 2,
+                                    color:
+                                        Colors.transparent,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        if (isFloatOpen) {
+                                          setState(() {
+                                            isFloatOpen =
+                                                false;
+                                          });
+                                        } else {
+                                          setState(() {
+                                            isFloatOpen =
+                                                true;
+                                          });
+                                        }
+                                      },
+                                      child: Container(
+                                        padding:
+                                            EdgeInsets.fromLTRB(
+                                              10,
+                                              15,
+                                              isFloatOpen
+                                                  ? 30
+                                                  : 10,
+                                              15,
+                                            ),
+                                        decoration: BoxDecoration(
+                                          color:
+                                              theme
+                                                  .lightModeColor
+                                                  .secColor100,
+                                          borderRadius:
+                                              BorderRadius.only(
+                                                topLeft:
+                                                    Radius.circular(
+                                                      5,
+                                                    ),
+                                                bottomLeft:
+                                                    Radius.circular(
+                                                      5,
+                                                    ),
                                               ),
-                                          decoration: BoxDecoration(
-                                            color:
-                                                theme
-                                                    .lightModeColor
-                                                    .secColor100,
-                                            borderRadius:
-                                                BorderRadius.only(
-                                                  topLeft:
-                                                      Radius.circular(
-                                                        5,
-                                                      ),
-                                                  bottomLeft:
-                                                      Radius.circular(
-                                                        5,
-                                                      ),
-                                                ),
-                                          ),
-                                          child: Stack(
-                                            children: [
-                                              Visibility(
-                                                visible:
-                                                    isFloatOpen,
-                                                child: Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize
-                                                          .min,
-                                                  children: [
-                                                    Column(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment.center,
-                                                      children: [
-                                                        Icon(
-                                                          color:
-                                                              Colors.white,
-                                                          size:
-                                                              16,
-                                                          Icons.arrow_forward_ios_rounded,
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    SizedBox(
-                                                      width:
-                                                          10,
-                                                    ),
-                                                    Column(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      spacing:
-                                                          15,
-                                                      children: [
-                                                        InkWell(
-                                                          mouseCursor:
-                                                              SystemMouseCursors.click,
-                                                          onTap: () async {
-                                                            openWhatsApp();
-                                                          },
-
-                                                          child: Column(
-                                                            spacing:
-                                                                3,
-                                                            mainAxisSize:
-                                                                MainAxisSize.min,
-                                                            children: [
-                                                              SvgPicture.asset(
-                                                                whatsappIconSvg,
-                                                                color:
-                                                                    Colors.white,
-                                                                height:
-                                                                    16,
-                                                              ),
-                                                              Text(
-                                                                style: TextStyle(
-                                                                  color:
-                                                                      Colors.white,
-                                                                  fontWeight:
-                                                                      FontWeight.bold,
-                                                                ),
-                                                                'Chat Us',
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        InkWell(
-                                                          mouseCursor:
-                                                              SystemMouseCursors.click,
-                                                          onTap: () async {
-                                                            phoneCall();
-                                                          },
-                                                          child: Column(
-                                                            spacing:
-                                                                3,
-                                                            mainAxisSize:
-                                                                MainAxisSize.min,
-                                                            children: [
-                                                              Icon(
-                                                                size:
-                                                                    17,
-                                                                color:
-                                                                    Colors.white,
-                                                                Icons.phone,
-                                                              ),
-                                                              Text(
-                                                                style: TextStyle(
-                                                                  color:
-                                                                      Colors.white,
-                                                                  fontWeight:
-                                                                      FontWeight.bold,
-                                                                ),
-                                                                'Call Us',
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              Visibility(
-                                                visible:
-                                                    !isFloatOpen,
-                                                child: GestureDetector(
-                                                  onTap: () {
-                                                    openFloat();
-                                                  },
-                                                  child: Column(
+                                        ),
+                                        child: Stack(
+                                          children: [
+                                            Visibility(
+                                              visible:
+                                                  isFloatOpen,
+                                              child: Row(
+                                                mainAxisSize:
+                                                    MainAxisSize
+                                                        .min,
+                                                children: [
+                                                  Column(
                                                     mainAxisSize:
                                                         MainAxisSize.min,
                                                     mainAxisAlignment:
                                                         MainAxisAlignment.center,
                                                     children: [
                                                       Icon(
-                                                        size:
-                                                            16,
                                                         color:
                                                             Colors.white,
-                                                        Icons.arrow_back_ios_new_rounded,
+                                                        size:
+                                                            16,
+                                                        Icons.arrow_forward_ios_rounded,
                                                       ),
                                                     ],
                                                   ),
+                                                  SizedBox(
+                                                    width:
+                                                        10,
+                                                  ),
+                                                  Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    spacing:
+                                                        15,
+                                                    children: [
+                                                      InkWell(
+                                                        mouseCursor:
+                                                            SystemMouseCursors.click,
+                                                        onTap: () async {
+                                                          openWhatsApp();
+                                                        },
+
+                                                        child: Column(
+                                                          spacing:
+                                                              3,
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            SvgPicture.asset(
+                                                              whatsappIconSvg,
+                                                              color:
+                                                                  Colors.white,
+                                                              height:
+                                                                  16,
+                                                            ),
+                                                            Text(
+                                                              style: TextStyle(
+                                                                color:
+                                                                    Colors.white,
+                                                                fontWeight:
+                                                                    FontWeight.bold,
+                                                              ),
+                                                              'Chat Us',
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      InkWell(
+                                                        mouseCursor:
+                                                            SystemMouseCursors.click,
+                                                        onTap: () async {
+                                                          phoneCall();
+                                                        },
+                                                        child: Column(
+                                                          spacing:
+                                                              3,
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            Icon(
+                                                              size:
+                                                                  17,
+                                                              color:
+                                                                  Colors.white,
+                                                              Icons.phone,
+                                                            ),
+                                                            Text(
+                                                              style: TextStyle(
+                                                                color:
+                                                                    Colors.white,
+                                                                fontWeight:
+                                                                    FontWeight.bold,
+                                                              ),
+                                                              'Call Us',
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Visibility(
+                                              visible:
+                                                  !isFloatOpen,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  openFloat();
+                                                },
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize
+                                                          .min,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .center,
+                                                  children: [
+                                                    Icon(
+                                                      size:
+                                                          16,
+                                                      color:
+                                                          Colors.white,
+                                                      Icons
+                                                          .arrow_back_ios_new_rounded,
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
                                   ),
                                 ),
-                                Visibility(
-                                  visible:
-                                      appVersionDesktop !=
-                                          returnAppVersionProvider(
-                                                context,
-                                              )
-                                              .appVersion
-                                              ?.desktopVersion &&
-                                      returnAppVersionProvider(
-                                            context,
-                                          ).isUpdated ==
-                                          false,
-                                  child: Align(
-                                    alignment: Alignment(
-                                      0,
-                                      -0.8,
-                                    ),
-                                    child: Material(
-                                      elevation: 2,
-                                      color:
-                                          Colors
-                                              .transparent,
-                                      child: Container(
-                                        width: 450,
-                                        padding:
-                                            EdgeInsets.fromLTRB(
-                                              15,
-                                              15,
-                                              15,
-                                              30,
-                                            ),
-                                        decoration: BoxDecoration(
-                                          color:
-                                              Colors.white,
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color:
-                                                  const Color.fromARGB(
-                                                    84,
-                                                    0,
-                                                    0,
-                                                    0,
-                                                  ),
-                                              blurRadius:
-                                                  20,
-                                              spreadRadius:
-                                                  10,
-                                            ),
-                                          ],
-                                          borderRadius:
-                                              BorderRadius.circular(
-                                                5,
-                                              ),
-                                        ),
-                                        child: Column(
-                                          mainAxisSize:
-                                              MainAxisSize
-                                                  .min,
-                                          children: [
-                                            Row(
-                                              spacing: 10,
-                                              mainAxisSize:
-                                                  MainAxisSize
-                                                      .max,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Opacity(
-                                                  opacity:
-                                                      0,
-                                                  child: IconButton(
-                                                    mouseCursor:
-                                                        SystemMouseCursors.click,
-                                                    onPressed:
-                                                        () {},
-                                                    icon: Icon(
-                                                      Icons
-                                                          .clear,
-                                                    ),
-                                                  ),
+                              ),
+                              Visibility(
+                                visible:
+                                    appVersionDesktop !=
+                                        returnAppVersionProvider(
+                                              context,
+                                            )
+                                            .appVersion
+                                            ?.desktopVersion &&
+                                    returnAppVersionProvider(
+                                          context,
+                                        ).isUpdated ==
+                                        false,
+                                child: Align(
+                                  alignment: Alignment(
+                                    0,
+                                    -0.8,
+                                  ),
+                                  child: Material(
+                                    elevation: 2,
+                                    color:
+                                        Colors.transparent,
+                                    child: Container(
+                                      width: 450,
+                                      padding:
+                                          EdgeInsets.fromLTRB(
+                                            15,
+                                            15,
+                                            15,
+                                            30,
+                                          ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color:
+                                                const Color.fromARGB(
+                                                  84,
+                                                  0,
+                                                  0,
+                                                  0,
                                                 ),
-                                                Text(
-                                                  style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold,
-                                                  ),
-                                                  'NEW UPDATE AVAILABLE',
-                                                ),
-                                                IconButton(
+                                            blurRadius: 20,
+                                            spreadRadius:
+                                                10,
+                                          ),
+                                        ],
+                                        borderRadius:
+                                            BorderRadius.circular(
+                                              5,
+                                            ),
+                                      ),
+                                      child: Column(
+                                        mainAxisSize:
+                                            MainAxisSize
+                                                .min,
+                                        children: [
+                                          Row(
+                                            spacing: 10,
+                                            mainAxisSize:
+                                                MainAxisSize
+                                                    .max,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .spaceBetween,
+                                            children: [
+                                              Opacity(
+                                                opacity: 0,
+                                                child: IconButton(
                                                   mouseCursor:
                                                       SystemMouseCursors
                                                           .click,
-                                                  onPressed: () {
-                                                    returnAppVersionProvider(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    ).toggleUpdated(
-                                                      true,
-                                                    );
-                                                  },
+                                                  onPressed:
+                                                      () {},
                                                   icon: Icon(
                                                     Icons
                                                         .clear,
                                                   ),
                                                 ),
-                                              ],
-                                            ),
-                                            Text(
-                                              textAlign:
-                                                  TextAlign
-                                                      .center,
-                                              style: TextStyle(
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b2
-                                                        .fontSize,
                                               ),
-                                              'New Update is Available. Please Click the button below to download the updated version.',
-                                            ),
-                                            Visibility(
-                                              visible:
-                                                  kIsWeb,
-                                              child: Column(
-                                                children: [
-                                                  SizedBox(
-                                                    height:
-                                                        10,
-                                                  ),
-                                                  Text(
-                                                    textAlign:
-                                                        TextAlign.center,
-                                                    style: TextStyle(
-                                                      color:
-                                                          theme.lightModeColor.secColor100,
-                                                      fontSize:
-                                                          theme.mobileTexts.b3.fontSize,
-                                                    ),
-                                                    'Note: If you decide to update web, You might need to refresh more than twice before the update can relfect',
-                                                  ),
-                                                ],
+                                              Text(
+                                                style: TextStyle(
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                ),
+                                                'NEW UPDATE AVAILABLE',
                                               ),
+                                              IconButton(
+                                                mouseCursor:
+                                                    SystemMouseCursors
+                                                        .click,
+                                                onPressed: () {
+                                                  returnAppVersionProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).toggleUpdated(
+                                                    true,
+                                                  );
+                                                },
+                                                icon: Icon(
+                                                  Icons
+                                                      .clear,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Text(
+                                            textAlign:
+                                                TextAlign
+                                                    .center,
+                                            style: TextStyle(
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b2
+                                                      .fontSize,
                                             ),
-                                            SizedBox(
-                                              height: 15,
-                                            ),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .center,
+                                            'New Update is Available. Please Click the button below to download the updated version.',
+                                          ),
+                                          Visibility(
+                                            visible: kIsWeb,
+                                            child: Column(
                                               children: [
-                                                Visibility(
-                                                  visible:
-                                                      kIsWeb &&
-                                                      Theme.of(
-                                                            context,
-                                                          ).platform ==
-                                                          TargetPlatform.iOS,
-                                                  child: Expanded(
-                                                    child: Material(
-                                                      color:
-                                                          Colors.transparent,
-                                                      child: Ink(
-                                                        decoration: BoxDecoration(
-                                                          borderRadius: BorderRadius.circular(
-                                                            5,
-                                                          ),
-                                                          color:
-                                                              theme.lightModeColor.prColor300,
-                                                        ),
-                                                        child: InkWell(
-                                                          mouseCursor:
-                                                              SystemMouseCursors.click,
-
-                                                          onTap: () async {
-                                                            setState(
-                                                              () {
-                                                                isUpdateLodaingWeb =
-                                                                    true;
-                                                              },
-                                                            );
-                                                            performRestart();
-                                                          },
-                                                          child: Container(
-                                                            padding: EdgeInsets.symmetric(
-                                                              vertical:
-                                                                  10,
-                                                              horizontal:
-                                                                  15,
-                                                            ),
-                                                            child: Center(
-                                                              child: Padding(
-                                                                padding: const EdgeInsets.only(
-                                                                  bottom:
-                                                                      3.0,
-                                                                ),
-                                                                child:
-                                                                    isUpdateLodaingWeb
-                                                                        ? CircularProgressIndicator(
-                                                                          color:
-                                                                              Colors.white,
-                                                                        )
-                                                                        : Text(
-                                                                          style: TextStyle(
-                                                                            color:
-                                                                                Colors.white,
-                                                                            fontSize:
-                                                                                theme.mobileTexts.b3.fontSize,
-                                                                            fontWeight:
-                                                                                FontWeight.bold,
-                                                                          ),
-                                                                          'Install Update',
-                                                                        ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
+                                                SizedBox(
+                                                  height:
+                                                      10,
                                                 ),
-                                                Visibility(
-                                                  visible:
-                                                      !kIsWeb ||
-                                                      (kIsWeb &&
-                                                          Theme.of(context).platform !=
-                                                              TargetPlatform.iOS),
-                                                  child: Expanded(
-                                                    child: Material(
-                                                      color:
-                                                          Colors.transparent,
-                                                      child: Ink(
-                                                        decoration: BoxDecoration(
-                                                          borderRadius: BorderRadius.circular(
-                                                            5,
-                                                          ),
-                                                          color:
-                                                              theme.lightModeColor.prColor300,
-                                                        ),
-                                                        child: InkWell(
-                                                          mouseCursor:
-                                                              SystemMouseCursors.click,
-                                                          onTap: () async {
-                                                            setState(
-                                                              () {
-                                                                isUpdateLodaingMobile =
-                                                                    true;
-                                                              },
-                                                            );
-                                                            downloadApkFromApp(
-                                                              context:
-                                                                  context,
-                                                            );
-                                                            setState(
-                                                              () {
-                                                                isUpdateLodaingMobile =
-                                                                    false;
-                                                              },
-                                                            );
-                                                          },
-                                                          child: Container(
-                                                            padding: EdgeInsets.symmetric(
-                                                              vertical:
-                                                                  10,
-                                                              horizontal:
-                                                                  15,
-                                                            ),
-                                                            child: Center(
-                                                              child: Padding(
-                                                                padding: const EdgeInsets.only(
-                                                                  bottom:
-                                                                      3.0,
-                                                                ),
-                                                                child:
-                                                                    isUpdateLodaingMobile
-                                                                        ? CircularProgressIndicator(
-                                                                          color:
-                                                                              Colors.white,
-                                                                        )
-                                                                        : Text(
-                                                                          style: TextStyle(
-                                                                            color:
-                                                                                Colors.white,
-                                                                            fontSize:
-                                                                                theme.mobileTexts.b3.fontSize,
-                                                                            fontWeight:
-                                                                                FontWeight.bold,
-                                                                          ),
-                                                                          !kIsWeb
-                                                                              ? 'Install Update'
-                                                                              : kIsWeb &&
-                                                                                  Theme.of(
-                                                                                        context,
-                                                                                      ).platform !=
-                                                                                      TargetPlatform.iOS
-                                                                              ? 'Download ${screenWidth(context) > tabletScreenSmall ? 'Desktop' : ''} App'
-                                                                              : '',
-                                                                        ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
+                                                Text(
+                                                  textAlign:
+                                                      TextAlign
+                                                          .center,
+                                                  style: TextStyle(
+                                                    color:
+                                                        theme.lightModeColor.secColor100,
+                                                    fontSize:
+                                                        theme.mobileTexts.b3.fontSize,
                                                   ),
-                                                ),
-                                                Visibility(
-                                                  visible:
-                                                      (kIsWeb &&
-                                                          Theme.of(context).platform !=
-                                                              TargetPlatform.iOS),
-                                                  child: SizedBox(
-                                                    width:
-                                                        10,
-                                                  ),
-                                                ),
-                                                Visibility(
-                                                  visible:
-                                                      kIsWeb &&
-                                                      Theme.of(
-                                                            context,
-                                                          ).platform !=
-                                                          TargetPlatform.iOS,
-                                                  child: Expanded(
-                                                    child: Material(
-                                                      color:
-                                                          Colors.transparent,
-                                                      child: Ink(
-                                                        decoration: BoxDecoration(
-                                                          borderRadius: BorderRadius.circular(
-                                                            5,
-                                                          ),
-                                                          color:
-                                                              theme.lightModeColor.prColor300,
-                                                        ),
-                                                        child: InkWell(
-                                                          mouseCursor:
-                                                              SystemMouseCursors.click,
-                                                          onTap: () async {
-                                                            setState(
-                                                              () {
-                                                                isUpdateLodaingWeb =
-                                                                    true;
-                                                              },
-                                                            );
-                                                            performRestart();
-                                                          },
-                                                          child: Container(
-                                                            padding: EdgeInsets.symmetric(
-                                                              vertical:
-                                                                  10,
-                                                              horizontal:
-                                                                  15,
-                                                            ),
-                                                            child: Center(
-                                                              child: Padding(
-                                                                padding: const EdgeInsets.only(
-                                                                  bottom:
-                                                                      3.0,
-                                                                ),
-                                                                child:
-                                                                    isUpdateLodaingWeb
-                                                                        ? CircularProgressIndicator(
-                                                                          color:
-                                                                              Colors.white,
-                                                                        )
-                                                                        : Text(
-                                                                          style: TextStyle(
-                                                                            color:
-                                                                                Colors.white,
-                                                                            fontSize:
-                                                                                theme.mobileTexts.b3.fontSize,
-                                                                            fontWeight:
-                                                                                FontWeight.bold,
-                                                                          ),
-                                                                          'Install Update',
-                                                                        ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
+                                                  'Note: If you decide to update web, You might need to refresh more than twice before the update can relfect',
                                                 ),
                                               ],
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                          SizedBox(
+                                            height: 15,
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .center,
+                                            children: [
+                                              Visibility(
+                                                visible:
+                                                    kIsWeb &&
+                                                    Theme.of(
+                                                          context,
+                                                        ).platform ==
+                                                        TargetPlatform.iOS,
+                                                child: Expanded(
+                                                  child: Material(
+                                                    color:
+                                                        Colors.transparent,
+                                                    child: Ink(
+                                                      decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(
+                                                          5,
+                                                        ),
+                                                        color:
+                                                            theme.lightModeColor.prColor300,
+                                                      ),
+                                                      child: InkWell(
+                                                        mouseCursor:
+                                                            SystemMouseCursors.click,
+
+                                                        onTap: () async {
+                                                          setState(
+                                                            () {
+                                                              isUpdateLodaingWeb =
+                                                                  true;
+                                                            },
+                                                          );
+                                                          performRestart();
+                                                        },
+                                                        child: Container(
+                                                          padding: EdgeInsets.symmetric(
+                                                            vertical:
+                                                                10,
+                                                            horizontal:
+                                                                15,
+                                                          ),
+                                                          child: Center(
+                                                            child: Padding(
+                                                              padding: const EdgeInsets.only(
+                                                                bottom:
+                                                                    3.0,
+                                                              ),
+                                                              child:
+                                                                  isUpdateLodaingWeb
+                                                                      ? CircularProgressIndicator(
+                                                                        color:
+                                                                            Colors.white,
+                                                                      )
+                                                                      : Text(
+                                                                        style: TextStyle(
+                                                                          color:
+                                                                              Colors.white,
+                                                                          fontSize:
+                                                                              theme.mobileTexts.b3.fontSize,
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                        ),
+                                                                        'Install Update',
+                                                                      ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Visibility(
+                                                visible:
+                                                    !kIsWeb ||
+                                                    (kIsWeb &&
+                                                        Theme.of(context).platform !=
+                                                            TargetPlatform.iOS),
+                                                child: Expanded(
+                                                  child: Material(
+                                                    color:
+                                                        Colors.transparent,
+                                                    child: Ink(
+                                                      decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(
+                                                          5,
+                                                        ),
+                                                        color:
+                                                            theme.lightModeColor.prColor300,
+                                                      ),
+                                                      child: InkWell(
+                                                        mouseCursor:
+                                                            SystemMouseCursors.click,
+                                                        onTap: () async {
+                                                          setState(
+                                                            () {
+                                                              isUpdateLodaingMobile =
+                                                                  true;
+                                                            },
+                                                          );
+                                                          downloadApkFromApp(
+                                                            context:
+                                                                context,
+                                                          );
+                                                          setState(
+                                                            () {
+                                                              isUpdateLodaingMobile =
+                                                                  false;
+                                                            },
+                                                          );
+                                                        },
+                                                        child: Container(
+                                                          padding: EdgeInsets.symmetric(
+                                                            vertical:
+                                                                10,
+                                                            horizontal:
+                                                                15,
+                                                          ),
+                                                          child: Center(
+                                                            child: Padding(
+                                                              padding: const EdgeInsets.only(
+                                                                bottom:
+                                                                    3.0,
+                                                              ),
+                                                              child:
+                                                                  isUpdateLodaingMobile
+                                                                      ? CircularProgressIndicator(
+                                                                        color:
+                                                                            Colors.white,
+                                                                      )
+                                                                      : Text(
+                                                                        style: TextStyle(
+                                                                          color:
+                                                                              Colors.white,
+                                                                          fontSize:
+                                                                              theme.mobileTexts.b3.fontSize,
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                        ),
+                                                                        !kIsWeb
+                                                                            ? 'Install Update'
+                                                                            : kIsWeb &&
+                                                                                Theme.of(
+                                                                                      context,
+                                                                                    ).platform !=
+                                                                                    TargetPlatform.iOS
+                                                                            ? 'Download ${screenWidth(context) > tabletScreenSmall ? 'Desktop' : ''} App'
+                                                                            : '',
+                                                                      ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Visibility(
+                                                visible:
+                                                    (kIsWeb &&
+                                                        Theme.of(context).platform !=
+                                                            TargetPlatform.iOS),
+                                                child:
+                                                    SizedBox(
+                                                      width:
+                                                          10,
+                                                    ),
+                                              ),
+                                              Visibility(
+                                                visible:
+                                                    kIsWeb &&
+                                                    Theme.of(
+                                                          context,
+                                                        ).platform !=
+                                                        TargetPlatform.iOS,
+                                                child: Expanded(
+                                                  child: Material(
+                                                    color:
+                                                        Colors.transparent,
+                                                    child: Ink(
+                                                      decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(
+                                                          5,
+                                                        ),
+                                                        color:
+                                                            theme.lightModeColor.prColor300,
+                                                      ),
+                                                      child: InkWell(
+                                                        mouseCursor:
+                                                            SystemMouseCursors.click,
+                                                        onTap: () async {
+                                                          setState(
+                                                            () {
+                                                              isUpdateLodaingWeb =
+                                                                  true;
+                                                            },
+                                                          );
+                                                          performRestart();
+                                                        },
+                                                        child: Container(
+                                                          padding: EdgeInsets.symmetric(
+                                                            vertical:
+                                                                10,
+                                                            horizontal:
+                                                                15,
+                                                          ),
+                                                          child: Center(
+                                                            child: Padding(
+                                                              padding: const EdgeInsets.only(
+                                                                bottom:
+                                                                    3.0,
+                                                              ),
+                                                              child:
+                                                                  isUpdateLodaingWeb
+                                                                      ? CircularProgressIndicator(
+                                                                        color:
+                                                                            Colors.white,
+                                                                      )
+                                                                      : Text(
+                                                                        style: TextStyle(
+                                                                          color:
+                                                                              Colors.white,
+                                                                          fontSize:
+                                                                              theme.mobileTexts.b3.fontSize,
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                        ),
+                                                                        'Install Update',
+                                                                      ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
                                 ),
-                                // DesktopFocusBarcodeWidget(
-                                //   theme: theme,
-                                // ),
-                                ExpirySubPopUpDesktop(),
-                                Visibility(
-                                  visible:
-                                      context
-                                          .watch<
-                                            AuthService
-                                          >()
-                                          .isLoading,
-                                  child: returnCompProvider(
-                                    context,
-                                  ).showSuccess('Loading'),
+                              ),
+                              // DesktopFocusBarcodeWidget(
+                              //   theme: theme,
+                              // ),
+                              ExpirySubPopUpDesktop(),
+                              Visibility(
+                                visible:
+                                    context
+                                        .watch<
+                                          AuthService
+                                        >()
+                                        .isLoading,
+                                child: returnCompProvider(
+                                  context,
+                                ).showSuccess('Loading'),
+                              ),
+                              Visibility(
+                                visible:
+                                    context
+                                        .watch<
+                                          AuthService
+                                        >()
+                                        .isLoading,
+                                child: returnCompProvider(
+                                  context,
+                                ).showLoader(
+                                  message: 'Loading',
                                 ),
-                                Visibility(
-                                  visible:
-                                      context
-                                          .watch<
-                                            AuthService
-                                          >()
-                                          .isLoading,
-                                  child: returnCompProvider(
-                                    context,
-                                  ).showLoader(
-                                    message: 'Loading',
-                                  ),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                  RightSideBar(theme: theme),
-                ],
-              ),
-              Visibility(
-                visible: isLoading,
-                child: returnCompProvider(
-                  context,
-                ).showLoader(message: 'Logging Out'),
-              ),
-            ],
-          ),
-        );
-      }
+                ),
+                RightSideBar(theme: theme),
+              ],
+            ),
+            Visibility(
+              visible: isLoading,
+              child: returnCompProvider(
+                context,
+              ).showLoader(message: 'Logging Out'),
+            ),
+          ],
+        ),
+      );
     }
+    // }
   }
 }

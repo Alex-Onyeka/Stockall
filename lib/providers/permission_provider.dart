@@ -39,6 +39,9 @@ class PermissionProvider extends ChangeNotifier {
   //
 
   Future<List<PermissionModel>> getPermissions() async {
+    permissionsCache =
+        PermissionFunc().getPermissionModel();
+    notifyListeners();
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
       final response =

@@ -131,6 +131,7 @@ class InventoryUpdatesProvider with ChangeNotifier {
 
   Future<List<TempInventoryUpdateClass>>
   getInventoryUpdates() async {
+    await getInventoryUpdatesOffline();
     bool isOnline = await ConnectivityProvider().isOnline();
     var shopId = returnShopProvider().userShop()!.shopId!;
     if (isOnline && InventoryUpdatesFunc().isSynced()) {

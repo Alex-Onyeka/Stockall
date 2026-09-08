@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/pages/authentication/explore_page/explore_page.dart';
 import 'package:stockall/pages/authentication/login/login_page.dart';
 import 'package:stockall/pages/authentication/sign_up/sign_up_page.dart';
 import 'package:stockall/pages/authentication/translations/auth_texts_en.dart';
@@ -55,7 +56,7 @@ class AuthLandingDesktop extends StatelessWidget {
                   ),
                   child: Container(
                     padding: EdgeInsets.symmetric(
-                      horizontal: 80,
+                      horizontal: 60,
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -148,7 +149,26 @@ class AuthLandingDesktop extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (context) {
-                                  return LoginPage();
+                                  return LoginPage(
+                                    useDemoLogin: false,
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                        SizedBox(height: 10),
+                        MainButtonTransparent(
+                          themeProvider: themeProvider,
+                          constraints: constraints,
+                          text:
+                              'Contact Support/Login Test Demo',
+                          action: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return ExplorePage();
                                 },
                               ),
                             );
@@ -163,7 +183,7 @@ class AuthLandingDesktop extends StatelessWidget {
           ),
           Align(
             alignment: Alignment(-0.8, 0),
-            child: Image.asset(appMockUp, width: 450),
+            child: Image.asset(appMockUp, width: 400),
           ),
         ],
       ),

@@ -235,10 +235,12 @@ TempUserClass currentUser() {
   return UserProvider().currentUserMain ??
       TempUserClass(
         password: 'password',
+        userId: '',
         name: 'name',
         email: 'email',
         role: 'role',
         departmentUuids: [],
+        createdAt: DateTime.now(),
         access: [],
       );
 }
@@ -286,6 +288,8 @@ TempUserClass userGeneral(
         name: 'name',
         email: 'email',
         role: 'Owner',
+        userId: '',
+        createdAt: DateTime.now(),
         authUserId: 'dfsgdhjfh',
         departmentUuids: [],
         access: [],
@@ -293,7 +297,7 @@ TempUserClass userGeneral(
 }
 
 int shopId() {
-  var tempId = returnShopProvider().userShop()!.shopId!;
+  var tempId = returnShopProvider().userShop()?.shopId ?? 1;
 
   return tempId;
 }
@@ -1059,7 +1063,8 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (context) => home,
           '/launch': (context) => LaunchScreen(),
-          '/login': (context) => LoginPage(),
+          '/login':
+              (context) => LoginPage(useDemoLogin: false),
           '/splash': (context) => SplashScreen(),
           '/reset-password':
               (context) => EnterNewPassword(),

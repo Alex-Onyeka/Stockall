@@ -20,6 +20,9 @@ class UtilityConstantProvider extends ChangeNotifier {
   UtilityConstants? utilityConstants;
 
   Future<UtilityConstants?> getUtilityConstants() async {
+    utilityConstants =
+        UtilityConstantsFunc().getUtilityConstants();
+    notifyListeners();
     bool isOnline = await ConnectivityProvider().isOnline();
     if (isOnline) {
       try {

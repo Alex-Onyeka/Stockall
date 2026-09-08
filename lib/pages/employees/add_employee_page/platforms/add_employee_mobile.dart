@@ -8,7 +8,7 @@ import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/employee_auth.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/pages/employees/add_employee_page/platforms/add_employee_desktop.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:uuid/uuid.dart';
 
@@ -107,7 +107,7 @@ class _AddEmployeeMobileState
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        SizedBox(height: 20),
+                        // SizedBox(height: 20),
                         Padding(
                           padding:
                               const EdgeInsets.symmetric(
@@ -124,9 +124,9 @@ class _AddEmployeeMobileState
                                         ),
                                     child: Column(
                                       children: [
-                                        SizedBox(
-                                          height: 20,
-                                        ),
+                                        // SizedBox(
+                                        //   height: 20,
+                                        // ),
                                         Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment
@@ -203,7 +203,7 @@ class _AddEmployeeMobileState
                                                     Text(
                                                       style: TextStyle(
                                                         fontSize:
-                                                            14,
+                                                            theme.mobileTexts.b2.fontSize,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
@@ -212,7 +212,7 @@ class _AddEmployeeMobileState
                                                     Text(
                                                       style: TextStyle(
                                                         fontSize:
-                                                            12,
+                                                            theme.mobileTexts.b4.fontSize,
                                                         fontWeight:
                                                             FontWeight.normal,
                                                       ),
@@ -227,7 +227,7 @@ class _AddEmployeeMobileState
                                       ],
                                     ),
                                   ),
-                                  SizedBox(height: 0),
+                                  SizedBox(height: 5),
                                   Visibility(
                                     visible: authorization(
                                       authorized:
@@ -235,35 +235,17 @@ class _AddEmployeeMobileState
                                               .addEmployee,
                                     ),
 
-                                    child: ListView.builder(
-                                      shrinkWrap: true,
-                                      physics:
-                                          NeverScrollableScrollPhysics(),
-                                      itemCount:
-                                          returnShopProvider(
-                                                    context:
-                                                        context,
-                                                  ).shopOwnerUser!.role ==
-                                                  'Owner'
-                                              ? returnPermissionProvider()
-                                                  .permissions()
-                                                  .where((
-                                                    emp,
-                                                  ) {
-                                                    return emp.role !=
-                                                        'Owner';
-                                                  })
-                                                  .toList()
-                                                  .length
-                                              : returnPermissionProvider()
-                                                  .permissions()
-                                                  .length,
-                                      itemBuilder: (
-                                        context,
-                                        index,
-                                      ) {
-                                        PermissionModel
-                                        employee =
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal:
+                                                10.0,
+                                          ),
+                                      child: ListView.builder(
+                                        shrinkWrap: true,
+                                        physics:
+                                            NeverScrollableScrollPhysics(),
+                                        itemCount:
                                             returnShopProvider(
                                                       context:
                                                           context,
@@ -271,42 +253,69 @@ class _AddEmployeeMobileState
                                                     'Owner'
                                                 ? returnPermissionProvider()
                                                     .permissions()
-                                                    .where(
-                                                      (
-                                                        emp,
-                                                      ) =>
-                                                          emp.role !=
-                                                          'Owner',
-                                                    )
-                                                    .toList()[index]
+                                                    .where((
+                                                      emp,
+                                                    ) {
+                                                      return emp.role !=
+                                                          'Owner';
+                                                    })
+                                                    .toList()
+                                                    .length
                                                 : returnPermissionProvider()
-                                                    .permissions()[index];
-                                        return EmployeeListTile(
-                                          currentSelected:
-                                              currentSelected ??
-                                              5,
-                                          index: index,
-                                          action: () async {
-                                            setState(() {
-                                              currentSelected =
-                                                  index;
-                                            });
-                                            await mainLocalLog(
-                                              index
-                                                  .toString(),
-                                            );
-                                            await mainLocalLog(
-                                              employee.role,
-                                            );
-                                          },
-                                          authorizations:
-                                              employee
-                                                  .access,
-                                          position:
-                                              employee.role,
-                                          theme: theme,
-                                        );
-                                      },
+                                                    .permissions()
+                                                    .length,
+                                        itemBuilder: (
+                                          context,
+                                          index,
+                                        ) {
+                                          PermissionModel
+                                          employee =
+                                              returnShopProvider(
+                                                        context:
+                                                            context,
+                                                      ).shopOwnerUser!.role ==
+                                                      'Owner'
+                                                  ? returnPermissionProvider()
+                                                      .permissions()
+                                                      .where(
+                                                        (
+                                                          emp,
+                                                        ) =>
+                                                            emp.role !=
+                                                            'Owner',
+                                                      )
+                                                      .toList()[index]
+                                                  : returnPermissionProvider()
+                                                      .permissions()[index];
+                                          return EmployeeListTile(
+                                            currentSelected:
+                                                currentSelected ??
+                                                5,
+                                            index: index,
+                                            action: () async {
+                                              setState(() {
+                                                currentSelected =
+                                                    index;
+                                              });
+                                              await mainLocalLog(
+                                                index
+                                                    .toString(),
+                                              );
+                                              await mainLocalLog(
+                                                employee
+                                                    .role,
+                                              );
+                                            },
+                                            authorizations:
+                                                employee
+                                                    .access,
+                                            position:
+                                                employee
+                                                    .role,
+                                            theme: theme,
+                                          );
+                                        },
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -783,129 +792,6 @@ class _AddEmployeeMobileState
           ),
         ),
       ],
-    );
-  }
-}
-
-class EmployeeListTile extends StatelessWidget {
-  final String position;
-  final List<String> authorizations;
-  final Function() action;
-  final int index;
-  final int currentSelected;
-  final ThemeProvider theme;
-
-  const EmployeeListTile({
-    super.key,
-    required this.position,
-    required this.authorizations,
-    required this.action,
-    required this.theme,
-    required this.index,
-    required this.currentSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Ink(
-        color: Colors.white,
-        child: InkWell(
-          mouseCursor: SystemMouseCursors.click,
-          onTap: () {
-            action();
-            FocusManager.instance.primaryFocus?.unfocus();
-          },
-          child: Padding(
-            padding: const EdgeInsets.only(
-              bottom: 20.0,
-              left: 15,
-              right: 15,
-            ),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b1.fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      position,
-                    ),
-                    SizedBox(height: 5),
-                    Checkbox(
-                      activeColor:
-                          theme.lightModeColor.secColor100,
-                      value: currentSelected == index,
-                      onChanged: (value) {
-                        action();
-                        FocusManager.instance.primaryFocus
-                            ?.unfocus();
-                      },
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
-                  children: [
-                    Flexible(
-                      child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                        children: [
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children:
-                                authorizations.map((auth) {
-                                  return Container(
-                                    padding:
-                                        EdgeInsets.symmetric(
-                                          vertical: 4,
-                                          horizontal: 8,
-                                        ),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade200,
-                                      ),
-                                    ),
-
-                                    child: Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b3
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
-                                      ),
-                                      auth,
-                                    ),
-                                  );
-                                }).toList(),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

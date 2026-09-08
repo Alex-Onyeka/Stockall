@@ -52,28 +52,7 @@ class StorageProductProvider extends ChangeNotifier {
     required TempStorageProducts product,
     bool? isMultiple,
   }) async {
-    // bool isOnline = await connectivity.isOnline();
     product.updatedAt = DateTime.now();
-    // if (isOnline) {
-    //   var data =
-    //       await supabase
-    //           .from(tableName)
-    //           .upsert(product.toJson(), onConflict: 'uuid')
-    //           .select()
-    //           .single();
-    //   await mainLocalLog('Storage Product Created successfully');
-    //   final newProduct = TempStorageProducts.fromJson(data);
-    //   await StorageProductsFunc().createStorageProduct(
-    //     newProduct,
-    //   );
-    //   // await returnEventsLogProvider().createLog(
-    //   //   returnEventsLogProvider(
-    //   //     // ignore: use_build_context_synchronously
-    //   //   ).productAdapter(product, 1),
-    //   //   // ignore: use_build_context_synchronously
-    //   // );
-    //   await mainLocalLog('Total Success');
-    // } else {
     product.createdAt ??= DateTime.now();
 
     await StorageProductsFunc().createStorageProduct(
@@ -82,12 +61,6 @@ class StorageProductProvider extends ChangeNotifier {
     await CreatedStorageProductsFunc().createStorageProduct(
       CreatedStorageProducts(storageProduct: product),
     );
-    // await returnEventsLogProvider().createLog(
-    //   returnEventsLogProvider(
-    //     // ignore: use_build_context_synchronously
-    //   ).productAdapter(product, 1),
-    //   // ignore: use_build_context_synchronously
-    // );
     await mainLocalLog('Offline Success');
     await mainLocalLog(
       'Offline Storage Product inserted Successfully',
@@ -359,6 +332,7 @@ class StorageProductProvider extends ChangeNotifier {
   Future<List<TempStorageProducts>> getStorageProducts(
     int shopId,
   ) async {
+    await getStorageProductsOffline(shopId);
     bool isOnline = await connectivity.isOnline();
     await mainLocalLog('✅✅ Products List Cleared');
     if (isOnline && StorageProductsFunc().isSynced()) {

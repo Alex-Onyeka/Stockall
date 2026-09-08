@@ -153,6 +153,21 @@ const String appName = 'Stockall';
 const String appDesc =
     'Your smart inventory companion. Track stock, manage sales, and grow your business with ease — all in one place. Let\'s simplify your workflow and boost your efficiency. 🚀';
 
+const String contactPhoneNumberCountryCodeRaw =
+    '08128735130';
+const String contactPhoneNumberCountryCode =
+    '+2348128735130';
+const String contactPhoneNumberCpountryCodeFormatted =
+    '+234 812 8735 130';
+
+String getContactPhoneNumber({required int formatIndex}) {
+  return formatIndex == 1
+      ? contactPhoneNumberCountryCodeRaw
+      : formatIndex == 2
+      ? contactPhoneNumberCountryCode
+      : contactPhoneNumberCpountryCodeFormatted;
+}
+
 const String appVersionMobile = '1.1.9+84';
 const String appVersionDesktop = '1.9.83.0';
 

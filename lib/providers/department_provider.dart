@@ -157,6 +157,7 @@ class DepartmentProvider with ChangeNotifier {
   }
 
   Future<List<DepartmentClass>> getDepartments() async {
+    await getDepartmentsOffline();
     bool isOnline = await connectivity.isOnline();
     try {
       if (isOnline && DepartmentsFunc().isSynced()) {

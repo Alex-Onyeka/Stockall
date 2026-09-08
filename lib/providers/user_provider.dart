@@ -42,7 +42,8 @@ class UserProvider extends ChangeNotifier {
       isLoading = true;
       bool isOnline =
           await ConnectivityProvider().isOnline();
-
+      _users = UserFunc().getUsers();
+      notifyListeners();
       if (isOnline) {
         await returnShopProvider().getUserShops();
         var employees =
@@ -91,6 +92,8 @@ class UserProvider extends ChangeNotifier {
   Future<TempUserClass?> fetchCurrentUser(
     BuildContext context,
   ) async {
+    _currentUser =
+        LoggedInUserFunc().getLoggedInUser()?.loggedInUser;
     bool isOnline = await ConnectivityProvider().isOnline();
     if (isOnline) {
       // ignore: use_build_context_synchronously

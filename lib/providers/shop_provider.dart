@@ -246,6 +246,18 @@ class ShopProvider extends ChangeNotifier {
   TempUserClass? shopOwnerUser;
 
   Future<List<TempShopClass>> getUserShops() async {
+    final shops = ShopFunc().getShops();
+
+    shops.sort((a, b) {
+      final aHQ = a.isHeadQuarters ?? false;
+      final bHQ = b.isHeadQuarters ?? false;
+      return (bHQ ? 1 : 0).compareTo(aHQ ? 1 : 0);
+    });
+
+    setShops(shops);
+    shopOwnerUser =
+        ShopOwnerFunc().getShopOwnerUser()?.shopOwner;
+    notifyListeners();
     bool isOnline = await connectivity.isOnline();
 
     try {

@@ -113,7 +113,7 @@ class _AddEmployeeDesktopState
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        SizedBox(height: 20),
+                        // SizedBox(height: 20),
                         Padding(
                           padding:
                               const EdgeInsets.symmetric(
@@ -130,9 +130,9 @@ class _AddEmployeeDesktopState
                                         ),
                                     child: Column(
                                       children: [
-                                        SizedBox(
-                                          height: 20,
-                                        ),
+                                        // SizedBox(
+                                        //   height: 20,
+                                        // ),
                                         Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment
@@ -798,7 +798,7 @@ class _AddEmployeeDesktopState
   }
 }
 
-class EmployeeListTile extends StatelessWidget {
+class EmployeeListTile extends StatefulWidget {
   final String position;
   final List<String> authorizations;
   final Function() action;
@@ -817,15 +817,35 @@ class EmployeeListTile extends StatelessWidget {
   });
 
   @override
+  State<EmployeeListTile> createState() =>
+      _EmployeeListTileState();
+}
+
+class _EmployeeListTileState
+    extends State<EmployeeListTile> {
+  bool isOpen = false;
+
+  void toggleIsOpen() {
+    setState(() {
+      isOpen = !isOpen;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    var theme = returnTheme(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Ink(
-        color: Colors.white,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(4),
+        ),
         child: InkWell(
           mouseCursor: SystemMouseCursors.click,
+          borderRadius: BorderRadius.circular(4),
           onTap: () {
-            action();
+            toggleIsOpen();
             FocusManager.instance.primaryFocus?.unfocus();
           },
           child: Padding(
@@ -833,6 +853,7 @@ class EmployeeListTile extends StatelessWidget {
               bottom: 20.0,
               left: 15,
               right: 15,
+              top: 10,
             ),
             child: Column(
               children: [
@@ -840,77 +861,137 @@ class EmployeeListTile extends StatelessWidget {
                   mainAxisAlignment:
                       MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b1.fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      position,
+                    Column(
+                      spacing: 2,
+                      crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          style: TextStyle(
+                            fontSize:
+                                widget
+                                    .theme
+                                    .mobileTexts
+                                    .b2
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          widget.position,
+                        ),
+                        Opacity(
+                          opacity: isOpen ? 0 : 1,
+                          child: Text(
+                            style: TextStyle(
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .b4
+                                      .fontSize,
+                              color:
+                                  theme
+                                      .lightModeColor
+                                      .secColor200,
+                              fontWeight: FontWeight.normal,
+                            ),
+                            'Open to View Access Level',
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 5),
-                    Checkbox(
-                      activeColor:
-                          theme.lightModeColor.secColor100,
-                      value: currentSelected == index,
-                      onChanged: (value) {
-                        action();
-                        FocusManager.instance.primaryFocus
-                            ?.unfocus();
-                      },
+                    Row(
+                      spacing: 5,
+                      children: [
+                        Checkbox(
+                          activeColor:
+                              widget
+                                  .theme
+                                  .lightModeColor
+                                  .secColor100,
+                          value:
+                              widget.currentSelected ==
+                              widget.index,
+                          onChanged: (value) {
+                            widget.action();
+                            FocusManager
+                                .instance
+                                .primaryFocus
+                                ?.unfocus();
+                          },
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              size: 25,
+                              isOpen
+                                  ? Icons
+                                      .keyboard_double_arrow_up_rounded
+                                  : Icons
+                                      .keyboard_double_arrow_down_rounded,
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ],
                 ),
-                Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
-                  children: [
-                    Flexible(
-                      child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                        children: [
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children:
-                                authorizations.map((auth) {
-                                  return Container(
-                                    padding:
-                                        EdgeInsets.symmetric(
-                                          vertical: 4,
-                                          horizontal: 8,
+                Visibility(
+                  visible: isOpen,
+                  child: Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
+                    children: [
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          children: [
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children:
+                                  widget.authorizations.map((
+                                    auth,
+                                  ) {
+                                    return Container(
+                                      padding:
+                                          EdgeInsets.symmetric(
+                                            vertical: 4,
+                                            horizontal: 8,
+                                          ),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color:
+                                              Colors
+                                                  .grey
+                                                  .shade200,
                                         ),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade200,
                                       ),
-                                    ),
 
-                                    child: Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b3
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
+                                      child: Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              widget
+                                                  .theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        auth,
                                       ),
-                                      auth,
-                                    ),
-                                  );
-                                }).toList(),
-                          ),
-                        ],
+                                    );
+                                  }).toList(),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),

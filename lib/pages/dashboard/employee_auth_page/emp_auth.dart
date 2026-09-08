@@ -607,12 +607,15 @@ class _EmpAuthState extends State<EmpAuth> {
                                               });
 
                                               TempUserClass?
-                                              user = await fetchUserFromDatabase(
-                                                AuthService()
-                                                    .currentUserEmail!,
-                                                AuthService()
-                                                    .currentUser!,
-                                              );
+                                              user =
+                                                  returnUserProviderSingle()
+                                                      .currentUserMain ??
+                                                  await fetchUserFromDatabase(
+                                                    AuthService()
+                                                        .currentUserEmail!,
+                                                    AuthService()
+                                                        .currentUser!,
+                                                  );
 
                                               setState(() {
                                                 isLoading =
@@ -753,12 +756,15 @@ class _EmpAuthState extends State<EmpAuth> {
                                                     true;
                                               });
                                               TempUserClass?
-                                              user = await fetchUserFromDatabase(
-                                                AuthService()
-                                                    .currentUserEmail!,
-                                                AuthService()
-                                                    .currentUser!,
-                                              );
+                                              user =
+                                                  returnUserProviderSingle()
+                                                      .currentUserMain ??
+                                                  await fetchUserFromDatabase(
+                                                    AuthService()
+                                                        .currentUserEmail!,
+                                                    AuthService()
+                                                        .currentUser!,
+                                                  );
                                               if (user !=
                                                       null &&
                                                   context
