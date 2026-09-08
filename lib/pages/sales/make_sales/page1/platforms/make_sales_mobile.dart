@@ -1969,9 +1969,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   child: Padding(
                                     padding:
                                         const EdgeInsets.fromLTRB(
-                                          30,
                                           10,
-                                          30,
+                                          10,
+                                          10,
                                           0,
                                         ),
                                     child: SingleChildScrollView(
@@ -2103,7 +2103,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               fontWeight:
                                                                   FontWeight.bold,
                                                             ),
-                                                            'Scan',
+                                                            'Barcode',
                                                           ),
                                                           Icon(
                                                             size:
@@ -2814,7 +2814,7 @@ class EmptyCartBottomWidget extends StatelessWidget {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(30, 10, 30, 0),
+        padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
         child: Column(
           children: [
             SizedBox(height: 10),
