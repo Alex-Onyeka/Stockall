@@ -1969,9 +1969,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   child: Padding(
                                     padding:
                                         const EdgeInsets.fromLTRB(
+                                          15,
                                           10,
-                                          10,
-                                          10,
+                                          15,
                                           0,
                                         ),
                                     child: SingleChildScrollView(

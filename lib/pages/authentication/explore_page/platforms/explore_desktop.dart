@@ -144,7 +144,12 @@ class LoginDemoSectionWidget extends StatelessWidget {
             ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(5),
-              color: Colors.grey.shade100,
+              color: const Color.fromARGB(
+                181,
+                245,
+                245,
+                245,
+              ),
               border: Border.all(
                 color: Colors.grey.shade300,
               ),
@@ -247,9 +252,9 @@ class LoginDemoSectionWidget extends StatelessWidget {
           ),
           SizedBox(height: 10),
           ActionButtonAlt(
-            text: 'Go To Login',
+            text: 'Login Demo',
             icon: Icon(
-              size: 22,
+              size: 20,
               color: Colors.white,
               Icons.login,
             ),
@@ -379,7 +384,7 @@ class ContactSupportSectionWidget extends StatelessWidget {
           ActionButtonAlt(
             text: 'Chat On Whatsapp',
             icon: Icon(
-              size: 22,
+              size: 20,
               color: Colors.white,
               Icons.wechat_rounded,
             ),
@@ -429,10 +434,7 @@ class ActionButtonAlt extends StatelessWidget {
             FocusManager.instance.primaryFocus?.unfocus();
           },
           child: Container(
-            padding: EdgeInsets.symmetric(
-              vertical:
-                  screenWidth(context) < 600 ? 13 : 12,
-            ),
+            padding: EdgeInsets.symmetric(vertical: 8),
 
             child: Center(
               child: Row(
@@ -443,15 +445,7 @@ class ActionButtonAlt extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.white,
                       fontSize:
-                          screenWidth(context) < 600
-                              ? theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize
-                              : theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
+                          theme.mobileTexts.b3.fontSize,
                       fontWeight: FontWeight.bold,
                     ),
                     text,

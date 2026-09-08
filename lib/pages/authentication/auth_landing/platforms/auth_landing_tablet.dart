@@ -28,6 +28,7 @@ class AuthLandingTablet extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
+                flex: 5,
                 child: SizedBox(
                   width: double.infinity,
                   child: Opacity(
@@ -50,6 +51,7 @@ class AuthLandingTablet extends StatelessWidget {
                 ),
               ),
               Expanded(
+                flex: 6,
                 child: ClipRRect(
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
@@ -177,8 +179,8 @@ class AuthLandingTablet extends StatelessWidget {
             ],
           ),
           Align(
-            alignment: Alignment(0, -0.7),
-            child: Image.asset(appMockUp, width: 300),
+            alignment: Alignment(0, -1.1),
+            child: Image.asset(appMockUp, width: 310),
           ),
         ],
       ),

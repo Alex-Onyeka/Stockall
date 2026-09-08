@@ -38,12 +38,11 @@ class SubscriptionProvider extends ChangeNotifier {
         : null;
   }
 
-  bool isClicked = false;
+  bool isClicked = true;
 
   void toggleIsClicked(bool value) {
     isClicked = value;
     notifyListeners();
-    // await mainLocalLog("Is Clicked Value: $isClicked");
   }
 
   void checkSubscriptionExpiryNotification() {

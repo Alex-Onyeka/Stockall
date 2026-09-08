@@ -281,111 +281,116 @@ class AuthService extends ChangeNotifier {
     required BuildContext context,
     required bool allowLogout,
   }) async {
-    if (returnData().isSynced() == 0 && !allowLogout) {
-      showDialog(
-        context: context,
-        builder: (errorContext) {
-          return InfoAlert(
-            theme: returnTheme(context),
-            message:
-                'You currently have some records that have not been backed up to the cloud. Please Proceed to Synchronize, before Logging out.',
-            title: 'Unsyned Records Detected',
-          );
-        },
-      );
-      return 0;
-    } else if (!returnSalesProvider().isEmptyCart() &&
-        !allowLogout) {
-      showDialog(
-        context: context,
-        builder: (errorContext) {
-          return InfoAlert(
-            theme: returnTheme(context),
-            message:
-                'You currently have some Items in your cart that you have not checked out. Please Proceed to complete the sales or clear all the carts, before Logging out.',
-            title: 'Cart Not Empty',
-          );
-        },
-      );
-      return 0;
-    } else if (!returnProductionsActionProvider()
-            .isCartEmpty() &&
-        !allowLogout) {
-      showDialog(
-        context: context,
-        builder: (errorContext) {
-          return InfoAlert(
-            theme: returnTheme(context),
-            message:
-                'You currently have some Items in your Productions cart. Please Proceed to complete the The Process clear all the carts, before Logging out.',
-            title: 'Production Cart Not Empty',
-          );
-        },
-      );
-      return 0;
-    } else if (!returnMaterialsUsageActionProvider()
-            .isCartEmpty() &&
-        !allowLogout) {
-      showDialog(
-        context: context,
-        builder: (errorContext) {
-          return InfoAlert(
-            theme: returnTheme(context),
-            message:
-                'You currently have some Items in your Materials Usage cart. Please Proceed to complete the The Process clear all the carts, before Logging out.',
-            title: 'Materials Usage Cart Not Empty',
-          );
-        },
-      );
-      return 0;
-    } else {
-      returnCustomers(
-        context,
-        listen: false,
-      ).clearCustomers();
-      returnData().clearProducts();
-      returnExpensesProvider(
-        context,
-        listen: false,
-      ).clearExpenses();
-      returnNotificationProvider(
-        context,
-        listen: false,
-      ).clearNotifications();
-      returnReceiptProviderSingle().clearReceipts();
-      returnReceiptProviderSingle().load(false);
-      await CurrentShopFunc().clearCurrentShop();
-      returnSalesProvider().clearCart();
-      await CartFunc().clearMainCart();
-      bool isOnline = ConnectivityProvider().isConnected;
-
-      if (isOnline) {
-        await _client.auth.signOut();
-        await LoggedInUserFunc().logOut();
+    try {
+      if (returnData().isSynced() == 0 && !allowLogout) {
+        showDialog(
+          context: context,
+          builder: (errorContext) {
+            return InfoAlert(
+              theme: returnTheme(context),
+              message:
+                  'You currently have some records that have not been backed up to the cloud. Please Proceed to Synchronize, before Logging out.',
+              title: 'Unsyned Records Detected',
+            );
+          },
+        );
+        return 0;
+      } else if (!returnSalesProvider().isEmptyCart() &&
+          !allowLogout) {
+        showDialog(
+          context: context,
+          builder: (errorContext) {
+            return InfoAlert(
+              theme: returnTheme(context),
+              message:
+                  'You currently have some Items in your cart that you have not checked out. Please Proceed to complete the sales or clear all the carts, before Logging out.',
+              title: 'Cart Not Empty',
+            );
+          },
+        );
+        return 0;
+      } else if (!returnProductionsActionProvider()
+              .isCartEmpty() &&
+          !allowLogout) {
+        showDialog(
+          context: context,
+          builder: (errorContext) {
+            return InfoAlert(
+              theme: returnTheme(context),
+              message:
+                  'You currently have some Items in your Productions cart. Please Proceed to complete the The Process clear all the carts, before Logging out.',
+              title: 'Production Cart Not Empty',
+            );
+          },
+        );
+        return 0;
+      } else if (!returnMaterialsUsageActionProvider()
+              .isCartEmpty() &&
+          !allowLogout) {
+        showDialog(
+          context: context,
+          builder: (errorContext) {
+            return InfoAlert(
+              theme: returnTheme(context),
+              message:
+                  'You currently have some Items in your Materials Usage cart. Please Proceed to complete the The Process clear all the carts, before Logging out.',
+              title: 'Materials Usage Cart Not Empty',
+            );
+          },
+        );
+        return 0;
       } else {
-        await LoggedInUserFunc().logOut();
-      }
-      returnShopProvider().clearShop();
-      returnUserProviderSingle().clearUsers();
-      if (context.mounted) {
-        returnNavProvider(
+        returnCustomers(
           context,
           listen: false,
-        ).navigate(0);
-        Navigator.pushReplacement(
+        ).clearCustomers();
+        returnData().clearProducts();
+        returnExpensesProvider(
           context,
-          MaterialPageRoute(
-            builder: (context) {
-              return AuthScreensPage();
-            },
-          ),
-        );
-      } else {
-        await mainLocalLog('Context is Not Mounted');
-      }
+          listen: false,
+        ).clearExpenses();
+        returnNotificationProvider(
+          context,
+          listen: false,
+        ).clearNotifications();
+        returnReceiptProviderSingle().clearReceipts();
+        returnReceiptProviderSingle().load(false);
+        await CurrentShopFunc().clearCurrentShop();
+        returnSalesProvider().clearCart();
+        await CartFunc().clearMainCart();
+        bool isOnline = ConnectivityProvider().isConnected;
 
-      notifyListeners();
-      return 1;
+        if (isOnline) {
+          await _client.auth.signOut();
+          await LoggedInUserFunc().logOut();
+        } else {
+          await LoggedInUserFunc().logOut();
+        }
+        returnShopProvider().clearShop();
+        returnUserProviderSingle().clearUsers();
+        if (context.mounted) {
+          returnNavProvider(
+            context,
+            listen: false,
+          ).navigate(0);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return AuthScreensPage();
+              },
+            ),
+          );
+        } else {
+          await mainLocalLog('Context is Not Mounted');
+        }
+
+        notifyListeners();
+        return 1;
+      }
+    } catch (e) {
+      mainLocalLog('Error Logging Out: ${e.toString()}');
+      return 0;
     }
   }
 

@@ -98,7 +98,7 @@ class _ExploreMobileState extends State<ExploreMobile> {
                 ),
                 child: Column(
                   children: [
-                    SizedBox(height: 15),
+                    SizedBox(height: 5),
                     LoginDemoSectionWidget(theme: theme),
                     SizedBox(height: 20),
                     ContactSupportSectionWidget(

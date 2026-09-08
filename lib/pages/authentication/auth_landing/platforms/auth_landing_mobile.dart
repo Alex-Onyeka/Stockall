@@ -32,7 +32,7 @@ class AuthLandingMobile extends StatelessWidget {
                   Container(
                     height:
                         MediaQuery.of(context).size.height *
-                        0.52,
+                        0.43,
                     color: Color.fromRGBO(25, 43, 117, 1),
                     child: Stack(
                       alignment: Alignment(0, 0.3),
@@ -58,10 +58,10 @@ class AuthLandingMobile extends StatelessWidget {
                           ),
                         ),
                         Positioned(
-                          top: 20,
+                          top: -30,
                           child: Image.asset(
                             appMockUp,
-                            height: 420,
+                            height: 400,
                           ),
                         ),
                       ],
@@ -74,7 +74,7 @@ class AuthLandingMobile extends StatelessWidget {
                     ),
                     child: Container(
                       padding: EdgeInsets.symmetric(
-                        horizontal: 30,
+                        horizontal: 15,
                       ),
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -88,7 +88,7 @@ class AuthLandingMobile extends StatelessWidget {
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(
-                                    horizontal: 50.0,
+                                    horizontal: 20.0,
                                   ),
                               child: Text(
                                 textAlign: TextAlign.center,
@@ -119,7 +119,7 @@ class AuthLandingMobile extends StatelessWidget {
                                     .authLandingWelcome,
                               ),
                             ),
-                            SizedBox(height: 20),
+                            SizedBox(height: 10),
                             Text(
                               textAlign: TextAlign.center,
                               style:
@@ -130,16 +130,16 @@ class AuthLandingMobile extends StatelessWidget {
                                         constraints,
                                         context,
                                       )
-                                      .b1
+                                      .b2
                                       .textStyleNormal,
                               appDesc,
                             ),
-                            SizedBox(height: 20),
+                            SizedBox(height: 10),
 
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(
-                                    horizontal: 20.0,
+                                    horizontal: 10.0,
                                   ),
                               child: Column(
                                 children: [
