@@ -1259,6 +1259,7 @@ class SalesProvider extends ChangeNotifier {
                   isQuantityUpdate: true,
                   quantityChange:
                       cartItem.getRealQuantity(),
+                  isMultipleUpdate: true,
                   isIncrement: false,
                 );
               } else {
@@ -1724,6 +1725,7 @@ class SalesProvider extends ChangeNotifier {
                   isQuantityUpdate: true,
                   quantityChange:
                       cartItem.getRealQuantity(),
+                  isMultipleUpdate: true,
                   isIncrement: false,
                 );
               } else {
@@ -1937,7 +1939,7 @@ class SalesProvider extends ChangeNotifier {
                 ? vat
                 : null,
         originalCost: calcSubTotal(),
-        balance: null,
+        balance: calcFinalTotal(),
         subStaffUuid: currentMainCart().subStaff?.uuid,
         cartName: currentCart().cartName,
         total: calcFinalTotal(),

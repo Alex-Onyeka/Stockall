@@ -8,10 +8,12 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customers_list/customer_list.dart';
+import 'package:stockall/pages/dashboard/components/contact_us_float_widget.dart';
 import 'package:stockall/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
+import 'package:stockall/pages/orders/order_list/order_list_page.dart';
 import 'package:stockall/pages/production/production_page.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
 import 'package:stockall/pages/purchases/purchase_list/purchase_list.dart';
@@ -324,29 +326,29 @@ class _MyDrawerWidgetMobileState
                                         .view_in_ar_rounded,
                               ),
                             ),
-                            // Visibility(
-                            //   visible: authorization(
-                            //     authorized:
-                            //         Authorizations()
-                            //             .manageOrders,
-                            //   ),
-                            //   child: NavListTileAlt(
-                            //     height: 14,
-                            //     action: () {
-                            //       Navigator.push(
-                            //         context,
-                            //         MaterialPageRoute(
-                            //           builder: (context) {
-                            //             return OrderListPage();
-                            //           },
-                            //         ),
-                            //       );
-                            //     },
-                            //     title: 'Orders',
-                            //     icon:
-                            //         Icons.article_outlined,
-                            //   ),
-                            // ),
+                            Visibility(
+                              visible: authorization(
+                                authorized:
+                                    Authorizations()
+                                        .manageOrders,
+                              ),
+                              child: NavListTileAlt(
+                                height: 14,
+                                action: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return OrderListPage();
+                                      },
+                                    ),
+                                  );
+                                },
+                                title: 'Orders',
+                                icon:
+                                    Icons.article_outlined,
+                              ),
+                            ),
                             SizedBox(height: 5),
                             Divider(
                               height:
@@ -357,6 +359,25 @@ class _MyDrawerWidgetMobileState
                                       ? 15
                                       : 20,
                               color: Colors.grey.shade200,
+                            ),
+                            Visibility(
+                              visible: authorization(
+                                authorized:
+                                    Authorizations()
+                                        .contactStockall,
+                              ),
+                              child: NavListTileAlt(
+                                height: 16,
+                                action: () {
+                                  contactUsAction(
+                                    context: context,
+                                  );
+                                },
+                                title: 'Contact Support',
+                                icon:
+                                    Icons
+                                        .manage_accounts_outlined,
+                              ),
                             ),
                             Visibility(
                               visible: !isStoreKeeper(),

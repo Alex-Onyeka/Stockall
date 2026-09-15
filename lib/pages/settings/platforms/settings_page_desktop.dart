@@ -24,6 +24,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/barcode_printing_page/barcode_printing_page.dart';
 import 'package:stockall/pages/categories/categories_page.dart';
+import 'package:stockall/pages/dashboard/components/contact_us_float_widget.dart';
 import 'package:stockall/pages/departments/departments_dashboard.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
 import 'package:stockall/pages/settings/components/clear_total_cache_widget.dart';
@@ -76,20 +77,23 @@ class _SettingsPageDesktopState
                 mainAxisAlignment:
                     MainAxisAlignment.spaceBetween,
                 children: [
-                  InkWell(
-                    mouseCursor: SystemMouseCursors.click,
-                    onTap: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 6,
-                        horizontal: 15,
-                      ),
-                      child: Icon(
-                        color: Colors.grey,
-                        size: 20,
-                        Icons.arrow_back_ios_new_rounded,
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      mouseCursor: SystemMouseCursors.click,
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 6,
+                          horizontal: 15,
+                        ),
+                        child: Icon(
+                          color: Colors.grey,
+                          size: 20,
+                          Icons.arrow_back_ios_new_rounded,
+                        ),
                       ),
                     ),
                   ),
@@ -127,17 +131,48 @@ class _SettingsPageDesktopState
                       ],
                     ),
                   ),
-                  Opacity(
-                    opacity: 0,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 6,
-                        horizontal: 15,
-                      ),
-                      child: Icon(
-                        color: Colors.grey,
-                        size: 20,
-                        Icons.arrow_back_ios_new_rounded,
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      right: 10.0,
+                    ),
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: InkWell(
+                        mouseCursor:
+                            SystemMouseCursors.click,
+                        onTap: () {
+                          contactUsAction(context: context);
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(
+                            5,
+                            6,
+                            5,
+                            6,
+                          ),
+                          child: Row(
+                            spacing: 3,
+                            children: [
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b4
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                                'Contact',
+                              ),
+                              Icon(
+                                color: Colors.grey,
+                                size: 16,
+                                Icons.phone,
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -1377,7 +1412,7 @@ class _SettingsPageDesktopState
                                     phoneCall();
                                   },
                                   title:
-                                      'Call Us (+234 704 850 7587)',
+                                      'Call Us (${getContactPhoneNumber(formatIndex: 3)})',
                                   icon: Icons.phone,
                                 ),
                               ),

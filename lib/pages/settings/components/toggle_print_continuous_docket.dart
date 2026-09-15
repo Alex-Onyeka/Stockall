@@ -13,7 +13,12 @@ class TogglePrintContinuousDocket extends StatelessWidget {
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return Visibility(
-      visible: !isStoreKeeper(),
+      visible:
+          !isStoreKeeper() &&
+          returnShopProvider(
+                context: context,
+              ).userShop()?.printSalesDocket ==
+              true,
       child: SubWrapper(
         isVisible:
             !SalesAuthAction().printDocketAction(

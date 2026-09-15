@@ -131,126 +131,126 @@ class LoginDemoSectionWidget extends StatelessWidget {
                     fontSize: theme.mobileTexts.b3.fontSize,
                     fontWeight: FontWeight.bold,
                   ),
-                  'Use the Email and Password Below to Login to a Demo Account',
+                  'Click The Button Below to Login to a Demo Account',
                 ),
               ),
             ],
           ),
           SizedBox(height: 10),
-          Container(
-            padding: EdgeInsets.symmetric(
-              vertical: 10,
-              horizontal: 10,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-              color: const Color.fromARGB(
-                181,
-                245,
-                245,
-                245,
-              ),
-              border: Border.all(
-                color: Colors.grey.shade300,
-              ),
-            ),
-            child: Column(
-              spacing: 3,
-              children: [
-                Row(
-                  spacing: 5,
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b4.fontSize,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey,
-                      ),
-                      'EMAIL:',
-                    ),
-                    Text(
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b2.fontSize,
-                        fontWeight: FontWeight.bold,
-                        color:
-                            theme
-                                .lightModeColor
-                                .secColor200,
-                      ),
-                      'stockalltest@gmail.com',
-                    ),
-                  ],
-                ),
-                Row(
-                  spacing: 5,
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b4.fontSize,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey,
-                      ),
-                      'PASSWORD:',
-                    ),
-                    Text(
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b2.fontSize,
-                        fontWeight: FontWeight.bold,
-                        color:
-                            theme
-                                .lightModeColor
-                                .secColor200,
-                      ),
-                      'test123',
-                    ),
-                  ],
-                ),
-                Row(
-                  spacing: 5,
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b4.fontSize,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey,
-                      ),
-                      'PIN:',
-                    ),
-                    Text(
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b2.fontSize,
-                        fontWeight: FontWeight.bold,
-                        color:
-                            theme
-                                .lightModeColor
-                                .secColor200,
-                      ),
-                      '0000',
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 10),
+          // Container(
+          //   padding: EdgeInsets.symmetric(
+          //     vertical: 10,
+          //     horizontal: 10,
+          //   ),
+          //   decoration: BoxDecoration(
+          //     borderRadius: BorderRadius.circular(5),
+          //     color: const Color.fromARGB(
+          //       181,
+          //       245,
+          //       245,
+          //       245,
+          //     ),
+          //     border: Border.all(
+          //       color: Colors.grey.shade300,
+          //     ),
+          //   ),
+          //   child: Column(
+          //     spacing: 3,
+          //     children: [
+          //       Row(
+          //         spacing: 5,
+          //         mainAxisAlignment:
+          //             MainAxisAlignment.center,
+          //         children: [
+          //           Text(
+          //             textAlign: TextAlign.center,
+          //             style: TextStyle(
+          //               fontSize:
+          //                   theme.mobileTexts.b4.fontSize,
+          //               fontWeight: FontWeight.bold,
+          //               color: Colors.grey,
+          //             ),
+          //             'EMAIL:',
+          //           ),
+          //           Text(
+          //             textAlign: TextAlign.center,
+          //             style: TextStyle(
+          //               fontSize:
+          //                   theme.mobileTexts.b2.fontSize,
+          //               fontWeight: FontWeight.bold,
+          //               color:
+          //                   theme
+          //                       .lightModeColor
+          //                       .secColor200,
+          //             ),
+          //             'stockalltest@gmail.com',
+          //           ),
+          //         ],
+          //       ),
+          //       Row(
+          //         spacing: 5,
+          //         mainAxisAlignment:
+          //             MainAxisAlignment.center,
+          //         children: [
+          //           Text(
+          //             textAlign: TextAlign.center,
+          //             style: TextStyle(
+          //               fontSize:
+          //                   theme.mobileTexts.b4.fontSize,
+          //               fontWeight: FontWeight.bold,
+          //               color: Colors.grey,
+          //             ),
+          //             'PASSWORD:',
+          //           ),
+          //           Text(
+          //             textAlign: TextAlign.center,
+          //             style: TextStyle(
+          //               fontSize:
+          //                   theme.mobileTexts.b2.fontSize,
+          //               fontWeight: FontWeight.bold,
+          //               color:
+          //                   theme
+          //                       .lightModeColor
+          //                       .secColor200,
+          //             ),
+          //             'test123',
+          //           ),
+          //         ],
+          //       ),
+          //       Row(
+          //         spacing: 5,
+          //         mainAxisAlignment:
+          //             MainAxisAlignment.center,
+          //         children: [
+          //           Text(
+          //             textAlign: TextAlign.center,
+          //             style: TextStyle(
+          //               fontSize:
+          //                   theme.mobileTexts.b4.fontSize,
+          //               fontWeight: FontWeight.bold,
+          //               color: Colors.grey,
+          //             ),
+          //             'PIN:',
+          //           ),
+          //           Text(
+          //             textAlign: TextAlign.center,
+          //             style: TextStyle(
+          //               fontSize:
+          //                   theme.mobileTexts.b2.fontSize,
+          //               fontWeight: FontWeight.bold,
+          //               color:
+          //                   theme
+          //                       .lightModeColor
+          //                       .secColor200,
+          //             ),
+          //             '0000',
+          //           ),
+          //         ],
+          //       ),
+          //     ],
+          //   ),
+          // ),
+          // SizedBox(height: 10),
           ActionButtonAlt(
             text: 'Login Demo',
             icon: Icon(

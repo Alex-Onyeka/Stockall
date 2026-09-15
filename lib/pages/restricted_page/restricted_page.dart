@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
+import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/pages/dashboard/components/button_tab.dart';
+import 'package:stockall/pages/dashboard/components/contact_us_float_widget.dart';
 import 'package:stockall/pages/dashboard/components/main_bottom_nav.dart';
 import 'package:stockall/pages/dashboard/components/top_nav_bar.dart';
 import 'package:stockall/pages/dashboard/components/total_sales_banner.dart';
@@ -382,9 +384,27 @@ class _RestrictedPageState extends State<RestrictedPage> {
                                       ),
                                     );
                                   },
-                                  text: 'Subscribe',
+                                  text:
+                                      'Explore Subscription Plans',
                                 ),
-                                SizedBox(height: 15),
+                                SizedBox(height: 10),
+                                MainButtonTransparent(
+                                  icon: Icon(
+                                    size: 18,
+                                    Icons
+                                        .manage_accounts_outlined,
+                                  ),
+                                  themeProvider: theme,
+                                  constraints:
+                                      BoxConstraints(),
+                                  text: 'Contact Support',
+                                  action: () {
+                                    contactUsAction(
+                                      context: context,
+                                    );
+                                  },
+                                ),
+                                SizedBox(height: 10),
                                 Row(
                                   children: [
                                     Expanded(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/orders/invoice_list/platforms/order_list_desktop.dart';
-import 'package:stockall/pages/orders/invoice_list/platforms/order_list_mobile.dart';
+import 'package:stockall/pages/orders/order_list/platforms/order_list_desktop.dart';
+import 'package:stockall/pages/orders/order_list/platforms/order_list_mobile.dart';
 
 class OrderListPage extends StatefulWidget {
   final String? agentUuid;

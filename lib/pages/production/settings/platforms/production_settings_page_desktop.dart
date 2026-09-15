@@ -121,7 +121,7 @@ class _ProductionSettingsPageDesktopState
                                 phoneCall();
                               },
                               title:
-                                  'Call Us (+234 704 850 7587)',
+                                  'Call Us (${getContactPhoneNumber(formatIndex: 3)})',
                               icon: Icons.phone,
                             ),
                           ),

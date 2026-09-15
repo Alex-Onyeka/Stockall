@@ -22,6 +22,7 @@ import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/categories/categories_page.dart';
+import 'package:stockall/pages/dashboard/components/contact_us_float_widget.dart';
 import 'package:stockall/pages/departments/departments_dashboard.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
 import 'package:stockall/pages/settings/components/clear_total_cache_widget.dart';
@@ -67,10 +68,51 @@ class _SettingsPageMobileState
         Scaffold(
           appBar: appBar(
             context: context,
-            title: 'General Settings',
+            title: 'Settings',
             backAction: () {
               Navigator.of(context).pop();
             },
+            widget: Padding(
+              padding: const EdgeInsets.only(right: 10.0),
+              child: Material(
+                type: MaterialType.transparency,
+                child: InkWell(
+                  mouseCursor: SystemMouseCursors.click,
+                  onTap: () {
+                    contactUsAction(context: context);
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      10,
+                      6,
+                      10,
+                      6,
+                    ),
+                    child: Row(
+                      spacing: 3,
+                      children: [
+                        Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b4
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          'Contact',
+                        ),
+                        Icon(
+                          color: Colors.grey,
+                          size: 16,
+                          Icons.phone,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
           body: SafeArea(
             child: Padding(
@@ -1454,7 +1496,7 @@ class _SettingsPageMobileState
                               phoneCall();
                             },
                             title:
-                                'Call Us (+234 704 850 7587)',
+                                'Call Us (${getContactPhoneNumber(formatIndex: 3)})',
                             icon: Icons.phone,
                           ),
                         ),

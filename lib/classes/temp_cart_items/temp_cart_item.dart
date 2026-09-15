@@ -259,6 +259,10 @@ class TempCartItem extends HiveObject {
     }
   }
 
+  double revenuePerItem() {
+    return revenue() / quantity;
+  }
+
   double revenueForAltScreen() {
     if (returnShopProvider().userShop()!.applyVAT!) {
       return (totalCostForAltScreen() -

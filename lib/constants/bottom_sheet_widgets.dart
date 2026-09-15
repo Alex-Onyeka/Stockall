@@ -50,7 +50,10 @@ void selectProductPurchase({
   bool isGroupTemp = false;
 
   bool useGroupUnit() {
-    if (shop(context)?.manageInventoryStorage == true) {
+    if (returnShopProvider()
+            .userShop()
+            ?.manageInventoryStorage ==
+        true) {
       return storageProduct?.useGroupUnit ?? false;
     } else {
       return product?.useGroupUnit ?? false;

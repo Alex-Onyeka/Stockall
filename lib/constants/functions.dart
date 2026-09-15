@@ -126,8 +126,9 @@ class Authorizations {
   String toggleManageCustomersAccount =
       'Toggle Manage Customers Account';
   String redeemCustomersReward = 'Redeem Customers Reward';
-  String debitOrCreditCustomersAccount =
-      'Debit Or Credit Customers Account';
+  String creditCustomersAccount =
+      'Credit Customers Account';
+  String debitCustomersAccount = 'Debit Customers Account';
   String makeSalesFromCustomersAccount =
       'Make Sales From Customers Account';
   String makeSale = 'Make Sale';

@@ -221,7 +221,7 @@ class ItemHistoryProvider with ChangeNotifier {
           CreatedItemHistory(itemHistory: itemHistory),
         );
         await getItemHistoriesOffline();
-        syncData();
+        // syncData();
         return 1;
       } catch (e) {
         await mainLocalLog(

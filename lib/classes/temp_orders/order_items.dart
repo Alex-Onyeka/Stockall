@@ -91,6 +91,9 @@ class OrderItems extends HiveObject {
   @HiveField(28)
   double? remainingBalance;
 
+  @HiveField(29)
+  double? tempQuantity;
+
   OrderItems({
     required this.uuid,
     required this.orderId,
@@ -121,6 +124,7 @@ class OrderItems extends HiveObject {
     required this.setTotalPrice,
     required this.remainingBalance,
     required this.remainingQuantity,
+    this.tempQuantity,
   });
 
   factory OrderItems.fromJson(Map<String, dynamic> json) {
@@ -270,6 +274,16 @@ class OrderItems extends HiveObject {
 
   double getRemainingBalance() {
     return ((remainingQuantity ?? 0) * (revenue));
+  }
+
+  double getRevenuePerItem() {
+    return (revenue / quantity) * (tempQuantity ?? 1);
+  }
+
+  String getUnit() {
+    return useGroupQuantity == true
+        ? (groupUnit ?? 'Group(s)')
+        : (unit ?? 'Unit(s)');
   }
 }
 

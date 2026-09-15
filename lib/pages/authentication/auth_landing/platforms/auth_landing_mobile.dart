@@ -32,10 +32,10 @@ class AuthLandingMobile extends StatelessWidget {
                   Container(
                     height:
                         MediaQuery.of(context).size.height *
-                        0.43,
+                        0.48,
                     color: Color.fromRGBO(25, 43, 117, 1),
                     child: Stack(
-                      alignment: Alignment(0, 0.3),
+                      alignment: Alignment(0, 0.4),
                       children: [
                         SizedBox(
                           width: double.infinity,
@@ -58,7 +58,7 @@ class AuthLandingMobile extends StatelessWidget {
                           ),
                         ),
                         Positioned(
-                          top: -30,
+                          top: 0,
                           child: Image.asset(
                             appMockUp,
                             height: 400,

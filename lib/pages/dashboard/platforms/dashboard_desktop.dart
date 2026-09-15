@@ -20,6 +20,7 @@ import 'package:stockall/local_database/new_feature_pop_up_func/new_feature_pop_
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customers_list/customer_list.dart';
 import 'package:stockall/pages/dashboard/components/button_tab.dart';
+import 'package:stockall/pages/dashboard/components/contact_us_float_widget.dart';
 import 'package:stockall/pages/dashboard/components/expiry_sub_popup_desktop.dart';
 import 'package:stockall/pages/dashboard/components/main_info_tab.dart';
 import 'package:stockall/pages/dashboard/components/store_keeper_department_switch_widget.dart';
@@ -46,23 +47,8 @@ class DashboardDesktop extends StatefulWidget {
 
 class _DashboardDesktopState
     extends State<DashboardDesktop> {
-  bool isFloatOpen = false;
   bool isUpdateLodaingWeb = false;
   bool isUpdateLodaingMobile = false;
-
-  void openFloat() {
-    setState(() {
-      isFloatOpen = true;
-    });
-
-    Future.delayed(Duration(seconds: 3), () {
-      if (mounted) {
-        setState(() {
-          isFloatOpen = false;
-        });
-      }
-    });
-  }
 
   bool isLoading = false;
   void clearDate() {
@@ -1012,198 +998,8 @@ class _DashboardDesktopState
                                   ),
                                 ],
                               ),
-                              Visibility(
-                                visible: authorization(
-                                  authorized:
-                                      Authorizations()
-                                          .contactStockall,
-                                ),
-                                child: Align(
-                                  alignment: Alignment(
-                                    1,
-                                    isFloatOpen ? 1 : 0.94,
-                                  ),
-                                  child: Material(
-                                    elevation: 2,
-                                    color:
-                                        Colors.transparent,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        if (isFloatOpen) {
-                                          setState(() {
-                                            isFloatOpen =
-                                                false;
-                                          });
-                                        } else {
-                                          setState(() {
-                                            isFloatOpen =
-                                                true;
-                                          });
-                                        }
-                                      },
-                                      child: Container(
-                                        padding:
-                                            EdgeInsets.fromLTRB(
-                                              10,
-                                              15,
-                                              isFloatOpen
-                                                  ? 30
-                                                  : 10,
-                                              15,
-                                            ),
-                                        decoration: BoxDecoration(
-                                          color:
-                                              theme
-                                                  .lightModeColor
-                                                  .secColor100,
-                                          borderRadius:
-                                              BorderRadius.only(
-                                                topLeft:
-                                                    Radius.circular(
-                                                      5,
-                                                    ),
-                                                bottomLeft:
-                                                    Radius.circular(
-                                                      5,
-                                                    ),
-                                              ),
-                                        ),
-                                        child: Stack(
-                                          children: [
-                                            Visibility(
-                                              visible:
-                                                  isFloatOpen,
-                                              child: Row(
-                                                mainAxisSize:
-                                                    MainAxisSize
-                                                        .min,
-                                                children: [
-                                                  Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.center,
-                                                    children: [
-                                                      Icon(
-                                                        color:
-                                                            Colors.white,
-                                                        size:
-                                                            16,
-                                                        Icons.arrow_forward_ios_rounded,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(
-                                                    width:
-                                                        10,
-                                                  ),
-                                                  Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    spacing:
-                                                        15,
-                                                    children: [
-                                                      InkWell(
-                                                        mouseCursor:
-                                                            SystemMouseCursors.click,
-                                                        onTap: () async {
-                                                          openWhatsApp();
-                                                        },
-
-                                                        child: Column(
-                                                          spacing:
-                                                              3,
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          children: [
-                                                            SvgPicture.asset(
-                                                              whatsappIconSvg,
-                                                              color:
-                                                                  Colors.white,
-                                                              height:
-                                                                  16,
-                                                            ),
-                                                            Text(
-                                                              style: TextStyle(
-                                                                color:
-                                                                    Colors.white,
-                                                                fontWeight:
-                                                                    FontWeight.bold,
-                                                              ),
-                                                              'Chat Us',
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      InkWell(
-                                                        mouseCursor:
-                                                            SystemMouseCursors.click,
-                                                        onTap: () async {
-                                                          phoneCall();
-                                                        },
-                                                        child: Column(
-                                                          spacing:
-                                                              3,
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          children: [
-                                                            Icon(
-                                                              size:
-                                                                  17,
-                                                              color:
-                                                                  Colors.white,
-                                                              Icons.phone,
-                                                            ),
-                                                            Text(
-                                                              style: TextStyle(
-                                                                color:
-                                                                    Colors.white,
-                                                                fontWeight:
-                                                                    FontWeight.bold,
-                                                              ),
-                                                              'Call Us',
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            Visibility(
-                                              visible:
-                                                  !isFloatOpen,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  openFloat();
-                                                },
-                                                child: Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize
-                                                          .min,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .center,
-                                                  children: [
-                                                    Icon(
-                                                      size:
-                                                          16,
-                                                      color:
-                                                          Colors.white,
-                                                      Icons
-                                                          .arrow_back_ios_new_rounded,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                              ContactUsFloatWidget(
+                                theme: theme,
                               ),
                               Visibility(
                                 visible:

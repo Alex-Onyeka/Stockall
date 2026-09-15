@@ -5,16 +5,14 @@ import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_orders/order_items.dart';
 import 'package:stockall/classes/temp_orders/orders.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockall/components/alert_dialogues/dialog_template.dart';
-import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
-import 'package:stockall/pages/orders/invoice_list/order_list_page.dart';
-import 'package:stockall/pages/orders/order_page/components/order_item_deliver_list_widget.dart';
+import 'package:stockall/pages/orders/order_list/order_list_page.dart';
+import 'package:stockall/pages/orders/order_page/deliver_order_items/deliver_order_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -1240,9 +1238,6 @@ class _OrderPageDesktopState
                                                           theme.mobileTexts.b4.fontSize,
                                                       fontWeight:
                                                           FontWeight.bold,
-                                                      // color:
-                                                      //     Colors
-                                                      //         .green,
                                                     ),
                                                     formatMoneyMid(
                                                       amount: returnOrdersProvider().getTotalMainRevenueOrder(
@@ -1613,9 +1608,17 @@ class _OrderPageDesktopState
                                         SystemMouseCursors
                                             .click,
                                     onTap: () {
-                                      deliverItemsAction(
-                                        order: order,
-                                        context: context,
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return DeliverOrdersPage(
+                                              order: order,
+                                            );
+                                          },
+                                        ),
                                       );
                                     },
                                     child: Container(
@@ -1681,7 +1684,7 @@ class _OrderPageDesktopState
                                         fontWeight:
                                             FontWeight.bold,
                                       ),
-                                      'Payment Records',
+                                      'Records',
                                     ),
                                   ],
                                 ),
@@ -1922,146 +1925,6 @@ class _OrderPageDesktopState
       },
     );
   }
-}
-
-void deliverItemsAction({
-  required BuildContext context,
-  required Orders order,
-}) {
-  var theme = returnTheme(context, listen: false);
-  List<OrderItems> list = [];
-  bool showTotal = false;
-
-  showDialog(
-    context: context,
-    builder: (firstContext) {
-      final commentController = TextEditingController();
-      return StatefulBuilder(
-        builder: (secondContext, setState) {
-          return DialogTemplate(
-            theme: theme,
-            message:
-                'Select Items to Deliver From this Order Receipt',
-            title: 'Select Item(s)',
-            action: () {
-              showDialog(
-                context: context,
-                builder: (confirmContext) {
-                  return ConfirmationAlert(
-                    theme: theme,
-                    message:
-                        'You are about to Deliver the Selected Items, and Generate Payment Receipts. Are you sure you want to proceed?',
-                    title: 'Record Delivery',
-                    action: () async {
-                      Navigator.of(confirmContext).pop();
-                      if (list.isEmpty) {
-                        list.addAll(order.orderItems);
-                      }
-                      await returnOrdersProvider()
-                          .makeOrderPayment(
-                            order: order,
-                            orderItemsNew: list,
-                            currentPayment: list
-                                .map(
-                                  (item) =>
-                                      item.getRemainingBalance(),
-                                )
-                                .fold(0, (a, b) => a + b),
-                            comment:
-                                commentController.text
-                                    .trim(),
-                          );
-                    },
-                  );
-                },
-              );
-            },
-            widget: SizedBox(
-              height: screenHeight(context) - 300,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20.0,
-                          vertical: 15,
-                        ),
-                        child: Column(
-                          spacing: 5,
-                          children:
-                              order.orderItems
-                                  .map(
-                                    (item) =>
-                                        OrderItemDeliverListWidget(
-                                          action: () {
-                                            setState(() {
-                                              showTotal =
-                                                  false;
-                                            });
-                                          },
-                                          item: item,
-                                          list: list,
-                                          theme: theme,
-                                        ),
-                                  )
-                                  .toList(),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20.0,
-                      vertical: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        top: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 1,
-                        ),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          'Deliver All Remaining Items',
-                        ),
-                        MyToggleButton(
-                          boolValue: showTotal,
-                          toggle: () {
-                            setState(() {
-                              if (showTotal == true) {
-                                showTotal = false;
-                                list.clear();
-                              } else {
-                                showTotal = true;
-                                list.clear();
-                                list.addAll(
-                                  order.orderItems,
-                                );
-                              }
-                            });
-                          },
-                          theme: theme,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      );
-    },
-  ).then((_) {});
 }
 
 class ActionButtonSmall extends StatelessWidget {

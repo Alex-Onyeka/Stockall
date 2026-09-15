@@ -252,103 +252,110 @@ class _PaymentTypeButtonState
                     ),
                   ],
                 ),
-                Row(
-                  spacing: 5,
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        child: MoneyTextfield(
-                          title: 'title',
-                          hint: 'Enter Amount',
-                          controller: topUpController,
-                          theme: theme,
-                          autoFocus: true,
-                          onSubmitted: (p0) async {
-                            if (returnSalesProvider()
-                                    .currentCart()
-                                    .getCustomer() !=
-                                null) {
-                              await topUpAction(
-                                popSecondContext: false,
-                                context: context,
-                                theme: theme,
-                                moneyTextField:
-                                    topUpController,
-                                customer:
-                                    returnSalesProvider()
-                                        .currentCart()
-                                        .getCustomer()!,
-                              );
-                              widget.action != null
-                                  ? widget.action!()
-                                  : {};
-                            }
-                          },
-                          showTitle: false,
-                        ),
-                      ),
-                    ),
-                    Material(
-                      type: MaterialType.transparency,
-                      child: Ink(
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(3),
-                          gradient:
-                              theme
-                                  .lightModeColor
-                                  .prGradient,
-                          border: Border.all(
-                            color: Colors.grey,
+                Visibility(
+                  visible: authorization(
+                    authorized:
+                        Authorizations()
+                            .creditCustomersAccount,
+                  ),
+                  child: Row(
+                    spacing: 5,
+                    children: [
+                      Expanded(
+                        child: SizedBox(
+                          child: MoneyTextfield(
+                            title: 'title',
+                            hint: 'Enter Amount',
+                            controller: topUpController,
+                            theme: theme,
+                            autoFocus: true,
+                            onSubmitted: (p0) async {
+                              if (returnSalesProvider()
+                                      .currentCart()
+                                      .getCustomer() !=
+                                  null) {
+                                await topUpAction(
+                                  popSecondContext: false,
+                                  context: context,
+                                  theme: theme,
+                                  moneyTextField:
+                                      topUpController,
+                                  customer:
+                                      returnSalesProvider()
+                                          .currentCart()
+                                          .getCustomer()!,
+                                );
+                                widget.action != null
+                                    ? widget.action!()
+                                    : {};
+                              }
+                            },
+                            showTitle: false,
                           ),
                         ),
-                        child: InkWell(
-                          mouseCursor:
-                              SystemMouseCursors.click,
-                          onTap: () async {
-                            if (returnSalesProvider()
-                                    .currentCart()
-                                    .getCustomer() !=
-                                null) {
-                              await topUpAction(
-                                popSecondContext: false,
-                                context: context,
-                                theme: theme,
-                                moneyTextField:
-                                    topUpController,
-                                customer:
-                                    returnSalesProvider()
-                                        .currentCart()
-                                        .getCustomer()!,
-                              );
-                              widget.action != null
-                                  ? widget.action!()
-                                  : {};
-                            }
-                          },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 8,
-                              horizontal: 15,
+                      ),
+                      Material(
+                        type: MaterialType.transparency,
+                        child: Ink(
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(3),
+                            gradient:
+                                theme
+                                    .lightModeColor
+                                    .prGradient,
+                            border: Border.all(
+                              color: Colors.grey,
                             ),
-                            child: Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b4
-                                        .fontSize,
-                                fontWeight:
-                                    FontWeight.normal,
-                                color: Colors.white,
+                          ),
+                          child: InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
+                            onTap: () async {
+                              if (returnSalesProvider()
+                                      .currentCart()
+                                      .getCustomer() !=
+                                  null) {
+                                await topUpAction(
+                                  popSecondContext: false,
+                                  context: context,
+                                  theme: theme,
+                                  moneyTextField:
+                                      topUpController,
+                                  customer:
+                                      returnSalesProvider()
+                                          .currentCart()
+                                          .getCustomer()!,
+                                );
+                                widget.action != null
+                                    ? widget.action!()
+                                    : {};
+                              }
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 8,
+                                horizontal: 15,
                               ),
-                              'Top Up',
+                              child: Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b4
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.normal,
+                                  color: Colors.white,
+                                ),
+                                'Top Up',
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),

@@ -12,7 +12,7 @@ import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
-import 'package:stockall/pages/orders/invoice_list/order_list_page.dart';
+import 'package:stockall/pages/orders/order_list/order_list_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/services/auth_service.dart';
 

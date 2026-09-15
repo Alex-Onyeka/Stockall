@@ -61,7 +61,7 @@ class _OrderItemDeliverListWidgetState
               widget.list.remove(newItem);
             } else {
               widget.list.add(newItem!);
-              fireAction();
+
               if (controller.text.isEmpty) {
                 newItem?.remainingQuantity =
                     (newItem?.remainingQuantity ?? 0) + 1;
@@ -70,6 +70,7 @@ class _OrderItemDeliverListWidgetState
                         .toString();
               }
             }
+            fireAction();
           });
         },
         child: Padding(
@@ -162,6 +163,7 @@ class _OrderItemDeliverListWidgetState
                     height: 45,
                     width: 100,
                     child: EditCartTextField(
+                      autoFocus: false,
                       title: '',
                       hint: '0',
                       showTitle: false,
@@ -257,11 +259,23 @@ class _OrderItemDeliverListWidgetState
                             )) {
                               fireAction();
                               widget.list.add(newItem!);
+                              newItem!.tempQuantity =
+                                  (double.tryParse(
+                                        controller.text,
+                                      ) ??
+                                      3);
                             }
                             controller.text =
                                 (newItem?.remainingQuantity ??
                                         0)
                                     .toString();
+                          } else {
+                            if (!widget.list.contains(
+                              newItem,
+                            )) {
+                              fireAction();
+                              widget.list.add(newItem!);
+                            }
                           }
                         });
                       },

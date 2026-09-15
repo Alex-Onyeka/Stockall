@@ -2080,7 +2080,10 @@ class _ReceiptDetailsContainerState
                           authorized:
                               Authorizations().updateSale,
                         ) &&
-                        !widget.mainReceipt.isInvoice,
+                        widget.mainReceipt.invoiceUuid ==
+                            null &&
+                        widget.mainReceipt.orderUuid ==
+                            null,
                     child: BottomActionButton(
                       text: 'Edit',
                       color: Colors.grey,

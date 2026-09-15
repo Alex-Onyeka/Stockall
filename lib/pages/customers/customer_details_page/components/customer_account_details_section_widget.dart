@@ -1,11 +1,15 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_customer_account_receipts/customer_account_receipts.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
+import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/customer_account_balance_print_and_download.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/invoices/invoice_page/invoice_page_desktop.dart';
@@ -87,6 +91,10 @@ class _CustomerAccountDetailsSectionWidgetState
                       'Account Details'.toUpperCase(),
                     ),
                   ],
+                ),
+                CustomerPrintButtonWidget(
+                  theme: theme,
+                  customer: widget.customer,
                 ),
               ],
             ),
@@ -241,19 +249,19 @@ class _CustomerAccountDetailsSectionWidgetState
                   ],
                 ),
                 // SizedBox(height: 5),
-                Visibility(
-                  visible: authorization(
-                    authorized:
-                        Authorizations()
-                            .debitOrCreditCustomersAccount,
-                  ),
-                  child: Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.start,
-                    spacing: 10,
-                    children: [
-                      SizedBox(width: 10),
-                      ActionButtonSmall(
+                Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.start,
+                  spacing: 10,
+                  children: [
+                    SizedBox(width: 10),
+                    Visibility(
+                      visible: authorization(
+                        authorized:
+                            Authorizations()
+                                .creditCustomersAccount,
+                      ),
+                      child: ActionButtonSmall(
                         isLoading: false,
                         action: () {
                           showDialog(
@@ -353,7 +361,14 @@ class _CustomerAccountDetailsSectionWidgetState
                           Icons.add,
                         ),
                       ),
-                      ActionButtonSmall(
+                    ),
+                    Visibility(
+                      visible: authorization(
+                        authorized:
+                            Authorizations()
+                                .debitCustomersAccount,
+                      ),
+                      child: ActionButtonSmall(
                         isLoading: false,
                         action: () {
                           showDialog(
@@ -473,8 +488,8 @@ class _CustomerAccountDetailsSectionWidgetState
                           Icons.remove,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -537,6 +552,10 @@ class _CustomerAccountDetailsSectionWidgetState
                     ),
                   ],
                 ),
+                CustomerPrintButtonWidget(
+                  theme: theme,
+                  customer: widget.customer,
+                ),
               ],
             ),
             Divider(
@@ -565,19 +584,19 @@ class _CustomerAccountDetailsSectionWidgetState
                   ],
                 ),
                 // SizedBox(height: 5),
-                Visibility(
-                  visible: authorization(
-                    authorized:
-                        Authorizations()
-                            .debitOrCreditCustomersAccount,
-                  ),
-                  child: Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.start,
-                    spacing: 10,
-                    children: [
-                      SizedBox(width: 10),
-                      ActionButtonSmall(
+                Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.start,
+                  spacing: 10,
+                  children: [
+                    SizedBox(width: 10),
+                    Visibility(
+                      visible: authorization(
+                        authorized:
+                            Authorizations()
+                                .creditCustomersAccount,
+                      ),
+                      child: ActionButtonSmall(
                         isLoading: false,
                         action: () {
                           showDialog(
@@ -677,7 +696,14 @@ class _CustomerAccountDetailsSectionWidgetState
                           Icons.add,
                         ),
                       ),
-                      ActionButtonSmall(
+                    ),
+                    Visibility(
+                      visible: authorization(
+                        authorized:
+                            Authorizations()
+                                .debitCustomersAccount,
+                      ),
+                      child: ActionButtonSmall(
                         isLoading: false,
                         action: () {
                           showDialog(
@@ -797,8 +823,8 @@ class _CustomerAccountDetailsSectionWidgetState
                           Icons.remove,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -853,6 +879,10 @@ class _CustomerAccountDetailsSectionWidgetState
                       'Reward Earnings'.toUpperCase(),
                     ),
                   ],
+                ),
+                CustomerPrintButtonWidget(
+                  theme: theme,
+                  customer: widget.customer,
                 ),
               ],
             ),
@@ -931,6 +961,112 @@ class _CustomerAccountDetailsSectionWidgetState
         ),
       );
     }
+  }
+}
+
+class CustomerPrintButtonWidget extends StatelessWidget {
+  const CustomerPrintButtonWidget({
+    super.key,
+    required this.theme,
+    required this.customer,
+  });
+
+  final ThemeProvider theme;
+  final TempCustomersClass customer;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      type: MaterialType.transparency,
+      child: InkWell(
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return DialogTemplate(
+                theme: theme,
+                message:
+                    'Select the Action you want to Perform',
+                title: 'Proceed With Action',
+                action: () {},
+                showBottomActionButtons: false,
+                widget: Column(
+                  spacing: 5,
+                  children: [
+                    Visibility(
+                      visible:
+                          !kIsWeb &&
+                          screenWidth(context) >
+                              mobileScreen,
+                      child: MainButtonTransparent(
+                        themeProvider: theme,
+                        constraints: BoxConstraints(),
+                        text: 'Print',
+                        action: () {
+                          var shop =
+                              returnShopProvider()
+                                  .userShop();
+                          generateAndPreviewPdfRollCustomerAccountBalance(
+                            context: context,
+                            customer: customer,
+                            printerType:
+                                shop?.printType ?? 1,
+                            shop: shop!,
+                          );
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ),
+                    MainButtonTransparent(
+                      themeProvider: theme,
+                      constraints: BoxConstraints(),
+                      text: 'Download',
+                      action: () {
+                        if (kIsWeb) {
+                          downloadPdfWebCustomerAccountBalance(
+                            context: context,
+                            customer: customer,
+                            filename:
+                                'Customer Account Balance',
+                          );
+                        } else {
+                          generateAndPreviewPdfCustomerAccountBalance(
+                            context: context,
+                            customer: customer,
+                            // filename:
+                            //     'Customer Account Balance',
+                          );
+                        }
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
+        borderRadius: BorderRadius.circular(3),
+        mouseCursor: SystemMouseCursors.click,
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            vertical: 5,
+            horizontal: 8,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(3),
+            border: Border.all(color: Colors.grey.shade200),
+          ),
+          child: Text(
+            style: TextStyle(
+              fontSize: theme.mobileTexts.b4.fontSize,
+              color: Colors.grey.shade100,
+            ),
+            'Print Balance',
+          ),
+        ),
+      ),
+    );
   }
 }
 

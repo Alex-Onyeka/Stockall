@@ -3027,11 +3027,10 @@ class _SalesTypeSwitchContainerState
                     index: 2,
                   ),
                   Visibility(
-                    visible: false,
-                    // authorization(
-                    //   authorized:
-                    //       Authorizations().manageOrders,
-                    // ),
+                    visible: authorization(
+                      authorized:
+                          Authorizations().manageOrders,
+                    ),
                     child: SalesTypeSwitchButton(
                       action: null,
                       index: 3,

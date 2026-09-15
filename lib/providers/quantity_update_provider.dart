@@ -67,14 +67,14 @@ class QuantityUpdateProvider with ChangeNotifier {
                 })
                 .toList();
 
-        await client.rpc(
+        var res = await client.rpc(
           'update_product_quantities',
           params: {'updates': tempQuantityUpdates},
         );
 
         await QuantityUpdateFunc().clearQuantitiesUpdate();
         await mainLocalLog(
-          'Unsynced Quantity Updates Cleared',
+          'Unsynced Quantity Updates Cleared: $res',
         );
       }
     } catch (e) {

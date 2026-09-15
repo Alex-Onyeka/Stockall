@@ -9,11 +9,13 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/calculator_page/calculator_page.dart';
 import 'package:stockall/pages/customers/customers_list/customer_list.dart';
+import 'package:stockall/pages/dashboard/components/contact_us_float_widget.dart';
 import 'package:stockall/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
+import 'package:stockall/pages/orders/order_list/order_list_page.dart';
 import 'package:stockall/pages/production/production_page.dart';
 import 'package:stockall/pages/purchases/purchase_list/purchase_list.dart';
 import 'package:stockall/pages/report/report_page.dart';
@@ -507,32 +509,32 @@ class _MyDrawerWidgetDesktopMainState
                                           .view_in_ar_rounded,
                                 ),
                               ),
-                              // Visibility(
-                              //   visible: authorization(
-                              //     authorized:
-                              //         Authorizations()
-                              //             .manageOrders,
-                              //   ),
-                              //   child: NavListTileDesktopAlt(
-                              //     itemIndex: 10,
-                              //     height: 14,
-                              //     action: () {
-                              //       checkNavigate(context);
-                              //       Navigator.push(
-                              //         context,
-                              //         MaterialPageRoute(
-                              //           builder: (context) {
-                              //             return OrderListPage();
-                              //           },
-                              //         ),
-                              //       );
-                              //     },
-                              //     title: 'Orders',
-                              //     icon:
-                              //         Icons
-                              //             .article_outlined,
-                              //   ),
-                              // ),
+                              Visibility(
+                                visible: authorization(
+                                  authorized:
+                                      Authorizations()
+                                          .manageOrders,
+                                ),
+                                child: NavListTileDesktopAlt(
+                                  itemIndex: 10,
+                                  height: 14,
+                                  action: () {
+                                    checkNavigate(context);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return OrderListPage();
+                                        },
+                                      ),
+                                    );
+                                  },
+                                  title: 'Orders',
+                                  icon:
+                                      Icons
+                                          .article_outlined,
+                                ),
+                              ),
                               SizedBox(height: 5),
                               Divider(
                                 height:
@@ -543,6 +545,26 @@ class _MyDrawerWidgetDesktopMainState
                                         ? 15
                                         : 20,
                                 color: Colors.grey.shade200,
+                              ),
+                              Visibility(
+                                visible: authorization(
+                                  authorized:
+                                      Authorizations()
+                                          .contactStockall,
+                                ),
+                                child: NavListTileDesktopAlt(
+                                  itemIndex: 11,
+                                  height: 18,
+                                  action: () {
+                                    contactUsAction(
+                                      context: context,
+                                    );
+                                  },
+                                  title: 'Contact Support',
+                                  icon:
+                                      Icons
+                                          .manage_accounts_outlined,
+                                ),
                               ),
                               Visibility(
                                 visible: !isStoreKeeper(),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/constants/functions.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class MainButtonTransparent extends StatelessWidget {
@@ -8,6 +7,7 @@ class MainButtonTransparent extends StatelessWidget {
   final BoxConstraints constraints;
   final String text;
   final Color? color;
+  final Icon? icon;
 
   const MainButtonTransparent({
     super.key,
@@ -16,6 +16,7 @@ class MainButtonTransparent extends StatelessWidget {
     required this.constraints,
     required this.text,
     this.color,
+    this.icon,
   });
 
   @override
@@ -43,32 +44,38 @@ class MainButtonTransparent extends StatelessWidget {
             FocusManager.instance.primaryFocus?.unfocus();
           },
           child: Container(
-            padding: EdgeInsets.symmetric(
-              vertical:
-                  screenWidth(context) < 600 ? 13 : 12,
-            ),
+            padding: EdgeInsets.symmetric(vertical: 10),
 
             child: Center(
-              child: Text(
-                style: TextStyle(
-                  color:
-                      color ??
-                      themeProvider
-                          .lightModeColor
-                          .prColor300,
-                  fontSize:
-                      screenWidth(context) < 600
-                          ? themeProvider
-                              .mobileTexts
-                              .b3
-                              .fontSize
-                          : themeProvider
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    style: TextStyle(
+                      color:
+                          color ??
+                          themeProvider
+                              .lightModeColor
+                              .prColor300,
+                      fontSize:
+                          themeProvider
                               .mobileTexts
                               .b3
                               .fontSize,
-                  fontWeight: FontWeight.bold,
-                ),
-                text,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    text,
+                  ),
+                  Visibility(
+                    visible: icon != null,
+                    child: Padding(
+                      padding: EdgeInsetsGeometry.only(
+                        left: 5,
+                      ),
+                      child: icon,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
