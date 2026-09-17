@@ -9,8 +9,8 @@ import 'package:stockall/classes/temp_orders/orders.dart';
 import 'package:stockall/classes/temp_orders/unsynced/created/created_orders.dart';
 import 'package:stockall/classes/temp_orders/unsynced/deleted/deleted_orders.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
-import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
@@ -26,7 +26,6 @@ import 'package:stockall/pages/report/invoice_sales_report/platforms/invoice_sal
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
-import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 // // //
@@ -123,6 +122,7 @@ class OrdersProvider extends ChangeNotifier {
       }
       notifyListeners();
       await loadOrdersOffline(shopId());
+      syncData();
       return 1;
     } catch (e) {
       await mainLocalLog(
@@ -582,17 +582,18 @@ class OrdersProvider extends ChangeNotifier {
     if (record.customPriceSet) {
       if (record.setTotalPrice != null &&
           record.setTotalPrice == true) {
-        tempRev = record.originalCost ?? 0;
-      } else {
         tempRev =
-            (record.originalCost ?? 0) / record.quantity;
+            ((record.originalCost ?? 0) *
+                record.getActualQuantity());
+      } else {
+        tempRev = (record.originalCost ?? 0);
       }
     }
     return TempCartItem(
       uuid: record.uuid,
       itemUuid: product.uuid,
       isVoid: false,
-      remainingBalance: record.remainingBalance,
+      remainingBalance: record.getRemainingBalance(),
       remainingQuantity: record.remainingQuantity,
       item: product,
       quantity: record.quantity,
@@ -645,12 +646,12 @@ class OrdersProvider extends ChangeNotifier {
 
         final double sellingPrice =
             record.discount == null
-                ? record.revenue / record.quantity
+                ? record.getTotalRevenue() / record.quantity
                 : (record.originalCost ?? 0) /
                     record.quantity;
         final double wholeSalePrice =
             record.discount == null
-                ? record.revenue / record.quantity
+                ? record.getTotalRevenue() / record.quantity
                 : (record.originalCost ?? 0) /
                     record.quantity;
 
@@ -812,165 +813,95 @@ class OrdersProvider extends ChangeNotifier {
   }
   //
 
-  Future<int> makeOrderPayment({
+  Future<void> makeOrderItemDelivery({
     required Orders order,
-    required List<OrderItems> orderItemsNew,
-    required double currentPayment,
-    required String comment,
+    required BuildContext context,
   }) async {
     try {
-      final createdAt = DateTime.now().toUtc();
-
-      TempMainReceipt receipt = TempMainReceipt(
-        isInvoice: false,
-        orderUuid: order.uuid,
-        comment: comment,
-        subStaffName: order.subStaffName,
-        createdAt: createdAt,
-        shopId: order.shopId,
-        staffId: AuthService().currentUser!,
-        staffName:
-            "${returnUserProviderSingle().currentUserMain!.name} ${returnUserProviderSingle().currentUserMain!.lastName}",
-        paymentMethod: 'Bank',
-        bank: currentPayment,
-        customerAccount: 0,
-        cashAlt: 0,
-        customerName: order.customerName,
-        customerUuid: order.customerId,
-        departmentName: order.departmentName,
-        departmentUuidNew: order.departmentUuid,
-        uuid: uuidGen(),
-        generalDiscount: order.generalDiscount,
-        fixedDiscount: order.fixedDiscount,
-        vat: order.vat,
-        originalCost: order.originalCost,
-        balance: getBalance(order: order) - currentPayment,
-        subStaffUuid: order.subStaffUuid,
-        cartName: order.cartName,
-      );
-
-      await mainLocalLog('Checkout Started');
-      var res = await returnReceiptProviderSingle()
-          .createReceipt(receipt);
-      if (res != null) {
-        await mainLocalLog('Receipt Created');
-        final productSaleRecords =
-            orderItemsNew.map((record) {
-              mainLocalLog(
-                'Sales Record about to be Created',
-              );
-              return TempProductSaleRecord(
-                isVoid: false,
-                customPriceSet: record.customPriceSet,
-                createdAt: createdAt,
-                productId: 0,
-                productUuid: record.productUuid,
-                productName: record.productName,
-                shopId: shopId(),
-                staffId: AuthService().currentUser!,
-                staffName:
-                    "${returnUserProviderSingle().currentUserMain!.name} ${returnUserProviderSingle().currentUserMain!.lastName}",
-                // customerId: customerId,
-                customerUuid: order.customerId,
-                customerName: order.customerName,
-                recepitId: 0,
-                receiptUuid: res.uuid,
-                quantity: record.remainingQuantity ?? 0,
-                revenue: calcSalesRecordRevenue(
-                  invoceTotalAmount:
-                      getTotalMainRevenueOrder(
-                        order: order,
-                      ),
-                  receiptPayment: currentPayment,
-                  salesRecodRevenue: record.revenue,
-                ),
-                costPrice: calcSalesRecordCostPrice(
-                  invoceTotalAmount:
-                      getTotalMainRevenueOrder(
-                        order: order,
-                      ),
-                  receiptPayment: currentPayment,
-                  salesRecodCostPrice:
-                      (record.costPrice ?? 0),
-                ),
-                discountedAmount:
-                    calcSalesRecordDiscountedAmount(
-                      invoceTotalAmount:
-                          getTotalMainRevenueOrder(
-                            order: order,
-                          ),
-                      receiptPayment: currentPayment,
-                      salesRecodDiscountedAmount:
-                          (record.discountedAmount ?? 0),
-                    ),
-                originalCost: calcSalesRecordOriginalCost(
-                  invoceTotalAmount:
-                      getTotalMainRevenueOrder(
-                        order: order,
-                      ),
-                  receiptPayment: currentPayment,
-                  salesRecodOriginalCost:
-                      (record.originalCost ?? 0),
-                ),
-                discount: record.discount,
-                fixedDiscount: record.fixedDiscount,
-
-                addToStock: record.addToStock,
-                departmentName:
-                    record.departmentName ??
-                    returnDepartmentProvider()
-                        .currentDepartment()
-                        ?.name,
-                departmentUuid:
-                    record.departmentUuid ??
-                    returnDepartmentProvider()
-                        .currentDepartment()
-                        ?.uuid,
-                uuid: uuidGen(),
-                isProductManaged: record.isProductManaged,
-                setTotalPrice: record.setTotalPrice,
-                unit: record.unit,
-                useWholeSalePrice: record.useWholeSalePrice,
-                useGroupQuantity: record.useGroupQuantity,
-                qttyPerGroup: record.qttyPerGroup,
-                // orderUuid: order.uuid,
-              );
-            }).toList();
-
-        await mainLocalLog(
-          'Creating Record Sales About to Start',
-        );
-        await returnReceiptProviderSingle()
-            .createProductSaleRecord(
-              records: productSaleRecords,
-              isPartPayment: true,
-            );
-        for (var item in orderItemsNew) {
-          var newItem = order.orderItems.firstWhere(
-            (itemm) => itemm.uuid == item.uuid,
+      double currentPayment =
+          returnOrdersActionProvider().totalOrdersAmount();
+      List<OrderItems> orderItemsTemp =
+          returnOrdersActionProvider().orderListItems;
+      List<TempCartItem> cartItems =
+          convertOrderToCartItems(
+            order: order,
+            saleRecords: orderItemsTemp,
+            context: context,
           );
-          newItem.remainingBalance =
-              (newItem.remainingBalance ?? 0) -
-              (item.remainingBalance ?? 0);
-        }
-        order.balance = (order.total ?? 0) - currentPayment;
-
-        await updateOrder(order: order);
-        loadOrdersOffline(shopId());
-        returnData().syncData();
-        notifyListeners();
-        return 1;
-      } else {
-        await mainLocalLog(
-          'Failed to Create Receipt From Order',
+      TempCart cart = TempCart(
+        cartItems: cartItems,
+        staffName: currentUser().name,
+        staffId: currentUser().userId,
+        departmentName: currentDepartment()?.name,
+        departmentUuid: currentDepartment()?.uuid,
+        customDate: null,
+        hasPrintedDocket: false,
+        subStaffName: null,
+        timeOfDay: null,
+        comment: returnOrdersActionProvider().comment,
+        cartItemTypeIndex: 1,
+        orderUuidEdit: null,
+        createdDate: DateTime.now(),
+        isInvoice: false,
+        paymentMethod: 2,
+        selectedCustomer: order.customerId,
+        orderUuid: order.uuid,
+      );
+      CheckoutResponse? res = await returnSalesProvider()
+          .checkoutMain(
+            context: context,
+            salesCartItem: cart,
+            shopId: shopId(),
+            paymentMethod: 'Bank',
+            cashAlt: 0,
+            bank: currentPayment,
+            customerBalance: 0,
+          );
+      if (res == null) {
+        showDialog(
+          // ignore: use_build_context_synchronously
+          context: context,
+          builder: (errorContext) {
+            return InfoAlert(
+              theme: returnTheme(context, listen: false),
+              message:
+                  'An Error Occoured While Performing This Operation. Please Try again Later.',
+              title: 'An Error Occoured',
+            );
+          },
         );
-        return 0;
+      } else {
+        for (var item in orderItemsTemp) {
+          var tempItem = order.getOrderItem(newItem: item);
+          if (tempItem != null) {
+            tempItem.remainingQuantity =
+                (tempItem.remainingQuantity ?? 0) -
+                item.getActualQuantityReversed();
+          }
+        }
+        Orders newOrder = order.copyWith();
+        newOrder.balance =
+            (newOrder.balance ?? 0) - currentPayment;
+        await updateOrder(order: newOrder);
+        returnOrdersActionProvider().clearAll();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return ReceiptPage(
+                response: res,
+                isMain: false,
+              );
+            },
+          ),
+        ).then((_) {
+          Navigator.of(context).pop();
+        });
       }
     } catch (e) {
       await mainLocalLog(
-        'Error Creating Receipt From Order: ${e.toString()}',
+        'Error Converting Delivery Items to Cart Item For Delivery Receipt Creating: ${e.toString()}',
       );
-      return 0;
     }
   }
 
@@ -1498,7 +1429,7 @@ class OrdersProvider extends ChangeNotifier {
 
       double totalCost = items.fold(
         0,
-        (sum, e) => sum + e.revenue,
+        (sum, e) => sum + e.getTotalRevenue(),
       );
 
       double totalCostPrice = items.fold(
@@ -1566,7 +1497,7 @@ class OrdersProvider extends ChangeNotifier {
   double getTotalSalesRevenue() {
     return returnOrderItemsByDayOrWeek()
         .toList()
-        .map((item) => item.revenue)
+        .map((item) => item.getTotalRevenue())
         .toList()
         .fold(0, (first, second) => first + second);
   }
@@ -1634,7 +1565,7 @@ class OrdersProvider extends ChangeNotifier {
 
       double totalCost = items.fold(
         0,
-        (sum, e) => sum + e.revenue,
+        (sum, e) => sum + e.getTotalRevenue(),
       );
 
       double totalCostPrice = items.fold(
@@ -1719,7 +1650,7 @@ class OrdersProvider extends ChangeNotifier {
   }) {
     return returnOrderItemsByDayOrWeek()
         .where((item) => item.departmentUuid == deptUuid)
-        .map((item) => item.revenue)
+        .map((item) => item.getTotalRevenue())
         .toList()
         .fold(0, (first, second) => first + second);
   }
@@ -1731,7 +1662,7 @@ class OrdersProvider extends ChangeNotifier {
   double getTotalSalesRevenueNoDepartment() {
     return returnOrderItemsByDayOrWeek()
         .where((item) => item.departmentUuid == null)
-        .map((item) => item.revenue)
+        .map((item) => item.getTotalRevenue())
         .toList()
         .fold(0, (first, second) => first + second);
   }
@@ -1776,7 +1707,7 @@ class OrdersProvider extends ChangeNotifier {
 
       double totalCost = items.fold(
         0,
-        (sum, e) => sum + (e.revenue),
+        (sum, e) => sum + (e.getTotalRevenue()),
       );
 
       result.add(

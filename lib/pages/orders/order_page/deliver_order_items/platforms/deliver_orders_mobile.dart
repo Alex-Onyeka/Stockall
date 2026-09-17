@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_orders/orders.dart';
-import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
-import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/orders/order_page/components/select_order_items_bottom_sheet.dart';
@@ -11,13 +8,13 @@ import 'package:stockall/pages/orders/order_page/deliver_order_items/platforms/c
 import 'package:stockall/pages/orders/order_page/deliver_order_items/platforms/components/order_item_delivery_tile.dart';
 import 'package:stockall/pages/orders/order_page/deliver_order_items/platforms/components/total_row_orders_delivery.dart';
 
-class DeliverOrdersDesktop extends StatefulWidget {
+class DeliverOrdersMobile extends StatefulWidget {
   final Orders order;
   final TextEditingController searchController;
   final TextEditingController priceController;
   final TextEditingController quantityController;
 
-  const DeliverOrdersDesktop({
+  const DeliverOrdersMobile({
     super.key,
     required this.order,
     required this.searchController,
@@ -26,141 +23,88 @@ class DeliverOrdersDesktop extends StatefulWidget {
   });
 
   @override
-  State<DeliverOrdersDesktop> createState() =>
-      _DeliverOrdersDesktopState();
+  State<DeliverOrdersMobile> createState() =>
+      DeliverOrdersMobileState();
 }
 
-class _DeliverOrdersDesktopState
-    extends State<DeliverOrdersDesktop> {
+class DeliverOrdersMobileState
+    extends State<DeliverOrdersMobile> {
   bool isLoading = false;
   bool showSuccess = false;
-
-  bool updateInventory = true;
-  int paymentSelected = 2;
-
-  void checkFields() async {
-    if (returnOrdersActionProvider()
-        .orderListItems
-        .isEmpty) {
-      showDialog(
-        context: context,
-        builder: (context) {
-          var theme = returnTheme(context);
-          return InfoAlert(
-            theme: theme,
-            message:
-                'No Item has been added to the List. Please add items to the list before proceeding',
-            title: 'Empty List',
-          );
-        },
-      );
-    } else {
-      showDialog(
-        context: context,
-        builder: (confirmDialog) {
-          return ConfirmationAlert(
-            theme: returnTheme(context, listen: false),
-            message:
-                'You are about to record a order Delivery and update the items, are you sure you want to proceed?',
-            title: 'Proceed With Action',
-            action: () async {
-              Navigator.of(confirmDialog).pop();
-              setState(() {
-                isLoading = true;
-              });
-
-              returnOrdersProvider().makeOrderItemDelivery(
-                order: widget.order,
-                context: context,
-              );
-            },
-          );
-        },
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    return Scaffold(
-      body: Stack(
-        children: [
-          DesktopCenterContainer(
-            width: 650,
-            mainWidget: Scaffold(
-              appBar: AppBar(
-                scrolledUnderElevation: 0,
-                centerTitle: true,
-                title: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.h4.fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      'Select Items',
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b2.fontSize,
-                      ),
-                      'Select Items From Order to Deliver',
-                    ),
-                  ],
-                ),
-                actions: [
-                  InkWell(
-                    mouseCursor: SystemMouseCursors.click,
-                    onTap: () {
-                      selectItemsForOrderDeliveryBottomSheet(
-                        priceController:
-                            widget.priceController,
-                        quantityController:
-                            widget.quantityController,
-                        context: context,
-                        action: () {
-                          setState(() {});
-                        },
-                        searchController:
-                            widget.searchController,
-                        order: widget.order,
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        8,
-                        8,
-                        12,
-                        8,
-                      ),
-                      child: Row(
-                        spacing: 5,
-                        children: [
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                            ),
-                            'Add Item',
-                          ),
-                          Icon(size: 16, Icons.add),
-                        ],
-                      ),
-                    ),
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            scrolledUnderElevation: 0,
+            centerTitle: true,
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  style: TextStyle(
+                    fontSize: theme.mobileTexts.h4.fontSize,
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
+                  'Select Items',
+                ),
+                SizedBox(height: 5),
+                Text(
+                  style: TextStyle(
+                    fontSize: theme.mobileTexts.b2.fontSize,
+                  ),
+                  'Select Items From Order to Deliver',
+                ),
+              ],
+            ),
+            actions: [
+              InkWell(
+                mouseCursor: SystemMouseCursors.click,
+                onTap: () {
+                  selectItemsForOrderDeliveryBottomSheet(
+                    priceController: widget.priceController,
+                    quantityController:
+                        widget.quantityController,
+                    context: context,
+                    action: () {
+                      setState(() {});
+                    },
+                    searchController:
+                        widget.searchController,
+                    order: widget.order,
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    8,
+                    8,
+                    12,
+                    8,
+                  ),
+                  child: Row(
+                    spacing: 5,
+                    children: [
+                      Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b3.fontSize,
+                        ),
+                        'Add Item',
+                      ),
+                      Icon(size: 16, Icons.add),
+                    ],
+                  ),
+                ),
               ),
-              body: Stack(
+            ],
+          ),
+          body: Stack(
+            children: [
+              Stack(
                 children: [
                   Column(
                     children: [
@@ -282,7 +226,7 @@ class _DeliverOrdersDesktopState
                               MainButtonP(
                                 themeProvider: theme,
                                 action: () {
-                                  checkFields();
+                                  // checkFields();
                                 },
                                 text: 'Create Delivery',
                               ),
@@ -294,24 +238,25 @@ class _DeliverOrdersDesktopState
                   ),
                 ],
               ),
-            ),
+            ],
           ),
-          Visibility(
-            visible: isLoading,
-            child: returnCompProvider(
-              context,
-              listen: false,
-            ).showLoader(message: 'Creating Delivery'),
-          ),
-          Visibility(
-            visible: showSuccess,
-            child: returnCompProvider(
-              context,
-              listen: false,
-            ).showSuccess('Delivery Created Successfully'),
-          ),
-        ],
-      ),
+        ),
+
+        Visibility(
+          visible: isLoading,
+          child: returnCompProvider(
+            context,
+            listen: false,
+          ).showLoader(message: 'Creating Delivery'),
+        ),
+        Visibility(
+          visible: showSuccess,
+          child: returnCompProvider(
+            context,
+            listen: false,
+          ).showSuccess('Delivery Created Successfully'),
+        ),
+      ],
     );
   }
 }

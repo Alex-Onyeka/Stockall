@@ -1060,7 +1060,7 @@ class SalesProvider extends ChangeNotifier {
           uuidGen();
       await mainLocalLog('🌹🌹 Created Date: $createdAt');
       TempMainReceipt receipt = TempMainReceipt(
-        orderUuid: null,
+        orderUuid: salesCartItem.orderUuid,
         comment: currentCart().comment,
         subStaffName:
             currentCart().subStaffName ??
@@ -2002,14 +2002,8 @@ class SalesProvider extends ChangeNotifier {
               );
 
               return OrderItems(
-                remainingBalance:
-                    currentCart().isReceiptEdit
-                        ? cartItem.remainingBalance
-                        : cartItem.revenue(),
-                remainingQuantity:
-                    currentCart().isReceiptEdit
-                        ? cartItem.remainingQuantity
-                        : cartItem.quantity,
+                // remainingBalance: cartItem.revenue(),
+                remainingQuantity: cartItem.quantity,
                 qttyPerGroup: cartItem.qttyPerGroup,
                 useGroupQuantity: cartItem.useGroupQuantity,
                 customPriceSet: cartItem.setCustomPrice,
@@ -2023,14 +2017,22 @@ class SalesProvider extends ChangeNotifier {
                 customerUuid: customerUuid(),
                 customerName: customerName(),
                 quantity: cartItem.quantity,
-                revenue: cartItem.revenue(),
+                revenue:
+                    (cartItem.revenue() /
+                        cartItem.getRealQuantity()),
                 discountedAmount: cartItem.discountCost(),
-                originalCost: cartItem.totalCost(),
+                originalCost:
+                    (cartItem.totalCost() /
+                        cartItem.getRealQuantity()),
                 discount:
                     cartItem.discount ??
                     cartItem.getItem()?.discount,
                 fixedDiscount: cartItem.fixedDiscount,
-                costPrice: cartItem.costPrice(),
+                costPrice:
+                    cartItem.costPrice() == null
+                        ? null
+                        : ((cartItem.costPrice() ?? 0) /
+                            cartItem.getRealQuantity()),
                 addToStock: cartItem.addToStock,
                 departmentName: departmentName(),
                 departmentUuid: departmentUuid(),
@@ -2038,7 +2040,7 @@ class SalesProvider extends ChangeNotifier {
                 isProductManaged:
                     cartItem.getItem()?.isManaged,
                 setTotalPrice: cartItem.setTotalPrice,
-                unit: cartItem.getUnit(),
+                unit: cartItem.getItem()?.unit ?? 'Unit(s)',
                 groupUnit:
                     cartItem.getItem()?.groupUnit ??
                     'Group(s)',
@@ -2104,16 +2106,10 @@ class SalesProvider extends ChangeNotifier {
                           : record.costPrice!;
 
                   final double sellingPrice =
-                      record.discount == null
-                          ? record.revenue / record.quantity
-                          : (record.originalCost ?? 0) /
-                              record.quantity;
+                      (record.originalCost ?? 0);
 
                   final double wholeSalePrice =
-                      record.discount == null
-                          ? record.revenue / record.quantity
-                          : (record.originalCost ?? 0) /
-                              record.quantity;
+                      record.revenue;
 
                   TempProductClass
                   product = TempProductClass(

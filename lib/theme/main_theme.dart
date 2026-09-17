@@ -280,6 +280,24 @@ class MobileTexts {
       color: LightModeColor().greyColor100,
     ),
   );
+
+  B1 b5 = B1(
+    fontWeightBold: FontWeight.bold,
+    fontWeightRegular: FontWeight.normal,
+    fontSize: 8.5,
+    letterSpacing: 0,
+    lineHeight: 12,
+    textStyleBold: TextStyle(
+      fontSize: 8.5,
+      fontWeight: FontWeight.bold,
+      color: LightModeColor().greyColor100,
+    ),
+    textStyleNormal: TextStyle(
+      fontSize: 8.5,
+      fontWeight: FontWeight.w500,
+      color: LightModeColor().greyColor100,
+    ),
+  );
 }
 
 class TabletTexts {

@@ -122,7 +122,7 @@ class OrderItems extends HiveObject {
     required this.isProductManaged,
     required this.originalCost,
     required this.setTotalPrice,
-    required this.remainingBalance,
+    this.remainingBalance,
     required this.remainingQuantity,
     this.tempQuantity,
   });
@@ -276,14 +276,78 @@ class OrderItems extends HiveObject {
     return ((remainingQuantity ?? 0) * (revenue));
   }
 
-  double getRevenuePerItem() {
-    return (revenue / quantity) * (tempQuantity ?? 1);
+  double getActualRemainingQuantity({bool? useGroupTemp}) {
+    if (useGroupTemp != null) {
+      return useGroupTemp == true
+          ? ((remainingQuantity ?? 0) * (qttyPerGroup ?? 1))
+          : (remainingQuantity ?? 0);
+    } else {
+      return useGroupQuantity == true
+          ? ((remainingQuantity ?? 0) * (qttyPerGroup ?? 1))
+          : (remainingQuantity ?? 0);
+    }
   }
 
-  String getUnit() {
-    return useGroupQuantity == true
-        ? (groupUnit ?? 'Group(s)')
-        : (unit ?? 'Unit(s)');
+  double getTotalRevenue({bool? useGroupTemp}) {
+    return (revenue *
+        getActualQuantity(useGroupTemp: useGroupTemp));
+  }
+
+  double getTotalOriginalSellingPrice({
+    bool? useGroupTemp,
+  }) {
+    return ((originalCost ?? 0) *
+        getActualQuantity(useGroupTemp: useGroupTemp));
+  }
+
+  double getTotalCostPrice() {
+    return ((costPrice ?? 0) * quantity);
+  }
+
+  double getActualQuantity({bool? useGroupTemp}) {
+    if (useGroupTemp != null) {
+      return useGroupTemp == true
+          ? (quantity * (qttyPerGroup ?? 1))
+          : quantity;
+    } else {
+      return useGroupQuantity == true
+          ? (quantity * (qttyPerGroup ?? 1))
+          : quantity;
+    }
+  }
+
+  double getActualQuantityReversed({bool? useGroupTemp}) {
+    if (useGroupTemp != null) {
+      return useGroupTemp == true
+          ? quantity
+          : (quantity / (qttyPerGroup ?? 1));
+    } else {
+      return useGroupQuantity == true
+          ? quantity
+          : (quantity / (qttyPerGroup ?? 1));
+    }
+  }
+
+  double calcQuantity({
+    required double quantity,
+    bool? useGroupTemp,
+  }) {
+    return quantity *
+        ((useGroupTemp ?? useGroupQuantity ?? false) == true
+            ? (qttyPerGroup ?? 0)
+            : 1);
+  }
+
+  String getUnit({bool? useGroupTemp}) {
+    if (useGroupTemp != null) {
+      return useGroupTemp == true
+          ? (groupUnit ?? 'Group(s)')
+          : (unit ?? 'Unit(s)');
+    } else {
+      return useGroupQuantity == true
+          ? (groupUnit ?? 'Group(s)')
+          : (unit ?? 'Unit(s)');
+    }
   }
 }
 

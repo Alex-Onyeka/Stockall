@@ -14,7 +14,7 @@ class OrdersActionProvider extends ChangeNotifier {
 
   void clearAll() {
     orderListItems.clear();
-    // isGroup = false;
+    comment = null;
     customTotalAmount = null;
     notifyListeners();
   }
@@ -28,6 +28,15 @@ class OrdersActionProvider extends ChangeNotifier {
       orderListItems.remove(item);
     }
     orderListItems.add(item);
+    notifyListeners();
+  }
+
+  void addAllItemsToList({
+    required List<OrderItems> items,
+  }) {
+    for (var item in items) {
+      addItemToList(item: item);
+    }
     notifyListeners();
   }
 
@@ -48,8 +57,15 @@ class OrdersActionProvider extends ChangeNotifier {
       return customTotalAmount ?? 0;
     } else {
       return orderListItems
-          .map((item) => item.revenue)
+          .map((item) => item.getTotalRevenue())
           .fold(0.0, (a, b) => a + b);
     }
+  }
+
+  String? comment;
+
+  void setComment({required String? newComment}) {
+    comment = newComment;
+    notifyListeners();
   }
 }

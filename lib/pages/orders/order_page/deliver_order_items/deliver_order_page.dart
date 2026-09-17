@@ -3,6 +3,7 @@ import 'package:stockall/classes/temp_orders/orders.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/orders/order_page/deliver_order_items/platforms/deliver_orders_mobile.dart';
 import 'package:stockall/pages/orders/order_page/deliver_order_items/platforms/deliver_orders_desktop.dart';
 
 class DeliverOrdersPage extends StatefulWidget {
@@ -45,7 +46,9 @@ class _DeliverOrdersPageState
             conditionX:
                 returnOrdersActionProvider()
                     .orderListItems
-                    .isNotEmpty,
+                    .isNotEmpty ||
+                returnOrdersActionProvider().comment !=
+                    null,
             didPop: didPop,
             action: () {
               returnOrdersActionProvider().clearAll();
@@ -55,13 +58,12 @@ class _DeliverOrdersPageState
         child: LayoutBuilder(
           builder: (context, constraints) {
             if (constraints.maxWidth < mobileScreen) {
-              // return DeliverOrdersMobile(
-              //   order: widget.order,
-              //   searchController: searchController,
-              //   priceController: priceController,
-              //   quantityController: quantityController,
-              // );
-              return Scaffold(appBar: AppBar());
+              return DeliverOrdersMobile(
+                order: widget.order,
+                searchController: searchController,
+                priceController: priceController,
+                quantityController: quantityController,
+              );
             } else {
               return DeliverOrdersDesktop(
                 order: widget.order,

@@ -12,6 +12,7 @@ import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/pages/orders/order_list/order_list_page.dart';
+import 'package:stockall/pages/orders/order_page/components/order_item_list_tile_order_page.dart';
 import 'package:stockall/pages/orders/order_page/deliver_order_items/deliver_order_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -734,184 +735,11 @@ class _OrderPageDesktopState
                                             .map(
                                               (
                                                 record,
-                                              ) => Container(
-                                                margin:
-                                                    EdgeInsets.symmetric(
-                                                      vertical:
-                                                          4,
-                                                    ),
-                                                padding:
-                                                    const EdgeInsets.fromLTRB(
-                                                      15.0,
-                                                      10.0,
-                                                      15.0,
-                                                      10.0,
-                                                    ),
-                                                decoration: BoxDecoration(
-                                                  color:
-                                                      Colors
-                                                          .grey
-                                                          .shade100,
-                                                ),
-                                                child: Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment
-                                                          .start,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  spacing:
-                                                      10,
-                                                  children: [
-                                                    Expanded(
-                                                      flex:
-                                                          10,
-                                                      child: Column(
-                                                        spacing:
-                                                            2,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text(
-                                                            style: TextStyle(
-                                                              fontSize:
-                                                                  theme.mobileTexts.b3.fontSize,
-                                                              fontWeight:
-                                                                  FontWeight.bold,
-                                                            ),
-                                                            record.productName,
-                                                          ),
-                                                          Row(
-                                                            spacing:
-                                                                8,
-                                                            children: [
-                                                              Row(
-                                                                spacing:
-                                                                    3,
-                                                                children: [
-                                                                  Text(
-                                                                    style: TextStyle(
-                                                                      fontSize:
-                                                                          theme.mobileTexts.b4.fontSize,
-                                                                      fontWeight:
-                                                                          FontWeight.normal,
-                                                                    ),
-                                                                    'Original Qtty: ',
-                                                                  ),
-                                                                  Text(
-                                                                    style: TextStyle(
-                                                                      fontSize:
-                                                                          theme.mobileTexts.b3.fontSize,
-                                                                      fontWeight:
-                                                                          FontWeight.bold,
-                                                                    ),
-                                                                    formatLargeNumberDouble(
-                                                                      record.quantity,
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              Visibility(
-                                                                visible:
-                                                                    (record.quantity >
-                                                                        (record.remainingQuantity ??
-                                                                            0)),
-                                                                child: Row(
-                                                                  spacing:
-                                                                      3,
-                                                                  children: [
-                                                                    Text(
-                                                                      style: TextStyle(
-                                                                        fontSize:
-                                                                            theme.mobileTexts.b4.fontSize,
-                                                                        fontWeight:
-                                                                            FontWeight.normal,
-                                                                      ),
-                                                                      '|    Remaining Qtty: ',
-                                                                    ),
-                                                                    Text(
-                                                                      style: TextStyle(
-                                                                        fontSize:
-                                                                            theme.mobileTexts.b3.fontSize,
-                                                                        fontWeight:
-                                                                            FontWeight.bold,
-                                                                      ),
-                                                                      formatLargeNumberDouble(
-                                                                        record.remainingQuantity ??
-                                                                            0,
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      flex:
-                                                          5,
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text(
-                                                            style: TextStyle(
-                                                              fontSize:
-                                                                  theme.mobileTexts.b3.fontSize,
-                                                              fontWeight:
-                                                                  FontWeight.bold,
-                                                            ),
-                                                            formatMoneyBig(
-                                                              amount:
-                                                                  (order.fixedDiscount ==
-                                                                                  null &&
-                                                                              order.generalDiscount ==
-                                                                                  null) &&
-                                                                          record.discount !=
-                                                                              null
-                                                                      ? ((record.originalCost ??
-                                                                              0) -
-                                                                          (record.discountedAmount ??
-                                                                              0))
-                                                                      : (record.originalCost ??
-                                                                          0),
-                                                              context:
-                                                                  context,
-                                                            ),
-                                                          ),
-                                                          Visibility(
-                                                            visible:
-                                                                record.discount !=
-                                                                    null &&
-                                                                !record.customPriceSet &&
-                                                                (order.fixedDiscount ==
-                                                                        null &&
-                                                                    order.generalDiscount ==
-                                                                        null),
-                                                            child: Text(
-                                                              style: TextStyle(
-                                                                decoration:
-                                                                    TextDecoration.lineThrough,
-                                                                fontSize:
-                                                                    theme.mobileTexts.b4.fontSize,
-                                                                fontWeight:
-                                                                    FontWeight.normal,
-                                                              ),
-                                                              formatMoneyMid(
-                                                                amount:
-                                                                    record.originalCost!,
-                                                                context:
-                                                                    context,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
+                                              ) => OrderItemListTileOrderPage(
+                                                theme:
+                                                    theme,
+                                                record:
+                                                    record,
                                               ),
                                             )
                                             .toList(),
@@ -1619,7 +1447,9 @@ class _OrderPageDesktopState
                                             );
                                           },
                                         ),
-                                      );
+                                      ).then((_) {
+                                        setState(() {});
+                                      });
                                     },
                                     child: Container(
                                       padding:

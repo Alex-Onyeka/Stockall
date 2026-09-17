@@ -1913,7 +1913,7 @@ class _ReceiptDetailsContainerState
               width: MediaQuery.of(context).size.width - 40,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                spacing: 10,
+                // spacing: 10,
                 children: [
                   Visibility(
                     visible: authorization(
@@ -2511,66 +2511,72 @@ class BottomActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          mouseCursor: SystemMouseCursors.click,
-          onTap: action,
-          borderRadius: BorderRadius.circular(5),
-          child: Container(
-            height: 40,
-            padding: EdgeInsets.symmetric(
-              vertical: 7,
-              horizontal: 10,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-              border: Border.all(
-                color: Colors.grey.shade400,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 5.0,
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            mouseCursor: SystemMouseCursors.click,
+            onTap: action,
+            borderRadius: BorderRadius.circular(5),
+            child: Container(
+              height: 40,
+              padding: EdgeInsets.symmetric(
+                vertical: 7,
+                horizontal: 10,
               ),
-            ),
-            child: Center(
-              child: Row(
-                spacing: 5,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Visibility(
-                    visible: text != null,
-                    child: Text(
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: textColor ?? Colors.grey,
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(
+                  color: Colors.grey.shade400,
+                ),
+              ),
+              child: Center(
+                child: Row(
+                  spacing: 5,
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+                  children: [
+                    Visibility(
+                      visible: text != null,
+                      child: Text(
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: textColor ?? Colors.grey,
+                          fontSize:
+                              theme.mobileTexts.b3.fontSize,
+                        ),
+                        text ?? '',
                       ),
-                      text ?? '',
                     ),
-                  ),
-                  Visibility(
-                    visible: text == null,
-                    child: Stack(
-                      children: [
-                        Visibility(
-                          visible: icon != null,
-                          child: Icon(
-                            size: iconSize,
-                            color: color,
-                            icon ??
-                                Icons
-                                    .delete_outline_rounded,
+                    Visibility(
+                      visible: text == null,
+                      child: Stack(
+                        children: [
+                          Visibility(
+                            visible: icon != null,
+                            child: Icon(
+                              size: iconSize,
+                              color: color,
+                              icon ??
+                                  Icons
+                                      .delete_outline_rounded,
+                            ),
                           ),
-                        ),
-                        Visibility(
-                          visible: svg != null,
-                          child: SvgPicture.asset(
-                            svg ?? '',
-                            height: iconSize,
+                          Visibility(
+                            visible: svg != null,
+                            child: SvgPicture.asset(
+                              svg ?? '',
+                              height: iconSize,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

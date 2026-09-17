@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:stockall/classes/temp_orders/order_items.dart';
 import 'package:stockall/classes/temp_orders/orders.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
-import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/calculations.dart';
-import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 
 void selectOrderItemsBottomSheet({
@@ -19,7 +17,6 @@ void selectOrderItemsBottomSheet({
   required OrderItems orderItem,
 }) {
   var theme = returnTheme(context, listen: false);
-  bool setCustomPrice = false;
   bool isGroupTemp = false;
 
   bool useGroupUnit() {
@@ -27,34 +24,22 @@ void selectOrderItemsBottomSheet({
   }
 
   isGroupTemp = orderItem.useGroupQuantity ?? false;
-  quantityController.text = (orderItem.quantity).toString();
+  quantityController.text =
+      (orderItem.remainingQuantity ?? 0).toString();
 
   double amount() {
-    if (setCustomPrice) {
-      return (double.tryParse(
-            priceController.text.replaceAll(',', ''),
-          ) ??
-          0);
-    } else {
-      return isGroupTemp
-          ? ((orderItem.getRevenuePerItem()) *
+    return orderItem.calcQuantity(
+          quantity:
               (double.tryParse(
                     quantityController.text.replaceAll(
                       ',',
                       '',
                     ),
                   ) ??
-                  0) *
-              (orderItem.qttyPerGroup ?? 1))
-          : (orderItem.costPrice ?? 0) *
-              (double.tryParse(
-                    quantityController.text.replaceAll(
-                      ',',
-                      '',
-                    ),
-                  ) ??
-                  0);
-    }
+                  0),
+          useGroupTemp: isGroupTemp,
+        ) *
+        orderItem.revenue;
   }
 
   showDialog(
@@ -100,12 +85,44 @@ void selectOrderItemsBottomSheet({
                     SizedBox(
                       width: 450,
                       child: EditCartTextField(
-                        title: 'Enter Item Quantity',
+                        title:
+                            'Enter Item Quantity ${orderItem.getUnit(useGroupTemp: isGroupTemp)}',
                         hint: 'Quantity',
                         controller: quantityController,
                         theme: theme,
                         onChanged: (value) {
-                          setState(() {});
+                          var itemRemainingQuantity =
+                              orderItem
+                                  .getActualRemainingQuantity(
+                                    useGroupTemp:
+                                        useGroupUnit(),
+                                  );
+                          var itemQttyPerGroup =
+                              orderItem.qttyPerGroup ?? 1;
+                          var number =
+                              isGroupTemp
+                                  ? (itemQttyPerGroup *
+                                      (double.tryParse(
+                                            value
+                                                .replaceAll(
+                                                  ',',
+                                                  '',
+                                                ),
+                                          ) ??
+                                          0))
+                                  : double.tryParse(
+                                        value.replaceAll(
+                                          ',',
+                                          '',
+                                        ),
+                                      ) ??
+                                      0;
+                          setState(() {
+                            if (number >
+                                itemRemainingQuantity) {
+                              quantityController.text = '0';
+                            }
+                          });
                         },
                       ),
                     ),
@@ -147,95 +164,7 @@ void selectOrderItemsBottomSheet({
                         ],
                       ),
                     ),
-                    SizedBox(height: 20),
-                    Builder(
-                      builder: (context) {
-                        if (setCustomPrice) {
-                          return Column(
-                            children: [
-                              Row(
-                                spacing: 10,
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.end,
-                                children: [
-                                  Expanded(
-                                    child: MoneyTextfield(
-                                      title: 'Custom Price',
-                                      hint: 'Enter Price',
-                                      controller:
-                                          priceController,
-                                      theme: theme,
-                                      onChanged: (value) {
-                                        setState(() {});
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 20),
-                            ],
-                          );
-                        } else {
-                          return Container();
-                        }
-                      },
-                    ),
-                    // SizedBox(height: 20),
-                    InkWell(
-                      mouseCursor: SystemMouseCursors.click,
-                      onTap: () {
-                        setState(() {
-                          setCustomPrice = !setCustomPrice;
-                        });
-                        priceController.clear();
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 5,
-                          horizontal: 10,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
-                          spacing: 5,
-                          children: [
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b1
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              setCustomPrice
-                                  ? 'Cancel Custom Price'
-                                  : 'Set Custom Price',
-                            ),
-                            Stack(
-                              children: [
-                                Visibility(
-                                  visible:
-                                      setCustomPrice ==
-                                      false,
-                                  child: SvgPicture.asset(
-                                    editIconSvg,
-                                    height: 20,
-                                  ),
-                                ),
-                                Visibility(
-                                  visible:
-                                      setCustomPrice ==
-                                      true,
-                                  child: Icon(Icons.clear),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+
                     SizedBox(height: 20),
                     Container(
                       decoration: BoxDecoration(
@@ -299,7 +228,38 @@ void selectOrderItemsBottomSheet({
                         ),
                         SmallButtonMain(
                           theme: theme,
-                          action: () {},
+                          action: () {
+                            if ((double.tryParse(
+                                      quantityController
+                                          .text
+                                          .replaceAll(
+                                            ',',
+                                            '',
+                                          ),
+                                    ) ??
+                                    0) >
+                                0) {
+                              OrderItems item =
+                                  orderItem.copyWith();
+                              item.useGroupQuantity =
+                                  isGroupTemp;
+                              item.quantity =
+                                  double.tryParse(
+                                    quantityController.text
+                                        .replaceAll(
+                                          ',',
+                                          '',
+                                        ),
+                                  ) ??
+                                  0;
+                              returnOrdersActionProvider()
+                                  .addItemToList(
+                                    item: item,
+                                  );
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                            }
+                          },
                           buttonText: 'Add Item',
                         ),
                       ],
@@ -376,24 +336,29 @@ void selectItemsForOrderDeliveryBottomSheet({
                           ),
                         ),
                       ),
-                      SizedBox(height: 30),
+                      SizedBox(height: 15),
+                      Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Select Items',
+                            style: TextStyle(
+                              fontSize:
+                                  returnTheme(
+                                    context,
+                                  ).mobileTexts.b1.fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 15),
                       Row(
                         mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
+                        spacing: 10,
                         children: [
-                          Expanded(
-                            child: Text(
-                              'Select Items',
-                              style: TextStyle(
-                                fontSize:
-                                    returnTheme(context)
-                                        .mobileTexts
-                                        .b1
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
                           Expanded(
                             child: SizedBox(
                               height: 30,
@@ -413,26 +378,84 @@ void selectItemsForOrderDeliveryBottomSheet({
                               ),
                             ),
                           ),
-                          Expanded(
-                            child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.end,
-                              children: [
-                                IconButton(
-                                  mouseCursor:
-                                      SystemMouseCursors
-                                          .click,
-                                  onPressed: () {
-                                    Navigator.of(
+                          InkWell(
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (firstContext) {
+                                  return ConfirmationAlert(
+                                    theme: returnTheme(
                                       context,
-                                    ).pop();
-                                    FocusScope.of(
-                                      context,
-                                    ).unfocus();
-                                  },
-                                  icon: Icon(Icons.check),
+                                      listen: false,
+                                    ),
+                                    message:
+                                        'You are about to Select All remaining items for delivery.',
+                                    title:
+                                        'Deliver All Items',
+                                    action: () {
+                                      Navigator.of(
+                                        firstContext,
+                                      ).pop();
+                                      returnOrdersActionProvider()
+                                          .addAllItemsToList(
+                                            items:
+                                                orderItems,
+                                          );
+                                      Navigator.of(
+                                        context,
+                                      ).pop();
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                            mouseCursor:
+                                SystemMouseCursors.click,
+                            borderRadius:
+                                BorderRadius.circular(5),
+                            child: Container(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    vertical: 6,
+                                    horizontal: 8,
+                                  ),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.grey,
+                                  width: 1,
                                 ),
-                              ],
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      3,
+                                    ),
+                              ),
+                              child: Text(
+                                'Select All',
+                                style: TextStyle(
+                                  fontSize:
+                                      returnTheme(context)
+                                          .mobileTexts
+                                          .b3
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          IconButton(
+                            mouseCursor:
+                                SystemMouseCursors.click,
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              FocusScope.of(
+                                context,
+                              ).unfocus();
+                            },
+                            icon: Icon(
+                              size: 18,
+                              Icons.clear,
                             ),
                           ),
                         ],
@@ -531,10 +554,7 @@ void selectItemsForOrderDeliveryBottomSheet({
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                           ),
-                                                          formatLargeNumberDouble(
-                                                            pro.remainingQuantity ??
-                                                                0,
-                                                          ),
+                                                          "${formatLargeNumberDouble(pro.remainingQuantity ?? 0)} ${pro.getUnit()}",
                                                         ),
                                                         Icon(
                                                           size:

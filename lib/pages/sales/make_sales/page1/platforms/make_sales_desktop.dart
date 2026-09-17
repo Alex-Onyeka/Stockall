@@ -1044,7 +1044,9 @@ class _MakeSalesDesktopState
                               0,
                               0,
                             ),
-                            padding: EdgeInsets.all(15),
+                            padding: EdgeInsets.symmetric(
+                              vertical: 10,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius:

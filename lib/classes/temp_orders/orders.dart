@@ -216,4 +216,14 @@ class Orders extends HiveObject {
       subStaffUuid: subStaffUuid ?? this.subStaffUuid,
     );
   }
+
+  OrderItems? getOrderItem({required OrderItems newItem}) {
+    return orderItems
+            .where((item) => item.uuid == newItem.uuid)
+            .isNotEmpty
+        ? orderItems
+            .where((item) => item.uuid == newItem.uuid)
+            .first
+        : null;
+  }
 }

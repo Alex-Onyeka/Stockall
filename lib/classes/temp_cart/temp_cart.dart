@@ -90,6 +90,9 @@ class TempCart extends HiveObject {
   @HiveField(26)
   String? orderUuidEdit;
 
+  @HiveField(27)
+  String? orderUuid;
+
   TempCart({
     required this.cartItems,
     this.isInvoice = false,
@@ -118,6 +121,7 @@ class TempCart extends HiveObject {
     required this.comment,
     required this.cartItemTypeIndex,
     required this.orderUuidEdit,
+    this.orderUuid,
   });
 
   List<TempCartItem> getCartItemsAll() {

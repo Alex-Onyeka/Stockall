@@ -27,7 +27,7 @@ class SmallButtonMain extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.symmetric(
             horizontal: 25,
-            vertical: 12,
+            vertical: 9,
           ),
 
           child: Row(

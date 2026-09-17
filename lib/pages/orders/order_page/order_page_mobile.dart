@@ -5,7 +5,6 @@ import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_orders/order_items.dart';
 import 'package:stockall/classes/temp_orders/orders.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
@@ -13,6 +12,8 @@ import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/pages/orders/order_list/order_list_page.dart';
+import 'package:stockall/pages/orders/order_page/components/order_item_list_tile_order_page.dart';
+import 'package:stockall/pages/orders/order_page/deliver_order_items/deliver_order_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -794,127 +795,11 @@ class _OrderPageMobileState extends State<OrderPageMobile> {
                                                   .map(
                                                     (
                                                       record,
-                                                    ) => Padding(
-                                                      padding: const EdgeInsets.only(
-                                                        top:
-                                                            15.0,
-                                                      ),
-                                                      child: Row(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment.start,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment.spaceBetween,
-                                                        spacing:
-                                                            10,
-                                                        children: [
-                                                          Expanded(
-                                                            flex:
-                                                                10,
-                                                            child: Column(
-                                                              spacing:
-                                                                  2,
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment.start,
-                                                              children: [
-                                                                Text(
-                                                                  style: TextStyle(
-                                                                    fontSize:
-                                                                        theme.mobileTexts.b3.fontSize,
-                                                                    fontWeight:
-                                                                        FontWeight.bold,
-                                                                  ),
-                                                                  record.productName,
-                                                                ),
-                                                                Row(
-                                                                  spacing:
-                                                                      3,
-                                                                  children: [
-                                                                    Text(
-                                                                      style: TextStyle(
-                                                                        fontSize:
-                                                                            theme.mobileTexts.b3.fontSize,
-                                                                        fontWeight:
-                                                                            FontWeight.normal,
-                                                                      ),
-                                                                      'Qtty: ',
-                                                                    ),
-                                                                    Text(
-                                                                      style: TextStyle(
-                                                                        fontSize:
-                                                                            theme.mobileTexts.b3.fontSize,
-                                                                        fontWeight:
-                                                                            FontWeight.bold,
-                                                                      ),
-                                                                      '[ ${formatLargeNumberDouble(record.quantity)} ]',
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex:
-                                                                5,
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment.start,
-                                                              children: [
-                                                                Text(
-                                                                  style: TextStyle(
-                                                                    fontSize:
-                                                                        theme.mobileTexts.b3.fontSize,
-                                                                    fontWeight:
-                                                                        FontWeight.bold,
-                                                                  ),
-                                                                  formatMoneyBig(
-                                                                    amount:
-                                                                        (order.fixedDiscount ==
-                                                                                        null &&
-                                                                                    order.generalDiscount ==
-                                                                                        null) &&
-                                                                                record.discount !=
-                                                                                    null
-                                                                            ? ((record.originalCost ??
-                                                                                    0) -
-                                                                                (record.discountedAmount ??
-                                                                                    0))
-                                                                            : (record.originalCost ??
-                                                                                0),
-                                                                    context:
-                                                                        context,
-                                                                  ),
-                                                                ),
-                                                                Visibility(
-                                                                  visible:
-                                                                      record.discount !=
-                                                                          null &&
-                                                                      !record.customPriceSet &&
-                                                                      (order.fixedDiscount ==
-                                                                              null &&
-                                                                          order.generalDiscount ==
-                                                                              null),
-                                                                  child: Text(
-                                                                    style: TextStyle(
-                                                                      decoration:
-                                                                          TextDecoration.lineThrough,
-                                                                      fontSize:
-                                                                          theme.mobileTexts.b4.fontSize,
-                                                                      fontWeight:
-                                                                          FontWeight.normal,
-                                                                    ),
-                                                                    formatMoneyMid(
-                                                                      amount:
-                                                                          record.originalCost!,
-                                                                      context:
-                                                                          context,
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
+                                                    ) => OrderItemListTileOrderPage(
+                                                      theme:
+                                                          theme,
+                                                      record:
+                                                          record,
                                                     ),
                                                   )
                                                   .toList(),
@@ -1563,440 +1448,87 @@ class _OrderPageMobileState extends State<OrderPageMobile> {
                                         SizedBox(
                                           height: 15,
                                         ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .spaceBetween,
-                                          spacing: 4,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b3
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              'Make Payment',
-                                            ),
-                                            Row(
-                                              spacing: 5,
-                                              children: [
-                                                InkWell(
-                                                  mouseCursor:
-                                                      SystemMouseCursors
-                                                          .click,
-                                                  onTap: () {
-                                                    selectPayment(
-                                                      1,
-                                                    );
-                                                  },
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                          4,
-                                                        ),
-                                                    child: Row(
-                                                      spacing:
-                                                          4,
-                                                      children: [
-                                                        Text(
-                                                          style: TextStyle(
-                                                            fontSize:
-                                                                theme.mobileTexts.b4.fontSize,
-                                                            fontWeight:
-                                                                paymentSelected ==
-                                                                        1
-                                                                    ? FontWeight.bold
-                                                                    : null,
-                                                          ),
-                                                          'Part',
-                                                        ),
-                                                        Container(
-                                                          padding: EdgeInsets.all(
-                                                            1.5,
-                                                          ),
-                                                          decoration: BoxDecoration(
-                                                            shape:
-                                                                BoxShape.circle,
-                                                            border: Border.all(
-                                                              color:
-                                                                  Colors.grey.shade400,
-                                                            ),
-                                                          ),
-                                                          child: Container(
-                                                            padding: EdgeInsets.all(
-                                                              3,
-                                                            ),
-                                                            decoration: BoxDecoration(
-                                                              shape:
-                                                                  BoxShape.circle,
-                                                              color:
-                                                                  paymentSelected ==
-                                                                          1
-                                                                      ? theme.lightModeColor.prColor250
-                                                                      : null,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
+                                        Ink(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(
+                                                  2,
                                                 ),
-                                                InkWell(
-                                                  mouseCursor:
-                                                      SystemMouseCursors
-                                                          .click,
-                                                  onTap: () {
-                                                    selectPayment(
-                                                      2,
-                                                    );
-                                                  },
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                          4,
-                                                        ),
-                                                    child: Row(
-                                                      spacing:
-                                                          4,
-                                                      children: [
-                                                        Text(
-                                                          style: TextStyle(
-                                                            fontSize:
-                                                                theme.mobileTexts.b4.fontSize,
-                                                            fontWeight:
-                                                                paymentSelected ==
-                                                                        2
-                                                                    ? FontWeight.bold
-                                                                    : null,
-                                                          ),
-                                                          'Full',
-                                                        ),
-                                                        Container(
-                                                          padding: EdgeInsets.all(
-                                                            1.5,
-                                                          ),
-                                                          decoration: BoxDecoration(
-                                                            shape:
-                                                                BoxShape.circle,
-                                                            border: Border.all(
-                                                              color:
-                                                                  Colors.grey.shade400,
-                                                            ),
-                                                          ),
-                                                          child: Container(
-                                                            padding: EdgeInsets.all(
-                                                              3,
-                                                            ),
-                                                            decoration: BoxDecoration(
-                                                              shape:
-                                                                  BoxShape.circle,
-                                                              color:
-                                                                  paymentSelected ==
-                                                                          2
-                                                                      ? theme.lightModeColor.prColor250
-                                                                      : null,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(
-                                                top: 10.0,
-                                              ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .center,
-                                            spacing: 5,
-                                            children: [
-                                              Expanded(
-                                                child: MoneyTextfield(
-                                                  onChanged: (
-                                                    value,
-                                                  ) {
-                                                    if ((double.tryParse(
-                                                              value.replaceAll(
-                                                                ',',
-                                                                '',
-                                                              ),
-                                                            ) ??
-                                                            0) >=
-                                                        returnOrdersProvider().getBalance(
-                                                          order:
-                                                              order,
-                                                        )) {
-                                                      paymentController
-                                                          .text = returnOrdersProvider()
-                                                          .getBalance(
-                                                            order:
-                                                                order,
-                                                          )
-                                                          .toStringAsFixed(
-                                                            0,
-                                                          );
-                                                      setState(() {
-                                                        paymentSelected =
-                                                            2;
-                                                      });
-                                                    }
-                                                    if ((double.tryParse(
-                                                              value.replaceAll(
-                                                                ',',
-                                                                '',
-                                                              ),
-                                                            ) ??
-                                                            0) <
-                                                        returnOrdersProvider().getBalance(
-                                                          order:
-                                                              order,
-                                                        )) {
-                                                      setState(() {
-                                                        paymentSelected =
-                                                            1;
-                                                      });
-                                                    }
-                                                  },
-                                                  showTitle:
-                                                      false,
-                                                  title:
-                                                      'Amount',
-                                                  hint:
-                                                      'Enter Amount',
-                                                  controller:
-                                                      paymentController,
-                                                  theme:
-                                                      theme,
-                                                  focusNode:
-                                                      paymentNode,
-                                                ),
-                                              ),
-                                              Ink(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                        2,
-                                                      ),
 
-                                                  gradient:
-                                                      theme
-                                                          .lightModeColor
-                                                          .prGradient,
-                                                ),
-                                                child: InkWell(
-                                                  mouseCursor:
-                                                      SystemMouseCursors
-                                                          .click,
-                                                  onTap: () {
-                                                    if (paymentController.text.isNotEmpty &&
-                                                        paymentController.text !=
-                                                            '0' &&
-                                                        !isLoading) {
-                                                      // showDialog(
-                                                      //   context:
-                                                      //       context,
-                                                      //   builder: (
-                                                      //     confirmDialog,
-                                                      //   ) {
-                                                      //     return ConfirmationAlert(
-                                                      //       theme:
-                                                      //           theme,
-                                                      //       message:
-                                                      //           'You are about to pay for an order. Are you sure you want to proceed?',
-                                                      //       title:
-                                                      //           'Make Payment',
-                                                      //       action: () async {
-                                                      //         Navigator.of(
-                                                      //           confirmDialog,
-                                                      //         ).pop();
-                                                      //         setState(
-                                                      //           () {
-                                                      //             isLoading =
-                                                      //                 true;
-                                                      //           },
-                                                      //         );
-                                                      //         var tempOrder = Orders(
-                                                      //           comment:
-                                                      //               order.comment,
-                                                      //           subStaffName:
-                                                      //               order.subStaffName,
-                                                      //           departmentUuid:
-                                                      //               order.departmentUuid,
-                                                      //           uuid:
-                                                      //               order.uuid,
-                                                      //           createdAt:
-                                                      //               order.createdAt,
-                                                      //           shopId:
-                                                      //               order.shopId,
-                                                      //           staffId:
-                                                      //               order.staffId,
-                                                      //           staffName:
-                                                      //               order.staffName,
-
-                                                      //           customerName:
-                                                      //               order.customerName,
-                                                      //           customerId:
-                                                      //               order.customerId,
-                                                      //           departmentName:
-                                                      //               order.departmentName,
-                                                      //           departmentUuid:
-                                                      //               order.departmentUuid,
-                                                      //           fixedDiscount:
-                                                      //               order.fixedDiscount,
-                                                      //           generalDiscount:
-                                                      //               order.generalDiscount,
-                                                      //           originalCost:
-                                                      //               order.originalCost,
-                                                      //           vat:
-                                                      //               order.vat,
-                                                      //           subStaffUuid:
-                                                      //               order.subStaffUuid,
-                                                      //           cartName:
-                                                      //               order.cartName,
-                                                      //         );
-
-                                                      //         var res = await returnOrdersProvider().makeOrderPayment(
-                                                      //           order:
-                                                      //               tempOrder,
-                                                      //           salesRecords:
-                                                      //               saleRecords,
-                                                      //           currentPayment:
-                                                      //               (double.tryParse(
-                                                      //                     paymentController.text.replaceAll(
-                                                      //                       ',',
-                                                      //                       '',
-                                                      //                     ),
-                                                      //                   ) ??
-                                                      //                   0),
-                                                      //         );
-
-                                                      //         if (res ==
-                                                      //             0) {
-                                                      //           setState(
-                                                      //             () {
-                                                      //               isLoading =
-                                                      //                   false;
-                                                      //             },
-                                                      //           );
-                                                      //           showDialog(
-                                                      //             // ignore: use_build_context_synchronously
-                                                      //             context:
-                                                      //                 context,
-                                                      //             builder: (
-                                                      //               popDialog,
-                                                      //             ) {
-                                                      //               return InfoAlert(
-                                                      //                 theme:
-                                                      //                     theme,
-                                                      //                 message:
-                                                      //                     'An Error Occoured while making this payment. Please try again.',
-                                                      //                 title:
-                                                      //                     'An Error Occoured',
-                                                      //               );
-                                                      //             },
-                                                      //           );
-                                                      //         } else {
-                                                      //           setState(
-                                                      //             () {
-                                                      //               isLoading =
-                                                      //                   false;
-                                                      //             },
-                                                      //           );
-                                                      //           actionResultDialog(
-                                                      //             // ignore: use_build_context_synchronously
-                                                      //             context:
-                                                      //                 context,
-                                                      //             isSuccess:
-                                                      //                 res ==
-                                                      //                         0
-                                                      //                     ? false
-                                                      //                     : true,
-                                                      //             message:
-                                                      //                 res ==
-                                                      //                         0
-                                                      //                     ? 'An error Occoured'
-                                                      //                     : 'Payment Successful',
-                                                      //           );
-                                                      //           if (context.mounted) {
-                                                      //             paymentController.clear();
-                                                      //           }
-                                                      //           setState(
-                                                      //             () {
-                                                      //               paymentSelected =
-                                                      //                   null;
-                                                      //             },
-                                                      //           );
-                                                      //         }
-                                                      //       },
-                                                      //     );
-                                                      //   },
-                                                      // );
-                                                    } else {
-                                                      paymentNode
-                                                          .requestFocus();
-                                                    }
-                                                  },
-                                                  child: Container(
-                                                    padding: EdgeInsets.symmetric(
-                                                      vertical:
-                                                          7.5,
-                                                      horizontal:
-                                                          25,
-                                                    ),
-                                                    child: Builder(
-                                                      builder: (
-                                                        context,
-                                                      ) {
-                                                        if (!isLoading) {
-                                                          return Text(
-                                                            style: TextStyle(
-                                                              fontSize:
-                                                                  theme.mobileTexts.b3.fontSize,
-                                                              color:
-                                                                  Colors.white,
-                                                            ),
-                                                            'Pay',
-                                                          );
-                                                        } else {
-                                                          return SizedBox(
-                                                            height:
-                                                                15,
-                                                            width:
-                                                                15,
-                                                            child: CircularProgressIndicator(
-                                                              color:
-                                                                  Colors.white,
-                                                              strokeWidth:
-                                                                  2,
-                                                            ),
-                                                          );
-                                                        }
-                                                      },
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
+                                            gradient:
+                                                theme
+                                                    .lightModeColor
+                                                    .prGradient,
                                           ),
-                                        ),
-                                        Visibility(
-                                          visible:
-                                              paymentSelected !=
-                                              null,
-                                          child: SizedBox(
-                                            height: 5,
+                                          child: InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    return DeliverOrdersPage(
+                                                      order:
+                                                          order,
+                                                    );
+                                                  },
+                                                ),
+                                              ).then((_) {
+                                                setState(
+                                                  () {},
+                                                );
+                                              });
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  EdgeInsets.symmetric(
+                                                    vertical:
+                                                        9,
+                                                    horizontal:
+                                                        25,
+                                                  ),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .center,
+                                                children: [
+                                                  Builder(
+                                                    builder: (
+                                                      context,
+                                                    ) {
+                                                      if (!isLoading) {
+                                                        return Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                theme.mobileTexts.b3.fontSize,
+                                                            color:
+                                                                Colors.white,
+                                                          ),
+                                                          'Deliver Items',
+                                                        );
+                                                      } else {
+                                                        return SizedBox(
+                                                          height:
+                                                              15,
+                                                          width:
+                                                              15,
+                                                          child: CircularProgressIndicator(
+                                                            color:
+                                                                Colors.white,
+                                                            strokeWidth:
+                                                                2,
+                                                          ),
+                                                        );
+                                                      }
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
                                           ),
                                         ),
                                         Divider(
@@ -2020,7 +1552,7 @@ class _OrderPageMobileState extends State<OrderPageMobile> {
                                                     FontWeight
                                                         .bold,
                                               ),
-                                              'Payment Records',
+                                              'Records',
                                             ),
                                           ],
                                         ),
