@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_orders/order_items.dart';
 import 'package:stockall/classes/temp_orders/orders.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
@@ -26,6 +27,18 @@ void selectOrderItemsBottomSheet({
   isGroupTemp = orderItem.useGroupQuantity ?? false;
   quantityController.text =
       (orderItem.remainingQuantity ?? 0).toString();
+
+  double? originalItemQuantity() {
+    var items = returnData().productListMain.where(
+      (item) => item.uuid == orderItem.productUuid,
+    );
+    if (items.isNotEmpty) {
+      var itemTemp = items.first;
+      return itemTemp.quantity;
+    } else {
+      return null;
+    }
+  }
 
   double amount() {
     return orderItem.calcQuantity(
@@ -120,6 +133,25 @@ void selectOrderItemsBottomSheet({
                           setState(() {
                             if (number >
                                 itemRemainingQuantity) {
+                              quantityController.text = '0';
+                            }
+                            if (originalItemQuantity() !=
+                                    null &&
+                                number >
+                                    (originalItemQuantity() ??
+                                        0)) {
+                              showDialog(
+                                context: context,
+                                builder: (errorContext) {
+                                  return InfoAlert(
+                                    theme: theme,
+                                    message:
+                                        'The Quantity you are trying to Deliver Exceeds Whats Left in your Stock: ${originalItemQuantity()}',
+                                    title:
+                                        'Insufficient Stock',
+                                  );
+                                },
+                              );
                               quantityController.text = '0';
                             }
                           });
@@ -396,11 +428,49 @@ void selectItemsForOrderDeliveryBottomSheet({
                                       Navigator.of(
                                         firstContext,
                                       ).pop();
-                                      returnOrdersActionProvider()
+                                      var res = returnOrdersActionProvider()
                                           .addAllItemsToList(
                                             items:
                                                 orderItems,
                                           );
+                                      if (res == 0) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    returnTheme(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    ).mobileTexts.b2.fontSize,
+                                              ),
+                                              'Some Items Were Not Added To Cart Because Their current Stock Amount is Less than The Delivery Amount',
+                                            ),
+                                            behavior:
+                                                SnackBarBehavior
+                                                    .floating,
+                                            backgroundColor:
+                                                returnTheme(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).lightModeColor.prColor300,
+                                            margin:
+                                                EdgeInsets.all(
+                                                  16,
+                                                ),
+                                            duration:
+                                                const Duration(
+                                                  seconds:
+                                                      5,
+                                                ),
+                                          ),
+                                        );
+                                      }
+
                                       Navigator.of(
                                         context,
                                       ).pop();

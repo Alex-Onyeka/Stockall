@@ -2595,10 +2595,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                   builder: (
                                                     context,
                                                   ) {
-                                                    return MakeSalesTwo(
-                                                      totalAmount:
-                                                          returnSalesProvider().calcFinalTotal(),
-                                                    );
+                                                    return MakeSalesTwo();
                                                   },
                                                 ),
                                               );

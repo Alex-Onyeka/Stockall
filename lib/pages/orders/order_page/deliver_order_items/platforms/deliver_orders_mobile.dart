@@ -7,12 +7,15 @@ import 'package:stockall/pages/orders/order_page/components/select_order_items_b
 import 'package:stockall/pages/orders/order_page/deliver_order_items/platforms/components/order_comment_widget.dart';
 import 'package:stockall/pages/orders/order_page/deliver_order_items/platforms/components/order_item_delivery_tile.dart';
 import 'package:stockall/pages/orders/order_page/deliver_order_items/platforms/components/total_row_orders_delivery.dart';
+import 'package:stockall/pages/orders/order_page/deliver_order_items/platforms/deliver_orders_desktop.dart';
 
 class DeliverOrdersMobile extends StatefulWidget {
   final Orders order;
   final TextEditingController searchController;
   final TextEditingController priceController;
   final TextEditingController quantityController;
+  final TextEditingController bankController;
+  final TextEditingController cashController;
 
   const DeliverOrdersMobile({
     super.key,
@@ -20,6 +23,8 @@ class DeliverOrdersMobile extends StatefulWidget {
     required this.searchController,
     required this.priceController,
     required this.quantityController,
+    required this.bankController,
+    required this.cashController,
   });
 
   @override
@@ -218,7 +223,13 @@ class DeliverOrdersMobileState
                           ),
                           child: Column(
                             children: [
-                              OrderCommentWidget(),
+                              OrderCommentWidget(
+                                order: widget.order,
+                                bankController:
+                                    widget.bankController,
+                                cashController:
+                                    widget.cashController,
+                              ),
                               TotalRowOrdersDelivery(
                                 priceController:
                                     widget.priceController,
@@ -226,7 +237,21 @@ class DeliverOrdersMobileState
                               MainButtonP(
                                 themeProvider: theme,
                                 action: () {
-                                  // checkFields();
+                                  checkFields(
+                                    bankController:
+                                        widget
+                                            .bankController,
+                                    cashController:
+                                        widget
+                                            .cashController,
+                                    context: context,
+                                    order: widget.order,
+                                    toggleLoading: () {
+                                      setState(() {
+                                        isLoading = true;
+                                      });
+                                    },
+                                  );
                                 },
                                 text: 'Create Delivery',
                               ),

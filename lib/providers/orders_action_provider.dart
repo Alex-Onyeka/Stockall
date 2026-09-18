@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_orders/order_items.dart';
+import 'package:stockall/main.dart';
 
 class OrdersActionProvider extends ChangeNotifier {
   static final OrdersActionProvider _instance =
@@ -15,6 +17,7 @@ class OrdersActionProvider extends ChangeNotifier {
   void clearAll() {
     orderListItems.clear();
     comment = null;
+    paymentOption = 1;
     customTotalAmount = null;
     notifyListeners();
   }
@@ -31,13 +34,25 @@ class OrdersActionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addAllItemsToList({
-    required List<OrderItems> items,
-  }) {
+  int addAllItemsToList({required List<OrderItems> items}) {
+    var value = 1;
     for (var item in items) {
-      addItemToList(item: item);
+      var products = returnData().productListMain.where(
+        (it) => it.uuid == item.productUuid,
+      );
+      if (products.isNotEmpty) {
+        var pr = products.first;
+        if ((pr.quantity ?? 0) > item.getActualQuantity()) {
+          addItemToList(item: item);
+        } else {
+          value = 0;
+        }
+      } else {
+        addItemToList(item: item);
+      }
     }
     notifyListeners();
+    return value;
   }
 
   void removeItemFromList({required OrderItems item}) {
@@ -67,5 +82,25 @@ class OrdersActionProvider extends ChangeNotifier {
   void setComment({required String? newComment}) {
     comment = newComment;
     notifyListeners();
+  }
+
+  int paymentOption = 1;
+
+  void changePaymentOptions(int index) {
+    paymentOption = index;
+    notifyListeners();
+  }
+
+  bool isBalanceSufficient(String customerUuid) {
+    List<TempCustomersClass> customers =
+        returnCustomersSingle().customers
+            .where((item) => item.uuid == customerUuid)
+            .toList();
+    if (customers.isNotEmpty) {
+      var customer = customers.first;
+      return customer.getBalance() >= totalOrdersAmount();
+    } else {
+      return false;
+    }
   }
 }

@@ -1146,10 +1146,8 @@ class _OrderPageDesktopState
                                                       //         .green,
                                                     ),
                                                     formatMoneyMid(
-                                                      amount: returnOrdersProvider().getBalance(
-                                                        order:
-                                                            order,
-                                                      ),
+                                                      amount:
+                                                          order.getCalculatedRemainingBalance(),
                                                       context:
                                                           context,
                                                     ),
@@ -1173,22 +1171,10 @@ class _OrderPageDesktopState
                                                   ),
                                               border: Border.all(
                                                 color:
-                                                    returnOrdersProvider(
-                                                              context:
-                                                                  context,
-                                                            ).getOrderStatus(
-                                                              order:
-                                                                  order,
-                                                            ) ==
+                                                    order.getOrderStatus() ==
                                                             0
                                                         ? Colors.red
-                                                        : returnOrdersProvider(
-                                                              context:
-                                                                  context,
-                                                            ).getOrderStatus(
-                                                              order:
-                                                                  order,
-                                                            ) ==
+                                                        : order.getOrderStatus() ==
                                                             1
                                                         ? const Color.fromARGB(
                                                           255,
@@ -1210,22 +1196,10 @@ class _OrderPageDesktopState
                                                     FontWeight
                                                         .bold,
                                                 color:
-                                                    returnOrdersProvider(
-                                                              context:
-                                                                  context,
-                                                            ).getOrderStatus(
-                                                              order:
-                                                                  order,
-                                                            ) ==
+                                                    order.getOrderStatus() ==
                                                             0
                                                         ? Colors.red
-                                                        : returnOrdersProvider(
-                                                              context:
-                                                                  context,
-                                                            ).getOrderStatus(
-                                                              order:
-                                                                  order,
-                                                            ) ==
+                                                        : order.getOrderStatus() ==
                                                             1
                                                         ? const Color.fromARGB(
                                                           255,
@@ -1235,22 +1209,10 @@ class _OrderPageDesktopState
                                                         )
                                                         : Colors.green,
                                               ),
-                                              returnOrdersProvider(
-                                                        context:
-                                                            context,
-                                                      ).getOrderStatus(
-                                                        order:
-                                                            order,
-                                                      ) ==
+                                              order.getOrderStatus() ==
                                                       0
                                                   ? 'Unpaid'
-                                                  : returnOrdersProvider(
-                                                        context:
-                                                            context,
-                                                      ).getOrderStatus(
-                                                        order:
-                                                            order,
-                                                      ) ==
+                                                  : order.getOrderStatus() ==
                                                       1
                                                   ? 'Partial'
                                                   : 'Paid',

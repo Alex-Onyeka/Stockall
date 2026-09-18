@@ -2940,11 +2940,7 @@ class _MakeSalesDesktopState
                                             builder: (
                                               context,
                                             ) {
-                                              return MakeSalesTwo(
-                                                totalAmount:
-                                                    returnSalesProvider()
-                                                        .calcFinalTotal(),
-                                              );
+                                              return MakeSalesTwo();
                                             },
                                           ),
                                         ).then((_) {

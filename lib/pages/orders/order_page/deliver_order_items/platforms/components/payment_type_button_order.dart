@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
+import 'package:stockall/classes/temp_orders/orders.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
@@ -9,60 +10,50 @@ import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_account_details_section_widget.dart';
 
-class PaymentTypeButton extends StatefulWidget {
+class PaymentTypeButtonOrder extends StatefulWidget {
   final int index;
+  final Orders order;
   final Function()? action;
-  const PaymentTypeButton({
+  final TextEditingController cashController;
+  final TextEditingController bankController;
+
+  const PaymentTypeButtonOrder({
     super.key,
     required this.index,
+    required this.order,
+    required this.cashController,
+    required this.bankController,
     this.action,
   });
 
   @override
-  State<PaymentTypeButton> createState() =>
-      _PaymentTypeButtonState();
+  State<PaymentTypeButtonOrder> createState() =>
+      _PaymentTypeButtonOrderState();
 }
 
-class _PaymentTypeButtonState
-    extends State<PaymentTypeButton> {
+class _PaymentTypeButtonOrderState
+    extends State<PaymentTypeButtonOrder> {
   TextEditingController topUpController =
       TextEditingController();
   @override
   Widget build(BuildContext context) {
     TempCustomersClass? customersClass;
     if (widget.index == 3) {
-      if (returnSalesProviderContext(
-            context,
-          ).currentCart().selectedCustomer !=
-          null) {
-        var customerUuid =
-            returnSalesProviderContext(
-              context,
-            ).currentCart().selectedCustomer;
-        List<TempCustomersClass> customers =
-            returnCustomersSingle().customers
-                .where((item) => item.uuid == customerUuid)
-                .toList();
-        if (customers.isNotEmpty) {
-          customersClass = customers.first;
-        }
+      var customerUuid = widget.order.customerId;
+      List<TempCustomersClass> customers =
+          returnCustomersSingle().customers
+              .where((item) => item.uuid == customerUuid)
+              .toList();
+      if (customers.isNotEmpty) {
+        customersClass = customers.first;
       }
     }
     var theme = returnTheme(context);
     void selectOptionAction() {
-      if (returnSalesProvider()
-                  .currentCart()
-                  .cartItemTypeIndex ==
-              2 &&
-          (widget.index == 2 || widget.index == 3)) {
-        return;
-      } else {
-        returnSalesProvider().changePaymentMethod(
-          index: widget.index,
-          context: context,
-        );
-        widget.action != null ? widget.action!() : {};
-      }
+      returnOrdersActionProvider().changePaymentOptions(
+        widget.index,
+      );
+      widget.action != null ? widget.action!() : {};
     }
 
     return Column(
@@ -107,16 +98,6 @@ class _PaymentTypeButtonState
                                       .b3
                                       .fontSize,
                               fontWeight: FontWeight.bold,
-                              color:
-                                  returnSalesProviderContext(
-                                                    context,
-                                                  )
-                                                  .currentCart()
-                                                  .cartItemTypeIndex ==
-                                              2 &&
-                                          widget.index == 2
-                                      ? Colors.grey
-                                      : null,
                             ),
                             "${returnSalesProviderContext(context).returnPaymentMethodSalesPage(widget.index)['method']}${customersClass != null ? " (${formatMoneyBig(amount: customersClass.getBalance(), context: context)})" : ''}",
                           ),
@@ -129,17 +110,9 @@ class _PaymentTypeButtonState
                                       .fontSize,
                               fontWeight: FontWeight.normal,
                               color:
-                                  returnSalesProviderContext(
-                                                    context,
-                                                  )
-                                                  .currentCart()
-                                                  .cartItemTypeIndex ==
-                                              2 &&
-                                          widget.index == 2
-                                      ? Colors.grey
-                                      : theme
-                                          .lightModeColor
-                                          .secColor200,
+                                  theme
+                                      .lightModeColor
+                                      .secColor200,
                             ),
                             returnSalesProviderContext(
                               context,
@@ -151,17 +124,7 @@ class _PaymentTypeButtonState
                       ),
                       Checkbox(
                         activeColor:
-                            returnSalesProviderContext(
-                                              context,
-                                            )
-                                            .currentCart()
-                                            .cartItemTypeIndex ==
-                                        2 &&
-                                    widget.index == 2
-                                ? Colors.grey
-                                : theme
-                                    .lightModeColor
-                                    .prColor250,
+                            theme.lightModeColor.prColor250,
                         shape: CircleBorder(
                           side: BorderSide(),
                         ),
@@ -173,9 +136,9 @@ class _PaymentTypeButtonState
                                   .secColor200,
                         ),
                         value:
-                            returnSalesProviderContext(
-                              context,
-                            ).currentCart().paymentMethod ==
+                            returnOrdersActionProvider(
+                              context: context,
+                            ).paymentOption ==
                             widget.index,
                         onChanged: (value) {
                           selectOptionAction();
@@ -191,13 +154,15 @@ class _PaymentTypeButtonState
         Visibility(
           visible:
               widget.index == 3 &&
-              returnSalesProviderContext(
-                    context,
-                  ).currentCart().paymentMethod ==
+              returnOrdersActionProvider(
+                    context: context,
+                  ).paymentOption ==
                   3 &&
-              !returnSalesProviderContext(
-                context,
-              ).isBalanceSufficient(),
+              !returnOrdersActionProvider(
+                context: context,
+              ).isBalanceSufficient(
+                customersClass?.uuid ?? '',
+              ),
           child: Container(
             padding: EdgeInsetsGeometry.only(
               top: 10,
@@ -256,20 +221,14 @@ class _PaymentTypeButtonState
                             theme: theme,
                             autoFocus: true,
                             onSubmitted: (p0) async {
-                              if (returnSalesProvider()
-                                      .currentCart()
-                                      .getCustomer() !=
-                                  null) {
+                              if (customersClass != null) {
                                 await topUpAction(
                                   popSecondContext: false,
                                   context: context,
                                   theme: theme,
                                   moneyTextField:
                                       topUpController,
-                                  customer:
-                                      returnSalesProvider()
-                                          .currentCart()
-                                          .getCustomer()!,
+                                  customer: customersClass,
                                 );
                                 widget.action != null
                                     ? widget.action!()
@@ -298,20 +257,14 @@ class _PaymentTypeButtonState
                             mouseCursor:
                                 SystemMouseCursors.click,
                             onTap: () async {
-                              if (returnSalesProvider()
-                                      .currentCart()
-                                      .getCustomer() !=
-                                  null) {
+                              if (customersClass != null) {
                                 await topUpAction(
                                   popSecondContext: false,
                                   context: context,
                                   theme: theme,
                                   moneyTextField:
                                       topUpController,
-                                  customer:
-                                      returnSalesProvider()
-                                          .currentCart()
-                                          .getCustomer()!,
+                                  customer: customersClass,
                                 );
                                 widget.action != null
                                     ? widget.action!()
@@ -352,159 +305,25 @@ class _PaymentTypeButtonState
   }
 }
 
-class PaymentTypeDropdown extends StatefulWidget {
-  final TextEditingController cashController;
-  final TextEditingController bankController;
-  const PaymentTypeDropdown({
-    super.key,
-    required this.bankController,
-    required this.cashController,
-  });
-
-  @override
-  State<PaymentTypeDropdown> createState() =>
-      _PaymentTypeDropdownState();
-}
-
-class _PaymentTypeDropdownState
-    extends State<PaymentTypeDropdown> {
-  bool isOpen = false;
-
-  void toggleIsOpen() {
-    setState(() {
-      isOpen = !isOpen;
-    });
-  }
-
-  bool isUpdating = false;
-
-  @override
-  Widget build(BuildContext context) {
-    TempCustomersClass? customersClass;
-    if (returnSalesProviderContext(
-          context,
-        ).currentCart().paymentMethod ==
-        3) {
-      if (returnSalesProviderContext(
-            context,
-          ).currentCart().selectedCustomer !=
-          null) {
-        var customerUuid =
-            returnSalesProviderContext(
-              context,
-            ).currentCart().selectedCustomer;
-        List<TempCustomersClass> customers =
-            returnCustomersSingle().customers
-                .where((item) => item.uuid == customerUuid)
-                .toList();
-        if (customers.isNotEmpty) {
-          customersClass = customers.first;
-        }
-      }
-    }
-    var theme = returnTheme(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5.0),
-      child: Column(
-        children: [
-          Ink(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(
-                color: Colors.grey.shade300,
-              ),
-            ),
-            child: InkWell(
-              mouseCursor: SystemMouseCursors.click,
-              onTap: () {
-                toggleIsOpen();
-              },
-              child: SizedBox(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    20,
-                    7,
-                    10,
-                    7,
-                  ),
-                  child: Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            "${returnSalesProviderContext(context).returnPaymentMethodSalesPage(returnSalesProviderContext(context).currentCart().paymentMethod)['method']}${customersClass != null ? " (${formatMoneyBig(amount: customersClass.getBalance(), context: context)})" : ''}",
-                          ),
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b4
-                                      .fontSize,
-                              fontWeight: FontWeight.normal,
-                            ),
-                            returnSalesProviderContext(
-                              context,
-                            ).selectedPaymentMethod()['subText'],
-                          ),
-                        ],
-                      ),
-                      Icon(
-                        size: 30,
-                        isOpen
-                            ? Icons
-                                .keyboard_arrow_up_rounded
-                            : Icons
-                                .keyboard_arrow_down_rounded,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: isOpen,
-            child: PaymentMethodSection(
-              bankController: widget.bankController,
-              cashController: widget.cashController,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class PaymentMethodSection extends StatefulWidget {
+class PaymentMethodSectionOrder extends StatefulWidget {
+  final Orders order;
   final TextEditingController cashController;
   final TextEditingController bankController;
 
-  const PaymentMethodSection({
+  const PaymentMethodSectionOrder({
     super.key,
     required this.cashController,
     required this.bankController,
+    required this.order,
   });
 
   @override
-  State<PaymentMethodSection> createState() =>
-      _PaymentMethodSectionState();
+  State<PaymentMethodSectionOrder> createState() =>
+      _PaymentMethodSectionOrderState();
 }
 
-class _PaymentMethodSectionState
-    extends State<PaymentMethodSection> {
+class _PaymentMethodSectionOrderState
+    extends State<PaymentMethodSectionOrder> {
   bool isUpdating = false;
   @override
   Widget build(BuildContext context) {
@@ -526,8 +345,28 @@ class _PaymentMethodSectionState
               ],
             ),
             SizedBox(height: 5),
-            PaymentTypeButton(index: 0),
-            PaymentTypeButton(index: 1),
+            PaymentTypeButtonOrder(
+              bankController: widget.bankController,
+              cashController: widget.cashController,
+              order: widget.order,
+              index: 0,
+              action: () {
+                widget.cashController.clear();
+                widget.bankController.clear();
+                setState(() {});
+              },
+            ),
+            PaymentTypeButtonOrder(
+              bankController: widget.bankController,
+              cashController: widget.cashController,
+              order: widget.order,
+              index: 1,
+              action: () {
+                widget.cashController.clear();
+                widget.bankController.clear();
+                setState(() {});
+              },
+            ),
             Visibility(
               visible:
                   GeneralSettingsAuthAction()
@@ -539,31 +378,45 @@ class _PaymentMethodSectionState
                           .userShop()
                           ?.manageCustomerAccount ==
                       true &&
-                  returnSalesProviderContext(
-                        context,
-                      ).currentCart().selectedCustomer !=
-                      null &&
+                  widget.order.customerId != null &&
                   authorization(
                     authorized:
                         Authorizations()
                             .makeSalesFromCustomersAccount,
                   ),
-              child: PaymentTypeButton(
+              child: PaymentTypeButtonOrder(
+                bankController: widget.bankController,
+                cashController: widget.cashController,
+                order: widget.order,
                 index: 3,
                 action: () {
+                  widget.cashController.clear();
+                  widget.bankController.clear();
                   setState(() {});
                 },
               ),
             ),
-            PaymentTypeButton(index: 2),
+            PaymentTypeButtonOrder(
+              bankController: widget.bankController,
+              cashController: widget.cashController,
+              order: widget.order,
+              index: 2,
+              action: () {
+                widget.cashController.text =
+                    returnOrdersActionProvider()
+                        .totalOrdersAmount()
+                        .toString();
+                widget.bankController.clear();
+              },
+            ),
           ],
         ),
         SizedBox(height: 20),
         Visibility(
           visible:
-              returnSalesProviderContext(
-                context,
-              ).currentCart().paymentMethod ==
+              returnOrdersActionProvider(
+                context: context,
+              ).paymentOption ==
               2,
           child: SizedBox(
             // width: 300,
@@ -590,8 +443,8 @@ class _PaymentMethodSectionState
                           ) ??
                           0;
                       if (cash >
-                          returnSalesProvider()
-                              .calcFinalTotal()) {
+                          returnOrdersActionProvider()
+                              .totalOrdersAmount()) {
                         showDialog(
                           context: context,
                           builder: (context) {
@@ -604,16 +457,15 @@ class _PaymentMethodSectionState
                           },
                         );
                         // Reset to max allowed
-                        widget
-                            .cashController
-                            .text = returnSalesProvider()
-                            .calcFinalTotal()
-                            .toStringAsFixed(2);
+                        widget.cashController.text =
+                            returnOrdersActionProvider()
+                                .totalOrdersAmount()
+                                .toStringAsFixed(2);
                         widget.bankController.text = '0.00';
                       } else {
                         double bank =
-                            returnSalesProvider()
-                                .calcFinalTotal() -
+                            returnOrdersActionProvider()
+                                .totalOrdersAmount() -
                             cash;
                         widget.bankController.text = bank
                             .toStringAsFixed(2);
@@ -641,8 +493,8 @@ class _PaymentMethodSectionState
                           ) ??
                           0;
                       if (bank >
-                          returnSalesProvider()
-                              .calcFinalTotal()) {
+                          returnOrdersActionProvider()
+                              .totalOrdersAmount()) {
                         showDialog(
                           context: context,
                           builder: (context) {
@@ -654,16 +506,15 @@ class _PaymentMethodSectionState
                             );
                           },
                         );
-                        widget
-                            .bankController
-                            .text = returnSalesProvider()
-                            .calcFinalTotal()
-                            .toStringAsFixed(2);
+                        widget.bankController.text =
+                            returnOrdersActionProvider()
+                                .totalOrdersAmount()
+                                .toStringAsFixed(2);
                         widget.cashController.text = '0.00';
                       } else {
                         double cash =
-                            returnSalesProvider()
-                                .calcFinalTotal() -
+                            returnOrdersActionProvider()
+                                .totalOrdersAmount() -
                             bank;
                         widget.cashController.text = cash
                             .toStringAsFixed(2);

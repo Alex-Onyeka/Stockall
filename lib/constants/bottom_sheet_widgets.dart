@@ -2133,60 +2133,6 @@ void selectProductSales({
   qttyNode.requestFocus();
 
   String formatSellingPrice(TempCartItem cartItem) {
-    // if (isEdit) {
-    //   if (useGroupQuantityTemp == true) {
-    //     if (useWholeSalePriceTemp) {
-    //       return ((qqty * cartItem.getQttyPerGroup()) *
-    //               (cartItem.getItem()?.wholeSalePrice ?? 0))
-    //           .toString();
-    //     } else if (priceController.text.isNotEmpty) {
-    //       if (returnSalesProvider().setTotalPrice) {
-    //         return priceController.text.replaceAll(',', '');
-    //       } else {
-    //         return (double.parse(
-    //                   priceController.text.isNotEmpty
-    //                       ? priceController.text.replaceAll(
-    //                         ',',
-    //                         '',
-    //                       )
-    //                       : '0',
-    //                 ) *
-    //                 (qqty.toDouble() *
-    //                     cartItem.getQttyPerGroup()))
-    //             .toString();
-    //       }
-    //     } else {
-    //       return ((qqty * cartItem.getQttyPerGroup()) *
-    //               (cartItem.getItem()?.sellingPrice ?? 0))
-    //           .toString();
-    //     }
-    //   } else {
-    //     if (useWholeSalePriceTemp) {
-    //       return (qqty *
-    //               (cartItem.getItem()?.wholeSalePrice ?? 0))
-    //           .toString();
-    //     } else if (priceController.text.isNotEmpty) {
-    //       if (returnSalesProvider().setTotalPrice) {
-    //         return priceController.text.replaceAll(',', '');
-    //       } else {
-    //         return (double.parse(
-    //                   priceController.text.isNotEmpty
-    //                       ? priceController.text.replaceAll(
-    //                         ',',
-    //                         '',
-    //                       )
-    //                       : '0',
-    //                 ) *
-    //                 qqty.toDouble())
-    //             .toString();
-    //       }
-    //     } else {
-    //       return (qqty *
-    //               (cartItem.getItem()?.sellingPrice ?? 0))
-    //           .toString();
-    //     }
-    //   }
-    // } else {
     if (useGroupQuantityTemp) {
       if (useWholeSalePriceTemp) {
         return ((qqty * cartItem.getQttyPerGroup()) *

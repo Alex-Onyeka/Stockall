@@ -236,18 +236,18 @@ class InvoicesProvider extends ChangeNotifier {
     TempInvoice invoice,
     List<String> productNames,
   ) async {
-    if (returnReceiptProviderSingle().receipts
-        .where((rec) => rec.invoiceUuid == invoice.uuid)
-        .isEmpty) {
-      return await deleteInvoiceAndUpdateInventory(
-        invoice,
-        productNames,
-      );
-    } else {
-      return await deleteInvoiceWithoutUpdatingInventory(
-        invoice.uuid!,
-      );
-    }
+    // if (returnReceiptProviderSingle().receipts
+    //     .where((rec) => rec.invoiceUuid == invoice.uuid)
+    //     .isEmpty) {
+    return await deleteInvoiceAndUpdateInventory(
+      invoice,
+      productNames,
+    );
+    // } else {
+    //   return await deleteInvoiceWithoutUpdatingInventory(
+    //     invoice.uuid!,
+    //   );
+    // }
   }
 
   Future<int> deleteInvoiceAndUpdateInventory(
@@ -384,6 +384,7 @@ class InvoicesProvider extends ChangeNotifier {
 
       TempMainReceipt receipt = TempMainReceipt(
         orderUuid: null,
+        salesTypeIndex: 2,
         comment: null,
         subStaffName: invoice.subStaffName,
         createdAt: createdAt,

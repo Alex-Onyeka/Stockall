@@ -92,6 +92,9 @@ class TempMainReceipt extends HiveObject {
   @HiveField(28)
   String? orderUuid;
 
+  @HiveField(29)
+  int? salesTypeIndex;
+
   TempMainReceipt({
     this.id,
     this.barcode,
@@ -121,7 +124,8 @@ class TempMainReceipt extends HiveObject {
     required this.subStaffName,
     required this.comment,
     required this.customerAccount,
-    required this.orderUuid,
+    this.orderUuid,
+    required this.salesTypeIndex,
   });
 
   factory TempMainReceipt.fromJson(
@@ -163,6 +167,7 @@ class TempMainReceipt extends HiveObject {
       customerAccount:
           (json['customer_account'] as num?)?.toDouble(),
       orderUuid: json['order_uuid'] as String?,
+      salesTypeIndex: json['sale_type_index'] as int?,
     );
   }
 
@@ -197,6 +202,7 @@ class TempMainReceipt extends HiveObject {
       'comment': comment,
       'customer_account': customerAccount,
       'order_uuid': orderUuid,
+      'sale_type_index': salesTypeIndex,
     };
   }
 
@@ -230,6 +236,7 @@ class TempMainReceipt extends HiveObject {
     String? comment,
     double? customerAccount,
     String? orderUuid,
+    int? salesTypeIndex,
   }) {
     return TempMainReceipt(
       id: id ?? this.id,
@@ -264,6 +271,7 @@ class TempMainReceipt extends HiveObject {
       customerAccount:
           customerAccount ?? this.customerAccount,
       orderUuid: orderUuid ?? this.orderUuid,
+      salesTypeIndex: salesTypeIndex ?? this.salesTypeIndex,
     );
   }
 
@@ -278,6 +286,10 @@ class TempMainReceipt extends HiveObject {
             ?.customerPercentageReward ??
         0;
     return (getTotalRevenue() * (value / 100));
+  }
+
+  int getSalesTypeIndex() {
+    return salesTypeIndex ?? 1;
   }
 }
 

@@ -12,9 +12,11 @@ class DialogTemplate extends StatelessWidget {
   final Widget widget;
   final String? actionButtonText;
   final bool? showBottomActionButtons;
+  final bool? showMainBottomActionButton;
   final bool? showTopSection;
   final Widget? topRightWidget;
   final Widget? topLeftWidget;
+  final String? cancelText;
   const DialogTemplate({
     super.key,
     required this.theme,
@@ -25,9 +27,11 @@ class DialogTemplate extends StatelessWidget {
     required this.widget,
     this.actionButtonText,
     this.showBottomActionButtons,
+    this.showMainBottomActionButton,
     this.showTopSection,
     this.topRightWidget,
     this.topLeftWidget,
+    this.cancelText,
   });
 
   @override
@@ -140,7 +144,6 @@ class DialogTemplate extends StatelessWidget {
               child: Column(
                 children: [
                   Row(
-                    spacing: 15,
                     mainAxisAlignment:
                         MainAxisAlignment.center,
                     children: [
@@ -182,47 +185,59 @@ class DialogTemplate extends StatelessWidget {
                                             .grey
                                             .shade800,
                                   ),
-                                  'Cancel',
+                                  cancelText ?? 'Cancel',
                                 ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                      Expanded(
-                        child: Ink(
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(5),
-                            color:
-                                theme
-                                    .lightModeColor
-                                    .errorColor200,
-                          ),
-                          child: InkWell(
-                            mouseCursor:
-                                SystemMouseCursors.click,
-                            onTap: action,
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 10,
-                              ),
+                      Visibility(
+                        visible:
+                            showMainBottomActionButton !=
+                            false,
+                        child: SizedBox(width: 15),
+                      ),
+                      Visibility(
+                        visible:
+                            showMainBottomActionButton !=
+                            false,
+                        child: Expanded(
+                          child: Ink(
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.circular(5),
+                              color:
+                                  theme
+                                      .lightModeColor
+                                      .errorColor200,
+                            ),
+                            child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
+                              onTap: action,
+                              child: Container(
+                                padding:
+                                    EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 10,
+                                    ),
 
-                              child: Center(
-                                child: Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
-                                    color: Colors.white,
+                                child: Center(
+                                  child: Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                    actionButtonText ??
+                                        'Proceed',
                                   ),
-                                  actionButtonText ??
-                                      'Proceed',
                                 ),
                               ),
                             ),

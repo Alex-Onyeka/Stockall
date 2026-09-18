@@ -46,8 +46,8 @@ class _OrderPageMobileState extends State<OrderPageMobile> {
                     inv.uuid ==
                     widget.checkoutResponse.order?.uuid,
               );
-          paymentController.text = returnOrdersProvider()
-              .getBalance(order: order)
+          paymentController.text = order
+              .getCalculatedRemainingBalance()
               .toStringAsFixed(0);
         }
         paymentNode.requestFocus();
@@ -1191,10 +1191,8 @@ class _OrderPageMobileState extends State<OrderPageMobile> {
                                                               //         .green,
                                                             ),
                                                             formatMoneyMid(
-                                                              amount: returnOrdersProvider().getBalance(
-                                                                order:
-                                                                    order,
-                                                              ),
+                                                              amount:
+                                                                  order.getCalculatedRemainingBalance(),
                                                               context:
                                                                   context,
                                                             ),
@@ -1217,22 +1215,10 @@ class _OrderPageMobileState extends State<OrderPageMobile> {
                                                           ),
                                                       border: Border.all(
                                                         color:
-                                                            returnOrdersProvider(
-                                                                      context:
-                                                                          context,
-                                                                    ).getOrderStatus(
-                                                                      order:
-                                                                          order,
-                                                                    ) ==
+                                                            order.getOrderStatus() ==
                                                                     0
                                                                 ? Colors.red
-                                                                : returnOrdersProvider(
-                                                                      context:
-                                                                          context,
-                                                                    ).getOrderStatus(
-                                                                      order:
-                                                                          order,
-                                                                    ) ==
+                                                                : order.getOrderStatus() ==
                                                                     1
                                                                 ? const Color.fromARGB(
                                                                   255,
@@ -1250,22 +1236,10 @@ class _OrderPageMobileState extends State<OrderPageMobile> {
                                                         fontWeight:
                                                             FontWeight.bold,
                                                         color:
-                                                            returnOrdersProvider(
-                                                                      context:
-                                                                          context,
-                                                                    ).getOrderStatus(
-                                                                      order:
-                                                                          order,
-                                                                    ) ==
+                                                            order.getOrderStatus() ==
                                                                     0
                                                                 ? Colors.red
-                                                                : returnOrdersProvider(
-                                                                      context:
-                                                                          context,
-                                                                    ).getOrderStatus(
-                                                                      order:
-                                                                          order,
-                                                                    ) ==
+                                                                : order.getOrderStatus() ==
                                                                     1
                                                                 ? const Color.fromARGB(
                                                                   255,
@@ -1275,22 +1249,10 @@ class _OrderPageMobileState extends State<OrderPageMobile> {
                                                                 )
                                                                 : Colors.green,
                                                       ),
-                                                      returnOrdersProvider(
-                                                                context:
-                                                                    context,
-                                                              ).getOrderStatus(
-                                                                order:
-                                                                    order,
-                                                              ) ==
+                                                      order.getOrderStatus() ==
                                                               0
                                                           ? 'Unpaid'
-                                                          : returnOrdersProvider(
-                                                                context:
-                                                                    context,
-                                                              ).getOrderStatus(
-                                                                order:
-                                                                    order,
-                                                              ) ==
+                                                          : order.getOrderStatus() ==
                                                               1
                                                           ? 'Partial'
                                                           : 'Paid',

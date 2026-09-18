@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_orders/orders.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/orders/order_page/deliver_order_items/platforms/components/payment_type_button_order.dart';
 
 class OrderCommentWidget extends StatefulWidget {
-  const OrderCommentWidget({super.key});
+  final TextEditingController cashController;
+  final TextEditingController bankController;
+  final Orders order;
+  const OrderCommentWidget({
+    super.key,
+    required this.order,
+    required this.cashController,
+    required this.bankController,
+  });
 
   @override
   State<OrderCommentWidget> createState() =>
@@ -16,7 +28,6 @@ class OrderCommentWidget extends StatefulWidget {
 class _OrderCommentWidgetState
     extends State<OrderCommentWidget> {
   final commentController = TextEditingController();
-
   bool isOpen = false;
 
   void toggleIsOpen() {
@@ -35,69 +46,162 @@ class _OrderCommentWidgetState
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Material(
-              type: MaterialType.transparency,
-              child: InkWell(
-                onTap: () {
-                  toggleIsOpen();
-                },
-                mouseCursor: SystemMouseCursors.click,
-                child: Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        spacing: 3,
-                        children: [
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
+            Row(
+              spacing: 5,
+              children: [
+                Expanded(
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: InkWell(
+                      onTap: () {
+                        toggleIsOpen();
+                      },
+                      mouseCursor: SystemMouseCursors.click,
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Row(
+                                spacing: 3,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'Comment:',
+                                  ),
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b4
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.normal,
+                                      fontStyle:
+                                          FontStyle.italic,
+                                    ),
+                                    cutLongText(
+                                      returnOrdersActionProvider(
+                                                context:
+                                                    context,
+                                              ).comment ==
+                                              null
+                                          ? 'Not Set'
+                                          : returnOrdersActionProvider(
+                                                context:
+                                                    context,
+                                              ).comment ??
+                                              '',
+                                      10,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            'Comment:',
-                          ),
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b4
-                                      .fontSize,
-                              fontWeight: FontWeight.normal,
-                              fontStyle: FontStyle.italic,
+                            Icon(
+                              isOpen
+                                  ? Icons
+                                      .keyboard_double_arrow_up_rounded
+                                  : Icons
+                                      .keyboard_double_arrow_down_rounded,
                             ),
-                            cutLongText(
-                              returnOrdersActionProvider(
-                                        context: context,
-                                      ).comment ==
-                                      null
-                                  ? 'Not Set'
-                                  : returnOrdersActionProvider(
-                                        context: context,
-                                      ).comment ??
-                                      '',
-                              15,
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                      Icon(
-                        isOpen
-                            ? Icons
-                                .keyboard_double_arrow_up_rounded
-                            : Icons
-                                .keyboard_double_arrow_down_rounded,
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
+                Material(
+                  type: MaterialType.transparency,
+                  child: Ink(
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(
+                        3,
+                      ),
+                    ),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(
+                        3,
+                      ),
+                      onTap: () {
+                        openPaymentMethodSelection();
+                      },
+                      mouseCursor: SystemMouseCursors.click,
+                      child: Container(
+                        padding: const EdgeInsets.fromLTRB(
+                          10.0,
+                          6,
+                          10,
+                          6,
+                        ),
+
+                        child: Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceBetween,
+                          spacing: 5,
+                          children: [
+                            Row(
+                              spacing: 3,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                  '${screenWidth(context) < (mobileScreenSmall - 150) ? '' : 'Payment '}Method:',
+                                ),
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    color:
+                                        theme
+                                            .lightModeColor
+                                            .secColor200,
+                                  ),
+                                  returnSalesProviderContext(
+                                    context,
+                                  ).returnPaymentMethod(
+                                    index:
+                                        returnOrdersActionProvider(
+                                          context: context,
+                                        ).paymentOption,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Icon(size: 18, Icons.edit),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
             Visibility(
               visible: isOpen,
@@ -218,6 +322,32 @@ class _OrderCommentWidgetState
               autoFocus: true,
               textInputAction: TextInputAction.newline,
             ),
+          ),
+        );
+      },
+    );
+  }
+
+  void openPaymentMethodSelection() {
+    var theme = returnTheme(context, listen: false);
+    setState(() {
+      isOpen = false;
+    });
+    showDialog(
+      context: context,
+      builder: (firstContext) {
+        return DialogTemplate(
+          theme: theme,
+          message:
+              'Select The Appropriate Payment Method From the options Below.',
+          title: 'Select Payment Method',
+          action: () {},
+          cancelText: 'Close',
+          showMainBottomActionButton: false,
+          widget: PaymentMethodSectionOrder(
+            order: widget.order,
+            bankController: widget.bankController,
+            cashController: widget.cashController,
           ),
         );
       },

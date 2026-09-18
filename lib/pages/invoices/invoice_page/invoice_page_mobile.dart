@@ -497,11 +497,25 @@ class _InvoicePageMobileState
                                 ),
                               ),
                               PopupMenuItem(
-                                enabled: authorization(
-                                  authorized:
-                                      Authorizations()
-                                          .deleteInvoice,
-                                ),
+                                enabled:
+                                    authorization(
+                                      authorized:
+                                          Authorizations()
+                                              .deleteInvoice,
+                                    ) &&
+                                    returnReceiptProvider(
+                                          context,
+                                        )
+                                        .returnOwnReceiptsByDayOrWeek()
+                                        .where(
+                                          (rec) =>
+                                              rec.invoiceUuid ==
+                                              widget
+                                                  .checkoutResponse
+                                                  .invoice
+                                                  ?.uuid,
+                                        )
+                                        .isEmpty,
                                 height: 35,
                                 onTap: () {
                                   showDialog(

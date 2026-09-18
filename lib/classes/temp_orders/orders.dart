@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_orders/order_items.dart';
+import 'package:stockall/main.dart';
 
 part 'orders.g.dart';
 
@@ -225,5 +226,40 @@ class Orders extends HiveObject {
             .where((item) => item.uuid == newItem.uuid)
             .first
         : null;
+  }
+
+  double getTotalPayment() {
+    var receipts = returnReceiptProviderSingle().receipts
+        .where((item) => item.orderUuid == uuid);
+    return receipts
+        .map((item) => item.getTotalRevenue())
+        .fold(0, (a, b) => a + b);
+  }
+
+  double getCalculatedRemainingBalance() {
+    // return orderItems
+    //     .where((item) => item.remainingQuantity != 0)
+    //     .map((item) => item.getRemainingBalance())
+    //     .fold(0, (a, b) => a + b);
+    var value =
+        getTotalMainRevenueOrder() - getTotalPayment();
+    return value < 0 ? 0 : value;
+  }
+
+  int getOrderStatus() {
+    if (getCalculatedRemainingBalance() ==
+        getTotalMainRevenueOrder()) {
+      return 0;
+    } else if (getCalculatedRemainingBalance() <
+            getTotalMainRevenueOrder() &&
+        getCalculatedRemainingBalance() > 0) {
+      return 1;
+    } else {
+      return 2;
+    }
+  }
+
+  double getTotalMainRevenueOrder() {
+    return total ?? 0;
   }
 }

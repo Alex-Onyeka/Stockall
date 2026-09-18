@@ -13,7 +13,7 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/home/home.dart';
+import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:stockall/services/printing/import_helper.dart'
@@ -67,6 +67,7 @@ class _ReceiptPageMobileState
       (rec) => rec.uuid! == widget.response.receipt?.uuid,
       orElse:
           () => TempMainReceipt(
+            salesTypeIndex: 1,
             orderUuid: null,
             customerAccount: 0,
             comment: null,
@@ -285,9 +286,6 @@ class _ReceiptPageMobileState
                             ).size.height -
                             25,
                         child: ReceiptDetailsContainer(
-                          isComingFromInvoice:
-                              widget.response.invoice !=
-                              null,
                           isMain: widget.isMain,
                           shop: shop!,
                           mainReceipt: mainReceipt,
@@ -1937,24 +1935,24 @@ class _ReceiptDetailsContainerState
                               context,
                               listen: false,
                             );
-                        var safeContext = context;
-                        if (!widget.mainReceipt.isInvoice) {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return ConfirmationAlert(
-                                theme: widget.theme,
-                                message:
-                                    'This action cannot be recovered. Are you sure you want to delete this sale receipt?',
-                                title: 'Delete Receipt?',
-                                action: () async {
-                                  Navigator.of(
-                                    safeContext,
-                                  ).pop();
-                                  setState(() {
-                                    isLoading = true;
-                                  });
-
+                        showDialog(
+                          context: context,
+                          builder: (confirmContext) {
+                            return ConfirmationAlert(
+                              theme: widget.theme,
+                              message:
+                                  'This action cannot be recovered. Are you sure you want to delete this sale receipt?',
+                              title: 'Delete Receipt?',
+                              action: () async {
+                                Navigator.of(
+                                  confirmContext,
+                                ).pop();
+                                setState(() {
+                                  isLoading = true;
+                                });
+                                if (widget.mainReceipt
+                                        .getSalesTypeIndex() ==
+                                    1) {
                                   await receiptP.deleteReceipt(
                                     widget.mainReceipt,
                                     records
@@ -1964,113 +1962,64 @@ class _ReceiptDetailsContainerState
                                         )
                                         .toList(),
                                   );
-
-                                  // if (safeContext.mounted) {
-                                  //   await receiptP
-                                  //       .loadReceipts(
-                                  //         shopId,
-                                  //       );
-                                  // }
-
-                                  setState(() {
-                                    isLoading = false;
-                                    showSuccess = true;
-                                  });
-
-                                  await Future.delayed(
-                                    Duration(
-                                      milliseconds: 500,
-                                    ),
-                                  );
-
-                                  if (safeContext.mounted) {
-                                    if (widget
-                                            .isComingFromInvoice ==
-                                        null) {
-                                      Navigator.pushReplacement(
-                                        safeContext,
-                                        MaterialPageRoute(
-                                          builder:
-                                              (
-                                                safeContext,
-                                              ) => Home(),
-                                        ),
-                                      );
-                                      returnNavProvider(
-                                        safeContext,
-                                        listen: false,
-                                      ).navigate(2);
-                                    } else {
-                                      Navigator.of(
-                                        safeContext,
-                                      ).pop();
-                                    }
-                                  }
-                                },
-                              );
-                            },
-                          );
-                        } else {
-                          showDialog(
-                            context: context,
-                            builder: (confirmContext) {
-                              return ConfirmationAlert(
-                                theme: widget.theme,
-                                message:
-                                    'Are you sure you want to proceed with action? This action cannot be reverted.',
-                                title: 'Delete Receipt',
-                                action: () async {
-                                  Navigator.of(
-                                    confirmContext,
-                                  ).pop();
-                                  setState(() {
-                                    isLoading = true;
-                                  });
-
+                                } else if (widget
+                                        .mainReceipt
+                                        .getSalesTypeIndex() ==
+                                    2) {
                                   await receiptP
                                       .deleteReceiptWithoutUpdatingInventory(
                                         widget
                                             .mainReceipt
                                             .uuid!,
                                       );
+                                } else if (widget
+                                        .mainReceipt
+                                        .getSalesTypeIndex() ==
+                                    3) {
+                                  await returnOrdersProvider()
+                                      .deleteDeliveryReceipt(
+                                        receipt:
+                                            widget
+                                                .mainReceipt,
+                                        records: records,
+                                        orderUuid:
+                                            widget
+                                                .mainReceipt
+                                                .orderUuid,
+                                      );
+                                }
 
-                                  // if (safeContext.mounted) {
-                                  //   await receiptP
-                                  //       .loadReceipts(
-                                  //         shopId,
-                                  //       );
-                                  // }
+                                setState(() {
+                                  isLoading = false;
+                                  showSuccess = true;
+                                });
 
-                                  setState(() {
-                                    isLoading = false;
-                                    showSuccess = true;
-                                  });
+                                await Future.delayed(
+                                  Duration(
+                                    milliseconds: 300,
+                                  ),
+                                );
 
-                                  await Future.delayed(
-                                    Duration(
-                                      milliseconds: 500,
-                                    ),
-                                  );
-
-                                  if (safeContext.mounted) {
+                                if (context.mounted) {
+                                  if (widget.isMain) {
                                     Navigator.pushReplacement(
-                                      safeContext,
+                                      context,
                                       MaterialPageRoute(
                                         builder:
-                                            (safeContext) =>
-                                                Home(),
+                                            (context) =>
+                                                MakeSalesPage(),
                                       ),
                                     );
-                                    returnNavProvider(
-                                      safeContext,
-                                      listen: false,
-                                    ).navigate(5);
+                                  } else {
+                                    Navigator.of(
+                                      context,
+                                    ).pop();
                                   }
-                                },
-                              );
-                            },
-                          );
-                        }
+                                }
+                              },
+                            );
+                          },
+                        );
                       },
                     ),
                   ),
@@ -2080,10 +2029,8 @@ class _ReceiptDetailsContainerState
                           authorized:
                               Authorizations().updateSale,
                         ) &&
-                        widget.mainReceipt.invoiceUuid ==
-                            null &&
-                        widget.mainReceipt.orderUuid ==
-                            null,
+                        widget.mainReceipt.isInvoice ==
+                            false,
                     child: BottomActionButton(
                       text: 'Edit',
                       color: Colors.grey,

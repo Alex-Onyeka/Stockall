@@ -23,6 +23,8 @@ class _DeliverOrdersPageState
       TextEditingController();
   TextEditingController quantityController =
       TextEditingController();
+  final cashController = TextEditingController();
+  final bankController = TextEditingController();
 
   @override
   void dispose() {
@@ -30,6 +32,8 @@ class _DeliverOrdersPageState
     searchController.dispose();
     priceController.dispose();
     quantityController.dispose();
+    cashController.dispose();
+    bankController.dispose();
   }
 
   @override
@@ -48,7 +52,13 @@ class _DeliverOrdersPageState
                     .orderListItems
                     .isNotEmpty ||
                 returnOrdersActionProvider().comment !=
-                    null,
+                    null ||
+                returnOrdersActionProvider()
+                        .customTotalAmount !=
+                    null ||
+                returnOrdersActionProvider()
+                        .paymentOption !=
+                    1,
             didPop: didPop,
             action: () {
               returnOrdersActionProvider().clearAll();
@@ -63,6 +73,8 @@ class _DeliverOrdersPageState
                 searchController: searchController,
                 priceController: priceController,
                 quantityController: quantityController,
+                bankController: bankController,
+                cashController: cashController,
               );
             } else {
               return DeliverOrdersDesktop(
@@ -70,6 +82,8 @@ class _DeliverOrdersPageState
                 searchController: searchController,
                 priceController: priceController,
                 quantityController: quantityController,
+                bankController: bankController,
+                cashController: cashController,
               );
             }
           },

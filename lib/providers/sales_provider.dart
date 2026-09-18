@@ -1060,6 +1060,7 @@ class SalesProvider extends ChangeNotifier {
           uuidGen();
       await mainLocalLog('🌹🌹 Created Date: $createdAt');
       TempMainReceipt receipt = TempMainReceipt(
+        salesTypeIndex: 1,
         orderUuid: salesCartItem.orderUuid,
         comment: currentCart().comment,
         subStaffName:
@@ -2073,8 +2074,7 @@ class SalesProvider extends ChangeNotifier {
                     (cartItem.getItem()!.quantity ?? 0)
                         .toString(),
                 title: 'Order Created',
-                quantityChange:
-                    (cartItem.getItem()!.quantity ?? 0),
+                quantityChange: 0,
                 newValue:
                     (cartItem.getItem()!.quantity ?? 0)
                         .toString(),
@@ -2301,16 +2301,12 @@ class SalesProvider extends ChangeNotifier {
   }
 
   double calcCashBackReward() {
-    // if (currentCart().paymentMethod == 3) {
-    //   return 0;
-    // } else {
     return calcFinalTotal() *
         ((returnShopProvider()
                     .userShop()
                     ?.customerPercentageReward ??
                 0) /
             100);
-    // }
   }
 
   bool isBalanceSufficient() {
@@ -3023,8 +3019,8 @@ class SalesProvider extends ChangeNotifier {
     );
   }
 
-  String returnPaymentMethod() {
-    switch (currentCart().paymentMethod) {
+  String returnPaymentMethod({int? index}) {
+    switch (index ?? currentCart().paymentMethod) {
       case 0:
         return 'Cash';
       case 1:

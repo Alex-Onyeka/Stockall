@@ -16,6 +16,8 @@ class DeliverOrdersDesktop extends StatefulWidget {
   final TextEditingController searchController;
   final TextEditingController priceController;
   final TextEditingController quantityController;
+  final TextEditingController bankController;
+  final TextEditingController cashController;
 
   const DeliverOrdersDesktop({
     super.key,
@@ -23,6 +25,8 @@ class DeliverOrdersDesktop extends StatefulWidget {
     required this.searchController,
     required this.priceController,
     required this.quantityController,
+    required this.bankController,
+    required this.cashController,
   });
 
   @override
@@ -34,51 +38,6 @@ class _DeliverOrdersDesktopState
     extends State<DeliverOrdersDesktop> {
   bool isLoading = false;
   bool showSuccess = false;
-
-  bool updateInventory = true;
-  int paymentSelected = 2;
-
-  void checkFields() async {
-    if (returnOrdersActionProvider()
-        .orderListItems
-        .isEmpty) {
-      showDialog(
-        context: context,
-        builder: (context) {
-          var theme = returnTheme(context);
-          return InfoAlert(
-            theme: theme,
-            message:
-                'No Item has been added to the List. Please add items to the list before proceeding',
-            title: 'Empty List',
-          );
-        },
-      );
-    } else {
-      showDialog(
-        context: context,
-        builder: (confirmDialog) {
-          return ConfirmationAlert(
-            theme: returnTheme(context, listen: false),
-            message:
-                'You are about to record a order Delivery and update the items, are you sure you want to proceed?',
-            title: 'Proceed With Action',
-            action: () async {
-              Navigator.of(confirmDialog).pop();
-              setState(() {
-                isLoading = true;
-              });
-
-              returnOrdersProvider().makeOrderItemDelivery(
-                order: widget.order,
-                context: context,
-              );
-            },
-          );
-        },
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +62,7 @@ class _DeliverOrdersDesktopState
                             theme.mobileTexts.h4.fontSize,
                         fontWeight: FontWeight.bold,
                       ),
-                      'Select Items',
+                      'Order Delivery',
                     ),
                     SizedBox(height: 5),
                     Text(
@@ -111,7 +70,7 @@ class _DeliverOrdersDesktopState
                         fontSize:
                             theme.mobileTexts.b2.fontSize,
                       ),
-                      'Select Items From Order to Deliver',
+                      'Select Items To be Delivered',
                     ),
                   ],
                 ),
@@ -274,7 +233,13 @@ class _DeliverOrdersDesktopState
                           ),
                           child: Column(
                             children: [
-                              OrderCommentWidget(),
+                              OrderCommentWidget(
+                                order: widget.order,
+                                bankController:
+                                    widget.bankController,
+                                cashController:
+                                    widget.cashController,
+                              ),
                               TotalRowOrdersDelivery(
                                 priceController:
                                     widget.priceController,
@@ -282,7 +247,21 @@ class _DeliverOrdersDesktopState
                               MainButtonP(
                                 themeProvider: theme,
                                 action: () {
-                                  checkFields();
+                                  checkFields(
+                                    bankController:
+                                        widget
+                                            .bankController,
+                                    cashController:
+                                        widget
+                                            .cashController,
+                                    context: context,
+                                    order: widget.order,
+                                    toggleLoading: () {
+                                      setState(() {
+                                        isLoading = true;
+                                      });
+                                    },
+                                  );
                                 },
                                 text: 'Create Delivery',
                               ),
@@ -312,6 +291,140 @@ class _DeliverOrdersDesktopState
           ),
         ],
       ),
+    );
+  }
+}
+
+void checkFields({
+  required BuildContext context,
+  required TextEditingController cashController,
+  required TextEditingController bankController,
+  required Orders order,
+  required Function() toggleLoading,
+}) async {
+  if (returnOrdersActionProvider().orderListItems.isEmpty) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        var theme = returnTheme(context);
+        return InfoAlert(
+          theme: theme,
+          message:
+              'No Item has been added to the List. Please add items to the list before proceeding',
+          title: 'Empty List',
+        );
+      },
+    );
+  } else if (returnOrdersActionProvider().paymentOption ==
+          3 &&
+      !returnOrdersActionProvider().isBalanceSufficient(
+        order.customerId ?? '',
+      )) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        var theme = returnTheme(context);
+        return InfoAlert(
+          theme: theme,
+          message:
+              'Customer Balance is Insufficient. Please Top Up Customer Account, or select Another Payment Method To Proceed.',
+          title: 'Customer Balance Insufficient',
+        );
+      },
+    );
+  } else if (returnOrdersActionProvider().paymentOption ==
+          2 &&
+      (returnOrdersActionProvider().totalOrdersAmount() !=
+          ((double.tryParse(
+                    cashController.text.replaceAll(',', ''),
+                  ) ??
+                  0) +
+              (double.tryParse(
+                    bankController.text.replaceAll(',', ''),
+                  ) ??
+                  0)))) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        var theme = returnTheme(context);
+        return InfoAlert(
+          theme: theme,
+          message:
+              'The Two Values Entered into the Split Payment Text Fields Does Not Sum Up to be Equal to The Total Amount of the Delivery. Please Update Values, or select Another Payment Method To Proceed.',
+          title: 'Split Payment Sum Not Set',
+        );
+      },
+    );
+  } else {
+    showDialog(
+      context: context,
+      builder: (confirmDialog) {
+        return ConfirmationAlert(
+          theme: returnTheme(context, listen: false),
+          message:
+              'You are about to record a order Delivery and update the items, are you sure you want to proceed?',
+          title: 'Proceed With Action',
+          action: () async {
+            Navigator.of(confirmDialog).pop();
+            toggleLoading();
+            int index =
+                returnOrdersActionProvider().paymentOption;
+            double totalAmount =
+                returnOrdersActionProvider()
+                    .totalOrdersAmount();
+            double bankAmount() {
+              if (index == 1) {
+                return totalAmount;
+              } else if (index == 2) {
+                return (double.tryParse(
+                      bankController.text.replaceAll(
+                        ',',
+                        '',
+                      ),
+                    ) ??
+                    0);
+              } else {
+                return 0;
+              }
+            }
+
+            double cashAmount() {
+              if (index == 0) {
+                return totalAmount;
+              } else if (index == 2) {
+                return (double.tryParse(
+                      cashController.text.replaceAll(
+                        ',',
+                        '',
+                      ),
+                    ) ??
+                    0);
+              } else {
+                return 0;
+              }
+            }
+
+            double customerAmount() {
+              if (index == 3) {
+                return totalAmount;
+              } else {
+                return 0;
+              }
+            }
+
+            await returnOrdersProvider()
+                .makeOrderItemDelivery(
+                  bankAmount: bankAmount(),
+                  cashAmount: cashAmount(),
+                  customerAmount: customerAmount(),
+                  order: order,
+                  context: context,
+                );
+            cashController.clear();
+            bankController.clear();
+          },
+        );
+      },
     );
   }
 }

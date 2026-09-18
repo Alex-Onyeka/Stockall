@@ -157,18 +157,6 @@ class _MainOrderTileMobileState
                         fontSize:
                             theme.mobileTexts.b3.fontSize,
                         fontWeight: FontWeight.bold,
-                        color:
-                            theme
-                                .lightModeColor
-                                .secColor200,
-                      ),
-                      'Payment',
-                    ),
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
-                        fontWeight: FontWeight.bold,
                         color: Colors.grey,
                       ),
                       '${getProductRecord().length} Item(s) Sold',
@@ -480,12 +468,6 @@ class _MainOrderTileDesktopState
                         subTitle: 'Quantity',
                         title:
                             '${getProductRecord().length} Item(s)',
-                        theme: theme,
-                      ),
-                      ReceicptTileSectionDesktop(
-                        flex: 3,
-                        subTitle: 'Payment Type',
-                        title: 'Cash',
                         theme: theme,
                       ),
                       ReceicptTileSectionDesktop(

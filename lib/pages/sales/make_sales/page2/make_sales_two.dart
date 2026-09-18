@@ -4,10 +4,10 @@ import 'package:stockall/pages/sales/make_sales/page2/platforms/make_sales_deskt
 import 'package:stockall/pages/sales/make_sales/page2/platforms/make_sales_mobile_two.dart';
 
 class MakeSalesTwo extends StatefulWidget {
-  final double totalAmount;
+  // final double totalAmount;
   const MakeSalesTwo({
     super.key,
-    required this.totalAmount,
+    // required this.totalAmount,
   });
 
   @override
@@ -38,7 +38,7 @@ class _MakeSalesPageState extends State<MakeSalesTwo> {
         builder: (context, constraints) {
           if (constraints.maxWidth < mobileScreen) {
             return MakeSalesMobileTwo(
-              totalAmount: widget.totalAmount,
+              // totalAmount: widget.totalAmount,
               customerController: customerController,
               bankController: bankController,
               cashController: cashController,
@@ -48,7 +48,7 @@ class _MakeSalesPageState extends State<MakeSalesTwo> {
             );
           } else {
             return MakeSalesDesktopTwo(
-              totalAmount: widget.totalAmount,
+              // totalAmount: widget.totalAmount,
               customerController: customerController,
               bankController: bankController,
               cashController: cashController,

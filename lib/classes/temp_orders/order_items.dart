@@ -273,7 +273,7 @@ class OrderItems extends HiveObject {
   }
 
   double getRemainingBalance() {
-    return ((remainingQuantity ?? 0) * (revenue));
+    return (getActualRemainingQuantity() * (revenue));
   }
 
   double getActualRemainingQuantity({bool? useGroupTemp}) {

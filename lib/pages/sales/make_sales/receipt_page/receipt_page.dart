@@ -12,12 +12,10 @@ import 'package:stockall/pages/sales/make_sales/receipt_page/platforms/receipt_p
 class ReceiptPage extends StatefulWidget {
   final CheckoutResponse response;
   final bool isMain;
-  // final bool? isComingFromInvoice;
   const ReceiptPage({
     super.key,
     required this.response,
     required this.isMain,
-    // this.isComingFromInvoice,
   });
 
   @override

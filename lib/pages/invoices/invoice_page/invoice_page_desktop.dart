@@ -506,11 +506,23 @@ class _InvoicePageDesktopState
                           ),
                         ),
                         Visibility(
-                          visible: authorization(
-                            authorized:
-                                Authorizations()
-                                    .deleteInvoice,
-                          ),
+                          visible:
+                              authorization(
+                                authorized:
+                                    Authorizations()
+                                        .deleteInvoice,
+                              ) &&
+                              returnReceiptProvider(context)
+                                  .returnOwnReceiptsByDayOrWeek()
+                                  .where(
+                                    (rec) =>
+                                        rec.invoiceUuid ==
+                                        widget
+                                            .checkoutResponse
+                                            .invoice
+                                            ?.uuid,
+                                  )
+                                  .isEmpty,
                           child: ActionButtonSmall(
                             isLoading: isDeleteLoading,
                             action: () {
