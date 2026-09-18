@@ -6,9 +6,13 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customer_account_transactions_page/customer_transactions_page.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_account_details_section_widget.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_details_section_widget.dart';
+import 'package:stockall/pages/customers/customer_details_page/components/customer_invoices_section.dart';
+import 'package:stockall/pages/customers/customer_details_page/components/customer_orders_section.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_purchases_section.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_transactions_section.dart';
+import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/invoices/invoice_page/invoice_page_desktop.dart';
+import 'package:stockall/pages/orders/order_list/order_list_page.dart';
 import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 
 class CustomerDetailsDesktop extends StatefulWidget {
@@ -159,6 +163,58 @@ class _CustomerDetailsDesktopState
                           color: Colors.grey.shade500,
                           Icons.arrow_forward_ios_rounded,
                         ),
+                      ),
+                    ),
+                    ActionButtonSmall(
+                      isLoading: isDeleting,
+                      action: () {
+                        if (customer != null &&
+                            isDeleting == false) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return InvoiceListPage(
+                                  customerUuid:
+                                      widget.customerUuid,
+                                );
+                              },
+                            ),
+                          );
+                        }
+                      },
+                      text: 'Invoices',
+                      textColor: Colors.grey.shade500,
+                      icon: Icon(
+                        size: 14,
+                        color: Colors.grey.shade500,
+                        Icons.arrow_forward_ios_rounded,
+                      ),
+                    ),
+                    ActionButtonSmall(
+                      isLoading: isDeleting,
+                      action: () {
+                        if (customer != null &&
+                            isDeleting == false) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return OrderListPage(
+                                  customerUuid:
+                                      widget.customerUuid,
+                                );
+                              },
+                            ),
+                          );
+                        }
+                      },
+                      text: 'Orders',
+                      textColor: Colors.grey.shade500,
+                      icon: Icon(
+                        size: 14,
+                        color: Colors.grey.shade500,
+                        Icons.arrow_forward_ios_rounded,
                       ),
                     ),
                     Visibility(
@@ -344,6 +400,38 @@ class _CustomerDetailsDesktopState
                                         ),
                                       ],
                                     ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(
+                                  horizontal: 10.0,
+                                ),
+                            child: Row(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child:
+                                      CustomerInvoicesSection(
+                                        customer: customer,
+                                      ),
+                                ),
+                                Expanded(
+                                  child: Row(
+                                    children: [
+                                      SizedBox(width: 10),
+                                      Expanded(
+                                        child:
+                                            CustomerOrdersSection(
+                                              customer:
+                                                  customer,
+                                            ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],

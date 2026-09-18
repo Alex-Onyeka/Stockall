@@ -93,7 +93,7 @@ class CustomerTransactionsSection extends StatelessWidget {
       margin: EdgeInsets.only(top: 10),
       padding: EdgeInsets.symmetric(
         vertical: 25,
-        horizontal: 15,
+        horizontal: 10,
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
@@ -311,7 +311,7 @@ class CustomerTransactionList extends StatelessWidget {
           child: Container(
             padding: EdgeInsets.symmetric(
               vertical: 12,
-              horizontal: 10,
+              horizontal: 6,
             ),
             child: Column(
               children: [
@@ -414,10 +414,7 @@ class CustomerTransactionList extends StatelessWidget {
                                       .fontSize,
                               fontWeight: FontWeight.normal,
                             ),
-                            formatDateTime(
-                              accountReceipt.createdAt ??
-                                  DateTime.now(),
-                            ),
+                            "${formatDateTime(accountReceipt.createdAt ?? DateTime.now())} - ${formatTime(accountReceipt.createdAt ?? DateTime.now())}",
                           ),
                         ),
                         Icon(

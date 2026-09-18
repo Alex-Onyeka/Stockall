@@ -767,16 +767,18 @@ class _MakeSalesMobileTwoState
                                         .manageCustomersAccountAndPoints(
                                           context: null,
                                         ) &&
-                                    returnShopProvider()
-                                            .userShop()
-                                            ?.manageCustomerReward ==
+                                    shop(
+                                          context,
+                                        )?.manageCustomerReward ==
                                         true &&
-                                    returnSalesProviderContext(
-                                              context,
-                                            )
-                                            .currentCart()
-                                            .selectedCustomer !=
-                                        null,
+                                    currentCart(
+                                          context: context,
+                                        ).selectedCustomer !=
+                                        null &&
+                                    currentCart(
+                                          context: context,
+                                        ).cartItemTypeIndex !=
+                                        3,
                                 child: Column(
                                   children: [
                                     SizedBox(height: 5),

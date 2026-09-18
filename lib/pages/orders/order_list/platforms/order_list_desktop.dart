@@ -167,7 +167,9 @@ class _OrderListDesktopState
                 child: DesktopPageContainer(
                   widget: Scaffold(
                     appBar: appBar(
-                      turnOff: true,
+                      turnOff:
+                          widget.customerUuid == null &&
+                          widget.agentUuid == null,
                       context: context,
                       title: 'All Orders',
                       widget: Row(
@@ -287,41 +289,50 @@ class _OrderListDesktopState
                         ],
                       ),
                     ),
-                    floatingActionButton: FloatingActionButtonMain(
-                      action: () {
-                        SalesAuthAction().manageOrdersAction(
-                          context: context,
-                          action: () {
-                            if (authorization(
-                              authorized:
-                                  Authorizations().makeSale,
-                            )) {
-                              returnNavProvider(
-                                context,
-                                listen: false,
-                              ).navigate(2);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return MakeSalesPage(
-                                      cartItemTypeIndex: 3,
-                                    );
-                                  },
-                                ),
-                              ).then((_) {
-                                setState(() {
-                                  // getProductList(context);
+                    floatingActionButton: Visibility(
+                      visible:
+                          widget.customerUuid == null &&
+                          widget.agentUuid == null,
+                      child: FloatingActionButtonMain(
+                        action: () {
+                          SalesAuthAction().manageOrdersAction(
+                            context: context,
+                            action: () {
+                              if (authorization(
+                                authorized:
+                                    Authorizations()
+                                        .makeSale,
+                              )) {
+                                returnNavProvider(
+                                  context,
+                                  listen: false,
+                                ).navigate(2);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return MakeSalesPage(
+                                        cartItemTypeIndex:
+                                            3,
+                                      );
+                                    },
+                                  ),
+                                ).then((_) {
+                                  setState(() {
+                                    // getProductList(context);
+                                  });
                                 });
-                              });
-                            }
-                          },
-                        );
-                      },
-                      color:
-                          theme.lightModeColor.secColor100,
-                      text: 'Create Order',
-                      theme: theme,
+                              }
+                            },
+                          );
+                        },
+                        color:
+                            theme
+                                .lightModeColor
+                                .secColor100,
+                        text: 'Create Order',
+                        theme: theme,
+                      ),
                     ),
                     body: OrderListBodyDesktop(
                       agentUuid: widget.agentUuid,

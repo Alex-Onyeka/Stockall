@@ -272,11 +272,9 @@ class _MainInvoiceTileMobileState
                                 fontWeight: FontWeight.bold,
                               ),
                               formatMoneyMid(
-                                amount: returnInvoicesProvider(
-                                  context: context,
-                                ).getTotalMainRevenueInvoice(
-                                  invoice: widget.invoice,
-                                ),
+                                amount:
+                                    widget.invoice
+                                        .getTotalMainRevenueInvoice(),
                                 context: context,
                               ),
                             ),
@@ -490,11 +488,9 @@ class _MainInvoiceTileDesktopState
                         flex: 4,
                         subTitle: 'Total',
                         title: formatMoneyMid(
-                          amount: returnInvoicesProvider(
-                            context: context,
-                          ).getTotalMainRevenueInvoice(
-                            invoice: widget.invoice,
-                          ),
+                          amount:
+                              widget.invoice
+                                  .getTotalMainRevenueInvoice(),
                           context: context,
                         ),
                         theme: theme,

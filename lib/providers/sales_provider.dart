@@ -1606,6 +1606,9 @@ class SalesProvider extends ChangeNotifier {
               }).toList();
 
           await returnInvoicesProvider().makeInvoicePayment(
+            bankAmount: bank,
+            cashAmount: cashAlt,
+            customerAmount: 0,
             invoice: invoice,
             salesRecords: productSaleRecords,
             currentPayment: partPayment,

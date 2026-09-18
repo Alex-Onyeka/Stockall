@@ -1,4 +1,6 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
+import 'package:stockall/main.dart';
 
 part 'temp_invoices.g.dart';
 
@@ -179,6 +181,64 @@ class TempInvoice extends HiveObject {
       'sub_staff_name': subStaffName,
       'comment': comment,
     };
+  }
+
+  double getTotalMainRevenueInvoice() {
+    var total = ((bank + cashAlt));
+
+    return total;
+  }
+
+  double getBalance() {
+    double tempValue = 0;
+    List<TempMainReceipt> receiptsTemp =
+        returnReceiptProviderSingle().receipts
+            .where((rec) => rec.invoiceUuid == uuid)
+            .toList();
+    for (var val in receiptsTemp) {
+      tempValue +=
+          (val.bank +
+              val.cashAlt +
+              (val.customerAccount ?? 0));
+    }
+    return getTotalMainRevenueInvoice() - tempValue;
+  }
+
+  int getInvoiceStatus() {
+    if (getBalance() == getTotalMainRevenueInvoice()) {
+      return 0;
+    } else if (getBalance() <
+            getTotalMainRevenueInvoice() &&
+        getBalance() > 0) {
+      return 1;
+    } else {
+      return 2;
+    }
+  }
+
+  double getDiscountAmountForInvoice() {
+    if (fixedDiscount != null) {
+      return (fixedDiscount ?? 0);
+    } else if (generalDiscount != null) {
+      return (getOriginalCostInvoice() *
+          ((generalDiscount ?? 0) / 100));
+    } else {
+      return 0;
+    }
+  }
+
+  double getAmountPaid() {
+    return getTotalMainRevenueInvoice() - getBalance();
+  }
+
+  double getVATInvoice({TempInvoice? invoice}) {
+    return invoice == null
+        ? 0
+        : (originalCost ?? 0) * ((vat ?? 0) / 100);
+  }
+
+  double getOriginalCostInvoice() {
+    return originalCost ?? 0;
   }
 }
 

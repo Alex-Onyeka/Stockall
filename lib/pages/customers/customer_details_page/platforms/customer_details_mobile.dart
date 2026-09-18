@@ -6,8 +6,12 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customer_account_transactions_page/customer_transactions_page.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_account_details_section_widget.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_details_section_widget.dart';
+import 'package:stockall/pages/customers/customer_details_page/components/customer_invoices_section.dart';
+import 'package:stockall/pages/customers/customer_details_page/components/customer_orders_section.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_purchases_section.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_transactions_section.dart';
+import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
+import 'package:stockall/pages/orders/order_list/order_list_page.dart';
 import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 
 class CustomerDetailsMobile extends StatefulWidget {
@@ -210,6 +214,70 @@ class _CustomerDetailsMobileState
                                 ),
                               ),
                               PopupMenuItem(
+                                height: 35,
+                                onTap: () {
+                                  if (customer != null &&
+                                      isDeleting == false) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return InvoiceListPage(
+                                            customerUuid:
+                                                widget
+                                                    .customerUuid,
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                  'Invoices',
+                                ),
+                              ),
+                              PopupMenuItem(
+                                height: 35,
+                                onTap: () {
+                                  if (customer != null &&
+                                      isDeleting == false) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return OrderListPage(
+                                            customerUuid:
+                                                widget
+                                                    .customerUuid,
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                  'Orders',
+                                ),
+                              ),
+                              PopupMenuItem(
                                 enabled: authorization(
                                   authorized:
                                       Authorizations()
@@ -329,7 +397,7 @@ class _CustomerDetailsMobileState
                                         ) &&
                                         showAccountOrReward(),
                                     child: SizedBox(
-                                      height: 220,
+                                      height: 300,
                                       child: Row(
                                         children: [
                                           Expanded(
@@ -396,6 +464,28 @@ class _CustomerDetailsMobileState
                                             ],
                                           ),
                                         ),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child:
+                                            CustomerInvoicesSection(
+                                              customer:
+                                                  customer,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child:
+                                            CustomerOrdersSection(
+                                              customer:
+                                                  customer,
+                                            ),
                                       ),
                                     ],
                                   ),

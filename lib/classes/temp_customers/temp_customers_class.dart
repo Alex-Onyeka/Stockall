@@ -1,4 +1,7 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
+import 'package:stockall/classes/temp_orders/orders.dart';
+import 'package:stockall/main.dart';
 
 part 'temp_customers_class.g.dart';
 
@@ -177,5 +180,29 @@ class TempCustomersClass extends HiveObject {
 
   double getBalance() {
     return (balance ?? 0);
+  }
+
+  List<TempInvoice> getInvoices() {
+    return returnInvoicesProvider().invoicesMain
+        .where((item) => item.customerUuid == uuid)
+        .toList();
+  }
+
+  double getTotalDebt() {
+    return getInvoices()
+        .map((item) => item.getBalance())
+        .fold(0, (a, b) => a + b);
+  }
+
+  List<Orders> getOrders() {
+    return returnOrdersProvider().orders
+        .where((item) => item.customerId == uuid)
+        .toList();
+  }
+
+  double getTotalUndeliveredOrderAmount() {
+    return getOrders()
+        .map((item) => item.getCalculatedRemainingBalance())
+        .fold(0, (a, b) => a + b);
   }
 }

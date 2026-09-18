@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
-import 'package:stockall/classes/temp_orders/orders.dart';
+import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
@@ -10,36 +10,38 @@ import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_account_details_section_widget.dart';
 
-class PaymentTypeButtonOrder extends StatefulWidget {
+class PaymentTypeButtonInvoice extends StatefulWidget {
   final int index;
-  final Orders order;
+  final TempInvoice invoice;
   final Function()? action;
   final TextEditingController cashController;
   final TextEditingController bankController;
+  final double mainValue;
 
-  const PaymentTypeButtonOrder({
+  const PaymentTypeButtonInvoice({
     super.key,
     required this.index,
-    required this.order,
+    required this.invoice,
     required this.cashController,
     required this.bankController,
+    required this.mainValue,
     this.action,
   });
 
   @override
-  State<PaymentTypeButtonOrder> createState() =>
-      _PaymentTypeButtonOrderState();
+  State<PaymentTypeButtonInvoice> createState() =>
+      _PaymentTypeButtonInvoiceState();
 }
 
-class _PaymentTypeButtonOrderState
-    extends State<PaymentTypeButtonOrder> {
+class _PaymentTypeButtonInvoiceState
+    extends State<PaymentTypeButtonInvoice> {
   TextEditingController topUpController =
       TextEditingController();
   @override
   Widget build(BuildContext context) {
     TempCustomersClass? customersClass;
     if (widget.index == 3) {
-      var customerUuid = widget.order.customerId;
+      var customerUuid = widget.invoice.customerUuid;
       List<TempCustomersClass> customers =
           returnCustomersSingle().customers
               .where((item) => item.uuid == customerUuid)
@@ -50,7 +52,7 @@ class _PaymentTypeButtonOrderState
     }
     var theme = returnTheme(context);
     void selectOptionAction() {
-      returnOrdersActionProvider().changePaymentOptions(
+      returnInvoicesProvider().changePaymentOptions(
         widget.index,
       );
       widget.action != null ? widget.action!() : {};
@@ -136,7 +138,7 @@ class _PaymentTypeButtonOrderState
                                   .secColor200,
                         ),
                         value:
-                            returnOrdersActionProvider(
+                            returnInvoicesProvider(
                               context: context,
                             ).paymentOption ==
                             widget.index,
@@ -154,14 +156,15 @@ class _PaymentTypeButtonOrderState
         Visibility(
           visible:
               widget.index == 3 &&
-              returnOrdersActionProvider(
+              returnInvoicesProvider(
                     context: context,
                   ).paymentOption ==
                   3 &&
-              !returnOrdersActionProvider(
+              !returnInvoicesProvider(
                 context: context,
               ).isBalanceSufficient(
                 customersClass?.uuid ?? '',
+                widget.mainValue,
               ),
           child: Container(
             padding: EdgeInsetsGeometry.only(
@@ -305,25 +308,27 @@ class _PaymentTypeButtonOrderState
   }
 }
 
-class PaymentMethodSectionOrder extends StatefulWidget {
-  final Orders order;
+class PaymentMethodSectionInvoice extends StatefulWidget {
+  final TempInvoice invoice;
   final TextEditingController cashController;
   final TextEditingController bankController;
+  final double mainValue;
 
-  const PaymentMethodSectionOrder({
+  const PaymentMethodSectionInvoice({
     super.key,
     required this.cashController,
     required this.bankController,
-    required this.order,
+    required this.invoice,
+    required this.mainValue,
   });
 
   @override
-  State<PaymentMethodSectionOrder> createState() =>
-      _PaymentMethodSectionOrderState();
+  State<PaymentMethodSectionInvoice> createState() =>
+      _PaymentMethodSectionInvoiceState();
 }
 
-class _PaymentMethodSectionOrderState
-    extends State<PaymentMethodSectionOrder> {
+class _PaymentMethodSectionInvoiceState
+    extends State<PaymentMethodSectionInvoice> {
   bool isUpdating = false;
   @override
   Widget build(BuildContext context) {
@@ -345,10 +350,11 @@ class _PaymentMethodSectionOrderState
               ],
             ),
             SizedBox(height: 5),
-            PaymentTypeButtonOrder(
+            PaymentTypeButtonInvoice(
+              mainValue: widget.mainValue,
               bankController: widget.bankController,
               cashController: widget.cashController,
-              order: widget.order,
+              invoice: widget.invoice,
               index: 0,
               action: () {
                 widget.cashController.clear();
@@ -356,10 +362,11 @@ class _PaymentMethodSectionOrderState
                 setState(() {});
               },
             ),
-            PaymentTypeButtonOrder(
+            PaymentTypeButtonInvoice(
+              mainValue: widget.mainValue,
               bankController: widget.bankController,
               cashController: widget.cashController,
-              order: widget.order,
+              invoice: widget.invoice,
               index: 1,
               action: () {
                 widget.cashController.clear();
@@ -378,16 +385,17 @@ class _PaymentMethodSectionOrderState
                           .userShop()
                           ?.manageCustomerAccount ==
                       true &&
-                  widget.order.customerId != null &&
+                  widget.invoice.customerUuid != null &&
                   authorization(
                     authorized:
                         Authorizations()
                             .makeSalesFromCustomersAccount,
                   ),
-              child: PaymentTypeButtonOrder(
+              child: PaymentTypeButtonInvoice(
+                mainValue: widget.mainValue,
                 bankController: widget.bankController,
                 cashController: widget.cashController,
-                order: widget.order,
+                invoice: widget.invoice,
                 index: 3,
                 action: () {
                   widget.cashController.clear();
@@ -396,16 +404,15 @@ class _PaymentMethodSectionOrderState
                 },
               ),
             ),
-            PaymentTypeButtonOrder(
+            PaymentTypeButtonInvoice(
+              mainValue: widget.mainValue,
               bankController: widget.bankController,
               cashController: widget.cashController,
-              order: widget.order,
+              invoice: widget.invoice,
               index: 2,
               action: () {
                 widget.cashController.text =
-                    returnOrdersActionProvider()
-                        .totalOrdersAmount()
-                        .toString();
+                    widget.mainValue.toString();
                 widget.bankController.text = '0.0';
               },
             ),
@@ -414,7 +421,7 @@ class _PaymentMethodSectionOrderState
         SizedBox(height: 20),
         Visibility(
           visible:
-              returnOrdersActionProvider(
+              returnInvoicesProvider(
                 context: context,
               ).paymentOption ==
               2,
@@ -442,9 +449,7 @@ class _PaymentMethodSectionOrderState
                             value.replaceAll(',', ''),
                           ) ??
                           0;
-                      if (cash >
-                          returnOrdersActionProvider()
-                              .totalOrdersAmount()) {
+                      if (cash > widget.mainValue) {
                         showDialog(
                           context: context,
                           builder: (context) {
@@ -457,18 +462,15 @@ class _PaymentMethodSectionOrderState
                           },
                         );
                         // Reset to max allowed
-                        widget.cashController.text =
-                            returnOrdersActionProvider()
-                                .totalOrdersAmount()
-                                .toStringAsFixed(2);
-                        widget.bankController.text = '0.00';
+                        widget.cashController.text = widget
+                            .mainValue
+                            .toStringAsFixed(1);
+                        widget.bankController.text = '0.0';
                       } else {
                         double bank =
-                            returnOrdersActionProvider()
-                                .totalOrdersAmount() -
-                            cash;
+                            widget.mainValue - cash;
                         widget.bankController.text = bank
-                            .toStringAsFixed(2);
+                            .toStringAsFixed(1);
                       }
 
                       isUpdating = false;
@@ -492,9 +494,7 @@ class _PaymentMethodSectionOrderState
                             value.replaceAll(',', ''),
                           ) ??
                           0;
-                      if (bank >
-                          returnOrdersActionProvider()
-                              .totalOrdersAmount()) {
+                      if (bank > widget.mainValue) {
                         showDialog(
                           context: context,
                           builder: (context) {
@@ -506,18 +506,15 @@ class _PaymentMethodSectionOrderState
                             );
                           },
                         );
-                        widget.bankController.text =
-                            returnOrdersActionProvider()
-                                .totalOrdersAmount()
-                                .toStringAsFixed(2);
-                        widget.cashController.text = '0.00';
+                        widget.bankController.text = widget
+                            .mainValue
+                            .toStringAsFixed(1);
+                        widget.cashController.text = '0.0';
                       } else {
                         double cash =
-                            returnOrdersActionProvider()
-                                .totalOrdersAmount() -
-                            bank;
+                            widget.mainValue - bank;
                         widget.cashController.text = cash
-                            .toStringAsFixed(2);
+                            .toStringAsFixed(1);
                       }
 
                       isUpdating = false;

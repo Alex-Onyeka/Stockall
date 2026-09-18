@@ -1108,10 +1108,9 @@ Future<Uint8List> _buildPdfInvoice({
                             fontSize: 8,
                           ),
                           formatMoneyMid(
-                            amount: returnInvoicesProvider()
-                                .getOriginalCostInvoice(
-                                  invoice,
-                                ),
+                            amount:
+                                invoice
+                                    .getOriginalCostInvoice(),
                             context: context,
                           ),
                         ),
@@ -1152,10 +1151,7 @@ Future<Uint8List> _buildPdfInvoice({
                             fontSize: 8,
                           ),
                           formatMoneyMid(
-                            amount: returnInvoicesProvider()
-                                .getVATInvoice(
-                                  invoice: invoice,
-                                ),
+                            amount: invoice.getVATInvoice(),
                             context: context,
                           ),
                         ),
@@ -1207,10 +1203,9 @@ Future<Uint8List> _buildPdfInvoice({
                                       fontSize: 8,
                                     ),
                                     formatMoneyMid(
-                                      amount: returnInvoicesProvider()
-                                          .getDiscountAmountForInvoice(
-                                            invoice,
-                                          ),
+                                      amount:
+                                          invoice
+                                              .getDiscountAmountForInvoice(),
                                       context: context,
                                     ),
                                   ),
@@ -1227,11 +1222,7 @@ Future<Uint8List> _buildPdfInvoice({
                   pw.SizedBox(height: 5),
                   pw.Builder(
                     builder: (pdfContext) {
-                      if (returnInvoicesProvider()
-                              .getBalance(
-                                invoice: invoice,
-                              ) >
-                          0) {
+                      if (invoice.getBalance() > 0) {
                         return pw.Column(
                           children: [
                             pw.Row(
@@ -1263,11 +1254,8 @@ Future<Uint8List> _buildPdfInvoice({
                                     ),
                                     formatMoneyMid(
                                       amount:
-                                          (returnInvoicesProvider()
-                                              .getBalance(
-                                                invoice:
-                                                    invoice,
-                                              )),
+                                          (invoice
+                                              .getBalance()),
                                       context: context,
                                     ),
                                   ),
@@ -1305,10 +1293,7 @@ Future<Uint8List> _buildPdfInvoice({
                             fontSize: 8,
                           ),
                           formatMoneyMid(
-                            amount: returnInvoicesProvider()
-                                .getAmountPaid(
-                                  invoice: invoice,
-                                ),
+                            amount: invoice.getAmountPaid(),
                             context: context,
                           ),
                         ),
@@ -1339,10 +1324,9 @@ Future<Uint8List> _buildPdfInvoice({
                             fontSize: 12,
                           ),
                           formatMoneyMid(
-                            amount: returnInvoicesProvider()
-                                .getTotalMainRevenueInvoice(
-                                  invoice: invoice,
-                                ),
+                            amount:
+                                invoice
+                                    .getTotalMainRevenueInvoice(),
                             context: context,
                           ),
                         ),
@@ -2386,10 +2370,9 @@ Future<Uint8List> _buildPdfRollInvoice({
                           fontSize: parTextAlt,
                         ),
                         formatMoneyMid(
-                          amount: returnInvoicesProvider()
-                              .getOriginalCostInvoice(
-                                invoice,
-                              ),
+                          amount:
+                              invoice
+                                  .getOriginalCostInvoice(),
                           context: context,
                         ),
                       ),
@@ -2444,10 +2427,9 @@ Future<Uint8List> _buildPdfRollInvoice({
                                     fontSize: parTextAlt,
                                   ),
                                   formatMoneyMid(
-                                    amount: returnInvoicesProvider()
-                                        .getDiscountAmountForInvoice(
-                                          invoice,
-                                        ),
+                                    amount:
+                                        invoice
+                                            .getDiscountAmountForInvoice(),
                                     context: context,
                                   ),
                                 ),
@@ -2505,11 +2487,8 @@ Future<Uint8List> _buildPdfRollInvoice({
                                   ),
                                   formatMoneyMid(
                                     amount:
-                                        returnInvoicesProvider()
-                                            .getVATInvoice(
-                                              invoice:
-                                                  invoice,
-                                            ),
+                                        invoice
+                                            .getVATInvoice(),
                                     context: context,
                                   ),
                                 ),
@@ -2527,10 +2506,7 @@ Future<Uint8List> _buildPdfRollInvoice({
                 pw.SizedBox(height: 1),
                 pw.Builder(
                   builder: (pdfContext) {
-                    if (returnInvoicesProvider().getBalance(
-                          invoice: invoice,
-                        ) >
-                        0) {
+                    if (invoice.getBalance() > 0) {
                       return pw.Column(
                         children: [
                           pw.Row(
@@ -2563,11 +2539,8 @@ Future<Uint8List> _buildPdfRollInvoice({
                                   ),
                                   formatMoneyMid(
                                     amount:
-                                        returnInvoicesProvider()
-                                            .getBalance(
-                                              invoice:
-                                                  invoice,
-                                            ),
+                                        invoice
+                                            .getBalance(),
                                     context: context,
                                   ),
                                 ),
@@ -2612,10 +2585,7 @@ Future<Uint8List> _buildPdfRollInvoice({
                             ),
                             formatMoneyMid(
                               amount:
-                                  returnInvoicesProvider()
-                                      .getAmountPaid(
-                                        invoice: invoice,
-                                      ),
+                                  invoice.getAmountPaid(),
                               context: context,
                             ),
                           ),
@@ -2647,10 +2617,9 @@ Future<Uint8List> _buildPdfRollInvoice({
                           fontSize: parText,
                         ),
                         formatMoneyMid(
-                          amount: returnInvoicesProvider()
-                              .getTotalMainRevenueInvoice(
-                                invoice: invoice,
-                              ),
+                          amount:
+                              invoice
+                                  .getTotalMainRevenueInvoice(),
                           context: context,
                         ),
                       ),

@@ -5,7 +5,6 @@ import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
@@ -15,6 +14,7 @@ import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
+import 'package:stockall/pages/invoices/invoice_page/invoice_page_desktop.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:stockall/services/printing/printer_service_mobile.dart';
@@ -50,8 +50,8 @@ class _InvoicePageMobileState
                     inv.uuid ==
                     widget.checkoutResponse.invoice?.uuid,
               );
-          paymentController.text = returnInvoicesProvider()
-              .getBalance(invoice: invoice)
+          paymentController.text = invoice
+              .getBalance()
               .toStringAsFixed(0);
         }
         paymentNode.requestFocus();
@@ -1041,10 +1041,8 @@ class _InvoicePageMobileState
                                                             FontWeight.bold,
                                                       ),
                                                       formatMoneyBig(
-                                                        amount: returnInvoicesProvider().getVATInvoice(
-                                                          invoice:
-                                                              invoice,
-                                                        ),
+                                                        amount:
+                                                            invoice.getVATInvoice(),
                                                         context:
                                                             context,
                                                       ),
@@ -1105,9 +1103,8 @@ class _InvoicePageMobileState
                                                             FontWeight.bold,
                                                       ),
                                                       formatMoneyBig(
-                                                        amount: returnInvoicesProvider().getDiscountAmountForInvoice(
-                                                          invoice,
-                                                        ),
+                                                        amount:
+                                                            invoice.getDiscountAmountForInvoice(),
                                                         context:
                                                             context,
                                                       ),
@@ -1151,10 +1148,8 @@ class _InvoicePageMobileState
                                                           FontWeight.bold,
                                                     ),
                                                     formatMoneyBig(
-                                                      amount: returnInvoicesProvider().getTotalMainRevenueInvoice(
-                                                        invoice:
-                                                            invoice,
-                                                      ),
+                                                      amount:
+                                                          invoice.getTotalMainRevenueInvoice(),
                                                       context:
                                                           context,
                                                     ),
@@ -1248,10 +1243,8 @@ class _InvoicePageMobileState
                                                               //         .green,
                                                             ),
                                                             formatMoneyMid(
-                                                              amount: returnInvoicesProvider().getTotalMainRevenueInvoice(
-                                                                invoice:
-                                                                    invoice,
-                                                              ),
+                                                              amount:
+                                                                  invoice.getTotalMainRevenueInvoice(),
                                                               context:
                                                                   context,
                                                             ),
@@ -1287,10 +1280,8 @@ class _InvoicePageMobileState
                                                               //         .green,
                                                             ),
                                                             formatMoneyMid(
-                                                              amount: returnInvoicesProvider().getAmountPaid(
-                                                                invoice:
-                                                                    invoice,
-                                                              ),
+                                                              amount:
+                                                                  invoice.getAmountPaid(),
                                                               context:
                                                                   context,
                                                             ),
@@ -1326,10 +1317,8 @@ class _InvoicePageMobileState
                                                               //         .green,
                                                             ),
                                                             formatMoneyMid(
-                                                              amount: returnInvoicesProvider().getBalance(
-                                                                invoice:
-                                                                    invoice,
-                                                              ),
+                                                              amount:
+                                                                  invoice.getBalance(),
                                                               context:
                                                                   context,
                                                             ),
@@ -1352,22 +1341,10 @@ class _InvoicePageMobileState
                                                           ),
                                                       border: Border.all(
                                                         color:
-                                                            returnInvoicesProvider(
-                                                                      context:
-                                                                          context,
-                                                                    ).getInvoiceStatus(
-                                                                      invoice:
-                                                                          invoice,
-                                                                    ) ==
+                                                            invoice.getInvoiceStatus() ==
                                                                     0
                                                                 ? Colors.red
-                                                                : returnInvoicesProvider(
-                                                                      context:
-                                                                          context,
-                                                                    ).getInvoiceStatus(
-                                                                      invoice:
-                                                                          invoice,
-                                                                    ) ==
+                                                                : invoice.getInvoiceStatus() ==
                                                                     1
                                                                 ? const Color.fromARGB(
                                                                   255,
@@ -1385,22 +1362,10 @@ class _InvoicePageMobileState
                                                         fontWeight:
                                                             FontWeight.bold,
                                                         color:
-                                                            returnInvoicesProvider(
-                                                                      context:
-                                                                          context,
-                                                                    ).getInvoiceStatus(
-                                                                      invoice:
-                                                                          invoice,
-                                                                    ) ==
+                                                            invoice.getInvoiceStatus() ==
                                                                     0
                                                                 ? Colors.red
-                                                                : returnInvoicesProvider(
-                                                                      context:
-                                                                          context,
-                                                                    ).getInvoiceStatus(
-                                                                      invoice:
-                                                                          invoice,
-                                                                    ) ==
+                                                                : invoice.getInvoiceStatus() ==
                                                                     1
                                                                 ? const Color.fromARGB(
                                                                   255,
@@ -1410,22 +1375,10 @@ class _InvoicePageMobileState
                                                                 )
                                                                 : Colors.green,
                                                       ),
-                                                      returnInvoicesProvider(
-                                                                context:
-                                                                    context,
-                                                              ).getInvoiceStatus(
-                                                                invoice:
-                                                                    invoice,
-                                                              ) ==
+                                                      invoice.getInvoiceStatus() ==
                                                               0
                                                           ? 'Unpaid'
-                                                          : returnInvoicesProvider(
-                                                                context:
-                                                                    context,
-                                                              ).getInvoiceStatus(
-                                                                invoice:
-                                                                    invoice,
-                                                              ) ==
+                                                          : invoice.getInvoiceStatus() ==
                                                               1
                                                           ? 'Partial'
                                                           : 'Paid',
@@ -1754,16 +1707,10 @@ class _InvoicePageMobileState
                                                               ),
                                                             ) ??
                                                             0) >=
-                                                        returnInvoicesProvider().getBalance(
-                                                          invoice:
-                                                              invoice,
-                                                        )) {
+                                                        invoice.getBalance()) {
                                                       paymentController
-                                                          .text = returnInvoicesProvider()
-                                                          .getBalance(
-                                                            invoice:
-                                                                invoice,
-                                                          )
+                                                          .text = invoice
+                                                          .getBalance()
                                                           .toStringAsFixed(
                                                             0,
                                                           );
@@ -1779,10 +1726,7 @@ class _InvoicePageMobileState
                                                               ),
                                                             ) ??
                                                             0) <
-                                                        returnInvoicesProvider().getBalance(
-                                                          invoice:
-                                                              invoice,
-                                                        )) {
+                                                        invoice.getBalance()) {
                                                       setState(() {
                                                         paymentSelected =
                                                             1;
@@ -1820,158 +1764,34 @@ class _InvoicePageMobileState
                                                       SystemMouseCursors
                                                           .click,
                                                   onTap: () {
-                                                    if (paymentController.text.isNotEmpty &&
-                                                        paymentController.text !=
-                                                            '0' &&
-                                                        !isLoading) {
-                                                      showDialog(
-                                                        context:
-                                                            context,
-                                                        builder: (
-                                                          confirmDialog,
-                                                        ) {
-                                                          return ConfirmationAlert(
-                                                            theme:
-                                                                theme,
-                                                            message:
-                                                                'You are about to pay for an invoice. Are you sure you want to proceed?',
-                                                            title:
-                                                                'Make Payment',
-                                                            action: () async {
-                                                              Navigator.of(
-                                                                confirmDialog,
-                                                              ).pop();
-                                                              setState(
-                                                                () {
-                                                                  isLoading =
-                                                                      true;
-                                                                },
-                                                              );
-                                                              var tempInvoice = TempInvoice(
-                                                                comment:
-                                                                    invoice.comment,
-                                                                subStaffName:
-                                                                    invoice.subStaffName,
-                                                                departmentUuidNew:
-                                                                    invoice.departmentUuidNew,
-                                                                uuid:
-                                                                    invoice.uuid,
-                                                                createdAt:
-                                                                    invoice.createdAt,
-                                                                shopId:
-                                                                    invoice.shopId,
-                                                                staffId:
-                                                                    invoice.staffId,
-                                                                staffName:
-                                                                    invoice.staffName,
-                                                                paymentMethod:
-                                                                    invoice.paymentMethod,
-                                                                bank:
-                                                                    (invoice.bank),
-                                                                cashAlt:
-                                                                    (invoice.cashAlt),
-                                                                customerName:
-                                                                    invoice.customerName,
-                                                                customerUuid:
-                                                                    invoice.customerUuid,
-                                                                departmentName:
-                                                                    invoice.departmentName,
-                                                                departmentUuid:
-                                                                    invoice.departmentUuid,
-                                                                fixedDiscount:
-                                                                    invoice.fixedDiscount,
-                                                                generalDiscount:
-                                                                    invoice.generalDiscount,
-                                                                originalCost:
-                                                                    invoice.originalCost,
-                                                                vat:
-                                                                    invoice.vat,
-                                                                subStaffUuid:
-                                                                    invoice.subStaffUuid,
-                                                                cartName:
-                                                                    invoice.cartName,
-                                                              );
-
-                                                              var res = await returnInvoicesProvider().makeInvoicePayment(
-                                                                invoice:
-                                                                    tempInvoice,
-                                                                salesRecords:
-                                                                    saleRecords,
-                                                                currentPayment:
-                                                                    (double.tryParse(
-                                                                          paymentController.text.replaceAll(
-                                                                            ',',
-                                                                            '',
-                                                                          ),
-                                                                        ) ??
-                                                                        0),
-                                                              );
-
-                                                              if (res ==
-                                                                  0) {
-                                                                setState(
-                                                                  () {
-                                                                    isLoading =
-                                                                        false;
-                                                                  },
-                                                                );
-                                                                showDialog(
-                                                                  // ignore: use_build_context_synchronously
-                                                                  context:
-                                                                      context,
-                                                                  builder: (
-                                                                    popDialog,
-                                                                  ) {
-                                                                    return InfoAlert(
-                                                                      theme:
-                                                                          theme,
-                                                                      message:
-                                                                          'An Error Occoured while making this payment. Please try again.',
-                                                                      title:
-                                                                          'An Error Occoured',
-                                                                    );
-                                                                  },
-                                                                );
-                                                              } else {
-                                                                setState(
-                                                                  () {
-                                                                    isLoading =
-                                                                        false;
-                                                                  },
-                                                                );
-                                                                actionResultDialog(
-                                                                  // ignore: use_build_context_synchronously
-                                                                  context:
-                                                                      context,
-                                                                  isSuccess:
-                                                                      res ==
-                                                                              0
-                                                                          ? false
-                                                                          : true,
-                                                                  message:
-                                                                      res ==
-                                                                              0
-                                                                          ? 'An error Occoured'
-                                                                          : 'Payment Successful',
-                                                                );
-                                                                if (context.mounted) {
-                                                                  paymentController.clear();
-                                                                }
-                                                                setState(
-                                                                  () {
-                                                                    paymentSelected =
-                                                                        null;
-                                                                  },
-                                                                );
-                                                              }
-                                                            },
-                                                          );
-                                                        },
-                                                      );
-                                                    } else {
-                                                      paymentNode
-                                                          .requestFocus();
-                                                    }
+                                                    makePartPaymentAction(
+                                                      setPaymentSelected: () {
+                                                        setState(() {
+                                                          paymentSelected =
+                                                              null;
+                                                        });
+                                                      },
+                                                      paymentNode:
+                                                          paymentNode,
+                                                      saleRecords:
+                                                          saleRecords,
+                                                      context:
+                                                          context,
+                                                      invoice:
+                                                          invoice,
+                                                      isLoading:
+                                                          isLoading,
+                                                      paymentController:
+                                                          paymentController,
+                                                      toggleLoading: (
+                                                        value,
+                                                      ) {
+                                                        setState(() {
+                                                          isLoading =
+                                                              value;
+                                                        });
+                                                      },
+                                                    );
                                                   },
                                                   child: Container(
                                                     padding: EdgeInsets.symmetric(
@@ -2240,52 +2060,52 @@ class _InvoicePageMobileState
     );
   }
 
-  Future<dynamic> actionResultDialog({
-    required BuildContext context,
-    required String message,
-    required bool isSuccess,
-  }) async {
-    await showDialog(
-      barrierDismissible: false,
-      // ignore: use_build_context_synchronously
-      context: context,
-      builder: (dialogContext) {
-        Future.delayed(const Duration(seconds: 3), () {
-          if (dialogContext.mounted) {
-            if (Navigator.of(dialogContext).canPop()) {
-              Navigator.of(dialogContext).pop();
-            }
-          }
-        });
+  // Future<dynamic> actionResultDialog({
+  //   required BuildContext context,
+  //   required String message,
+  //   required bool isSuccess,
+  // }) async {
+  //   await showDialog(
+  //     barrierDismissible: false,
+  //     // ignore: use_build_context_synchronously
+  //     context: context,
+  //     builder: (dialogContext) {
+  //       Future.delayed(const Duration(seconds: 3), () {
+  //         if (dialogContext.mounted) {
+  //           if (Navigator.of(dialogContext).canPop()) {
+  //             Navigator.of(dialogContext).pop();
+  //           }
+  //         }
+  //       });
 
-        return AlertDialog(
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 10,
-          ),
-          backgroundColor: Colors.white,
-          content: Container(
-            height: 400,
-            width: 400,
-            color: Colors.white,
-            child: Builder(
-              builder: (context) {
-                if (!isSuccess) {
-                  return returnCompProvider(
-                    context,
-                    listen: false,
-                  ).showError(message);
-                } else {
-                  return returnCompProvider(
-                    context,
-                    listen: false,
-                  ).showSuccess(message);
-                }
-              },
-            ),
-          ),
-        );
-      },
-    );
-  }
+  //       return AlertDialog(
+  //         contentPadding: EdgeInsets.symmetric(
+  //           horizontal: 10,
+  //           vertical: 10,
+  //         ),
+  //         backgroundColor: Colors.white,
+  //         content: Container(
+  //           height: 400,
+  //           width: 400,
+  //           color: Colors.white,
+  //           child: Builder(
+  //             builder: (context) {
+  //               if (!isSuccess) {
+  //                 return returnCompProvider(
+  //                   context,
+  //                   listen: false,
+  //                 ).showError(message);
+  //               } else {
+  //                 return returnCompProvider(
+  //                   context,
+  //                   listen: false,
+  //                 ).showSuccess(message);
+  //               }
+  //             },
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 }

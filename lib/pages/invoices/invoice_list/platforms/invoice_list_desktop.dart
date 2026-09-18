@@ -170,7 +170,9 @@ class _InvoiceListDesktopState
                 child: DesktopPageContainer(
                   widget: Scaffold(
                     appBar: appBar(
-                      turnOff: true,
+                      turnOff:
+                          widget.customerUuid == null &&
+                          widget.agentUuid == null,
                       context: context,
                       title: 'All Invoices',
                       widget: Row(
@@ -290,44 +292,50 @@ class _InvoiceListDesktopState
                         ],
                       ),
                     ),
-                    floatingActionButton: FloatingActionButtonMain(
-                      action: () {
-                        SalesAuthAction()
-                            .invoiceManagementAction(
-                              context: context,
-                              action: () {
-                                if (authorization(
-                                  authorized:
-                                      Authorizations()
-                                          .makeSale,
-                                )) {
-                                  returnNavProvider(
-                                    context,
-                                    listen: false,
-                                  ).navigate(2);
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return MakeSalesPage(
-                                          cartItemTypeIndex:
-                                              2,
-                                        );
-                                      },
-                                    ),
-                                  ).then((_) {
-                                    setState(() {
-                                      // getProductList(context);
-                                    });
+                    floatingActionButton: Visibility(
+                      visible:
+                          widget.customerUuid == null &&
+                          widget.agentUuid == null,
+                      child: FloatingActionButtonMain(
+                        action: () {
+                          SalesAuthAction().invoiceManagementAction(
+                            context: context,
+                            action: () {
+                              if (authorization(
+                                authorized:
+                                    Authorizations()
+                                        .makeSale,
+                              )) {
+                                returnNavProvider(
+                                  context,
+                                  listen: false,
+                                ).navigate(2);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return MakeSalesPage(
+                                        cartItemTypeIndex:
+                                            2,
+                                      );
+                                    },
+                                  ),
+                                ).then((_) {
+                                  setState(() {
+                                    // getProductList(context);
                                   });
-                                }
-                              },
-                            );
-                      },
-                      color:
-                          theme.lightModeColor.secColor100,
-                      text: 'Create Invoice',
-                      theme: theme,
+                                });
+                              }
+                            },
+                          );
+                        },
+                        color:
+                            theme
+                                .lightModeColor
+                                .secColor100,
+                        text: 'Create Invoice',
+                        theme: theme,
+                      ),
                     ),
                     body: InvoiceListBodyDesktop(
                       agentUuid: widget.agentUuid,

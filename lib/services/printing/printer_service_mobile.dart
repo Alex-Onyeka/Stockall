@@ -1123,10 +1123,7 @@ Uint8List generateStyledInvoice({
 
   builder.addSeparator();
 
-  if (returnInvoicesProvider().getBalance(
-        invoice: invoice,
-      ) !=
-      0) {
+  if (invoice.getBalance() != 0) {
     builder.addTextMiddle('Invoice Receipt');
   } else {
     builder.addTextMiddle('PAID INVOICE');
@@ -1164,12 +1161,9 @@ Uint8List generateStyledInvoice({
   builder.addBlank();
   builder.addSeparator();
   builder.addBlank();
-  final subtotal = returnInvoicesProvider()
-      .getOriginalCostInvoice(invoice);
-  final total = returnInvoicesProvider()
-      .getTotalMainRevenueInvoice(invoice: invoice);
-  final discount = returnInvoicesProvider()
-      .getDiscountAmountForInvoice(invoice);
+  final subtotal = invoice.getOriginalCostInvoice();
+  final total = invoice.getTotalMainRevenueInvoice();
+  final discount = invoice.getDiscountAmountForInvoice();
 
   builder.addLeftRight(
     'Subtotal:',
@@ -1197,9 +1191,7 @@ Uint8List generateStyledInvoice({
     builder.addLeftRight(
       "VAT: [${invoice.vat ?? 0}%]",
       formatMoneyMid(
-        amount: returnInvoicesProvider().getVATInvoice(
-          invoice: invoice,
-        ),
+        amount: invoice.getVATInvoice(),
         context: context,
         isR: true,
       ),
@@ -1208,9 +1200,7 @@ Uint8List generateStyledInvoice({
   builder.addLeftRight(
     "Paid:",
     formatMoneyMid(
-      amount: (returnInvoicesProvider().getAmountPaid(
-        invoice: invoice,
-      )),
+      amount: (invoice.getAmountPaid()),
       context: context,
       isR: true,
     ),
@@ -1219,9 +1209,7 @@ Uint8List generateStyledInvoice({
   builder.addLeftRight(
     "Balance:",
     formatMoneyMid(
-      amount: (returnInvoicesProvider().getBalance(
-        invoice: invoice,
-      )),
+      amount: (invoice.getBalance()),
       context: context,
       isR: true,
     ),

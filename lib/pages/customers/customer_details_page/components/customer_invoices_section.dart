@@ -1,47 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/checkout_response.dart';
-import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
+import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
+import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
-import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
-class CustomerPurchasesSection extends StatelessWidget {
-  final String customerUuid;
-  const CustomerPurchasesSection({
+class CustomerInvoicesSection extends StatelessWidget {
+  final TempCustomersClass customer;
+  const CustomerInvoicesSection({
     super.key,
-    required this.customerUuid,
+    required this.customer,
   });
 
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    List<TempMainReceipt> sales =
-        returnReceiptProvider(context)
-                    .returnOwnReceiptsByDayOrWeek()
-                    .where(
-                      (item) =>
-                          item.customerUuid == customerUuid,
-                    )
-                    .length >
-                5
-            ? returnReceiptProvider(context)
-                .returnOwnReceiptsByDayOrWeek()
-                .where(
-                  (item) =>
-                      item.customerUuid == customerUuid,
-                )
-                .toList()
-                .sublist(0, 4)
-            : returnReceiptProvider(context)
-                .returnOwnReceiptsByDayOrWeek()
-                .where(
-                  (item) =>
-                      item.customerUuid == customerUuid,
-                )
-                .toList();
+    List<TempInvoice> sales =
+        customer.getInvoices().length > 5
+            ? customer.getInvoices().sublist(0, 4)
+            : customer.getInvoices();
 
     return Container(
       margin: EdgeInsets.only(top: 10),
@@ -85,7 +66,7 @@ class CustomerPurchasesSection extends StatelessWidget {
                           theme.mobileTexts.b4.fontSize,
                       fontWeight: FontWeight.bold,
                     ),
-                    'Today\'s Purchases'.toUpperCase(),
+                    'All Invoices'.toUpperCase(),
                   ),
                 ],
               ),
@@ -98,8 +79,8 @@ class CustomerPurchasesSection extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) {
-                          return TotalSalesPage(
-                            customerUuid: customerUuid,
+                          return InvoiceListPage(
+                            customerUuid: customer.uuid,
                           );
                         },
                       ),
@@ -141,7 +122,7 @@ class CustomerPurchasesSection extends StatelessWidget {
                 return Center(
                   child: EmptyWidgetDisplayOnly(
                     title: 'Empty List',
-                    subText: 'No Purchases Found for Today',
+                    subText: 'No Invoices Found for Today',
                     theme: theme,
                     height: 15,
                     icon: Icons.clear,
@@ -153,8 +134,8 @@ class CustomerPurchasesSection extends StatelessWidget {
                   children:
                       sales
                           .map(
-                            (item) => CustomerPurchasesList(
-                              receipt: item,
+                            (item) => CustomerInvoicesList(
+                              invoice: item,
                               theme: theme,
                             ),
                           )
@@ -169,12 +150,12 @@ class CustomerPurchasesSection extends StatelessWidget {
   }
 }
 
-class CustomerPurchasesList extends StatelessWidget {
-  final TempMainReceipt receipt;
-  const CustomerPurchasesList({
+class CustomerInvoicesList extends StatelessWidget {
+  final TempInvoice invoice;
+  const CustomerInvoicesList({
     super.key,
     required this.theme,
-    required this.receipt,
+    required this.invoice,
   });
 
   final ThemeProvider theme;
@@ -193,7 +174,7 @@ class CustomerPurchasesList extends StatelessWidget {
                 return ReceiptPage(
                   isMain: false,
                   response: CheckoutResponse(
-                    receipt: receipt,
+                    invoice: invoice,
                   ),
                 );
               },
@@ -227,9 +208,14 @@ class CustomerPurchasesList extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                     formatMoneyBig(
-                      amount: receipt.getTotalRevenue(),
+                      amount:
+                          invoice
+                              .getTotalMainRevenueInvoice(),
                       context: context,
                     ),
+                  ),
+                  InvoicePaymentStatusWidget(
+                    invoice: invoice,
                   ),
                 ],
               ),
@@ -242,7 +228,7 @@ class CustomerPurchasesList extends StatelessWidget {
                           theme.mobileTexts.b4.fontSize,
                       fontWeight: FontWeight.normal,
                     ),
-                    "${formatDateTime(receipt.createdAt)} - ${formatTime(receipt.createdAt)}",
+                    "${formatDateTime(invoice.createdAt)} - ${formatTime(invoice.createdAt)}",
                   ),
                   Icon(
                     size: 12,
@@ -253,6 +239,59 @@ class CustomerPurchasesList extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class InvoicePaymentStatusWidget extends StatefulWidget {
+  final TempInvoice invoice;
+  const InvoicePaymentStatusWidget({
+    super.key,
+    required this.invoice,
+  });
+
+  @override
+  State<InvoicePaymentStatusWidget> createState() =>
+      _InvoicePaymentStatusWidgetState();
+}
+
+class _InvoicePaymentStatusWidgetState
+    extends State<InvoicePaymentStatusWidget> {
+  Color mainColor() {
+    return widget.invoice.getInvoiceStatus() == 1
+        ? Colors.amber
+        : widget.invoice.getInvoiceStatus() == 2
+        ? Colors.green
+        : Colors.red;
+  }
+
+  String mainText() {
+    return widget.invoice.getInvoiceStatus() == 1
+        ? 'Partial'
+        : widget.invoice.getInvoiceStatus() == 2
+        ? 'Paid'
+        : 'Unpaid';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context);
+    return Container(
+      padding: EdgeInsets.symmetric(
+        vertical: 2,
+        horizontal: 4,
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: mainColor()),
+      ),
+      child: Text(
+        style: TextStyle(
+          color: mainColor(),
+          fontSize: theme.mobileTexts.b5.fontSize,
+        ),
+        mainText(),
       ),
     );
   }

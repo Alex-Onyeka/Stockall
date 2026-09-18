@@ -1,47 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/checkout_response.dart';
-import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
+import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
+import 'package:stockall/classes/temp_orders/orders.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/orders/order_list/order_list_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
-import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
-class CustomerPurchasesSection extends StatelessWidget {
-  final String customerUuid;
-  const CustomerPurchasesSection({
+class CustomerOrdersSection extends StatelessWidget {
+  final TempCustomersClass customer;
+  const CustomerOrdersSection({
     super.key,
-    required this.customerUuid,
+    required this.customer,
   });
 
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    List<TempMainReceipt> sales =
-        returnReceiptProvider(context)
-                    .returnOwnReceiptsByDayOrWeek()
-                    .where(
-                      (item) =>
-                          item.customerUuid == customerUuid,
-                    )
-                    .length >
-                5
-            ? returnReceiptProvider(context)
-                .returnOwnReceiptsByDayOrWeek()
-                .where(
-                  (item) =>
-                      item.customerUuid == customerUuid,
-                )
-                .toList()
-                .sublist(0, 4)
-            : returnReceiptProvider(context)
-                .returnOwnReceiptsByDayOrWeek()
-                .where(
-                  (item) =>
-                      item.customerUuid == customerUuid,
-                )
-                .toList();
+    List<Orders> orders =
+        customer.getOrders().length > 5
+            ? customer.getOrders().sublist(0, 4)
+            : customer.getOrders();
 
     return Container(
       margin: EdgeInsets.only(top: 10),
@@ -85,7 +66,7 @@ class CustomerPurchasesSection extends StatelessWidget {
                           theme.mobileTexts.b4.fontSize,
                       fontWeight: FontWeight.bold,
                     ),
-                    'Today\'s Purchases'.toUpperCase(),
+                    'All Orders'.toUpperCase(),
                   ),
                 ],
               ),
@@ -98,8 +79,8 @@ class CustomerPurchasesSection extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) {
-                          return TotalSalesPage(
-                            customerUuid: customerUuid,
+                          return OrderListPage(
+                            customerUuid: customer.uuid,
                           );
                         },
                       ),
@@ -137,11 +118,11 @@ class CustomerPurchasesSection extends StatelessWidget {
           Divider(color: Colors.grey.shade300, height: 25),
           Builder(
             builder: (context) {
-              if (sales.isEmpty) {
+              if (orders.isEmpty) {
                 return Center(
                   child: EmptyWidgetDisplayOnly(
                     title: 'Empty List',
-                    subText: 'No Purchases Found for Today',
+                    subText: 'No dOrders Found for Today',
                     theme: theme,
                     height: 15,
                     icon: Icons.clear,
@@ -151,10 +132,10 @@ class CustomerPurchasesSection extends StatelessWidget {
                 return Column(
                   spacing: 5,
                   children:
-                      sales
+                      orders
                           .map(
-                            (item) => CustomerPurchasesList(
-                              receipt: item,
+                            (item) => CustomerdOrdersList(
+                              order: item,
                               theme: theme,
                             ),
                           )
@@ -169,12 +150,12 @@ class CustomerPurchasesSection extends StatelessWidget {
   }
 }
 
-class CustomerPurchasesList extends StatelessWidget {
-  final TempMainReceipt receipt;
-  const CustomerPurchasesList({
+class CustomerdOrdersList extends StatelessWidget {
+  final Orders order;
+  const CustomerdOrdersList({
     super.key,
     required this.theme,
-    required this.receipt,
+    required this.order,
   });
 
   final ThemeProvider theme;
@@ -192,9 +173,7 @@ class CustomerPurchasesList extends StatelessWidget {
               builder: (context) {
                 return ReceiptPage(
                   isMain: false,
-                  response: CheckoutResponse(
-                    receipt: receipt,
-                  ),
+                  response: CheckoutResponse(order: order),
                 );
               },
             ),
@@ -227,10 +206,12 @@ class CustomerPurchasesList extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                     formatMoneyBig(
-                      amount: receipt.getTotalRevenue(),
+                      amount:
+                          order.getTotalMainRevenueOrder(),
                       context: context,
                     ),
                   ),
+                  OrdersPaymentStatusWidget(order: order),
                 ],
               ),
               Row(
@@ -242,7 +223,7 @@ class CustomerPurchasesList extends StatelessWidget {
                           theme.mobileTexts.b4.fontSize,
                       fontWeight: FontWeight.normal,
                     ),
-                    "${formatDateTime(receipt.createdAt)} - ${formatTime(receipt.createdAt)}",
+                    "${formatDateTime(order.createdAt)} - ${formatTime(order.createdAt)}",
                   ),
                   Icon(
                     size: 12,
@@ -253,6 +234,59 @@ class CustomerPurchasesList extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class OrdersPaymentStatusWidget extends StatefulWidget {
+  final Orders order;
+  const OrdersPaymentStatusWidget({
+    super.key,
+    required this.order,
+  });
+
+  @override
+  State<OrdersPaymentStatusWidget> createState() =>
+      _OrdersPaymentStatusWidgetState();
+}
+
+class _OrdersPaymentStatusWidgetState
+    extends State<OrdersPaymentStatusWidget> {
+  Color mainColor() {
+    return widget.order.getOrderStatus() == 1
+        ? Colors.amber
+        : widget.order.getOrderStatus() == 2
+        ? Colors.green
+        : Colors.red;
+  }
+
+  String mainText() {
+    return widget.order.getOrderStatus() == 1
+        ? 'Partial'
+        : widget.order.getOrderStatus() == 2
+        ? 'Paid'
+        : 'Unpaid';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context);
+    return Container(
+      padding: EdgeInsets.symmetric(
+        vertical: 2,
+        horizontal: 4,
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: mainColor()),
+      ),
+      child: Text(
+        style: TextStyle(
+          color: mainColor(),
+          fontSize: theme.mobileTexts.b5.fontSize,
+        ),
+        mainText(),
       ),
     );
   }

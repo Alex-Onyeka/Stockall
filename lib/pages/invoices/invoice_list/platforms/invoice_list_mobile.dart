@@ -107,33 +107,38 @@ class InvoiceListMobileState
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButtonMain(
-        action: () {
-          SalesAuthAction().invoiceManagementAction(
-            context: context,
-            action: () {
-              if (authorization(
-                authorized: Authorizations().makeSale,
-              )) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return MakeSalesPage(
-                        cartItemTypeIndex: 2,
-                      );
-                    },
-                  ),
-                ).then((_) {
-                  setState(() {});
-                });
-              }
-            },
-          );
-        },
-        color: theme.lightModeColor.secColor100,
-        text: 'Create Invoice',
-        theme: theme,
+      floatingActionButton: Visibility(
+        visible:
+            widget.customerUuid == null &&
+            widget.agentUuid == null,
+        child: FloatingActionButtonMain(
+          action: () {
+            SalesAuthAction().invoiceManagementAction(
+              context: context,
+              action: () {
+                if (authorization(
+                  authorized: Authorizations().makeSale,
+                )) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return MakeSalesPage(
+                          cartItemTypeIndex: 2,
+                        );
+                      },
+                    ),
+                  ).then((_) {
+                    setState(() {});
+                  });
+                }
+              },
+            );
+          },
+          color: theme.lightModeColor.secColor100,
+          text: 'Create Invoice',
+          theme: theme,
+        ),
       ),
       body: InvoiceListBodyMobile(
         agentUuid: widget.agentUuid,

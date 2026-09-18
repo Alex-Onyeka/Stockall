@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
+import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_invoices/unsynced/created_invoices/created_invoices.dart';
 import 'package:stockall/classes/temp_invoices/unsynced/deleted_invoices/deleted_invoices.dart';
@@ -374,10 +375,53 @@ class InvoicesProvider extends ChangeNotifier {
     }
   }
 
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+
+  String? comment;
+
+  void setComment({required String? newComment}) {
+    comment = newComment;
+    notifyListeners();
+  }
+
+  int paymentOption = 1;
+
+  void changePaymentOptions(int index) {
+    paymentOption = index;
+    notifyListeners();
+  }
+
+  bool isBalanceSufficient(
+    String customerUuid,
+    double enteredValue,
+  ) {
+    List<TempCustomersClass> customers =
+        returnCustomersSingle().customers
+            .where((item) => item.uuid == customerUuid)
+            .toList();
+    if (customers.isNotEmpty) {
+      var customer = customers.first;
+      return customer.getBalance() >= enteredValue;
+    } else {
+      return false;
+    }
+  }
+
   Future<int> makeInvoicePayment({
     required TempInvoice invoice,
     required List<TempProductSaleRecord> salesRecords,
     required double currentPayment,
+    required double cashAmount,
+    required double bankAmount,
+    required double customerAmount,
+    String? comment,
   }) async {
     try {
       final createdAt = DateTime.now().toUtc();
@@ -385,17 +429,18 @@ class InvoicesProvider extends ChangeNotifier {
       TempMainReceipt receipt = TempMainReceipt(
         orderUuid: null,
         salesTypeIndex: 2,
-        comment: null,
+        comment: comment,
         subStaffName: invoice.subStaffName,
         createdAt: createdAt,
         shopId: invoice.shopId,
         staffId: AuthService().currentUser!,
         staffName:
             "${returnUserProviderSingle().currentUserMain!.name} ${returnUserProviderSingle().currentUserMain!.lastName}",
-        paymentMethod: 'Bank',
-        bank: currentPayment,
-        customerAccount: 0,
-        cashAlt: 0,
+        paymentMethod: returnSalesProvider()
+            .returnPaymentMethod(index: paymentOption),
+        bank: bankAmount,
+        customerAccount: customerAmount,
+        cashAlt: cashAmount,
         isInvoice: true,
         customerName: invoice.customerName,
         customerUuid: invoice.customerUuid,
@@ -407,8 +452,7 @@ class InvoicesProvider extends ChangeNotifier {
         fixedDiscount: invoice.fixedDiscount,
         vat: invoice.vat,
         originalCost: invoice.originalCost,
-        balance:
-            getBalance(invoice: invoice) - currentPayment,
+        balance: invoice.getBalance() - currentPayment,
         subStaffUuid: invoice.subStaffUuid,
         cartName: invoice.cartName,
       );
@@ -453,17 +497,13 @@ class InvoicesProvider extends ChangeNotifier {
                 quantity: record.quantity,
                 revenue: calcSalesRecordRevenue(
                   invoceTotalAmount:
-                      getTotalMainRevenueInvoice(
-                        invoice: invoice,
-                      ),
+                      invoice.getTotalMainRevenueInvoice(),
                   receiptPayment: currentPayment,
                   salesRecodRevenue: record.revenue,
                 ),
                 costPrice: calcSalesRecordCostPrice(
                   invoceTotalAmount:
-                      getTotalMainRevenueInvoice(
-                        invoice: invoice,
-                      ),
+                      invoice.getTotalMainRevenueInvoice(),
                   receiptPayment: currentPayment,
                   salesRecodCostPrice:
                       (record.costPrice ?? 0),
@@ -471,18 +511,15 @@ class InvoicesProvider extends ChangeNotifier {
                 discountedAmount:
                     calcSalesRecordDiscountedAmount(
                       invoceTotalAmount:
-                          getTotalMainRevenueInvoice(
-                            invoice: invoice,
-                          ),
+                          invoice
+                              .getTotalMainRevenueInvoice(),
                       receiptPayment: currentPayment,
                       salesRecodDiscountedAmount:
                           (record.discountedAmount ?? 0),
                     ),
                 originalCost: calcSalesRecordOriginalCost(
                   invoceTotalAmount:
-                      getTotalMainRevenueInvoice(
-                        invoice: invoice,
-                      ),
+                      invoice.getTotalMainRevenueInvoice(),
                   receiptPayment: currentPayment,
                   salesRecodOriginalCost:
                       (record.originalCost ?? 0),
@@ -522,7 +559,7 @@ class InvoicesProvider extends ChangeNotifier {
             );
         await mainLocalLog('Sales Record Inserted');
         // invoice.balance =
-        //    getBalance(invoice: invoice) - currentPayment;
+        //    invoice.getBalance() - currentPayment;
         // invoice.status =
         await updateInvoice(
           invoice: invoice,
@@ -966,8 +1003,7 @@ class InvoicesProvider extends ChangeNotifier {
     return returnInvoicesByDayOrWeekAll()
         .where(
           (inv) =>
-              (inv.bank + inv.cashAlt) ==
-              getBalance(invoice: inv),
+              (inv.bank + inv.cashAlt) == inv.getBalance(),
         )
         .toList();
   }
@@ -976,16 +1012,15 @@ class InvoicesProvider extends ChangeNotifier {
     return returnInvoicesByDayOrWeekAll()
         .where(
           (inv) =>
-              getBalance(invoice: inv) != 0 &&
-              (inv.bank + inv.cashAlt) >
-                  getBalance(invoice: inv),
+              inv.getBalance() != 0 &&
+              (inv.bank + inv.cashAlt) > inv.getBalance(),
         )
         .toList();
   }
 
   List<TempInvoice> returnPaidInvoices() {
     return returnInvoicesByDayOrWeekAll()
-        .where((inv) => getBalance(invoice: inv) == 0)
+        .where((inv) => inv.getBalance() == 0)
         .toList();
   }
 
@@ -1032,20 +1067,19 @@ class InvoicesProvider extends ChangeNotifier {
           .where(
             (inv) =>
                 (inv.bank + inv.cashAlt) ==
-                getBalance(invoice: inv),
+                inv.getBalance(),
           )
           .toList();
     } else if (invoicePaymentStatusIndex == 1) {
       return returnInvoicesBasedOnPaymentStatus()
-          .where((inv) => getBalance(invoice: inv) == 0)
+          .where((inv) => inv.getBalance() == 0)
           .toList();
     } else if (invoicePaymentStatusIndex == 2) {
       return returnInvoicesBasedOnPaymentStatus()
           .where(
             (inv) =>
-                getBalance(invoice: inv) != 0 &&
-                (inv.bank + inv.cashAlt) >
-                    getBalance(invoice: inv),
+                inv.getBalance() != 0 &&
+                (inv.bank + inv.cashAlt) > inv.getBalance(),
           )
           .toList();
     } else {
@@ -1074,7 +1108,7 @@ class InvoicesProvider extends ChangeNotifier {
               (rec) => rec.customerUuid == customerId,
             )
             : returnInvoicesByDayOrWeekAll())) {
-      tempTotalRevenue += getBalance(invoice: invoice);
+      tempTotalRevenue += invoice.getBalance();
     }
 
     return tempTotalRevenue;
@@ -1083,70 +1117,6 @@ class InvoicesProvider extends ChangeNotifier {
   //
   //
   //
-
-  double getTotalMainRevenueInvoice({
-    required TempInvoice invoice,
-  }) {
-    var total = ((invoice.bank + invoice.cashAlt));
-
-    return total;
-  }
-
-  double getBalance({required TempInvoice invoice}) {
-    double tempValue = 0;
-    List<TempMainReceipt> receiptsTemp =
-        returnReceiptProviderSingle().receipts
-            .where((rec) => rec.invoiceUuid == invoice.uuid)
-            .toList();
-    for (var val in receiptsTemp) {
-      tempValue +=
-          (val.bank +
-              val.cashAlt +
-              (val.customerAccount ?? 0));
-    }
-    return getTotalMainRevenueInvoice(invoice: invoice) -
-        tempValue;
-  }
-
-  int getInvoiceStatus({required TempInvoice invoice}) {
-    if (getBalance(invoice: invoice) ==
-        getTotalMainRevenueInvoice(invoice: invoice)) {
-      return 0;
-    } else if (getBalance(invoice: invoice) <
-            getTotalMainRevenueInvoice(invoice: invoice) &&
-        getBalance(invoice: invoice) > 0) {
-      return 1;
-    } else {
-      return 2;
-    }
-  }
-
-  double getDiscountAmountForInvoice(TempInvoice invoice) {
-    if (invoice.fixedDiscount != null) {
-      return (invoice.fixedDiscount ?? 0);
-    } else if (invoice.generalDiscount != null) {
-      return (getOriginalCostInvoice(invoice) *
-          ((invoice.generalDiscount ?? 0) / 100));
-    } else {
-      return 0;
-    }
-  }
-
-  double getAmountPaid({required TempInvoice invoice}) {
-    return getTotalMainRevenueInvoice(invoice: invoice) -
-        getBalance(invoice: invoice);
-  }
-
-  double getVATInvoice({TempInvoice? invoice}) {
-    return invoice == null
-        ? 0
-        : (invoice.originalCost ?? 0) *
-            ((invoice.vat ?? 0) / 100);
-  }
-
-  double getOriginalCostInvoice(TempInvoice invoice) {
-    return invoice.originalCost ?? 0;
-  }
 
   //
   //
@@ -1431,8 +1401,8 @@ class InvoicesProvider extends ChangeNotifier {
       final group = grouped[staffUuid]!;
 
       group.number++;
-      group.totalBalance += getBalance(invoice: invoice);
-      group.totalPaid += getAmountPaid(invoice: invoice);
+      group.totalBalance += invoice.getBalance();
+      group.totalPaid += invoice.getAmountPaid();
       group.totalOriginalCost += invoice.originalCost ?? 0;
       group.totalRevenue += invoice.cashAlt + invoice.bank;
     }
@@ -1471,8 +1441,8 @@ class InvoicesProvider extends ChangeNotifier {
       final group = grouped[customerUuid]!;
 
       group.number++;
-      group.totalBalance += getBalance(invoice: invoice);
-      group.totalPaid += getAmountPaid(invoice: invoice);
+      group.totalBalance += invoice.getBalance();
+      group.totalPaid += invoice.getAmountPaid();
       group.totalOriginalCost += invoice.originalCost ?? 0;
       group.totalRevenue += invoice.cashAlt + invoice.bank;
     }
@@ -1509,8 +1479,8 @@ class InvoicesProvider extends ChangeNotifier {
       final group = grouped[paymentMethod]!;
 
       group.number++;
-      group.totalBalance += getBalance(invoice: invoice);
-      group.totalPaid += getAmountPaid(invoice: invoice);
+      group.totalBalance += invoice.getBalance();
+      group.totalPaid += invoice.getAmountPaid();
       group.totalOriginalCost += invoice.originalCost ?? 0;
       group.totalRevenue += invoice.cashAlt + invoice.bank;
     }
@@ -1546,8 +1516,8 @@ class InvoicesProvider extends ChangeNotifier {
       final group = grouped[departmentUuid]!;
 
       group.number++;
-      group.totalBalance += getBalance(invoice: invoice);
-      group.totalPaid += getAmountPaid(invoice: invoice);
+      group.totalBalance += invoice.getBalance();
+      group.totalPaid += invoice.getAmountPaid();
       group.totalOriginalCost += invoice.originalCost ?? 0;
       group.totalRevenue += invoice.cashAlt + invoice.bank;
     }
@@ -1720,14 +1690,14 @@ class InvoicesProvider extends ChangeNotifier {
 
   double rowTotalTotalBalance() {
     return returnAllOrSetDateInvoices()
-        .map((item) => getBalance(invoice: item))
+        .map((item) => item.getBalance())
         .toList()
         .fold(0, (p, n) => p + n);
   }
 
   double rowTotalTotalPaid() {
     return returnAllOrSetDateInvoices()
-        .map((item) => getAmountPaid(invoice: item))
+        .map((item) => item.getAmountPaid())
         .toList()
         .fold(0, (p, n) => p + n);
   }
@@ -1788,7 +1758,7 @@ class InvoicesProvider extends ChangeNotifier {
                 DataCell(
                   Text(
                     formatMoneyBig(
-                      amount: getAmountPaid(invoice: item),
+                      amount: item.getAmountPaid(),
                       context: context,
                     ),
                   ),
@@ -1796,7 +1766,7 @@ class InvoicesProvider extends ChangeNotifier {
                 DataCell(
                   Text(
                     formatMoneyBig(
-                      amount: getBalance(invoice: item),
+                      amount: item.getBalance(),
                       context: context,
                     ),
                   ),

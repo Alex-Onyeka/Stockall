@@ -103,33 +103,38 @@ class OrderListMobileState extends State<OrderListMobile> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButtonMain(
-        action: () {
-          SalesAuthAction().manageOrdersAction(
-            context: context,
-            action: () {
-              if (authorization(
-                authorized: Authorizations().makeSale,
-              )) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return MakeSalesPage(
-                        cartItemTypeIndex: 3,
-                      );
-                    },
-                  ),
-                ).then((_) {
-                  setState(() {});
-                });
-              }
-            },
-          );
-        },
-        color: theme.lightModeColor.secColor100,
-        text: 'Create Order',
-        theme: theme,
+      floatingActionButton: Visibility(
+        visible:
+            widget.customerUuid == null &&
+            widget.agentUuid == null,
+        child: FloatingActionButtonMain(
+          action: () {
+            SalesAuthAction().manageOrdersAction(
+              context: context,
+              action: () {
+                if (authorization(
+                  authorized: Authorizations().makeSale,
+                )) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return MakeSalesPage(
+                          cartItemTypeIndex: 3,
+                        );
+                      },
+                    ),
+                  ).then((_) {
+                    setState(() {});
+                  });
+                }
+              },
+            );
+          },
+          color: theme.lightModeColor.secColor100,
+          text: 'Create Order',
+          theme: theme,
+        ),
       ),
       body: OrderListBodyMobile(
         agentUuid: widget.agentUuid,

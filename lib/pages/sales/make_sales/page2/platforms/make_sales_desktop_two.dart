@@ -708,16 +708,20 @@ class _MakeSalesDesktopTwoState
                                           .manageCustomersAccountAndPoints(
                                             context: null,
                                           ) &&
-                                      returnShopProvider()
-                                              .userShop()
-                                              ?.manageCustomerReward ==
+                                      shop(
+                                            context,
+                                          )?.manageCustomerReward ==
                                           true &&
-                                      returnSalesProviderContext(
+                                      currentCart(
+                                            context:
                                                 context,
-                                              )
-                                              .currentCart()
-                                              .selectedCustomer !=
-                                          null,
+                                          ).selectedCustomer !=
+                                          null &&
+                                      currentCart(
+                                            context:
+                                                context,
+                                          ).cartItemTypeIndex !=
+                                          3,
                                   child: Column(
                                     children: [
                                       SizedBox(height: 5),
