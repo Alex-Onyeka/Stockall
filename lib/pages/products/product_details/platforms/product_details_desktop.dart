@@ -1558,6 +1558,63 @@ class _ProductDetailsDesktopState
         children: [
           Row(
             children: [
+              Expanded(
+                child: TabContainer(
+                  isMoney: false,
+                  text: product.getSingleUnit(),
+                  price: product.quantity ?? 0,
+                  theme: widget.theme,
+                  backGround:
+                      product.isManaged
+                          ? (product.quantity ?? 0) >
+                                  product.lowQtty!
+                              ? const Color.fromARGB(
+                                18,
+                                2,
+                                163,
+                                31,
+                              )
+                              : const Color.fromARGB(
+                                15,
+                                207,
+                                6,
+                                29,
+                              )
+                          : const Color.fromARGB(
+                            48,
+                            158,
+                            158,
+                            158,
+                          ),
+                  border:
+                      product.isManaged
+                          ? (product.quantity ?? 0) >
+                                  product.lowQtty!
+                              ? const Color.fromARGB(
+                                63,
+                                2,
+                                163,
+                                31,
+                              )
+                              : const Color.fromARGB(
+                                57,
+                                176,
+                                4,
+                                30,
+                              )
+                          : const Color.fromARGB(
+                            45,
+                            158,
+                            158,
+                            158,
+                          ),
+                ),
+              ),
+
+              Visibility(
+                visible: product.useGroupUnit == true,
+                child: SizedBox(width: 10),
+              ),
               Visibility(
                 visible: product.useGroupUnit == true,
                 child: Expanded(
@@ -1613,62 +1670,6 @@ class _ProductDetailsDesktopState
                               158,
                             ),
                   ),
-                ),
-              ),
-              Visibility(
-                visible: product.useGroupUnit == true,
-                child: SizedBox(width: 10),
-              ),
-              Expanded(
-                child: TabContainer(
-                  isMoney: false,
-                  text: product.getSingleUnit(),
-                  price: product.quantity ?? 0,
-                  theme: widget.theme,
-                  backGround:
-                      product.isManaged
-                          ? (product.quantity ?? 0) >
-                                  product.lowQtty!
-                              ? const Color.fromARGB(
-                                18,
-                                2,
-                                163,
-                                31,
-                              )
-                              : const Color.fromARGB(
-                                15,
-                                207,
-                                6,
-                                29,
-                              )
-                          : const Color.fromARGB(
-                            48,
-                            158,
-                            158,
-                            158,
-                          ),
-                  border:
-                      product.isManaged
-                          ? (product.quantity ?? 0) >
-                                  product.lowQtty!
-                              ? const Color.fromARGB(
-                                63,
-                                2,
-                                163,
-                                31,
-                              )
-                              : const Color.fromARGB(
-                                57,
-                                176,
-                                4,
-                                30,
-                              )
-                          : const Color.fromARGB(
-                            45,
-                            158,
-                            158,
-                            158,
-                          ),
                 ),
               ),
             ],

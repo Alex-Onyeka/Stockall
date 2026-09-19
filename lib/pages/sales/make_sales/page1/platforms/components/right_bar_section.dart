@@ -364,6 +364,8 @@ class _RightBarSectionState extends State<RightBarSection> {
                                           product: product,
                                           action: () {
                                             addItemToCartFromCartItemList(
+                                              useTempCart:
+                                                  false,
                                               closeAction:
                                                   () {},
                                               context:
@@ -402,6 +404,7 @@ class _RightBarSectionState extends State<RightBarSection> {
 }
 
 void addItemToCartFromCartItemList({
+  required bool useTempCart,
   required TempProductClass product,
   required BuildContext context,
   required FocusNode qttyNode,
@@ -453,6 +456,7 @@ void addItemToCartFromCartItemList({
     );
   } else {
     selectProductSales(
+      useTempCart: useTempCart,
       isEdit: false,
       context: context,
       qttyNode: qttyNode,
@@ -460,7 +464,7 @@ void addItemToCartFromCartItemList({
       quantityController: quantityController,
       searchController: searchController,
       theme: theme,
-      cartItem: TempCartItem(
+      cartItemTemp: TempCartItem(
         uuid: cartItemTemp?.uuid ?? uuidGen(),
         itemUuid: product.uuid,
         isVoid: false,

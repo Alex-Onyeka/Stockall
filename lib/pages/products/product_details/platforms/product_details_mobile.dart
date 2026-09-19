@@ -767,9 +767,8 @@ class _ProductDetailsMobileState
                                           Visibility(
                                             visible:
                                                 product
-                                                    .isPartOfStorage() &&
-                                                product.useGroupUnit ==
-                                                    true,
+                                                    .useGroupUnit ==
+                                                true,
                                             child: SizedBox(
                                               width: 10,
                                             ),
@@ -777,9 +776,8 @@ class _ProductDetailsMobileState
                                           Visibility(
                                             visible:
                                                 product
-                                                    .isPartOfStorage() &&
-                                                product.useGroupUnit ==
-                                                    true,
+                                                    .useGroupUnit ==
+                                                true,
                                             child: Expanded(
                                               child: TabContainerMobile(
                                                 isMoney:
@@ -849,16 +847,8 @@ class _ProductDetailsMobileState
                                       ),
                                       Visibility(
                                         visible:
-                                            authorization(
-                                              authorized:
-                                                  Authorizations()
-                                                      .updateProduct,
-                                            ) &&
-                                            authorization(
-                                              authorized:
-                                                  Authorizations()
-                                                      .updateItemQuantity,
-                                            ),
+                                            product
+                                                .canUpdateQuantity(),
                                         child: SizedBox(
                                           height: 10,
                                         ),

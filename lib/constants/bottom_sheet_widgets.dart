@@ -2086,7 +2086,7 @@ void sizeTypeBottomSheet(
 void selectProductSales({
   required bool isEdit,
   required ThemeProvider theme,
-  required TempCartItem cartItem,
+  required TempCartItem cartItemTemp,
   required Function() closeAction,
   required TextEditingController priceController,
   required TextEditingController quantityController,
@@ -2094,6 +2094,7 @@ void selectProductSales({
   required FocusNode qttyNode,
   required FocusNode priceNode,
   required BuildContext context,
+  required bool useTempCart,
   // required double qttyTemp
 }) {
   bool isOnscreenKeyboardClicked = false;
@@ -2101,6 +2102,7 @@ void selectProductSales({
   double qqty = 0;
   bool useWholeSalePriceTemp = false;
   bool useGroupQuantityTemp = false;
+  TempCartItem cartItem = cartItemTemp.copyWith();
   bool useGroupUnit() {
     return cartItem.item.useGroupUnit ?? false;
   }
@@ -2264,7 +2266,7 @@ void selectProductSales({
                                       false) {
                                     if (!returnSalesProvider()
                                         .canAddProductToCart(
-                                          // isEdit: isEdit,
+                                          isEdit: isEdit,
                                           newCartItem:
                                               cartItem,
                                           quantityToAdd:
@@ -2281,7 +2283,7 @@ void selectProductSales({
                                               title:
                                                   "Quantity Limit Reached",
                                               message:
-                                                  "Only ${returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem)} available in stock.",
+                                                  "Only ${returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit)} available in stock.",
                                               theme: theme,
                                             ),
                                       ).then((_) {
@@ -2356,18 +2358,9 @@ void selectProductSales({
                                         ),
                                         MyToggleButton(
                                           boolValue:
-                                              // isEdit
-                                              //     ?
                                               useGroupQuantityTemp,
-                                          //     :
-                                          // cartItem
-                                          //     .useGroupQuantity ??
-                                          // false,
-                                          toggle: () {
-                                            // var salesProvider =
-                                            //     returnSalesProvider();
 
-                                            // if (isEdit) {
+                                          toggle: () {
                                             setState(() {
                                               if (useGroupQuantityTemp) {
                                                 useGroupQuantityTemp =
@@ -2375,6 +2368,14 @@ void selectProductSales({
                                               } else {
                                                 useGroupQuantityTemp =
                                                     true;
+                                                // if (currentCart()
+                                                //         .cartItemTypeIndex !=
+                                                //     3) {
+                                                //   quantityController
+                                                //           .text =
+                                                //       '0';
+                                                //   qqty = 0;
+                                                // }
                                               }
                                             });
                                           },
@@ -2459,13 +2460,6 @@ void selectProductSales({
                             SizedBox(height: 30),
                             Visibility(
                               visible:
-                                  // isEdit
-                                  //     ? (cartItem
-                                  //                 .getItem()
-                                  //                 ?.setCustomPrice ??
-                                  //             false) &&
-                                  //         !useWholeSalePriceTemp
-                                  //     :
                                   (cartItem
                                           .getItem()
                                           ?.setCustomPrice ??
@@ -2632,28 +2626,15 @@ void selectProductSales({
                                         ),
                                         MyToggleButton(
                                           boolValue:
-                                              // isEdit
-                                              //     ? useWholeSalePriceTemp
-                                              //     :
                                               useWholeSalePriceTemp,
                                           toggle: () {
                                             var salesProvider =
                                                 returnSalesProvider();
 
-                                            // if (isEdit) {
                                             setState(() {
                                               useWholeSalePriceTemp =
                                                   !useWholeSalePriceTemp;
                                             });
-                                            // } else {
-                                            // salesProvider
-                                            //     .toggleWholeSale(
-                                            //       cartItem:
-                                            //           cartItem,
-                                            //       context:
-                                            //           context,
-                                            //     );
-                                            // }
                                             priceController
                                                 .clear();
                                             salesProvider
@@ -2777,8 +2758,8 @@ void selectProductSales({
                                             false) {
                                           if (!returnSalesProvider()
                                               .canAddProductToCart(
-                                                // isEdit:
-                                                //     isEdit,
+                                                isEdit:
+                                                    isEdit,
                                                 newCartItem:
                                                     cartItem,
                                                 quantityToAdd:
@@ -2796,7 +2777,7 @@ void selectProductSales({
                                                     title:
                                                         "Quantity Limit Reached",
                                                     message:
-                                                        "Only ${returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem)} available in stock.",
+                                                        "Only ${returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit)} available in stock.",
                                                     theme:
                                                         theme,
                                                   ),
@@ -3035,7 +3016,9 @@ void selectProductSales({
                                           cartItem.quantity =
                                               qqty.toDouble();
                                           if (returnSalesProvider()
-                                              .isAddMultipleItemsToCart) {
+                                                  .isAddMultipleItemsToCart &&
+                                              useTempCart ==
+                                                  true) {
                                             cartItem.useGroupQuantity =
                                                 useGroupQuantityTemp;
                                             cartItem.useWholeSalePrice =
@@ -3240,8 +3223,8 @@ void selectProductSales({
                                                   ?.isManaged ??
                                               false) {
                                             if (!returnSalesProvider().canAddProductToCart(
-                                              // isEdit:
-                                              //     isEdit,
+                                              isEdit:
+                                                  isEdit,
                                               newCartItem:
                                                   cartItem,
                                               quantityToAdd:
@@ -3259,7 +3242,7 @@ void selectProductSales({
                                                       title:
                                                           "Quantity Limit Reached",
                                                       message:
-                                                          "Only ${returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem)} available in stock.",
+                                                          "Only ${returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit)} available in stock.",
                                                       theme:
                                                           theme,
                                                     ),
@@ -4052,6 +4035,8 @@ class _CustomBottomPanelState
                                                   return ProductTileCartSearch(
                                                     action: () {
                                                       addItemToCartFromCartItemList(
+                                                        useTempCart:
+                                                            true,
                                                         closeAction: () {
                                                           Navigator.of(
                                                             context,

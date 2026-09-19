@@ -77,7 +77,6 @@ class _CustomerSelectionWidgetState
                                   spacing: 15,
                                   children: [
                                     Column(
-                                      spacing: 10,
                                       children: [
                                         SizedBox(
                                           height: 20,
@@ -115,31 +114,43 @@ class _CustomerSelectionWidgetState
                                           text:
                                               'Select Customer',
                                         ),
-                                        MainButtonP(
-                                          themeProvider:
-                                              theme,
-                                          action: () {
-                                            showDialog(
-                                              context:
-                                                  context,
-                                              builder: (
-                                                confirmDialog,
-                                              ) {
-                                                return CreateTemporaryCustomerWidget();
+                                        Visibility(
+                                          visible:
+                                              currentCart()
+                                                  .cartItemTypeIndex ==
+                                              1,
+                                          child: Padding(
+                                            padding:
+                                                const EdgeInsets.only(
+                                                  top: 10.0,
+                                                ),
+                                            child: MainButtonP(
+                                              themeProvider:
+                                                  theme,
+                                              action: () {
+                                                showDialog(
+                                                  context:
+                                                      context,
+                                                  builder: (
+                                                    confirmDialog,
+                                                  ) {
+                                                    return CreateTemporaryCustomerWidget();
+                                                  },
+                                                ).then((_) {
+                                                  widget.refreshAction !=
+                                                          null
+                                                      ? widget
+                                                          .refreshAction!()
+                                                      : {};
+                                                  setState(
+                                                    () {},
+                                                  );
+                                                });
                                               },
-                                            ).then((_) {
-                                              widget.refreshAction !=
-                                                      null
-                                                  ? widget
-                                                      .refreshAction!()
-                                                  : {};
-                                              setState(
-                                                () {},
-                                              );
-                                            });
-                                          },
-                                          text:
-                                              'Create Temporary Customer',
+                                              text:
+                                                  'Create Temporary Customer',
+                                            ),
+                                          ),
                                         ),
                                       ],
                                     ),

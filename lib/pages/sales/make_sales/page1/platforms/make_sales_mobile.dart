@@ -1757,6 +1757,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                   )
                                                                   .isNotEmpty) {
                                                                 selectProductSales(
+                                                                  useTempCart:
+                                                                      false,
                                                                   priceNode:
                                                                       FocusNode(),
                                                                   isEdit:
@@ -1777,7 +1779,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                   //     item.quantity,
                                                                   context:
                                                                       context,
-                                                                  cartItem:
+                                                                  cartItemTemp:
                                                                       item,
                                                                 );
                                                               } else {
@@ -1881,6 +1883,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                           )
                                                                           .isNotEmpty) {
                                                                         selectProductSales(
+                                                                          useTempCart:
+                                                                              false,
                                                                           priceNode:
                                                                               FocusNode(),
                                                                           isEdit:
@@ -1901,7 +1905,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                           //     item.quantity,
                                                                           context:
                                                                               context,
-                                                                          cartItem:
+                                                                          cartItemTemp:
                                                                               item,
                                                                         );
                                                                       } else {

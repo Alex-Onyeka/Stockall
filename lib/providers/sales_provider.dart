@@ -294,22 +294,76 @@ class SalesProvider extends ChangeNotifier {
   }
 
   TempCart currentCart() {
-    // try {
     return currentMainCart().cartQueue.firstWhere(
       (cart) => cart.id == cartIdCache,
     );
-    // } catch (e) {
-    //   await mainLocalLog('Error Occoured: ${e.toString()}');
-    //   return TempCart(
-    //     cartItems: [],
-    //     cartItemTypeIndex: 1,
-    //     staffName: 'Alex',
-    //     staffId: 'staffId',
-    //     departmentName: 'departmentName',
-    //     departmentUuid: 'departmentUuid',
-    //     cartName: 'Beans',
-    //   );
-    // }
+  }
+
+  void updateCurrentCart(TempCart cart) {
+    currentCart().cartItems = cart.cartItems;
+    currentCart().id = cart.id;
+    currentCart().isInvoice = cart.isInvoice;
+    currentCart().selectedCustomer = cart.selectedCustomer;
+    currentCart().selectedCustomerName =
+        cart.selectedCustomerName;
+    currentCart().paymentMethod = cart.paymentMethod;
+    currentCart().discount = cart.discount;
+    currentCart().isReceiptEdit = cart.isReceiptEdit;
+    currentCart().receiptUuidEdit = cart.receiptUuidEdit;
+    currentCart().invoiceUuidEdit = cart.invoiceUuidEdit;
+    currentCart().createdDate = cart.createdDate;
+    currentCart().setCustomPrice = cart.setCustomPrice;
+    currentCart().fixedDiscount = cart.fixedDiscount;
+    currentCart().isSettingDiscountOpen =
+        cart.isSettingDiscountOpen;
+    currentCart().cartName = cart.cartName;
+    currentCart().subStaffUuid = cart.subStaffUuid;
+    currentCart().staffName = cart.staffName;
+    currentCart().staffId = cart.staffId;
+    currentCart().departmentUuid = cart.departmentUuid;
+    currentCart().departmentName = cart.departmentName;
+    currentCart().customDate = cart.customDate;
+    currentCart().hasPrintedDocket = cart.hasPrintedDocket;
+    currentCart().subStaffName = cart.subStaffName;
+    currentCart().timeOfDay = cart.timeOfDay;
+    currentCart().comment = cart.comment;
+    currentCart().cartItemTypeIndex =
+        cart.cartItemTypeIndex;
+    currentCart().orderUuidEdit = cart.orderUuidEdit;
+    currentCart().orderUuid = cart.orderUuid;
+  }
+
+  Future<void> updateCurrentCartItem(
+    TempCartItem cartItem,
+  ) async {
+    List<TempCartItem> temps =
+        currentCart().cartItems
+            .where((item) => item.uuid == cartItem.uuid)
+            .toList();
+    if (temps.isNotEmpty) {
+      var tempItem = temps.first;
+      tempItem.item = cartItem.item;
+      tempItem.itemUuid = cartItem.itemUuid;
+      tempItem.quantity = cartItem.quantity;
+      tempItem.discount = cartItem.discount;
+      tempItem.fixedDiscount = cartItem.fixedDiscount;
+      tempItem.customPrice = cartItem.customPrice;
+      tempItem.setCustomPrice = cartItem.setCustomPrice;
+      tempItem.addToStock = cartItem.addToStock;
+      tempItem.setTotalPrice = cartItem.setTotalPrice;
+      tempItem.useWholeSalePrice =
+          cartItem.useWholeSalePrice;
+      tempItem.salesRecordId = cartItem.salesRecordId;
+      tempItem.useGroupQuantity = cartItem.useGroupQuantity;
+      tempItem.qttyPerGroup = cartItem.qttyPerGroup;
+      tempItem.isVoid = cartItem.isVoid;
+      tempItem.uuid = cartItem.uuid;
+      tempItem.remainingQuantity =
+          cartItem.remainingQuantity;
+      tempItem.remainingBalance = cartItem.remainingBalance;
+    } else {
+      await mainLocalLog('Couldn\'t Find Cart Item');
+    }
   }
 
   Future<void> updateCurrentCartName(
@@ -1957,19 +2011,6 @@ class SalesProvider extends ChangeNotifier {
             order,
             [],
           );
-          // await returnEventsLogProvider().createLog(
-          //   returnEventsLogProvider().receiptAdapter(
-          //     receipt,
-          //     salesCartItem
-          //         .getCartItems()
-          //         .map(
-          //           (item) =>
-          //               item.getItem()?.name ?? 'Item Name',
-          //         )
-          //         .toList(),
-          //     2,
-          //   ),
-          // );
         } catch (e) {
           await mainLocalLog(
             'Error Deleting Order: ${e.toString()}',
@@ -1977,19 +2018,6 @@ class SalesProvider extends ChangeNotifier {
           return null;
         }
       } else {
-        // await returnEventsLogProvider().createLog(
-        //   returnEventsLogProvider().receiptAdapter(
-        //     receipt,
-        //     salesCartItem
-        //         .getCartItems()
-        //         .map(
-        //           (item) =>
-        //               item.getItem()?.name ?? 'Item Name',
-        //         )
-        //         .toList(),
-        //     1,
-        //   ),
-        // );
         await mainLocalLog('Order Uuid is null');
       }
 
@@ -2006,7 +2034,9 @@ class SalesProvider extends ChangeNotifier {
               );
 
               return OrderItems(
-                // remainingBalance: cartItem.revenue(),
+                originalUseGroupQuantity:
+                    cartItem.getItem()?.useGroupUnit ??
+                    false,
                 remainingQuantity: cartItem.quantity,
                 qttyPerGroup: cartItem.qttyPerGroup,
                 useGroupQuantity: cartItem.useGroupQuantity,
@@ -2374,7 +2404,7 @@ class SalesProvider extends ChangeNotifier {
       }
     }
     CartFunc().updateMainCart(currentMainCart());
-    print('Comment Updated: $comment');
+    mainLocalLog('Comment Updated: $comment');
     notifyListeners();
   }
 
@@ -2409,20 +2439,61 @@ class SalesProvider extends ChangeNotifier {
   //
   //
 
+  // double totalInAllCarts({
+  //   required TempCartItem newCartItem,
+  // }) {
+  //   double totalInAllCarts = 0;
+  //   for (var mainCart in mainCartQueue) {
+  //     for (final cart in mainCart.cartQueue.where(
+  //       (item) => item.cartItemTypeIndex != 3,
+  //     )) {
+  //       for (final cartItem in cart.getCartItems().where(
+  //         (item) => item != newCartItem,
+  //       )) {
+  //         if ((cartItem.itemUuid ?? cartItem.item.uuid) ==
+  //             (newCartItem.itemUuid ??
+  //                 newCartItem.item.uuid)) {
+  //           if (newCartItem.useGroupQuantity == true) {
+  //             totalInAllCarts += cartItem.getRealQuantity();
+  //           } else {
+  //             totalInAllCarts += cartItem.quantity;
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  //   return totalInAllCarts;
+  // }
+
   double totalInAllCarts({
     required TempCartItem newCartItem,
+    required bool isEdit,
   }) {
     double totalInAllCarts = 0;
+
+    final itemUuid =
+        newCartItem.itemUuid ?? newCartItem.item.uuid;
+
     for (var mainCart in mainCartQueue) {
       for (final cart in mainCart.cartQueue.where(
         (item) => item.cartItemTypeIndex != 3,
       )) {
-        for (final cartItem in cart.getCartItems().where(
-          (item) => item != newCartItem,
-        )) {
-          if ((cartItem.itemUuid ?? cartItem.item.uuid) ==
-              (newCartItem.itemUuid ??
-                  newCartItem.item.uuid)) {
+        for (final cartItem in cart.getCartItems()) {
+          final cartItemUuid =
+              cartItem.itemUuid ?? cartItem.item.uuid;
+
+          // During edit, ignore the existing version of this item.
+          if (isEdit && cartItemUuid == itemUuid) {
+            continue;
+          }
+
+          // During normal adding, don't count the exact object
+          // being added if it already exists somewhere.
+          if (!isEdit && cartItem == newCartItem) {
+            continue;
+          }
+
+          if (cartItemUuid == itemUuid) {
             if (newCartItem.useGroupQuantity == true) {
               totalInAllCarts += cartItem.getRealQuantity();
             } else {
@@ -2432,11 +2503,13 @@ class SalesProvider extends ChangeNotifier {
         }
       }
     }
+
     return totalInAllCarts;
   }
 
   double remainingQttyInAllCarts({
     required TempCartItem newCartItem,
+    required bool isEdit,
   }) {
     var tempList = returnData().productListMain.where(
       (item) =>
@@ -2445,10 +2518,16 @@ class SalesProvider extends ChangeNotifier {
     );
     if (tempList.isNotEmpty) {
       return (tempList.first.quantity ?? 0) -
-          totalInAllCarts(newCartItem: newCartItem);
+          totalInAllCarts(
+            newCartItem: newCartItem,
+            isEdit: isEdit,
+          );
     } else {
       return (newCartItem.getItem()?.quantity ?? 0) -
-          totalInAllCarts(newCartItem: newCartItem);
+          totalInAllCarts(
+            newCartItem: newCartItem,
+            isEdit: isEdit,
+          );
     }
   }
 
@@ -2545,6 +2624,7 @@ class SalesProvider extends ChangeNotifier {
     required TempCartItem newCartItem,
     required double quantityToAdd,
     bool? useGroupUnit,
+    required bool isEdit,
   }) {
     // This cart type does not have stock restrictions.
     if (currentCart().cartItemTypeIndex == 3) {
@@ -2588,6 +2668,7 @@ class SalesProvider extends ChangeNotifier {
 
     final currentQuantity = totalInAllCarts(
       newCartItem: newCartItem,
+      isEdit: isEdit,
     );
 
     final quantityToAddInStock =
@@ -2656,6 +2737,7 @@ class SalesProvider extends ChangeNotifier {
         useGroupUnit: null,
         newCartItem: newItem,
         quantityToAdd: newItem.quantity,
+        isEdit: false,
         // isEdit: false,
         // useGroupUnit: newItem.useGroupQuantity ?? false,
       )) {
@@ -2707,6 +2789,7 @@ class SalesProvider extends ChangeNotifier {
     // required bool isEdit,
   }) async {
     if (canAddProductToCart(
+      isEdit: false,
       useGroupUnit: null,
       newCartItem: newItem,
       quantityToAdd: newItem.quantity,
@@ -2876,6 +2959,7 @@ class SalesProvider extends ChangeNotifier {
     required bool setCustomPrice,
   }) async {
     if (canAddProductToCart(
+      isEdit: true,
       newCartItem: cartItem,
       quantityToAdd: number,
       useGroupUnit: null,
@@ -2925,10 +3009,13 @@ class SalesProvider extends ChangeNotifier {
                   : 0,
         ),
       );
+      await updateCurrentCartItem(cartItem);
       await CartFunc().updateMainCart(currentMainCart());
       notifyListeners();
     } else {
-      print('Cannot Add to Cart Because Quantity Ti Wa');
+      await mainLocalLog(
+        'Cannot Add to Cart Because Quantity Ti Wa',
+      );
     }
   }
 

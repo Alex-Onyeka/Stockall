@@ -193,6 +193,8 @@ class _BarcodeAndSearchTextFieldState
                                               .click,
                                       onTap: () {
                                         addItemToCartFromCartItemList(
+                                          useTempCart:
+                                              false,
                                           closeAction:
                                               () {},
                                           context: context,

@@ -94,6 +94,9 @@ class OrderItems extends HiveObject {
   @HiveField(29)
   double? tempQuantity;
 
+  @HiveField(30)
+  bool? originalUseGroupQuantity;
+
   OrderItems({
     required this.uuid,
     required this.orderId,
@@ -125,6 +128,7 @@ class OrderItems extends HiveObject {
     this.remainingBalance,
     required this.remainingQuantity,
     this.tempQuantity,
+    required this.originalUseGroupQuantity,
   });
 
   factory OrderItems.fromJson(Map<String, dynamic> json) {
@@ -165,6 +169,8 @@ class OrderItems extends HiveObject {
           (json['remaining_balance'] as num?)?.toDouble(),
       remainingQuantity:
           (json['remaining_quantity'] as num?)?.toDouble(),
+      originalUseGroupQuantity:
+          json['original_use_group_quantity'] as bool?,
     );
   }
 
@@ -199,6 +205,8 @@ class OrderItems extends HiveObject {
       'set_total_price': setTotalPrice,
       'remaining_balance': remainingBalance,
       'remaining_quantity': remainingQuantity,
+      'original_use_group_quantity':
+          originalUseGroupQuantity,
     };
   }
 
@@ -232,6 +240,7 @@ class OrderItems extends HiveObject {
     bool? setTotalPrice,
     double? remainingBalance,
     double? remainingQuantity,
+    bool? originalUseGroupQuantity,
   }) {
     return OrderItems(
       uuid: uuid ?? this.uuid,
@@ -269,7 +278,14 @@ class OrderItems extends HiveObject {
           remainingQuantity ?? this.remainingQuantity,
       remainingBalance:
           remainingBalance ?? this.remainingBalance,
+      originalUseGroupQuantity:
+          originalUseGroupQuantity ??
+          this.originalUseGroupQuantity,
     );
+  }
+
+  bool getOriginalUseGroupQuantity() {
+    return originalUseGroupQuantity ?? false;
   }
 
   double getRemainingBalance() {

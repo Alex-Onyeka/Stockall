@@ -1727,6 +1727,8 @@ class _MakeSalesDesktopState
                                                                                     )
                                                                                     .isNotEmpty) {
                                                                                   selectProductSales(
+                                                                                    useTempCart:
+                                                                                        false,
                                                                                     priceNode:
                                                                                         priceNode,
                                                                                     isEdit:
@@ -1747,7 +1749,7 @@ class _MakeSalesDesktopState
                                                                                     //     item.quantity,
                                                                                     context:
                                                                                         context,
-                                                                                    cartItem:
+                                                                                    cartItemTemp:
                                                                                         item,
                                                                                   );
                                                                                 } else {
@@ -1852,6 +1854,8 @@ class _MakeSalesDesktopState
                                                                                           )
                                                                                           .isNotEmpty) {
                                                                                         selectProductSales(
+                                                                                          useTempCart:
+                                                                                              false,
                                                                                           priceNode:
                                                                                               priceNode,
                                                                                           isEdit:
@@ -1872,7 +1876,7 @@ class _MakeSalesDesktopState
                                                                                           //     item.quantity,
                                                                                           context:
                                                                                               context,
-                                                                                          cartItem:
+                                                                                          cartItemTemp:
                                                                                               item,
                                                                                         );
                                                                                       } else {

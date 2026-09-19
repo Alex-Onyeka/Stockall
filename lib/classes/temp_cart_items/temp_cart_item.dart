@@ -470,6 +470,8 @@ class TempCartItem extends HiveObject {
     bool? isVoid,
     String? itemUuid,
     String? uuid,
+    double? remainingQuantity,
+    double? remainingBalance,
   }) {
     return TempCartItem(
       item: item ?? this.item,
@@ -489,6 +491,10 @@ class TempCartItem extends HiveObject {
       isVoid: isVoid ?? this.isVoid,
       itemUuid: itemUuid ?? this.itemUuid,
       uuid: uuid ?? this.uuid,
+      remainingQuantity:
+          remainingQuantity ?? this.remainingQuantity,
+      remainingBalance:
+          remainingBalance ?? this.remainingBalance,
     );
   }
 

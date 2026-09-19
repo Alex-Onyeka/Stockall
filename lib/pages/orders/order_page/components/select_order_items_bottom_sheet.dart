@@ -20,6 +20,10 @@ void selectOrderItemsBottomSheet({
   var theme = returnTheme(context, listen: false);
   bool isGroupTemp = false;
 
+  bool originalUseGroupUnit() {
+    return orderItem.getOriginalUseGroupQuantity();
+  }
+
   bool useGroupUnit() {
     return orderItem.useGroupQuantity ?? false;
   }
@@ -159,7 +163,7 @@ void selectOrderItemsBottomSheet({
                       ),
                     ),
                     Visibility(
-                      visible: useGroupUnit(),
+                      visible: originalUseGroupUnit(),
                       child: Column(
                         children: [
                           SizedBox(height: 20),
@@ -187,6 +191,8 @@ void selectOrderItemsBottomSheet({
                                       isGroupTemp =
                                           !isGroupTemp;
                                     });
+                                    quantityController
+                                        .text = '0';
                                   },
                                   theme: theme,
                                 ),
@@ -261,7 +267,64 @@ void selectOrderItemsBottomSheet({
                         SmallButtonMain(
                           theme: theme,
                           action: () {
-                            if ((double.tryParse(
+                            var itemQttyPerGroup =
+                                orderItem.qttyPerGroup ?? 1;
+                            var number =
+                                isGroupTemp
+                                    ? (itemQttyPerGroup *
+                                        (double.tryParse(
+                                              quantityController
+                                                  .text
+                                                  .replaceAll(
+                                                    ',',
+                                                    '',
+                                                  ),
+                                            ) ??
+                                            0))
+                                    : double.tryParse(
+                                          quantityController
+                                              .text
+                                              .replaceAll(
+                                                ',',
+                                                '',
+                                              ),
+                                        ) ??
+                                        0;
+                            if (originalItemQuantity() !=
+                                    null &&
+                                number >
+                                    (originalItemQuantity() ??
+                                        0)) {
+                              showDialog(
+                                context: context,
+                                builder: (errorContext) {
+                                  return InfoAlert(
+                                    theme: theme,
+                                    message:
+                                        'The Quantity you are trying to Deliver Exceeds Whats Left in your Stock: ${originalItemQuantity()}',
+                                    title:
+                                        'Insufficient Stock',
+                                  );
+                                },
+                              );
+                              return;
+                            } else {
+                              if ((double.tryParse(
+                                        quantityController
+                                            .text
+                                            .replaceAll(
+                                              ',',
+                                              '',
+                                            ),
+                                      ) ??
+                                      0) >
+                                  0) {
+                                OrderItems item =
+                                    orderItem.copyWith();
+                                item.useGroupQuantity =
+                                    isGroupTemp;
+                                item.quantity =
+                                    double.tryParse(
                                       quantityController
                                           .text
                                           .replaceAll(
@@ -269,27 +332,14 @@ void selectOrderItemsBottomSheet({
                                             '',
                                           ),
                                     ) ??
-                                    0) >
-                                0) {
-                              OrderItems item =
-                                  orderItem.copyWith();
-                              item.useGroupQuantity =
-                                  isGroupTemp;
-                              item.quantity =
-                                  double.tryParse(
-                                    quantityController.text
-                                        .replaceAll(
-                                          ',',
-                                          '',
-                                        ),
-                                  ) ??
-                                  0;
-                              returnOrdersActionProvider()
-                                  .addItemToList(
-                                    item: item,
-                                  );
-                              Navigator.of(context).pop();
-                              Navigator.of(context).pop();
+                                    0;
+                                returnOrdersActionProvider()
+                                    .addItemToList(
+                                      item: item,
+                                    );
+                                Navigator.of(context).pop();
+                                Navigator.of(context).pop();
+                              }
                             }
                           },
                           buttonText: 'Add Item',
