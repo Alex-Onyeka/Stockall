@@ -87,6 +87,7 @@ import 'package:stockall/local_database/waybills/unsync_funcs/created/created_wa
 import 'package:stockall/local_database/waybills/unsync_funcs/deleted/deleted_waybills_func.dart';
 import 'package:stockall/local_database/waybills/unsync_funcs/updated/updated_waybills_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/settings/components/clear_total_cache_widget.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/department_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -1490,6 +1491,810 @@ class DataProvider extends ChangeNotifier {
         return 0;
       }
     }
+  }
+
+  List<UnsyncedItems> unsyncedItems() {
+    List<UnsyncedItems> tempItems = [];
+
+    // Products
+    final createdProducts =
+        CreatedProductFunc().getProducts();
+    if (createdProducts.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Products',
+          quantity: createdProducts.length.toDouble(),
+        ),
+      );
+    }
+
+    final deletedProducts =
+        DeletedProductsFunc().getProductIds();
+    if (deletedProducts.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Deleted Products',
+          quantity: deletedProducts.length.toDouble(),
+        ),
+      );
+    }
+
+    final updatedProducts =
+        UpdatedProductsFunc().getProducts();
+    if (updatedProducts.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Updated Products',
+          quantity: updatedProducts.length.toDouble(),
+        ),
+      );
+    }
+
+    // Inventory
+    final createdInventoryUpdates =
+        CreatedInventoryUpdatesFunc()
+            .getCreatedInventoryUpdatess();
+    if (createdInventoryUpdates.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Inventory Updates',
+          quantity:
+              createdInventoryUpdates.length.toDouble(),
+        ),
+      );
+    }
+
+    final quantityUpdates =
+        QuantityUpdateFunc().getQuantitiesUpdate();
+    if (quantityUpdates.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Quantity Updates',
+          quantity: quantityUpdates.length.toDouble(),
+        ),
+      );
+    }
+
+    // Expenses
+    final createdExpenses =
+        CreatedExpensesFunc().getExpenses();
+    if (createdExpenses.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Expenses',
+          quantity: createdExpenses.length.toDouble(),
+        ),
+      );
+    }
+
+    final deletedExpenses =
+        DeletedExpensesFunc().getExpenseIds();
+    if (deletedExpenses.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Deleted Expenses',
+          quantity: deletedExpenses.length.toDouble(),
+        ),
+      );
+    }
+
+    final updatedExpenses =
+        UpdatedExpensesFunc().getExpenses();
+    if (updatedExpenses.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Updated Expenses',
+          quantity: updatedExpenses.length.toDouble(),
+        ),
+      );
+    }
+
+    // Customers
+    final createdCustomers =
+        CreatedCustomersFunc().getCustomers();
+    if (createdCustomers.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Customers',
+          quantity: createdCustomers.length.toDouble(),
+        ),
+      );
+    }
+
+    final deletedCustomers =
+        DeletedCustomersFunc().getCustomerIds();
+    if (deletedCustomers.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Deleted Customers',
+          quantity: deletedCustomers.length.toDouble(),
+        ),
+      );
+    }
+
+    // Customer Account Receipts
+    final createdCustomerAccountReceipts =
+        CreatedCustomerAccountReceiptsFunc()
+            .getCustomerAccountReceipts();
+    if (createdCustomerAccountReceipts.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Customer Account Receipts',
+          quantity:
+              createdCustomerAccountReceipts.length
+                  .toDouble(),
+        ),
+      );
+    }
+
+    final updatedCustomerAccountReceipts =
+        UpdatedCustomerAccountReceiptsFunc()
+            .getCustomerAccountReceiptsIds();
+    if (updatedCustomerAccountReceipts.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Updated Customer Account Receipts',
+          quantity:
+              updatedCustomerAccountReceipts.length
+                  .toDouble(),
+        ),
+      );
+    }
+
+    final deletedCustomerAccountReceipts =
+        DeletedCustomerAccountReceiptsFunc()
+            .getCustomerAccountReceiptsIds();
+    if (deletedCustomerAccountReceipts.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Deleted Customer Account Receipts',
+          quantity:
+              deletedCustomerAccountReceipts.length
+                  .toDouble(),
+        ),
+      );
+    }
+
+    final customerAccountUpdates =
+        CustomerAccountUpdateFunc().getQuantitiesUpdate();
+    if (customerAccountUpdates.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Customer Account Updates',
+          quantity:
+              customerAccountUpdates.length.toDouble(),
+        ),
+      );
+    }
+
+    // Receipts
+    final createdReceipts =
+        CreatedReceiptsFunc().getReceipts();
+    if (createdReceipts.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Receipts',
+          quantity: createdReceipts.length.toDouble(),
+        ),
+      );
+    }
+
+    final createdRecords =
+        CreatedRecordsFunc().getRecords();
+    if (createdRecords.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Records',
+          quantity: createdRecords.length.toDouble(),
+        ),
+      );
+    }
+
+    final deletedReceipts =
+        DeletedReceiptsFunc().getReceiptIds();
+    if (deletedReceipts.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Deleted Receipts',
+          quantity: deletedReceipts.length.toDouble(),
+        ),
+      );
+    }
+
+    final updatedReceipts =
+        UpdatedReceiptsFunc().getReceiptIds();
+    if (updatedReceipts.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Updated Receipts',
+          quantity: updatedReceipts.length.toDouble(),
+        ),
+      );
+    }
+
+    // Shop
+    final updatedShop = UpdatedShopFunc().getUpdatedShop();
+    if (updatedShop.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Updated Shop',
+          quantity: updatedShop.length.toDouble(),
+        ),
+      );
+    }
+
+    final createdShopLogo =
+        CreatedShopLogosFunc().getCreatedLogo();
+    if (createdShopLogo != null) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Shop Logo',
+          quantity: 1,
+        ),
+      );
+    }
+
+    // Events
+    final createdEventsLogs =
+        CreatedEventsLogFunc().getCreatedEventsLogs();
+    if (createdEventsLogs.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Events Logs',
+          quantity: createdEventsLogs.length.toDouble(),
+        ),
+      );
+    }
+
+    // Departments
+    final createdDepartments =
+        CreatedDepartmentsFunc().getDepartment();
+    if (createdDepartments.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Departments',
+          quantity: createdDepartments.length.toDouble(),
+        ),
+      );
+    }
+
+    final updatedDepartments =
+        UpdatedDepartmentFunc().getDepartments();
+    if (updatedDepartments.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Updated Departments',
+          quantity: updatedDepartments.length.toDouble(),
+        ),
+      );
+    }
+
+    final deletedDepartments =
+        DeletedDepartmentsFunc().getDepartmentIds();
+    if (deletedDepartments.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Deleted Departments',
+          quantity: deletedDepartments.length.toDouble(),
+        ),
+      );
+    }
+
+    // Invoices
+    final createdInvoices =
+        CreatedInvoicesFunc().getInvoices();
+    if (createdInvoices.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Invoices',
+          quantity: createdInvoices.length.toDouble(),
+        ),
+      );
+    }
+
+    final updatedInvoices =
+        UpdatedInvoicesFunc().getInvoiceIds();
+    if (updatedInvoices.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Updated Invoices',
+          quantity: updatedInvoices.length.toDouble(),
+        ),
+      );
+    }
+
+    final deletedInvoices =
+        DeletedInvoicesFunc().getInvoiceIds();
+    if (deletedInvoices.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Deleted Invoices',
+          quantity: deletedInvoices.length.toDouble(),
+        ),
+      );
+    }
+
+    // Sub Staff
+    final createdSubStaff =
+        CreatedSubStaffFunc().getSubStaffs();
+    if (createdSubStaff.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Sub Staff',
+          quantity: createdSubStaff.length.toDouble(),
+        ),
+      );
+    }
+
+    final updatedSubStaff =
+        UpdatedSubStaffFunc().getSubStaffs();
+    if (updatedSubStaff.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Updated Sub Staff',
+          quantity: updatedSubStaff.length.toDouble(),
+        ),
+      );
+    }
+
+    final deletedSubStaff =
+        DeletedSubStaffFunc().getSubStaffIds();
+    if (deletedSubStaff.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Deleted Sub Staff',
+          quantity: deletedSubStaff.length.toDouble(),
+        ),
+      );
+    }
+
+    // Categories
+    final createdCategories =
+        CreatedCategoriesFunc().getCreateCategories();
+    if (createdCategories.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Categories',
+          quantity: createdCategories.length.toDouble(),
+        ),
+      );
+    }
+
+    final updatedCategories =
+        UpdatedCategoriesFunc().getCategories();
+    if (updatedCategories.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Updated Categories',
+          quantity: updatedCategories.length.toDouble(),
+        ),
+      );
+    }
+
+    final deletedCategories =
+        DeletedCategoriesFunc().getCategoryIds();
+    if (deletedCategories.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Deleted Categories',
+          quantity: deletedCategories.length.toDouble(),
+        ),
+      );
+    }
+
+    // Suppliers
+    final createdSuppliers =
+        CreatedSupplierFunc().getSuppliers();
+    if (createdSuppliers.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Suppliers',
+          quantity: createdSuppliers.length.toDouble(),
+        ),
+      );
+    }
+
+    final updatedSuppliers =
+        UpdatedSupplierFunc().getSuppliers();
+    if (updatedSuppliers.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Updated Suppliers',
+          quantity: updatedSuppliers.length.toDouble(),
+        ),
+      );
+    }
+
+    final deletedSuppliers =
+        DeletedSupplierFunc().getSupplierIds();
+    if (deletedSuppliers.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Deleted Suppliers',
+          quantity: deletedSuppliers.length.toDouble(),
+        ),
+      );
+    }
+
+    // Purchases
+    final createdPurchases =
+        CreatedPurchasesFunc().getPurchases();
+    if (createdPurchases.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Purchases',
+          quantity: createdPurchases.length.toDouble(),
+        ),
+      );
+    }
+
+    final deletedPurchases =
+        DeletedPurchasesFunc().getPurchaseIds();
+    if (deletedPurchases.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Deleted Purchases',
+          quantity: deletedPurchases.length.toDouble(),
+        ),
+      );
+    }
+
+    final updatedPurchases =
+        UpdatedPurchasesFunc().getPurchaseIds();
+    if (updatedPurchases.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Updated Purchases',
+          quantity: updatedPurchases.length.toDouble(),
+        ),
+      );
+    }
+
+    // Item Purchases
+    final createdItemPurchases =
+        CreatedItemPurchaseFunc().getRecords();
+    if (createdItemPurchases.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Item Purchases',
+          quantity: createdItemPurchases.length.toDouble(),
+        ),
+      );
+    }
+
+    final deletedItemPurchases =
+        DeletedItemPurchaseFunc().getItemPurchaseIds();
+    if (deletedItemPurchases.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Deleted Item Purchases',
+          quantity: deletedItemPurchases.length.toDouble(),
+        ),
+      );
+    }
+
+    // Storage Products
+    final createdStorageProducts =
+        CreatedStorageProductsFunc().getStorageProducts();
+    if (createdStorageProducts.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Storage Products',
+          quantity:
+              createdStorageProducts.length.toDouble(),
+        ),
+      );
+    }
+
+    final updatedStorageProducts =
+        UpdatedStorageProductsFunc().getStorageProductIds();
+    if (updatedStorageProducts.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Updated Storage Products',
+          quantity:
+              updatedStorageProducts.length.toDouble(),
+        ),
+      );
+    }
+
+    final deletedStorageProducts =
+        DeletedStorageProductsFunc().getStorageProductIds();
+    if (deletedStorageProducts.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Deleted Storage Products',
+          quantity:
+              deletedStorageProducts.length.toDouble(),
+        ),
+      );
+    }
+
+    // Waybills
+    final createdWaybills =
+        CreatedWaybillsFunc().getWaybills();
+    if (createdWaybills.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Waybills',
+          quantity: createdWaybills.length.toDouble(),
+        ),
+      );
+    }
+
+    final updatedWaybills =
+        UpdatedWaybillsFunc().getWaybillIds();
+    if (updatedWaybills.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Updated Waybills',
+          quantity: updatedWaybills.length.toDouble(),
+        ),
+      );
+    }
+
+    final deletedWaybills =
+        DeletedWaybillsFunc().getWaybillIds();
+    if (deletedWaybills.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Deleted Waybills',
+          quantity: deletedWaybills.length.toDouble(),
+        ),
+      );
+    }
+
+    // Item Histories
+    final createdItemHistories =
+        CreatedItemHistoriesFunc()
+            .getCreatedItemHistoriess();
+    if (createdItemHistories.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Item Histories',
+          quantity: createdItemHistories.length.toDouble(),
+        ),
+      );
+    }
+
+    // Materials
+    final createdMaterials =
+        CreatedMaterialsFunc().getMaterials();
+    if (createdMaterials.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Materials',
+          quantity: createdMaterials.length.toDouble(),
+        ),
+      );
+    }
+
+    final updatedMaterials =
+        UpdatedMaterialsFunc().getMaterials();
+    if (updatedMaterials.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Updated Materials',
+          quantity: updatedMaterials.length.toDouble(),
+        ),
+      );
+    }
+
+    final deletedMaterials =
+        DeletedMaterialsFunc().getMaterialIds();
+    if (deletedMaterials.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Deleted Materials',
+          quantity: deletedMaterials.length.toDouble(),
+        ),
+      );
+    }
+
+    final materialsQuantityUpdates =
+        MaterialsQuantityUpdateFunc()
+            .getMaterialsQuantitiesUpdate();
+    if (materialsQuantityUpdates.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Materials Quantity Updates',
+          quantity:
+              materialsQuantityUpdates.length.toDouble(),
+        ),
+      );
+    }
+
+    final createdMaterialsItemHistories =
+        CreatedMaterialsItemHistoriesFunc()
+            .getCreatedMaterialsItemHistoriess();
+    if (createdMaterialsItemHistories.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Materials Item Histories',
+          quantity:
+              createdMaterialsItemHistories.length
+                  .toDouble(),
+        ),
+      );
+    }
+
+    // Production Items
+    final createdProductionItems =
+        CreatedProductionItemsFunc().getProductionItems();
+    if (createdProductionItems.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Production Items',
+          quantity:
+              createdProductionItems.length.toDouble(),
+        ),
+      );
+    }
+
+    final updatedProductionItems =
+        UpdatedProductionItemsFunc().getProductionItems();
+    if (updatedProductionItems.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Updated Production Items',
+          quantity:
+              updatedProductionItems.length.toDouble(),
+        ),
+      );
+    }
+
+    final deletedProductionItems =
+        DeletedProductionItemsFunc().getProductionItemIds();
+    if (deletedProductionItems.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Deleted Production Items',
+          quantity:
+              deletedProductionItems.length.toDouble(),
+        ),
+      );
+    }
+
+    final createdProductionItemHistories =
+        CreatedProductionItemHistoriesFunc()
+            .getCreatedProductionItemHistoriess();
+    if (createdProductionItemHistories.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Production Item Histories',
+          quantity:
+              createdProductionItemHistories.length
+                  .toDouble(),
+        ),
+      );
+    }
+
+    final productionItemsQuantityUpdates =
+        ProductionItemsQuantityUpdateFunc()
+            .getProductionItemsQuantitiesUpdate();
+    if (productionItemsQuantityUpdates.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Production Items Quantity Updates',
+          quantity:
+              productionItemsQuantityUpdates.length
+                  .toDouble(),
+        ),
+      );
+    }
+
+    // Production Records
+    final createdProductionRecords =
+        CreatedProductionRecordsFunc().getProductions();
+    if (createdProductionRecords.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Production Records',
+          quantity:
+              createdProductionRecords.length.toDouble(),
+        ),
+      );
+    }
+
+    final updatedProductionRecords =
+        UpdatedProductionRecordsFunc().getProductionIds();
+    if (updatedProductionRecords.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Updated Production Records',
+          quantity:
+              updatedProductionRecords.length.toDouble(),
+        ),
+      );
+    }
+
+    final deletedProductionRecords =
+        DeletedProductionRecordsFunc().getProductionIds();
+    if (deletedProductionRecords.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Deleted Production Records',
+          quantity:
+              deletedProductionRecords.length.toDouble(),
+        ),
+      );
+    }
+
+    // Production Materials Usage
+    final createdProductionMaterialsUsage =
+        CreatedProductionMaterialsUsageFunc()
+            .getProductionMaterialsUsage();
+    if (createdProductionMaterialsUsage.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Production Materials Usage',
+          quantity:
+              createdProductionMaterialsUsage.length
+                  .toDouble(),
+        ),
+      );
+    }
+
+    final updatedProductionMaterialsUsage =
+        UpdatedProductionMaterialsUsageFunc()
+            .getProductionMaterialsUsageIds();
+    if (updatedProductionMaterialsUsage.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Updated Production Materials Usage',
+          quantity:
+              updatedProductionMaterialsUsage.length
+                  .toDouble(),
+        ),
+      );
+    }
+
+    final deletedProductionMaterialsUsage =
+        DeletedProductionMaterialsUsageFunc()
+            .getDeletedProductionMaterialsUsageIds();
+    if (deletedProductionMaterialsUsage.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Deleted Production Materials Usage',
+          quantity:
+              deletedProductionMaterialsUsage.length
+                  .toDouble(),
+        ),
+      );
+    }
+
+    // Orders
+    final createdOrders = CreatedOrdersFunc().getOrders();
+    if (createdOrders.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Orders',
+          quantity: createdOrders.length.toDouble(),
+        ),
+      );
+    }
+
+    final updatedOrders = UpdatedOrdersFunc().getOrderIds();
+    if (updatedOrders.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Updated Orders',
+          quantity: updatedOrders.length.toDouble(),
+        ),
+      );
+    }
+
+    final deletedOrders = DeletedOrdersFunc().getOrderIds();
+    if (deletedOrders.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Deleted Orders',
+          quantity: deletedOrders.length.toDouble(),
+        ),
+      );
+    }
+
+    return tempItems;
   }
 
   String? departmentUuid;
