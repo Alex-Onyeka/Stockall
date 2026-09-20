@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
-import 'package:stockall/components/alert_dialogues/dialog_template.dart';
-import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
-import 'package:stockall/components/text_fields/general_textfield.dart';
-import 'package:stockall/components/text_fields/general_textfield_only.dart';
-import 'package:stockall/components/text_fields/main_dropdown_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
@@ -14,6 +9,9 @@ import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/shop_setup/edit_receipt_page/edit_receipt.dart';
+import 'package:stockall/pages/shop_setup/shop_page/components/delete_shop_button_widget.dart';
+import 'package:stockall/pages/shop_setup/shop_page/components/select_currency_widget.dart';
+import 'package:stockall/pages/shop_setup/shop_page/components/set_social_details.dart';
 import 'package:stockall/pages/shop_setup/shop_setup_one/shop_setup_page.dart';
 import 'package:stockall/pages/shop_setup/shop_setup_two/shop_setup_two.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -35,43 +33,12 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
     return shopP.userShop()!;
   }
 
-  TextEditingController currencyController =
-      TextEditingController();
-
-  String? selectedCurrency;
-  String? displayCurrency;
   bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
     shopFuture = getShop();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        displayCurrency =
-            returnShopProvider()
-                    .userShop()!
-                    .currency
-                    .isEmpty
-                ? 'Currency Not Set'
-                : '${currencies.firstWhere((currency) => currency.symbol == returnShopProvider().userShop()!.currency).currency} (${currencies.firstWhere((currency) => currency.symbol == returnShopProvider().userShop()!.currency).symbol})';
-        selectedCurrency =
-            returnShopProvider()
-                    .userShop()!
-                    .currency
-                    .isEmpty
-                ? null
-                : currencies
-                    .firstWhere(
-                      (currency) =>
-                          currency.symbol ==
-                          returnShopProvider()
-                              .userShop()!
-                              .currency,
-                    )
-                    .symbol;
-      });
-    });
   }
 
   final instaController = TextEditingController();
@@ -92,119 +59,26 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
               child: Column(
                 children: [
                   SizedBox(height: 10),
-                  Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: const Color.fromARGB(
-                        43,
-                        0,
-                        150,
-                        135,
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 30.0,
                     ),
-                    child: Image.asset(
-                      shopIconImage,
-                      height: 80,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Column(
-                    spacing: 2,
-                    children: [
-                      Shimmer.fromColors(
-                        baseColor: Colors.grey.shade300,
-                        highlightColor: Colors.white,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius:
-                                BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b1
-                                      .fontSize,
-                            ),
-                            'Shop Name',
-                          ),
+                    child: Shimmer.fromColors(
+                      baseColor: Colors.grey.shade300,
+                      highlightColor: Colors.white,
+                      child: Container(
+                        height: 120,
+
+                        decoration: BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius:
+                              BorderRadius.circular(5),
                         ),
-                      ),
-                      Shimmer.fromColors(
-                        baseColor: Colors.grey.shade300,
-                        highlightColor: Colors.white,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius:
-                                BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b1
-                                      .fontSize,
-                            ),
-                            '000 0 00 000 0',
-                          ),
-                        ),
-                      ),
-                      Shimmer.fromColors(
-                        baseColor: Colors.grey.shade300,
-                        highlightColor: Colors.white,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius:
-                                BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b1
-                                      .fontSize,
-                            ),
-                            'alexonyekasm@gmail.com',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Shimmer.fromColors(
-                    baseColor: Colors.grey.shade300,
-                    highlightColor: Colors.white,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey,
-                        borderRadius: BorderRadius.circular(
-                          10,
-                        ),
-                      ),
-                      child: Text(
-                        style: TextStyle(
-                          fontWeight: FontWeight.normal,
-                          fontSize:
-                              theme.mobileTexts.b1.fontSize,
-                          color:
-                              theme
-                                  .lightModeColor
-                                  .secColor200,
-                        ),
-                        ' shop.shopAddress shop.shopAddress',
                       ),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 30),
+
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 30.0,
@@ -217,7 +91,16 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                               MainAxisAlignment
                                   .spaceBetween,
                           children: [
-                            Text('Country:'),
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                              ),
+                              'Country:',
+                            ),
                             Shimmer.fromColors(
                               baseColor:
                                   Colors.grey.shade300,
@@ -232,17 +115,11 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                 ),
                                 child: Text(
                                   style: TextStyle(
-                                    fontWeight:
-                                        FontWeight.normal,
                                     fontSize:
                                         theme
                                             .mobileTexts
-                                            .b1
+                                            .b3
                                             .fontSize,
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .secColor200,
                                   ),
                                   'Not Set',
                                 ),
@@ -255,7 +132,16 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                               MainAxisAlignment
                                   .spaceBetween,
                           children: [
-                            Text('State:'),
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                              ),
+                              'State:',
+                            ),
                             Shimmer.fromColors(
                               baseColor:
                                   Colors.grey.shade300,
@@ -270,17 +156,11 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                 ),
                                 child: Text(
                                   style: TextStyle(
-                                    fontWeight:
-                                        FontWeight.normal,
                                     fontSize:
                                         theme
                                             .mobileTexts
-                                            .b1
+                                            .b3
                                             .fontSize,
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .secColor200,
                                   ),
                                   'Not Set',
                                 ),
@@ -293,7 +173,16 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                               MainAxisAlignment
                                   .spaceBetween,
                           children: [
-                            Text('City:'),
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                              ),
+                              'City:',
+                            ),
                             Shimmer.fromColors(
                               baseColor:
                                   Colors.grey.shade300,
@@ -308,17 +197,11 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                 ),
                                 child: Text(
                                   style: TextStyle(
-                                    fontWeight:
-                                        FontWeight.normal,
                                     fontSize:
                                         theme
                                             .mobileTexts
-                                            .b1
+                                            .b3
                                             .fontSize,
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .secColor200,
                                   ),
                                   'Not Set',
                                 ),
@@ -331,7 +214,16 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                               MainAxisAlignment
                                   .spaceBetween,
                           children: [
-                            Text('Address:'),
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                              ),
+                              'Address:',
+                            ),
                             Shimmer.fromColors(
                               baseColor:
                                   Colors.grey.shade300,
@@ -346,17 +238,11 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                 ),
                                 child: Text(
                                   style: TextStyle(
-                                    fontWeight:
-                                        FontWeight.normal,
                                     fontSize:
                                         theme
                                             .mobileTexts
-                                            .b1
+                                            .b3
                                             .fontSize,
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .secColor200,
                                   ),
                                   'Not Set',
                                 ),
@@ -369,7 +255,16 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                               MainAxisAlignment
                                   .spaceBetween,
                           children: [
-                            Text('Facebook:'),
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                              ),
+                              'Facebook:',
+                            ),
                             Shimmer.fromColors(
                               baseColor:
                                   Colors.grey.shade300,
@@ -384,17 +279,11 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                 ),
                                 child: Text(
                                   style: TextStyle(
-                                    fontWeight:
-                                        FontWeight.normal,
                                     fontSize:
                                         theme
                                             .mobileTexts
-                                            .b1
+                                            .b3
                                             .fontSize,
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .secColor200,
                                   ),
                                   'Not Set',
                                 ),
@@ -407,7 +296,16 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                               MainAxisAlignment
                                   .spaceBetween,
                           children: [
-                            Text('Instagram:'),
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                              ),
+                              'Instagram:',
+                            ),
                             Shimmer.fromColors(
                               baseColor:
                                   Colors.grey.shade300,
@@ -422,17 +320,11 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                 ),
                                 child: Text(
                                   style: TextStyle(
-                                    fontWeight:
-                                        FontWeight.normal,
                                     fontSize:
                                         theme
                                             .mobileTexts
-                                            .b1
+                                            .b3
                                             .fontSize,
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .secColor200,
                                   ),
                                   'Not Set',
                                 ),
@@ -521,97 +413,14 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                 child: Column(
                   children: [
                     SizedBox(height: 10),
-                    Container(
-                      padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: const Color.fromARGB(
-                          43,
-                          0,
-                          150,
-                          135,
-                        ),
-                      ),
-                      child: Image.asset(
-                        shopIconImage,
-                        height: 80,
-                      ),
+                    ShopDetailsTopSectionWidget(
+                      theme: theme,
+                      shop: shop,
                     ),
                     SizedBox(height: 5),
                     Column(
                       spacing: 2,
                       children: [
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 4,
-                            horizontal: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
-                            borderRadius:
-                                BorderRadius.circular(3),
-                            border: Border.all(
-                              color: Colors.grey.shade300,
-                            ),
-                          ),
-                          child: Text(
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b4
-                                      .fontSize,
-                            ),
-                            "#Shop ID: ${shopRef()}",
-                          ),
-                        ),
-                        Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 30.0,
-                              ),
-                          child: Text(
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b1
-                                      .fontSize,
-                            ),
-                            shop.name,
-                          ),
-                        ),
-                        Text(
-                          style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                          ),
-                          shop.phoneNumber ??
-                              'Phone Number Not Set',
-                        ),
-                        Text(
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b2
-                                    .fontSize,
-                            color:
-                                theme
-                                    .lightModeColor
-                                    .secColor200,
-                          ),
-                          shop.email ?? 'Email Not Set',
-                        ),
                         SizedBox(height: 10),
                         Padding(
                           padding:
@@ -951,22 +760,38 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                             context:
                                                 context,
                                           ),
-                                  mainWidget:
-                                      MainButtonTransparent(
-                                        themeProvider:
-                                            theme,
-                                        action: () {
-                                          setSocialDetails(
-                                            context,
-                                            theme,
-                                            shop,
-                                          );
+                                  mainWidget: MainButtonTransparent(
+                                    themeProvider: theme,
+                                    action: () {
+                                      setSocialDetails(
+                                        context: context,
+                                        setShopFuture: () {
+                                          setState(() {
+                                            shopFuture =
+                                                getShop();
+                                          });
                                         },
-                                        text:
-                                            'Edit Social Details',
-                                        constraints:
-                                            BoxConstraints(),
-                                      ),
+                                        toggleLoading: (
+                                          value,
+                                        ) {
+                                          setState(() {
+                                            isLoading =
+                                                value;
+                                          });
+                                        },
+                                        faceBookController:
+                                            faceBookController,
+                                        instaController:
+                                            instaController,
+                                        shop: shop,
+                                        theme: theme,
+                                      );
+                                    },
+                                    text:
+                                        'Edit Social Details',
+                                    constraints:
+                                        BoxConstraints(),
+                                  ),
                                 ),
                               ),
                               Expanded(
@@ -1012,372 +837,15 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                               ),
                             ],
                           ),
-                          SizedBox(height: 10),
-                          Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontWeight:
-                                      FontWeight.bold,
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                ),
-                                'Set your Currency',
-                              ),
-                              SizedBox(height: 5),
-                              MainDropdownOnly(
-                                valueSet:
-                                    displayCurrency != null,
-                                hint:
-                                    displayCurrency ??
-                                    'Select Your Currency',
-                                theme: theme,
-                                isOpen: false,
-                                onTap: () {
-                                  showGeneralDialog(
-                                    context: context,
-                                    pageBuilder: (
-                                      context,
-                                      animation,
-                                      secondaryAnimation,
-                                    ) {
-                                      return GestureDetector(
-                                        onTap:
-                                            () =>
-                                                FocusManager
-                                                    .instance
-                                                    .primaryFocus
-                                                    ?.unfocus(),
-                                        child: StatefulBuilder(
-                                          builder:
-                                              (
-                                                context,
-                                                setState,
-                                              ) => Material(
-                                                color:
-                                                    Colors
-                                                        .transparent,
-                                                // elevation: 1,
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                        top:
-                                                            10.0,
-                                                      ),
-                                                  child: Ink(
-                                                    height:
-                                                        MediaQuery.of(
-                                                          context,
-                                                        ).size.height,
-                                                    decoration: BoxDecoration(
-                                                      color:
-                                                          Colors.grey.shade100,
-                                                      boxShadow: [
-                                                        BoxShadow(
-                                                          color: const Color.fromARGB(
-                                                            55,
-                                                            0,
-                                                            0,
-                                                            0,
-                                                          ),
-                                                          blurRadius:
-                                                              5,
-                                                        ),
-                                                      ],
-                                                      borderRadius: BorderRadius.vertical(
-                                                        top: Radius.circular(
-                                                          20,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    child: Container(
-                                                      height:
-                                                          MediaQuery.of(
-                                                            context,
-                                                          ).size.height *
-                                                          0.9,
-
-                                                      padding: const EdgeInsets.fromLTRB(
-                                                        15,
-                                                        15,
-                                                        15,
-                                                        45,
-                                                      ),
-                                                      child: Column(
-                                                        children: [
-                                                          Material(
-                                                            color:
-                                                                Colors.white,
-                                                            child: Column(
-                                                              children: [
-                                                                Center(
-                                                                  child: Container(
-                                                                    height:
-                                                                        4,
-                                                                    width:
-                                                                        70,
-                                                                    decoration: BoxDecoration(
-                                                                      borderRadius: BorderRadius.circular(
-                                                                        15,
-                                                                      ),
-                                                                      color:
-                                                                          Colors.grey.shade400,
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                                SizedBox(
-                                                                  height:
-                                                                      10,
-                                                                ),
-                                                                Padding(
-                                                                  padding: const EdgeInsets.symmetric(
-                                                                    horizontal:
-                                                                        15.0,
-                                                                  ),
-                                                                  child: Row(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment.spaceBetween,
-                                                                    children: [
-                                                                      Column(
-                                                                        crossAxisAlignment:
-                                                                            CrossAxisAlignment.start,
-                                                                        children: [
-                                                                          Text(
-                                                                            'Select Your Currency',
-                                                                            style: TextStyle(
-                                                                              fontSize:
-                                                                                  returnTheme(
-                                                                                    context,
-                                                                                  ).mobileTexts.b1.fontSize,
-                                                                              fontWeight:
-                                                                                  FontWeight.bold,
-                                                                            ),
-                                                                          ),
-                                                                          Text(
-                                                                            'Search For Countries or Currency name',
-                                                                            style: TextStyle(
-                                                                              fontSize:
-                                                                                  returnTheme(
-                                                                                    context,
-                                                                                  ).mobileTexts.b2.fontSize,
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                      InkWell(
-                                                                        mouseCursor:
-                                                                            SystemMouseCursors.click,
-                                                                        onTap: () {
-                                                                          Navigator.of(
-                                                                            context,
-                                                                          ).pop();
-                                                                          currencyController.clear();
-                                                                        },
-                                                                        child: Container(
-                                                                          padding: EdgeInsets.all(
-                                                                            10,
-                                                                          ),
-                                                                          decoration: BoxDecoration(
-                                                                            shape:
-                                                                                BoxShape.circle,
-                                                                            color:
-                                                                                Colors.grey.shade800,
-                                                                          ),
-                                                                          child: Icon(
-                                                                            color:
-                                                                                Colors.white,
-                                                                            Icons.clear_rounded,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                                SizedBox(
-                                                                  height:
-                                                                      10,
-                                                                ),
-                                                                Padding(
-                                                                  padding: const EdgeInsets.symmetric(
-                                                                    horizontal:
-                                                                        20.0,
-                                                                  ),
-                                                                  child: GeneralTextfieldOnly(
-                                                                    hint:
-                                                                        'Search for country or currency',
-                                                                    lines:
-                                                                        1,
-                                                                    theme:
-                                                                        theme,
-                                                                    controller:
-                                                                        currencyController,
-                                                                    onChanged: (
-                                                                      value,
-                                                                    ) {
-                                                                      setState(
-                                                                        () {},
-                                                                      );
-                                                                    },
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            child: Builder(
-                                                              builder: (
-                                                                context,
-                                                              ) {
-                                                                var safeContext =
-                                                                    context;
-                                                                var currenciies = currencies.where(
-                                                                  (
-                                                                    currency,
-                                                                  ) =>
-                                                                      currency.country.toLowerCase().contains(
-                                                                        currencyController.text.toLowerCase(),
-                                                                      ) ||
-                                                                      currency.currency.toLowerCase().contains(
-                                                                        currencyController.text.toLowerCase(),
-                                                                      ),
-                                                                );
-                                                                if (isLoading) {
-                                                                  return Container(
-                                                                    color: const Color.fromARGB(
-                                                                      67,
-                                                                      255,
-                                                                      255,
-                                                                      255,
-                                                                    ),
-                                                                    child: Center(
-                                                                      child: returnCompProvider(
-                                                                        context,
-                                                                        listen:
-                                                                            false,
-                                                                      ).showLoader(
-                                                                        message:
-                                                                            'Loading',
-                                                                      ),
-                                                                    ),
-                                                                  );
-                                                                } else {
-                                                                  if (currenciies.isEmpty) {
-                                                                    return Container(
-                                                                      color:
-                                                                          Colors.white,
-                                                                      child: Center(
-                                                                        child: Text(
-                                                                          'Not Found',
-                                                                        ),
-                                                                      ),
-                                                                    );
-                                                                  } else {
-                                                                    return ListView.builder(
-                                                                      itemCount:
-                                                                          currenciies.length,
-                                                                      itemBuilder: (
-                                                                        context,
-                                                                        index,
-                                                                      ) {
-                                                                        var item =
-                                                                            currenciies.toList()[index];
-                                                                        return Padding(
-                                                                          padding: const EdgeInsets.symmetric(
-                                                                            vertical:
-                                                                                5,
-                                                                          ),
-                                                                          child: ListTile(
-                                                                            tileColor:
-                                                                                Colors.white,
-                                                                            subtitle: Text(
-                                                                              style: TextStyle(
-                                                                                fontSize:
-                                                                                    theme.mobileTexts.b2.fontSize,
-                                                                                fontWeight:
-                                                                                    FontWeight.normal,
-                                                                                color:
-                                                                                    theme.lightModeColor.secColor100,
-                                                                              ),
-                                                                              item.currency,
-                                                                            ),
-                                                                            title: Text(
-                                                                              style: TextStyle(
-                                                                                fontSize:
-                                                                                    theme.mobileTexts.b1.fontSize,
-                                                                                fontWeight:
-                                                                                    FontWeight.bold,
-                                                                              ),
-                                                                              item.country,
-                                                                            ),
-                                                                            trailing: Text(
-                                                                              style: TextStyle(
-                                                                                fontSize:
-                                                                                    theme.mobileTexts.b1.fontSize,
-                                                                                fontWeight:
-                                                                                    FontWeight.bold,
-                                                                                color:
-                                                                                    theme.lightModeColor.secColor100,
-                                                                              ),
-                                                                              item.symbol,
-                                                                            ),
-                                                                            onTap: () async {
-                                                                              setState(
-                                                                                () {
-                                                                                  isLoading =
-                                                                                      true;
-                                                                                },
-                                                                              );
-                                                                              await returnShopProvider().updateShopCurrency(
-                                                                                currency:
-                                                                                    item.symbol,
-                                                                                shopId:
-                                                                                    shopId(),
-                                                                              );
-                                                                              setState(
-                                                                                () {
-                                                                                  selectedCurrency =
-                                                                                      item.symbol;
-                                                                                  displayCurrency =
-                                                                                      '${item.currency} (${item.symbol})';
-                                                                                  isLoading =
-                                                                                      false;
-                                                                                },
-                                                                              );
-                                                                              if (safeContext.mounted) {
-                                                                                Navigator.of(
-                                                                                  safeContext,
-                                                                                ).pop();
-                                                                              }
-                                                                            },
-                                                                          ),
-                                                                        );
-                                                                      },
-                                                                    );
-                                                                  }
-                                                                }
-                                                              },
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                        ),
-                                      );
-                                    },
-                                  ).then((context) {
-                                    setState(() {});
-                                  });
-                                },
-                              ),
-                            ],
+                          SizedBox(height: 2),
+                          SelectCurrencyWidget(),
+                          SizedBox(height: 1),
+                          DeleteShopButtonWidget(
+                            toggleLoading: (value) {
+                              setState(() {
+                                isLoading = value;
+                              });
+                            },
                           ),
                         ],
                       ),
@@ -1391,95 +859,93 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
       ),
     );
   }
+}
 
-  void setSocialDetails(
-    BuildContext context,
-    ThemeProvider theme,
-    TempShopClass shop,
-  ) {
-    GeneralSettingsAuthAction().addSocialsAction(
-      context: context,
-      action: () {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return DialogTemplate(
-              theme: theme,
-              message: '',
-              title: 'Enter Social Details',
-              widget: Column(
-                mainAxisSize: MainAxisSize.min,
-                spacing: 10,
-                children: [
-                  GeneralTextField(
-                    initialValue: shop.faceBookHandle,
-                    isEmail: false,
-                    title: 'Facebook Handle (Optional)',
-                    isEnabled: true,
-                    hint: 'Enter Facebook Handle',
-                    controller: faceBookController,
-                    lines: 1,
-                    theme: theme,
+class ShopDetailsTopSectionWidget extends StatelessWidget {
+  const ShopDetailsTopSectionWidget({
+    super.key,
+    required this.theme,
+    required this.shop,
+  });
+
+  final ThemeProvider theme;
+  final TempShopClass shop;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 30),
+      padding: EdgeInsets.symmetric(
+        vertical: 15,
+        horizontal: 15,
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5),
+        color: Colors.grey.shade100,
+      ),
+      child: Row(
+        spacing: 10,
+        children: [
+          Container(
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: const Color.fromARGB(43, 0, 150, 135),
+            ),
+            child: Image.asset(shopIconImage, height: 80),
+          ),
+          Column(
+            spacing: 5,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(
+                  vertical: 4,
+                  horizontal: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(3),
+                  border: Border.all(
+                    color: Colors.grey.shade300,
                   ),
-                  GeneralTextField(
-                    initialValue: shop.instaHandle,
-                    isEmail: false,
-                    title: 'Instagram Handle (Optional)',
-                    isEnabled: true,
-                    hint: 'Enter Instagram Handle',
-                    controller: instaController,
-                    lines: 1,
-                    theme: theme,
+                ),
+                child: Text(
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: theme.mobileTexts.b4.fontSize,
                   ),
-                ],
+                  "#Shop ID: ${shopRef()}",
+                ),
               ),
-              action: () async {
-                setState(() {
-                  isLoading = true;
-                });
-                var res = await returnShopProvider()
-                    .updateShopSocials(
-                      face:
-                          faceBookController.text.isEmpty
-                              ? null
-                              : faceBookController.text,
-                      insta:
-                          instaController.text.isEmpty
-                              ? null
-                              : instaController.text,
-                    );
-                if (res == 1) {
-                  setState(() {
-                    isLoading = false;
-                  });
-                  if (!context.mounted) {
-                    return;
-                  }
-                  Navigator.of(context).pop();
-                  setState(() {
-                    shopFuture = getShop();
-                  });
-                } else {
-                  if (!context.mounted) {
-                    return;
-                  }
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return InfoAlert(
-                        theme: theme,
-                        message:
-                            'The Update was not successful. Please try again.',
-                        title: 'Update Failed',
-                      );
-                    },
-                  );
-                }
-              },
-            );
-          },
-        );
-      },
+              Text(
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: theme.mobileTexts.b2.fontSize,
+                ),
+                shop.name,
+              ),
+              Text(
+                style: TextStyle(
+                  fontWeight: FontWeight.normal,
+                  fontSize: theme.mobileTexts.b3.fontSize,
+                ),
+                shop.phoneNumber ?? 'Phone Number Not Set',
+              ),
+              Text(
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontWeight: FontWeight.normal,
+                  fontSize: theme.mobileTexts.b3.fontSize,
+                  color: theme.lightModeColor.secColor200,
+                ),
+                shop.email ?? 'Email Not Set',
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

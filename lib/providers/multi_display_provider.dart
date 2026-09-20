@@ -12,21 +12,21 @@ class MultiDisplayProvider extends ChangeNotifier {
   MultiDisplayProvider._internal();
 
   Future<bool> isAllowed() async {
-    if (returnShopProvider().isDesktop() &&
-        currentUser().role != 'Store Keeper') {
-      var screen = await getAltDisplay();
-      if (screen == null) {
-        return false;
-      }
-      for (var win in windows) {
-        await win.controller.setFrame(
-          screen.visiblePosition! & screen.visibleSize!,
-        );
-      }
-      return true;
-    } else {
-      return false;
-    }
+    // if (returnShopProvider().isDesktop() &&
+    //     currentUser().role != 'Store Keeper') {
+    //   var screen = await getAltDisplay();
+    //   if (screen == null) {
+    //     return false;
+    //   }
+    //   for (var win in windows) {
+    //     await win.controller.setFrame(
+    //       screen.visiblePosition! & screen.visibleSize!,
+    //     );
+    //   }
+    //   return true;
+    // } else {
+    return false;
+    // }
   }
 
   List<WindowInfo> windows = [];

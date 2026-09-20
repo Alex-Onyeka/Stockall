@@ -538,6 +538,7 @@ void selectCountry({
                                         'Fetch Countries',
                                     theme: theme,
                                     height: 30,
+                                    altAction: () {},
                                     action: () async {
                                       await returnCountryProvider()
                                           .fetchCountries();
@@ -1551,14 +1552,15 @@ void selectCity({
                                       buttonText: 'Close',
                                       theme: theme,
                                       height: 30,
+                                      altAction: () {},
                                       action: () {
-                                        // Navigator.of(
-                                        //   context,
-                                        // ).pop();
-                                        // setState(() {
-                                        //   cityController
-                                        //       .clear();
-                                        // });
+                                        Navigator.of(
+                                          context,
+                                        ).pop();
+                                        setState(() {
+                                          cityController
+                                              .clear();
+                                        });
                                       },
                                       icon: Icons.clear,
                                     ),
