@@ -553,7 +553,7 @@ class _MyDrawerWidgetDesktopMainState
                                           .contactStockall,
                                 ),
                                 child: NavListTileDesktopAlt(
-                                  itemIndex: 11,
+                                  itemIndex: -1,
                                   height: 18,
                                   action: () {
                                     contactUsAction(
@@ -592,7 +592,7 @@ class _MyDrawerWidgetDesktopMainState
                                           returnNavProvider(
                                                     context,
                                                   ).currentIndex ==
-                                                  10
+                                                  11
                                               ? const Color.fromARGB(
                                                 36,
                                                 255,
@@ -625,7 +625,7 @@ class _MyDrawerWidgetDesktopMainState
                                                           returnNavProvider(
                                                                     context,
                                                                   ).currentIndex ==
-                                                                  10
+                                                                  11
                                                               ? Colors.grey.shade900
                                                               : Colors.grey.shade400,
                                                       size:
@@ -650,7 +650,7 @@ class _MyDrawerWidgetDesktopMainState
                                                         returnNavProvider(
                                                                   context,
                                                                 ).currentIndex ==
-                                                                10
+                                                                11
                                                             ? FontWeight.bold
                                                             : FontWeight.normal,
                                                   ),
@@ -768,7 +768,7 @@ class _MyDrawerWidgetDesktopMainState
                                                       returnNavProvider(
                                                         context,
                                                       ).currentIndex ==
-                                                      10,
+                                                      11,
                                                   child: SizedBox(
                                                     width:
                                                         15,
@@ -779,7 +779,7 @@ class _MyDrawerWidgetDesktopMainState
                                                       returnNavProvider(
                                                         context,
                                                       ).currentIndex ==
-                                                      10,
+                                                      11,
                                                   child: Padding(
                                                     padding:
                                                         const EdgeInsets.fromLTRB(
@@ -811,7 +811,7 @@ class _MyDrawerWidgetDesktopMainState
                                 ),
                               ),
                               NavListTileDesktopAlt(
-                                itemIndex: 11,
+                                itemIndex: 12,
                                 height: 18,
                                 action: () {
                                   checkNavigate(context);

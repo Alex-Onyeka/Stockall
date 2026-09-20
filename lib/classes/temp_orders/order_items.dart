@@ -97,6 +97,9 @@ class OrderItems extends HiveObject {
   @HiveField(30)
   bool? originalUseGroupQuantity;
 
+  @HiveField(31)
+  bool? tempUseGroupQuantity;
+
   OrderItems({
     required this.uuid,
     required this.orderId,
@@ -129,6 +132,7 @@ class OrderItems extends HiveObject {
     required this.remainingQuantity,
     this.tempQuantity,
     required this.originalUseGroupQuantity,
+    required this.tempUseGroupQuantity,
   });
 
   factory OrderItems.fromJson(Map<String, dynamic> json) {
@@ -171,6 +175,8 @@ class OrderItems extends HiveObject {
           (json['remaining_quantity'] as num?)?.toDouble(),
       originalUseGroupQuantity:
           json['original_use_group_quantity'] as bool?,
+      tempUseGroupQuantity:
+          json['temp_use_group_quantity'] as bool?,
     );
   }
 
@@ -207,6 +213,7 @@ class OrderItems extends HiveObject {
       'remaining_quantity': remainingQuantity,
       'original_use_group_quantity':
           originalUseGroupQuantity,
+      'temp_use_group_quantity': tempUseGroupQuantity,
     };
   }
 
@@ -241,6 +248,7 @@ class OrderItems extends HiveObject {
     double? remainingBalance,
     double? remainingQuantity,
     bool? originalUseGroupQuantity,
+    bool? tempUseGroupQuantity,
   }) {
     return OrderItems(
       uuid: uuid ?? this.uuid,
@@ -281,7 +289,13 @@ class OrderItems extends HiveObject {
       originalUseGroupQuantity:
           originalUseGroupQuantity ??
           this.originalUseGroupQuantity,
+      tempUseGroupQuantity:
+          tempUseGroupQuantity ?? this.tempUseGroupQuantity,
     );
+  }
+
+  bool getTempUseGroupQuantity() {
+    return tempUseGroupQuantity ?? false;
   }
 
   bool getOriginalUseGroupQuantity() {
@@ -332,15 +346,15 @@ class OrderItems extends HiveObject {
     }
   }
 
-  double getActualQuantityReversed({bool? useGroupTemp}) {
-    if (useGroupTemp != null) {
-      return useGroupTemp == true
-          ? quantity
-          : (quantity / (qttyPerGroup ?? 1));
+  double getActualQuantityDuringDeliveryCheckout() {
+    if (tempUseGroupQuantity == true &&
+        useGroupQuantity == false) {
+      return (quantity / (qttyPerGroup ?? 1));
+    } else if (tempUseGroupQuantity == false &&
+        useGroupQuantity == true) {
+      return (quantity * (qttyPerGroup ?? 1));
     } else {
-      return useGroupQuantity == true
-          ? quantity
-          : (quantity / (qttyPerGroup ?? 1));
+      return quantity;
     }
   }
 

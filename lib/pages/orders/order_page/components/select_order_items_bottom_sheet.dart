@@ -515,7 +515,7 @@ void selectItemsForOrderDeliveryBottomSheet({
                                             duration:
                                                 const Duration(
                                                   seconds:
-                                                      5,
+                                                      8,
                                                 ),
                                           ),
                                         );

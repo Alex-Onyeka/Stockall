@@ -2368,14 +2368,14 @@ void selectProductSales({
                                               } else {
                                                 useGroupQuantityTemp =
                                                     true;
-                                                // if (currentCart()
-                                                //         .cartItemTypeIndex !=
-                                                //     3) {
-                                                //   quantityController
-                                                //           .text =
-                                                //       '0';
-                                                //   qqty = 0;
-                                                // }
+                                                if (currentCart()
+                                                        .cartItemTypeIndex !=
+                                                    3) {
+                                                  quantityController
+                                                          .text =
+                                                      '0';
+                                                  qqty = 0;
+                                                }
                                               }
                                             });
                                           },

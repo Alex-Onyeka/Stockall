@@ -37,18 +37,26 @@ class OrdersActionProvider extends ChangeNotifier {
   int addAllItemsToList({required List<OrderItems> items}) {
     var value = 1;
     for (var item in items) {
-      var products = returnData().productListMain.where(
-        (it) => it.uuid == item.productUuid,
-      );
-      if (products.isNotEmpty) {
-        var pr = products.first;
-        if ((pr.quantity ?? 0) > item.getActualQuantity()) {
-          addItemToList(item: item);
+      if (item.getActualRemainingQuantity() != 0) {
+        var products = returnData().productListMain.where(
+          (it) => it.uuid == item.productUuid,
+        );
+        var tempItem = item.copyWith();
+        tempItem.quantity = (item.remainingQuantity ?? 0);
+        if (products.isNotEmpty) {
+          var pr = products.first;
+
+          if ((pr.quantity ?? 0) >
+              tempItem.getActualQuantity()) {
+            addItemToList(item: tempItem);
+          } else {
+            value = 0;
+          }
         } else {
-          value = 0;
+          addItemToList(item: tempItem);
         }
       } else {
-        addItemToList(item: item);
+        value = 0;
       }
     }
     notifyListeners();

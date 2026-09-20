@@ -492,7 +492,7 @@ class _MyDrawerWidgetTabletState
                                           .contactStockall,
                                 ),
                                 child: NavListTileTablet(
-                                  itemIndex: 11,
+                                  itemIndex: -1,
                                   height: 18,
                                   action: () {
                                     contactUsAction(
@@ -529,7 +529,7 @@ class _MyDrawerWidgetTabletState
                                         returnNavProvider(
                                                   context,
                                                 ).currentIndex ==
-                                                10
+                                                11
                                             ? const Color.fromARGB(
                                               36,
                                               255,
@@ -654,7 +654,7 @@ class _MyDrawerWidgetTabletState
                                               returnNavProvider(
                                                 context,
                                               ).currentIndex ==
-                                              10,
+                                              11,
                                           child: SizedBox(
                                             width: 15,
                                           ),
@@ -664,7 +664,7 @@ class _MyDrawerWidgetTabletState
                                               returnNavProvider(
                                                 context,
                                               ).currentIndex ==
-                                              10,
+                                              11,
                                           child: Padding(
                                             padding:
                                                 const EdgeInsets.fromLTRB(
@@ -695,7 +695,7 @@ class _MyDrawerWidgetTabletState
                                 ),
                               ),
                               NavListTileTablet(
-                                itemIndex: 11,
+                                itemIndex: 12,
                                 height: 18,
                                 action: () {
                                   checkNavigate(context);

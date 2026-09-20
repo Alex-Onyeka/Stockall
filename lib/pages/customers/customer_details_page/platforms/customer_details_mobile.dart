@@ -8,7 +8,7 @@ import 'package:stockall/pages/customers/customer_details_page/components/custom
 import 'package:stockall/pages/customers/customer_details_page/components/customer_details_section_widget.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_invoices_section.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_orders_section.dart';
-import 'package:stockall/pages/customers/customer_details_page/components/customer_purchases_section.dart';
+import 'package:stockall/pages/customers/customer_details_page/components/customer_sales_section.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_transactions_section.dart';
 import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/orders/order_list/order_list_page.dart';
@@ -143,7 +143,7 @@ class _CustomerDetailsMobileState
                           itemBuilder: (context) {
                             return [
                               PopupMenuItem(
-                                height: 35,
+                                height: 45,
                                 onTap: () {
                                   if (customer != null &&
                                       isDeleting == false) {
@@ -171,50 +171,11 @@ class _CustomerDetailsMobileState
                                     fontWeight:
                                         FontWeight.bold,
                                   ),
-                                  'Purchases',
+                                  'Sales',
                                 ),
                               ),
                               PopupMenuItem(
-                                enabled:
-                                    authorization(
-                                      authorized:
-                                          Authorizations()
-                                              .viewCustomersAccount,
-                                    ) &&
-                                    showAccountOrReward(),
-                                height: 35,
-                                onTap: () {
-                                  if (customer != null &&
-                                      isDeleting == false) {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return CustomerTransactionsPage(
-                                            customerUuid:
-                                                widget
-                                                    .customerUuid,
-                                          );
-                                        },
-                                      ),
-                                    );
-                                  }
-                                },
-                                child: Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
-                                  ),
-                                  'Transactions',
-                                ),
-                              ),
-                              PopupMenuItem(
-                                height: 35,
+                                height: 45,
                                 onTap: () {
                                   if (customer != null &&
                                       isDeleting == false) {
@@ -246,7 +207,7 @@ class _CustomerDetailsMobileState
                                 ),
                               ),
                               PopupMenuItem(
-                                height: 35,
+                                height: 45,
                                 onTap: () {
                                   if (customer != null &&
                                       isDeleting == false) {
@@ -278,12 +239,51 @@ class _CustomerDetailsMobileState
                                 ),
                               ),
                               PopupMenuItem(
+                                enabled:
+                                    authorization(
+                                      authorized:
+                                          Authorizations()
+                                              .viewCustomersAccount,
+                                    ) &&
+                                    showAccountOrReward(),
+                                height: 45,
+                                onTap: () {
+                                  if (customer != null &&
+                                      isDeleting == false) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return CustomerTransactionsPage(
+                                            customerUuid:
+                                                widget
+                                                    .customerUuid,
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                  'Transactions',
+                                ),
+                              ),
+                              PopupMenuItem(
                                 enabled: authorization(
                                   authorized:
                                       Authorizations()
                                           .deleteCustomer,
                                 ),
-                                height: 35,
+                                height: 45,
                                 onTap: () {
                                   if (customer != null &&
                                       isDeleting == false) {
@@ -431,7 +431,7 @@ class _CustomerDetailsMobileState
                                     children: [
                                       Expanded(
                                         child:
-                                            CustomerPurchasesSection(
+                                            CustomerSalesSection(
                                               customerUuid:
                                                   customer
                                                       .uuid ??

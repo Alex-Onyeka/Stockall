@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockall/components/alert_dialogues/dialog_template.dart';
-import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -453,144 +451,149 @@ class _ShopBannerScreenDesktopState
   }
 }
 
-Future<dynamic> setRole(
-  BuildContext context,
-  ThemeProvider theme,
-) {
-  return showDialog(
-    context: context,
-    builder: (confirmDialog) {
-      return StatefulBuilder(
-        builder:
-            (context, setState) => DialogTemplate(
-              theme: theme,
-              message:
-                  'Select a Role for yourself from the List below, and then proceed to create the shop.',
-              title: 'Select Role',
-              widget: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                spacing: 5,
-                children:
-                    returnShopProvider(context: context)
-                        .roles
-                        .map(
-                          (role) => Material(
-                            type: MaterialType.transparency,
-                            child: InkWell(
-                              mouseCursor:
-                                  SystemMouseCursors.click,
-                              borderRadius:
-                                  BorderRadius.circular(5),
-                              onTap: () {
-                                returnShopProvider()
-                                    .setRole(role);
-                              },
-                              child: Container(
-                                padding:
-                                    EdgeInsets.symmetric(
-                                      vertical: 10,
-                                      horizontal: 13,
-                                    ),
-                                decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        5,
-                                      ),
-                                  border: Border.all(
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade100,
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .spaceBetween,
-                                  children: [
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b3
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
-                                      ),
-                                      role,
-                                    ),
-                                    Container(
-                                      padding:
-                                          EdgeInsets.all(2),
-                                      decoration: BoxDecoration(
-                                        shape:
-                                            BoxShape.circle,
-                                        border: Border.all(
-                                          color:
-                                              Colors
-                                                  .grey
-                                                  .shade400,
-                                        ),
-                                      ),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          shape:
-                                              BoxShape
-                                                  .circle,
-                                          color:
-                                              returnShopProvider(
-                                                        context:
-                                                            context,
-                                                      ).tempRole ==
-                                                      role
-                                                  ? theme
-                                                      .lightModeColor
-                                                      .prColor250
-                                                  : Colors
-                                                      .transparent,
-                                        ),
-                                        height: 8,
-                                        width: 8,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        )
-                        .toList(),
-              ),
-              action: () {
-                if (returnShopProvider().tempRole == '') {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return InfoAlert(
-                        theme: theme,
-                        message:
-                            'You Need to Select A Role before you can Proceed.',
-                        title: 'Select A Role',
-                      );
-                    },
-                  );
-                } else {
-                  Navigator.of(confirmDialog).pop();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return ShopSetupPage();
-                      },
-                    ),
-                  );
-                }
-              },
-            ),
-      );
-    },
+void setRole(BuildContext context, ThemeProvider theme) {
+  // return showDialog(
+  //   context: context,
+  //   builder: (confirmDialog) {
+  //     return StatefulBuilder(
+  //       builder:
+  //           (context, setState) => DialogTemplate(
+  //             theme: theme,
+  //             message:
+  //                 'Select a Role for yourself from the List below, and then proceed to create the shop.',
+  //             title: 'Select Role',
+  //             widget: Column(
+  //               mainAxisSize: MainAxisSize.min,
+  //               mainAxisAlignment: MainAxisAlignment.center,
+  //               spacing: 5,
+  //               children:
+  //                   returnShopProvider(context: context)
+  //                       .roles
+  //                       .map(
+  //                         (role) => Material(
+  //                           type: MaterialType.transparency,
+  //                           child: InkWell(
+  //                             mouseCursor:
+  //                                 SystemMouseCursors.click,
+  //                             borderRadius:
+  //                                 BorderRadius.circular(5),
+  //                             onTap: () {
+  //                               returnShopProvider()
+  //                                   .setRole(role);
+  //                             },
+  //                             child: Container(
+  //                               padding:
+  //                                   EdgeInsets.symmetric(
+  //                                     vertical: 10,
+  //                                     horizontal: 13,
+  //                                   ),
+  //                               decoration: BoxDecoration(
+  //                                 borderRadius:
+  //                                     BorderRadius.circular(
+  //                                       5,
+  //                                     ),
+  //                                 border: Border.all(
+  //                                   color:
+  //                                       Colors
+  //                                           .grey
+  //                                           .shade100,
+  //                                   width: 1,
+  //                                 ),
+  //                               ),
+  //                               child: Row(
+  //                                 mainAxisAlignment:
+  //                                     MainAxisAlignment
+  //                                         .spaceBetween,
+  //                                 children: [
+  //                                   Text(
+  //                                     style: TextStyle(
+  //                                       fontSize:
+  //                                           theme
+  //                                               .mobileTexts
+  //                                               .b3
+  //                                               .fontSize,
+  //                                       fontWeight:
+  //                                           FontWeight.bold,
+  //                                     ),
+  //                                     role,
+  //                                   ),
+  //                                   Container(
+  //                                     padding:
+  //                                         EdgeInsets.all(2),
+  //                                     decoration: BoxDecoration(
+  //                                       shape:
+  //                                           BoxShape.circle,
+  //                                       border: Border.all(
+  //                                         color:
+  //                                             Colors
+  //                                                 .grey
+  //                                                 .shade400,
+  //                                       ),
+  //                                     ),
+  //                                     child: Container(
+  //                                       decoration: BoxDecoration(
+  //                                         shape:
+  //                                             BoxShape
+  //                                                 .circle,
+  //                                         color:
+  //                                             returnShopProvider(
+  //                                                       context:
+  //                                                           context,
+  //                                                     ).tempRole ==
+  //                                                     role
+  //                                                 ? theme
+  //                                                     .lightModeColor
+  //                                                     .prColor250
+  //                                                 : Colors
+  //                                                     .transparent,
+  //                                       ),
+  //                                       height: 8,
+  //                                       width: 8,
+  //                                     ),
+  //                                   ),
+  //                                 ],
+  //                               ),
+  //                             ),
+  //                           ),
+  //                         ),
+  //                       )
+  //                       .toList(),
+  //             ),
+  //             action: () {
+  //               if (returnShopProvider().tempRole == '') {
+  //                 showDialog(
+  //                   context: context,
+  //                   builder: (context) {
+  //                     return InfoAlert(
+  //                       theme: theme,
+  //                       message:
+  //                           'You Need to Select A Role before you can Proceed.',
+  //                       title: 'Select A Role',
+  //                     );
+  //                   },
+  //                 );
+  //               } else {
+  //                 Navigator.of(confirmDialog).pop();
+  //                 Navigator.push(
+  //                   context,
+  //                   MaterialPageRoute(
+  //                     builder: (context) {
+  //                       return ShopSetupPage();
+  //                     },
+  //                   ),
+  //                 );
+  //               }
+  //             },
+  //           ),
+  //     );
+  //   },
+  // );
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) {
+        return ShopSetupPage();
+      },
+    ),
   );
 }

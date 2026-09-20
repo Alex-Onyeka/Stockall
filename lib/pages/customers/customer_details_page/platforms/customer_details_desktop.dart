@@ -8,7 +8,7 @@ import 'package:stockall/pages/customers/customer_details_page/components/custom
 import 'package:stockall/pages/customers/customer_details_page/components/customer_details_section_widget.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_invoices_section.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_orders_section.dart';
-import 'package:stockall/pages/customers/customer_details_page/components/customer_purchases_section.dart';
+import 'package:stockall/pages/customers/customer_details_page/components/customer_sales_section.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_transactions_section.dart';
 import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/invoices/invoice_page/invoice_page_desktop.dart';
@@ -122,47 +122,12 @@ class _CustomerDetailsDesktopState
                           );
                         }
                       },
-                      text: 'Purchases',
+                      text: 'Sales',
                       textColor: Colors.grey.shade500,
                       icon: Icon(
                         size: 14,
                         color: Colors.grey.shade500,
                         Icons.arrow_forward_ios_rounded,
-                      ),
-                    ),
-                    Visibility(
-                      visible:
-                          authorization(
-                            authorized:
-                                Authorizations()
-                                    .viewCustomersAccount,
-                          ) &&
-                          showAccountOrReward(),
-                      child: ActionButtonSmall(
-                        isLoading: isDeleting,
-                        action: () {
-                          if (customer != null &&
-                              isDeleting == false) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return CustomerTransactionsPage(
-                                    customerUuid:
-                                        widget.customerUuid,
-                                  );
-                                },
-                              ),
-                            );
-                          }
-                        },
-                        text: 'Transactions',
-                        textColor: Colors.grey.shade500,
-                        icon: Icon(
-                          size: 14,
-                          color: Colors.grey.shade500,
-                          Icons.arrow_forward_ios_rounded,
-                        ),
                       ),
                     ),
                     ActionButtonSmall(
@@ -215,6 +180,41 @@ class _CustomerDetailsDesktopState
                         size: 14,
                         color: Colors.grey.shade500,
                         Icons.arrow_forward_ios_rounded,
+                      ),
+                    ),
+                    Visibility(
+                      visible:
+                          authorization(
+                            authorized:
+                                Authorizations()
+                                    .viewCustomersAccount,
+                          ) &&
+                          showAccountOrReward(),
+                      child: ActionButtonSmall(
+                        isLoading: isDeleting,
+                        action: () {
+                          if (customer != null &&
+                              isDeleting == false) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return CustomerTransactionsPage(
+                                    customerUuid:
+                                        widget.customerUuid,
+                                  );
+                                },
+                              ),
+                            );
+                          }
+                        },
+                        text: 'Transactions',
+                        textColor: Colors.grey.shade500,
+                        icon: Icon(
+                          size: 14,
+                          color: Colors.grey.shade500,
+                          Icons.arrow_forward_ios_rounded,
+                        ),
                       ),
                     ),
                     Visibility(
@@ -372,7 +372,7 @@ class _CustomerDetailsDesktopState
                               children: [
                                 Expanded(
                                   child:
-                                      CustomerPurchasesSection(
+                                      CustomerSalesSection(
                                         customerUuid:
                                             customer.uuid ??
                                             '',

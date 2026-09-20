@@ -20,7 +20,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
   @override
   void initState() {
     super.initState();
-    returnNavProvider(context, listen: false).navigate(11);
+    returnNavProvider(context, listen: false).navigate(12);
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKey =

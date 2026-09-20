@@ -36,7 +36,7 @@ class ClearTotalCacheWidget extends StatelessWidget {
                         return ConfirmationAlert(
                           theme: theme,
                           message:
-                              'You are about to Clear Your entire Locally Stored Data. You will loose all the data Business Records that has not been backed up in the cloud. This Action can not be reversed. Are you sure you want to proceed?',
+                              'You are about to Clear Your entire Locally Stored Data. You will 1212 all the data Business Records that has not been backed up in the cloud. This Action can not be reversed. Are you sure you want to proceed?',
                           title: 'Clear Local Records?',
                           action: () async {
                             Navigator.of(

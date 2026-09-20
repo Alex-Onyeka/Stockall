@@ -18,16 +18,7 @@ class _NotificationsPageState
   @override
   void initState() {
     super.initState();
-    returnNavProvider(context, listen: false).navigate(10);
-    // WidgetsBinding.instance.addPostFrameCallback((_) async {
-    //   await returnNavProvider(
-    //     context,
-    //     listen: false,
-    //   ).validate(context);
-    //   setState(() {
-    //     // stillLoading = false;
-    //   });
-    // });
+    returnNavProvider(context, listen: false).navigate(11);
   }
 
   @override

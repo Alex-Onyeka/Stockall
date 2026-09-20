@@ -292,4 +292,12 @@ class TempProductSaleRecord {
       isVoid: isVoid ?? this.isVoid,
     );
   }
+
+  double getActualQuantity() {
+    if (useGroupQuantity == true) {
+      return quantity * (qttyPerGroup ?? 1);
+    } else {
+      return quantity;
+    }
+  }
 }

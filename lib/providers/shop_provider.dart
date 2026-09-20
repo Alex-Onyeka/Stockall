@@ -87,16 +87,16 @@ class ShopProvider extends ChangeNotifier {
           listen: false,
           // ignore: use_build_context_synchronously
         ).createSubscription(context);
-        if (tempRole != 'Owner') {
-          await mainLocalLog('User is not Owner');
-          shop.employees!.add(
-            AuthService().currentUser ??
-                returnUserProviderSingle()
-                    .currentUserMain
-                    ?.userId ??
-                '',
-          );
-        }
+        // if (tempRole != 'Owner') {
+        //   await mainLocalLog('User is not Owner');
+        //   shop.employees!.add(
+        //     AuthService().currentUser ??
+        //         returnUserProviderSingle()
+        //             .currentUserMain
+        //             ?.userId ??
+        //         '',
+        //   );
+        // }
         shop.isHeadQuarters = true;
         await supabase
             .from('shops')
@@ -2034,14 +2034,14 @@ class ShopProvider extends ChangeNotifier {
   String state = '';
   String city = '';
   String address = '';
-  String tempRole = '';
+  String tempRole = 'Owner';
 
   void setRole(String newRole) {
     tempRole = newRole;
     notifyListeners();
   }
 
-  List<String> roles = ['Owner', 'General Manager'];
+  // List<String> roles = ['Owner', 'General Manager'];
 
   double? generalPercentDiscount;
   double? generalFixedDiscount;

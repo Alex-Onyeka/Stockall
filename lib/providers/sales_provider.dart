@@ -2040,6 +2040,8 @@ class SalesProvider extends ChangeNotifier {
                 remainingQuantity: cartItem.quantity,
                 qttyPerGroup: cartItem.qttyPerGroup,
                 useGroupQuantity: cartItem.useGroupQuantity,
+                tempUseGroupQuantity:
+                    cartItem.useGroupQuantity,
                 customPriceSet: cartItem.setCustomPrice,
                 useWholeSalePrice:
                     cartItem.useWholeSalePrice,

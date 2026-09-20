@@ -932,25 +932,19 @@ class OrdersProvider extends ChangeNotifier {
         await mainLocalLog('Sales Record Inserted');
         var newOrder = order.copyWith();
 
-        // newOrder.balance =
-        //     (newOrder.getCalculatedRemainingBalance()) -
-        //     returnOrdersActionProvider()
-        //         .totalOrdersAmount();
-
-        // if ((newOrder.getCalculatedRemainingBalance()) <= 0) {
-        //   newOrder.balance = 0;
-        // }
-
         for (var item in orderItemsTemp) {
           var itemTemp = newOrder.getOrderItem(
             newItem: item,
           );
           if (itemTemp != null) {
+            print(
+              'Item Remaining Quantity: ${item.remainingQuantity}... Item Actual Remaining Quantity: ${item.getActualRemainingQuantity()}... Item Quantity: ${item.quantity}... Item Actual Quantity: ${item.getActualQuantity()}... ',
+            );
             itemTemp.remainingQuantity =
                 (itemTemp.remainingQuantity ?? 0) -
-                item.quantity;
-            if ((itemTemp.remainingBalance ?? 0) <= 0) {
-              itemTemp.remainingBalance = 0;
+                item.getActualQuantityDuringDeliveryCheckout();
+            if ((itemTemp.remainingQuantity ?? 0) <= 0) {
+              itemTemp.remainingQuantity = 0;
             }
           }
         }
@@ -1089,15 +1083,6 @@ class OrdersProvider extends ChangeNotifier {
                 .toList();
         if (ordersTemp.isNotEmpty) {
           var orderTemp = orders.first.copyWith();
-          // orderTemp.balance =
-          //     (orderTemp.getCalculatedRemainingBalance()) +
-          //     receipt.getTotalRevenue();
-          // if ((orderTemp.getCalculatedRemainingBalance()) >
-          //     (orderTemp.total ?? 0)) {
-          //   orderTemp.balance =
-          //       (orderTemp.total ?? 0) -
-          //       (orderTemp.getTotalPayment());
-          // }
           for (var item in records) {
             var orderItems = orderTemp.orderItems.where(
               (it) => it.productUuid == item.productUuid,
@@ -1106,7 +1091,7 @@ class OrdersProvider extends ChangeNotifier {
               var orderItem = orderItems.first;
               orderItem.remainingQuantity =
                   (orderItem.remainingQuantity ?? 0) +
-                  item.quantity;
+                  item.getActualQuantity();
               if ((orderItem.remainingQuantity ?? 0) >
                   orderItem.quantity) {
                 orderItem.remainingQuantity =
@@ -1135,7 +1120,7 @@ class OrdersProvider extends ChangeNotifier {
   //
   //
 
-  List<OrderItems> _orderItems = [];
+  final List<OrderItems> _orderItems = [];
   List<OrderItems> get orderItems => _orderItems;
 
   List<Orders> departmentOrders() {
