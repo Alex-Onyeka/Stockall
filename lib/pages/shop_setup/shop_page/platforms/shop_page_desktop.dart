@@ -12,7 +12,7 @@ import 'package:stockall/pages/shop_setup/edit_receipt_page/edit_receipt.dart';
 import 'package:stockall/pages/shop_setup/shop_page/components/delete_shop_button_widget.dart';
 import 'package:stockall/pages/shop_setup/shop_page/components/select_currency_widget.dart';
 import 'package:stockall/pages/shop_setup/shop_page/components/set_social_details.dart';
-import 'package:stockall/pages/shop_setup/shop_page/platforms/shop_page_mobile.dart';
+import 'package:stockall/pages/shop_setup/shop_page/components/shop_details_top_section_widget.dart';
 import 'package:stockall/pages/shop_setup/shop_setup_one/shop_setup_page.dart';
 import 'package:stockall/pages/shop_setup/shop_setup_two/shop_setup_two.dart';
 

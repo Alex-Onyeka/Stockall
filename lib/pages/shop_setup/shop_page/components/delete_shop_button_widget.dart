@@ -42,16 +42,16 @@ class _DeleteShopButtonWidgetState
             Row(
               spacing: 15,
               children: [
-                Expanded(child: Divider()),
+                Expanded(child: Divider(thickness: 0.5)),
                 Text(
                   style: TextStyle(
-                    fontSize: theme.mobileTexts.b3.fontSize,
+                    fontSize: theme.mobileTexts.b4.fontSize,
                     fontWeight: FontWeight.bold,
                     color: Colors.redAccent,
                   ),
                   'CRITICAL',
                 ),
-                Expanded(child: Divider()),
+                Expanded(child: Divider(thickness: 0.5)),
               ],
             ),
             MainButtonTransparent(

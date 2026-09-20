@@ -60,7 +60,7 @@ class MainButtonTransparent extends StatelessWidget {
                       fontSize:
                           themeProvider
                               .mobileTexts
-                              .b3
+                              .b4
                               .fontSize,
                       fontWeight: FontWeight.bold,
                     ),

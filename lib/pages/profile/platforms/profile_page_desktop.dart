@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
-import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
-import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/profile/change_email/enter_new_email/enter_new_email.dart';
-import 'package:stockall/pages/profile/delete_account/delete_account.dart';
 import 'package:stockall/pages/profile/edit/edit.dart';
+import 'package:stockall/pages/profile/platforms/components/delete_account_button_widget.dart';
+import 'package:stockall/pages/profile/platforms/components/user_uuid_widget_profile.dart';
 
 class ProfilePageDesktop extends StatefulWidget {
   const ProfilePageDesktop({
@@ -197,7 +196,7 @@ class ProfilePageDesktopState
                               fontSize:
                                   theme
                                       .mobileTexts
-                                      .b1
+                                      .b2
                                       .fontSize,
                             ),
                             user.name,
@@ -208,7 +207,7 @@ class ProfilePageDesktopState
                               fontSize:
                                   theme
                                       .mobileTexts
-                                      .b1
+                                      .b3
                                       .fontSize,
                             ),
                             user.phone ?? 'Phone Number',
@@ -220,7 +219,7 @@ class ProfilePageDesktopState
                               fontSize:
                                   theme
                                       .mobileTexts
-                                      .b1
+                                      .b3
                                       .fontSize,
                               color:
                                   theme
@@ -229,84 +228,9 @@ class ProfilePageDesktopState
                             ),
                             user.email,
                           ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 5,
-                            ),
-                            child: Ink(
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      4,
-                                    ),
-                                border: Border.all(
-                                  color:
-                                      Colors.grey.shade400,
-                                ),
-                                color: Colors.grey.shade100,
-                              ),
-                              child: InkWell(
-                                mouseCursor:
-                                    SystemMouseCursors
-                                        .click,
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      4,
-                                    ),
-                                onTap: () {
-                                  copyToClipboard(
-                                    context: context,
-                                    text:
-                                        user.userId ??
-                                        'No Text',
-                                  );
-                                },
-                                child: Container(
-                                  padding:
-                                      EdgeInsets.symmetric(
-                                        vertical: 3,
-                                        horizontal: 6,
-                                      ),
-                                  child: Row(
-                                    mainAxisSize:
-                                        MainAxisSize.min,
-                                    spacing: 5,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .center,
-                                    children: [
-                                      Flexible(
-                                        child: Text(
-                                          style: TextStyle(
-                                            fontWeight:
-                                                FontWeight
-                                                    .normal,
-                                            fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b3
-                                                    .fontSize,
-                                          ),
-                                          user.userId ??
-                                              'User Id',
-                                        ),
-                                      ),
-                                      Icon(
-                                        size: 16,
-                                        color:
-                                            theme
-                                                .lightModeColor
-                                                .secColor200,
-                                        Icons.copy,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
+                          UserUuidWidgetProfile(
+                            user: user,
+                            theme: theme,
                           ),
                         ],
                       ),
@@ -590,59 +514,7 @@ class ProfilePageDesktopState
                               text: 'Change PIN',
                               constraints: BoxConstraints(),
                             ),
-                            MainButtonTransparent(
-                              themeProvider: theme,
-                              color: Colors.red,
-                              action: () {
-                                if (returnConnectivityProvider()
-                                    .isConnected) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (
-                                      confirmDialog,
-                                    ) {
-                                      return ConfirmationAlert(
-                                        theme: theme,
-                                        message:
-                                            'Deleting your account means loosing all your account information. This action cannot be reversed. Are you sure you want to proceed?',
-                                        title:
-                                            'Are you Sure?',
-                                        action: () {
-                                          Navigator.of(
-                                            confirmDialog,
-                                          ).pop();
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (
-                                                context,
-                                              ) {
-                                                return DeleteAccount();
-                                              },
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                  );
-                                } else {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return InfoAlert(
-                                        theme: theme,
-                                        message:
-                                            'Please Turn on your internet connection to Proceed with this action.',
-                                        title:
-                                            'No Internet',
-                                      );
-                                    },
-                                  );
-                                }
-                              },
-                              text: 'Delete Your Account',
-                              constraints: BoxConstraints(),
-                            ),
+                            DeleteAccountButtonWidget(),
                           ],
                         ),
                       ),
