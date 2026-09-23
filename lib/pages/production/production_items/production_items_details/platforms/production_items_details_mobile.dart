@@ -16,7 +16,7 @@ import 'package:stockall/pages/production/production_items/add_production_item/a
 import 'package:stockall/pages/production/production_items/production_item_history_page/production_item_history_page.dart';
 import 'package:stockall/pages/production/production_items/production_items_details/platforms/components/transfer_production_item_quantity.dart';
 import 'package:stockall/pages/production/production_items/production_items_details/platforms/components/update_production_item_quantity.dart';
-import 'package:stockall/pages/products/product_details/platforms/product_details_desktop.dart';
+import 'package:stockall/pages/products/product_details/platforms/components/bottom_info_section.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class ProductionItemsDetailsMobile extends StatefulWidget {

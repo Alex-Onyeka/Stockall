@@ -11,13 +11,12 @@ import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
-import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/calculations.dart';
-import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/products/product_details/platforms/product_details_desktop.dart';
+import 'package:stockall/pages/products/product_details/platforms/components/edit_button.dart';
+import 'package:stockall/pages/products/product_details/platforms/components/unit_selection_widget.dart';
 
 Future<Object?> transferItemQuantity(
   BuildContext context,
@@ -47,47 +46,7 @@ class _TransferItemQuantityWidgetState
     extends State<TransferItemQuantityWidget> {
   bool isEditQuantityLoading = false;
   final quantityController = TextEditingController();
-  bool transferGroup = false;
-
-  String returnUnitText() {
-    if (transferGroup) {
-      return widget.item.groupUnit == null ||
-              widget.item.groupUnit == 'Others'
-          ? ''
-          : " Group(s)";
-    } else {
-      return widget.item.unit.isEmpty ||
-              widget.item.unit == 'Others'
-          ? ''
-          : " Unit(s)";
-    }
-  }
-
-  double returnGroupQuantity() {
-    if (transferGroup) {
-      return (widget.item.quantity ?? 0) /
-          (widget.item.qttyPerGroup ?? 1);
-    } else {
-      return (widget.item.quantity ?? 0);
-    }
-  }
-
-  double returnUnitQuantity(double value) {
-    if (transferGroup) {
-      return value * (widget.item.qttyPerGroup ?? 0);
-    } else {
-      return value;
-    }
-  }
-
-  double returnActualQuantity() {
-    if (transferGroup) {
-      return (widget.item.quantity ?? 0) *
-          (widget.item.qttyPerGroup ?? 0);
-    } else {
-      return (widget.item.quantity ?? 0);
-    }
-  }
+  String? unitUuid;
 
   @override
   Widget build(BuildContext context) {
@@ -157,7 +116,7 @@ class _TransferItemQuantityWidgetState
                                         .fontSize,
                                 fontWeight: FontWeight.bold,
                               ),
-                              'Transfer${returnUnitText()} Quantity',
+                              'Transfer ${widget.item.getProductUnit(unitUuid: unitUuid).name} Quantity',
                             ),
                             Builder(
                               builder: (context) {
@@ -209,7 +168,7 @@ class _TransferItemQuantityWidgetState
                               ),
                               widget.item.quantity == null
                                   ? 'Quantity Not Set'
-                                  : 'Current${returnUnitText()} Quantity : ${formatLargeNumberDouble(returnGroupQuantity())}',
+                                  : 'Current Quantity in ${widget.item.getProductUnit(unitUuid: unitUuid).name}: ${formatLargeNumberDouble(widget.item.getProductUnit(unitUuid: unitUuid).getQuantityEquivDivided(context: context))}',
                             ),
                             EditCartTextField(
                               onChanged: (value) {
@@ -222,9 +181,15 @@ class _TransferItemQuantityWidgetState
                                   var eValue = double.parse(
                                     quantityController.text,
                                   );
-                                  if (returnUnitQuantity(
-                                        eValue,
-                                      ) >
+                                  if (widget.item
+                                          .getProductUnit(
+                                            unitUuid:
+                                                unitUuid,
+                                          )
+                                          .getQuantityEquivMultiplied(
+                                            newQuantity:
+                                                eValue,
+                                          ) >
                                       (widget
                                               .item
                                               .quantity ??
@@ -237,7 +202,7 @@ class _TransferItemQuantityWidgetState
                                 }
                               },
                               title:
-                                  '${returnUnitText()} Quantity',
+                                  '${widget.item.getProductUnit(unitUuid: unitUuid).name} Quantity',
                               hint: 'Enter Quantity Amount',
                               controller:
                                   quantityController,
@@ -246,65 +211,62 @@ class _TransferItemQuantityWidgetState
                           ],
                         ),
                         SizedBox(height: 20),
-                        Visibility(
-                          visible:
-                              widget.item.useGroupUnit ==
-                              true,
-                          child: Column(
-                            children: [
-                              ConstrainedBox(
-                                constraints: BoxConstraints(
-                                  maxWidth: 230,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .spaceBetween,
-                                  children: [
-                                    Text(
-                                      style: TextStyle(
-                                        fontWeight:
-                                            FontWeight.bold,
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b3
-                                                .fontSize,
-                                      ),
-                                      'Transfer Group Quantity?',
-                                    ),
-                                    MyToggleButton(
-                                      isSmall:
-                                          screenWidth(
-                                            context,
-                                          ) <=
-                                          mobileScreen,
-                                      boolValue:
-                                          transferGroup,
-                                      toggle: () {
-                                        setState(() {
-                                          transferGroup =
-                                              !transferGroup;
-                                          quantityController
-                                              .clear();
-                                        });
-                                      },
-                                      theme: theme,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(height: 20),
-                            ],
-                          ),
+                        UnitSelectionWidget(
+                          product: widget.item,
+                          setUnitUuid: (uuid) {
+                            setState(() {
+                              unitUuid = uuid;
+                            });
+                            if (widget.item
+                                    .getProductUnit(
+                                      unitUuid: unitUuid,
+                                    )
+                                    .getQuantityEquivMultiplied(
+                                      newQuantity:
+                                          double.tryParse(
+                                            quantityController
+                                                .text
+                                                .replaceAll(
+                                                  ',',
+                                                  '',
+                                                ),
+                                          ) ??
+                                          0,
+                                    ) >
+                                (widget.item.quantity ??
+                                    0)) {
+                              quantityController.text = '0';
+                            }
+                          },
+                          theme: theme,
+                          unitUuid: unitUuid,
                         ),
 
-                        SizedBox(height: 15),
+                        // SizedBox(height: 15),
                         MainButtonP(
                           themeProvider: theme,
                           action: () {
                             var firstContext = context;
-                            if (quantityController
+                            if (widget.item
+                                        .getProductUnit(
+                                          unitUuid:
+                                              unitUuid,
+                                        )
+                                        .getQuantityEquivMultiplied(
+                                          newQuantity:
+                                              double.tryParse(
+                                                quantityController
+                                                    .text
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
+                                              ) ??
+                                              0,
+                                        ) <=
+                                    (widget.item.quantity ??
+                                        0) &&
+                                quantityController
                                     .text
                                     .isNotEmpty &&
                                 quantityController.text !=
@@ -318,15 +280,14 @@ class _TransferItemQuantityWidgetState
                                         .length >
                                     1) {
                                   transferItemAction(
+                                    unitUuid: unitUuid,
                                     mainItem: widget.item,
                                     enteredValue:
-                                        returnUnitQuantity(
-                                          (double.tryParse(
-                                                quantityController
-                                                    .text,
-                                              ) ??
-                                              0),
-                                        ),
+                                        (double.tryParse(
+                                              quantityController
+                                                  .text,
+                                            ) ??
+                                            0),
                                     firstContext:
                                         firstContext,
                                     loadingAction: (value) {
@@ -338,17 +299,16 @@ class _TransferItemQuantityWidgetState
                                   );
                                 } else {
                                   selectDepartmentProducts(
+                                    unitUuid: unitUuid,
                                     secondContext: null,
                                     firstContext:
                                         firstContext,
                                     enteredValue:
-                                        returnUnitQuantity(
-                                          (double.tryParse(
-                                                quantityController
-                                                    .text,
-                                              ) ??
-                                              0),
-                                        ),
+                                        (double.tryParse(
+                                              quantityController
+                                                  .text,
+                                            ) ??
+                                            0),
                                     mainItem: widget.item,
                                     loadingAction: (value) {
                                       setState(() {
@@ -380,16 +340,15 @@ class _TransferItemQuantityWidgetState
                                 } else {
                                   selectShopsProducts(
                                     secondContext: null,
+                                    unitUuid: unitUuid,
                                     firstContext:
                                         firstContext,
                                     enteredValue:
-                                        returnUnitQuantity(
-                                          (double.tryParse(
-                                                quantityController
-                                                    .text,
-                                              ) ??
-                                              0),
-                                        ),
+                                        (double.tryParse(
+                                              quantityController
+                                                  .text,
+                                            ) ??
+                                            0),
                                     mainItem: widget.item,
                                     loadingAction: (value) {
                                       setState(() {
@@ -431,6 +390,7 @@ class _TransferItemQuantityWidgetState
 void transferItemAction({
   required BuildContext firstContext,
   required TempProductClass mainItem,
+  required String? unitUuid,
   required Function(bool value) loadingAction,
   required double enteredValue,
 }) {
@@ -459,6 +419,7 @@ void transferItemAction({
                 text: 'Transfer To Department',
                 action: () {
                   selectDepartmentProducts(
+                    unitUuid: unitUuid,
                     mainItem: mainItem,
                     firstContext: firstContext,
                     secondContext: secondContext,
@@ -495,6 +456,7 @@ void transferItemAction({
                     );
                   } else {
                     selectShopsProducts(
+                      unitUuid: unitUuid,
                       secondContext: secondContext,
                       firstContext: firstContext,
                       enteredValue: enteredValue,
@@ -518,6 +480,7 @@ void selectDepartmentProducts({
   required BuildContext? secondContext,
   required BuildContext firstContext,
   required TempProductClass mainItem,
+  required String? unitUuid,
   required Function(bool value) loadingAction,
   required double enteredValue,
 }) {
@@ -549,6 +512,7 @@ void selectDepartmentProducts({
                       loadingAction: loadingAction,
                       department: selectedDept,
                       enteredValue: enteredValue,
+                      unitUuid: unitUuid,
                     );
                   }
                 },
@@ -699,6 +663,7 @@ void selectItemInADepartmentProducts({
   required BuildContext thirdContext,
   required BuildContext? secondContext,
   required BuildContext firstContext,
+  required String? unitUuid,
   required TempProductClass mainItem,
   required Function(bool value) loadingAction,
   DepartmentClass? department,
@@ -729,7 +694,8 @@ void selectItemInADepartmentProducts({
                           theme: theme,
                           message:
                               'You are about to perform an item quantity Transfer. Please note that this action can not be reversed. Are you sure you want to proceed?',
-                          title: 'Transfer item Quantity',
+                          title:
+                              'Transfer item Quantity $enteredValue',
                           action: () async {
                             loadingAction(true);
                             TempProductClass oldProduct =
@@ -738,7 +704,14 @@ void selectItemInADepartmentProducts({
                                 oldProduct.copyWith();
                             newProduct.quantity =
                                 (newProduct.quantity ?? 0) +
-                                enteredValue;
+                                newProduct
+                                    .getProductUnit(
+                                      unitUuid: unitUuid,
+                                    )
+                                    .getQuantityEquivMultiplied(
+                                      newQuantity:
+                                          enteredValue,
+                                    );
                             ItemHistory
                             itemHistory = ItemHistory(
                               shopId: shopId(),
@@ -754,22 +727,39 @@ void selectItemInADepartmentProducts({
                               itemUuid: newProduct.uuid,
                               itemName: newProduct.name,
                               newValue:
-                                  (newProduct.quantity ?? 0)
-                                      .toString(),
+                                  formatLargeNumberDouble(
+                                    (newProduct.quantity ??
+                                        0),
+                                  ),
                               oldValue:
-                                  (oldProduct.quantity ?? 0)
-                                      .toString(),
+                                  formatLargeNumberDouble(
+                                    (oldProduct.quantity ??
+                                        0),
+                                  ),
                               quantityChange: enteredValue,
                               staffId: currentUser().userId,
                               staffName: currentUser().name,
+                              unit:
+                                  mainItem
+                                      .getProductUnit(
+                                        unitUuid: unitUuid,
+                                      )
+                                      .name,
+                              primaryUnit: 'Unit(s)',
                             );
                             var res = await returnData()
                                 .updateProduct(
                                   product: newProduct,
                                   isQuantityUpdate: true,
                                   includeQuantity: true,
-                                  quantityChange:
-                                      enteredValue,
+                                  quantityChange: newProduct
+                                      .getProductUnit(
+                                        unitUuid: unitUuid,
+                                      )
+                                      .getQuantityEquivMultiplied(
+                                        newQuantity:
+                                            enteredValue,
+                                      ),
                                   isIncrement: true,
                                   itemHistory: itemHistory,
                                 );
@@ -779,7 +769,15 @@ void selectItemInADepartmentProducts({
                             newProduct2.quantity =
                                 ((newProduct2.quantity ??
                                         0) -
-                                    enteredValue);
+                                    newProduct2
+                                        .getProductUnit(
+                                          unitUuid:
+                                              unitUuid,
+                                        )
+                                        .getQuantityEquivMultiplied(
+                                          newQuantity:
+                                              enteredValue,
+                                        ));
                             ItemHistory
                             itemHistory2 = ItemHistory(
                               shopId: shopId(),
@@ -790,24 +788,53 @@ void selectItemInADepartmentProducts({
                               createdAt: DateTime.now(),
                               itemUuid: newProduct2.uuid,
                               itemName: newProduct2.name,
-                              newValue:
-                                  (newProduct2.quantity ??
-                                          0)
-                                      .toString(),
-                              oldValue:
-                                  (mainItem.quantity ?? 0)
-                                      .toString(),
+                              newValue: formatLargeNumberDouble(
+                                mainItem
+                                    .getProductUnit()
+                                    .getQuantityEquivDivided(
+                                      newQuantity:
+                                          (newProduct2
+                                                  .quantity ??
+                                              0),
+                                    ),
+                              ),
+                              oldValue: formatLargeNumberDouble(
+                                mainItem
+                                    .getProductUnit()
+                                    .getQuantityEquivDivided(
+                                      newQuantity:
+                                          (mainItem
+                                                  .quantity ??
+                                              0),
+                                    ),
+                              ),
                               quantityChange: -enteredValue,
                               staffId: currentUser().userId,
                               staffName: currentUser().name,
+                              unit:
+                                  newProduct2
+                                      .getProductUnit(
+                                        unitUuid: unitUuid,
+                                      )
+                                      .name,
+                              primaryUnit:
+                                  newProduct2
+                                      .getProductUnit()
+                                      .name,
                             );
                             var res2 = await returnData()
                                 .updateProduct(
                                   product: newProduct2,
                                   isQuantityUpdate: true,
                                   includeQuantity: true,
-                                  quantityChange:
-                                      enteredValue,
+                                  quantityChange: newProduct2
+                                      .getProductUnit(
+                                        unitUuid: unitUuid,
+                                      )
+                                      .getQuantityEquivMultiplied(
+                                        newQuantity:
+                                            enteredValue,
+                                      ),
                                   isIncrement: false,
                                   itemHistory: itemHistory2,
                                 );
@@ -1017,7 +1044,7 @@ void selectItemInADepartmentProducts({
                                                                 fontWeight:
                                                                     FontWeight.bold,
                                                               ),
-                                                              '${item.quantity ?? 0}',
+                                                              '${item.getProductUnit().getQuantityEquivDivided()} ${item.getProductUnit().name}',
                                                             ),
                                                             Container(
                                                               padding: EdgeInsets.all(
@@ -1078,6 +1105,7 @@ void selectShopsProducts({
   required BuildContext? secondContext,
   required BuildContext firstContext,
   required TempProductClass mainItem,
+  required String? unitUuid,
   required Function(bool value) loadingAction,
   required double enteredValue,
 }) {
@@ -1104,6 +1132,7 @@ void selectShopsProducts({
             action: () {
               if (selectedShop != null) {
                 selectItemInAShop(
+                  unitUuid: unitUuid,
                   firstContext: firstContext,
                   secondContext: secondContext,
                   thirdContext: thirdContext,
@@ -1271,6 +1300,7 @@ void selectItemInAShop({
   required Function(bool value) loadingAction,
   required TempShopClass shop,
   required double enteredValue,
+  required String? unitUuid,
 }) {
   var theme = returnTheme(thirdContext, listen: false);
   final searchController = TextEditingController();
@@ -1306,7 +1336,13 @@ void selectItemInAShop({
                             oldProduct.copyWith();
                         newProduct.quantity =
                             (newProduct.quantity ?? 0) +
-                            enteredValue;
+                            newProduct
+                                .getProductUnit(
+                                  unitUuid: unitUuid,
+                                )
+                                .getQuantityEquivMultiplied(
+                                  newQuantity: enteredValue,
+                                );
                         ItemHistory
                         itemHistory = ItemHistory(
                           desc:
@@ -1321,15 +1357,22 @@ void selectItemInAShop({
                           createdAt: DateTime.now(),
                           itemUuid: newProduct.uuid,
                           itemName: newProduct.name,
-                          newValue:
-                              (newProduct.quantity ?? 0)
-                                  .toString(),
-                          oldValue:
-                              (oldProduct.quantity ?? 0)
-                                  .toString(),
+                          newValue: formatLargeNumberDouble(
+                            (newProduct.quantity ?? 0),
+                          ),
+                          oldValue: formatLargeNumberDouble(
+                            (oldProduct.quantity ?? 0),
+                          ),
                           quantityChange: enteredValue,
                           staffId: currentUser().userId,
                           staffName: currentUser().name,
+                          unit:
+                              newProduct
+                                  .getProductUnit(
+                                    unitUuid: unitUuid,
+                                  )
+                                  .name,
+                          primaryUnit: 'Unit(s)',
                         );
                         var res = await returnData()
                             .updateProductForOtherShops(
@@ -1341,7 +1384,14 @@ void selectItemInAShop({
                             mainItem.copyWith();
                         newProduct2.quantity =
                             ((newProduct2.quantity ?? 0) -
-                                enteredValue);
+                                newProduct2
+                                    .getProductUnit(
+                                      unitUuid: unitUuid,
+                                    )
+                                    .getQuantityEquivDivided(
+                                      newQuantity:
+                                          enteredValue,
+                                    ));
                         ItemHistory
                         itemHistory2 = ItemHistory(
                           shopId: shopId(),
@@ -1352,22 +1402,39 @@ void selectItemInAShop({
                           createdAt: DateTime.now(),
                           itemUuid: newProduct2.uuid,
                           itemName: newProduct2.name,
-                          newValue:
-                              (newProduct2.quantity ?? 0)
-                                  .toString(),
-                          oldValue:
-                              (mainItem.quantity ?? 0)
-                                  .toString(),
+                          newValue: formatLargeNumberDouble(
+                            (newProduct2.quantity ?? 0),
+                          ),
+                          oldValue: formatLargeNumberDouble(
+                            (mainItem.quantity ?? 0),
+                          ),
                           quantityChange: -enteredValue,
                           staffId: currentUser().userId,
                           staffName: currentUser().name,
+                          unit:
+                              newProduct2
+                                  .getProductUnit(
+                                    unitUuid: unitUuid,
+                                  )
+                                  .name,
+                          primaryUnit:
+                              mainItem
+                                  .getProductUnit()
+                                  .name,
                         );
                         var res2 = await returnData()
                             .updateProduct(
                               product: newProduct2,
                               isQuantityUpdate: true,
                               includeQuantity: true,
-                              quantityChange: enteredValue,
+                              quantityChange: newProduct2
+                                  .getProductUnit(
+                                    unitUuid: unitUuid,
+                                  )
+                                  .getQuantityEquivDivided(
+                                    newQuantity:
+                                        enteredValue,
+                                  ),
                               isIncrement: false,
                               itemHistory: itemHistory2,
                             );
@@ -1504,7 +1571,7 @@ void selectItemInAShop({
                                         title:
                                             'No Item Found',
                                         subText:
-                                            'You have not added to any item under this Shop.',
+                                            'You have not added any item under this Shop.',
                                         theme: theme,
                                         height: 30,
                                         icon: Icons.clear,

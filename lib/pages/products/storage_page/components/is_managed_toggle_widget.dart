@@ -52,6 +52,7 @@ class _IsManagedToggleWidgetState
                       isQuantityUpdate: false,
                       quantityChange: null,
                       product: TempProductClass(
+                        unitsList: widget.product.unitsList,
                         useGroupUnit:
                             widget.product.useGroupUnit,
                         categories:

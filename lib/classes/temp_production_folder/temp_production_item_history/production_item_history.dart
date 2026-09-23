@@ -49,6 +49,12 @@ class ProductionItemHistory {
   @HiveField(14)
   bool? isIncreased;
 
+  @HiveField(15)
+  String? unit;
+
+  @HiveField(16)
+  String? primaryUnit;
+
   ProductionItemHistory({
     this.uuid,
     this.createdAt,
@@ -65,6 +71,8 @@ class ProductionItemHistory {
     this.quantityChange,
     required this.desc,
     required this.isIncreased,
+    this.unit,
+    this.primaryUnit,
   });
 
   factory ProductionItemHistory.fromJson(
@@ -90,6 +98,8 @@ class ProductionItemHistory {
           (json["quantity_change"] as num?)?.toDouble(),
       desc: json['desc'] as String?,
       isIncreased: json['is_increased'] as bool,
+      unit: json['unit'] as String?,
+      primaryUnit: json['primary_unit'] as String?,
     );
   }
 
@@ -110,6 +120,8 @@ class ProductionItemHistory {
       'quantity_change': quantityChange,
       'desc': desc,
       'is_increased': isIncreased,
+      'unit': unit,
+      'primary_unit': primaryUnit,
     };
   }
 }

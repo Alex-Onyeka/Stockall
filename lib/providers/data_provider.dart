@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:stockall/classes/temp_categories/category_class.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/created_products/created_products.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/deleted_products/deleted_products.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/quantity_update/quantity_update.dart';
@@ -2322,6 +2323,16 @@ class DataProvider extends ChangeNotifier {
 
   List<TempProductClass> productListMain = [];
 
+  List<ProductUnitsClass> unitsList() {
+    List<ProductUnitsClass> tempUnits = [];
+    for (var item in productListMain) {
+      for (var unitItem in item.getUnitsList()) {
+        tempUnits.add(unitItem);
+      }
+    }
+    return tempUnits;
+  }
+
   List<TempProductClass> productList() {
     if (returnShopProvider()
             .userShop()
@@ -2849,6 +2860,7 @@ class DataProvider extends ChangeNotifier {
     clearExpDate();
     clearDepartment();
     clearUnit();
+    clearTempUnitsList();
     notifyListeners();
   }
 
@@ -2965,17 +2977,6 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // CategoryClass? selectedCategory;
-
-  // void selectCategory(CategoryClass category) {
-  //   if (selectedCategories.contains(category)) {
-  //     selectedCategories.remove(category);
-  //   } else {
-  //     selectedCategories.add(category);
-  //   }
-  //   notifyListeners();
-  // }
-
   //
   //
   //
@@ -3090,6 +3091,89 @@ class DataProvider extends ChangeNotifier {
         ? totalValue / (product.qttyPerGroup ?? 0)
         : 0;
   }
+  //
+  //
+  //
+
+  //
+  //
+  //
+  //
+
+  List<ProductUnitsClass> tempUnitsList = [];
+
+  List<ProductUnitsClass> tempUnitsListSorted() {
+    tempUnitsList.sort(
+      (a, b) => a.conversion.compareTo(b.conversion),
+    );
+    return tempUnitsList;
+  }
+
+  void clearTempUnitsList() {
+    tempUnitsList.clear();
+    notifyListeners();
+  }
+
+  bool isUnitListOpen = false;
+
+  void createOrUpdateUnitList({
+    required ProductUnitsClass unitListSingle,
+  }) {
+    if (tempUnitsList
+        .where((item) => item.uuid == unitListSingle.uuid)
+        .isNotEmpty) {
+      tempUnitsList.removeWhere(
+        (item) => item.uuid == unitListSingle.uuid,
+      );
+    }
+    tempUnitsList.add(unitListSingle);
+    notifyListeners();
+  }
+
+  void deleteProductUnit({
+    required ProductUnitsClass unitListSingle,
+  }) {
+    if (tempUnitsList.length > 1) {
+      tempUnitsList.removeWhere(
+        (item) => item.uuid == unitListSingle.uuid,
+      );
+      if (unitListSingle.isPrimary) {
+        selectPrimaryUnit(
+          unitListSingle: tempUnitsList.first,
+        );
+      }
+    }
+    notifyListeners();
+  }
+
+  void initUnitsList({
+    required List<ProductUnitsClass> unitsListNew,
+  }) {
+    var newTempList = unitsListNew.map(
+      (item) => item.copyWith(),
+    );
+    tempUnitsList = newTempList.toList();
+    print(
+      'Temp Units: ${tempUnitsList.length} | New Units: ${unitsListNew.length}',
+    );
+    notifyListeners();
+  }
+
+  void selectPrimaryUnit({
+    required ProductUnitsClass unitListSingle,
+  }) {
+    for (var item in tempUnitsList) {
+      if (item.uuid == unitListSingle.uuid) {
+        item.isPrimary = true;
+      } else {
+        item.isPrimary = false;
+      }
+    }
+    notifyListeners();
+  }
+
+  //
+  //
   //
   //
   //

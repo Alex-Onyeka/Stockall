@@ -128,15 +128,23 @@ class EmptyWidgetDisplayOnly extends StatelessWidget {
                               children: [
                                 Text(
                                   style: TextStyle(
+                                    color:
+                                        theme
+                                            .lightModeColor
+                                            .secColor200,
                                     fontSize:
                                         theme
                                             .mobileTexts
-                                            .b1
+                                            .b2
                                             .fontSize,
                                   ),
                                   altActionText ?? '',
                                 ),
                                 Icon(
+                                  color:
+                                      theme
+                                          .lightModeColor
+                                          .secColor200,
                                   size: 18,
                                   altIcon ?? Icons.refresh,
                                 ),

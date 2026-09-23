@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/local_database/products/unsync_funcs/quantity_update/quantity_update_func.dart';
 // import 'package:stockall/local_database/products/unsync_funcs/sales_products/sales_product_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/created_products/created_product_func.dart';
@@ -18,6 +19,7 @@ class ProductsFunc {
   Future<void> init() async {
     try {
       Hive.registerAdapter(TempProductClassAdapter());
+      Hive.registerAdapter(ProductUnitsClassAdapter());
       productBox = await Hive.openBox(productBoxName);
       await CreatedProductFunc().init();
       await DeletedProductsFunc().init();
@@ -34,8 +36,8 @@ class ProductsFunc {
   }
 
   List<TempProductClass> getProducts() {
-    List<TempProductClass> products = productBox.values
-        .toList();
+    List<TempProductClass> products =
+        productBox.values.toList();
     products.sort(
       (a, b) => a.name.toLowerCase().compareTo(
         b.name.toLowerCase(),
@@ -47,9 +49,10 @@ class ProductsFunc {
   TempProductClass? getSingleProduct({
     required String uuid,
   }) {
-    List<TempProductClass> products = productBox.values
-        .where((pro) => pro.uuid == uuid)
-        .toList();
+    List<TempProductClass> products =
+        productBox.values
+            .where((pro) => pro.uuid == uuid)
+            .toList();
     if (products.isNotEmpty) {
       return products.first;
     } else {
@@ -126,113 +129,6 @@ class ProductsFunc {
       return 0;
     }
   }
-
-  // Future<int> deductQuantity({
-  //   required bool isOnline,
-  //   required String uuid,
-  //   required double? quantity,
-  // }) async {
-  //   try {
-  //     var product = productBox.get(uuid);
-  //     if (product != null && product.isManaged) {
-  //       if (product.isManaged) {
-  //         final newQuantity =
-  //             (product.quantity ?? 0) - (quantity ?? 0);
-
-  //         // Make sure it never goes negative
-  //         product.quantity =
-  //             newQuantity < 0 ? 0 : newQuantity;
-
-  //         // Save back into Hive explicitly
-  //         await productBox.put(uuid, product);
-  //         var containsCreated =
-  //             CreatedProductFunc()
-  //                 .getProducts()
-  //                 .where(
-  //                   (cProduct) =>
-  //                       cProduct.product.uuid == uuid,
-  //                 )
-  //                 .toList();
-  //         if (containsCreated.isNotEmpty) {
-  //           await CreatedProductFunc().updateProduct(
-  //             CreatedProducts(
-  //               product: productBox.get(uuid)!,
-  //             ),
-  //           );
-  //         } else {
-  //           if (!isOnline) {
-  //             await SalesProductFunc().createSalesProduct(
-  //               SalesProducts(
-  //                 productUuid: uuid,
-  //                 quantity: quantity ?? 0,
-  //               ),
-  //             );
-  //           }
-  //         }
-  //         await mainLocalLog(
-  //           'Offline Product Quantity Deducted Successfully',
-  //         );
-  //         return 1;
-  //       } else {
-  //         await mainLocalLog('Offline Product Is Not Managed');
-  //         return 0;
-  //       }
-  //     } else {
-  //       await mainLocalLog('Product not found in box ❌');
-  //       return 0;
-  //     }
-  //   } catch (e) {
-  //     await mainLocalLog(
-  //       'Offline Product Deduct Failed: ${e.toString()}',
-  //     );
-  //     return 0;
-  //   }
-  // }
-
-  // Future<int> incrementQuantity({
-  //   required String uuid,
-  //   required double? quantity,
-  // }) async {
-  //   try {
-  //     var product = productBox.get(uuid);
-  //     if (product != null) {
-  //       final newQuantity =
-  //           (product.quantity ?? 0) + (quantity ?? 0);
-
-  //       // Make sure it never goes negative
-  //       product.quantity =
-  //           newQuantity < 0 ? 0 : newQuantity;
-
-  //       // Save back into Hive explicitly
-  //       await productBox.put(uuid, product);
-  //       var salesProducts = SalesProductFunc()
-  //           .getProducts()
-  //           .where((sales) => sales.productUuid == uuid);
-  //       if (salesProducts.isNotEmpty) {
-  //         await SalesProductFunc()
-  //             .deductSalesProductQuantity(
-  //               SalesProducts(
-  //                 quantity: quantity ?? 0,
-  //                 productUuid: uuid,
-  //               ),
-  //             );
-  //       }
-
-  //       await mainLocalLog(
-  //         'Offline Product Quantity Incremented Successfully',
-  //       );
-  //       return 1;
-  //     } else {
-  //       await mainLocalLog('Product not found in box ❌');
-  //       return 0;
-  //     }
-  //   } catch (e) {
-  //     await mainLocalLog(
-  //       'Offline Product Increment Failed: ${e.toString()}',
-  //     );
-  //     return 0;
-  //   }
-  // }
 
   Future<int> clearProducts() async {
     try {

@@ -1,0 +1,151 @@
+import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/main.dart';
+
+part 'product_units_class.g.dart';
+
+@HiveType(typeId: 139)
+class ProductUnitsClass extends HiveObject {
+  @HiveField(0)
+  String uuid;
+
+  @HiveField(1)
+  DateTime createdAt;
+
+  @HiveField(2)
+  String? staffName;
+
+  @HiveField(3)
+  String? staffUuid;
+
+  @HiveField(4)
+  double conversion;
+
+  @HiveField(5)
+  String name;
+
+  @HiveField(6)
+  bool isPrimary;
+
+  @HiveField(7)
+  String productUuid;
+
+  ProductUnitsClass({
+    required this.uuid,
+    required this.staffUuid,
+    required this.createdAt,
+    required this.staffName,
+    required this.conversion,
+    required this.name,
+    required this.isPrimary,
+    required this.productUuid,
+  });
+
+  factory ProductUnitsClass.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    return ProductUnitsClass(
+      uuid: json['uuid'] as String,
+      createdAt: DateTime.parse(json['created_at']),
+      staffName: json['staff_name'] as String?,
+      staffUuid: json['staff_uuid'] as String?,
+      conversion: (json['conversion'] as num).toDouble(),
+      name: json['name'] as String,
+      isPrimary: json['is_primary'] as bool,
+      productUuid: json['product_uuid'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      // 'id': id,
+      'created_at': createdAt.toIso8601String(),
+      'staff_name': staffName,
+      'staff_uuid': staffUuid,
+      'uuid': uuid,
+      'conversion': conversion,
+      'name': name,
+      'is_primary': isPrimary,
+      'product_uuid': productUuid,
+    };
+  }
+
+  ProductUnitsClass copyWith({
+    String? uuid,
+    String? staffUuid,
+    String? staffName,
+    DateTime? createdAt,
+    double? conversion,
+    String? name,
+    bool? isPrimary,
+    String? productUuid,
+  }) {
+    return ProductUnitsClass(
+      uuid: uuid ?? this.uuid,
+      staffUuid: staffUuid ?? this.staffUuid,
+      createdAt: createdAt ?? this.createdAt,
+      staffName: staffName ?? this.staffName,
+      conversion: conversion ?? this.conversion,
+      name: name ?? this.name,
+      isPrimary: isPrimary ?? this.isPrimary,
+      productUuid: productUuid ?? this.productUuid,
+    );
+  }
+
+  static List<ProductUnitsClass> getUnitList({
+    required String? productUuid,
+    required List<ProductUnitsClass>? tempUnitList,
+  }) {
+    if (tempUnitList == null ||
+        tempUnitList.isEmpty == true) {
+      ProductUnitsClass value = ProductUnitsClass(
+        uuid: uuidGen(),
+        staffUuid: currentUser().userId,
+        createdAt: DateTime.now(),
+        staffName: currentUser().name,
+        conversion: 1,
+        name: 'Unit(s)',
+        isPrimary: true,
+        productUuid: productUuid ?? '',
+      );
+      return [value];
+    } else {
+      return tempUnitList;
+    }
+  }
+
+  String getUnitName() {
+    return name.toUpperCase();
+  }
+
+  double getQuantityEquivDivided({
+    BuildContext? context,
+    double? newQuantity,
+  }) {
+    var items = returnData(context: context).productListMain
+        .where((item) => item.uuid == productUuid);
+    if (items.isNotEmpty) {
+      var item = items.first;
+      return (newQuantity ?? item.quantity ?? 0) /
+          conversion;
+    } else {
+      return 0;
+    }
+  }
+
+  double getQuantityEquivMultiplied({
+    BuildContext? context,
+    double? newQuantity,
+  }) {
+    var items = returnData(context: context).productListMain
+        .where((item) => item.uuid == productUuid);
+    if (items.isNotEmpty) {
+      var item = items.first;
+      return (newQuantity ?? item.quantity ?? 0) *
+          conversion;
+    } else {
+      return 0;
+    }
+  }
+}

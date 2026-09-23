@@ -652,6 +652,7 @@ class OrdersProvider extends ChangeNotifier {
                     record.quantity;
 
         TempProductClass productNew = TempProductClass(
+          unitsList: [],
           useGroupUnit: false,
           categories: [],
           groupUnit: 'Group(s)',

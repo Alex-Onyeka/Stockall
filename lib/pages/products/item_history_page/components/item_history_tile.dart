@@ -117,7 +117,7 @@ class ItemHistoryTileState extends State<ItemHistoryTile> {
                   child: Column(
                     children: [
                       Row(
-                        spacing: 15,
+                        spacing: 10,
                         mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                         crossAxisAlignment:
@@ -167,7 +167,8 @@ class ItemHistoryTileState extends State<ItemHistoryTile> {
                                             theme
                                                 .mobileTexts
                                                 .b2
-                                                .fontSize,
+                                                .fontSize -
+                                            1,
                                         color: mainColor(),
                                       ),
                                       returnHistoryQuantity(
@@ -191,6 +192,17 @@ class ItemHistoryTileState extends State<ItemHistoryTile> {
                                                 widget
                                                     .materialsItemHistory
                                                     ?.isIncreased),
+                                        unit:
+                                            widget
+                                                .itemHistory
+                                                ?.unit ??
+                                            widget
+                                                .productionItemHistory
+                                                ?.unit ??
+                                            widget
+                                                .materialsItemHistory
+                                                ?.unit ??
+                                            '',
                                       ),
                                     ),
                                   ],
@@ -509,6 +521,13 @@ class _ItemHistoryDetailsWidgetState
                 ItemHistorySectionWidget(
                   title: 'Quantity Change',
                   message: returnHistoryQuantity(
+                    unit:
+                        widget.itemHistory?.unit ??
+                        widget
+                            .productionItemHistory
+                            ?.unit ??
+                        widget.materialsItemHistory?.unit ??
+                        '',
                     isIncreased:
                         (widget.itemHistory?.isIncreased ??
                             widget
@@ -531,29 +550,13 @@ class _ItemHistoryDetailsWidgetState
                 ),
                 ItemHistorySectionWidget(
                   title: 'New Value',
-                  message: formatLargeNumber(
-                    widget.itemHistory?.newValue ??
-                        widget
-                            .productionItemHistory
-                            ?.newValue ??
-                        widget
-                            .materialsItemHistory
-                            ?.newValue ??
-                        '',
-                  ),
+                  message:
+                      "${formatLargeNumber(widget.itemHistory?.newValue ?? widget.productionItemHistory?.newValue ?? widget.materialsItemHistory?.newValue ?? '')} ${widget.itemHistory?.primaryUnit ?? widget.productionItemHistory?.primaryUnit ?? widget.materialsItemHistory?.primaryUnit ?? ''}",
                 ),
                 ItemHistorySectionWidget(
                   title: 'Old Value',
-                  message: formatLargeNumber(
-                    widget.itemHistory?.oldValue ??
-                        widget
-                            .productionItemHistory
-                            ?.oldValue ??
-                        widget
-                            .materialsItemHistory
-                            ?.oldValue ??
-                        '0',
-                  ),
+                  message:
+                      "${formatLargeNumber(widget.itemHistory?.oldValue ?? widget.productionItemHistory?.oldValue ?? widget.materialsItemHistory?.oldValue ?? '0')} ${widget.itemHistory?.primaryUnit ?? widget.productionItemHistory?.primaryUnit ?? widget.materialsItemHistory?.primaryUnit ?? ''}",
                 ),
                 ItemHistorySectionWidget(
                   title: 'Creator',
@@ -743,16 +746,17 @@ class ItemHistorySectionWidget extends StatelessWidget {
 String returnHistoryQuantity({
   required double? quantityChange,
   required bool? isIncreased,
+  required String? unit,
 }) {
   final quantity = quantityChange ?? 0;
 
   if (quantity == 0) {
-    return '${quantity.abs()}';
+    return '${quantity.abs()} $unit';
   }
 
   if (isIncreased == false) {
-    return '-${quantity.abs()}';
+    return '-${quantity.abs()} $unit';
   }
 
-  return '+${quantity.abs()}';
+  return '+${quantity.abs()} $unit';
 }

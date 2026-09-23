@@ -1387,6 +1387,7 @@ class SalesProvider extends ChangeNotifier {
 
                   TempProductClass
                   product = TempProductClass(
+                    unitsList: [],
                     useGroupUnit: false,
                     categories: [],
                     storageUuid: null,
@@ -1858,6 +1859,7 @@ class SalesProvider extends ChangeNotifier {
 
                   TempProductClass
                   product = TempProductClass(
+                    unitsList: [],
                     useGroupUnit: false,
                     categories: [],
                     storageUuid: null,
@@ -2148,6 +2150,7 @@ class SalesProvider extends ChangeNotifier {
 
                   TempProductClass
                   product = TempProductClass(
+                    unitsList: [],
                     useGroupUnit: false,
                     categories: [],
                     storageUuid: null,
@@ -3252,6 +3255,7 @@ class SalesProvider extends ChangeNotifier {
                     record.quantity;
 
         TempProductClass productNew = TempProductClass(
+          unitsList: [],
           useGroupUnit: false,
           categories: [],
           storageUuid: null,

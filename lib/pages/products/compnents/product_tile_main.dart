@@ -493,55 +493,8 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                     .grey
                                                     .shade700,
                                       ),
-                                      widget
-                                                  .product
-                                                  .expiryDate !=
-                                              null
-                                          ? getDayDifference(
-                                                    widget.product.expiryDate ??
-                                                        DateTime.now(),
-                                                  ) >=
-                                                  1
-                                              ? widget.product.quantity ==
-                                                      0
-                                                  ? 'Out of Stock'
-                                                  : widget
-                                                          .product
-                                                          .quantity ==
-                                                      null
-                                                  ? 'Not Set'
-                                                  : authorization(
-                                                    authorized:
-                                                        Authorizations().viewItemQuantity,
-                                                  )
-                                                  ? formatLargeNumberDouble(
-                                                    (widget.product.quantity ??
-                                                        0),
-                                                  )
-                                                  : 'Restricted'
-                                              : 'Item Expired'
-                                          : widget
-                                                  .product
-                                                  .quantity ==
-                                              0
-                                          ? 'Out of Stock'
-                                          : widget
-                                                  .product
-                                                  .quantity ==
-                                              null
-                                          ? 'Not Set'
-                                          : authorization(
-                                            authorized:
-                                                Authorizations()
-                                                    .viewItemQuantity,
-                                          )
-                                          ? formatLargeNumberDouble(
-                                            (widget
-                                                    .product
-                                                    .quantity ??
-                                                0),
-                                          )
-                                          : 'Restricted',
+                                      widget.product
+                                          .getQuantityText(),
                                     ),
                                   ),
                                 ),

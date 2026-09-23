@@ -8,7 +8,7 @@ import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/products/product_details/platforms/product_details_desktop.dart';
+import 'package:stockall/pages/products/product_details/platforms/components/tab_container.dart';
 import 'package:stockall/pages/products/storage_page/add_storage_item/add_storage_item.dart';
 import 'package:stockall/pages/products/storage_page/components/summary_table_heading_bar.dart';
 import 'package:stockall/pages/products/storage_page/components/table_row_widget.dart';

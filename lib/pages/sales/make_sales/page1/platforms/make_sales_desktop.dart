@@ -1247,6 +1247,8 @@ class _MakeSalesDesktopState
                                                   returnSalesProvider()
                                                       .setTotalPrice,
                                               item: TempProductClass(
+                                                unitsList:
+                                                    [],
                                                 useGroupUnit:
                                                     false,
                                                 categories:
@@ -1384,6 +1386,8 @@ class _MakeSalesDesktopState
                                                     returnSalesProvider()
                                                         .setTotalPrice,
                                                 item: TempProductClass(
+                                                  unitsList:
+                                                      [],
                                                   useGroupUnit:
                                                       false,
                                                   categories:
@@ -1590,6 +1594,8 @@ class _MakeSalesDesktopState
                                                                       setTotalPrice:
                                                                           returnSalesProvider().setTotalPrice,
                                                                       item: TempProductClass(
+                                                                        unitsList:
+                                                                            [],
                                                                         useGroupUnit:
                                                                             false,
                                                                         categories:
@@ -2341,6 +2347,8 @@ class _MakeSalesDesktopState
                                                           setTotalPrice:
                                                               returnSalesProvider().setTotalPrice,
                                                           item: TempProductClass(
+                                                            unitsList:
+                                                                [],
                                                             categories:
                                                                 [],
                                                             useGroupUnit:
