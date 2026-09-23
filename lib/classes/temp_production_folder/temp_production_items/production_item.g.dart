@@ -6,7 +6,8 @@ part of 'production_item.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class ProductionItemAdapter extends TypeAdapter<ProductionItem> {
+class ProductionItemAdapter
+    extends TypeAdapter<ProductionItem> {
   @override
   final int typeId = 109;
 
@@ -14,7 +15,8 @@ class ProductionItemAdapter extends TypeAdapter<ProductionItem> {
   ProductionItem read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++)
+        reader.readByte(): reader.read(),
     };
     return ProductionItem(
       name: fields[1] as String,

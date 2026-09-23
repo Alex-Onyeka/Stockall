@@ -3558,26 +3558,38 @@ class DataProvider extends ChangeNotifier {
   Future<int> duplicateSelectedProducts() async {
     try {
       for (var pr in selectedProducts) {
+        String newUuid = uuidGen();
         final newProduct = pr.copyWith(
-          uuid: uuidGen(),
+          uuid: newUuid,
           name: '${pr.name} Copy ${randomCode()}',
           createdAt: DateTime.now(),
         );
 
-        await ProductsFunc().createProduct(newProduct);
+        List<ProductUnitsClass> tempItems =
+            (newProduct.unitsList ?? [])
+                .map((item) => item.copyWith())
+                .toList();
 
-        await CreatedProductFunc().createProduct(
-          CreatedProducts(
-            product: newProduct,
-            includeQuantity: true,
-          ),
+        for (ProductUnitsClass item in tempItems) {
+          item.uuid = uuidGen();
+          item.productUuid = newUuid;
+          item.createdAt = DateTime.now();
+        }
+
+        newProduct.unitsList = tempItems;
+
+        ItemHistory itemHistory = ItemHistory(
+          shopId: shopId(),
+          title: 'Item Created',
+          quantityChange: 0,
+          newValue: (pr.quantity ?? 0).toString(),
+          desc: 'Item Created From Duplicate (${pr.name})',
+          isIncreased: false,
+          oldValue: (pr.quantity ?? 0).toString(),
         );
-
-        await returnEventsLogProvider().createLog(
-          returnEventsLogProvider().productAdapter(
-            newProduct,
-            1,
-          ),
+        await createProduct(
+          product: newProduct,
+          itemHistory: itemHistory,
         );
       }
       await getProductsOffline(shopId());
@@ -3598,6 +3610,7 @@ class DataProvider extends ChangeNotifier {
       for (var pr in selectedProducts) {
         for (var shop
             in returnShopProvider().multipleSelectedShops) {
+          String newUuid = uuidGen();
           final newProduct = pr.copyWith(
             brand: null,
             category: null,
@@ -3605,11 +3618,23 @@ class DataProvider extends ChangeNotifier {
             departmentName: null,
             departmentUuid: null,
             storageUuid: null,
-            uuid: uuidGen(),
+            uuid: newUuid,
             shopId: shop.shopId,
             name: '${pr.name} ${randomCode()}',
             createdAt: DateTime.now(),
           );
+          List<ProductUnitsClass> tempItems =
+              (newProduct.unitsList ?? [])
+                  .map((item) => item.copyWith())
+                  .toList();
+
+          for (ProductUnitsClass item in tempItems) {
+            item.uuid = uuidGen();
+            item.productUuid = newUuid;
+            item.createdAt = DateTime.now();
+          }
+
+          newProduct.unitsList = tempItems;
 
           await supabase
               .from('products')
@@ -3638,28 +3663,43 @@ class DataProvider extends ChangeNotifier {
         for (var depart
             in returnDepartmentProvider()
                 .multipleSelectedDepartments) {
+          String newUuid = uuidGen();
           final newProduct = pr.copyWith(
-            uuid: uuidGen(),
+            uuid: newUuid,
             departmentUuid: depart.uuid,
             departmentName: depart.name,
             name: '${pr.name} ${randomCode()}',
             createdAt: DateTime.now(),
           );
 
-          await ProductsFunc().createProduct(newProduct);
+          List<ProductUnitsClass> tempItems =
+              (newProduct.unitsList ?? [])
+                  .map((item) => item.copyWith())
+                  .toList();
 
-          await CreatedProductFunc().createProduct(
-            CreatedProducts(
-              product: newProduct,
-              includeQuantity: true,
-            ),
+          for (ProductUnitsClass item in tempItems) {
+            item.uuid = uuidGen();
+            item.productUuid = newUuid;
+            item.createdAt = DateTime.now();
+          }
+
+          newProduct.unitsList = tempItems;
+
+          ItemHistory itemHistory = ItemHistory(
+            shopId: shopId(),
+            title: 'Item Created',
+            quantityChange: 0,
+            newValue: (pr.quantity ?? 0).toString(),
+            desc:
+                'Item Created From Duplicate; Item Name: ${pr.name} | Department Name: ${pr.departmentName ?? 'Not Set'}',
+            isIncreased: false,
+            oldValue: (pr.quantity ?? 0).toString(),
+            departmentUuid: depart.uuid,
+            departmentName: depart.name,
           );
-
-          await returnEventsLogProvider().createLog(
-            returnEventsLogProvider().productAdapter(
-              newProduct,
-              1,
-            ),
+          await createProduct(
+            product: newProduct,
+            itemHistory: itemHistory,
           );
         }
       }

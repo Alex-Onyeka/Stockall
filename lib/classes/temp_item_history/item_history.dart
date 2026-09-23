@@ -96,7 +96,7 @@ class ItemHistory {
           (json["quantity_change"] as num?)?.toDouble(),
       desc: json['desc'] as String?,
       isIncreased: json['is_increased'] as bool?,
-      unit: json['unit'] as String,
+      unit: json['unit'] as String?,
       primaryUnit: json['primary_unit'] as String?,
     );
   }

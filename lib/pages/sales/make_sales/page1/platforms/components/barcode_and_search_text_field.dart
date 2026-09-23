@@ -264,7 +264,7 @@ class _BarcodeAndSearchTextFieldState
                                                     fontWeight:
                                                         FontWeight.bold,
                                                   ),
-                                                  "- (${formatLargeNumberDouble(item.quantity ?? 0)})  ",
+                                                  "- (${item.getQuantityText(context: context)})  ",
                                                 ),
                                                 Text(
                                                   style: TextStyle(

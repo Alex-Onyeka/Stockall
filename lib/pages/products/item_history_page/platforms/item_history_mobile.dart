@@ -50,7 +50,7 @@ class ItemHistoryMobileState
     List<ItemHistory>? itemHistories =
         returnItemHistoryProvider(
           context: context,
-        ).returnItemHistories().where((history) {
+        ).itemHistories.where((history) {
           if (widget.productUuid != null) {
             return history.itemUuid == widget.productUuid &&
                 (history.itemName?.toLowerCase().contains(

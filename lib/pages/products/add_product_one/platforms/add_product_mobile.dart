@@ -1628,10 +1628,18 @@ class _AddProductMobileState
                                         ),
                                       ],
                                     ),
-                                    SizedBox(height: 10),
-                                    Column(
-                                      children: [
-                                        SubWrapper(
+                                    Visibility(
+                                      visible: authorization(
+                                        authorized:
+                                            Authorizations()
+                                                .manageMultipleUnits,
+                                      ),
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(
+                                              top: 10.0,
+                                            ),
+                                        child: SubWrapper(
                                           isVisible:
                                               !ItemsAuthAction()
                                                   .applyVariationsAction(
@@ -1678,7 +1686,7 @@ class _AddProductMobileState
                                             theme: theme,
                                           ),
                                         ),
-                                      ],
+                                      ),
                                     ),
                                     Column(
                                       children: [

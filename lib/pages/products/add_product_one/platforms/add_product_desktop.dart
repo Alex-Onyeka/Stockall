@@ -1960,90 +1960,69 @@ class _AddProductDesktopState
                                             ),
                                           ],
                                         ),
-                                        Column(
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Expanded(
-                                                  child: SubWrapper(
-                                                    isVisible:
-                                                        !ItemsAuthAction().applyVariationsAction(
-                                                          context:
-                                                              context,
-                                                        ),
-                                                    mainWidget: MainDropdown(
-                                                      valueSet:
-                                                          returnData().tempUnitsList.isNotEmpty,
-                                                      onTap: () {
-                                                        ItemsAuthAction().applyVariationsAction(
-                                                          context:
-                                                              context,
-                                                          action: () {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder: (
-                                                                  context,
-                                                                ) {
-                                                                  return ProductUnitsPage(
-                                                                    productUuid:
-                                                                        createdProductUuid ??
-                                                                        '',
-                                                                  );
-                                                                },
-                                                              ),
-                                                            );
-                                                          },
-                                                        );
-                                                      },
-                                                      isOpen:
-                                                          returnData().tempUnitsList.isNotEmpty,
-                                                      title:
-                                                          'Item Unit(s) (Optional)',
-                                                      hint:
-                                                          returnData(
-                                                                context:
-                                                                    context,
-                                                              ).tempUnitsList.isEmpty
-                                                              ? 'Unit Not Set'
-                                                              : "${returnData(context: context).tempUnitsList.firstWhere((item) => item.isPrimary).name} and (${returnData(context: context).tempUnitsList.length - 1}) More",
-                                                      theme:
-                                                          theme,
-                                                    ),
-                                                  ),
+                                        Visibility(
+                                          visible: authorization(
+                                            authorized:
+                                                Authorizations()
+                                                    .manageMultipleUnits,
+                                          ),
+                                          child: Padding(
+                                            padding:
+                                                const EdgeInsets.only(
+                                                  bottom:
+                                                      10.0,
                                                 ),
-                                              ],
-                                            ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            Visibility(
-                                              visible:
-                                                  returnData(
+                                            child: SubWrapper(
+                                              isVisible:
+                                                  !ItemsAuthAction().applyVariationsAction(
                                                     context:
                                                         context,
-                                                  ).useGroupUnit ==
-                                                  true,
-                                              child: Column(
-                                                children: [
-                                                  EditCartTextField(
-                                                    theme:
-                                                        theme,
-                                                    hint:
-                                                        'Enter Item Quantity in Group',
-                                                    title:
-                                                        'Quantity in Group (Optional)',
-                                                    controller:
-                                                        widget.qttyPerGroupController,
                                                   ),
-                                                  SizedBox(
-                                                    height:
-                                                        10,
-                                                  ),
-                                                ],
+                                              mainWidget: MainDropdown(
+                                                valueSet:
+                                                    returnData()
+                                                        .tempUnitsList
+                                                        .isNotEmpty,
+                                                onTap: () {
+                                                  ItemsAuthAction().applyVariationsAction(
+                                                    context:
+                                                        context,
+                                                    action: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (
+                                                            context,
+                                                          ) {
+                                                            return ProductUnitsPage(
+                                                              productUuid:
+                                                                  createdProductUuid ??
+                                                                  '',
+                                                            );
+                                                          },
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                isOpen:
+                                                    returnData()
+                                                        .tempUnitsList
+                                                        .isNotEmpty,
+                                                title:
+                                                    'Item Unit(s) (Optional)',
+                                                hint:
+                                                    returnData(
+                                                          context:
+                                                              context,
+                                                        ).tempUnitsList.isEmpty
+                                                        ? 'Unit Not Set'
+                                                        : "${returnData(context: context).tempUnitsList.firstWhere((item) => item.isPrimary).name} and (${returnData(context: context).tempUnitsList.length - 1}) More",
+                                                theme:
+                                                    theme,
                                               ),
                                             ),
-                                          ],
+                                          ),
                                         ),
                                         Column(
                                           children: [

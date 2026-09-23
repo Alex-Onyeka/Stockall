@@ -190,11 +190,11 @@ class _ProductTileCartSearchState
                                                 widget
                                                     .theme
                                                     .mobileTexts
-                                                    .b4
+                                                    .b5
                                                     .fontSize,
                                             fontWeight:
                                                 FontWeight
-                                                    .w600,
+                                                    .normal,
                                             color:
                                                 widget
                                                     .theme
@@ -320,7 +320,7 @@ class _ProductTileCartSearchState
                                       ),
                                   child: Text(
                                     style: TextStyle(
-                                      fontSize: 10,
+                                      fontSize: 9,
                                       fontWeight:
                                           FontWeight.bold,
                                       color:
@@ -367,56 +367,11 @@ class _ProductTileCartSearchState
                                                   .grey
                                                   .shade700,
                                     ),
-                                    widget
-                                                .product
-                                                .expiryDate !=
-                                            null
-                                        ? getDayDifference(
-                                                  widget.product.expiryDate ??
-                                                      DateTime.now(),
-                                                ) >=
-                                                1
-                                            ? widget.product.quantity ==
-                                                    0
-                                                ? 'Out of Stock'
-                                                : widget
-                                                        .product
-                                                        .quantity ==
-                                                    null
-                                                ? 'Qtty Not Set'
-                                                : authorization(
-                                                  authorized:
-                                                      Authorizations()
-                                                          .viewItemQuantity,
-                                                )
-                                                ? formatLargeNumberDouble(
-                                                  widget.product.quantity ??
-                                                      0,
-                                                )
-                                                : 'Restricted'
-                                            : 'Item Expired'
-                                        : widget
-                                                .product
-                                                .quantity ==
-                                            0
-                                        ? 'Out of Stock'
-                                        : widget
-                                                .product
-                                                .quantity ==
-                                            null
-                                        ? 'Qtty Not Set'
-                                        : authorization(
-                                          authorized:
-                                              Authorizations()
-                                                  .viewItemQuantity,
-                                        )
-                                        ? formatLargeNumberDouble(
-                                          widget
-                                                  .product
-                                                  .quantity ??
-                                              0,
-                                        )
-                                        : 'Restricted',
+
+                                    widget.product
+                                        .getQuantityText(
+                                          context: context,
+                                        ),
                                   ),
                                 ),
                               ),
@@ -439,7 +394,7 @@ class _ProductTileCartSearchState
                                             widget
                                                 .theme
                                                 .mobileTexts
-                                                .b3
+                                                .b4
                                                 .fontSize,
                                         fontWeight:
                                             FontWeight.bold,
@@ -503,7 +458,7 @@ class _ProductTileCartSearchState
                                             widget
                                                 .theme
                                                 .mobileTexts
-                                                .b3
+                                                .b4
                                                 .fontSize,
                                         fontWeight:
                                             FontWeight.bold,

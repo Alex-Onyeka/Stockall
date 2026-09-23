@@ -115,9 +115,13 @@ class Authorizations {
   String updateProduct = 'Update Items';
   String deleteProduct = 'Delete Items';
   String transferProduct = 'Transfer Items';
+  String manageMultipleUnits = 'Manage Multiple Units';
   String addCustomer = 'Add Customers';
   String updateCustomer = 'Update Customers';
   String deleteCustomer = 'Delete Customers';
+  String addSupplier = 'Add Suppliers';
+  String updateSupplier = 'Update Suppliers';
+  String deleteSupplier = 'Delete Suppliers';
   String viewCustomersAccount = 'View Customers Account';
   String deleteCustomersTransactions =
       'Delete Customers Transactions';

@@ -2194,18 +2194,25 @@ class _MakeSalesDesktopState
                                       ),
                                     ),
                                     SubStaffSelectionWidget(),
-                                    BarcodeAndSearchTextField(
-                                      searchController:
-                                          widget
-                                              .searchController,
-                                      theme: theme,
-                                      priceNode: priceNode,
-                                      qtyNode: qttyNode,
-                                      priceController:
-                                          priceController,
-                                      quantityController:
-                                          quantityController,
-                                      close: () {},
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(
+                                            top: 10.0,
+                                          ),
+                                      child: BarcodeAndSearchTextField(
+                                        searchController:
+                                            widget
+                                                .searchController,
+                                        theme: theme,
+                                        priceNode:
+                                            priceNode,
+                                        qtyNode: qttyNode,
+                                        priceController:
+                                            priceController,
+                                        quantityController:
+                                            quantityController,
+                                        close: () {},
+                                      ),
                                     ),
                                     SizedBox(height: 10),
                                     Material(

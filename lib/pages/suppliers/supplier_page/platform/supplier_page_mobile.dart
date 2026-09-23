@@ -5,6 +5,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/purchases/purchase_list/purchase_list.dart';
 import 'package:stockall/pages/suppliers/add_supplier/add_supplier.dart';
@@ -247,62 +248,76 @@ class DetailsPageContainer extends StatelessWidget {
             spacing: 15,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SupplierActionButton(
-                icon: Icons.delete_outline_rounded,
-                color: theme.lightModeColor.errorColor200,
-                iconSize: 18,
-                text: 'Delete',
-                action: () {
-                  final safeContext = context;
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return ConfirmationAlert(
-                        theme: theme,
-                        message:
-                            'You are about to delete your supplier, are you sure you want to proceed?',
-                        title: 'Are you sure?',
-                        action: () async {
-                          if (safeContext.mounted) {
-                            Navigator.of(safeContext).pop();
-                          }
-                          returnSuppliersProvider()
-                              .deleteSupplierMain(
-                                supplier,
-                                context,
-                              );
-                          await Future.delayed(
-                            Duration(microseconds: 500),
-                            () {},
-                          );
-                          if (context.mounted) {
-                            Navigator.of(context).pop();
-                          }
-                        },
-                      );
-                    },
-                  );
-                },
-                theme: theme,
-              ),
-              SupplierActionButton(
-                svg: editIconSvg,
-                color: Colors.grey,
-                iconSize: 15,
-                text: 'Edit',
-                action: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
+              Visibility(
+                visible: authorization(
+                  authorized:
+                      Authorizations().deleteSupplier,
+                ),
+                child: SupplierActionButton(
+                  icon: Icons.delete_outline_rounded,
+                  color: theme.lightModeColor.errorColor200,
+                  iconSize: 18,
+                  text: 'Delete',
+                  action: () {
+                    final safeContext = context;
+                    showDialog(
+                      context: context,
                       builder: (context) {
-                        return AddSupplier(
-                          supplier: supplier,
+                        return ConfirmationAlert(
+                          theme: theme,
+                          message:
+                              'You are about to delete your supplier, are you sure you want to proceed?',
+                          title: 'Are you sure?',
+                          action: () async {
+                            if (safeContext.mounted) {
+                              Navigator.of(
+                                safeContext,
+                              ).pop();
+                            }
+                            returnSuppliersProvider()
+                                .deleteSupplierMain(
+                                  supplier,
+                                  context,
+                                );
+                            await Future.delayed(
+                              Duration(microseconds: 500),
+                              () {},
+                            );
+                            if (context.mounted) {
+                              Navigator.of(context).pop();
+                            }
+                          },
                         );
                       },
-                    ),
-                  );
-                },
-                theme: theme,
+                    );
+                  },
+                  theme: theme,
+                ),
+              ),
+              Visibility(
+                visible: authorization(
+                  authorized:
+                      Authorizations().updateSupplier,
+                ),
+                child: SupplierActionButton(
+                  svg: editIconSvg,
+                  color: Colors.grey,
+                  iconSize: 15,
+                  text: 'Edit',
+                  action: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return AddSupplier(
+                            supplier: supplier,
+                          );
+                        },
+                      ),
+                    );
+                  },
+                  theme: theme,
+                ),
               ),
             ],
           ),

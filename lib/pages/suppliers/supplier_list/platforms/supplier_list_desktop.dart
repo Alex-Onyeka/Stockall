@@ -161,27 +161,32 @@ class _SupplierListDesktopState
               Expanded(
                 child: DesktopPageContainer(
                   widget: Scaffold(
-                    floatingActionButton:
-                        FloatingActionButtonMain(
-                          theme: theme,
-                          action: () {
-                            Navigator.push(
+                    floatingActionButton: Visibility(
+                      visible: authorization(
+                        authorized:
+                            Authorizations().addSupplier,
+                      ),
+                      child: FloatingActionButtonMain(
+                        theme: theme,
+                        action: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return AddSupplier();
+                              },
+                            ),
+                          ).then((_) {
+                            setState(() {});
+                          });
+                        },
+                        color:
+                            returnTheme(
                               context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return AddSupplier();
-                                },
-                              ),
-                            ).then((_) {
-                              setState(() {});
-                            });
-                          },
-                          color:
-                              returnTheme(
-                                context,
-                              ).lightModeColor.prColor300,
-                          text: 'Add Supplier',
-                        ),
+                            ).lightModeColor.prColor300,
+                        text: 'Add Supplier',
+                      ),
+                    ),
                     appBar: AppBar(
                       toolbarHeight: 60,
                       leading: Opacity(
