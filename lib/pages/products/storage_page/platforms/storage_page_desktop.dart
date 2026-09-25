@@ -15,6 +15,7 @@ import 'package:stockall/pages/products/storage_page/add_storage_item/add_storag
 import 'package:stockall/pages/products/storage_page/components/inventory_update_widget.dart';
 import 'package:stockall/pages/products/storage_page/components/summary_table_heading_bar.dart';
 import 'package:stockall/pages/products/storage_page/components/table_row_widget.dart';
+import 'package:stockall/pages/products/storage_page/storage_item_history_page/item_history_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class StoragePageDesktop extends StatefulWidget {
@@ -308,13 +309,19 @@ class StoragePageDesktopState
                                         .viewItemsHistory,
                               ),
                               onTap: () {
-                                setState(() {
-                                  sortIndex = 3;
-                                  viewUpdateSummary = false;
-                                });
-                                searchController.clear();
-                                returnInventoryUpdatesProvider()
+                                returnStorageItemHistoryProvider()
                                     .clearDate();
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return StorageItemHistoryPage(
+                                        fromItemDetails:
+                                            false,
+                                      );
+                                    },
+                                  ),
+                                );
                               },
                               child: Text(
                                 style: TextStyle(

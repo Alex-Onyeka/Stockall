@@ -168,7 +168,7 @@ class _TransferItemQuantityWidgetState
                               ),
                               widget.item.quantity == null
                                   ? 'Quantity Not Set'
-                                  : 'Current Quantity in ${widget.item.getProductUnit(unitUuid: unitUuid).name}: ${formatLargeNumberDouble(widget.item.getProductUnit(unitUuid: unitUuid).getQuantityEquivDivided(context: context))}',
+                                  : 'Current Quantity in ${widget.item.getProductUnit(unitUuid: unitUuid).name}: ${formatLargeNumberDouble(widget.item.getProductUnit(unitUuid: unitUuid).getQuantityEquivDivided(index: 1, context: context))}',
                             ),
                             EditCartTextField(
                               onChanged: (value) {
@@ -187,6 +187,7 @@ class _TransferItemQuantityWidgetState
                                                 unitUuid,
                                           )
                                           .getQuantityEquivMultiplied(
+                                            index: 1,
                                             newQuantity:
                                                 eValue,
                                           ) >
@@ -212,6 +213,9 @@ class _TransferItemQuantityWidgetState
                         ),
                         SizedBox(height: 20),
                         UnitSelectionWidget(
+                          storageProduct: null,
+                          material: null,
+                          productionItem: null,
                           product: widget.item,
                           setUnitUuid: (uuid) {
                             setState(() {
@@ -222,6 +226,7 @@ class _TransferItemQuantityWidgetState
                                       unitUuid: unitUuid,
                                     )
                                     .getQuantityEquivMultiplied(
+                                      index: 1,
                                       newQuantity:
                                           double.tryParse(
                                             quantityController
@@ -253,6 +258,7 @@ class _TransferItemQuantityWidgetState
                                               unitUuid,
                                         )
                                         .getQuantityEquivMultiplied(
+                                          index: 1,
                                           newQuantity:
                                               double.tryParse(
                                                 quantityController
@@ -694,8 +700,7 @@ void selectItemInADepartmentProducts({
                           theme: theme,
                           message:
                               'You are about to perform an item quantity Transfer. Please note that this action can not be reversed. Are you sure you want to proceed?',
-                          title:
-                              'Transfer item Quantity $enteredValue',
+                          title: 'Transfer item Quantity',
                           action: () async {
                             loadingAction(true);
                             TempProductClass oldProduct =
@@ -704,11 +709,12 @@ void selectItemInADepartmentProducts({
                                 oldProduct.copyWith();
                             newProduct.quantity =
                                 (newProduct.quantity ?? 0) +
-                                newProduct
+                                mainItem
                                     .getProductUnit(
                                       unitUuid: unitUuid,
                                     )
                                     .getQuantityEquivMultiplied(
+                                      index: 1,
                                       newQuantity:
                                           enteredValue,
                                     );
@@ -726,16 +732,28 @@ void selectItemInADepartmentProducts({
                               createdAt: DateTime.now(),
                               itemUuid: newProduct.uuid,
                               itemName: newProduct.name,
-                              newValue:
-                                  formatLargeNumberDouble(
-                                    (newProduct.quantity ??
-                                        0),
-                                  ),
-                              oldValue:
-                                  formatLargeNumberDouble(
-                                    (oldProduct.quantity ??
-                                        0),
-                                  ),
+                              newValue: formatLargeNumberDouble(
+                                newProduct
+                                    .getProductUnit()
+                                    .getQuantityEquivDivided(
+                                      index: 1,
+                                      newQuantity:
+                                          (newProduct
+                                                  .quantity ??
+                                              0),
+                                    ),
+                              ),
+                              oldValue: formatLargeNumberDouble(
+                                oldProduct
+                                    .getProductUnit()
+                                    .getQuantityEquivDivided(
+                                      index: 1,
+                                      newQuantity:
+                                          (oldProduct
+                                                  .quantity ??
+                                              0),
+                                    ),
+                              ),
                               quantityChange: enteredValue,
                               staffId: currentUser().userId,
                               staffName: currentUser().name,
@@ -745,7 +763,10 @@ void selectItemInADepartmentProducts({
                                         unitUuid: unitUuid,
                                       )
                                       .name,
-                              primaryUnit: 'Unit(s)',
+                              primaryUnit:
+                                  newProduct
+                                      .getProductUnit()
+                                      .name,
                             );
                             var res = await returnData()
                                 .updateProduct(
@@ -757,6 +778,7 @@ void selectItemInADepartmentProducts({
                                         unitUuid: unitUuid,
                                       )
                                       .getQuantityEquivMultiplied(
+                                        index: 1,
                                         newQuantity:
                                             enteredValue,
                                       ),
@@ -775,6 +797,7 @@ void selectItemInADepartmentProducts({
                                               unitUuid,
                                         )
                                         .getQuantityEquivMultiplied(
+                                          index: 1,
                                           newQuantity:
                                               enteredValue,
                                         ));
@@ -792,6 +815,7 @@ void selectItemInADepartmentProducts({
                                 mainItem
                                     .getProductUnit()
                                     .getQuantityEquivDivided(
+                                      index: 1,
                                       newQuantity:
                                           (newProduct2
                                                   .quantity ??
@@ -802,6 +826,7 @@ void selectItemInADepartmentProducts({
                                 mainItem
                                     .getProductUnit()
                                     .getQuantityEquivDivided(
+                                      index: 1,
                                       newQuantity:
                                           (mainItem
                                                   .quantity ??
@@ -832,6 +857,7 @@ void selectItemInADepartmentProducts({
                                         unitUuid: unitUuid,
                                       )
                                       .getQuantityEquivMultiplied(
+                                        index: 1,
                                         newQuantity:
                                             enteredValue,
                                       ),
@@ -1044,7 +1070,7 @@ void selectItemInADepartmentProducts({
                                                                 fontWeight:
                                                                     FontWeight.bold,
                                                               ),
-                                                              '${item.getProductUnit().getQuantityEquivDivided()} ${item.getProductUnit().name}',
+                                                              '${item.getProductUnit().getQuantityEquivDivided(index: 1)} ${item.getProductUnit().name}',
                                                             ),
                                                             Container(
                                                               padding: EdgeInsets.all(
@@ -1336,11 +1362,12 @@ void selectItemInAShop({
                             oldProduct.copyWith();
                         newProduct.quantity =
                             (newProduct.quantity ?? 0) +
-                            newProduct
+                            mainItem
                                 .getProductUnit(
                                   unitUuid: unitUuid,
                                 )
                                 .getQuantityEquivMultiplied(
+                                  index: 1,
                                   newQuantity: enteredValue,
                                 );
                         ItemHistory
@@ -1358,21 +1385,42 @@ void selectItemInAShop({
                           itemUuid: newProduct.uuid,
                           itemName: newProduct.name,
                           newValue: formatLargeNumberDouble(
-                            (newProduct.quantity ?? 0),
+                            newProduct
+                                .getProductUnit()
+                                .getQuantityEquivDivided(
+                                  index: 1,
+                                  product: newProduct,
+                                  newQuantity:
+                                      (newProduct
+                                              .quantity ??
+                                          0),
+                                ),
                           ),
                           oldValue: formatLargeNumberDouble(
-                            (oldProduct.quantity ?? 0),
+                            oldProduct
+                                .getProductUnit()
+                                .getQuantityEquivDivided(
+                                  index: 1,
+                                  product: oldProduct,
+                                  newQuantity:
+                                      (oldProduct
+                                              .quantity ??
+                                          0),
+                                ),
                           ),
                           quantityChange: enteredValue,
                           staffId: currentUser().userId,
                           staffName: currentUser().name,
                           unit:
-                              newProduct
+                              mainItem
                                   .getProductUnit(
                                     unitUuid: unitUuid,
                                   )
                                   .name,
-                          primaryUnit: 'Unit(s)',
+                          primaryUnit:
+                              newProduct
+                                  .getProductUnit()
+                                  .name,
                         );
                         var res = await returnData()
                             .updateProductForOtherShops(
@@ -1388,7 +1436,8 @@ void selectItemInAShop({
                                     .getProductUnit(
                                       unitUuid: unitUuid,
                                     )
-                                    .getQuantityEquivDivided(
+                                    .getQuantityEquivMultiplied(
+                                      index: 1,
                                       newQuantity:
                                           enteredValue,
                                     ));
@@ -1403,10 +1452,25 @@ void selectItemInAShop({
                           itemUuid: newProduct2.uuid,
                           itemName: newProduct2.name,
                           newValue: formatLargeNumberDouble(
-                            (newProduct2.quantity ?? 0),
+                            newProduct2
+                                .getProductUnit()
+                                .getQuantityEquivDivided(
+                                  index: 1,
+                                  newQuantity:
+                                      (newProduct2
+                                              .quantity ??
+                                          0),
+                                ),
                           ),
                           oldValue: formatLargeNumberDouble(
-                            (mainItem.quantity ?? 0),
+                            mainItem
+                                .getProductUnit()
+                                .getQuantityEquivDivided(
+                                  index: 1,
+                                  newQuantity:
+                                      (mainItem.quantity ??
+                                          0),
+                                ),
                           ),
                           quantityChange: -enteredValue,
                           staffId: currentUser().userId,
@@ -1432,6 +1496,7 @@ void selectItemInAShop({
                                     unitUuid: unitUuid,
                                   )
                                   .getQuantityEquivDivided(
+                                    index: 1,
                                     newQuantity:
                                         enteredValue,
                                   ),
@@ -1635,7 +1700,7 @@ void selectItemInAShop({
                                                                   fontWeight:
                                                                       FontWeight.bold,
                                                                 ),
-                                                                '${item.quantity ?? 0}',
+                                                                '${item.getProductUnit().getQuantityEquivDivided(index: 1, product: item)} ${item.getProductUnit().name}',
                                                               ),
                                                               Container(
                                                                 padding: EdgeInsets.all(

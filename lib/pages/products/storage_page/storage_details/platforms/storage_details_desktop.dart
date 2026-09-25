@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_storage_item_history/storage_item_history.dart';
 // import 'package:path/path.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -8,10 +9,13 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/compnents/product_tile_main.dart';
+import 'package:stockall/pages/products/product_details/platforms/components/edit_button.dart';
+import 'package:stockall/pages/products/product_details/platforms/components/tab_container.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
 import 'package:stockall/pages/products/storage_page/add_storage_item/add_storage_item.dart';
-import 'package:stockall/pages/products/storage_page/storage_details/components.dart';
-import 'package:stockall/pages/products/storage_page/storage_page.dart';
+import 'package:stockall/pages/products/storage_page/storage_details/components/quantity_in_stock_storage_item.dart';
+import 'package:stockall/pages/products/storage_page/storage_details/components/update_storage_item_quantity.dart';
+import 'package:stockall/pages/products/storage_page/storage_item_history_page/item_history_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class StorageDetailsDesktop extends StatefulWidget {
@@ -95,7 +99,8 @@ class _StorageDetailsDesktopState
                     Scaffold(
                       appBar: appBar(
                         context: context,
-                        title: 'Item Details',
+                        title:
+                            'Item Details ${product.quantity ?? 0}',
                         widget: InkWell(
                           mouseCursor:
                               SystemMouseCursors.click,
@@ -104,8 +109,10 @@ class _StorageDetailsDesktopState
                               context,
                               MaterialPageRoute(
                                 builder: (context) {
-                                  return StoragePage(
-                                    itemName: product.name,
+                                  return StorageItemHistoryPage(
+                                    productUuid:
+                                        product.uuid,
+                                    fromItemDetails: true,
                                   );
                                 },
                               ),
@@ -206,7 +213,6 @@ class _StorageDetailsDesktopState
                                     ),
                                     SizedBox(height: 20),
                                     Row(
-                                      spacing: 10,
                                       children: [
                                         Expanded(
                                           child: TabContainer(
@@ -236,147 +242,13 @@ class _StorageDetailsDesktopState
                                                 ),
                                           ),
                                         ),
-                                        Expanded(
-                                          child: TabContainer(
-                                            isMoney: true,
-                                            text:
-                                                'Selling Price',
-                                            price:
-                                                product
-                                                    .sellingPrice ??
-                                                0,
-                                            theme:
-                                                widget
-                                                    .theme,
-                                            backGround:
-                                                const Color.fromARGB(
-                                                  24,
-                                                  240,
-                                                  206,
-                                                  104,
-                                                ),
-                                            border:
-                                                const Color.fromARGB(
-                                                  71,
-                                                  228,
-                                                  225,
-                                                  41,
-                                                ),
-                                          ),
-                                        ),
                                       ],
                                     ),
-                                    SizedBox(height: 10),
-                                    Column(
-                                      spacing: 10,
-                                      children: [
-                                        Row(
-                                          spacing:
-                                              product.useGroupUnit ==
-                                                      true
-                                                  ? 10
-                                                  : 0,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .center,
-                                          children: [
-                                            Visibility(
-                                              visible:
-                                                  product
-                                                      .useGroupUnit ==
-                                                  true,
-                                              child: Expanded(
-                                                child: TabContainer(
-                                                  isMoney:
-                                                      false,
-                                                  text:
-                                                      product.groupUnit ==
-                                                                  null ||
-                                                              product.groupUnit ==
-                                                                  'Group(s)'
-                                                          ? 'Group Quantity'
-                                                          : 'Quantity of ${product.groupUnit}',
-                                                  price:
-                                                      (product.quantity ??
-                                                          0) /
-                                                      (product.qttyPerGroup ??
-                                                          1),
-                                                  theme:
-                                                      widget
-                                                          .theme,
-                                                  backGround:
-                                                      const Color.fromARGB(
-                                                        10,
-                                                        58,
-                                                        58,
-                                                        58,
-                                                      ),
-                                                  border:
-                                                      const Color.fromARGB(
-                                                        31,
-                                                        30,
-                                                        30,
-                                                        32,
-                                                      ),
-                                                ),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: TabContainer(
-                                                isMoney:
-                                                    false,
-                                                text:
-                                                    product.unit ==
-                                                                null ||
-                                                            product.unit ==
-                                                                'Others'
-                                                        ? 'Unit Quantity'
-                                                        : 'Quantity of ${product.unit ?? 'Unit(s)'}',
-                                                price:
-                                                    product
-                                                        .quantity ??
-                                                    0,
-                                                theme:
-                                                    widget
-                                                        .theme,
-                                                backGround:
-                                                    const Color.fromARGB(
-                                                      10,
-                                                      58,
-                                                      58,
-                                                      58,
-                                                    ),
-                                                border:
-                                                    const Color.fromARGB(
-                                                      31,
-                                                      30,
-                                                      30,
-                                                      32,
-                                                    ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        EditButton(
-                                          theme:
-                                              widget.theme,
-                                          action: () async {
-                                            updateStorageQuantity(
-                                              storageProduct:
-                                                  product,
-                                              context:
-                                                  context,
-                                              theme:
-                                                  widget
-                                                      .theme,
-                                            );
-                                          },
-                                          text:
-                                              'Update Quantity',
-                                        ),
-                                      ],
+                                    SizedBox(height: 20),
+                                    quantityInStockWidgetStorageItem(
+                                      context,
+                                      product,
                                     ),
-
                                     SizedBox(height: 20),
                                     Divider(
                                       height: 15,
@@ -413,7 +285,7 @@ class _StorageDetailsDesktopState
                                               .grey
                                               .shade200,
                                     ),
-                                    SizedBox(height: 10),
+                                    // SizedBox(height: 10),
                                     Padding(
                                       padding:
                                           const EdgeInsets.symmetric(
@@ -423,9 +295,9 @@ class _StorageDetailsDesktopState
                                       child: Column(
                                         spacing: 0,
                                         children: [
-                                          SizedBox(
-                                            height: 10,
-                                          ),
+                                          // SizedBox(
+                                          //   height: 10,
+                                          // ),
                                           ManageProductsStorage(
                                             productUuid:
                                                 widget
@@ -533,10 +405,33 @@ class _StorageDetailsDesktopState
                                                   isLoading =
                                                       true;
                                                 });
-                                                await provider
-                                                    .deleteProductMain(
+                                                StorageItemHistory
+                                                itemHistory = StorageItemHistory(
+                                                  shopId:
+                                                      shopId,
+                                                  title:
+                                                      'Item Deleted',
+                                                  quantityChange:
+                                                      0,
+                                                  storageItemNewValue:
+                                                      (product.quantity ??
+                                                              0)
+                                                          .toString(),
+                                                  desc:
+                                                      'Item Deleted Now',
+                                                  isIncreased:
+                                                      false,
+                                                  storageItemOldValue:
+                                                      (product.quantity ??
+                                                              0)
+                                                          .toString(),
+                                                );
+                                                await provider.deleteProductMain(
+                                                  product:
                                                       product,
-                                                    );
+                                                  itemHistory:
+                                                      itemHistory,
+                                                );
                                                 await provider
                                                     .getStorageProducts(
                                                       shopId,
@@ -600,6 +495,12 @@ class _StorageDetailsDesktopState
                                             },
                                           ),
                                         ).then((context) {
+                                          returnStorageProductProvider()
+                                              .getSingleStorageProductItemOnline(
+                                                itemUuid:
+                                                    widget
+                                                        .productUuid,
+                                              );
                                           setState(() {});
                                         });
                                       },
@@ -642,267 +543,5 @@ class _StorageDetailsDesktopState
         ),
       );
     }
-  }
-}
-
-class BottomInfoSection extends StatefulWidget {
-  const BottomInfoSection({
-    super.key,
-    required this.theme,
-    required this.text,
-    required this.mainText,
-    this.setBarcodeAction,
-    this.actionText,
-    this.onClick,
-  });
-
-  final ThemeProvider theme;
-  final String text;
-  final String mainText;
-  final Function()? setBarcodeAction;
-  final String? actionText;
-  final Function()? onClick;
-
-  @override
-  State<BottomInfoSection> createState() =>
-      _BottomInfoSectionState();
-}
-
-class _BottomInfoSectionState
-    extends State<BottomInfoSection> {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            style: TextStyle(
-              fontSize:
-                  widget.theme.mobileTexts.b2.fontSize,
-              fontWeight: FontWeight.normal,
-            ),
-            '${widget.text}:',
-          ),
-          Row(
-            children: [
-              Visibility(
-                visible: widget.setBarcodeAction != null,
-                child: Material(
-                  color: Colors.transparent,
-                  child: Ink(
-                    decoration: BoxDecoration(
-                      color:
-                          widget
-                              .theme
-                              .lightModeColor
-                              .prColor300,
-                      borderRadius: BorderRadius.circular(
-                        3,
-                      ),
-                    ),
-                    child: InkWell(
-                      mouseCursor: SystemMouseCursors.click,
-                      borderRadius: BorderRadius.circular(
-                        3,
-                      ),
-                      onTap: widget.setBarcodeAction,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 5,
-                          vertical: 2,
-                        ),
-                        child: Center(
-                          child: Text(
-                            style: TextStyle(
-                              fontSize:
-                                  widget
-                                      .theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                            widget.actionText ?? '',
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Visibility(
-                visible: widget.setBarcodeAction == null,
-                child: InkWell(
-                  mouseCursor: SystemMouseCursors.click,
-                  onTap: () {
-                    widget.onClick != null
-                        ? widget.onClick!()
-                        : {};
-                    mainLocalLog('Clicked');
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Visibility(
-                        visible: widget.onClick != null,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              color: Colors.grey.shade600,
-                              Icons.arrow_left,
-                            ),
-                            // SizedBox(width: 2),
-                          ],
-                        ),
-                      ),
-                      Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b2
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        widget.mainText,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class EditButton extends StatelessWidget {
-  final String text;
-  final Function() action;
-  final ThemeProvider theme;
-  final IconData? icon;
-  final Color? color;
-
-  const EditButton({
-    super.key,
-    required this.text,
-    required this.action,
-    required this.theme,
-    this.icon,
-    this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Ink(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
-        color: Colors.transparent,
-        border: Border.all(color: Colors.grey.shade300),
-      ),
-      child: InkWell(
-        mouseCursor: SystemMouseCursors.click,
-        onTap: action,
-        borderRadius: BorderRadius.circular(5),
-        child: Container(
-          padding: EdgeInsets.symmetric(vertical: 7),
-
-          child: Center(
-            child: Row(
-              spacing: 5,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  style: TextStyle(
-                    color: theme.lightModeColor.prColor300,
-                    fontSize: theme.mobileTexts.b3.fontSize,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  text,
-                ),
-                Icon(
-                  size: 18,
-                  color:
-                      color ??
-                      theme.lightModeColor.prColor300,
-                  icon ?? Icons.edit_note_rounded,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class TabContainer extends StatelessWidget {
-  const TabContainer({
-    super.key,
-    required this.theme,
-    required this.backGround,
-    required this.border,
-    required this.price,
-    required this.text,
-    required this.isMoney,
-    this.priceTextSize,
-    this.isDiscount,
-  });
-  final Color backGround;
-  final Color border;
-  final double price;
-  final ThemeProvider theme;
-  final String text;
-  final bool isMoney;
-  final bool? isDiscount;
-  final double? priceTextSize;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        vertical: 7,
-        horizontal: 2,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
-        color: backGround,
-        border: Border.all(color: border),
-      ),
-      child: Column(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.b4.fontSize,
-                  fontWeight: FontWeight.normal,
-                ),
-                text,
-              ),
-              Text(
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize:
-                      priceTextSize ??
-                      theme.mobileTexts.b2.fontSize,
-                  fontWeight: FontWeight.bold,
-                ),
-                '${isMoney ? currencySymbol(context: context) : ''}${formatLargeNumberDouble(price)}${isDiscount != null ? '%' : ''}',
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
   }
 }

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
-// import 'package:path/path.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
-import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
@@ -17,7 +15,6 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
-// import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/scan_barcode.dart';
 import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
@@ -132,6 +129,7 @@ class _AddProductMobileState
               );
 
               await dataProvider.createProduct(
+                isMultiple: false,
                 itemHistory: itemHistory,
                 product: TempProductClass(
                   unitsList:
@@ -187,7 +185,7 @@ class _AddProductMobileState
                                 .replaceAll(',', ''),
                           )
                           : 0,
-                  shopId: userShop!.shopId!,
+                  shopId: shopId(),
                   sellingPrice:
                       widget
                               .sellingController
@@ -232,11 +230,6 @@ class _AddProductMobileState
                 isLoading = false;
                 showSuccess = true;
               });
-
-              // Clear data before popping
-              if (safeContext.mounted) {
-                dataProvider.clearFields();
-              }
 
               Future.delayed(Duration(seconds: 2), () {
                 // Pop current screen
@@ -347,16 +340,7 @@ class _AddProductMobileState
                         )
                         : null,
                 quantity: widget.product?.quantity,
-                // widget
-                //         .quantityController
-                //         .text
-                //         .isNotEmpty
-                //     ? double.parse(
-                //       widget.quantityController.text
-                //           .replaceAll(',', ''),
-                //     )
-                //     : null,
-                shopId: userShop!.shopId!,
+                shopId: shopId(),
                 barcode: barcode,
                 // categoryUuid:
                 //     provider.selectedCategory?.uuid,
@@ -392,10 +376,6 @@ class _AddProductMobileState
               });
 
               if (safeContext.mounted) {
-                provider.clearFields();
-              }
-
-              if (safeContext.mounted) {
                 Navigator.of(safeContext).pop();
               }
             }
@@ -419,8 +399,10 @@ class _AddProductMobileState
       setState(() {
         createdProductUuid = uuidGen();
       });
+    } else {
+      createdProductUuid = widget.product?.uuid;
     }
-    setShop();
+    // setShop();
   }
 
   Future<void> clearFields() async {
@@ -467,7 +449,8 @@ class _AddProductMobileState
       returnData().useGroupUnit =
           widget.product!.useGroupUnit ?? false;
       returnData().initUnitsList(
-        unitsListNew: widget.product!.unitsList ?? [],
+        productUuid: createdProductUuid,
+        unitsListNew: widget.product?.getUnitsList() ?? [],
       );
       returnData().setCustomPrice =
           widget.product!.setCustomPrice;
@@ -490,14 +473,14 @@ class _AddProductMobileState
     }
   }
 
-  TempShopClass? userShop;
-  void setShop() async {
-    await returnShopProvider().getUserShops();
+  // TempShopClass? userShop;
+  // void setShop() async {
+  //   await returnShopProvider().getUserShops();
 
-    setState(() {
-      userShop = returnShopProvider().userShop();
-    });
-  }
+  //   setState(() {
+  //     userShop = returnShopProvider().userShop();
+  //   });
+  // }
 
   @override
   void dispose() {

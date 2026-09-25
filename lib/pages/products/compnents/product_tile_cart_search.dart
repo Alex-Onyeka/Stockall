@@ -371,6 +371,7 @@ class _ProductTileCartSearchState
                                     widget.product
                                         .getQuantityText(
                                           context: context,
+                                          index: 1,
                                         ),
                                   ),
                                 ),

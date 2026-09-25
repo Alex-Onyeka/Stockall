@@ -2371,7 +2371,7 @@ void makePartPaymentAction({
             }
           },
           widget: SizedBox(
-            height: screenHeight(context) - 230,
+            height: screenHeight(context) - 280,
             child: SingleChildScrollView(
               child: Column(
                 spacing: 20,

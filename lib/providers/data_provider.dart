@@ -10,6 +10,7 @@ import 'package:stockall/classes/temp_product_class/unsynced/deleted_products/de
 import 'package:stockall/classes/temp_product_class/unsynced/quantity_update/quantity_update.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/updated/updated_products.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
+import 'package:stockall/classes/temp_storage_item_history/storage_item_history.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -75,6 +76,7 @@ import 'package:stockall/local_database/purchases/unsync_funcs/deleted/deleted_p
 import 'package:stockall/local_database/purchases/unsync_funcs/updated/updated_purchases_func.dart';
 import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart';
 import 'package:stockall/local_database/shop_logos/created_shop_logo/created_shop_logos_func.dart';
+import 'package:stockall/local_database/storage_item_history/unsync_funcs/created_item_histories_func.dart';
 import 'package:stockall/local_database/storage_product/unsync_funcs/created/created_storage_products_func.dart';
 import 'package:stockall/local_database/storage_product/unsync_funcs/deleted/deleted_storage_products_func.dart';
 import 'package:stockall/local_database/storage_product/unsync_funcs/updated/updated_storage_products_func.dart';
@@ -154,6 +156,7 @@ class DataProvider extends ChangeNotifier {
   Future<void> createProduct({
     required TempProductClass product,
     required ItemHistory? itemHistory,
+    required bool isMultiple,
   }) async {
     product.updatedAt = DateTime.now();
     product.createdAt ??= DateTime.now();
@@ -182,7 +185,9 @@ class DataProvider extends ChangeNotifier {
       );
     }
 
-    syncData();
+    if (!isMultiple) {
+      syncData();
+    }
 
     clearFields();
   }
@@ -508,6 +513,9 @@ class DataProvider extends ChangeNotifier {
         .clearupdatedInvoiceUpdatedInvoices();
 
     await CreatedItemHistoriesFunc().clearItemHistory();
+
+    await CreatedStorageItemHistoriesFunc()
+        .clearStorageItemHistory();
 
     await CreatedMaterialsFunc().clearMaterials();
     await DeletedMaterialsFunc().clearDeletedMaterial();
@@ -1305,6 +1313,17 @@ class DataProvider extends ChangeNotifier {
             );
             setSyncProgress(68);
           }
+          if (CreatedStorageItemHistoriesFunc()
+                  .getCreatedStorageItemHistoriess()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnStorageItemHistoryProvider()
+                .storageItemHistoriesSync();
+            await mainLocalLog(
+              'Finished Syncing Storage Item Histories',
+            );
+            setSyncProgress(69);
+          }
 
           toggleSyncing(false);
         } else {
@@ -1441,6 +1460,9 @@ class DataProvider extends ChangeNotifier {
           DeletedWaybillsFunc().getWaybillIds().isEmpty &&
           CreatedItemHistoriesFunc()
               .getCreatedItemHistoriess()
+              .isEmpty &&
+          CreatedStorageItemHistoriesFunc()
+              .getCreatedStorageItemHistoriess()
               .isEmpty &&
           CreatedMaterialsFunc().getMaterials().isEmpty &&
           UpdatedMaterialsFunc().getMaterials().isEmpty &&
@@ -2054,6 +2076,20 @@ class DataProvider extends ChangeNotifier {
         UnsyncedItems(
           name: 'Created Item Histories',
           quantity: createdItemHistories.length.toDouble(),
+        ),
+      );
+    }
+
+    // Storage Item Histories
+    final createdStorageItemHistories =
+        CreatedStorageItemHistoriesFunc()
+            .getCreatedStorageItemHistoriess();
+    if (createdStorageItemHistories.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Storage Item Histories',
+          quantity:
+              createdStorageItemHistories.length.toDouble(),
         ),
       );
     }
@@ -3106,7 +3142,14 @@ class DataProvider extends ChangeNotifier {
     tempUnitsList.sort(
       (a, b) => a.conversion.compareTo(b.conversion),
     );
+    // if (tempUnitsList.length < 2) {
     return tempUnitsList;
+    // } else {
+    //   return [
+    //     tempUnitsList.firstWhere((item) => item.isPrimary),
+    //     ...tempUnitsList.where((item) => !item.isPrimary),
+    //   ];
+    // }
   }
 
   void clearTempUnitsList() {
@@ -3148,11 +3191,18 @@ class DataProvider extends ChangeNotifier {
 
   void initUnitsList({
     required List<ProductUnitsClass> unitsListNew,
+    required String? productUuid,
   }) {
-    var newTempList = unitsListNew.map(
-      (item) => item.copyWith(),
+    tempUnitsList.clear();
+    tempUnitsList.addAll(
+      unitsListNew.map((item) {
+        if (productUuid == null) {
+          return item.copyWith();
+        } else {
+          return item.copyWith(productUuid: productUuid);
+        }
+      }),
     );
-    tempUnitsList = newTempList.toList();
     print(
       'Temp Units: ${tempUnitsList.length} | New Units: ${unitsListNew.length}',
     );
@@ -3533,10 +3583,20 @@ class DataProvider extends ChangeNotifier {
           shopId: shopId(),
           title: 'Item Deleted',
           quantityChange: 0,
-          newValue: (pr.quantity ?? 0).toString(),
           desc: 'Item Deleted Now',
           isIncreased: false,
-          oldValue: (pr.quantity ?? 0).toString(),
+          unit: pr.getPrimaryUnit().name,
+          primaryUnit: pr.getPrimaryUnit().name,
+          oldValue: formatLargeNumberDouble(
+            pr.getProductUnit().getQuantityEquivDivided(
+              index: 1,
+            ),
+          ),
+          newValue: formatLargeNumberDouble(
+            pr.getProductUnit().getQuantityEquivDivided(
+              index: 1,
+            ),
+          ),
         );
         await deleteProductMain(
           itemHistory: itemHistory,
@@ -3582,12 +3642,23 @@ class DataProvider extends ChangeNotifier {
           shopId: shopId(),
           title: 'Item Created',
           quantityChange: 0,
-          newValue: (pr.quantity ?? 0).toString(),
           desc: 'Item Created From Duplicate (${pr.name})',
           isIncreased: false,
-          oldValue: (pr.quantity ?? 0).toString(),
+          unit: pr.getPrimaryUnit().name,
+          primaryUnit: pr.getPrimaryUnit().name,
+          oldValue: formatLargeNumberDouble(
+            pr.getProductUnit().getQuantityEquivDivided(
+              index: 1,
+            ),
+          ),
+          newValue: formatLargeNumberDouble(
+            pr.getProductUnit().getQuantityEquivDivided(
+              index: 1,
+            ),
+          ),
         );
         await createProduct(
+          isMultiple: true,
           product: newProduct,
           itemHistory: itemHistory,
         );
@@ -3689,15 +3760,26 @@ class DataProvider extends ChangeNotifier {
             shopId: shopId(),
             title: 'Item Created',
             quantityChange: 0,
-            newValue: (pr.quantity ?? 0).toString(),
             desc:
                 'Item Created From Duplicate; Item Name: ${pr.name} | Department Name: ${pr.departmentName ?? 'Not Set'}',
             isIncreased: false,
-            oldValue: (pr.quantity ?? 0).toString(),
             departmentUuid: depart.uuid,
             departmentName: depart.name,
+            unit: pr.getPrimaryUnit().name,
+            primaryUnit: pr.getPrimaryUnit().name,
+            oldValue: formatLargeNumberDouble(
+              pr.getProductUnit().getQuantityEquivDivided(
+                index: 1,
+              ),
+            ),
+            newValue: formatLargeNumberDouble(
+              pr.getProductUnit().getQuantityEquivDivided(
+                index: 1,
+              ),
+            ),
           );
           await createProduct(
+            isMultiple: true,
             product: newProduct,
             itemHistory: itemHistory,
           );
@@ -3720,22 +3802,59 @@ class DataProvider extends ChangeNotifier {
     try {
       for (var pr in selectedProducts) {
         var newUuid = uuidGen();
+        TempStorageProducts newProduct =
+            TempStorageProducts(
+              unitsList: [],
+              useGroupUnit: pr.useGroupUnit,
+              name: pr.name,
+              shopId: pr.shopId,
+              groupUnit: pr.groupUnit,
+              unit: pr.unit,
+              createdAt: DateTime.now(),
+              uuid: newUuid,
+              updatedAt: DateTime.now(),
+              qttyPerGroup: pr.qttyPerGroup,
+              costPrice: pr.costPrice,
+              sellingPrice: pr.sellingPrice,
+            );
+        List<ProductUnitsClass> tempItems =
+            (pr.unitsList ?? [])
+                .map((item) => item.copyWith())
+                .toList();
+
+        for (ProductUnitsClass item in tempItems) {
+          item.uuid = uuidGen();
+          item.productUuid = newUuid;
+          item.createdAt = DateTime.now();
+        }
+
+        newProduct.unitsList = tempItems;
+
+        StorageItemHistory itemHistory = StorageItemHistory(
+          shopId: shopId(),
+          title: 'Item Created',
+          quantityChange: 0,
+          desc:
+              'Item Created From Duplicate; Item Name: ${pr.name} | Department Name: ${pr.departmentName ?? 'Not Set'}',
+          isIncreased: false,
+          storageUnit: pr.getPrimaryUnit().name,
+          storagePrimaryUnit: pr.getPrimaryUnit().name,
+          storageItemOldValue: formatLargeNumberDouble(
+            pr.getProductUnit().getQuantityEquivDivided(
+              index: 1,
+            ),
+          ),
+          storageItemNewValue: formatLargeNumberDouble(
+            pr.getProductUnit().getQuantityEquivDivided(
+              index: 1,
+            ),
+          ),
+        );
         await returnStorageProductProvider()
             .createStorageProduct(
               isMultiple: true,
-              product: TempStorageProducts(
-                useGroupUnit: pr.useGroupUnit,
-                name: pr.name,
-                shopId: pr.shopId,
-                groupUnit: pr.groupUnit,
-                unit: pr.unit,
-                createdAt: DateTime.now(),
-                uuid: newUuid,
-                updatedAt: DateTime.now(),
-                qttyPerGroup: pr.qttyPerGroup,
-                costPrice: pr.costPrice,
-                sellingPrice: pr.sellingPrice,
-              ),
+              product: newProduct,
+              itemHistory: itemHistory,
             );
 
         var product = pr.copyWith(storageUuid: newUuid);

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_item_history/production_item_history.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_items/production_item.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_items/unsynced/created/created_production_item.dart';
@@ -63,6 +64,7 @@ class ProductionItemsProvider extends ChangeNotifier {
   Future<void> createProductionItem({
     required ProductionItem productionItem,
     required ProductionItemHistory? productionItemHistory,
+    required bool isMultiple,
   }) async {
     productionItem.updatedAt = DateTime.now();
     productionItem.createdAt ??= DateTime.now();
@@ -91,9 +93,11 @@ class ProductionItemsProvider extends ChangeNotifier {
           );
     }
 
-    syncData();
+    if (!isMultiple) {
+      syncData();
+    }
 
-    returnData().clearFields();
+    // returnData().clearFields();
   }
 
   Future<void> createdProductionItemsSync() async {
@@ -156,7 +160,6 @@ class ProductionItemsProvider extends ChangeNotifier {
         );
         await getProductionItems();
 
-        returnData().clearFields();
         await mainLocalLog(
           'Unsynced ProductionItems Cleared',
         );
@@ -201,7 +204,6 @@ class ProductionItemsProvider extends ChangeNotifier {
         );
         await getProductionItems();
 
-        returnData().clearFields();
         await mainLocalLog(
           'Unsynced deleted productionItems cleared',
         );
@@ -347,7 +349,6 @@ class ProductionItemsProvider extends ChangeNotifier {
           'Mounted, refreshing productionItems ✅',
         );
         await getProductionItems();
-        returnData().clearFields();
       }
     } catch (e) {
       await mainLocalLog(
@@ -364,6 +365,21 @@ class ProductionItemsProvider extends ChangeNotifier {
   //
 
   List<ProductionItem> productionItemListMain = [];
+
+  void insertSingleItemIntoCache({
+    required ProductionItem newItem,
+  }) {
+    var items = productionItemListMain.where(
+      (item) => item.uuid == newItem.uuid,
+    );
+    if (items.isNotEmpty) {
+      var itemTemp = items.first;
+      itemTemp.replaceWith(newItem: newItem);
+    } else {
+      productionItemListMain.add(newItem);
+    }
+    notifyListeners();
+  }
 
   List<ProductionItem> productionItemList() {
     if (returnShopProvider()
@@ -530,6 +546,73 @@ class ProductionItemsProvider extends ChangeNotifier {
             .insertAllProductionItems(
               productionItemListMain,
             );
+      } else {
+        returnData().syncData();
+        await mainLocalLog(
+          "Offline Data Gotten: ${ProductionItemsFunc().getProductionItems().length}",
+        );
+        productionItemListMain =
+            ProductionItemsFunc().getProductionItems();
+        notifyListeners();
+      }
+
+      notifyListeners();
+      return productionItemListMain;
+    } catch (e) {
+      await mainLocalLog(
+        "Error Getting ProductionItems Online: ${e.toString()}",
+      );
+      return [];
+    }
+  }
+
+  Future<List<ProductionItem>>
+  getSingleProductionItemOnline({
+    required String itemUuid,
+  }) async {
+    try {
+      bool isOnline = await connectivity.isOnline();
+      await mainLocalLog(
+        '✅✅ Getting Single Production Item',
+      );
+      if (isOnline &&
+          ProductionItemsFunc().isSynced() &&
+          returnShopProvider()
+                  .userShop()
+                  ?.manageProductions ==
+              true &&
+          authorization(
+            authorized: Authorizations().viewProductions,
+          ) &&
+          GeneralSettingsAuthAction().manageProductions(
+            context: null,
+          )) {
+        final data =
+            await supabase
+                .from(tableName)
+                .select()
+                .eq('uuid', itemUuid)
+                .maybeSingle();
+
+        if (data == null) {
+          mainLocalLog(
+            'Error Getting Single Production item',
+          );
+          return [];
+        }
+        notifyListeners();
+
+        ProductionItem tempItem = ProductionItem.fromJson(
+          data,
+        );
+        mainLocalLog(
+          'Single Production item Gotten Successfully: ${tempItem.name}',
+        );
+        ProductionItemsFunc().createProductionItem(
+          tempItem,
+        );
+        insertSingleItemIntoCache(newItem: tempItem);
+        notifyListeners();
       } else {
         returnData().syncData();
         await mainLocalLog(
@@ -824,10 +907,20 @@ class ProductionItemsProvider extends ChangeNotifier {
               shopId: shopId(),
               title: 'Item Deleted',
               quantityChange: 0,
-              newValue: (pr.quantity ?? 0).toString(),
+              newValue: formatLargeNumberDouble(
+                pr.getProductUnit().getQuantityEquivDivided(
+                  index: 2,
+                ),
+              ),
               desc: 'Production Item Deleted Now',
               isIncreased: false,
-              oldValue: (pr.quantity ?? 0).toString(),
+              oldValue: formatLargeNumberDouble(
+                pr.getProductUnit().getQuantityEquivDivided(
+                  index: 2,
+                ),
+              ),
+              unit: pr.getPrimaryUnit().name,
+              primaryUnit: pr.getPrimaryUnit().name,
             );
         await deleteProductionItemMain(
           productionItemHistory: productionItemHistory,
@@ -849,23 +942,51 @@ class ProductionItemsProvider extends ChangeNotifier {
   Future<int> duplicateSelectedProductionItems() async {
     try {
       for (var pr in selectedProductionItems) {
+        String newUuid = uuidGen();
         final newProductionItem = pr.copyWith(
-          uuid: uuidGen(),
+          uuid: newUuid,
           name: '${pr.name} Copy ${randomCode()}',
           createdAt: DateTime.now(),
         );
 
-        await ProductionItemsFunc().createProductionItem(
-          newProductionItem,
-        );
+        List<ProductUnitsClass> tempItems =
+            (newProductionItem.unitsList ?? [])
+                .map((item) => item.copyWith())
+                .toList();
 
-        await CreatedProductionItemsFunc()
-            .createProductionItem(
-              CreatedProductionItem(
-                productionItem: newProductionItem,
-                includeQuantity: true,
-              ),
-            );
+        for (ProductUnitsClass item in tempItems) {
+          item.uuid = uuidGen();
+          item.productUuid = newUuid;
+          item.createdAt = DateTime.now();
+        }
+
+        newProductionItem.unitsList = tempItems;
+
+        ProductionItemHistory
+        productionItemHistory = ProductionItemHistory(
+          shopId: shopId(),
+          title: 'Item Created',
+          quantityChange: 0,
+          desc: 'Item Created From Duplicate (${pr.name})',
+          isIncreased: false,
+          unit: pr.getPrimaryUnit().name,
+          primaryUnit: pr.getPrimaryUnit().name,
+          oldValue: formatLargeNumberDouble(
+            pr.getProductUnit().getQuantityEquivDivided(
+              index: 2,
+            ),
+          ),
+          newValue: formatLargeNumberDouble(
+            pr.getProductUnit().getQuantityEquivDivided(
+              index: 2,
+            ),
+          ),
+        );
+        await createProductionItem(
+          isMultiple: true,
+          productionItem: newProductionItem,
+          productionItemHistory: productionItemHistory,
+        );
       }
       await getProductionItemsOffline(shopId());
       toggleIsSelectProductionItem(false);
@@ -874,7 +995,7 @@ class ProductionItemsProvider extends ChangeNotifier {
       // }
     } catch (e) {
       await mainLocalLog(
-        "Error Duplicating Multiple ProductionItems: ${e.toString()}",
+        "Error Duplicating Multiple Production Items: ${e.toString()}",
       );
       return 0;
     }
@@ -886,15 +1007,29 @@ class ProductionItemsProvider extends ChangeNotifier {
       for (var pr in selectedProductionItems) {
         for (var shop
             in returnShopProvider().multipleSelectedShops) {
+          String newUuid = uuidGen();
           final newProductionItem = pr.copyWith(
             categories: [],
             departmentName: null,
             departmentUuid: null,
-            uuid: uuidGen(),
+            uuid: newUuid,
             shopId: shop.shopId,
             name: '${pr.name} ${randomCode()}',
             createdAt: DateTime.now(),
           );
+
+          List<ProductUnitsClass> tempItems =
+              (newProductionItem.unitsList ?? [])
+                  .map((item) => item.copyWith())
+                  .toList();
+
+          for (ProductUnitsClass item in tempItems) {
+            item.uuid = uuidGen();
+            item.productUuid = newUuid;
+            item.createdAt = DateTime.now();
+          }
+
+          newProductionItem.unitsList = tempItems;
 
           await supabase
               .from(tableName)
@@ -925,25 +1060,56 @@ class ProductionItemsProvider extends ChangeNotifier {
         for (var depart
             in returnDepartmentProvider()
                 .multipleSelectedDepartments) {
+          String newUuid = uuidGen();
           final newProductionItem = pr.copyWith(
-            uuid: uuidGen(),
+            uuid: newUuid,
             departmentUuid: depart.uuid,
             departmentName: depart.name,
             name: '${pr.name} ${randomCode()}',
             createdAt: DateTime.now(),
           );
 
-          await ProductionItemsFunc().createProductionItem(
-            newProductionItem,
-          );
+          List<ProductUnitsClass> tempItems =
+              (newProductionItem.unitsList ?? [])
+                  .map((item) => item.copyWith())
+                  .toList();
 
-          await CreatedProductionItemsFunc()
-              .createProductionItem(
-                CreatedProductionItem(
-                  productionItem: newProductionItem,
-                  includeQuantity: true,
-                ),
-              );
+          for (ProductUnitsClass item in tempItems) {
+            item.uuid = uuidGen();
+            item.productUuid = newUuid;
+            item.createdAt = DateTime.now();
+          }
+
+          newProductionItem.unitsList = tempItems;
+
+          ProductionItemHistory
+          productionItemHistory = ProductionItemHistory(
+            shopId: shopId(),
+            title: 'Item Created',
+            quantityChange: 0,
+            desc:
+                'Item Created From Duplicate; Item Name: ${pr.name} | Department Name: ${pr.departmentName ?? 'Not Set'}',
+            isIncreased: false,
+            departmentUuid: depart.uuid,
+            departmentName: depart.name,
+            unit: pr.getPrimaryUnit().name,
+            primaryUnit: pr.getPrimaryUnit().name,
+            oldValue: formatLargeNumberDouble(
+              pr.getProductUnit().getQuantityEquivDivided(
+                index: 2,
+              ),
+            ),
+            newValue: formatLargeNumberDouble(
+              pr.getProductUnit().getQuantityEquivDivided(
+                index: 2,
+              ),
+            ),
+          );
+          await createProductionItem(
+            isMultiple: true,
+            productionItem: newProductionItem,
+            productionItemHistory: productionItemHistory,
+          );
         }
       }
       toggleIsSelectProductionItem(false);

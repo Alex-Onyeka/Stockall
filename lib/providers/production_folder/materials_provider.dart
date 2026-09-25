@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_material_class/material_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_material_class/unsynced/created_materials/created_material.dart';
 import 'package:stockall/classes/temp_production_folder/temp_material_class/unsynced/deleted_materials/deleted_material.dart';
@@ -61,6 +62,7 @@ class MaterialsProvider extends ChangeNotifier {
   Future<void> createMaterial({
     required MaterialClass material,
     required MaterialsItemHistory? materialsItemHistoy,
+    required bool isMultiple,
   }) async {
     material.updatedAt = DateTime.now();
     material.createdAt ??= DateTime.now();
@@ -85,9 +87,11 @@ class MaterialsProvider extends ChangeNotifier {
           .createMaterialsItemHistory(materialsItemHistoy);
     }
 
-    syncData();
+    if (!isMultiple) {
+      syncData();
+    }
 
-    returnData().clearFields();
+    // returnData().clearFields();
   }
 
   Future<void> createdMaterialsSync() async {
@@ -135,7 +139,7 @@ class MaterialsProvider extends ChangeNotifier {
         );
         await getMaterials();
 
-        returnData().clearFields();
+        // returnData().clearFields();
         await mainLocalLog('Unsynced Materials Cleared');
       }
     } catch (e) {
@@ -177,7 +181,7 @@ class MaterialsProvider extends ChangeNotifier {
         );
         await getMaterials();
 
-        returnData().clearFields();
+        // returnData().clearFields();
         await mainLocalLog(
           'Unsynced deleted materials cleared',
         );
@@ -314,7 +318,7 @@ class MaterialsProvider extends ChangeNotifier {
           'Mounted, refreshing materials ✅',
         );
         await getMaterials();
-        returnData().clearFields();
+        // returnData().clearFields();
       }
     } catch (e) {
       await mainLocalLog(
@@ -331,6 +335,21 @@ class MaterialsProvider extends ChangeNotifier {
   //
 
   List<MaterialClass> materialListMain = [];
+
+  void insertSingleItemIntoCache({
+    required MaterialClass newItem,
+  }) {
+    var items = materialListMain.where(
+      (item) => item.uuid == newItem.uuid,
+    );
+    if (items.isNotEmpty) {
+      var itemTemp = items.first;
+      itemTemp.replaceWith(newItem: newItem);
+    } else {
+      materialListMain.add(newItem);
+    }
+    notifyListeners();
+  }
 
   List<MaterialClass> materialList() {
     if (returnShopProvider()
@@ -510,6 +529,67 @@ class MaterialsProvider extends ChangeNotifier {
     }
   }
 
+  Future<MaterialClass?> getSingleMaterialItemOnline({
+    required String itemUuid,
+  }) async {
+    try {
+      bool isOnline = await connectivity.isOnline();
+      await mainLocalLog('✅✅ Getting Single Material Item');
+      if (isOnline &&
+          MaterialsFunc().isSynced() &&
+          returnShopProvider()
+                  .userShop()
+                  ?.manageProductions ==
+              true &&
+          authorization(
+            authorized: Authorizations().viewProductions,
+          ) &&
+          GeneralSettingsAuthAction().manageProductions(
+            context: null,
+          )) {
+        final data =
+            await supabase
+                .from(tableName)
+                .select()
+                .eq('uuid', itemUuid)
+                .maybeSingle();
+
+        if (data == null) {
+          mainLocalLog(
+            'Error Getting Single Material item',
+          );
+          return null;
+        }
+        notifyListeners();
+
+        MaterialClass tempItem = MaterialClass.fromJson(
+          data,
+        );
+        mainLocalLog(
+          'Single Material item Gotten Successfully: ${tempItem.name}',
+        );
+        MaterialsFunc().createMaterial(tempItem);
+        insertSingleItemIntoCache(newItem: tempItem);
+        notifyListeners();
+      } else {
+        returnData().syncData();
+        await mainLocalLog(
+          "Offline Data Gotten: ${MaterialsFunc().getMaterials().length}",
+        );
+        materialListMain = MaterialsFunc().getMaterials();
+        notifyListeners();
+      }
+
+      notifyListeners();
+      return null;
+    } catch (e) {
+      await mainLocalLog(
+        "Error Getting MaterialItems Online: ${e.toString()}",
+      );
+      return null;
+    }
+  }
+
   Future<List<MaterialClass>> getMaterialsOffline(
     int shopId,
   ) async {
@@ -616,7 +696,7 @@ class MaterialsProvider extends ChangeNotifier {
     required bool? isIncrement,
     required MaterialsItemHistory? materialsItemHistory,
     MaterialClass? oldMaterial,
-    bool? isMultipleUpdate,
+    required bool isMultipleUpdate,
   }) async {
     try {
       await mainLocalLog(material.isManaged.toString());
@@ -738,7 +818,7 @@ class MaterialsProvider extends ChangeNotifier {
 
   Future<void> deleteMaterialMain({
     required MaterialClass material,
-    bool? isMultipleDelete,
+    required bool? isMultipleDelete,
     required MaterialsItemHistory? materialsItemHistory,
   }) async {
     await MaterialsFunc().deleteMaterial(material.uuid!);
@@ -845,10 +925,20 @@ class MaterialsProvider extends ChangeNotifier {
               shopId: shopId(),
               title: 'Item Deleted',
               quantityChange: 0,
-              newValue: (pr.quantity ?? 0).toString(),
               desc: 'Materials Item Deleted Now',
               isIncreased: false,
-              oldValue: (pr.quantity ?? 0).toString(),
+              oldValue: formatLargeNumberDouble(
+                pr.getProductUnit().getQuantityEquivDivided(
+                  index: 3,
+                ),
+              ),
+              newValue: formatLargeNumberDouble(
+                pr.getProductUnit().getQuantityEquivDivided(
+                  index: 3,
+                ),
+              ),
+              unit: pr.getProductUnit().name,
+              primaryUnit: pr.getProductUnit().name,
             );
         await deleteMaterialMain(
           materialsItemHistory: materialsItemHistory,
@@ -870,26 +960,57 @@ class MaterialsProvider extends ChangeNotifier {
   Future<int> duplicateSelectedMaterials() async {
     try {
       for (var pr in selectedMaterials) {
+        String newUuid = uuidGen();
         final newMaterial = pr.copyWith(
-          uuid: uuidGen(),
+          uuid: newUuid,
           name: '${pr.name} Copy ${randomCode()}',
           createdAt: DateTime.now(),
         );
 
-        await MaterialsFunc().createMaterial(newMaterial);
+        List<ProductUnitsClass> tempItems =
+            (newMaterial.unitsList ?? [])
+                .map((item) => item.copyWith())
+                .toList();
 
-        await CreatedMaterialsFunc().createMaterial(
-          CreatedMaterial(
-            material: newMaterial,
-            includeQuantity: true,
+        for (ProductUnitsClass item in tempItems) {
+          item.uuid = uuidGen();
+          item.productUuid = newUuid;
+          item.createdAt = DateTime.now();
+        }
+
+        newMaterial.unitsList = tempItems;
+
+        MaterialsItemHistory
+        materialsItemHistory = MaterialsItemHistory(
+          shopId: shopId(),
+          title: 'Item Created',
+          quantityChange: 0,
+          desc: 'Item Created From Duplicate (${pr.name})',
+          isIncreased: false,
+          oldValue: formatLargeNumberDouble(
+            pr.getProductUnit().getQuantityEquivDivided(
+              index: 3,
+            ),
           ),
+          newValue: formatLargeNumberDouble(
+            pr.getProductUnit().getQuantityEquivDivided(
+              index: 3,
+            ),
+          ),
+          unit: pr.getPrimaryUnit().name,
+          primaryUnit: pr.getPrimaryUnit().name,
+        );
+
+        await createMaterial(
+          isMultiple: true,
+          material: newMaterial,
+          materialsItemHistoy: materialsItemHistory,
         );
       }
       await getMaterialsOffline(shopId());
       toggleIsSelectMaterial(false);
       syncData();
       return 1;
-      // }
     } catch (e) {
       await mainLocalLog(
         "Error Duplicating Multiple Materials: ${e.toString()}",
@@ -903,15 +1024,29 @@ class MaterialsProvider extends ChangeNotifier {
       for (var pr in selectedMaterials) {
         for (var shop
             in returnShopProvider().multipleSelectedShops) {
+          String newUuid = uuidGen();
           final newMaterial = pr.copyWith(
             categories: [],
             departmentName: null,
             departmentUuid: null,
-            uuid: uuidGen(),
+            uuid: newUuid,
             shopId: shop.shopId,
             name: '${pr.name} ${randomCode()}',
             createdAt: DateTime.now(),
           );
+
+          List<ProductUnitsClass> tempItems =
+              (newMaterial.unitsList ?? [])
+                  .map((item) => item.copyWith())
+                  .toList();
+
+          for (ProductUnitsClass item in tempItems) {
+            item.uuid = uuidGen();
+            item.productUuid = newUuid;
+            item.createdAt = DateTime.now();
+          }
+
+          newMaterial.unitsList = tempItems;
 
           await supabase
               .from(tableName)
@@ -940,21 +1075,55 @@ class MaterialsProvider extends ChangeNotifier {
         for (var depart
             in returnDepartmentProvider()
                 .multipleSelectedDepartments) {
+          String newUuid = uuidGen();
           final newMaterial = pr.copyWith(
-            uuid: uuidGen(),
+            uuid: newUuid,
             departmentUuid: depart.uuid,
             departmentName: depart.name,
             name: '${pr.name} ${randomCode()}',
             createdAt: DateTime.now(),
           );
 
-          await MaterialsFunc().createMaterial(newMaterial);
+          List<ProductUnitsClass> tempItems =
+              (newMaterial.unitsList ?? [])
+                  .map((item) => item.copyWith())
+                  .toList();
 
-          await CreatedMaterialsFunc().createMaterial(
-            CreatedMaterial(
-              material: newMaterial,
-              includeQuantity: true,
+          for (ProductUnitsClass item in tempItems) {
+            item.uuid = uuidGen();
+            item.productUuid = newUuid;
+            item.createdAt = DateTime.now();
+          }
+
+          newMaterial.unitsList = tempItems;
+
+          MaterialsItemHistory
+          materialsItemHistory = MaterialsItemHistory(
+            shopId: shopId(),
+            title: 'Item Created',
+            quantityChange: 0,
+            desc:
+                'Item Created From Duplicate; Item Name: ${pr.name} | Department Name: ${pr.departmentName ?? 'Not Set'}',
+            isIncreased: false,
+            departmentUuid: depart.uuid,
+            departmentName: depart.name,
+            unit: pr.getPrimaryUnit().name,
+            primaryUnit: pr.getPrimaryUnit().name,
+            oldValue: formatLargeNumberDouble(
+              pr.getProductUnit().getQuantityEquivDivided(
+                index: 3,
+              ),
             ),
+            newValue: formatLargeNumberDouble(
+              pr.getProductUnit().getQuantityEquivDivided(
+                index: 3,
+              ),
+            ),
+          );
+          await createMaterial(
+            isMultiple: true,
+            material: newMaterial,
+            materialsItemHistoy: materialsItemHistory,
           );
         }
       }

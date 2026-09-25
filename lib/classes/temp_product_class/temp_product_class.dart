@@ -412,7 +412,10 @@ class TempProductClass {
     );
   }
 
-  String getQuantityText({BuildContext? context}) {
+  String getQuantityText({
+    BuildContext? context,
+    required int index,
+  }) {
     if (!authorization(
       authorized: Authorizations().viewItemQuantity,
     )) {
@@ -425,14 +428,20 @@ class TempProductClass {
           return 'Stock Out';
         } else {
           return formatLargeNumberDouble(
-            getPrimaryUnitQuantity(context: context),
+            getPrimaryUnitQuantity(
+              context: context,
+              index: index,
+            ),
           );
         }
       }
     }
   }
 
-  double getPrimaryUnitQuantity({BuildContext? context}) {
+  double getPrimaryUnitQuantity({
+    BuildContext? context,
+    required int index,
+  }) {
     if (unitsList == null || unitsList?.isEmpty == true) {
       return (quantity ?? 0);
     } else {
@@ -444,6 +453,7 @@ class TempProductClass {
       } else {
         var item = items.first;
         return item.getQuantityEquivDivided(
+          index: index,
           context: context,
         );
       }
@@ -463,9 +473,9 @@ class TempProductClass {
   }
 
   ProductUnitsClass getProductUnit({String? unitUuid}) {
-    var items =
-        unitsList?.where((item) => item.uuid == unitUuid) ??
-        [];
+    var items = getUnitsList().where(
+      (item) => item.uuid == unitUuid,
+    );
     if (unitUuid == null || items.isEmpty) {
       return getPrimaryUnit();
     } else {
@@ -485,7 +495,7 @@ class TempProductClass {
         staffUuid: currentUser().userId,
         createdAt: DateTime.now(),
         staffName: currentUser().name,
-        conversion: qttyPerGroup ?? 1,
+        conversion: 1,
         name: unit == 'Others' ? 'Unit(s)' : unit,
         isPrimary: true,
         productUuid: uuid!,
@@ -498,13 +508,48 @@ class TempProductClass {
   }
 
   List<ProductUnitsClass> getUnitsList() {
-    var tempList = unitsList ?? [];
-    if (tempList.length < 2) {
-      return tempList;
+    List<ProductUnitsClass> tempList() {
+      if (unitsList == null || unitsList?.isEmpty == true) {
+        List<ProductUnitsClass> tempList = [
+          ProductUnitsClass(
+            uuid: uuidGen(),
+            staffUuid: currentUser().userId,
+            createdAt: DateTime.now(),
+            staffName: currentUser().name,
+            conversion: 1,
+            name: unit == 'Others' ? 'Unit(s)' : unit,
+            isPrimary: true,
+            productUuid: uuid!,
+          ),
+        ];
+        if (useGroupUnit == true) {
+          ProductUnitsClass newItem = ProductUnitsClass(
+            uuid: uuidGen(),
+            staffUuid: currentUser().userId,
+            createdAt: DateTime.now(),
+            staffName: currentUser().name,
+            conversion: qttyPerGroup ?? 1,
+            name:
+                groupUnit == 'Others' || groupUnit == null
+                    ? 'Group(s)'
+                    : groupUnit ?? '',
+            isPrimary: false,
+            productUuid: uuid!,
+          );
+          tempList.add(newItem);
+        }
+        return tempList;
+      } else {
+        return unitsList ?? [];
+      }
+    }
+
+    if (tempList().length < 2) {
+      return tempList();
     } else {
       return [
-        tempList.firstWhere((item) => item.isPrimary),
-        ...tempList.where((item) => !item.isPrimary),
+        tempList().firstWhere((item) => item.isPrimary),
+        ...tempList().where((item) => !item.isPrimary),
       ];
     }
   }

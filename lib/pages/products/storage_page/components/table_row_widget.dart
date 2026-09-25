@@ -26,7 +26,9 @@ class TableRowRecordWidget extends StatefulWidget {
 class _TableRowRecordWidgetState
     extends State<TableRowRecordWidget> {
   double getTotalInStorage() {
-    return widget.product.quantity ?? 0;
+    return widget.product
+        .getProductUnit()
+        .getQuantityEquivDivided(index: 4);
   }
 
   double getTotalInSales() {
@@ -39,7 +41,11 @@ class _TableRowRecordWidgetState
             .toList();
 
     return items
-        .map((item) => (item.quantity ?? 0))
+        .map(
+          (item) => widget.product
+              .getProductUnit()
+              .getQuantityEquivDivided(index: 4),
+        )
         .fold(0, (a, b) => a + b);
   }
 
@@ -178,9 +184,7 @@ class _TableRowRecordWidgetState
                                     .fontSize,
                             fontWeight: FontWeight.bold,
                           ),
-                          formatLargeNumberDouble(
-                            getTotalInStorage(),
-                          ),
+                          "${formatLargeNumberDouble(getTotalInStorage())} ${widget.product.getProductUnit().name}",
                         ),
                       ),
                     ],
@@ -212,9 +216,7 @@ class _TableRowRecordWidgetState
                                     .fontSize,
                             fontWeight: FontWeight.bold,
                           ),
-                          formatLargeNumberDouble(
-                            getTotalInSales(),
-                          ),
+                          "${formatLargeNumberDouble(getTotalInSales())} ${widget.product.getProductUnit().name}",
                         ),
                       ),
                     ],
@@ -246,9 +248,7 @@ class _TableRowRecordWidgetState
                                     .fontSize,
                             fontWeight: FontWeight.bold,
                           ),
-                          formatLargeNumberDouble(
-                            getOverallTotal(),
-                          ),
+                          "${formatLargeNumberDouble(getOverallTotal())} ${widget.product.getProductUnit().name}",
                         ),
                       ),
                     ],

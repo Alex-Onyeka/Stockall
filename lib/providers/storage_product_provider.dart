@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_storage_item_history/storage_item_history.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/classes/temp_storage_product/unsynced/created_storage_products/created_storage_products.dart';
 import 'package:stockall/classes/temp_storage_product/unsynced/deleted_storage_products/deleted_storage_product.dart';
@@ -50,6 +51,7 @@ class StorageProductProvider extends ChangeNotifier {
 
   Future<void> createStorageProduct({
     required TempStorageProducts product,
+    required StorageItemHistory? itemHistory,
     bool? isMultiple,
   }) async {
     product.updatedAt = DateTime.now();
@@ -66,6 +68,12 @@ class StorageProductProvider extends ChangeNotifier {
       'Offline Storage Product inserted Successfully',
     );
     // }
+    if (itemHistory != null) {
+      itemHistory.storageItemName = product.name;
+      itemHistory.storageItemUuid = product.uuid;
+      await returnStorageItemHistoryProvider()
+          .createStorageItemHistory(itemHistory);
+    }
 
     await getStorageProductsOffline(
       returnShopProvider().userShop()!.shopId!,
@@ -307,6 +315,21 @@ class StorageProductProvider extends ChangeNotifier {
 
   List<TempStorageProducts> storageProductListMain = [];
 
+  void insertSingleStorageItemIntoCache({
+    required TempStorageProducts newItem,
+  }) {
+    var items = storageProductListMain.where(
+      (item) => item.uuid == newItem.uuid,
+    );
+    if (items.isNotEmpty) {
+      var itemTemp = items.first;
+      itemTemp.replaceWith(newItem: newItem);
+    } else {
+      storageProductListMain.add(newItem);
+    }
+    notifyListeners();
+  }
+
   void clearProducts() {
     storageProductListMain.clear();
     mainLocalLog('Products Cleared');
@@ -448,6 +471,69 @@ class StorageProductProvider extends ChangeNotifier {
     return storageProductListMain;
   }
 
+  //
+  //
+  //
+  //
+  Future<TempStorageProducts?>
+  getSingleStorageProductItemOnline({
+    required String itemUuid,
+  }) async {
+    try {
+      bool isOnline = await connectivity.isOnline();
+      await mainLocalLog(
+        '✅✅ Getting Single Storage Product Item',
+      );
+      if (isOnline && StorageProductsFunc().isSynced()) {
+        final data =
+            await supabase
+                .from(tableName)
+                .select()
+                .eq('uuid', itemUuid)
+                .maybeSingle();
+
+        if (data == null) {
+          mainLocalLog(
+            'Error Getting Single Storage Product item',
+          );
+          return null;
+        }
+        notifyListeners();
+
+        TempStorageProducts tempItem =
+            TempStorageProducts.fromJson(data);
+        mainLocalLog(
+          'Single Storage Product item Gotten Successfully: ${tempItem.name}',
+        );
+        StorageProductsFunc().createStorageProduct(
+          tempItem,
+        );
+        insertSingleStorageItemIntoCache(newItem: tempItem);
+        notifyListeners();
+      } else {
+        returnData().syncData();
+        await mainLocalLog(
+          "Offline Data Gotten: ${StorageProductsFunc().getStorageProducts().length}",
+        );
+        storageProductListMain =
+            StorageProductsFunc().getStorageProducts();
+        notifyListeners();
+      }
+
+      notifyListeners();
+      return null;
+    } catch (e) {
+      await mainLocalLog(
+        "Error Getting Storage Product Items Online: ${e.toString()}",
+      );
+      return null;
+    }
+  }
+
+  //
+  //
+  //
+
   Future<List<TempStorageProducts>>
   getStorageProductsOffline(int shopId) async {
     await mainLocalLog(
@@ -465,6 +551,7 @@ class StorageProductProvider extends ChangeNotifier {
 
   Future<int> updateProduct({
     required TempStorageProducts product,
+    StorageItemHistory? storageItemHistory,
     required bool isQuantityUpdate,
     required double? quantityChange,
     required bool? isIncrement,
@@ -502,6 +589,13 @@ class StorageProductProvider extends ChangeNotifier {
         await getStorageProductsOffline(
           returnShopProvider().userShop()!.shopId!,
         );
+        if (isQuantityUpdate &&
+            storageItemHistory != null) {
+          storageItemHistory.storageItemName = product.name;
+          storageItemHistory.storageItemUuid = product.uuid;
+          await returnStorageItemHistoryProvider()
+              .createStorageItemHistory(storageItemHistory);
+        }
         notifyListeners();
         syncData();
         return 1;
@@ -519,9 +613,10 @@ class StorageProductProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteProductMain(
-    TempStorageProducts product,
-  ) async {
+  Future<void> deleteProductMain({
+    required TempStorageProducts product,
+    required StorageItemHistory? itemHistory,
+  }) async {
     await StorageProductsFunc().deleteStorageProduct(
       product.uuid!,
     );
@@ -571,13 +666,12 @@ class StorageProductProvider extends ChangeNotifier {
           );
       await mainLocalLog('Deleted Update Log');
     }
-    // await returnEventsLogProvider().createLog(
-    //   returnEventsLogProvider(
-    //     // ignore: use_build_context_synchronously
-    //   ).productAdapter(product, 3),
-    //   // ignore: use_build_context_synchronously
-    // );
-    // }
+    if (itemHistory != null) {
+      itemHistory.storageItemName = product.name;
+      itemHistory.storageItemUuid = product.uuid;
+      await returnStorageItemHistoryProvider()
+          .createStorageItemHistory(itemHistory);
+    }
     await getStorageProductsOffline(
       returnShopProvider().userShop()!.shopId!,
     );

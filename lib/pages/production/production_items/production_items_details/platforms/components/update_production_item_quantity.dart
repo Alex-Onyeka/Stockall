@@ -4,13 +4,11 @@ import 'package:stockall/classes/temp_production_folder/temp_production_items/pr
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
-import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/calculations.dart';
-import 'package:stockall/constants/constants_main.dart';
-import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/edit_button.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/item_comment_widget.dart';
+import 'package:stockall/pages/products/product_details/platforms/components/unit_selection_widget.dart';
 
 Future<Object?> updateProductionItemQuantity(
   BuildContext context,
@@ -45,39 +43,7 @@ class _UpdateProductionItemQuantityWidgetState
   final quantityController = TextEditingController();
   final commentController = TextEditingController();
   bool isAddToQuantity = true;
-  bool updateGroup = false;
-
-  String returnUnitText() {
-    if (updateGroup) {
-      return widget.productionItem.groupUnit == null ||
-              widget.productionItem.groupUnit == 'Others'
-          ? ''
-          : " Group(s)";
-    } else {
-      return widget.productionItem.unit.isEmpty ||
-              widget.productionItem.unit == 'Others'
-          ? ''
-          : " Unit(s)";
-    }
-  }
-
-  double returnGroupQuantity() {
-    if (updateGroup) {
-      return (widget.productionItem.quantity ?? 0) /
-          (widget.productionItem.qttyPerGroup ?? 0);
-    } else {
-      return (widget.productionItem.quantity ?? 0);
-    }
-  }
-
-  double returnUnitQuantity(double value) {
-    if (updateGroup) {
-      return value *
-          (widget.productionItem.qttyPerGroup ?? 0);
-    } else {
-      return value;
-    }
-  }
+  String? unitUuid;
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +68,7 @@ class _UpdateProductionItemQuantityWidgetState
                 children: [
                   Container(
                     padding: EdgeInsets.all(30),
-                    margin: EdgeInsets.only(bottom: 100),
+                    margin: EdgeInsets.only(bottom: 50),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(
@@ -147,7 +113,7 @@ class _UpdateProductionItemQuantityWidgetState
                                         .fontSize,
                                 fontWeight: FontWeight.bold,
                               ),
-                              'Edit${returnUnitText()} Quantity',
+                              'Edit ${widget.productionItem.getProductUnit(unitUuid: unitUuid).name} Quantity',
                             ),
                             Builder(
                               builder: (context) {
@@ -202,7 +168,7 @@ class _UpdateProductionItemQuantityWidgetState
                                           .quantity ==
                                       null
                                   ? 'Quantity Not Set'
-                                  : 'Current${returnUnitText()} Quantity : ${formatLargeNumberDouble(returnGroupQuantity())}',
+                                  : 'Current Quantity in ${widget.productionItem.getProductUnit(unitUuid: unitUuid).name}: ${formatLargeNumberDouble(widget.productionItem.getProductUnit(unitUuid: unitUuid).getQuantityEquivDivided(index: 2, context: context))}',
                             ),
                             EditCartTextField(
                               onChanged: (value) {
@@ -214,7 +180,7 @@ class _UpdateProductionItemQuantityWidgetState
                                 }
                               },
                               title:
-                                  '${returnUnitText()} Quantity',
+                                  '${widget.productionItem.getProductUnit(unitUuid: unitUuid).name} Quantity',
                               hint: 'Enter Quantity Amount',
                               controller:
                                   quantityController,
@@ -223,59 +189,19 @@ class _UpdateProductionItemQuantityWidgetState
                           ],
                         ),
                         SizedBox(height: 20),
-                        Visibility(
-                          visible:
-                              widget
-                                  .productionItem
-                                  .useGroupUnit ==
-                              true,
-                          child: Column(
-                            children: [
-                              ConstrainedBox(
-                                constraints: BoxConstraints(
-                                  maxWidth: 230,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .spaceBetween,
-                                  children: [
-                                    Text(
-                                      style: TextStyle(
-                                        fontWeight:
-                                            FontWeight.bold,
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b3
-                                                .fontSize,
-                                      ),
-                                      'Update Group Quantity?',
-                                    ),
-                                    MyToggleButton(
-                                      isSmall:
-                                          screenWidth(
-                                            context,
-                                          ) <=
-                                          mobileScreen,
-                                      boolValue:
-                                          updateGroup,
-                                      toggle: () {
-                                        setState(() {
-                                          updateGroup =
-                                              !updateGroup;
-                                          // quantityController
-                                          //     .clear();
-                                        });
-                                      },
-                                      theme: theme,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(height: 20),
-                            ],
-                          ),
+                        UnitSelectionWidget(
+                          storageProduct: null,
+                          productionItem:
+                              widget.productionItem,
+                          material: null,
+                          product: null,
+                          setUnitUuid: (uuid) {
+                            setState(() {
+                              unitUuid = uuid;
+                            });
+                          },
+                          theme: theme,
+                          unitUuid: unitUuid,
                         ),
 
                         Row(
@@ -462,8 +388,36 @@ class _UpdateProductionItemQuantityWidgetState
                                       });
                                       double setQuantity() {
                                         if (isAddToQuantity) {
-                                          return returnUnitQuantity(
-                                                double.parse(
+                                          return widget
+                                                  .productionItem
+                                                  .getProductUnit(
+                                                    unitUuid:
+                                                        unitUuid,
+                                                  )
+                                                  .getQuantityEquivMultiplied(
+                                                    index:
+                                                        2,
+                                                    newQuantity: double.parse(
+                                                      quantityController.text.replaceAll(
+                                                        ',',
+                                                        '',
+                                                      ),
+                                                    ),
+                                                  ) +
+                                              (widget
+                                                      .productionItem
+                                                      .quantity ??
+                                                  0);
+                                        } else {
+                                          return widget
+                                              .productionItem
+                                              .getProductUnit(
+                                                unitUuid:
+                                                    unitUuid,
+                                              )
+                                              .getQuantityEquivMultiplied(
+                                                index: 2,
+                                                newQuantity: double.parse(
                                                   quantityController
                                                       .text
                                                       .replaceAll(
@@ -471,22 +425,7 @@ class _UpdateProductionItemQuantityWidgetState
                                                         '',
                                                       ),
                                                 ),
-                                              ) +
-                                              (widget
-                                                      .productionItem
-                                                      .quantity ??
-                                                  0);
-                                        } else {
-                                          return returnUnitQuantity(
-                                            double.parse(
-                                              quantityController
-                                                  .text
-                                                  .replaceAll(
-                                                    ',',
-                                                    '',
-                                                  ),
-                                            ),
-                                          );
+                                              );
                                         }
                                       }
 
@@ -498,6 +437,19 @@ class _UpdateProductionItemQuantityWidgetState
                                               0);
                                       ProductionItemHistory
                                       productionItemHistory = ProductionItemHistory(
+                                        primaryUnit:
+                                            widget
+                                                .productionItem
+                                                .getProductUnit()
+                                                .name,
+                                        unit:
+                                            widget
+                                                .productionItem
+                                                .getProductUnit(
+                                                  unitUuid:
+                                                      unitUuid,
+                                                )
+                                                .name,
                                         shopId: shopId(),
                                         desc:
                                             commentController
@@ -510,19 +462,40 @@ class _UpdateProductionItemQuantityWidgetState
                                             isIncrement,
                                         title:
                                             'Item Quantity ${isIncrement ? "Increased" : 'Reduced'}',
-                                        quantityChange:
-                                            (setQuantity() -
-                                                (widget
-                                                        .productionItem
-                                                        .quantity ??
-                                                    0)),
-                                        newValue:
-                                            setQuantity()
-                                                .toString(),
-                                        oldValue:
-                                            (widget.productionItem.quantity ??
-                                                    0)
-                                                .toString(),
+                                        quantityChange: widget
+                                            .productionItem
+                                            .getProductUnit(
+                                              unitUuid:
+                                                  unitUuid,
+                                            )
+                                            .getQuantityEquivDivided(
+                                              index: 2,
+                                              newQuantity:
+                                                  (setQuantity() -
+                                                      (widget.productionItem.quantity ??
+                                                          0)),
+                                            ),
+                                        newValue: formatLargeNumberDouble(
+                                          widget
+                                              .productionItem
+                                              .getProductUnit()
+                                              .getQuantityEquivDivided(
+                                                index: 2,
+                                                newQuantity:
+                                                    setQuantity(),
+                                              ),
+                                        ),
+                                        oldValue: formatLargeNumberDouble(
+                                          widget
+                                              .productionItem
+                                              .getProductUnit()
+                                              .getQuantityEquivDivided(
+                                                index: 2,
+                                                newQuantity:
+                                                    (widget.productionItem.quantity ??
+                                                        0),
+                                              ),
+                                        ),
                                       );
 
                                       await productionItemsProvider.updateProductionItem(
@@ -536,11 +509,14 @@ class _UpdateProductionItemQuantityWidgetState
                                             true,
                                         quantityChange:
                                             (setQuantity() -
-                                                (widget
-                                                        .productionItem
-                                                        .quantity ??
-                                                    0)),
+                                                    (widget.productionItem.quantity ??
+                                                        0))
+                                                .abs(),
                                         productionItem: ProductionItem(
+                                          unitsList:
+                                              widget
+                                                  .productionItem
+                                                  .unitsList,
                                           useGroupUnit:
                                               widget
                                                   .productionItem

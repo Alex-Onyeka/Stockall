@@ -318,6 +318,7 @@ class MaterialsUsageProvider extends ChangeNotifier {
                 isIncreased: true,
               );
           await returnMaterialsProvider().updateMaterial(
+            isMultipleUpdate: false,
             material: newMaterial,
             isQuantityUpdate: true,
             includeQuantity: true,

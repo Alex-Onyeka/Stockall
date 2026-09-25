@@ -174,6 +174,7 @@ class QuantityWidgetProductDetails extends StatelessWidget {
                 formatLargeNumberDouble(
                   unit.getQuantityEquivDivided(
                     context: context,
+                    index: 1,
                   ),
                 ),
               ),

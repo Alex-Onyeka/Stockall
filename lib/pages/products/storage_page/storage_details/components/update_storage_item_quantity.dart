@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_departments_class/department_class.dart';
-import 'package:stockall/classes/temp_inventory_updates/temp_inventory_update_class.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_storage_item_history/storage_item_history.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -9,13 +10,14 @@ import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
-import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/product_details/platforms/components/item_comment_widget.dart';
+import 'package:stockall/pages/products/product_details/platforms/components/unit_selection_widget.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
-void updateStorageQuantity({
+void updateStorageItemQuantity({
   required TempStorageProducts storageProduct,
   required BuildContext context,
   required ThemeProvider theme,
@@ -30,7 +32,7 @@ void updateStorageQuantity({
               theme: theme,
               message: 'Enter Details',
               title:
-                  'Update ${returnStorageProductProvider().unitText(storageProduct: storageProduct)} Quantity',
+                  'Update ${storageProduct.getProductUnit().name} Quantity',
               topRightWidget:
                   returnStorageProductProvider(
                         context: context,
@@ -56,9 +58,9 @@ void updateStorageQuantity({
       );
     },
   ).then((_) {
-    returnStorageProductProvider().toggleGroupUnit(
-      value: false,
-    );
+    // returnStorageProductProvider().toggleGroupUnit(
+    //   value: false,
+    // );
   });
 }
 
@@ -77,24 +79,44 @@ class StorageQuantityUpdateWidget extends StatefulWidget {
 class _StorageQuantityUpdateWidgetState
     extends State<StorageQuantityUpdateWidget> {
   final quantityController = TextEditingController();
+  final commentController = TextEditingController();
   int currentIndex = 0;
   String? productUuid;
   String? staffUuid;
+  String? unitUuid;
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.storageProduct.useGroupUnit == true) {
-        returnStorageProductProvider().toggleGroupUnit(
-          value: true,
-        );
-      }
+      // if (widget.storageProduct.useGroupUnit == true) {
+      //   returnStorageProductProvider().toggleGroupUnit(
+      //     value: true,
+      //   );
+      // }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
+    TempProductClass? product() {
+      if (currentIndex == 0 && productUuid != null) {
+        return returnData().productListMain
+            .where((pro) => pro.uuid == productUuid)
+            .first;
+      } else {
+        return null;
+      }
+    }
+
+    TempStorageProducts? storageP() {
+      if (currentIndex == 0 && productUuid != null) {
+        return null;
+      } else {
+        return widget.storageProduct;
+      }
+    }
+
     return Column(
       spacing: 10,
       mainAxisSize: MainAxisSize.min,
@@ -127,41 +149,9 @@ class _StorageQuantityUpdateWidgetState
                   productUuid = null;
                   staffUuid = null;
                 });
-                if (!returnStorageProductProvider()
-                    .isGroupUnit) {
-                  if (((widget.storageProduct.quantity ??
-                              0) -
-                          ((double.tryParse(
-                                (quantityController.text
-                                    .replaceAll(',', '')),
-                              ) ??
-                              0)) <
-                      0)) {
-                    setState(() {
-                      quantityController.text = '0';
-                    });
-                  }
-                } else {
-                  if (((widget.storageProduct.quantity ??
-                              0) -
-                          ((double.tryParse(
-                                    (quantityController.text
-                                        .replaceAll(
-                                          ',',
-                                          '',
-                                        )),
-                                  ) ??
-                                  0) *
-                              (widget
-                                      .storageProduct
-                                      .qttyPerGroup ??
-                                  0)) <
-                      0)) {
-                    setState(() {
-                      quantityController.text = '0';
-                    });
-                  }
-                }
+                setState(() {
+                  quantityController.text = '0';
+                });
               },
             ),
             ToggleButton(
@@ -179,103 +169,24 @@ class _StorageQuantityUpdateWidgetState
             ),
           ],
         ),
-        Visibility(
-          visible:
-              widget.storageProduct.useGroupUnit == true,
-          child: Column(
-            children: [
-              SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20.0,
-                ),
-                child: Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      'Update Group Quantity?',
-                    ),
-                    MyToggleButton(
-                      // isSmall: true,
-                      boolValue:
-                          returnStorageProductProvider()
-                              .isGroupUnit,
-                      toggle: () {
-                        returnStorageProductProvider()
-                            .toggleGroupUnit(
-                              value:
-                                  returnStorageProductProvider()
-                                          .isGroupUnit
-                                      ? false
-                                      : true,
-                            );
-                        if (currentIndex == 1) {
-                          if (!returnStorageProductProvider()
-                              .isGroupUnit) {
-                            if (((widget
-                                            .storageProduct
-                                            .quantity ??
-                                        0) -
-                                    (double.tryParse(
-                                          (quantityController
-                                              .text
-                                              .replaceAll(
-                                                ',',
-                                                '',
-                                              )),
-                                        ) ??
-                                        0) <
-                                0)) {
-                              setState(() {
-                                quantityController.text =
-                                    '0';
-                              });
-                            }
-                          } else {
-                            if (((widget
-                                            .storageProduct
-                                            .quantity ??
-                                        0) -
-                                    (((double.tryParse(
-                                              (quantityController
-                                                  .text
-                                                  .replaceAll(
-                                                    ',',
-                                                    '',
-                                                  )),
-                                            )) ??
-                                            0) *
-                                        (widget
-                                                .storageProduct
-                                                .qttyPerGroup ??
-                                            0)) <
-                                0)) {
-                              setState(() {
-                                quantityController.text =
-                                    '0';
-                              });
-                            }
-                          }
-                        }
-                      },
-                      theme: theme,
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 2),
-            ],
-          ),
+        UnitSelectionWidget(
+          material: null,
+          productionItem: null,
+          product: product(),
+          storageProduct: storageP(),
+          setUnitUuid: (uuid) {
+            setState(() {
+              unitUuid = uuid;
+            });
+          },
+          theme: theme,
+          unitUuid: unitUuid,
         ),
 
         EditCartTextField(
           title: 'Quantity',
           hint:
-              'Enter ${returnStorageProductProvider().unitText(storageProduct: widget.storageProduct)} Quantity',
+              'Enter ${widget.storageProduct.getProductUnit(unitUuid: unitUuid).name} Quantity',
           controller: quantityController,
           theme: theme,
           showTitle: false,
@@ -286,65 +197,31 @@ class _StorageQuantityUpdateWidgetState
                   .where((pro) => pro.uuid == productUuid);
               if (tempProducts.isNotEmpty) {
                 var pro = tempProducts.first;
-                if (!returnStorageProductProvider()
-                    .isGroupUnit) {
-                  if ((pro.quantity ?? 0) <
-                      (double.tryParse(
-                            (quantityController.text
-                                .replaceAll(',', '')),
-                          ) ??
-                          0)) {
-                    setState(() {
-                      quantityController.text = '';
-                    });
-                  }
-                } else {
-                  if ((pro.quantity ?? 0) <
-                      (((double.tryParse(
-                                (quantityController.text
-                                    .replaceAll(',', '')),
-                              )) ??
-                              0) *
-                          (widget
-                                  .storageProduct
-                                  .qttyPerGroup ??
-                              0))) {
-                    setState(() {
-                      quantityController.text = '';
-                    });
-                  }
+                if (pro
+                        .getProductUnit(unitUuid: unitUuid)
+                        .getQuantityEquivMultiplied(
+                          index: 1,
+                          newQuantity: double.tryParse(
+                            quantityController.text
+                                .replaceAll(',', ''),
+                          ),
+                        ) >
+                    (pro.quantity ?? 0)) {
+                  quantityController.text = '0';
                 }
               }
             } else if (currentIndex == 1) {
-              if (!returnStorageProductProvider()
-                  .isGroupUnit) {
-                if (((widget.storageProduct.quantity ?? 0) -
-                        (double.tryParse(
-                              (quantityController.text
-                                  .replaceAll(',', '')),
-                            ) ??
-                            0) <
-                    0)) {
-                  setState(() {
-                    quantityController.text = '';
-                  });
-                }
-              } else {
-                if (((widget.storageProduct.quantity ?? 0) -
-                        (((double.tryParse(
-                                  (quantityController.text
-                                      .replaceAll(',', '')),
-                                )) ??
-                                0) *
-                            (widget
-                                    .storageProduct
-                                    .qttyPerGroup ??
-                                0)) <
-                    0)) {
-                  setState(() {
-                    quantityController.text = '';
-                  });
-                }
+              if (widget.storageProduct
+                      .getProductUnit(unitUuid: unitUuid)
+                      .getQuantityEquivMultiplied(
+                        index: 4,
+                        newQuantity: double.tryParse(
+                          quantityController.text
+                              .replaceAll(',', ''),
+                        ),
+                      ) >
+                  (widget.storageProduct.quantity ?? 0)) {
+                quantityController.text = '0';
               }
             }
           },
@@ -768,6 +645,10 @@ class _StorageQuantityUpdateWidgetState
             ],
           ),
         ),
+        ItemCommentWidget(
+          commentController: commentController,
+        ),
+        SizedBox(height: 10),
         Row(
           spacing: 15,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -814,9 +695,8 @@ class _StorageQuantityUpdateWidgetState
                   mouseCursor: SystemMouseCursors.click,
                   onTap: () {
                     if (quantityController
-                            .text
-                            .isNotEmpty ||
-                        currentIndex == 2) {
+                        .text
+                        .isNotEmpty) {
                       if (currentIndex == 1 &&
                           productUuid == null) {
                         showDialog(
@@ -838,193 +718,115 @@ class _StorageQuantityUpdateWidgetState
                           return ConfirmationAlert(
                             theme: theme,
                             message:
-                                'You are about to ${quantityController.text.isEmpty || quantityController.text == '0' ? 'Clear' : 'Update'} the ${returnStorageProductProvider().unitText(storageProduct: widget.storageProduct)} quantity of This item in Storage. Are you sure you want to proceed?',
+                                'You are about to ${quantityController.text.isEmpty || quantityController.text == '0' ? 'Clear' : 'Update'} the quantity of This item in Storage. Are you sure you want to proceed?',
                             title:
-                                '${quantityController.text.isEmpty || quantityController.text == '0' ? 'Clear' : 'Update'} ${returnStorageProductProvider().unitText(storageProduct: widget.storageProduct)} Stock',
+                                '${quantityController.text.isEmpty || quantityController.text == '0' ? 'Clear' : 'Update'} Stock',
                             action: () async {
-                              double? tempQtty;
+                              double? storageNewQuantity;
                               TempStorageProducts
                               newProduct =
-                                  TempStorageProducts(
-                                    useGroupUnit:
-                                        widget
-                                            .storageProduct
-                                            .useGroupUnit,
-                                    shopId: shopId(),
-                                    name:
-                                        widget
-                                            .storageProduct
-                                            .name,
-                                    createdAt:
-                                        widget
-                                            .storageProduct
-                                            .createdAt,
-                                    desc:
-                                        widget
-                                            .storageProduct
-                                            .desc,
-                                    groupUnit:
-                                        widget
-                                            .storageProduct
-                                            .groupUnit,
-                                    quantity:
-                                        widget
-                                            .storageProduct
-                                            .quantity,
-                                    unit:
-                                        widget
-                                            .storageProduct
-                                            .unit,
-                                    updatedAt:
-                                        DateTime.now(),
-                                    uuid:
-                                        widget
-                                            .storageProduct
-                                            .uuid,
-                                    qttyPerGroup:
-                                        widget
-                                            .storageProduct
-                                            .qttyPerGroup,
-                                    costPrice:
-                                        widget
-                                            .storageProduct
-                                            .costPrice,
-                                    sellingPrice:
-                                        widget
-                                            .storageProduct
-                                            .sellingPrice,
-                                  );
+                                  widget.storageProduct
+                                      .copyWith();
+
                               Navigator.of(
                                 actionContext,
                               ).pop();
+
                               returnStorageProductProvider()
                                   .toggleIsLoading(true);
+
+                              double enteredQuantity =
+                                  (double.tryParse(
+                                        quantityController
+                                            .text
+                                            .replaceAll(
+                                              ',',
+                                              '',
+                                            ),
+                                      ) ??
+                                      0);
+
                               if (currentIndex == 0) {
-                                if (returnStorageProductProvider()
-                                    .isGroupUnit) {
-                                  tempQtty =
-                                      ((widget
-                                                  .storageProduct
-                                                  .quantity ??
-                                              0) +
-                                          (((double.tryParse(
-                                                    quantityController
-                                                        .text
-                                                        .replaceAll(
-                                                          ',',
-                                                          '',
-                                                        ),
-                                                  ) ??
-                                                  0)) *
-                                              (widget
-                                                      .storageProduct
-                                                      .qttyPerGroup ??
-                                                  1)));
-                                } else {
-                                  tempQtty =
-                                      ((widget
-                                                  .storageProduct
-                                                  .quantity ??
-                                              0) +
-                                          ((double.tryParse(
-                                                quantityController
-                                                    .text
-                                                    .replaceAll(
-                                                      ',',
-                                                      '',
-                                                    ),
-                                              ) ??
-                                              0)));
+                                double equivQuantity() {
+                                  if (productUuid == null) {
+                                    return widget
+                                        .storageProduct
+                                        .getProductUnit(
+                                          unitUuid:
+                                              unitUuid,
+                                        )
+                                        .getQuantityEquivMultiplied(
+                                          index: 4,
+                                          newQuantity:
+                                              enteredQuantity,
+                                        );
+                                  } else {
+                                    return returnData()
+                                        .productListMain
+                                        .firstWhere(
+                                          (item) =>
+                                              item.uuid ==
+                                              productUuid,
+                                        )
+                                        .getProductUnit(
+                                          unitUuid:
+                                              unitUuid,
+                                        )
+                                        .getQuantityEquivMultiplied(
+                                          index: 1,
+                                          newQuantity:
+                                              enteredQuantity,
+                                        );
+                                  }
                                 }
-                              } else if (currentIndex ==
-                                  1) {
-                                if (returnStorageProductProvider()
-                                    .isGroupUnit) {
-                                  tempQtty =
-                                      ((widget
-                                                  .storageProduct
-                                                  .quantity ??
-                                              0) -
-                                          (((double.tryParse(
-                                                    quantityController
-                                                        .text
-                                                        .replaceAll(
-                                                          ',',
-                                                          '',
-                                                        ),
-                                                  ) ??
-                                                  0)) *
-                                              (widget
-                                                      .storageProduct
-                                                      .qttyPerGroup ??
-                                                  1)));
-                                } else {
-                                  tempQtty =
-                                      ((widget
-                                                  .storageProduct
-                                                  .quantity ??
-                                              0) -
-                                          ((double.tryParse(
-                                                quantityController
-                                                    .text
-                                                    .replaceAll(
-                                                      ',',
-                                                      '',
-                                                    ),
-                                              ) ??
-                                              0)));
-                                }
-                              } else {
-                                if (returnStorageProductProvider()
-                                    .isGroupUnit) {
-                                  tempQtty =
-                                      ((double.tryParse(
-                                            quantityController
-                                                .text
-                                                .replaceAll(
-                                                  ',',
-                                                  '',
-                                                ),
-                                          ) ??
-                                          0)) *
-                                      (widget
-                                              .storageProduct
-                                              .qttyPerGroup ??
-                                          1);
-                                } else {
-                                  tempQtty =
-                                      (((double.tryParse(
-                                            quantityController
-                                                .text
-                                                .replaceAll(
-                                                  ',',
-                                                  '',
-                                                ),
-                                          ) ??
-                                          0)));
-                                }
-                              }
-                              newProduct.quantity =
-                                  tempQtty;
-                              double qttyChange =
-                                  (widget
-                                          .storageProduct
-                                          .quantity ??
-                                      0) -
-                                  tempQtty;
-                              var res = await returnStorageProductProvider()
-                                  .updateProduct(
-                                    product: newProduct,
-                                    isQuantityUpdate: true,
-                                    quantityChange:
-                                        qttyChange,
-                                    isIncrement:
-                                        (widget
+
+                                storageNewQuantity =
+                                    ((widget
                                                 .storageProduct
                                                 .quantity ??
-                                            0) <
-                                        tempQtty,
-                                  );
+                                            0) +
+                                        equivQuantity());
+                              } else if (currentIndex ==
+                                  1) {
+                                double
+                                equivQuantity = widget
+                                    .storageProduct
+                                    .getProductUnit(
+                                      unitUuid: unitUuid,
+                                    )
+                                    .getQuantityEquivMultiplied(
+                                      index: 4,
+                                      newQuantity:
+                                          enteredQuantity,
+                                    );
+                                storageNewQuantity =
+                                    (widget
+                                            .storageProduct
+                                            .quantity ??
+                                        0) -
+                                    equivQuantity;
+                              } else {
+                                double
+                                equivQuantity = widget
+                                    .storageProduct
+                                    .getProductUnit(
+                                      unitUuid: unitUuid,
+                                    )
+                                    .getQuantityEquivMultiplied(
+                                      index: 4,
+                                      newQuantity:
+                                          enteredQuantity,
+                                    );
+                                storageNewQuantity =
+                                    equivQuantity;
+                              }
+                              newProduct.quantity =
+                                  storageNewQuantity;
+
+                              //
+                              //
+                              //
+
                               var prs = returnData()
                                   .productListMain
                                   .where((pr) {
@@ -1035,60 +837,74 @@ class _StorageQuantityUpdateWidgetState
                                         pr.uuid ==
                                             productUuid;
                                   });
-                              final original =
+                              final originalProduct =
                                   prs.isNotEmpty
                                       ? prs.first
                                       : null;
 
-                              final oldQuantity =
-                                  original?.quantity ?? 0;
+                              final salesOldQuantity =
+                                  originalProduct
+                                      ?.quantity ??
+                                  0;
+
                               final storageOldQty =
                                   widget
                                       .storageProduct
                                       .quantity ??
                                   0;
+                              double qttyChange = widget
+                                  .storageProduct
+                                  .getProductUnit(
+                                    unitUuid: unitUuid,
+                                  )
+                                  .getQuantityEquivMultiplied(
+                                    index: 4,
+                                    newQuantity:
+                                        storageNewQuantity -
+                                        storageOldQty,
+                                  );
 
                               final newPr =
-                                  original?.copyWith();
+                                  originalProduct
+                                      ?.copyWith();
 
-                              final inputQty =
-                                  returnStorageProductProvider()
-                                          .isGroupUnit
-                                      ? ((double.tryParse(
-                                                quantityController
-                                                    .text
-                                                    .replaceAll(
-                                                      ',',
-                                                      '',
-                                                    ),
-                                              ) ??
-                                              0) *
-                                          (widget
-                                                  .storageProduct
-                                                  .qttyPerGroup ??
-                                              1))
-                                      : (double.tryParse(
-                                            quantityController
-                                                .text
-                                                .replaceAll(
-                                                  ',',
-                                                  '',
-                                                ),
-                                          ) ??
-                                          0);
+                              double
+                              equivQuantityForProduct = 0;
+                              if (currentIndex == 0 &&
+                                  productUuid != null) {
+                                equivQuantityForProduct =
+                                    newPr
+                                        ?.getProductUnit(
+                                          unitUuid:
+                                              unitUuid,
+                                        )
+                                        .getQuantityEquivMultiplied(
+                                          index: 1,
+                                          newQuantity:
+                                              enteredQuantity,
+                                        ) ??
+                                    0;
+                                newPr?.quantity =
+                                    (newPr.quantity ?? 0) -
+                                    equivQuantityForProduct;
+                              } else if (currentIndex ==
+                                  1) {
+                                equivQuantityForProduct = widget
+                                    .storageProduct
+                                    .getProductUnit(
+                                      unitUuid: unitUuid,
+                                    )
+                                    .getQuantityEquivMultiplied(
+                                      index: 4,
+                                      newQuantity:
+                                          enteredQuantity,
+                                    );
+                                newPr?.quantity =
+                                    (newPr.quantity ?? 0) +
+                                    equivQuantityForProduct;
+                              }
 
-                              newPr?.quantity =
-                                  (currentIndex == 0 &&
-                                          productUuid !=
-                                              null)
-                                      ? (newPr.quantity ??
-                                              0) -
-                                          inputQty
-                                      : (newPr.quantity ??
-                                              0) +
-                                          inputQty;
-
-                              final newQuantity =
+                              final salesNewQuantity =
                                   newPr?.quantity ?? 0;
 
                               if ((currentIndex != 2) &&
@@ -1097,21 +913,74 @@ class _StorageQuantityUpdateWidgetState
                                 itemHistory = ItemHistory(
                                   shopId: shopId(),
                                   isIncreased:
-                                      newQuantity >
-                                      oldQuantity,
-                                  oldValue:
-                                      oldQuantity
-                                          .toString(),
+                                      salesNewQuantity >
+                                      salesOldQuantity,
+                                  oldValue: formatLargeNumberDouble(
+                                    newPr
+                                        .getProductUnit()
+                                        .getQuantityEquivDivided(
+                                          index: 1,
+                                          newQuantity:
+                                              salesOldQuantity,
+                                        ),
+                                  ),
                                   desc:
-                                      'Item ${(newQuantity > oldQuantity) ? "Received From" : 'Returned To'} Storage',
+                                      'Item ${(salesNewQuantity > salesOldQuantity) ? "Received From" : 'Returned To'} Storage',
                                   title:
-                                      'Item ${(newQuantity > oldQuantity) ? "Received From" : 'Returned To'} Storage.',
+                                      'Item ${(salesNewQuantity > salesOldQuantity) ? "Received From" : 'Returned To'} Storage.',
                                   quantityChange:
-                                      newQuantity -
-                                      oldQuantity,
-                                  newValue:
-                                      newPr.quantity
-                                          ?.toString(),
+                                      product() != null
+                                          ? newPr
+                                              .getProductUnit(
+                                                unitUuid:
+                                                    unitUuid,
+                                              )
+                                              .getQuantityEquivDivided(
+                                                index: 1,
+                                                newQuantity:
+                                                    salesNewQuantity -
+                                                    salesOldQuantity,
+                                              )
+                                          : widget
+                                              .storageProduct
+                                              .getProductUnit(
+                                                unitUuid:
+                                                    unitUuid,
+                                              )
+                                              .getQuantityEquivDivided(
+                                                index: 4,
+                                                newQuantity:
+                                                    salesNewQuantity -
+                                                    salesOldQuantity,
+                                              ),
+                                  newValue: formatLargeNumberDouble(
+                                    newPr
+                                        .getProductUnit()
+                                        .getQuantityEquivDivided(
+                                          index: 1,
+                                          newQuantity:
+                                              salesNewQuantity,
+                                        ),
+                                  ),
+                                  primaryUnit:
+                                      newPr
+                                          .getProductUnit()
+                                          .name,
+                                  unit:
+                                      product() == null
+                                          ? widget
+                                              .storageProduct
+                                              .getProductUnit(
+                                                unitUuid:
+                                                    unitUuid,
+                                              )
+                                              .name
+                                          : newPr
+                                              .getProductUnit(
+                                                unitUuid:
+                                                    unitUuid,
+                                              )
+                                              .name,
                                 );
                                 await returnData()
                                     .updateProduct(
@@ -1120,13 +989,13 @@ class _StorageQuantityUpdateWidgetState
                                       includeQuantity:
                                           false,
                                       isIncrement:
-                                          newQuantity >
-                                          oldQuantity,
+                                          salesNewQuantity >
+                                          salesOldQuantity,
                                       isQuantityUpdate:
                                           true,
                                       quantityChange:
-                                          newQuantity -
-                                          oldQuantity,
+                                          salesNewQuantity -
+                                          salesOldQuantity,
                                       product: newPr,
                                     );
                               }
@@ -1156,7 +1025,31 @@ class _StorageQuantityUpdateWidgetState
                                   usersTemp.isNotEmpty
                                       ? usersTemp.first
                                       : null;
-                              var newUpdate = TempInventoryUpdateClass(
+                              String desc() {
+                                if (commentController
+                                    .text
+                                    .isNotEmpty) {
+                                  return commentController
+                                      .text
+                                      .trim();
+                                } else {
+                                  if (currentIndex == 0) {
+                                    if (productUuid ==
+                                        null) {
+                                      return 'Stock In';
+                                    } else {
+                                      return 'Item Returned';
+                                    }
+                                  } else if (currentIndex ==
+                                      1) {
+                                    return 'Stock Out';
+                                  } else {
+                                    return 'Stock Updated';
+                                  }
+                                }
+                              }
+
+                              var storageItemHistory = StorageItemHistory(
                                 shopId: shopId(),
                                 title:
                                     currentIndex == 0 &&
@@ -1172,49 +1065,145 @@ class _StorageQuantityUpdateWidgetState
                                         ? 'Stock Out'
                                         : 'Stock Updated',
                                 createdAt: DateTime.now(),
-                                departmentName:
-                                    returnDepartmentProvider()
-                                        .currentDepartment()
-                                        ?.name,
-                                departmentUuid:
-                                    returnDepartmentProvider()
-                                        .currentDepartment()
-                                        ?.uuid,
-                                departmentNameTwo:
+                                salesDepartmentName:
                                     department?.name,
-                                departmentUuidTwo:
+                                salesDepartmentUuid:
                                     department?.uuid,
-                                itemName:
+                                storageItemName:
                                     widget
                                         .storageProduct
                                         .name,
-                                itemUuid:
+                                storageItemUuid:
                                     widget
                                         .storageProduct
                                         .uuid,
-                                staffId:
+                                storageStaffId:
                                     currentUser().userId,
-                                staffName:
+                                storageStaffName:
                                     currentUser().name,
-                                staffIdTwo: user?.userId,
-                                staffNameTwo: user?.name,
-                                oldValue:
-                                    storageOldQty
-                                        .toString(),
-                                newValue:
-                                    tempQtty.toString(),
+                                salesStaffUuid:
+                                    user?.userId,
+                                salesStaffName: user?.name,
+                                storageItemOldValue:
+                                    formatLargeNumberDouble(
+                                      widget.storageProduct
+                                          .getProductUnit()
+                                          .getQuantityEquivDivided(
+                                            index: 4,
+                                            newQuantity:
+                                                storageOldQty,
+                                          ),
+                                    ),
+                                storageItemNewValue:
+                                    formatLargeNumberDouble(
+                                      widget.storageProduct
+                                          .getProductUnit()
+                                          .getQuantityEquivDivided(
+                                            index: 4,
+                                            newQuantity:
+                                                storageNewQuantity,
+                                          ),
+                                    ),
                                 uuid: uuidGen(),
-                                itemTwoOldValue:
-                                    oldQuantity.toString(),
-                                itemTwoNewValue:
-                                    newQuantity.toString(),
-                                itemTwoUuid: productUuid,
+                                salesItemOldValue:
+                                    productUuid == null
+                                        ? null
+                                        : formatLargeNumberDouble(
+                                          salesOldQuantity,
+                                        ),
+                                salesItemNewValue:
+                                    productUuid == null
+                                        ? null
+                                        : formatLargeNumberDouble(
+                                          salesNewQuantity,
+                                        ),
+                                salesItemUuid: productUuid,
+                                salesItemName: newPr?.name,
+                                quantityChange:
+                                    product() == null
+                                        ? widget
+                                            .storageProduct
+                                            .getProductUnit(
+                                              unitUuid:
+                                                  unitUuid,
+                                            )
+                                            .getQuantityEquivDivided(
+                                              index: 4,
+                                              newQuantity:
+                                                  (storageNewQuantity -
+                                                      storageOldQty),
+                                            )
+                                        : newPr
+                                            ?.getProductUnit(
+                                              unitUuid:
+                                                  unitUuid,
+                                            )
+                                            .getQuantityEquivDivided(
+                                              index: 1,
+                                              newQuantity:
+                                                  (storageNewQuantity -
+                                                      storageOldQty),
+                                            ),
+                                isIncreased:
+                                    storageNewQuantity >
+                                    storageOldQty,
+                                desc: desc(),
+                                salesPrimaryUnit:
+                                    newPr
+                                        ?.getProductUnit()
+                                        .name,
+                                salesUnit:
+                                    product() == null
+                                        ? widget
+                                            .storageProduct
+                                            .getProductUnit(
+                                              unitUuid:
+                                                  unitUuid,
+                                            )
+                                            .name
+                                        : newPr
+                                            ?.getProductUnit(
+                                              unitUuid:
+                                                  unitUuid,
+                                            )
+                                            .name,
+                                storagePrimaryUnit:
+                                    widget.storageProduct
+                                        .getProductUnit()
+                                        .name,
+                                storageUnit:
+                                    product() == null
+                                        ? widget
+                                            .storageProduct
+                                            .getProductUnit(
+                                              unitUuid:
+                                                  unitUuid,
+                                            )
+                                            .name
+                                        : newPr
+                                            ?.getProductUnit(
+                                              unitUuid:
+                                                  unitUuid,
+                                            )
+                                            .name,
                               );
 
-                              await returnInventoryUpdatesProvider()
-                                  .createInventoryUpdate(
-                                    newUpdate,
+                              var res = await returnStorageProductProvider()
+                                  .updateProduct(
+                                    product: newProduct,
+                                    isQuantityUpdate: true,
+                                    quantityChange:
+                                        qttyChange,
+                                    isIncrement:
+                                        (widget
+                                                .storageProduct
+                                                .quantity ??
+                                            0) <
+                                        storageNewQuantity,
+                                    storageItemHistory:
+                                        storageItemHistory,
                                   );
+
                               returnStorageProductProvider()
                                   .toggleIsLoading(false);
                               if (res == 0) {

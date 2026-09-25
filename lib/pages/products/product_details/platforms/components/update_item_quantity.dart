@@ -163,7 +163,7 @@ class _UpdateItemQuantityWidgetState
                               widget.product.quantity ==
                                       null
                                   ? 'Quantity Not Set'
-                                  : 'Current Quantity in ${widget.product.getProductUnit(unitUuid: unitUuid).name}: ${formatLargeNumberDouble(widget.product.getProductUnit(unitUuid: unitUuid).getQuantityEquivDivided(context: context))}',
+                                  : 'Current Quantity in ${widget.product.getProductUnit(unitUuid: unitUuid).name}: ${formatLargeNumberDouble(widget.product.getProductUnit(unitUuid: unitUuid).getQuantityEquivDivided(index: 1, context: context))}',
                             ),
                             EditCartTextField(
                               onChanged: (value) {
@@ -193,6 +193,9 @@ class _UpdateItemQuantityWidgetState
                         ),
                         SizedBox(height: 20),
                         UnitSelectionWidget(
+                          storageProduct: null,
+                          material: null,
+                          productionItem: null,
                           product: widget.product,
                           setUnitUuid: (uuid) {
                             setState(() {
@@ -394,6 +397,8 @@ class _UpdateItemQuantityWidgetState
                                                         unitUuid,
                                                   )
                                                   .getQuantityEquivMultiplied(
+                                                    index:
+                                                        1,
                                                     newQuantity: double.parse(
                                                       quantityController.text.replaceAll(
                                                         ',',
@@ -413,6 +418,7 @@ class _UpdateItemQuantityWidgetState
                                                     unitUuid,
                                               )
                                               .getQuantityEquivMultiplied(
+                                                index: 1,
                                                 newQuantity: double.parse(
                                                   quantityController
                                                       .text
@@ -454,6 +460,7 @@ class _UpdateItemQuantityWidgetState
                                                   unitUuid,
                                             )
                                             .getQuantityEquivDivided(
+                                              index: 1,
                                               newQuantity:
                                                   (setQuantity() -
                                                       (widget.product.quantity ??
@@ -463,6 +470,7 @@ class _UpdateItemQuantityWidgetState
                                             widget.product
                                                 .getProductUnit()
                                                 .getQuantityEquivDivided(
+                                                  index: 1,
                                                   newQuantity:
                                                       setQuantity(),
                                                 )
@@ -480,6 +488,7 @@ class _UpdateItemQuantityWidgetState
                                             widget.product
                                                 .getProductUnit()
                                                 .getQuantityEquivDivided(
+                                                  index: 1,
                                                   newQuantity:
                                                       (widget.product.quantity ??
                                                           0),

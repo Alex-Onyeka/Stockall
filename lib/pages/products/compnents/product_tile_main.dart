@@ -494,7 +494,11 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                     .shade700,
                                       ),
                                       widget.product
-                                          .getQuantityText(),
+                                          .getQuantityText(
+                                            index: 1,
+                                            context:
+                                                context,
+                                          ),
                                     ),
                                   ),
                                 ),

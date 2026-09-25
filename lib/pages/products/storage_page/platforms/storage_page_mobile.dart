@@ -14,6 +14,7 @@ import 'package:stockall/pages/products/storage_page/components/summary_table_he
 import 'package:stockall/pages/products/storage_page/components/table_row_widget.dart';
 import 'package:stockall/pages/products/storage_page/platforms/storage_page_desktop.dart';
 import 'package:stockall/pages/products/storage_page/storage_details/storage_details_page.dart';
+import 'package:stockall/pages/products/storage_page/storage_item_history_page/item_history_page.dart';
 import 'package:stockall/pages/report/events_log/platforms/events_log_mobile.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -247,12 +248,18 @@ class _StoragePageMobileState
                                   .viewItemsHistory,
                         ),
                         onTap: () {
-                          setState(() {
-                            sortIndex = 3;
-                          });
-                          searchController.clear();
-                          returnInventoryUpdatesProvider()
+                          returnStorageItemHistoryProvider()
                               .clearDate();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return StorageItemHistoryPage(
+                                  fromItemDetails: false,
+                                );
+                              },
+                            ),
+                          );
                         },
                         child: Text(
                           style: TextStyle(
@@ -330,19 +337,7 @@ class _StoragePageMobileState
                                       Axis.horizontal,
                                   children: [
                                     SizedBox(
-                                      width:
-                                          screenWidth(
-                                                    context,
-                                                  ) >
-                                                  mobileScreenSmall
-                                              ? screenWidth(
-                                                    context,
-                                                  ) -
-                                                  20
-                                              : screenWidth(
-                                                    context,
-                                                  ) +
-                                                  100,
+                                      width: 700,
                                       child: RefreshIndicator(
                                         onRefresh: () {
                                           return getProducts();
@@ -451,111 +446,9 @@ class _StoragePageMobileState
                                     ),
                                   ],
                                 );
-                              } else if (sortIndex == 2) {
+                              } else {
                                 return StorageSummaryWidgetMobile(
                                   theme: theme,
-                                );
-                              } else {
-                                return SizedBox(
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        width:
-                                            double.infinity,
-                                        height: 1.5,
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade200,
-                                      ),
-                                      SizedBox(height: 15),
-                                      Builder(
-                                        builder: (context) {
-                                          if (returnInventoryUpdatesProvider(
-                                                context:
-                                                    context,
-                                              )
-                                              .returnInventoryUpdates()
-                                              .where(
-                                                (update) =>
-                                                    update.itemName?.toLowerCase().contains(
-                                                          searchController.text.toLowerCase(),
-                                                        ) ==
-                                                        true ||
-                                                    update
-                                                        .title
-                                                        .toLowerCase()
-                                                        .contains(
-                                                          searchController.text.toLowerCase(),
-                                                        ),
-                                              )
-                                              .isEmpty) {
-                                            return Padding(
-                                              padding:
-                                                  EdgeInsetsGeometry.only(
-                                                    top:
-                                                        100,
-                                                  ),
-                                              child: EmptyWidgetDisplayOnly(
-                                                title:
-                                                    'No History Recorded',
-                                                subText:
-                                                    'No History Has been recorded for this day.',
-                                                theme:
-                                                    theme,
-                                                height: 30,
-                                                altIcon:
-                                                    Icons
-                                                        .refresh,
-                                                altActionText:
-                                                    'Refresh History',
-                                                icon:
-                                                    Icons
-                                                        .clear,
-                                                altAction:
-                                                    () async {
-                                                      await getProducts();
-                                                    },
-                                              ),
-                                            );
-                                          }
-                                          return Expanded(
-                                            child: ListView(
-                                              shrinkWrap:
-                                                  true,
-                                              children:
-                                                  returnInventoryUpdatesProvider(
-                                                        context:
-                                                            context,
-                                                      )
-                                                      .returnInventoryUpdates()
-                                                      .where(
-                                                        (
-                                                          update,
-                                                        ) =>
-                                                            update.itemName?.toLowerCase().contains(
-                                                                  searchController.text.toLowerCase(),
-                                                                ) ==
-                                                                true ||
-                                                            update.title.toLowerCase().contains(
-                                                              searchController.text.toLowerCase(),
-                                                            ),
-                                                      )
-                                                      .map(
-                                                        (
-                                                          update,
-                                                        ) => InventoryUpdateWidgetMobile(
-                                                          update:
-                                                              update,
-                                                        ),
-                                                      )
-                                                      .toList(),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ],
-                                  ),
                                 );
                               }
                             },

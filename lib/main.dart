@@ -65,6 +65,7 @@ import 'package:stockall/providers/report_provider.dart';
 import 'package:stockall/providers/sales_provider.dart';
 import 'package:stockall/providers/shop_dashboard_provider.dart';
 import 'package:stockall/providers/shop_provider.dart';
+import 'package:stockall/providers/storage_item_history_provider.dart';
 import 'package:stockall/providers/storage_product_provider.dart';
 import 'package:stockall/providers/sub_payment_provider.dart';
 import 'package:stockall/providers/sub_staff_provider.dart';
@@ -866,6 +867,15 @@ OrdersActionProvider returnOrdersActionProvider({
   }
 }
 
+StorageItemHistoryProvider
+returnStorageItemHistoryProvider({BuildContext? context}) {
+  if (context == null) {
+    return StorageItemHistoryProvider();
+  } else {
+    return Provider.of<StorageItemHistoryProvider>(context);
+  }
+}
+
 Widget colorWidget(
   Widget widget,
   bool isPrimary,
@@ -1068,6 +1078,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => OrdersActionProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => StorageItemHistoryProvider(),
         ),
       ],
       child: MaterialApp(

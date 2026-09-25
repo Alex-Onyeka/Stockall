@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_production_folder/temp_material_class/material_class.dart';
-import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -359,60 +358,9 @@ class _MaterialsTileMainState
                                           .grey
                                           .shade700,
                             ),
-                            widget.material.expiryDate !=
-                                    null
-                                ? getDayDifference(
-                                          widget
-                                                  .material
-                                                  .expiryDate ??
-                                              DateTime.now(),
-                                        ) >=
-                                        1
-                                    ? widget
-                                                .material
-                                                .quantity ==
-                                            0
-                                        ? 'Out of Stock'
-                                        : widget
-                                                .material
-                                                .quantity ==
-                                            null
-                                        ? 'Not Set'
-                                        : authorization(
-                                          authorized:
-                                              Authorizations()
-                                                  .viewItemQuantity,
-                                        )
-                                        ? formatLargeNumberDouble(
-                                          (widget
-                                                  .material
-                                                  .quantity ??
-                                              0),
-                                        )
-                                        : 'Restricted'
-                                    : 'Item Expired'
-                                : widget
-                                        .material
-                                        .quantity ==
-                                    0
-                                ? 'Out of Stock'
-                                : widget
-                                        .material
-                                        .quantity ==
-                                    null
-                                ? 'Not Set'
-                                : authorization(
-                                  authorized:
-                                      Authorizations()
-                                          .viewItemQuantity,
-                                )
-                                ? formatLargeNumberDouble(
-                                  (widget
-                                          .material
-                                          .quantity ??
-                                      0),
-                                )
-                                : 'Restricted',
+                            widget.material.getQuantityText(
+                              index: 3,
+                            ),
                           ),
                         ),
                       ),

@@ -6,8 +6,7 @@ part of 'production_item.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class ProductionItemAdapter
-    extends TypeAdapter<ProductionItem> {
+class ProductionItemAdapter extends TypeAdapter<ProductionItem> {
   @override
   final int typeId = 109;
 
@@ -15,8 +14,7 @@ class ProductionItemAdapter
   ProductionItem read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++)
-        reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ProductionItem(
       name: fields[1] as String,
@@ -38,13 +36,14 @@ class ProductionItemAdapter
       categoryUuid: fields[16] as String?,
       categories: (fields[17] as List?)?.cast<String>(),
       useGroupUnit: fields[18] as bool?,
+      unitsList: (fields[19] as List?)?.cast<ProductUnitsClass>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, ProductionItem obj) {
     writer
-      ..writeByte(19)
+      ..writeByte(20)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -82,7 +81,9 @@ class ProductionItemAdapter
       ..writeByte(17)
       ..write(obj.categories)
       ..writeByte(18)
-      ..write(obj.useGroupUnit);
+      ..write(obj.useGroupUnit)
+      ..writeByte(19)
+      ..write(obj.unitsList);
   }
 
   @override

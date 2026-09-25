@@ -11,13 +11,12 @@ import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
-import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/calculations.dart';
-import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/edit_button.dart';
+import 'package:stockall/pages/products/product_details/platforms/components/unit_selection_widget.dart';
 
 Future<Object?> transferMaterialsQuantity(
   BuildContext context,
@@ -50,48 +49,7 @@ class _TransferMaterialsQuantityWidgetState
     extends State<TransferMaterialsQuantityWidget> {
   bool isEditQuantityLoading = false;
   final quantityController = TextEditingController();
-  bool transferGroup = false;
-
-  String returnUnitText() {
-    if (transferGroup) {
-      return widget.materialsItem.groupUnit == null ||
-              widget.materialsItem.groupUnit == 'Others'
-          ? ''
-          : " Group(s)";
-    } else {
-      return widget.materialsItem.unit.isEmpty ||
-              widget.materialsItem.unit == 'Others'
-          ? ''
-          : " Unit(s)";
-    }
-  }
-
-  double returnGroupQuantity() {
-    if (transferGroup) {
-      return (widget.materialsItem.quantity ?? 0) /
-          (widget.materialsItem.qttyPerGroup ?? 1);
-    } else {
-      return (widget.materialsItem.quantity ?? 0);
-    }
-  }
-
-  double returnUnitQuantity(double value) {
-    if (transferGroup) {
-      return value *
-          (widget.materialsItem.qttyPerGroup ?? 0);
-    } else {
-      return value;
-    }
-  }
-
-  double returnActualQuantity() {
-    if (transferGroup) {
-      return (widget.materialsItem.quantity ?? 0) *
-          (widget.materialsItem.qttyPerGroup ?? 0);
-    } else {
-      return (widget.materialsItem.quantity ?? 0);
-    }
-  }
+  String? unitUuid;
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +119,7 @@ class _TransferMaterialsQuantityWidgetState
                                         .fontSize,
                                 fontWeight: FontWeight.bold,
                               ),
-                              'Transfer${returnUnitText()} Quantity',
+                              'Transfer ${widget.materialsItem.getProductUnit(unitUuid: unitUuid).name} Quantity',
                             ),
                             Builder(
                               builder: (context) {
@@ -216,7 +174,7 @@ class _TransferMaterialsQuantityWidgetState
                                           .quantity ==
                                       null
                                   ? 'Quantity Not Set'
-                                  : 'Current${returnUnitText()} Quantity : ${formatLargeNumberDouble(returnGroupQuantity())}',
+                                  : 'Current Quantity in ${widget.materialsItem.getProductUnit(unitUuid: unitUuid).name}: ${formatLargeNumberDouble(widget.materialsItem.getProductUnit(unitUuid: unitUuid).getQuantityEquivDivided(index: 3, context: context))}',
                             ),
                             EditCartTextField(
                               onChanged: (value) {
@@ -229,9 +187,16 @@ class _TransferMaterialsQuantityWidgetState
                                   var eValue = double.parse(
                                     quantityController.text,
                                   );
-                                  if (returnUnitQuantity(
-                                        eValue,
-                                      ) >
+                                  if (widget.materialsItem
+                                          .getProductUnit(
+                                            unitUuid:
+                                                unitUuid,
+                                          )
+                                          .getQuantityEquivMultiplied(
+                                            index: 3,
+                                            newQuantity:
+                                                eValue,
+                                          ) >
                                       (widget
                                               .materialsItem
                                               .quantity ??
@@ -244,7 +209,7 @@ class _TransferMaterialsQuantityWidgetState
                                 }
                               },
                               title:
-                                  '${returnUnitText()} Quantity',
+                                  '${widget.materialsItem.getProductUnit(unitUuid: unitUuid).name} Quantity',
                               hint: 'Enter Quantity Amount',
                               controller:
                                   quantityController,
@@ -253,59 +218,41 @@ class _TransferMaterialsQuantityWidgetState
                           ],
                         ),
                         SizedBox(height: 20),
-                        Visibility(
-                          visible:
-                              widget
-                                  .materialsItem
-                                  .useGroupUnit ==
-                              true,
-                          child: Column(
-                            children: [
-                              ConstrainedBox(
-                                constraints: BoxConstraints(
-                                  maxWidth: 230,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .spaceBetween,
-                                  children: [
-                                    Text(
-                                      style: TextStyle(
-                                        fontWeight:
-                                            FontWeight.bold,
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b3
-                                                .fontSize,
-                                      ),
-                                      'Transfer Group Quantity?',
-                                    ),
-                                    MyToggleButton(
-                                      isSmall:
-                                          screenWidth(
-                                            context,
-                                          ) <=
-                                          mobileScreen,
-                                      boolValue:
-                                          transferGroup,
-                                      toggle: () {
-                                        setState(() {
-                                          transferGroup =
-                                              !transferGroup;
-                                          quantityController
-                                              .clear();
-                                        });
-                                      },
-                                      theme: theme,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(height: 20),
-                            ],
-                          ),
+                        UnitSelectionWidget(
+                          storageProduct: null,
+                          material: widget.materialsItem,
+                          productionItem: null,
+                          product: null,
+                          setUnitUuid: (uuid) {
+                            setState(() {
+                              unitUuid = uuid;
+                            });
+                            if (widget.materialsItem
+                                    .getProductUnit(
+                                      unitUuid: unitUuid,
+                                    )
+                                    .getQuantityEquivMultiplied(
+                                      index: 3,
+                                      newQuantity:
+                                          double.tryParse(
+                                            quantityController
+                                                .text
+                                                .replaceAll(
+                                                  ',',
+                                                  '',
+                                                ),
+                                          ) ??
+                                          0,
+                                    ) >
+                                (widget
+                                        .materialsItem
+                                        .quantity ??
+                                    0)) {
+                              quantityController.text = '0';
+                            }
+                          },
+                          theme: theme,
+                          unitUuid: unitUuid,
                         ),
 
                         SizedBox(height: 15),
@@ -313,7 +260,29 @@ class _TransferMaterialsQuantityWidgetState
                           themeProvider: theme,
                           action: () {
                             var firstContext = context;
-                            if (quantityController
+                            if (widget.materialsItem
+                                        .getProductUnit(
+                                          unitUuid:
+                                              unitUuid,
+                                        )
+                                        .getQuantityEquivMultiplied(
+                                          index: 3,
+                                          newQuantity:
+                                              double.tryParse(
+                                                quantityController
+                                                    .text
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
+                                              ) ??
+                                              0,
+                                        ) <=
+                                    (widget
+                                            .materialsItem
+                                            .quantity ??
+                                        0) &&
+                                quantityController
                                     .text
                                     .isNotEmpty &&
                                 quantityController.text !=
@@ -327,17 +296,16 @@ class _TransferMaterialsQuantityWidgetState
                                         .length >
                                     1) {
                                   transferMaterialsAction(
+                                    unitUuid: unitUuid,
                                     mainMaterials:
                                         widget
                                             .materialsItem,
                                     enteredValue:
-                                        returnUnitQuantity(
-                                          (double.tryParse(
-                                                quantityController
-                                                    .text,
-                                              ) ??
-                                              0),
-                                        ),
+                                        (double.tryParse(
+                                              quantityController
+                                                  .text,
+                                            ) ??
+                                            0),
                                     firstContext:
                                         firstContext,
                                     loadingAction: (value) {
@@ -349,6 +317,7 @@ class _TransferMaterialsQuantityWidgetState
                                   );
                                 } else {
                                   selectItemInADepartmentsMaterial(
+                                    unitUuid: unitUuid,
                                     thirdContext: null,
                                     secondContext: null,
                                     firstContext:
@@ -357,13 +326,11 @@ class _TransferMaterialsQuantityWidgetState
                                         widget
                                             .materialsItem,
                                     enteredValue:
-                                        returnUnitQuantity(
-                                          (double.tryParse(
-                                                quantityController
-                                                    .text,
-                                              ) ??
-                                              0),
-                                        ),
+                                        (double.tryParse(
+                                              quantityController
+                                                  .text,
+                                            ) ??
+                                            0),
                                     loadingAction: (value) {
                                       setState(() {
                                         isEditQuantityLoading =
@@ -393,17 +360,16 @@ class _TransferMaterialsQuantityWidgetState
                                   );
                                 } else {
                                   selectShopsMaterials(
+                                    unitUuid: unitUuid,
                                     secondContext: null,
                                     firstContext:
                                         firstContext,
                                     enteredValue:
-                                        returnUnitQuantity(
-                                          (double.tryParse(
-                                                quantityController
-                                                    .text,
-                                              ) ??
-                                              0),
-                                        ),
+                                        (double.tryParse(
+                                              quantityController
+                                                  .text,
+                                            ) ??
+                                            0),
                                     mainMaterials:
                                         widget
                                             .materialsItem,
@@ -448,6 +414,7 @@ void transferMaterialsAction({
   required BuildContext firstContext,
   required MaterialClass mainMaterials,
   required Function(bool value) loadingAction,
+  required String? unitUuid,
   required double enteredValue,
 }) {
   var theme = returnTheme(firstContext, listen: false);
@@ -478,6 +445,7 @@ void transferMaterialsAction({
                     mainMaterials: mainMaterials,
                     firstContext: firstContext,
                     secondContext: secondContext,
+                    unitUuid: unitUuid,
                     enteredValue: enteredValue,
                     loadingAction: (value) {
                       loadingAction(value);
@@ -514,6 +482,7 @@ void transferMaterialsAction({
                       secondContext: secondContext,
                       firstContext: firstContext,
                       enteredValue: enteredValue,
+                      unitUuid: unitUuid,
                       mainMaterials: mainMaterials,
                       loadingAction: (value) {
                         loadingAction(value);
@@ -533,6 +502,7 @@ void transferMaterialsAction({
 void selectDepartmentMaterialss({
   required BuildContext? secondContext,
   required BuildContext firstContext,
+  required String? unitUuid,
   required MaterialClass mainMaterials,
   required Function(bool value) loadingAction,
   required double enteredValue,
@@ -560,6 +530,7 @@ void selectDepartmentMaterialss({
                     selectItemInADepartmentsMaterial(
                       secondContext: secondContext,
                       firstContext: firstContext,
+                      unitUuid: unitUuid,
                       mainMaterials: mainMaterials,
                       thirdContext: thirdContext,
                       loadingAction: loadingAction,
@@ -715,6 +686,7 @@ void selectItemInADepartmentsMaterial({
   required BuildContext? thirdContext,
   required BuildContext? secondContext,
   required BuildContext firstContext,
+  required String? unitUuid,
   required MaterialClass mainMaterials,
   required Function(bool value) loadingAction,
   DepartmentClass? department,
@@ -752,112 +724,174 @@ void selectItemInADepartmentsMaterial({
                           title: 'Transfer Item Quantity',
                           action: () async {
                             loadingAction(true);
-                            MaterialClass oldProduct =
+                            MaterialClass oldMaterial =
                                 selectedMaterial!;
                             MaterialClass newMaterial =
-                                oldProduct.copyWith();
+                                oldMaterial.copyWith();
                             newMaterial.quantity =
                                 (newMaterial.quantity ??
                                     0) +
-                                enteredValue;
-                            MaterialsItemHistory
-                            materialsItemHistory =
-                                MaterialsItemHistory(
-                                  shopId: shopId(),
-                                  isIncreased: true,
-                                  departmentName:
-                                      newMaterial
-                                          .departmentName,
-                                  departmentUuid:
-                                      newMaterial
-                                          .departmentUuid,
-                                  desc:
-                                      'Item Quantity Received From Transfer - From Material Item Name: ${mainMaterials.name}. Department Name: ${returnDepartmentProvider().currentDepartment()?.name ?? 'Department Not Set'}.',
-                                  title: 'Transfered In',
-                                  createdAt: DateTime.now(),
-                                  itemUuid:
-                                      newMaterial.uuid,
-                                  itemName:
-                                      newMaterial.name,
-                                  newValue:
-                                      (newMaterial.quantity ??
-                                              0)
-                                          .toString(),
-                                  oldValue:
-                                      (oldProduct.quantity ??
-                                              0)
-                                          .toString(),
-                                  quantityChange:
-                                      enteredValue,
-                                  staffId:
-                                      currentUser().userId,
-                                  staffName:
-                                      currentUser().name,
-                                );
-                            var res =
-                                await returnMaterialsProvider()
-                                    .updateMaterial(
-                                      material: newMaterial,
-                                      isQuantityUpdate:
-                                          true,
-                                      includeQuantity: true,
-                                      quantityChange:
+                                mainMaterials
+                                    .getProductUnit(
+                                      unitUuid: unitUuid,
+                                    )
+                                    .getQuantityEquivMultiplied(
+                                      index: 3,
+                                      newQuantity:
                                           enteredValue,
-                                      isIncrement: true,
-                                      materialsItemHistory:
-                                          materialsItemHistory,
                                     );
+                            MaterialsItemHistory
+                            materialsItemHistory = MaterialsItemHistory(
+                              shopId: shopId(),
+                              isIncreased: true,
+                              departmentName:
+                                  newMaterial
+                                      .departmentName,
+                              departmentUuid:
+                                  newMaterial
+                                      .departmentUuid,
+                              desc:
+                                  'Item Quantity Received From Transfer - From Material Item Name: ${mainMaterials.name}. Department Name: ${returnDepartmentProvider().currentDepartment()?.name ?? 'Department Not Set'}.',
+                              title: 'Transfered In',
+                              createdAt: DateTime.now(),
+                              itemUuid: newMaterial.uuid,
+                              itemName: newMaterial.name,
+                              newValue: formatLargeNumberDouble(
+                                newMaterial
+                                    .getProductUnit()
+                                    .getQuantityEquivDivided(
+                                      index: 3,
+                                      newQuantity:
+                                          (newMaterial
+                                                  .quantity ??
+                                              0),
+                                    ),
+                              ),
+                              oldValue: formatLargeNumberDouble(
+                                oldMaterial
+                                    .getProductUnit()
+                                    .getQuantityEquivDivided(
+                                      index: 3,
+                                      newQuantity:
+                                          (oldMaterial
+                                                  .quantity ??
+                                              0),
+                                    ),
+                              ),
+                              quantityChange: enteredValue,
+                              staffId: currentUser().userId,
+                              staffName: currentUser().name,
+                              unit:
+                                  mainMaterials
+                                      .getProductUnit(
+                                        unitUuid: unitUuid,
+                                      )
+                                      .name,
+                              primaryUnit:
+                                  newMaterial
+                                      .getProductUnit()
+                                      .name,
+                            );
+                            var res = await returnMaterialsProvider()
+                                .updateMaterial(
+                                  isMultipleUpdate: false,
+                                  material: newMaterial,
+                                  isQuantityUpdate: true,
+                                  includeQuantity: true,
+                                  quantityChange: mainMaterials
+                                      .getProductUnit(
+                                        unitUuid: unitUuid,
+                                      )
+                                      .getQuantityEquivMultiplied(
+                                        index: 3,
+                                        newQuantity:
+                                            enteredValue,
+                                      ),
+                                  isIncrement: true,
+                                  materialsItemHistory:
+                                      materialsItemHistory,
+                                );
 
                             MaterialClass newMaterial2 =
                                 mainMaterials.copyWith();
                             newMaterial2.quantity =
                                 ((newMaterial2.quantity ??
                                         0) -
-                                    enteredValue);
+                                    mainMaterials
+                                        .getProductUnit(
+                                          unitUuid:
+                                              unitUuid,
+                                        )
+                                        .getQuantityEquivMultiplied(
+                                          index: 3,
+                                          newQuantity:
+                                              enteredValue,
+                                        ));
                             MaterialsItemHistory
-                            materialsItemHistory2 =
-                                MaterialsItemHistory(
-                                  shopId: shopId(),
-                                  isIncreased: false,
-                                  desc:
-                                      'Material Item Quantity Transfered To - Item Name: ${oldProduct.name}, Department Name: ${department?.name ?? 'Department Not Set'}.',
-                                  title: 'Transfered Out',
-                                  createdAt: DateTime.now(),
-                                  itemUuid:
-                                      newMaterial2.uuid,
-                                  itemName:
-                                      newMaterial2.name,
-                                  newValue:
-                                      (newMaterial2
+                            materialsItemHistory2 = MaterialsItemHistory(
+                              shopId: shopId(),
+                              isIncreased: false,
+                              desc:
+                                  'Material Item Quantity Transfered To - Item Name: ${oldMaterial.name}, Department Name: ${department?.name ?? 'Department Not Set'}.',
+                              title: 'Transfered Out',
+                              createdAt: DateTime.now(),
+                              itemUuid: newMaterial2.uuid,
+                              itemName: newMaterial2.name,
+                              newValue: formatLargeNumberDouble(
+                                mainMaterials
+                                    .getProductUnit()
+                                    .getQuantityEquivDivided(
+                                      index: 3,
+                                      newQuantity:
+                                          (newMaterial2
                                                   .quantity ??
-                                              0)
-                                          .toString(),
-                                  oldValue:
-                                      (mainMaterials
+                                              0),
+                                    ),
+                              ),
+                              oldValue: formatLargeNumberDouble(
+                                mainMaterials
+                                    .getProductUnit()
+                                    .getQuantityEquivDivided(
+                                      index: 3,
+                                      newQuantity:
+                                          (mainMaterials
                                                   .quantity ??
-                                              0)
-                                          .toString(),
-                                  quantityChange:
-                                      -enteredValue,
-                                  staffId:
-                                      currentUser().userId,
-                                  staffName:
-                                      currentUser().name,
+                                              0),
+                                    ),
+                              ),
+                              quantityChange: -enteredValue,
+                              staffId: currentUser().userId,
+                              staffName: currentUser().name,
+                              unit:
+                                  mainMaterials
+                                      .getProductUnit(
+                                        unitUuid: unitUuid,
+                                      )
+                                      .name,
+                              primaryUnit:
+                                  mainMaterials
+                                      .getProductUnit()
+                                      .name,
+                            );
+                            var res2 = await returnMaterialsProvider()
+                                .updateMaterial(
+                                  isMultipleUpdate: false,
+                                  material: newMaterial2,
+                                  isQuantityUpdate: true,
+                                  includeQuantity: true,
+                                  quantityChange: newMaterial2
+                                      .getProductUnit(
+                                        unitUuid: unitUuid,
+                                      )
+                                      .getQuantityEquivMultiplied(
+                                        index: 3,
+                                        newQuantity:
+                                            enteredValue,
+                                      ),
+                                  isIncrement: false,
+                                  materialsItemHistory:
+                                      materialsItemHistory2,
                                 );
-                            var res2 =
-                                await returnMaterialsProvider()
-                                    .updateMaterial(
-                                      material:
-                                          newMaterial2,
-                                      isQuantityUpdate:
-                                          true,
-                                      includeQuantity: true,
-                                      quantityChange:
-                                          enteredValue,
-                                      isIncrement: false,
-                                      materialsItemHistory:
-                                          materialsItemHistory2,
-                                    );
                             if (res == null ||
                                 res2 == null) {
                               loadingAction(false);
@@ -1065,7 +1099,7 @@ void selectItemInADepartmentsMaterial({
                                                                 fontWeight:
                                                                     FontWeight.bold,
                                                               ),
-                                                              '${item.quantity ?? 0}',
+                                                              '${item.getProductUnit().getQuantityEquivDivided(index: 3)} ${item.getProductUnit().name}',
                                                             ),
                                                             Container(
                                                               padding: EdgeInsets.all(
@@ -1126,6 +1160,7 @@ void selectShopsMaterials({
   required BuildContext? secondContext,
   required BuildContext firstContext,
   required MaterialClass mainMaterials,
+  required String? unitUuid,
   required Function(bool value) loadingAction,
   required double enteredValue,
 }) {
@@ -1152,6 +1187,7 @@ void selectShopsMaterials({
             action: () {
               if (selectedShop != null) {
                 selectItemInAShopMaterial(
+                  unitUuid: unitUuid,
                   firstContext: firstContext,
                   secondContext: secondContext,
                   thirdContext: thirdContext,
@@ -1315,6 +1351,7 @@ void selectItemInAShopMaterial({
   required BuildContext thirdContext,
   required BuildContext? secondContext,
   required BuildContext firstContext,
+  required String? unitUuid,
   required MaterialClass mainMaterials,
   required Function(bool value) loadingAction,
   required TempShopClass shop,
@@ -1354,35 +1391,66 @@ void selectItemInAShopMaterial({
                             oldProduct.copyWith();
                         newMaterial.quantity =
                             (newMaterial.quantity ?? 0) +
-                            enteredValue;
+                            mainMaterials
+                                .getProductUnit(
+                                  unitUuid: unitUuid,
+                                )
+                                .getQuantityEquivMultiplied(
+                                  index: 3,
+                                  newQuantity: enteredValue,
+                                );
                         MaterialsItemHistory
-                        materialsItemHistory =
-                            MaterialsItemHistory(
-                              desc:
-                                  'Item Quantity Received From Transfer - From Material Item Name: ${mainMaterials.name}. Shop Name: ${returnShopProvider().userShop()?.name}.',
-                              shopId: shop.shopId!,
-                              title: 'Transfered In',
-                              isIncreased: true,
-                              departmentName:
-                                  newMaterial
-                                      .departmentName,
-                              departmentUuid:
-                                  newMaterial
-                                      .departmentUuid,
-                              createdAt: DateTime.now(),
-                              itemUuid: newMaterial.uuid,
-                              itemName: newMaterial.name,
-                              newValue:
-                                  (newMaterial.quantity ??
-                                          0)
-                                      .toString(),
-                              oldValue:
-                                  (oldProduct.quantity ?? 0)
-                                      .toString(),
-                              quantityChange: enteredValue,
-                              staffId: currentUser().userId,
-                              staffName: currentUser().name,
-                            );
+                        materialsItemHistory = MaterialsItemHistory(
+                          desc:
+                              'Item Quantity Received From Transfer - From Material Item Name: ${mainMaterials.name}. Shop Name: ${returnShopProvider().userShop()?.name}.',
+                          shopId: shop.shopId!,
+                          title: 'Transfered In',
+                          isIncreased: true,
+                          departmentName:
+                              newMaterial.departmentName,
+                          departmentUuid:
+                              newMaterial.departmentUuid,
+                          createdAt: DateTime.now(),
+                          itemUuid: newMaterial.uuid,
+                          itemName: newMaterial.name,
+                          newValue: formatLargeNumberDouble(
+                            newMaterial
+                                .getProductUnit()
+                                .getQuantityEquivDivided(
+                                  index: 3,
+                                  material: newMaterial,
+                                  newQuantity:
+                                      (newMaterial
+                                              .quantity ??
+                                          0),
+                                ),
+                          ),
+                          oldValue: formatLargeNumberDouble(
+                            oldProduct
+                                .getProductUnit()
+                                .getQuantityEquivDivided(
+                                  index: 3,
+                                  material: oldProduct,
+                                  newQuantity:
+                                      (oldProduct
+                                              .quantity ??
+                                          0),
+                                ),
+                          ),
+                          quantityChange: enteredValue,
+                          staffId: currentUser().userId,
+                          staffName: currentUser().name,
+                          unit:
+                              mainMaterials
+                                  .getProductUnit(
+                                    unitUuid: unitUuid,
+                                  )
+                                  .name,
+                          primaryUnit:
+                              newMaterial
+                                  .getProductUnit()
+                                  .name,
+                        );
                         var res =
                             await returnMaterialsProvider()
                                 .updateMaterialForOtherShops(
@@ -1395,42 +1463,80 @@ void selectItemInAShopMaterial({
                             mainMaterials.copyWith();
                         newMaterial2.quantity =
                             ((newMaterial2.quantity ?? 0) -
-                                enteredValue);
+                                newMaterial2
+                                    .getProductUnit(
+                                      unitUuid: unitUuid,
+                                    )
+                                    .getQuantityEquivMultiplied(
+                                      index: 3,
+                                      newQuantity:
+                                          enteredValue,
+                                    ));
                         MaterialsItemHistory
-                        materialsItemHistory2 =
-                            MaterialsItemHistory(
-                              shopId: shopId(),
-                              isIncreased: false,
-                              desc:
-                                  'Material Item Quantity Transfered To - Item Name: ${oldProduct.name}, Shop Name: ${shop.name}.',
-                              title: 'Transfered Out',
-                              createdAt: DateTime.now(),
-                              itemUuid: newMaterial2.uuid,
-                              itemName: newMaterial2.name,
-                              newValue:
-                                  (newMaterial2.quantity ??
-                                          0)
-                                      .toString(),
-                              oldValue:
-                                  (mainMaterials.quantity ??
-                                          0)
-                                      .toString(),
-                              quantityChange: -enteredValue,
-                              staffId: currentUser().userId,
-                              staffName: currentUser().name,
+                        materialsItemHistory2 = MaterialsItemHistory(
+                          shopId: shopId(),
+                          isIncreased: false,
+                          desc:
+                              'Material Item Quantity Transfered To - Item Name: ${oldProduct.name}, Shop Name: ${shop.name}.',
+                          title: 'Transfered Out',
+                          createdAt: DateTime.now(),
+                          itemUuid: newMaterial2.uuid,
+                          itemName: newMaterial2.name,
+                          newValue: formatLargeNumberDouble(
+                            newMaterial2
+                                .getProductUnit()
+                                .getQuantityEquivDivided(
+                                  index: 3,
+                                  newQuantity:
+                                      (newMaterial2
+                                              .quantity ??
+                                          0),
+                                ),
+                          ),
+                          oldValue: formatLargeNumberDouble(
+                            mainMaterials
+                                .getProductUnit()
+                                .getQuantityEquivDivided(
+                                  index: 3,
+                                  newQuantity:
+                                      (mainMaterials
+                                              .quantity ??
+                                          0),
+                                ),
+                          ),
+                          quantityChange: -enteredValue,
+                          staffId: currentUser().userId,
+                          staffName: currentUser().name,
+                          unit:
+                              newMaterial2
+                                  .getProductUnit(
+                                    unitUuid: unitUuid,
+                                  )
+                                  .name,
+                          primaryUnit:
+                              mainMaterials
+                                  .getProductUnit()
+                                  .name,
+                        );
+                        var res2 = await returnMaterialsProvider()
+                            .updateMaterial(
+                              isMultipleUpdate: false,
+                              material: newMaterial2,
+                              isQuantityUpdate: true,
+                              includeQuantity: true,
+                              quantityChange: newMaterial2
+                                  .getProductUnit(
+                                    unitUuid: unitUuid,
+                                  )
+                                  .getQuantityEquivMultiplied(
+                                    index: 3,
+                                    newQuantity:
+                                        enteredValue,
+                                  ),
+                              isIncrement: false,
+                              materialsItemHistory:
+                                  materialsItemHistory2,
                             );
-                        var res2 =
-                            await returnMaterialsProvider()
-                                .updateMaterial(
-                                  material: newMaterial2,
-                                  isQuantityUpdate: true,
-                                  includeQuantity: true,
-                                  quantityChange:
-                                      enteredValue,
-                                  isIncrement: false,
-                                  materialsItemHistory:
-                                      materialsItemHistory2,
-                                );
                         if (res == null || res2 == null) {
                           loadingAction(false);
                           showDialog(

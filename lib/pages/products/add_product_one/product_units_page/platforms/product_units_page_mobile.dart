@@ -56,7 +56,9 @@ class _ProductUnitsPageMobileState
               Expanded(
                 child: Builder(
                   builder: (context) {
-                    if (returnData().unitsList().isEmpty) {
+                    if (returnData()
+                        .tempUnitsList
+                        .isEmpty) {
                       return Material(
                         color: Colors.transparent,
                         child: EmptyWidgetDisplayOnly(
@@ -66,12 +68,21 @@ class _ProductUnitsPageMobileState
                           theme: theme,
                           height: 25,
                           altAction: () {
-                            // returnData().getProducts(
-                            //   shopId(),
-                            // );
+                            addProductUnitAction(
+                              context: context,
+                              nameController:
+                                  widget.nameController,
+                              productUuid:
+                                  widget.productUuid,
+                              quantityController:
+                                  widget.quantityController,
+                              setStateAction: () {
+                                setState(() {});
+                              },
+                            );
                           },
-                          altActionText: 'Refresh',
-                          altIcon: Icons.refresh,
+                          altActionText: 'Create New Unit',
+                          altIcon: Icons.add,
                           icon: Icons.clear,
                         ),
                       );

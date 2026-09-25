@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_production_folder/temp_material_class/material_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
 
@@ -122,30 +124,102 @@ class ProductUnitsClass extends HiveObject {
   double getQuantityEquivDivided({
     BuildContext? context,
     double? newQuantity,
+    required int index,
+    TempProductClass? product,
+    MaterialClass? material,
   }) {
-    var items = returnData(context: context).productListMain
-        .where((item) => item.uuid == productUuid);
-    if (items.isNotEmpty) {
-      var item = items.first;
-      return (newQuantity ?? item.quantity ?? 0) /
+    List items() {
+      if (index == 1) {
+        return returnData(context: context).productListMain
+            .where((item) => item.uuid == productUuid)
+            .toList();
+      } else if (index == 2) {
+        return returnProductionItemsProvider(
+              context: context,
+            ).productionItemListMain
+            .where((item) => item.uuid == productUuid)
+            .toList();
+      } else if (index == 3) {
+        return returnMaterialsProvider(context: context)
+            .materialListMain
+            .where((item) => item.uuid == productUuid)
+            .toList();
+      } else if (index == 4) {
+        return returnStorageProductProvider(
+              context: context,
+            ).storageProductListMain
+            .where((item) => item.uuid == productUuid)
+            .toList();
+      } else {
+        return returnData(context: context).productListMain
+            .where((item) => item.uuid == productUuid)
+            .toList();
+      }
+    }
+
+    if (product != null) {
+      return (newQuantity ?? product.quantity ?? 0) /
+          conversion;
+    } else if (material != null) {
+      return (newQuantity ?? material.quantity ?? 0) /
           conversion;
     } else {
-      return 0;
+      if (items().isNotEmpty) {
+        var item = items().first;
+        return (newQuantity ?? item.quantity ?? 0) /
+            conversion;
+      } else {
+        return 0;
+      }
     }
   }
 
   double getQuantityEquivMultiplied({
     BuildContext? context,
     double? newQuantity,
+    required int index,
+    TempProductClass? product,
   }) {
-    var items = returnData(context: context).productListMain
-        .where((item) => item.uuid == productUuid);
-    if (items.isNotEmpty) {
-      var item = items.first;
-      return (newQuantity ?? item.quantity ?? 0) *
-          conversion;
+    List items() {
+      if (index == 1) {
+        return returnData(context: context).productListMain
+            .where((item) => item.uuid == productUuid)
+            .toList();
+      } else if (index == 2) {
+        return returnProductionItemsProvider(
+              context: context,
+            ).productionItemListMain
+            .where((item) => item.uuid == productUuid)
+            .toList();
+      } else if (index == 3) {
+        return returnMaterialsProvider(context: context)
+            .materialListMain
+            .where((item) => item.uuid == productUuid)
+            .toList();
+      } else if (index == 4) {
+        return returnStorageProductProvider(
+              context: context,
+            ).storageProductListMain
+            .where((item) => item.uuid == productUuid)
+            .toList();
+      } else {
+        return returnData(context: context).productListMain
+            .where((item) => item.uuid == productUuid)
+            .toList();
+      }
+    }
+
+    if (product == null) {
+      if (items().isNotEmpty) {
+        var item = items().first;
+        return (newQuantity ?? item.quantity ?? 0) *
+            conversion;
+      } else {
+        return 0;
+      }
     } else {
-      return 0;
+      return (newQuantity ?? product.quantity ?? 0) *
+          conversion;
     }
   }
 }

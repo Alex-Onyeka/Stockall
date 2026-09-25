@@ -37,13 +37,14 @@ class MaterialClassAdapter extends TypeAdapter<MaterialClass> {
       categoryUuid: fields[17] as String?,
       categories: (fields[18] as List?)?.cast<String>(),
       useGroupUnit: fields[19] as bool?,
+      unitsList: (fields[20] as List?)?.cast<ProductUnitsClass>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, MaterialClass obj) {
     writer
-      ..writeByte(20)
+      ..writeByte(21)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -83,7 +84,9 @@ class MaterialClassAdapter extends TypeAdapter<MaterialClass> {
       ..writeByte(18)
       ..write(obj.categories)
       ..writeByte(19)
-      ..write(obj.useGroupUnit);
+      ..write(obj.useGroupUnit)
+      ..writeByte(20)
+      ..write(obj.unitsList);
   }
 
   @override

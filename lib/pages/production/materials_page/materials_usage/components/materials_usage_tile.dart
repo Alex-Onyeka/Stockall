@@ -10,8 +10,8 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/production/materials_page/materials_details/materials_details_page.dart';
-import 'package:stockall/pages/production/materials_page/materials_details/platforms/materials_details_mobile.dart';
 import 'package:stockall/pages/production/materials_page/materials_usage/create_production/create_materials_usage_page.dart';
+import 'package:stockall/pages/products/product_details/platforms/components/edit_button.dart';
 
 class MaterialsUsageTile extends StatefulWidget {
   const MaterialsUsageTile({

@@ -264,7 +264,7 @@ class _BarcodeAndSearchTextFieldState
                                                     fontWeight:
                                                         FontWeight.bold,
                                                   ),
-                                                  "- (${item.getQuantityText(context: context)})  ",
+                                                  "- (${item.getQuantityText(context: context, index: 1)})  ",
                                                 ),
                                                 Text(
                                                   style: TextStyle(

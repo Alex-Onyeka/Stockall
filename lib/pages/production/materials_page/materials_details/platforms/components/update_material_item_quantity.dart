@@ -4,15 +4,13 @@ import 'package:stockall/classes/temp_production_folder/temp_materials_item_hist
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
-import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/calculations.dart';
-import 'package:stockall/constants/constants_main.dart';
-import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/edit_button.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/item_comment_widget.dart';
+import 'package:stockall/pages/products/product_details/platforms/components/unit_selection_widget.dart';
 
-Future<Object?> updateMaterialQuantity(
+Future<Object?> updateMaterialItemQuantity(
   BuildContext context,
   MaterialClass materialClass,
 ) {
@@ -44,39 +42,7 @@ class _UpdateMaterialQuantityWidgetState
   final quantityController = TextEditingController();
   final commentController = TextEditingController();
   bool isAddToQuantity = true;
-  bool updateGroup = false;
-
-  String returnUnitText() {
-    if (updateGroup) {
-      return widget.materialClass.groupUnit == null ||
-              widget.materialClass.groupUnit == 'Others'
-          ? ''
-          : " Group(s)";
-    } else {
-      return widget.materialClass.unit.isEmpty ||
-              widget.materialClass.unit == 'Others'
-          ? ''
-          : " Unit(s)";
-    }
-  }
-
-  double returnGroupQuantity() {
-    if (updateGroup) {
-      return (widget.materialClass.quantity ?? 0) /
-          (widget.materialClass.qttyPerGroup ?? 0);
-    } else {
-      return (widget.materialClass.quantity ?? 0);
-    }
-  }
-
-  double returnUnitQuantity(double value) {
-    if (updateGroup) {
-      return value *
-          (widget.materialClass.qttyPerGroup ?? 0);
-    } else {
-      return value;
-    }
-  }
+  String? unitUuid;
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +67,7 @@ class _UpdateMaterialQuantityWidgetState
                 children: [
                   Container(
                     padding: EdgeInsets.all(30),
-                    margin: EdgeInsets.only(bottom: 100),
+                    margin: EdgeInsets.only(bottom: 10),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(
@@ -146,7 +112,7 @@ class _UpdateMaterialQuantityWidgetState
                                         .fontSize,
                                 fontWeight: FontWeight.bold,
                               ),
-                              'Edit${returnUnitText()} Quantity',
+                              'Edit ${widget.materialClass.getProductUnit(unitUuid: unitUuid).name} Quantity',
                             ),
                             Builder(
                               builder: (context) {
@@ -201,7 +167,7 @@ class _UpdateMaterialQuantityWidgetState
                                           .quantity ==
                                       null
                                   ? 'Quantity Not Set'
-                                  : 'Current${returnUnitText()} Quantity : ${formatLargeNumberDouble(returnGroupQuantity())}',
+                                  : 'Current Quantity in ${widget.materialClass.getProductUnit(unitUuid: unitUuid).name}: ${formatLargeNumberDouble(widget.materialClass.getProductUnit(unitUuid: unitUuid).getQuantityEquivDivided(index: 3, context: context))}',
                             ),
                             EditCartTextField(
                               onChanged: (value) {
@@ -213,7 +179,7 @@ class _UpdateMaterialQuantityWidgetState
                                 }
                               },
                               title:
-                                  '${returnUnitText()} Quantity',
+                                  '${widget.materialClass.getProductUnit(unitUuid: unitUuid).name} Quantity',
                               hint: 'Enter Quantity Amount',
                               controller:
                                   quantityController,
@@ -222,61 +188,19 @@ class _UpdateMaterialQuantityWidgetState
                           ],
                         ),
                         SizedBox(height: 20),
-                        Visibility(
-                          visible:
-                              widget
-                                  .materialClass
-                                  .useGroupUnit ==
-                              true,
-                          child: Column(
-                            children: [
-                              ConstrainedBox(
-                                constraints: BoxConstraints(
-                                  maxWidth: 230,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .spaceBetween,
-                                  children: [
-                                    Text(
-                                      style: TextStyle(
-                                        fontWeight:
-                                            FontWeight.bold,
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b3
-                                                .fontSize,
-                                      ),
-                                      'Update Group Quantity?',
-                                    ),
-                                    MyToggleButton(
-                                      isSmall:
-                                          screenWidth(
-                                            context,
-                                          ) <=
-                                          mobileScreen,
-                                      boolValue:
-                                          updateGroup,
-                                      toggle: () {
-                                        setState(() {
-                                          updateGroup =
-                                              !updateGroup;
-                                          // quantityController
-                                          //     .clear();
-                                        });
-                                      },
-                                      theme: theme,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(height: 20),
-                            ],
-                          ),
+                        UnitSelectionWidget(
+                          storageProduct: null,
+                          material: widget.materialClass,
+                          productionItem: null,
+                          product: null,
+                          setUnitUuid: (uuid) {
+                            setState(() {
+                              unitUuid = uuid;
+                            });
+                          },
+                          theme: theme,
+                          unitUuid: unitUuid,
                         ),
-
                         Row(
                           mainAxisAlignment:
                               MainAxisAlignment.center,
@@ -461,8 +385,36 @@ class _UpdateMaterialQuantityWidgetState
                                       });
                                       double setQuantity() {
                                         if (isAddToQuantity) {
-                                          return returnUnitQuantity(
-                                                double.parse(
+                                          return widget
+                                                  .materialClass
+                                                  .getProductUnit(
+                                                    unitUuid:
+                                                        unitUuid,
+                                                  )
+                                                  .getQuantityEquivMultiplied(
+                                                    index:
+                                                        3,
+                                                    newQuantity: double.parse(
+                                                      quantityController.text.replaceAll(
+                                                        ',',
+                                                        '',
+                                                      ),
+                                                    ),
+                                                  ) +
+                                              (widget
+                                                      .materialClass
+                                                      .quantity ??
+                                                  0);
+                                        } else {
+                                          return widget
+                                              .materialClass
+                                              .getProductUnit(
+                                                unitUuid:
+                                                    unitUuid,
+                                              )
+                                              .getQuantityEquivMultiplied(
+                                                index: 3,
+                                                newQuantity: double.parse(
                                                   quantityController
                                                       .text
                                                       .replaceAll(
@@ -470,22 +422,7 @@ class _UpdateMaterialQuantityWidgetState
                                                         '',
                                                       ),
                                                 ),
-                                              ) +
-                                              (widget
-                                                      .materialClass
-                                                      .quantity ??
-                                                  0);
-                                        } else {
-                                          return returnUnitQuantity(
-                                            double.parse(
-                                              quantityController
-                                                  .text
-                                                  .replaceAll(
-                                                    ',',
-                                                    '',
-                                                  ),
-                                            ),
-                                          );
+                                              );
                                         }
                                       }
 
@@ -497,6 +434,19 @@ class _UpdateMaterialQuantityWidgetState
                                               0);
                                       MaterialsItemHistory
                                       materialsItemHistory = MaterialsItemHistory(
+                                        primaryUnit:
+                                            widget
+                                                .materialClass
+                                                .getProductUnit()
+                                                .name,
+                                        unit:
+                                            widget
+                                                .materialClass
+                                                .getProductUnit(
+                                                  unitUuid:
+                                                      unitUuid,
+                                                )
+                                                .name,
                                         shopId: shopId(),
                                         desc:
                                             commentController
@@ -509,22 +459,45 @@ class _UpdateMaterialQuantityWidgetState
                                             isIncrement,
                                         title:
                                             'Item Quantity ${isIncrement ? "Increased" : 'Reduced'}',
-                                        quantityChange:
-                                            (setQuantity() -
-                                                (widget
-                                                        .materialClass
-                                                        .quantity ??
-                                                    0)),
-                                        newValue:
-                                            setQuantity()
-                                                .toString(),
-                                        oldValue:
-                                            (widget.materialClass.quantity ??
-                                                    0)
-                                                .toString(),
+                                        quantityChange: widget
+                                            .materialClass
+                                            .getProductUnit(
+                                              unitUuid:
+                                                  unitUuid,
+                                            )
+                                            .getQuantityEquivDivided(
+                                              index: 3,
+                                              newQuantity:
+                                                  (setQuantity() -
+                                                      (widget.materialClass.quantity ??
+                                                          0)),
+                                            ),
+                                        newValue: formatLargeNumberDouble(
+                                          widget
+                                              .materialClass
+                                              .getProductUnit()
+                                              .getQuantityEquivDivided(
+                                                index: 3,
+                                                newQuantity:
+                                                    setQuantity(),
+                                              ),
+                                        ),
+                                        oldValue: formatLargeNumberDouble(
+                                          widget
+                                              .materialClass
+                                              .getProductUnit()
+                                              .getQuantityEquivDivided(
+                                                index: 3,
+                                                newQuantity:
+                                                    (widget.materialClass.quantity ??
+                                                        0),
+                                              ),
+                                        ),
                                       );
 
                                       await materialClasssProvider.updateMaterial(
+                                        isMultipleUpdate:
+                                            false,
                                         materialsItemHistory:
                                             materialsItemHistory,
                                         includeQuantity:
@@ -540,6 +513,10 @@ class _UpdateMaterialQuantityWidgetState
                                                         .quantity ??
                                                     0)),
                                         material: MaterialClass(
+                                          unitsList:
+                                              widget
+                                                  .materialClass
+                                                  .unitsList,
                                           useGroupUnit:
                                               widget
                                                   .materialClass

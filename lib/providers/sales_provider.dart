@@ -1431,6 +1431,7 @@ class SalesProvider extends ChangeNotifier {
                       oldValue: '0',
                     );
                     await returnData().createProduct(
+                      isMultiple: true,
                       itemHistory: itemHistory,
                       product: product,
                     );
@@ -1903,6 +1904,7 @@ class SalesProvider extends ChangeNotifier {
                       oldValue: '0',
                     );
                     await returnData().createProduct(
+                      isMultiple: true,
                       itemHistory: itemHistory,
                       product: product,
                     );
@@ -2194,6 +2196,7 @@ class SalesProvider extends ChangeNotifier {
                       oldValue: '0',
                     );
                     await returnData().createProduct(
+                      isMultiple: true,
                       itemHistory: itemHistory,
                       product: product,
                     );

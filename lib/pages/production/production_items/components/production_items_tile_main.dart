@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_items/production_item.dart';
-import 'package:stockall/constants/calculations.dart';
-import 'package:stockall/constants/functions.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class ProductionItemsTileMain extends StatefulWidget {
@@ -200,62 +198,8 @@ class _ProductionItemsTileMainState
                               fontWeight: FontWeight.bold,
                               color: Colors.grey.shade700,
                             ),
-                            widget
-                                        .productionItem
-                                        .expiryDate !=
-                                    null
-                                ? getDayDifference(
-                                          widget
-                                                  .productionItem
-                                                  .expiryDate ??
-                                              DateTime.now(),
-                                        ) >=
-                                        1
-                                    ? widget
-                                                .productionItem
-                                                .quantity ==
-                                            0
-                                        ? 'Out of Stock'
-                                        : widget
-                                                .productionItem
-                                                .quantity ==
-                                            null
-                                        ? 'Not Set'
-                                        : authorization(
-                                          authorized:
-                                              Authorizations()
-                                                  .viewItemQuantity,
-                                        )
-                                        ? formatLargeNumberDouble(
-                                          (widget
-                                                  .productionItem
-                                                  .quantity ??
-                                              0),
-                                        )
-                                        : 'Restricted'
-                                    : 'Item Expired'
-                                : widget
-                                        .productionItem
-                                        .quantity ==
-                                    0
-                                ? 'Out of Stock'
-                                : widget
-                                        .productionItem
-                                        .quantity ==
-                                    null
-                                ? 'Not Set'
-                                : authorization(
-                                  authorized:
-                                      Authorizations()
-                                          .viewItemQuantity,
-                                )
-                                ? formatLargeNumberDouble(
-                                  (widget
-                                          .productionItem
-                                          .quantity ??
-                                      0),
-                                )
-                                : 'Restricted',
+                            widget.productionItem
+                                .getQuantityText(index: 2),
                           ),
                         ),
                       ),

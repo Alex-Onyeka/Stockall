@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
+import 'package:stockall/classes/temp_storage_item_history/storage_item_history.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
-import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/main_dropdown.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
-import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/add_product_one/product_units_page/product_units_page.dart';
 
 class AddStorageItemDesktop extends StatefulWidget {
   final TempStorageProducts? storageProduct;
@@ -40,12 +40,6 @@ class _AddStorageItemDesktopState
     extends State<AddStorageItemDesktop> {
   bool isLoading = false;
   bool showSuccess = false;
-
-  bool isOpenUnit = false;
-  bool isOpenGroupUnit = false;
-  //
-  //
-  //
   bool isOpen = false;
 
   void checkFields() async {
@@ -95,6 +89,7 @@ class _AddStorageItemDesktopState
               final dataProvider =
                   returnStorageProductProvider();
               var product = TempStorageProducts(
+                unitsList: returnData().tempUnitsList,
                 useGroupUnit: returnData().useGroupUnit,
                 shopId: shopId(),
                 name: widget.nameController.text.trim(),
@@ -118,7 +113,20 @@ class _AddStorageItemDesktopState
                 ),
               );
 
+              StorageItemHistory itemHistory =
+                  StorageItemHistory(
+                    storageUnit: 'Not Set',
+                    shopId: shopId(),
+                    title: 'Item Created',
+                    quantityChange: 0,
+                    storageItemNewValue: '0',
+                    desc: 'Item Created Now',
+                    isIncreased: true,
+                    storageItemOldValue: '0',
+                  );
+
               await dataProvider.createStorageProduct(
+                itemHistory: itemHistory,
                 product: product,
               );
 
@@ -126,11 +134,6 @@ class _AddStorageItemDesktopState
                 isLoading = false;
                 showSuccess = true;
               });
-
-              // Clear data before popping
-              if (safeContext.mounted) {
-                returnData().clearFields();
-              }
 
               Future.delayed(Duration(seconds: 2), () {
                 // Pop current screen
@@ -188,13 +191,16 @@ class _AddStorageItemDesktopState
                 isQuantityUpdate: false,
                 quantityChange: null,
                 product: TempStorageProducts(
+                  unitsList: returnData().tempUnitsList,
                   useGroupUnit: returnData().useGroupUnit,
                   createdAt:
                       widget.storageProduct?.createdAt,
                   updatedAt: DateTime.now(),
                   uuid: widget.storageProduct?.uuid,
                   name: widget.nameController.text.trim(),
-                  unit: dataProvider.selectedUnit!,
+                  unit:
+                      dataProvider.selectedUnit ??
+                      'Unit(s)',
                   groupUnit: dataProvider.selectedGroupUnit,
                   qttyPerGroup:
                       widget
@@ -231,7 +237,7 @@ class _AddStorageItemDesktopState
                                 .replaceAll(',', ''),
                           )
                           : null,
-                  shopId: userShop!.shopId!,
+                  shopId: shopId(),
                 ),
                 // oldProduct: widget.product!,
               );
@@ -245,10 +251,6 @@ class _AddStorageItemDesktopState
                   isLoading = false;
                   showSuccess = true;
                 });
-
-                if (safeContext.mounted) {
-                  dataProvider.clearFields();
-                }
 
                 if (safeContext.mounted) {
                   Navigator.of(safeContext).pop();
@@ -267,9 +269,17 @@ class _AddStorageItemDesktopState
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       clearFields();
+      if (widget.storageProduct == null) {
+        setState(() {
+          createdProductUuid = uuidGen();
+        });
+      } else {
+        createdProductUuid = widget.storageProduct?.uuid;
+      }
     });
-    setShop();
   }
+
+  String? createdProductUuid;
 
   Future<void> clearFields() async {
     await Future.delayed(Duration(microseconds: 500), () {
@@ -285,6 +295,12 @@ class _AddStorageItemDesktopState
       );
       returnData().selectGroupUnit(
         unit: widget.storageProduct!.groupUnit,
+      );
+
+      returnData().initUnitsList(
+        unitsListNew:
+            widget.storageProduct?.getUnitsList() ?? [],
+        productUuid: createdProductUuid,
       );
       returnData().useGroupUnit =
           widget.storageProduct?.useGroupUnit ?? false;
@@ -306,18 +322,6 @@ class _AddStorageItemDesktopState
     }
   }
 
-  bool isGroup = false;
-
-  TempShopClass? userShop;
-  void setShop() async {
-    await returnShopProvider().getUserShops();
-    setState(() {
-      userShop = returnShopProvider().userShop();
-    });
-  }
-
-  //
-  //
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -396,258 +400,69 @@ class _AddStorageItemDesktopState
                                         widget
                                             .costPriceController,
                                   ),
-                                  SizedBox(height: 5),
-                                  MoneyTextfield(
-                                    theme: theme,
-                                    hint:
-                                        'Enter Selling Price',
-                                    title:
-                                        'Selling Price (Optional)',
-                                    controller:
-                                        widget
-                                            .sellingPriceController,
-                                  ),
                                   SizedBox(height: 15),
-                                  Column(
-                                    children: [
-                                      Column(
-                                        children: [
-                                          SizedBox(
-                                            height: 20,
+                                  Visibility(
+                                    visible: authorization(
+                                      authorized:
+                                          Authorizations()
+                                              .manageMultipleUnits,
+                                    ),
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(
+                                            bottom: 10.0,
                                           ),
-                                          InkWell(
-                                            mouseCursor:
-                                                SystemMouseCursors
-                                                    .click,
-                                            onTap: () {
+                                      child: SubWrapper(
+                                        isVisible:
+                                            !ItemsAuthAction()
+                                                .applyVariationsAction(
+                                                  context:
+                                                      context,
+                                                ),
+                                        mainWidget: MainDropdown(
+                                          valueSet:
                                               returnData()
-                                                  .toggleUseGroupUnit();
-                                              FocusManager
-                                                  .instance
-                                                  .primaryFocus
-                                                  ?.unfocus();
-                                            },
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Flexible(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment.start,
-                                                    children: [
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              theme.mobileTexts.b1.fontSize,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                        'Use Group Unit?',
-                                                      ),
-                                                      Column(
-                                                        spacing:
-                                                            5,
-                                                        children: [
-                                                          Text(
-                                                            style: TextStyle(
-                                                              fontSize:
-                                                                  10,
-                                                            ),
-                                                            'This Controls if you want to also manage the group unit of this item  (E.g: Single Unit: Bottle, Group Unit: Crate.)',
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Checkbox(
-                                                  activeColor:
-                                                      theme
-                                                          .lightModeColor
-                                                          .secColor100,
-                                                  value:
-                                                      returnData(
-                                                        context:
-                                                            context,
-                                                      ).useGroupUnit,
-                                                  onChanged: (
-                                                    value,
-                                                  ) {
-                                                    returnData()
-                                                        .toggleUseGroupUnit();
-                                                    FocusManager
-                                                        .instance
-                                                        .primaryFocus
-                                                        ?.unfocus();
-                                                  },
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: 10,
-                                          ),
-                                          Row(
-                                            children: [
-                                              Expanded(
-                                                child: SubWrapper(
-                                                  isVisible:
-                                                      !ItemsAuthAction().applyVariationsAction(
-                                                        context:
-                                                            context,
-                                                      ),
-                                                  mainWidget: MainDropdown(
-                                                    valueSet:
-                                                        returnData(
-                                                          context:
-                                                              context,
-                                                        ).unitValueSet,
-                                                    onTap: () {
-                                                      ItemsAuthAction().applyVariationsAction(
-                                                        context:
-                                                            context,
-                                                        action: () {
-                                                          unitsBottomSheet(
-                                                            context,
-                                                            () {
-                                                              setState(
-                                                                () {
-                                                                  isOpenUnit =
-                                                                      !isOpenUnit;
-                                                                },
-                                                              );
-                                                            },
-                                                          );
-                                                          setState(
-                                                            () {
-                                                              isOpenUnit =
-                                                                  !isOpenUnit;
-                                                            },
-                                                          );
-                                                        },
+                                                  .tempUnitsList
+                                                  .isNotEmpty,
+                                          onTap: () {
+                                            ItemsAuthAction().applyVariationsAction(
+                                              context:
+                                                  context,
+                                              action: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (
+                                                      context,
+                                                    ) {
+                                                      return ProductUnitsPage(
+                                                        productUuid:
+                                                            createdProductUuid ??
+                                                            '',
                                                       );
                                                     },
-                                                    isOpen:
-                                                        isOpenUnit,
-                                                    title:
-                                                        'Item Unit (Optional)',
-                                                    hint:
-                                                        returnData(
-                                                          context:
-                                                              context,
-                                                        ).selectedUnit ??
-                                                        'Select Item Unit',
-                                                    theme:
-                                                        theme,
                                                   ),
-                                                ),
-                                              ),
-                                              Visibility(
-                                                visible:
-                                                    returnData()
-                                                        .useGroupUnit ==
-                                                    true,
-                                                child:
-                                                    SizedBox(
-                                                      width:
-                                                          10,
-                                                    ),
-                                              ),
-                                              Visibility(
-                                                visible:
-                                                    returnData()
-                                                        .useGroupUnit ==
-                                                    true,
-                                                child: Expanded(
-                                                  child: SubWrapper(
-                                                    isVisible:
-                                                        !ItemsAuthAction().useGroupUnitAction(
-                                                          context:
-                                                              context,
-                                                        ),
-                                                    mainWidget: MainDropdown(
-                                                      valueSet:
-                                                          returnData(
-                                                            context:
-                                                                context,
-                                                          ).groupUnitValueSet,
-                                                      onTap: () {
-                                                        ItemsAuthAction().useGroupUnitAction(
-                                                          context:
-                                                              context,
-                                                          action: () {
-                                                            groupUnitsBottomSheet(
-                                                              context,
-                                                              () {
-                                                                setState(
-                                                                  () {
-                                                                    isOpenGroupUnit =
-                                                                        !isOpenGroupUnit;
-                                                                  },
-                                                                );
-                                                              },
-                                                            );
-                                                            setState(
-                                                              () {
-                                                                isOpenGroupUnit =
-                                                                    !isOpenGroupUnit;
-                                                              },
-                                                            );
-                                                          },
-                                                        );
-                                                      },
-                                                      isOpen:
-                                                          isOpenGroupUnit,
-                                                      title:
-                                                          'Item Group Unit (Optional)',
-                                                      hint:
-                                                          returnData(
-                                                            context:
-                                                                context,
-                                                          ).selectedGroupUnit ??
-                                                          'Select Item Group Unit',
-                                                      theme:
-                                                          theme,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            height: 10,
-                                          ),
-                                          Visibility(
-                                            visible:
-                                                returnData()
-                                                    .useGroupUnit ==
-                                                true,
-                                            child: Column(
-                                              children: [
-                                                EditCartTextField(
-                                                  theme:
-                                                      theme,
-                                                  hint:
-                                                      'Enter Item Quantity in Group',
-                                                  title:
-                                                      'Quantity in Group (Optional)',
-                                                  controller:
-                                                      widget
-                                                          .qttyPerGroupController,
-                                                ),
-                                                SizedBox(
-                                                  height:
-                                                      10,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
+                                                );
+                                              },
+                                            );
+                                          },
+                                          isOpen:
+                                              returnData()
+                                                  .tempUnitsList
+                                                  .isNotEmpty,
+                                          title:
+                                              'Item Unit(s) (Optional)',
+                                          hint:
+                                              returnData(
+                                                    context:
+                                                        context,
+                                                  ).tempUnitsList.isEmpty
+                                                  ? 'Unit Not Set'
+                                                  : "${returnData(context: context).tempUnitsList.firstWhere((item) => item.isPrimary).name} and (${returnData(context: context).tempUnitsList.length - 1}) More",
+                                          theme: theme,
+                                        ),
                                       ),
-                                      SizedBox(height: 10),
-                                    ],
+                                    ),
                                   ),
                                 ],
                               ),
