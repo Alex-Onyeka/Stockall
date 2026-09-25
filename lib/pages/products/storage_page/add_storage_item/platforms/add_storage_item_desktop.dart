@@ -89,7 +89,7 @@ class _AddStorageItemDesktopState
               final dataProvider =
                   returnStorageProductProvider();
               var product = TempStorageProducts(
-                unitsList: returnData().tempUnitsList,
+                unitsList: returnData().getTempUnitList(),
                 useGroupUnit: returnData().useGroupUnit,
                 shopId: shopId(),
                 name: widget.nameController.text.trim(),
@@ -191,7 +191,7 @@ class _AddStorageItemDesktopState
                 isQuantityUpdate: false,
                 quantityChange: null,
                 product: TempStorageProducts(
-                  unitsList: returnData().tempUnitsList,
+                  unitsList: returnData().getTempUnitList(),
                   useGroupUnit: returnData().useGroupUnit,
                   createdAt:
                       widget.storageProduct?.createdAt,

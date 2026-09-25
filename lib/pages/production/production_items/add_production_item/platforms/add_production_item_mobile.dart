@@ -119,7 +119,8 @@ class _AddProductionItemMobileState
                     productionItemHistory:
                         productionItemHistory,
                     productionItem: ProductionItem(
-                      unitsList: dataProvider.tempUnitsList,
+                      unitsList:
+                          dataProvider.getTempUnitList(),
                       useGroupUnit:
                           dataProvider.useGroupUnit,
                       categories:
@@ -231,7 +232,7 @@ class _AddProductionItemMobileState
               isQuantityUpdate: false,
               quantityChange: null,
               productionItem: ProductionItem(
-                unitsList: dataProvider.tempUnitsList,
+                unitsList: dataProvider.getTempUnitList(),
                 useGroupUnit: dataProvider.useGroupUnit,
                 categories:
                     dataProvider.selectedCategories

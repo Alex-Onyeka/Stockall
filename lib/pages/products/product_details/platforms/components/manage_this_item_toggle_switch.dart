@@ -8,9 +8,11 @@ import 'package:stockall/main.dart';
 
 class ManageThisItemToggleSwitch extends StatefulWidget {
   final TempProductClass product;
+  final Function() setStateAction;
   const ManageThisItemToggleSwitch({
     super.key,
     required this.product,
+    required this.setStateAction,
   });
 
   @override
@@ -121,6 +123,7 @@ class _ManageThisItemToggleSwitchState
                         ),
                         oldProduct: widget.product,
                       );
+                      widget.setStateAction();
                       setState(() {
                         isLoading = false;
                       });

@@ -122,7 +122,7 @@ class _AddMaterialDesktopState
                 isMultiple: false,
                 materialsItemHistoy: materialsItemHistory,
                 material: MaterialClass(
-                  unitsList: dataProvider.tempUnitsList,
+                  unitsList: dataProvider.getTempUnitList(),
                   useGroupUnit: dataProvider.useGroupUnit,
                   categories:
                       dataProvider.selectedCategories
@@ -232,7 +232,7 @@ class _AddMaterialDesktopState
               isQuantityUpdate: false,
               quantityChange: null,
               material: MaterialClass(
-                unitsList: dataProvider.tempUnitsList,
+                unitsList: dataProvider.getTempUnitList(),
                 useGroupUnit: dataProvider.useGroupUnit,
                 categories:
                     dataProvider.selectedCategories

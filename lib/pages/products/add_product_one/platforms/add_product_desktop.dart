@@ -136,8 +136,7 @@ class _AddProductDesktopState
                 isMultiple: false,
                 itemHistory: itemHistory,
                 product: TempProductClass(
-                  unitsList:
-                      dataProvider.tempUnitsList.toList(),
+                  unitsList: dataProvider.getTempUnitList(),
                   useGroupUnit: dataProvider.useGroupUnit,
                   categories:
                       dataProvider.selectedCategories
@@ -276,7 +275,7 @@ class _AddProductDesktopState
               isQuantityUpdate: false,
               quantityChange: null,
               product: TempProductClass(
-                unitsList: provider.tempUnitsList.toList(),
+                unitsList: provider.getTempUnitList(),
                 useGroupUnit: provider.useGroupUnit,
                 categories:
                     provider.selectedCategories.toList(),

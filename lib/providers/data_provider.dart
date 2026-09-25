@@ -3138,6 +3138,12 @@ class DataProvider extends ChangeNotifier {
 
   List<ProductUnitsClass> tempUnitsList = [];
 
+  List<ProductUnitsClass> getTempUnitList() {
+    return tempUnitsList
+        .map((item) => item.copyWith())
+        .toList();
+  }
+
   List<ProductUnitsClass> tempUnitsListSorted() {
     tempUnitsList.sort(
       (a, b) => a.conversion.compareTo(b.conversion),

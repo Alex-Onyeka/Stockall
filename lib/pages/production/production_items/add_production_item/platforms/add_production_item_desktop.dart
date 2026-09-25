@@ -122,7 +122,8 @@ class _AddProductionItemDesktopState
                     productionItemHistory:
                         productionItemHistory,
                     productionItem: ProductionItem(
-                      unitsList: dataProvider.tempUnitsList,
+                      unitsList:
+                          dataProvider.getTempUnitList(),
                       useGroupUnit:
                           dataProvider.useGroupUnit,
                       categories:
@@ -234,7 +235,7 @@ class _AddProductionItemDesktopState
               isQuantityUpdate: false,
               quantityChange: null,
               productionItem: ProductionItem(
-                unitsList: dataProvider.tempUnitsList,
+                unitsList: dataProvider.getTempUnitList(),
                 useGroupUnit: dataProvider.useGroupUnit,
                 categories:
                     dataProvider.selectedCategories

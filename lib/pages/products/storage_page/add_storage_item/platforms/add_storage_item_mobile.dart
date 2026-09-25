@@ -87,7 +87,7 @@ class AddStorageItemMobileState
               final dataProvider =
                   returnStorageProductProvider();
               var product = TempStorageProducts(
-                unitsList: returnData().tempUnitsList,
+                unitsList: returnData().getTempUnitList(),
                 useGroupUnit: returnData().useGroupUnit,
                 shopId: shopId(),
                 name: widget.nameController.text.trim(),
@@ -189,7 +189,7 @@ class AddStorageItemMobileState
                 isQuantityUpdate: false,
                 quantityChange: null,
                 product: TempStorageProducts(
-                  unitsList: returnData().tempUnitsList,
+                  unitsList: returnData().getTempUnitList(),
                   useGroupUnit: returnData().useGroupUnit,
                   createdAt:
                       widget.storageProduct?.createdAt,

@@ -225,6 +225,9 @@ class _ProductDetailsMobileState
                                       ),
                                       ManageThisItemToggleSwitch(
                                         product: product,
+                                        setStateAction: () {
+                                          setState(() {});
+                                        },
                                       ),
                                     ],
                                   ),

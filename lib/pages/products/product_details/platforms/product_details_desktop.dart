@@ -291,6 +291,11 @@ class _ProductDetailsDesktopState
                                                 ManageThisItemToggleSwitch(
                                                   product:
                                                       product,
+                                                  setStateAction: () {
+                                                    setState(
+                                                      () {},
+                                                    );
+                                                  },
                                                 ),
                                               ],
                                             ),
