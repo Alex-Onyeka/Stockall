@@ -63,7 +63,7 @@ class _ProductionItemsDetailsMobileState
   Widget build(BuildContext context) {
     // final shopI = returnShopProvider().userShop()!.shopId!;
     List<ProductionItem>? productionItemList =
-        returnProductionItemsProvider()
+        returnProductionItemsProvider(context: context)
             .productionItemListMain
             .where(
               (productionItem) =>

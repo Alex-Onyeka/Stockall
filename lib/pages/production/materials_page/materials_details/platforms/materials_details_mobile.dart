@@ -61,7 +61,8 @@ class _MaterialsDetailsMobileState
   @override
   Widget build(BuildContext context) {
     List<MaterialClass>? materialList =
-        returnMaterialsProvider().materialListMain
+        returnMaterialsProvider(context: context)
+            .materialListMain
             .where(
               (material) =>
                   material.uuid == widget.materialUuid,
