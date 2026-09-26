@@ -172,10 +172,7 @@ class NavProvider extends ChangeNotifier {
       );
       return;
     } else {
-      dataProvider.setAllowedRange(
-        plan: subsription?.plan,
-        context: context,
-      );
+      dataProvider.setAllowedRange(plan: subsription?.plan);
       await userProvider.fetchCurrentUser(context);
       if (dataProvider.isSynced() == 0 && isOnline) {
         if (!dataProvider.isSyncing) {

@@ -164,6 +164,21 @@ class SubscriptionProvider extends ChangeNotifier {
     }
   }
 
+  Future<SubscriptionClass?>
+  getSubscriptionOffline() async {
+    try {
+      await mainLocalLog('Getting Subscription Offline');
+      subscription = SubscriptionFunc().getSubscription();
+      notifyListeners();
+      return subscription;
+    } catch (e) {
+      await mainLocalLog(
+        '❌❌ Get Subscription Error Offline: ${e.toString()}',
+      );
+      return null;
+    }
+  }
+
   Future<int> subscribe({
     required int oldPlan,
     required BuildContext context,

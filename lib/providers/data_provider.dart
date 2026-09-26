@@ -2419,10 +2419,7 @@ class DataProvider extends ChangeNotifier {
 
   int? allowedRangeItems;
 
-  void setAllowedRange({
-    int? plan,
-    required BuildContext context,
-  }) {
+  void setAllowedRange({int? plan}) {
     allowedRangeItems =
         plan == 3
             ? null

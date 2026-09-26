@@ -18,6 +18,7 @@ import 'package:stockall/providers/notifications_provider.dart';
 import 'package:stockall/providers/purchase_provider.dart';
 import 'package:stockall/providers/receipts_provider.dart';
 import 'package:stockall/providers/shop_provider.dart';
+import 'package:stockall/providers/subscription_provider.dart';
 import 'package:stockall/providers/user_provider.dart';
 import 'package:stockall/providers/utility_constant_provider.dart';
 
@@ -583,11 +584,20 @@ class RefreshFunctions {
                       context: safeContext,
                     );
                   }
+                  //
+                  //
+                  //
+                  //
+                  await loadAllDataOffline(
+                    context: context,
+                  );
+                  //
+                  //
+                  //
+                  //
                   if (context.mounted) {
-                    await returnUserProvider(
-                      context,
-                      listen: false,
-                    ).fetchCurrentUser(safeContext);
+                    await returnUserProviderSingle()
+                        .fetchCurrentUser(safeContext);
                   }
                   await utilityConstantProvider
                       .getUtilityConstants();
@@ -600,7 +610,6 @@ class RefreshFunctions {
                   if (safeContext.mounted) {
                     dataProvider.setAllowedRange(
                       plan: subs?.plan,
-                      context: safeContext,
                     );
                   }
                   await mainLocalLog(
@@ -642,6 +651,15 @@ class RefreshFunctions {
             },
           );
         } else {
+          //
+          //
+          //
+          //
+          await loadAllDataOffline(context: context);
+          //
+          //
+          //
+          //
           await getUserShop();
           await utilityConstantProvider
               .getUtilityConstants();
@@ -650,10 +668,7 @@ class RefreshFunctions {
             "Subscription Plan RefreshAll: ${subs?.plan}",
           );
           if (safeContext.mounted) {
-            dataProvider.setAllowedRange(
-              plan: subs?.plan,
-              context: safeContext,
-            );
+            dataProvider.setAllowedRange(plan: subs?.plan);
           }
           await mainLocalLog(
             "Allowed Items RefreshAll: ${dataProvider.allowedRangeItems}",
@@ -692,4 +707,45 @@ class RefreshFunctions {
       dataProvider.toggleRefreshing(false);
     }
   }
+}
+
+Future<void> loadAllDataOffline({
+  required BuildContext context,
+}) async {
+  returnUserProviderSingle().fetchCurrentUserOffline();
+  await returnUtilityConstantProvider()
+      .getUtilityConstantsOffline();
+  var subss =
+      await SubscriptionProvider().getSubscriptionOffline();
+  returnData().setAllowedRange(plan: subss?.plan);
+  await returnDepartmentProvider().getDepartmentsOffline();
+  await returnReceiptProviderSingle().loadReceiptsOffline(
+    shopId(),
+  );
+  if (returnShopProvider().userShop()?.bulkSale == true) {
+    await returnSubStaffProvider().getSubStaffsOffline();
+  }
+  await returnEventsLogProvider().getEventLogsOffline();
+  await returnErrorLogProvider().getErrorLogsOffline();
+  await returnExpensesProviderSingle().getExpensesOffline(
+    shopId(),
+  );
+  await returnUserProviderSingle()
+      .fetchUsersByShopOffline();
+
+  await NotificationProvider()
+      .fetchRecentNotificationsOffline();
+
+  await returnCustomersSingle().fetchCustomersOffline();
+
+  await returnPurchaseProvider().loadPurchasesOffline();
+
+  await returnMaterialsProvider().getMaterialsOffline(
+    shopId(),
+  );
+  await returnProductionItemsProvider()
+      .getProductionItemsOffline(shopId());
+  await returnProductionRecordsProvider()
+      .getProductionRecordsOffline();
+  await returnOrdersProvider().loadOrdersOffline(shopId());
 }

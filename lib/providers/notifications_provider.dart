@@ -130,6 +130,13 @@ class NotificationProvider with ChangeNotifier {
     return _notifications;
   }
 
+  Future<List<TempNotification>>
+  fetchRecentNotificationsOffline() async {
+    _notifications = NotificationFunc().getNotifications();
+    notifyListeners();
+    return _notifications;
+  }
+
   void refreshState() {
     notifyListeners();
   }

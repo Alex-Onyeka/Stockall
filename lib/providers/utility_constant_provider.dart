@@ -66,6 +66,15 @@ class UtilityConstantProvider extends ChangeNotifier {
     }
   }
 
+  Future<UtilityConstants?>
+  getUtilityConstantsOffline() async {
+    utilityConstants =
+        UtilityConstantsFunc().getUtilityConstants();
+    notifyListeners();
+    await mainLocalLog('Utility Constants gotten Offline');
+    return utilityConstants;
+  }
+
   bool hasViewedUpdate = false;
 
   void closeUpdate() {

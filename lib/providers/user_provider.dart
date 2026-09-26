@@ -86,6 +86,29 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
+  Future<List<TempUserClass>> fetchUsersByShopOffline(
+    // BuildContext context,
+  ) async {
+    try {
+      _users = UserFunc().getUsers();
+      notifyListeners();
+
+      _users.sort(
+        (a, b) => a.name.toLowerCase().compareTo(
+          b.name.toLowerCase(),
+        ),
+      );
+      notifyListeners();
+      isLoading = false;
+      return _users;
+    } catch (e) {
+      await mainLocalLog(
+        'Error Fetching Users Offline: ${e.toString()}',
+      );
+      return [];
+    }
+  }
+
   TempUserClass? _currentUser;
   TempUserClass? get currentUserMain => _currentUser;
 
@@ -96,7 +119,6 @@ class UserProvider extends ChangeNotifier {
         LoggedInUserFunc().getLoggedInUser()?.loggedInUser;
     bool isOnline = await ConnectivityProvider().isOnline();
     if (isOnline) {
-      // ignore: use_build_context_synchronously
       if (returnData().isSynced() == 0) {
         returnData(
           // ignore: use_build_context_synchronously
@@ -154,6 +176,17 @@ class UserProvider extends ChangeNotifier {
         'Current Logged In User: ${_currentUser?.name}',
       );
     }
+
+    notifyListeners();
+    return _currentUser;
+  }
+
+  Future<TempUserClass?> fetchCurrentUserOffline() async {
+    _currentUser =
+        LoggedInUserFunc().getLoggedInUser()?.loggedInUser;
+    await mainLocalLog(
+      'Current Logged In User: ${_currentUser?.name}',
+    );
 
     notifyListeners();
     return _currentUser;

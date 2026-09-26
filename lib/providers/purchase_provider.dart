@@ -223,6 +223,18 @@ class PurchaseProvider extends ChangeNotifier {
     return _purchases;
   }
 
+  // READ all Purchases for a shop
+  Future<List<TempPurchase>> loadPurchasesOffline() async {
+    await loadItemPurchaseRecordsOffline();
+
+    _purchases = PurchaseFunc().getPurchases();
+    await loadItemPurchaseRecordsOffline();
+    await mainLocalLog('Offline Purchases Gotten');
+    notifyListeners();
+    notifyListeners();
+    return _purchases;
+  }
+
   DateTime? dateSet;
 
   void clearDate() {
@@ -868,6 +880,23 @@ class PurchaseProvider extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog(
         '❌Error Getting Item Purchase Records: ${e.toString()}',
+      );
+      return [];
+    }
+  }
+
+  // READ sales for a shop
+  Future<List<TempItemPurchaseRecord>>
+  loadItemPurchaseRecordsOffline() async {
+    try {
+      _itemPurchaseRecords =
+          ItemPurchaseFunc().getItemPurchaseRecords();
+
+      notifyListeners();
+      return _itemPurchaseRecords;
+    } catch (e) {
+      await mainLocalLog(
+        '❌Error Getting Item Purchase Records Offline: ${e.toString()}',
       );
       return [];
     }
