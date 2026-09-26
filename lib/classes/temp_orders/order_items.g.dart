@@ -49,13 +49,14 @@ class OrderItemsAdapter extends TypeAdapter<OrderItems> {
       tempQuantity: fields[29] as double?,
       originalUseGroupQuantity: fields[30] as bool?,
       tempUseGroupQuantity: fields[31] as bool?,
+      unitsList: (fields[32] as List?)?.cast<ProductUnitsClass>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, OrderItems obj) {
     writer
-      ..writeByte(32)
+      ..writeByte(33)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -119,7 +120,9 @@ class OrderItemsAdapter extends TypeAdapter<OrderItems> {
       ..writeByte(30)
       ..write(obj.originalUseGroupQuantity)
       ..writeByte(31)
-      ..write(obj.tempUseGroupQuantity);
+      ..write(obj.tempUseGroupQuantity)
+      ..writeByte(32)
+      ..write(obj.unitsList);
   }
 
   @override

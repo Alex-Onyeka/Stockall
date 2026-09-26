@@ -1,4 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
+import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/main.dart';
 
 part 'temp_product_sale_record.g.dart';
 
@@ -103,6 +107,9 @@ class TempProductSaleRecord {
   @HiveField(32)
   bool? isVoid;
 
+  @HiveField(33)
+  List<ProductUnitsClass>? unitsList;
+
   TempProductSaleRecord({
     this.productRecordId,
     required this.createdAt,
@@ -137,6 +144,7 @@ class TempProductSaleRecord {
     required this.useGroupQuantity,
     required this.qttyPerGroup,
     required this.isVoid,
+    required this.unitsList,
   });
 
   factory TempProductSaleRecord.fromJson(
@@ -181,6 +189,14 @@ class TempProductSaleRecord {
       qttyPerGroup:
           (json['qtty_per_group'] as num?)?.toDouble(),
       isVoid: json['is_void'] as bool?,
+      unitsList:
+          (json['units_list'] as List<dynamic>? ?? [])
+              .map(
+                (item) => ProductUnitsClass.fromJson(
+                  item as Map<String, dynamic>,
+                ),
+              )
+              .toList(),
     );
   }
 
@@ -217,6 +233,10 @@ class TempProductSaleRecord {
       'sell_group': useGroupQuantity,
       'qtty_per_group': qttyPerGroup,
       'is_void': isVoid,
+      'units_list': ProductUnitsClass.getUnitList(
+        tempUnitList: unitsList,
+        productUuid: uuid,
+      ),
     };
   }
 
@@ -252,6 +272,7 @@ class TempProductSaleRecord {
     bool? useGroupQuantity,
     double? qttyPerGroup,
     bool? isVoid,
+    List<ProductUnitsClass>? unitsList,
   }) {
     return TempProductSaleRecord(
       productRecordId:
@@ -290,7 +311,108 @@ class TempProductSaleRecord {
           useGroupQuantity ?? this.useGroupQuantity,
       qttyPerGroup: qttyPerGroup ?? this.qttyPerGroup,
       isVoid: isVoid ?? this.isVoid,
+      unitsList: unitsList ?? this.unitsList,
     );
+  }
+
+  List<ProductUnitsClass> getUnitListFinal() {
+    return getUnitsList()
+        .map((item) => item.copyWith())
+        .toList();
+  }
+
+  double getPrimaryUnitQuantity({
+    BuildContext? context,
+    required int index,
+  }) {
+    if (unitsList == null || unitsList?.isEmpty == true) {
+      return quantity;
+    } else {
+      var items = unitsList!.where(
+        (item) => item.isPrimary,
+      );
+      if (items.isEmpty) {
+        return quantity;
+      } else {
+        var item = items.first;
+        return item.getQuantityEquivDivided(
+          index: index,
+          context: context,
+        );
+      }
+    }
+  }
+
+  ProductUnitsClass getProductUnit({String? unitUuid}) {
+    var items = getUnitsList().where(
+      (item) => item.uuid == unitUuid,
+    );
+    if (unitUuid == null || items.isEmpty) {
+      return getPrimaryUnit();
+    } else {
+      return getUnitsList().firstWhere(
+        (item) => item.uuid == unitUuid,
+      );
+    }
+  }
+
+  ProductUnitsClass getPrimaryUnit() {
+    if (getUnitsList().isEmpty == true ||
+        getUnitsList()
+            .where((item) => item.isPrimary == true)
+            .isEmpty) {
+      return ProductUnitsClass(
+        uuid: uuidGen(),
+        staffUuid: currentUser().userId,
+        createdAt: DateTime.now(),
+        staffName: currentUser().name,
+        conversion: 1,
+        name:
+            unit == 'Others'
+                ? 'Unit(s)'
+                : unit ?? 'Unit(s)',
+        isPrimary: true,
+        productUuid: uuid!,
+      );
+    } else {
+      return getUnitsList()
+          .where((item) => item.isPrimary == true)
+          .first;
+    }
+  }
+
+  List<ProductUnitsClass> getUnitsList() {
+    List<ProductUnitsClass> tempList() {
+      if (unitsList == null || unitsList?.isEmpty == true) {
+        List<ProductUnitsClass> tempList = [
+          ProductUnitsClass(
+            uuid: uuidGen(),
+            staffUuid: currentUser().userId,
+            createdAt: DateTime.now(),
+            staffName: currentUser().name,
+            conversion: 1,
+            name:
+                unit == 'Others'
+                    ? 'Unit(s)'
+                    : unit ?? 'Unit(s)',
+            isPrimary: true,
+            productUuid: uuid!,
+          ),
+        ];
+        return tempList;
+      } else {
+        return unitsList ?? [];
+      }
+    }
+
+    if (tempList().length < 2) {
+      return tempList();
+    } else {
+      return [
+        tempList().firstWhere((item) => item.isPrimary),
+        ...tempList().where((item) => !item.isPrimary),
+      ];
+    }
   }
 
   double getActualQuantity() {

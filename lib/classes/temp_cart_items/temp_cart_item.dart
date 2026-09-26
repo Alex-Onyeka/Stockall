@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:hive/hive.dart';
@@ -118,6 +120,94 @@ class TempCartItem extends HiveObject {
       remainingBalance: json['remaining_balance'],
       remainingQuantity: json['remaining_quantity'],
     );
+  }
+
+  TempCartItem copyWith({
+    TempProductClass? item,
+    double? discount,
+    double? fixedDiscount,
+    double? quantity,
+    double? customPrice,
+    bool? setCustomPrice,
+    bool? useWholeSalePrice,
+    bool? setTotalPrice,
+    bool? addToStock,
+    String? salesRecordId,
+    bool? useGroupQuantity,
+    double? qttyPerGroup,
+    bool? isVoid,
+    String? itemUuid,
+    String? uuid,
+    double? remainingQuantity,
+    double? remainingBalance,
+  }) {
+    return TempCartItem(
+      item: item ?? this.item,
+      discount: discount ?? this.discount,
+      fixedDiscount: fixedDiscount ?? this.fixedDiscount,
+      quantity: quantity ?? this.quantity,
+      customPrice: customPrice ?? this.customPrice,
+      setCustomPrice: setCustomPrice ?? this.setCustomPrice,
+      useWholeSalePrice:
+          useWholeSalePrice ?? this.useWholeSalePrice,
+      setTotalPrice: setTotalPrice ?? this.setTotalPrice,
+      addToStock: addToStock ?? this.addToStock,
+      salesRecordId: salesRecordId ?? this.salesRecordId,
+      useGroupQuantity:
+          useGroupQuantity ?? this.useGroupQuantity,
+      qttyPerGroup: qttyPerGroup ?? this.qttyPerGroup,
+      isVoid: isVoid ?? this.isVoid,
+      itemUuid: itemUuid ?? this.itemUuid,
+      uuid: uuid ?? this.uuid,
+      remainingQuantity:
+          remainingQuantity ?? this.remainingQuantity,
+      remainingBalance:
+          remainingBalance ?? this.remainingBalance,
+    );
+  }
+
+  List<ProductUnitsClass> getUnitListFinal() {
+    return getUnitsList()
+        .map((item) => item.copyWith())
+        .toList();
+  }
+
+  double getPrimaryUnitQuantity({
+    BuildContext? context,
+    required int index,
+  }) {
+    if (getItem()?.unitsList == null ||
+        getItem()?.unitsList?.isEmpty == true) {
+      return quantity;
+    } else {
+      var items = getItem()?.unitsList!.where(
+        (item) => item.isPrimary,
+      );
+      if (items?.isEmpty == true) {
+        return quantity;
+      } else {
+        var item = items?.first;
+        return item?.getQuantityEquivDivided(
+              index: index,
+              context: context,
+            ) ??
+            0;
+      }
+    }
+  }
+
+  ProductUnitsClass getProductUnit({String? unitUuid}) {
+    return getItem()!.getProductUnit(unitUuid: unitUuid);
+  }
+
+  ProductUnitsClass getPrimaryUnit() {
+    return getUnitsList()
+        .where((item) => item.isPrimary == true)
+        .first;
+  }
+
+  List<ProductUnitsClass> getUnitsList() {
+    return getItem()?.getUnitsList() ?? [];
   }
 
   TempProductClass? getItem() {
@@ -452,50 +542,6 @@ class TempCartItem extends HiveObject {
         return item.unit;
       }
     }
-  }
-
-  TempCartItem copyWith({
-    TempProductClass? item,
-    double? discount,
-    double? fixedDiscount,
-    double? quantity,
-    double? customPrice,
-    bool? setCustomPrice,
-    bool? useWholeSalePrice,
-    bool? setTotalPrice,
-    bool? addToStock,
-    String? salesRecordId,
-    bool? useGroupQuantity,
-    double? qttyPerGroup,
-    bool? isVoid,
-    String? itemUuid,
-    String? uuid,
-    double? remainingQuantity,
-    double? remainingBalance,
-  }) {
-    return TempCartItem(
-      item: item ?? this.item,
-      discount: discount ?? this.discount,
-      fixedDiscount: fixedDiscount ?? this.fixedDiscount,
-      quantity: quantity ?? this.quantity,
-      customPrice: customPrice ?? this.customPrice,
-      setCustomPrice: setCustomPrice ?? this.setCustomPrice,
-      useWholeSalePrice:
-          useWholeSalePrice ?? this.useWholeSalePrice,
-      setTotalPrice: setTotalPrice ?? this.setTotalPrice,
-      addToStock: addToStock ?? this.addToStock,
-      salesRecordId: salesRecordId ?? this.salesRecordId,
-      useGroupQuantity:
-          useGroupQuantity ?? this.useGroupQuantity,
-      qttyPerGroup: qttyPerGroup ?? this.qttyPerGroup,
-      isVoid: isVoid ?? this.isVoid,
-      itemUuid: itemUuid ?? this.itemUuid,
-      uuid: uuid ?? this.uuid,
-      remainingQuantity:
-          remainingQuantity ?? this.remainingQuantity,
-      remainingBalance:
-          remainingBalance ?? this.remainingBalance,
-    );
   }
 
   // double profitOrLoss() {

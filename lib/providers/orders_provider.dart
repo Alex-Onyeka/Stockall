@@ -877,6 +877,7 @@ class OrdersProvider extends ChangeNotifier {
                 'Sales Record about to be Created',
               );
               return TempProductSaleRecord(
+                unitsList: record.getUnitListFinal(),
                 isVoid: false,
                 customPriceSet: record.customPriceSet,
                 createdAt: createdAt,

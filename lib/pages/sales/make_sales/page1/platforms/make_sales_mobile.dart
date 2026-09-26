@@ -3103,17 +3103,35 @@ class _SwitchSaleTypeWidgetMobileState
               ];
             },
             child: Container(
-              padding: EdgeInsets.fromLTRB(15, 5, 5, 5),
+              padding: EdgeInsets.fromLTRB(10, 5, 5, 5),
               child: Row(
                 spacing: 5,
                 children: [
-                  Text(
-                    style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b4.fontSize,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    'Sale Type',
+                  Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b4.fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        'Sale Type',
+                      ),
+                      Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b5.fontSize,
+                          fontWeight: FontWeight.normal,
+                          color:
+                              theme
+                                  .lightModeColor
+                                  .secColor200,
+                        ),
+                        "[ ${currentCart().getGeneralSalesType()} ]",
+                      ),
+                    ],
                   ),
                   Icon(Icons.keyboard_arrow_down_rounded),
                 ],

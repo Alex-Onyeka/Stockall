@@ -1215,6 +1215,7 @@ class SalesProvider extends ChangeNotifier {
                 );
 
                 return TempProductSaleRecord(
+                  unitsList: cartItem.getUnitListFinal(),
                   isVoid: cartItem.isVoid ?? false,
                   qttyPerGroup: cartItem.qttyPerGroup,
                   useGroupQuantity:
@@ -1622,6 +1623,7 @@ class SalesProvider extends ChangeNotifier {
               ) {
                 final product = cartItem.getItem();
                 return TempProductSaleRecord(
+                  unitsList: cartItem.getUnitListFinal(),
                   isVoid: cartItem.isVoid ?? false,
                   qttyPerGroup: cartItem.qttyPerGroup,
                   useGroupQuantity:
@@ -1684,6 +1686,7 @@ class SalesProvider extends ChangeNotifier {
                 );
 
                 return TempProductSaleRecord(
+                  unitsList: cartItem.getUnitListFinal(),
                   isVoid: cartItem.isVoid ?? false,
                   qttyPerGroup: cartItem.qttyPerGroup,
                   useGroupQuantity:
@@ -2038,6 +2041,7 @@ class SalesProvider extends ChangeNotifier {
               );
 
               return OrderItems(
+                unitsList: cartItem.getUnitListFinal(),
                 originalUseGroupQuantity:
                     cartItem.getItem()?.useGroupUnit ??
                     false,
@@ -3228,9 +3232,11 @@ class SalesProvider extends ChangeNotifier {
           newRecord.revenue = newRecord.originalCost!;
           // record.discount = 0;
         }
+        var newProduct = product.first.copyWith();
+        newProduct.unitsList = record.getUnitListFinal();
         final cartItem = saleRecordToCartItem(
           record: newRecord,
-          product: product.first,
+          product: newProduct,
         );
         cartItems.add(cartItem);
       } else {
@@ -3258,7 +3264,7 @@ class SalesProvider extends ChangeNotifier {
                     record.quantity;
 
         TempProductClass productNew = TempProductClass(
-          unitsList: [],
+          unitsList: record.getUnitListFinal(),
           useGroupUnit: false,
           categories: [],
           storageUuid: null,

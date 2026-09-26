@@ -427,12 +427,7 @@ class TempProductClass {
         if (quantity == null || quantity == 0) {
           return 'Stock Out';
         } else {
-          return formatLargeNumberDouble(
-            getPrimaryUnitQuantity(
-              context: context,
-              index: index,
-            ),
-          );
+          return "${formatLargeNumberDouble(getPrimaryUnitQuantity(context: context, index: index))}${getPrimaryUnit().name == 'Others' ? '' : ' ${cutLongText(getProductUnit().name, 7)}'}";
         }
       }
     }

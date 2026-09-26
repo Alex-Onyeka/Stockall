@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class ProductTileMain extends StatefulWidget {
@@ -117,7 +118,7 @@ class _ProductTileMainState extends State<ProductTileMain> {
                       ),
                       Container(
                         height: 50,
-                        width: 50,
+                        width: 30,
                         decoration: BoxDecoration(
                           borderRadius:
                               BorderRadius.circular(5),
@@ -138,6 +139,8 @@ class _ProductTileMainState extends State<ProductTileMain> {
                               mainAxisAlignment:
                                   MainAxisAlignment
                                       .spaceBetween,
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
                               children: [
                                 Flexible(
                                   child: Row(
@@ -211,6 +214,45 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                         ),
                                       ),
                                     ],
+                                  ),
+                                ),
+                                Visibility(
+                                  visible:
+                                      widget
+                                              .product
+                                              .departmentUuid !=
+                                          null &&
+                                      shop(
+                                            context,
+                                          )?.manageDepartments ==
+                                          true,
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(
+                                          horizontal: 5.0,
+                                        ),
+                                    child: Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            widget
+                                                .theme
+                                                .mobileTexts
+                                                .b4
+                                                .fontSize,
+                                        color:
+                                            widget
+                                                .theme
+                                                .lightModeColor
+                                                .secColor200,
+                                      ),
+                                      cutLongText(
+                                        widget
+                                                .product
+                                                .departmentName ??
+                                            'Not Set',
+                                        10,
+                                      ),
+                                    ),
                                   ),
                                 ),
                                 Visibility(
@@ -513,40 +555,40 @@ class _ProductTileMainState extends State<ProductTileMain> {
               ),
             ),
           ),
-          Visibility(
-            visible: widget.product.discount != null,
-            child: Align(
-              alignment: Alignment(0.7, 0),
-              child: Container(
-                padding: EdgeInsets.fromLTRB(6, 5, 6, 7),
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(
-                    190,
-                    139,
-                    18,
-                    10,
-                  ),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(10),
-                    bottomRight: Radius.circular(10),
-                  ),
-                ),
-                child: Text(
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                    fontSize:
-                        widget
-                            .theme
-                            .mobileTexts
-                            .b4
-                            .fontSize,
-                  ),
-                  '${widget.product.discount ?? '0'}%',
-                ),
-              ),
-            ),
-          ),
+          // Visibility(
+          //   visible: widget.product.discount != null,
+          //   child: Align(
+          //     alignment: Alignment(0.7, 0),
+          //     child: Container(
+          //       padding: EdgeInsets.fromLTRB(6, 5, 6, 7),
+          //       decoration: BoxDecoration(
+          //         color: const Color.fromARGB(
+          //           190,
+          //           139,
+          //           18,
+          //           10,
+          //         ),
+          //         borderRadius: BorderRadius.only(
+          //           bottomLeft: Radius.circular(10),
+          //           bottomRight: Radius.circular(10),
+          //         ),
+          //       ),
+          //       child: Text(
+          //         style: TextStyle(
+          //           color: Colors.white,
+          //           fontWeight: FontWeight.w800,
+          //           fontSize:
+          //               widget
+          //                   .theme
+          //                   .mobileTexts
+          //                   .b4
+          //                   .fontSize,
+          //         ),
+          //         '${widget.product.discount ?? '0'}%',
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

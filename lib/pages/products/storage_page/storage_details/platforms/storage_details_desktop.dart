@@ -99,8 +99,7 @@ class _StorageDetailsDesktopState
                     Scaffold(
                       appBar: appBar(
                         context: context,
-                        title:
-                            'Item Details ${product.quantity ?? 0}',
+                        title: 'Item Details',
                         widget: InkWell(
                           mouseCursor:
                               SystemMouseCursors.click,

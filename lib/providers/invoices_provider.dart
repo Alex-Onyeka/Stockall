@@ -479,6 +479,7 @@ class InvoicesProvider extends ChangeNotifier {
                 'Sales Record about to be Created',
               );
               return TempProductSaleRecord(
+                unitsList: record.getUnitListFinal(),
                 isVoid: record.isVoid ?? false,
                 customPriceSet: record.customPriceSet,
                 createdAt: createdAt,

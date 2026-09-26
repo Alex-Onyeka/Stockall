@@ -567,6 +567,25 @@ class _ProductDetailsDesktopState
                                             text:
                                                 'Can Set Custom Price?',
                                           ),
+                                          Visibility(
+                                            visible:
+                                                shop(
+                                                  context,
+                                                )?.manageDepartments ==
+                                                true,
+                                            child: BottomInfoSection(
+                                              theme:
+                                                  widget
+                                                      .theme,
+                                              mainText: cutLongText(
+                                                product.departmentName ??
+                                                    'Not Set',
+                                                20,
+                                              ),
+                                              text:
+                                                  'Department',
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
