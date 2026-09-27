@@ -1111,6 +1111,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                     ).pop();
                                   },
                                   editCartItem: TempCartItem(
+                                    unitUuid: null,
                                     itemUuid: null,
                                     uuid: uuidGen(),
                                     isVoid: false,
@@ -1201,6 +1202,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   ).pop();
                                 },
                                 editCartItem: TempCartItem(
+                                  unitUuid: null,
                                   itemUuid: null,
                                   uuid: uuidGen(),
                                   isVoid: false,
@@ -1316,6 +1318,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         ).pop();
                                       },
                                       editCartItem: TempCartItem(
+                                        unitUuid: null,
                                         itemUuid: null,
                                         uuid: uuidGen(),
                                         isVoid: false,
@@ -1416,6 +1419,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   ).pop();
                                 },
                                 editCartItem: TempCartItem(
+                                  unitUuid: null,
                                   itemUuid: null,
                                   uuid: uuidGen(),
                                   isVoid: false,
@@ -1608,6 +1612,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                           ).pop();
                                                         },
                                                         editCartItem: TempCartItem(
+                                                          unitUuid:
+                                                              null,
                                                           itemUuid:
                                                               null,
                                                           uuid:
@@ -1786,7 +1792,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                   context:
                                                                       context,
                                                                   cartItemTemp:
-                                                                      item,
+                                                                      item.copyWith(),
                                                                 );
                                                               } else {
                                                                 returnSalesProvider().toggleAddToStock(
@@ -1912,7 +1918,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                           context:
                                                                               context,
                                                                           cartItemTemp:
-                                                                              item,
+                                                                              item.copyWith(),
                                                                         );
                                                                       } else {
                                                                         returnSalesProvider().toggleAddToStock(
@@ -2038,6 +2044,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                 context:
                                                                     context,
                                                                 newItem: TempCartItem(
+                                                                  unitUuid:
+                                                                      null,
                                                                   uuid:
                                                                       uuidGen(),
                                                                   itemUuid:
@@ -2300,6 +2308,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               ).pop();
                                                             },
                                                             editCartItem: TempCartItem(
+                                                              unitUuid:
+                                                                  null,
                                                               itemUuid:
                                                                   null,
                                                               uuid:

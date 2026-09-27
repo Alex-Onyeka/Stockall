@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
-import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -369,7 +368,7 @@ class _ProductTileCartSearchState
                                     ),
 
                                     widget.product
-                                        .getQuantityText(
+                                        .getQuantityTextCartTileSearch(
                                           context: context,
                                           index: 1,
                                         ),
@@ -405,32 +404,8 @@ class _ProductTileCartSearchState
                                                 .lightModeColor
                                                 .prColor300,
                                       ),
-                                      widget
-                                                  .product
-                                                  .discount ==
-                                              null
-                                          ? (widget
-                                                      .product
-                                                      .sellingPrice !=
-                                                  null
-                                              ? formatMoneyMid(
-                                                amount:
-                                                    widget
-                                                        .product
-                                                        .sellingPrice ??
-                                                    0,
-                                                context:
-                                                    context,
-                                              )
-                                              : 'Price Not Set')
-                                          : formatMoneyMid(
-                                            amount:
-                                                ((widget.product.sellingPrice ??
-                                                        0.0) -
-                                                    ((widget.product.sellingPrice ??
-                                                            0.0) *
-                                                        (widget.product.discount! /
-                                                            100))),
+                                      widget.product
+                                          .getItemTilePriceWithDiscount(
                                             context:
                                                 context,
                                           ),
@@ -465,14 +440,11 @@ class _ProductTileCartSearchState
                                             FontWeight.bold,
                                         color: Colors.grey,
                                       ),
-                                      formatMoneyMid(
-                                        amount:
-                                            widget
-                                                .product
-                                                .sellingPrice ??
-                                            0,
-                                        context: context,
-                                      ),
+                                      widget.product
+                                          .getItemTilePriceNoDiscount(
+                                            context:
+                                                context,
+                                          ),
                                     ),
                                   ),
                                 ],

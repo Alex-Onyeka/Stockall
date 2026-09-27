@@ -586,6 +586,7 @@ class OrdersProvider extends ChangeNotifier {
       }
     }
     return TempCartItem(
+      unitUuid: record.unitUuid,
       uuid: record.uuid,
       itemUuid: product.uuid,
       isVoid: false,
@@ -877,6 +878,7 @@ class OrdersProvider extends ChangeNotifier {
                 'Sales Record about to be Created',
               );
               return TempProductSaleRecord(
+                unitUuid: record.unitUuid,
                 unitsList: record.getUnitListFinal(),
                 isVoid: false,
                 customPriceSet: record.customPriceSet,

@@ -479,6 +479,7 @@ class InvoicesProvider extends ChangeNotifier {
                 'Sales Record about to be Created',
               );
               return TempProductSaleRecord(
+                unitUuid: record.unitUuid,
                 unitsList: record.getUnitListFinal(),
                 isVoid: record.isVoid ?? false,
                 customPriceSet: record.customPriceSet,
@@ -754,6 +755,7 @@ class InvoicesProvider extends ChangeNotifier {
       }
     }
     return TempCartItem(
+      unitUuid: record.unitUuid,
       uuid: record.uuid,
       itemUuid: product.uuid,
       isVoid: record.isVoid ?? false,

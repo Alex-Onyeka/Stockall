@@ -87,7 +87,7 @@ class AddStorageItemMobileState
               final dataProvider =
                   returnStorageProductProvider();
               var product = TempStorageProducts(
-                unitsList: returnData().getTempUnitList(),
+                unitsList: returnData().tempUnitsList,
                 useGroupUnit: returnData().useGroupUnit,
                 shopId: shopId(),
                 name: widget.nameController.text.trim(),
@@ -100,7 +100,7 @@ class AddStorageItemMobileState
                 quantity: null,
                 unit: returnData().selectedUnit,
                 updatedAt: DateTime.now(),
-                uuid: uuidGen(),
+                uuid: createdProductUuid,
                 costPrice: double.tryParse(
                   widget.costPriceController.text
                       .replaceAll(',', ''),
@@ -189,12 +189,12 @@ class AddStorageItemMobileState
                 isQuantityUpdate: false,
                 quantityChange: null,
                 product: TempStorageProducts(
-                  unitsList: returnData().getTempUnitList(),
+                  unitsList: returnData().tempUnitsList,
                   useGroupUnit: returnData().useGroupUnit,
                   createdAt:
                       widget.storageProduct?.createdAt,
                   updatedAt: DateTime.now(),
-                  uuid: widget.storageProduct?.uuid,
+                  uuid: createdProductUuid,
                   name: widget.nameController.text.trim(),
                   unit:
                       dataProvider.selectedUnit ??

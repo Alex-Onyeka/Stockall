@@ -50,7 +50,7 @@ class StorageItemHistoryMobileState
     List<StorageItemHistory>? itemHistories =
         returnStorageItemHistoryProvider(
           context: context,
-        ).storageItemHistories.where((history) {
+        ).returnItemHistories().where((history) {
           if (widget.productUuid != null) {
             return history.storageItemUuid ==
                     widget.productUuid &&

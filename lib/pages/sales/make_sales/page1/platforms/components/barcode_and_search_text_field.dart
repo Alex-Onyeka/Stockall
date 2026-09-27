@@ -72,6 +72,7 @@ class _BarcodeAndSearchTextFieldState
                           // isEdit: false,
                           context: context,
                           newItem: TempCartItem(
+                            unitUuid: null,
                             uuid: uuidGen(),
                             itemUuid: items.first.uuid,
                             isVoid: false,
@@ -204,7 +205,8 @@ class _BarcodeAndSearchTextFieldState
                                           priceNode:
                                               widget
                                                   .priceNode,
-                                          product: item,
+                                          product:
+                                              item.copyWith(),
                                           qttyNode:
                                               widget
                                                   .qtyNode,

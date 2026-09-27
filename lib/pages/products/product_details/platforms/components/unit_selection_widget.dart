@@ -15,6 +15,7 @@ class UnitSelectionWidget extends StatefulWidget {
   final String? unitUuid;
   final Function(String? uuid)? setUnitUuid;
   final bool? showSelectUnitText;
+  final List<ProductUnitsClass>? unitList;
   const UnitSelectionWidget({
     super.key,
     required this.product,
@@ -24,6 +25,7 @@ class UnitSelectionWidget extends StatefulWidget {
     required this.theme,
     required this.unitUuid,
     required this.setUnitUuid,
+    this.unitList,
     this.showSelectUnitText,
   });
 
@@ -57,11 +59,31 @@ class _UnitSelectionWidgetState
             color: Colors.white,
             itemBuilder:
                 (context) =>
+                    widget.unitList
+                        ?.map(
+                          (item) =>
+                              myPopUpMenuItemUnitSelection(
+                                unitList: widget.unitList,
+                                item: item,
+                                material: widget.material,
+                                storageProduct:
+                                    widget.storageProduct,
+                                product: widget.product,
+                                productionItem:
+                                    widget.productionItem,
+                                setUnitUuid:
+                                    widget.setUnitUuid,
+                                theme: widget.theme,
+                                unitUuid: widget.unitUuid,
+                              ),
+                        )
+                        .toList() ??
                     widget.product
                         ?.getUnitsList()
                         .map(
                           (item) =>
                               myPopUpMenuItemUnitSelection(
+                                unitList: widget.unitList,
                                 item: item,
                                 material: widget.material,
                                 storageProduct:
@@ -81,6 +103,7 @@ class _UnitSelectionWidgetState
                         .map(
                           (item) =>
                               myPopUpMenuItemUnitSelection(
+                                unitList: widget.unitList,
                                 item: item,
                                 material: widget.material,
                                 storageProduct:
@@ -100,6 +123,7 @@ class _UnitSelectionWidgetState
                         .map(
                           (item) =>
                               myPopUpMenuItemUnitSelection(
+                                unitList: widget.unitList,
                                 item: item,
                                 material: widget.material,
                                 product: widget.product,
@@ -119,6 +143,7 @@ class _UnitSelectionWidgetState
                         .map(
                           (item) =>
                               myPopUpMenuItemUnitSelection(
+                                unitList: widget.unitList,
                                 item: item,
                                 material: widget.material,
                                 storageProduct:
@@ -156,27 +181,36 @@ class _UnitSelectionWidgetState
                               .fontSize,
                       fontWeight: FontWeight.bold,
                     ),
-                    widget.product
-                            ?.getProductUnit(
-                              unitUuid: widget.unitUuid,
-                            )
-                            .name ??
-                        widget.productionItem
-                            ?.getProductUnit(
-                              unitUuid: widget.unitUuid,
-                            )
-                            .name ??
-                        widget.material
-                            ?.getProductUnit(
-                              unitUuid: widget.unitUuid,
-                            )
-                            .name ??
-                        widget.storageProduct
-                            ?.getProductUnit(
-                              unitUuid: widget.unitUuid,
-                            )
-                            .name ??
-                        'Name',
+                    widget.unitList != null
+                        ? widget.unitList
+                                ?.firstWhere(
+                                  (item) =>
+                                      item.uuid ==
+                                      widget.unitUuid,
+                                )
+                                .name ??
+                            'Not Set'
+                        : widget.product
+                                ?.getProductUnit(
+                                  unitUuid: widget.unitUuid,
+                                )
+                                .name ??
+                            widget.productionItem
+                                ?.getProductUnit(
+                                  unitUuid: widget.unitUuid,
+                                )
+                                .name ??
+                            widget.material
+                                ?.getProductUnit(
+                                  unitUuid: widget.unitUuid,
+                                )
+                                .name ??
+                            widget.storageProduct
+                                ?.getProductUnit(
+                                  unitUuid: widget.unitUuid,
+                                )
+                                .name ??
+                            'Name',
                   ),
                   Icon(Icons.keyboard_arrow_down),
                 ],
@@ -199,7 +233,52 @@ PopupMenuItem myPopUpMenuItemUnitSelection({
   required TempStorageProducts? storageProduct,
   required ProductionItem? productionItem,
   required MaterialClass? material,
+  required List<ProductUnitsClass>? unitList,
 }) {
+  bool getBold() {
+    if (unitList != null && item.uuid == unitUuid) {
+      return true;
+    } else if ((product
+                ?.getProductUnit(unitUuid: unitUuid)
+                .uuid ??
+            productionItem
+                ?.getProductUnit(unitUuid: unitUuid)
+                .uuid ??
+            material
+                ?.getProductUnit(unitUuid: unitUuid)
+                .uuid ??
+            storageProduct
+                ?.getProductUnit(unitUuid: unitUuid)
+                .uuid) ==
+        item.uuid) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool getVisibility() {
+    if (unitList != null && item.uuid == unitUuid) {
+      return true;
+    } else if ((product
+                ?.getProductUnit(unitUuid: unitUuid)
+                .uuid ??
+            productionItem
+                ?.getProductUnit(unitUuid: unitUuid)
+                .uuid ??
+            material
+                ?.getProductUnit(unitUuid: unitUuid)
+                .uuid ??
+            storageProduct
+                ?.getProductUnit(unitUuid: unitUuid)
+                .uuid) ==
+        item.uuid) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   return PopupMenuItem(
     onTap: () {
       setUnitUuid != null ? setUnitUuid(item.uuid) : {};
@@ -218,56 +297,13 @@ PopupMenuItem myPopUpMenuItemUnitSelection({
                 style: TextStyle(
                   fontSize: theme.mobileTexts.b3.fontSize,
                   fontWeight:
-                      (product
-                                      ?.getProductUnit(
-                                        unitUuid: unitUuid,
-                                      )
-                                      .uuid ??
-                                  productionItem
-                                      ?.getProductUnit(
-                                        unitUuid: unitUuid,
-                                      )
-                                      .uuid ??
-                                  material
-                                      ?.getProductUnit(
-                                        unitUuid: unitUuid,
-                                      )
-                                      .uuid ??
-                                  storageProduct
-                                      ?.getProductUnit(
-                                        unitUuid: unitUuid,
-                                      )
-                                      .uuid) ==
-                              item.uuid
-                          ? FontWeight.bold
-                          : null,
+                      getBold() ? FontWeight.bold : null,
                 ),
                 item.name,
               ),
             ),
             Visibility(
-              visible:
-                  (product
-                          ?.getProductUnit(
-                            unitUuid: unitUuid,
-                          )
-                          .uuid ??
-                      productionItem
-                          ?.getProductUnit(
-                            unitUuid: unitUuid,
-                          )
-                          .uuid ??
-                      material
-                          ?.getProductUnit(
-                            unitUuid: unitUuid,
-                          )
-                          .uuid ??
-                      storageProduct
-                          ?.getProductUnit(
-                            unitUuid: unitUuid,
-                          )
-                          .uuid) ==
-                  item.uuid,
+              visible: getVisibility(),
               child: Icon(
                 size: 17,
                 color: Colors.grey.shade700,

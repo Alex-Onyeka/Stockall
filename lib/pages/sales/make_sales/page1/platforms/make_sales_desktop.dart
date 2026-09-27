@@ -1232,6 +1232,8 @@ class _MakeSalesDesktopState
                                               ).pop();
                                             },
                                             editCartItem: TempCartItem(
+                                              unitUuid:
+                                                  null,
                                               itemUuid:
                                                   null,
                                               uuid:
@@ -1370,6 +1372,8 @@ class _MakeSalesDesktopState
                                                 ).pop();
                                               },
                                               editCartItem: TempCartItem(
+                                                unitUuid:
+                                                    null,
                                                 itemUuid:
                                                     null,
                                                 uuid:
@@ -1579,6 +1583,8 @@ class _MakeSalesDesktopState
                                                                       ).pop();
                                                                     },
                                                                     editCartItem: TempCartItem(
+                                                                      unitUuid:
+                                                                          null,
                                                                       itemUuid:
                                                                           null,
                                                                       uuid:
@@ -1756,7 +1762,7 @@ class _MakeSalesDesktopState
                                                                                     context:
                                                                                         context,
                                                                                     cartItemTemp:
-                                                                                        item,
+                                                                                        item.copyWith(),
                                                                                   );
                                                                                 } else {
                                                                                   returnSalesProvider().toggleAddToStock(
@@ -1883,7 +1889,7 @@ class _MakeSalesDesktopState
                                                                                           context:
                                                                                               context,
                                                                                           cartItemTemp:
-                                                                                              item,
+                                                                                              item.copyWith(),
                                                                                         );
                                                                                       } else {
                                                                                         returnSalesProvider().toggleAddToStock(
@@ -2339,6 +2345,8 @@ class _MakeSalesDesktopState
                                                           ).pop();
                                                         },
                                                         editCartItem: TempCartItem(
+                                                          unitUuid:
+                                                              null,
                                                           itemUuid:
                                                               null,
                                                           uuid:

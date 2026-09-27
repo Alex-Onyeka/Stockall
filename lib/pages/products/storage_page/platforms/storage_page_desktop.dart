@@ -311,6 +311,8 @@ class StoragePageDesktopState
                               onTap: () {
                                 returnStorageItemHistoryProvider()
                                     .clearDate();
+                                returnData()
+                                    .removeSearchNodeListener();
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -321,7 +323,12 @@ class StoragePageDesktopState
                                       );
                                     },
                                   ),
-                                );
+                                ).then((_) {
+                                  returnData()
+                                      .requestFocusSearchNode();
+                                  returnData()
+                                      .addSearchNodeListener();
+                                });
                               },
                               child: Text(
                                 style: TextStyle(

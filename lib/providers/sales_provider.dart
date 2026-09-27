@@ -360,6 +360,7 @@ class SalesProvider extends ChangeNotifier {
       tempItem.uuid = cartItem.uuid;
       tempItem.remainingQuantity =
           cartItem.remainingQuantity;
+      tempItem.unitUuid = cartItem.unitUuid;
       tempItem.remainingBalance = cartItem.remainingBalance;
     } else {
       await mainLocalLog('Couldn\'t Find Cart Item');
@@ -701,7 +702,7 @@ class SalesProvider extends ChangeNotifier {
   }
 
   TempProductClass? getStockConflictForCartSwitch() {
-    final Map<String, double> cartQuantities = {};
+    final Map<String, CartItemConflictClass> cartItems = {};
 
     final currentCartType = currentCart().cartItemTypeIndex;
 
@@ -726,21 +727,25 @@ class SalesProvider extends ChangeNotifier {
             continue;
           }
 
-          final quantity =
-              cartItem.useGroupQuantity == true
-                  ? cartItem.getRealQuantity()
-                  : cartItem.quantity;
+          final quantity = cartItem.getRealQuantity();
 
-          cartQuantities[itemUuid] =
-              (cartQuantities[itemUuid] ?? 0) + quantity;
+          final existing = cartItems[itemUuid];
+
+          cartItems[itemUuid] = CartItemConflictClass(
+            uuid: itemUuid,
+            quantity: (existing?.quantity ?? 0) + quantity,
+            isExpired:
+                existing?.isExpired ??
+                cartItem.item.isExpiredReal(),
+          );
         }
       }
     }
 
-    for (final entry in cartQuantities.entries) {
+    for (final conflict in cartItems.values) {
       final product =
           returnData().productListMain
-              .where((item) => item.uuid == entry.key)
+              .where((item) => item.uuid == conflict.uuid)
               .firstOrNull;
 
       // Custom item — no stock restriction.
@@ -754,11 +759,23 @@ class SalesProvider extends ChangeNotifier {
       }
 
       final availableQuantity = product.quantity ?? 0;
-      final totalQuantity = entry.value;
 
-      if (totalQuantity > availableQuantity) {
-        // Only return the conflict if this product
-        // exists in the current cart.
+      if (conflict.quantity > availableQuantity) {
+        final existsInCurrentCart = currentCart()
+            .getCartItems()
+            .any(
+              (item) =>
+                  (item.itemUuid ?? item.item.uuid) ==
+                  product.uuid,
+            );
+
+        if (existsInCurrentCart) {
+          return product;
+        }
+      }
+
+      // Expired item
+      if (conflict.isExpired) {
         final existsInCurrentCart = currentCart()
             .getCartItems()
             .any(
@@ -785,20 +802,37 @@ class SalesProvider extends ChangeNotifier {
       final conflict = getStockConflictForCartSwitch();
 
       if (conflict != null) {
-        showDialog(
-          context: context,
-          builder: (errorContext) {
-            return InfoAlert(
-              theme: returnTheme(context, listen: false),
-              message:
-                  'Product: [ ${conflict.name} ] has a quantity '
-                  'that exceeds the available stock. '
-                  'Please reduce the quantity or remove this item '
-                  'before switching Sale Type.',
-              title: 'Insufficient Stock',
-            );
-          },
-        );
+        if (conflict.isExpiredReal()) {
+          showDialog(
+            context: context,
+            builder: (errorContext) {
+              return InfoAlert(
+                theme: returnTheme(context, listen: false),
+                message:
+                    'Product: [ ${conflict.name} ] is Expired '
+                    'Please Remove This Item From Cart Or Proceed to '
+                    'Turn off Is-Managed for this item '
+                    'before switching Sale Type.',
+                title: 'Item Expired',
+              );
+            },
+          );
+        } else {
+          showDialog(
+            context: context,
+            builder: (errorContext) {
+              return InfoAlert(
+                theme: returnTheme(context, listen: false),
+                message:
+                    'Product: [ ${conflict.name} ] has a quantity '
+                    'that exceeds the available stock. '
+                    'Please reduce the quantity or remove this item '
+                    'before switching Sale Type.',
+                title: 'Insufficient Stock',
+              );
+            },
+          );
+        }
 
         return;
       }
@@ -1215,6 +1249,7 @@ class SalesProvider extends ChangeNotifier {
                 );
 
                 return TempProductSaleRecord(
+                  unitUuid: cartItem.unitUuid,
                   unitsList: cartItem.getUnitListFinal(),
                   isVoid: cartItem.isVoid ?? false,
                   qttyPerGroup: cartItem.qttyPerGroup,
@@ -1271,30 +1306,55 @@ class SalesProvider extends ChangeNotifier {
           try {
             for (final cartItem
                 in salesCartItem.getCartItems()) {
-              if (((cartItem.getItem()?.quantity ?? 0) >
-                      0) &&
+              TempProductClass? mainItem;
+              var products = returnData().productListMain
+                  .where(
+                    (item) =>
+                        item.uuid == cartItem.item.uuid,
+                  );
+              if (products.isNotEmpty) {
+                mainItem = products.first.copyWith();
+              } else {
+                mainItem = cartItem.item.copyWith();
+              }
+              if (((mainItem.quantity ?? 0) > 0) &&
                   (cartItem.getItem()?.isManaged ??
                       false)) {
-                cartItem.getItem()!.quantity =
-                    (cartItem.getItem()!.quantity ?? 0) -
+                mainItem.quantity =
+                    (mainItem.quantity ?? 0) -
                     cartItem.getRealQuantity();
                 ItemHistory itemHistory = ItemHistory(
+                  unit: cartItem.getSelectedUnit().name,
+                  primaryUnit:
+                      cartItem.getPrimaryUnit().name,
                   shopId: shopId,
                   desc:
-                      '${cartItem.getRealQuantity()} Quantity(s) of This Item was Sold. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
+                      '${cartItem.quantity} ${cartItem.getSelectedUnit().name} of This Item was Sold. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
                   isIncreased: false,
-                  oldValue:
-                      ((cartItem.getItem()!.quantity ?? 0) +
-                              cartItem.getRealQuantity())
-                          .toString(),
+
                   title: 'Item Sold In Receipt',
-                  quantityChange:
-                      -cartItem.getRealQuantity(),
-                  newValue:
-                      cartItem
-                          .getItem()!
-                          .quantity
-                          .toString(),
+                  quantityChange: -cartItem.quantity,
+                  newValue: formatLargeNumberDouble(
+                    cartItem
+                        .getPrimaryUnit()
+                        .getQuantityEquivDivided(
+                          index: 1,
+                          newQuantity:
+                              mainItem.quantity ?? 0,
+                          product: mainItem,
+                        ),
+                  ),
+                  oldValue: formatLargeNumberDouble(
+                    (cartItem
+                        .getPrimaryUnit()
+                        .getQuantityEquivDivided(
+                          index: 1,
+                          product: mainItem,
+                          newQuantity:
+                              (mainItem.quantity ?? 0) +
+                              cartItem.getRealQuantity(),
+                        )),
+                  ),
                 );
                 await returnData().updateProduct(
                   itemHistory:
@@ -1311,7 +1371,7 @@ class SalesProvider extends ChangeNotifier {
                           ? null
                           : itemHistory,
                   includeQuantity: false,
-                  product: cartItem.getItem()!,
+                  product: mainItem,
                   isQuantityUpdate: true,
                   quantityChange:
                       cartItem.getRealQuantity(),
@@ -1328,24 +1388,37 @@ class SalesProvider extends ChangeNotifier {
                     )
                     .isNotEmpty) {
                   ItemHistory itemHistory = ItemHistory(
+                    unit: cartItem.getSelectedUnit().name,
+                    primaryUnit:
+                        cartItem.getPrimaryUnit().name,
                     desc:
-                        '${cartItem.getRealQuantity()} Quantity(s) of This Item was Sold, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
+                        '${cartItem.getRealQuantity()} ${cartItem.getSelectedUnit().name} of This Item was Sold, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
                     shopId: shopId,
                     isIncreased: false,
-                    oldValue:
-                        (cartItem.getItem()!.quantity ?? 0)
-                            .toString(),
+                    oldValue: formatLargeNumberDouble(
+                      mainItem
+                          .getPrimaryUnit()
+                          .getQuantityEquivDivided(
+                            index: 1,
+                            newQuantity:
+                                (mainItem.quantity ?? 0),
+                          ),
+                    ),
                     title:
                         'Item Sold In Receipt (Unmanaged)',
                     quantityChange: 0,
-                    newValue:
-                        (cartItem.getItem()!.quantity ?? 0)
-                            .toString(),
+                    newValue: formatLargeNumberDouble(
+                      mainItem
+                          .getPrimaryUnit()
+                          .getQuantityEquivDivided(
+                            index: 1,
+                            newQuantity:
+                                (mainItem.quantity ?? 0),
+                          ),
+                    ),
                   );
-                  itemHistory.itemName =
-                      cartItem.getItem()!.name;
-                  itemHistory.itemUuid =
-                      cartItem.getItem()!.uuid;
+                  itemHistory.itemName = mainItem.name;
+                  itemHistory.itemUuid = mainItem.uuid;
                   await returnItemHistoryProvider()
                       .createItemHistory(itemHistory);
                 }
@@ -1623,6 +1696,7 @@ class SalesProvider extends ChangeNotifier {
               ) {
                 final product = cartItem.getItem();
                 return TempProductSaleRecord(
+                  unitUuid: cartItem.unitUuid,
                   unitsList: cartItem.getUnitListFinal(),
                   isVoid: cartItem.isVoid ?? false,
                   qttyPerGroup: cartItem.qttyPerGroup,
@@ -1686,6 +1760,7 @@ class SalesProvider extends ChangeNotifier {
                 );
 
                 return TempProductSaleRecord(
+                  unitUuid: cartItem.unitUuid,
                   unitsList: cartItem.getUnitListFinal(),
                   isVoid: cartItem.isVoid ?? false,
                   qttyPerGroup: cartItem.qttyPerGroup,
@@ -1752,8 +1827,11 @@ class SalesProvider extends ChangeNotifier {
                     (cartItem.getItem()!.quantity ?? 0) -
                     cartItem.getRealQuantity();
                 ItemHistory itemHistory = ItemHistory(
+                  unit: cartItem.getSelectedUnit().name,
+                  primaryUnit:
+                      cartItem.getSelectedUnit().name,
                   desc:
-                      '${cartItem.getRealQuantity()} Quantity(s) of This Item was Sold. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
+                      '${cartItem.getRealQuantity()} ${cartItem.getSelectedUnit().name} of This Item was Sold. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
                   shopId: shopId,
                   isIncreased: false,
                   oldValue:
@@ -1801,8 +1879,11 @@ class SalesProvider extends ChangeNotifier {
                     )
                     .isNotEmpty) {
                   ItemHistory itemHistory = ItemHistory(
+                    unit: cartItem.getSelectedUnit().name,
+                    primaryUnit:
+                        cartItem.getSelectedUnit().name,
                     desc:
-                        '${cartItem.getRealQuantity()} Quantity(s) of This Item was Sold, but Not Deducted Because Item is Not Managed. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
+                        '${cartItem.getRealQuantity()} ${cartItem.getSelectedUnit().name} of This Item was Sold, but Not Deducted Because Item is Not Managed. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
                     shopId: shopId,
                     isIncreased: false,
                     oldValue:
@@ -2041,6 +2122,7 @@ class SalesProvider extends ChangeNotifier {
               );
 
               return OrderItems(
+                unitUuid: cartItem.unitUuid,
                 unitsList: cartItem.getUnitListFinal(),
                 originalUseGroupQuantity:
                     cartItem.getItem()?.useGroupUnit ??
@@ -2109,8 +2191,11 @@ class SalesProvider extends ChangeNotifier {
             for (final cartItem
                 in salesCartItem.getCartItems()) {
               ItemHistory itemHistory = ItemHistory(
+                unit: cartItem.getSelectedUnit().name,
+                primaryUnit:
+                    cartItem.getSelectedUnit().name,
                 desc:
-                    '${cartItem.getRealQuantity()} Quantity(s) of This Item was Ordered for, but Not Deducted. Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
+                    '${cartItem.getRealQuantity()} ${cartItem.getSelectedUnit().name} of This Item was Ordered for, but Not Deducted. Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
                 shopId: shopId,
                 isIncreased: false,
                 oldValue:
@@ -2506,11 +2591,11 @@ class SalesProvider extends ChangeNotifier {
           }
 
           if (cartItemUuid == itemUuid) {
-            if (newCartItem.useGroupQuantity == true) {
-              totalInAllCarts += cartItem.getRealQuantity();
-            } else {
-              totalInAllCarts += cartItem.quantity;
-            }
+            // if (newCartItem.useGroupQuantity == true) {
+            totalInAllCarts += cartItem.getRealQuantity();
+            // } else {
+            //   totalInAllCarts += cartItem.quantity;
+            // }
           }
         }
       }
@@ -2635,7 +2720,7 @@ class SalesProvider extends ChangeNotifier {
   bool canAddProductToCart({
     required TempCartItem newCartItem,
     required double quantityToAdd,
-    bool? useGroupUnit,
+    // bool? useGroupUnit,
     required bool isEdit,
   }) {
     // This cart type does not have stock restrictions.
@@ -2683,11 +2768,7 @@ class SalesProvider extends ChangeNotifier {
       isEdit: isEdit,
     );
 
-    final quantityToAddInStock =
-        (useGroupUnit ??
-                newCartItem.useGroupQuantity == true)
-            ? quantityToAdd * newCartItem.getQttyPerGroup()
-            : quantityToAdd;
+    final quantityToAddInStock = quantityToAdd;
 
     final newTotal = currentQuantity + quantityToAddInStock;
 
@@ -2746,9 +2827,13 @@ class SalesProvider extends ChangeNotifier {
   }) async {
     for (var newItem in tempCartItems) {
       if (canAddProductToCart(
-        useGroupUnit: null,
         newCartItem: newItem,
-        quantityToAdd: newItem.quantity,
+        quantityToAdd: newItem
+            .getSelectedUnit()
+            .getQuantityEquivMultiplied(
+              index: 1,
+              newQuantity: newItem.quantity,
+            ),
         isEdit: false,
         // isEdit: false,
         // useGroupUnit: newItem.useGroupQuantity ?? false,
@@ -2802,9 +2887,13 @@ class SalesProvider extends ChangeNotifier {
   }) async {
     if (canAddProductToCart(
       isEdit: false,
-      useGroupUnit: null,
       newCartItem: newItem,
-      quantityToAdd: newItem.quantity,
+      quantityToAdd: newItem
+          .getSelectedUnit()
+          .getQuantityEquivMultiplied(
+            index: 1,
+            newQuantity: newItem.quantity,
+          ),
       // isEdit: isEdit,
       // useGroupUnit: newItem.useGroupQuantity ?? false,
     )) {
@@ -2973,8 +3062,12 @@ class SalesProvider extends ChangeNotifier {
     if (canAddProductToCart(
       isEdit: true,
       newCartItem: cartItem,
-      quantityToAdd: number,
-      useGroupUnit: null,
+      quantityToAdd: cartItem
+          .getSelectedUnit()
+          .getQuantityEquivMultiplied(
+            index: 1,
+            newQuantity: number,
+          ),
     )) {
       if (returnShopProvider().userShop()!.trackCart ==
               true &&
@@ -3196,6 +3289,7 @@ class SalesProvider extends ChangeNotifier {
       }
     }
     return TempCartItem(
+      unitUuid: record.unitUuid,
       uuid: record.uuid,
       itemUuid: product.uuid,
       isVoid: record.isVoid ?? false,
@@ -3460,4 +3554,16 @@ class SalesProvider extends ChangeNotifier {
       },
     );
   }
+}
+
+class CartItemConflictClass {
+  final String uuid;
+  final double quantity;
+  final bool isExpired;
+
+  CartItemConflictClass({
+    required this.uuid,
+    required this.quantity,
+    required this.isExpired,
+  });
 }

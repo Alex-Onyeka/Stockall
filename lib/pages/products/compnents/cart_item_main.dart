@@ -396,22 +396,48 @@ class _CartItemMainState extends State<CartItemMain> {
                                           ),
                                         ),
                                         Center(
-                                          child: Text(
-                                            style: TextStyle(
-                                              color:
-                                                  theme
-                                                      .lightModeColor
-                                                      .prColor300,
-                                              fontSize: 18,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
-                                            ),
-                                            formatLargeNumberDouble(
-                                              widget
-                                                  .cartItem
-                                                  .quantity,
-                                            ),
+                                          child: Row(
+                                            spacing: 2,
+                                            children: [
+                                              Text(
+                                                style: TextStyle(
+                                                  color:
+                                                      theme
+                                                          .lightModeColor
+                                                          .prColor300,
+                                                  fontSize:
+                                                      18,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                ),
+                                                formatLargeNumberDouble(
+                                                  widget
+                                                      .cartItem
+                                                      .quantity,
+                                                ),
+                                              ),
+                                              Text(
+                                                style: TextStyle(
+                                                  color:
+                                                      theme
+                                                          .lightModeColor
+                                                          .prColor300,
+                                                  fontSize:
+                                                      10,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                ),
+                                                cutLongText(
+                                                  widget
+                                                      .cartItem
+                                                      .getSelectedUnit()
+                                                      .name,
+                                                  7,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ],

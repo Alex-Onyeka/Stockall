@@ -107,6 +107,9 @@ class OrderItems extends HiveObject {
   @HiveField(32)
   List<ProductUnitsClass>? unitsList;
 
+  @HiveField(33)
+  String? unitUuid;
+
   OrderItems({
     required this.uuid,
     required this.orderId,
@@ -141,6 +144,7 @@ class OrderItems extends HiveObject {
     required this.originalUseGroupQuantity,
     required this.tempUseGroupQuantity,
     required this.unitsList,
+    required this.unitUuid,
   });
 
   factory OrderItems.fromJson(Map<String, dynamic> json) {
@@ -193,6 +197,7 @@ class OrderItems extends HiveObject {
                 ),
               )
               .toList(),
+      unitUuid: json['unit_uuid'] as String?,
     );
   }
 
@@ -234,6 +239,7 @@ class OrderItems extends HiveObject {
         tempUnitList: unitsList,
         productUuid: uuid,
       ),
+      'unit_uuid': unitUuid,
     };
   }
 
@@ -270,6 +276,7 @@ class OrderItems extends HiveObject {
     bool? originalUseGroupQuantity,
     bool? tempUseGroupQuantity,
     List<ProductUnitsClass>? unitsList,
+    String? unitUuid,
   }) {
     return OrderItems(
       uuid: uuid ?? this.uuid,
@@ -313,6 +320,7 @@ class OrderItems extends HiveObject {
       tempUseGroupQuantity:
           tempUseGroupQuantity ?? this.tempUseGroupQuantity,
       unitsList: unitsList ?? this.unitsList,
+      unitUuid: unitUuid ?? this.unitUuid,
     );
   }
 

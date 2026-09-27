@@ -110,6 +110,9 @@ class TempProductSaleRecord {
   @HiveField(33)
   List<ProductUnitsClass>? unitsList;
 
+  @HiveField(34)
+  String? unitUuid;
+
   TempProductSaleRecord({
     this.productRecordId,
     required this.createdAt,
@@ -145,6 +148,7 @@ class TempProductSaleRecord {
     required this.qttyPerGroup,
     required this.isVoid,
     required this.unitsList,
+    required this.unitUuid,
   });
 
   factory TempProductSaleRecord.fromJson(
@@ -197,6 +201,7 @@ class TempProductSaleRecord {
                 ),
               )
               .toList(),
+      unitUuid: json['unit_uuid'] as String?,
     );
   }
 
@@ -237,6 +242,7 @@ class TempProductSaleRecord {
         tempUnitList: unitsList,
         productUuid: uuid,
       ),
+      'unit_uuid': unitUuid,
     };
   }
 
@@ -273,6 +279,7 @@ class TempProductSaleRecord {
     double? qttyPerGroup,
     bool? isVoid,
     List<ProductUnitsClass>? unitsList,
+    String? unitUuid,
   }) {
     return TempProductSaleRecord(
       productRecordId:
@@ -312,6 +319,7 @@ class TempProductSaleRecord {
       qttyPerGroup: qttyPerGroup ?? this.qttyPerGroup,
       isVoid: isVoid ?? this.isVoid,
       unitsList: unitsList ?? this.unitsList,
+      unitUuid: unitUuid ?? this.unitUuid,
     );
   }
 
@@ -321,37 +329,57 @@ class TempProductSaleRecord {
         .toList();
   }
 
-  double getPrimaryUnitQuantity({
-    BuildContext? context,
-    required int index,
-  }) {
+  double getSelectedUnitQuantity({BuildContext? context}) {
     if (unitsList == null || unitsList?.isEmpty == true) {
       return quantity;
     } else {
       var items = unitsList!.where(
-        (item) => item.isPrimary,
+        (item) => item.uuid == unitUuid,
       );
       if (items.isEmpty) {
         return quantity;
       } else {
         var item = items.first;
         return item.getQuantityEquivDivided(
-          index: index,
+          index: 1,
+          context: context,
+          newQuantity: quantity,
+        );
+      }
+    }
+  }
+
+  double getSelectedUnitQuantityMultiplied({
+    BuildContext? context,
+  }) {
+    if (unitsList == null || unitsList?.isEmpty == true) {
+      return quantity;
+    } else {
+      var items = unitsList!.where(
+        (item) => item.uuid == unitUuid,
+      );
+      if (items.isEmpty) {
+        return quantity;
+      } else {
+        var item = items.first;
+        return item.getQuantityEquivMultiplied(
+          index: 1,
+          newQuantity: quantity,
           context: context,
         );
       }
     }
   }
 
-  ProductUnitsClass getProductUnit({String? unitUuid}) {
+  ProductUnitsClass getSelectedUnit({String? unitUuidNew}) {
     var items = getUnitsList().where(
-      (item) => item.uuid == unitUuid,
+      (item) => item.uuid == (unitUuidNew ?? unitUuid),
     );
-    if (unitUuid == null || items.isEmpty) {
+    if (items.isEmpty) {
       return getPrimaryUnit();
     } else {
       return getUnitsList().firstWhere(
-        (item) => item.uuid == unitUuid,
+        (item) => item.uuid == (unitUuidNew ?? unitUuid),
       );
     }
   }
@@ -399,6 +427,19 @@ class TempProductSaleRecord {
             productUuid: uuid!,
           ),
         ];
+        if (useGroupQuantity == true) {
+          var newItem = ProductUnitsClass(
+            uuid: uuidGen(),
+            staffUuid: currentUser().userId,
+            createdAt: DateTime.now(),
+            staffName: currentUser().name,
+            conversion: qttyPerGroup ?? 1,
+            name: 'Group(s)',
+            isPrimary: false,
+            productUuid: uuid!,
+          );
+          tempList.add(newItem);
+        }
         return tempList;
       } else {
         return unitsList ?? [];

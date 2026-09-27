@@ -412,6 +412,47 @@ class TempProductClass {
     );
   }
 
+  String getItemTilePriceWithDiscount({
+    required BuildContext context,
+  }) {
+    if (discount == null) {
+      if (sellingPrice != null) {
+        return formatMoneyMid(
+          amount:
+              getPrimaryUnit().conversion *
+              (sellingPrice ?? 0),
+          context: context,
+        );
+      } else {
+        return 'Price Not Set';
+      }
+    } else {
+      return formatMoneyMid(
+        amount:
+            getPrimaryUnit().conversion *
+            (((sellingPrice ?? 0.0) -
+                ((sellingPrice ?? 0.0) *
+                    (discount! / 100)))),
+        context: context,
+      );
+    }
+  }
+
+  String getItemTilePriceNoDiscount({
+    required BuildContext context,
+  }) {
+    if (sellingPrice != null) {
+      return formatMoneyMid(
+        amount:
+            getPrimaryUnit().conversion *
+            (sellingPrice ?? 0),
+        context: context,
+      );
+    } else {
+      return 'Price Not Set';
+    }
+  }
+
   String getQuantityText({
     BuildContext? context,
     required int index,
@@ -433,9 +474,50 @@ class TempProductClass {
     }
   }
 
+  String getQuantityTextCartTileSearch({
+    BuildContext? context,
+    required int index,
+  }) {
+    if (!authorization(
+      authorized: Authorizations().viewItemQuantity,
+    )) {
+      return '****';
+    } else {
+      if (isExpired()) {
+        return 'Expired';
+      } else {
+        var products = returnData(context: context)
+            .productListMain
+            .where((item) => item.uuid == uuid);
+        double tempQuantity = 0;
+        if (products.isNotEmpty) {
+          tempQuantity =
+              context == null
+                  ? returnSalesProvider()
+                      .remainingItemQttyInAllCarts(
+                        product: products.first,
+                      )
+                  : returnSalesProviderContext(
+                    context,
+                  ).remainingItemQttyInAllCarts(
+                    product: products.first,
+                  );
+        } else {
+          tempQuantity = (quantity ?? 0);
+        }
+        if (tempQuantity <= 0) {
+          return 'Stock Out';
+        } else {
+          return "${formatLargeNumberDouble(getPrimaryUnitQuantity(context: context, index: index, newQuantity: tempQuantity))}${getPrimaryUnit().name == 'Others' ? '' : ' ${cutLongText(getProductUnit().name, 7)}'}";
+        }
+      }
+    }
+  }
+
   double getPrimaryUnitQuantity({
     BuildContext? context,
     required int index,
+    double? newQuantity,
   }) {
     if (unitsList == null || unitsList?.isEmpty == true) {
       return (quantity ?? 0);
@@ -450,6 +532,7 @@ class TempProductClass {
         return item.getQuantityEquivDivided(
           index: index,
           context: context,
+          newQuantity: newQuantity,
         );
       }
     }
@@ -580,6 +663,22 @@ class TempProductClass {
         } else {
           return false;
         }
+      }
+    } else {
+      return false;
+    }
+  }
+
+  bool isExpiredReal() {
+    if (isManaged) {
+      if (expiryDate != null) {
+        if (expiryDate?.isBefore(DateTime.now()) == true) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
       }
     } else {
       return false;

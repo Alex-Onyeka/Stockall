@@ -317,23 +317,13 @@ class _RightBarSectionState extends State<RightBarSection> {
                                     fontWeight:
                                         FontWeight.bold,
                                   ),
-                                  returnData()
-                                      .productList()
-                                      .where((item) {
-                                        if (currentCat ==
-                                            null) {
-                                          return true;
-                                        } else {
-                                          return item
-                                                  .categories
-                                                  ?.contains(
-                                                    currentCat,
-                                                  ) ==
-                                              true;
-                                        }
-                                      })
-                                      .length
-                                      .toString(),
+                                  "[ ${returnData().productList().where((item) {
+                                    if (currentCat == null) {
+                                      return true;
+                                    } else {
+                                      return item.categories?.contains(currentCat) == true;
+                                    }
+                                  }).length} ]",
                                 ),
                               ],
                             ),
@@ -375,7 +365,8 @@ class _RightBarSectionState extends State<RightBarSection> {
                                               priceNode:
                                                   priceNode,
                                               product:
-                                                  product,
+                                                  product
+                                                      .copyWith(),
                                               qttyNode:
                                                   qttyNode,
                                               quantityController:
@@ -465,6 +456,7 @@ void addItemToCartFromCartItemList({
       searchController: searchController,
       theme: theme,
       cartItemTemp: TempCartItem(
+        unitUuid: null,
         uuid: cartItemTemp?.uuid ?? uuidGen(),
         itemUuid: product.uuid,
         isVoid: false,

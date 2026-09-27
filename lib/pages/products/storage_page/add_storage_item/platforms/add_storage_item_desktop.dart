@@ -102,7 +102,7 @@ class _AddStorageItemDesktopState
                 quantity: null,
                 unit: returnData().selectedUnit,
                 updatedAt: DateTime.now(),
-                uuid: uuidGen(),
+                uuid: createdProductUuid,
                 costPrice: double.tryParse(
                   widget.costPriceController.text
                       .replaceAll(',', ''),
@@ -196,7 +196,7 @@ class _AddStorageItemDesktopState
                   createdAt:
                       widget.storageProduct?.createdAt,
                   updatedAt: DateTime.now(),
-                  uuid: widget.storageProduct?.uuid,
+                  uuid: createdProductUuid,
                   name: widget.nameController.text.trim(),
                   unit:
                       dataProvider.selectedUnit ??
