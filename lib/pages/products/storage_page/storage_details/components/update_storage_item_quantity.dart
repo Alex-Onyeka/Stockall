@@ -358,7 +358,7 @@ class _StorageQuantityUpdateWidgetState
                                                       child: Padding(
                                                         padding: EdgeInsetsGeometry.symmetric(
                                                           vertical:
-                                                              10,
+                                                              15,
                                                           horizontal:
                                                               10,
                                                         ),
@@ -368,27 +368,60 @@ class _StorageQuantityUpdateWidgetState
                                                           spacing:
                                                               5,
                                                           children: [
-                                                            Row(
-                                                              spacing:
-                                                                  5,
-                                                              children: [
-                                                                Icon(
-                                                                  size:
-                                                                      14,
-                                                                  color:
-                                                                      theme.lightModeColor.prColor300,
-                                                                  Icons.width_normal_rounded,
+                                                            Expanded(
+                                                              child: Row(
+                                                                spacing:
+                                                                    5,
+                                                                children: [
+                                                                  Icon(
+                                                                    size:
+                                                                        14,
+                                                                    color:
+                                                                        theme.lightModeColor.prColor300,
+                                                                    Icons.width_normal_rounded,
+                                                                  ),
+                                                                  Expanded(
+                                                                    child: Text(
+                                                                      style: TextStyle(
+                                                                        fontSize:
+                                                                            theme.mobileTexts.b3.fontSize,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                      ),
+                                                                      product.name,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                            Visibility(
+                                                              visible:
+                                                                  product.departmentName !=
+                                                                  null,
+                                                              child: Padding(
+                                                                padding: const EdgeInsets.symmetric(
+                                                                  horizontal:
+                                                                      5.0,
                                                                 ),
-                                                                Text(
+                                                                child: Text(
                                                                   style: TextStyle(
                                                                     fontSize:
                                                                         theme.mobileTexts.b4.fontSize,
                                                                     fontWeight:
-                                                                        FontWeight.bold,
+                                                                        FontWeight.normal,
+                                                                    color:
+                                                                        product.departmentName !=
+                                                                                null
+                                                                            ? theme.lightModeColor.secColor200
+                                                                            : Colors.grey,
                                                                   ),
-                                                                  product.name,
+                                                                  cutLongText(
+                                                                    product.departmentName ??
+                                                                        'Not Set',
+                                                                    20,
+                                                                  ),
                                                                 ),
-                                                              ],
+                                                              ),
                                                             ),
                                                             Icon(
                                                               size:
@@ -1557,84 +1590,137 @@ class _ManageProductsStorageState
                                           color:
                                               Colors
                                                   .transparent,
-                                          child: InkWell(
-                                            mouseCursor:
-                                                SystemMouseCursors
-                                                    .click,
-                                            onTap: () {
-                                              setState(() {
-                                                if (list.contains(
-                                                  dept.uuid,
-                                                )) {
-                                                  list.remove(
+                                          child: Ink(
+                                            decoration:
+                                                BoxDecoration(
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade100,
+                                                ),
+                                            child: InkWell(
+                                              mouseCursor:
+                                                  SystemMouseCursors
+                                                      .click,
+                                              onTap: () {
+                                                setState(() {
+                                                  if (list.contains(
                                                     dept.uuid,
-                                                  );
-                                                  tempList.add(
-                                                    dept.uuid!,
-                                                  );
-                                                } else {
-                                                  list.add(
-                                                    dept.uuid!,
-                                                  );
-                                                  tempList.remove(
-                                                    dept.uuid,
-                                                  );
-                                                }
-                                              });
-                                            },
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    vertical:
-                                                        9.0,
-                                                    horizontal:
-                                                        12,
-                                                  ),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          widget.theme.mobileTexts.b3.fontSize,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                    dept.name,
-                                                  ),
-                                                  Container(
-                                                    padding:
-                                                        EdgeInsets.all(
-                                                          2,
-                                                        ),
-                                                    decoration: BoxDecoration(
-                                                      shape:
-                                                          BoxShape.circle,
-                                                      border: Border.all(
-                                                        color:
-                                                            Colors.grey,
+                                                  )) {
+                                                    list.remove(
+                                                      dept.uuid,
+                                                    );
+                                                    tempList.add(
+                                                      dept.uuid!,
+                                                    );
+                                                  } else {
+                                                    list.add(
+                                                      dept.uuid!,
+                                                    );
+                                                    tempList.remove(
+                                                      dept.uuid,
+                                                    );
+                                                  }
+                                                });
+                                              },
+                                              child: Container(
+                                                padding: const EdgeInsets.symmetric(
+                                                  vertical:
+                                                      10.0,
+                                                  horizontal:
+                                                      12,
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Expanded(
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment.start,
+                                                        children: [
+                                                          Text(
+                                                            style: TextStyle(
+                                                              fontSize:
+                                                                  widget.theme.mobileTexts.b3.fontSize,
+                                                              fontWeight:
+                                                                  FontWeight.bold,
+                                                            ),
+                                                            dept.name,
+                                                          ),
+                                                          Padding(
+                                                            padding: const EdgeInsets.only(
+                                                              top:
+                                                                  2.0,
+                                                            ),
+                                                            child: Row(
+                                                              spacing:
+                                                                  2,
+                                                              children: [
+                                                                Text(
+                                                                  style: TextStyle(
+                                                                    fontSize:
+                                                                        widget.theme.mobileTexts.b5.fontSize,
+                                                                    fontWeight:
+                                                                        FontWeight.bold,
+                                                                    color:
+                                                                        Colors.grey.shade500,
+                                                                  ),
+                                                                  'Dept:',
+                                                                ),
+                                                                Text(
+                                                                  style: TextStyle(
+                                                                    fontSize:
+                                                                        widget.theme.mobileTexts.b5.fontSize,
+                                                                    fontWeight:
+                                                                        FontWeight.bold,
+                                                                    color:
+                                                                        dept.departmentName !=
+                                                                                null
+                                                                            ? widget.theme.lightModeColor.secColor200
+                                                                            : Colors.grey,
+                                                                  ),
+                                                                  dept.departmentName ??
+                                                                      'Not Set',
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ],
                                                       ),
                                                     ),
-                                                    child: Container(
+                                                    Container(
                                                       padding:
                                                           EdgeInsets.all(
-                                                            5,
+                                                            2,
                                                           ),
                                                       decoration: BoxDecoration(
                                                         shape:
                                                             BoxShape.circle,
-                                                        color:
-                                                            list.contains(
-                                                                  dept.uuid,
-                                                                )
-                                                                ? widget.theme.lightModeColor.prColor250
-                                                                : Colors.transparent,
+                                                        border: Border.all(
+                                                          color:
+                                                              Colors.grey,
+                                                        ),
+                                                      ),
+                                                      child: Container(
+                                                        padding: EdgeInsets.all(
+                                                          5,
+                                                        ),
+                                                        decoration: BoxDecoration(
+                                                          shape:
+                                                              BoxShape.circle,
+                                                          color:
+                                                              list.contains(
+                                                                    dept.uuid,
+                                                                  )
+                                                                  ? widget.theme.lightModeColor.prColor250
+                                                                  : Colors.transparent,
+                                                        ),
                                                       ),
                                                     ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ),

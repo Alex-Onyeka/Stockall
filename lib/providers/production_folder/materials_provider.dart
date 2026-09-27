@@ -1026,9 +1026,6 @@ class MaterialsProvider extends ChangeNotifier {
             in returnShopProvider().multipleSelectedShops) {
           String newUuid = uuidGen();
           final newMaterial = pr.copyWith(
-            categories: [],
-            departmentName: null,
-            departmentUuid: null,
             uuid: newUuid,
             shopId: shop.shopId,
             name: '${pr.name} ${randomCode()}',
@@ -1047,6 +1044,10 @@ class MaterialsProvider extends ChangeNotifier {
           }
 
           newMaterial.unitsList = tempItems;
+          newMaterial.departmentName = null;
+          newMaterial.departmentUuid = null;
+          newMaterial.categoryUuid = null;
+          newMaterial.categories = [];
 
           await supabase
               .from(tableName)

@@ -3686,12 +3686,6 @@ class DataProvider extends ChangeNotifier {
             in returnShopProvider().multipleSelectedShops) {
           String newUuid = uuidGen();
           final newProduct = pr.copyWith(
-            brand: null,
-            category: null,
-            categories: [],
-            departmentName: null,
-            departmentUuid: null,
-            storageUuid: null,
             uuid: newUuid,
             shopId: shop.shopId,
             name: '${pr.name} ${randomCode()}',
@@ -3709,6 +3703,12 @@ class DataProvider extends ChangeNotifier {
           }
 
           newProduct.unitsList = tempItems;
+          newProduct.departmentName = null;
+          newProduct.departmentUuid = null;
+          newProduct.category = null;
+          newProduct.categoryUuid = null;
+          newProduct.categories = [];
+          newProduct.storageUuid = null;
 
           await supabase
               .from('products')
