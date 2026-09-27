@@ -12,6 +12,7 @@ import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_orders/order_items.dart';
 import 'package:stockall/classes/temp_orders/orders.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_sub_staff/temp_sub_staff.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -1459,9 +1460,23 @@ class SalesProvider extends ChangeNotifier {
                           : (record.originalCost ?? 0) /
                               record.quantity;
 
+                  var productUuid =
+                      record.productUuid ?? uuidGen();
+
                   TempProductClass
                   product = TempProductClass(
-                    unitsList: [],
+                    unitsList: [
+                      ProductUnitsClass(
+                        uuid: uuidGen(),
+                        staffUuid: currentUser().userId,
+                        createdAt: createdAt,
+                        staffName: currentUser().name,
+                        conversion: 1,
+                        name: 'Unit(s)',
+                        isPrimary: true,
+                        productUuid: productUuid,
+                      ),
+                    ],
                     useGroupUnit: false,
                     categories: [],
                     storageUuid: null,
@@ -1492,7 +1507,7 @@ class SalesProvider extends ChangeNotifier {
                     sizeType: null,
                     startDate: null,
                     updatedAt: DateTime.now(),
-                    uuid: record.productUuid,
+                    uuid: productUuid,
                   );
                   if (context.mounted) {
                     ItemHistory itemHistory = ItemHistory(
@@ -1819,33 +1834,55 @@ class SalesProvider extends ChangeNotifier {
             // Step 3: Decrement quantity via RPC
             for (final cartItem
                 in salesCartItem.getCartItems()) {
-              if (((cartItem.getItem()?.quantity ?? 0) >
-                      0) &&
+              TempProductClass? mainItem;
+              var products = returnData().productListMain
+                  .where(
+                    (item) =>
+                        item.uuid == cartItem.item.uuid,
+                  );
+              if (products.isNotEmpty) {
+                mainItem = products.first.copyWith();
+              } else {
+                mainItem = cartItem.item.copyWith();
+              }
+              if (((mainItem.quantity ?? 0) > 0) &&
                   (cartItem.getItem()?.isManaged ??
                       false)) {
-                cartItem.getItem()!.quantity =
-                    (cartItem.getItem()!.quantity ?? 0) -
+                mainItem.quantity =
+                    (mainItem.quantity ?? 0) -
                     cartItem.getRealQuantity();
                 ItemHistory itemHistory = ItemHistory(
                   unit: cartItem.getSelectedUnit().name,
                   primaryUnit:
-                      cartItem.getSelectedUnit().name,
-                  desc:
-                      '${cartItem.getRealQuantity()} ${cartItem.getSelectedUnit().name} of This Item was Sold. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
+                      cartItem.getPrimaryUnit().name,
                   shopId: shopId,
+                  desc:
+                      '${cartItem.quantity} ${cartItem.getSelectedUnit().name} of This Item was Sold on Credit. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
                   isIncreased: false,
-                  oldValue:
-                      ((cartItem.getItem()!.quantity ?? 0) +
-                              cartItem.getRealQuantity())
-                          .toString(),
-                  title: 'Item Sold In Invoice',
-                  quantityChange:
-                      -cartItem.getRealQuantity(),
-                  newValue:
-                      cartItem
-                          .getItem()!
-                          .quantity
-                          .toString(),
+
+                  title: 'Item Sold On Credit',
+                  quantityChange: -cartItem.quantity,
+                  newValue: formatLargeNumberDouble(
+                    cartItem
+                        .getPrimaryUnit()
+                        .getQuantityEquivDivided(
+                          index: 1,
+                          newQuantity:
+                              mainItem.quantity ?? 0,
+                          product: mainItem,
+                        ),
+                  ),
+                  oldValue: formatLargeNumberDouble(
+                    (cartItem
+                        .getPrimaryUnit()
+                        .getQuantityEquivDivided(
+                          index: 1,
+                          product: mainItem,
+                          newQuantity:
+                              (mainItem.quantity ?? 0) +
+                              cartItem.getRealQuantity(),
+                        )),
+                  ),
                 );
                 await returnData().updateProduct(
                   itemHistory:
@@ -1862,7 +1899,7 @@ class SalesProvider extends ChangeNotifier {
                           ? null
                           : itemHistory,
                   includeQuantity: false,
-                  product: cartItem.getItem()!,
+                  product: mainItem,
                   isQuantityUpdate: true,
                   quantityChange:
                       cartItem.getRealQuantity(),
@@ -1881,25 +1918,35 @@ class SalesProvider extends ChangeNotifier {
                   ItemHistory itemHistory = ItemHistory(
                     unit: cartItem.getSelectedUnit().name,
                     primaryUnit:
-                        cartItem.getSelectedUnit().name,
+                        cartItem.getPrimaryUnit().name,
                     desc:
-                        '${cartItem.getRealQuantity()} ${cartItem.getSelectedUnit().name} of This Item was Sold, but Not Deducted Because Item is Not Managed. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
+                        '${cartItem.getRealQuantity()} ${cartItem.getSelectedUnit().name} of This Item was Sold On Credit, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
                     shopId: shopId,
                     isIncreased: false,
-                    oldValue:
-                        (cartItem.getItem()!.quantity ?? 0)
-                            .toString(),
+                    oldValue: formatLargeNumberDouble(
+                      mainItem
+                          .getPrimaryUnit()
+                          .getQuantityEquivDivided(
+                            index: 1,
+                            newQuantity:
+                                (mainItem.quantity ?? 0),
+                          ),
+                    ),
                     title:
-                        'Item Sold In Invoice (Unmanaged)',
+                        'Item Sold On Credit (Unmanaged)',
                     quantityChange: 0,
-                    newValue:
-                        (cartItem.getItem()!.quantity ?? 0)
-                            .toString(),
+                    newValue: formatLargeNumberDouble(
+                      mainItem
+                          .getPrimaryUnit()
+                          .getQuantityEquivDivided(
+                            index: 1,
+                            newQuantity:
+                                (mainItem.quantity ?? 0),
+                          ),
+                    ),
                   );
-                  itemHistory.itemName =
-                      cartItem.getItem()!.name;
-                  itemHistory.itemUuid =
-                      cartItem.getItem()!.uuid;
+                  itemHistory.itemName = mainItem.name;
+                  itemHistory.itemUuid = mainItem.uuid;
                   await returnItemHistoryProvider()
                       .createItemHistory(itemHistory);
                 }
@@ -1941,10 +1988,23 @@ class SalesProvider extends ChangeNotifier {
                           ? record.revenue / record.quantity
                           : (record.originalCost ?? 0) /
                               record.quantity;
+                  var productUuid =
+                      record.productUuid ?? uuidGen();
 
                   TempProductClass
                   product = TempProductClass(
-                    unitsList: [],
+                    unitsList: [
+                      ProductUnitsClass(
+                        uuid: uuidGen(),
+                        staffUuid: currentUser().userId,
+                        createdAt: createdAt,
+                        staffName: currentUser().name,
+                        conversion: 1,
+                        name: 'Unit(s)',
+                        isPrimary: true,
+                        productUuid: productUuid,
+                      ),
+                    ],
                     useGroupUnit: false,
                     categories: [],
                     storageUuid: null,
@@ -1975,7 +2035,7 @@ class SalesProvider extends ChangeNotifier {
                     sizeType: null,
                     startDate: null,
                     updatedAt: DateTime.now(),
-                    uuid: record.productUuid,
+                    uuid: productUuid,
                   );
                   if (context.mounted) {
                     ItemHistory itemHistory = ItemHistory(

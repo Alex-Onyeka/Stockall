@@ -191,7 +191,7 @@ class ProductRecordFunc {
               title: 'Receipt Deleted (Unmanaged)',
               desc:
                   '${record.quantity} ${record.unit} of This Item was Returned of This Item was Returned, but this item unmanaged when the sales was made, so the quantity did not increase. Receipt Id: #${returnOnlyDigits(receiptUuid)}.',
-              quantityChange: record.quantity,
+              quantityChange: 0,
               newValue: formatLargeNumberDouble(
                 product
                     .getProductUnit()
@@ -316,34 +316,38 @@ class ProductRecordFunc {
                   )
                   .toList();
           if (products.isNotEmpty) {
-            var product = products.first;
+            var oldProduct = products.first;
+            var product = oldProduct.copyWith();
             product.quantity =
-                record.useGroupQuantity == true
-                    ? (product.quantity ?? 0) +
-                        (record.quantity *
-                            (record.qttyPerGroup ?? 1))
-                    : (product.quantity ?? 0) +
-                        record.quantity;
+                (product.quantity ?? 0) +
+                record.getSelectedUnitQuantityMultiplied();
             ItemHistory itemHistory = ItemHistory(
               shopId: shopId(),
               title: 'Item Returned',
               desc:
-                  '${record.useGroupQuantity == true ? (record.quantity * (record.qttyPerGroup ?? 1)) : record.quantity} quantities of This Item was Returned. Invoice Id: #${returnOnlyDigits(invoiceUuid)}.',
-              quantityChange:
-                  record.useGroupQuantity == true
-                      ? (record.quantity *
-                          (record.qttyPerGroup ?? 1))
-                      : record.quantity,
-              newValue: product.quantity?.toString(),
+                  '${record.quantity} ${record.unit} of This Item was Returned. Invoice Id: #${returnOnlyDigits(invoiceUuid)}.',
+              quantityChange: record.quantity,
+              newValue: formatLargeNumberDouble(
+                product
+                    .getProductUnit()
+                    .getQuantityEquivDivided(
+                      index: 1,
+                      newQuantity: product.quantity,
+                      product: product,
+                    ),
+              ),
               isIncreased: true,
-              oldValue:
-                  ((product.quantity ?? 0) -
-                          (record.useGroupQuantity == true
-                              ? (record.quantity *
-                                  (record.qttyPerGroup ??
-                                      1))
-                              : record.quantity))
-                      .toString(),
+              oldValue: formatLargeNumberDouble(
+                oldProduct
+                    .getProductUnit()
+                    .getQuantityEquivDivided(
+                      index: 1,
+                      newQuantity: oldProduct.quantity,
+                      product: oldProduct,
+                    ),
+              ),
+              unit: record.unit,
+              primaryUnit: product.getPrimaryUnit().name,
             );
             await returnData().updateProduct(
               itemHistory: itemHistory,
@@ -352,14 +356,13 @@ class ProductRecordFunc {
               product: product,
               isQuantityUpdate: true,
               quantityChange:
-                  record.useGroupQuantity == true
-                      ? (record.quantity *
-                          (record.qttyPerGroup ?? 1))
-                      : record.quantity,
+                  record
+                      .getSelectedUnitQuantityMultiplied(),
               isIncrement: true,
             );
           }
         }
+
         if (record.isProductManaged! == false) {
           List<TempProductClass> products =
               returnData().productListMain
@@ -374,11 +377,29 @@ class ProductRecordFunc {
               shopId: shopId(),
               title: 'Invoice Deleted (Unmanaged)',
               desc:
-                  '${record.useGroupQuantity == true ? (record.quantity * (record.qttyPerGroup ?? 1)) : record.quantity} quantities of This Item was Returned, but this item unmanaged when the sales was made, so the quantity did not increase. Invoice Id: #${returnOnlyDigits(invoiceUuid)}.',
+                  '${record.quantity} ${record.unit} of This Item was Returned, but this item was unmanaged when the sales was made, so the quantity did not increase. Invoice Id: #${returnOnlyDigits(invoiceUuid)}.',
               quantityChange: 0,
-              newValue: product.quantity?.toString(),
+              newValue: formatLargeNumberDouble(
+                product
+                    .getProductUnit()
+                    .getQuantityEquivDivided(
+                      index: 1,
+                      newQuantity: product.quantity,
+                      product: product,
+                    ),
+              ),
               isIncreased: true,
-              oldValue: product.quantity?.toString(),
+              oldValue: formatLargeNumberDouble(
+                product
+                    .getProductUnit()
+                    .getQuantityEquivDivided(
+                      index: 1,
+                      newQuantity: product.quantity,
+                      product: product,
+                    ),
+              ),
+              unit: record.unit,
+              primaryUnit: product.getPrimaryUnit().name,
             );
             itemHistory.itemName = product.name;
             itemHistory.itemUuid = product.uuid;

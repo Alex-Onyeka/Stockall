@@ -864,7 +864,18 @@ class _InvoicePageMobileState
                                                                         fontWeight:
                                                                             FontWeight.bold,
                                                                       ),
-                                                                      '[ ${formatLargeNumberDouble(record.quantity)} ]',
+                                                                      formatLargeNumberDouble(
+                                                                        record.quantity,
+                                                                      ),
+                                                                    ),
+                                                                    Text(
+                                                                      style: TextStyle(
+                                                                        fontSize:
+                                                                            theme.mobileTexts.b4.fontSize,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                      ),
+                                                                      '${record.unit}',
                                                                     ),
                                                                   ],
                                                                 ),

@@ -237,18 +237,10 @@ class InvoicesProvider extends ChangeNotifier {
     TempInvoice invoice,
     List<String> productNames,
   ) async {
-    // if (returnReceiptProviderSingle().receipts
-    //     .where((rec) => rec.invoiceUuid == invoice.uuid)
-    //     .isEmpty) {
     return await deleteInvoiceAndUpdateInventory(
       invoice,
       productNames,
     );
-    // } else {
-    //   return await deleteInvoiceWithoutUpdatingInventory(
-    //     invoice.uuid!,
-    //   );
-    // }
   }
 
   Future<int> deleteInvoiceAndUpdateInventory(
