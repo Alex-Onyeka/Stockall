@@ -56,6 +56,9 @@ class ItemHistoryProvider with ChangeNotifier {
   }
 
   List<ItemHistory> departmentItemHistories() {
+    itemHistories.sort(
+      (a, b) => b.createdAt!.compareTo(a.createdAt!),
+    );
     if (returnShopProvider()
             .userShop()
             ?.manageDepartments ==
@@ -92,9 +95,6 @@ class ItemHistoryProvider with ChangeNotifier {
   }
 
   List<ItemHistory> returnItemHistories() {
-    departmentItemHistories().sort(
-      (a, b) => b.createdAt!.compareTo(a.createdAt!),
-    );
     if (dateSet == null &&
         rangeEndDate == null &&
         rangeStartDate == null) {

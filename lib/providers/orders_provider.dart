@@ -942,7 +942,7 @@ class OrdersProvider extends ChangeNotifier {
           );
           if (itemTemp != null) {
             print(
-              'Item Remaining Quantity: ${item.remainingQuantity}... Item Actual Remaining Quantity: ${item.getActualRemainingQuantity()}... Item Quantity: ${item.quantity}... Item Actual Quantity: ${item.getActualQuantity()}... ',
+              'Item Name: ${item.productName}... Item Remaining Quantity: ${item.remainingQuantity}... Item Actual Remaining Quantity: ${item.getActualRemainingQuantity()}... Item Quantity: ${item.quantity}... Item Actual Quantity: ${item.getActualQuantity()}... Item Actual Quantity During Delivery Checkout: ${item.getActualQuantityDuringDeliveryCheckout()}...',
             );
             itemTemp.remainingQuantity =
                 (itemTemp.remainingQuantity ?? 0) -
@@ -973,15 +973,30 @@ class OrdersProvider extends ChangeNotifier {
               ItemHistory itemHistory = ItemHistory(
                 shopId: shopId(),
                 desc:
-                    '${item.getActualQuantity()} Quantity(s) of This Item was Delivered. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}... Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
+                    '${item.quantity} ${item.getUnit()} of This Item was Delivered. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}... Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
                 isIncreased: false,
-                oldValue:
-                    ((product.quantity ?? 0) +
-                            item.getActualQuantity())
-                        .toString(),
                 title: 'Order Item Delivered',
-                quantityChange: -item.getActualQuantity(),
-                newValue: product.quantity.toString(),
+                quantityChange: -item.quantity,
+                oldValue: formatLargeNumberDouble(
+                  item
+                      .getSelectedUnit()
+                      .getQuantityEquivDivided(
+                        index: 1,
+                        newQuantity:
+                            ((product.quantity ?? 0) +
+                                item.quantity),
+                      ),
+                ),
+                newValue: formatLargeNumberDouble(
+                  item
+                      .getSelectedUnit()
+                      .getQuantityEquivDivided(
+                        index: 1,
+                        newQuantity: product.quantity,
+                      ),
+                ),
+                unit: item.getUnit(),
+                primaryUnit: product.getPrimaryUnit().name,
               );
               await returnData().updateProduct(
                 itemHistory:
@@ -1004,15 +1019,31 @@ class OrdersProvider extends ChangeNotifier {
             } else {
               ItemHistory itemHistory = ItemHistory(
                 desc:
-                    '${item.getActualQuantity()} Quantity(s) of This Item was Delivered, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}... Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
+                    '${item.quantity} ${item.getUnit()} of This Item was Delivered, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}... Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
                 shopId: shopId(),
                 isIncreased: false,
-                oldValue:
-                    (product.quantity ?? 0).toString(),
+                oldValue: formatLargeNumberDouble(
+                  item
+                      .getSelectedUnit()
+                      .getQuantityEquivDivided(
+                        index: 1,
+                        newQuantity:
+                            (product.quantity ?? 0),
+                      ),
+                ),
+                newValue: formatLargeNumberDouble(
+                  item
+                      .getSelectedUnit()
+                      .getQuantityEquivDivided(
+                        index: 1,
+                        newQuantity:
+                            (product.quantity ?? 0),
+                      ),
+                ),
+                unit: item.getUnit(),
+                primaryUnit: product.getPrimaryUnit().name,
                 title: 'Order Item Delivered (Unmanaged)',
                 quantityChange: 0,
-                newValue:
-                    (product.quantity ?? 0).toString(),
               );
               itemHistory.itemName = product.name;
               itemHistory.itemUuid = product.uuid;

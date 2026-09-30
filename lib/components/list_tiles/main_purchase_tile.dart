@@ -167,7 +167,7 @@ class _MainPurchaseTileMobileState
                         fontWeight: FontWeight.bold,
                         color: Colors.grey,
                       ),
-                      '${getProductRecord().length} Item(s) Sold',
+                      '${getProductRecord().length} Item(s) Purchased',
                     ),
                   ],
                 ),

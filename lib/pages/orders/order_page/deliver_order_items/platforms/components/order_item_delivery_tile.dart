@@ -65,7 +65,7 @@ class OrderItemDeliveryTile extends StatelessWidget {
                           theme.mobileTexts.b4.fontSize,
                       fontWeight: FontWeight.bold,
                     ),
-                    '${formatLargeNumberDouble(item.quantity)} ${returnOrdersActionProvider().itemUnit(orderItem: item)}',
+                    '${formatLargeNumberDouble(item.quantity)} ${item.getUnit()}',
                   ),
                   Text(
                     style: TextStyle(

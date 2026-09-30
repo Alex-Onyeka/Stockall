@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/temp_orders/order_items.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_material_class/material_class.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -125,6 +126,8 @@ class ProductUnitsClass extends HiveObject {
     BuildContext? context,
     double? newQuantity,
     required int index,
+    OrderItems? orderItem,
+    double? quantityTwo,
     TempProductClass? product,
     MaterialClass? material,
   }) {
@@ -163,6 +166,11 @@ class ProductUnitsClass extends HiveObject {
     } else if (material != null) {
       return (newQuantity ?? material.quantity ?? 0) /
           conversion;
+    } else if (orderItem != null) {
+      return (newQuantity ?? orderItem.quantity) /
+          conversion;
+    } else if (quantityTwo != null) {
+      return (newQuantity ?? quantityTwo) / conversion;
     } else {
       if (items().isNotEmpty) {
         var item = items().first;
@@ -177,6 +185,8 @@ class ProductUnitsClass extends HiveObject {
   double getQuantityEquivMultiplied({
     BuildContext? context,
     double? newQuantity,
+    OrderItems? orderItem,
+    double? quantityTwo,
     required int index,
     TempProductClass? product,
   }) {
@@ -209,7 +219,15 @@ class ProductUnitsClass extends HiveObject {
       }
     }
 
-    if (product == null) {
+    if (product != null) {
+      return (newQuantity ?? product.quantity ?? 0) *
+          conversion;
+    } else if (orderItem != null) {
+      return (newQuantity ?? orderItem.quantity) *
+          conversion;
+    } else if (quantityTwo != null) {
+      return (newQuantity ?? quantityTwo) * conversion;
+    } else {
       if (items().isNotEmpty) {
         var item = items().first;
         return (newQuantity ?? item.quantity ?? 0) *
@@ -217,9 +235,6 @@ class ProductUnitsClass extends HiveObject {
       } else {
         return 0;
       }
-    } else {
-      return (newQuantity ?? product.quantity ?? 0) *
-          conversion;
     }
   }
 }

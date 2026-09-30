@@ -377,8 +377,9 @@ class _PurchaseListDesktopState
                                   return CreatePurchase();
                                 },
                               ),
-                            ).then((_) {
-                              getPurchases();
+                            ).then((_) async {
+                              await getPurchases();
+                              setState(() {});
                             });
                             //       },
                             //     );

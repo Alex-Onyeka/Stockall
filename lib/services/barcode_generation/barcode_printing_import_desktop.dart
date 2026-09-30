@@ -27,6 +27,21 @@ Future<bool> printBarcodeDesktop(
   );
 }
 
+Future<bool> printLabelDesktop({
+  required String printerName,
+  required String text,
+  String? title,
+}) async {
+  final tsplCommand = generateTsplForCustomLabel(
+    text: text,
+    title: title,
+  );
+  return await sendRawToUsbPrinter(
+    printerName,
+    tsplCommand,
+  );
+}
+
 Future<bool> sendRawToUsbPrinter(
   String printerName,
   String command,
@@ -236,6 +251,68 @@ String generateTsplForBarcodesAndPriceTag(
 
     buffer.writeln('PRINT 1,1');
   }
+
+  return buffer.toString();
+}
+
+String generateTsplForCustomLabel({
+  required String text,
+  String? title,
+}) {
+  final buffer = StringBuffer();
+
+  final settings =
+      returnShopProvider().customLabelPrinterSettings!;
+
+  final scaledStartX =
+      settings.startX * (settings.widthMm / 58);
+
+  final scaledStartY =
+      settings.startY * (settings.heightMm / 30);
+
+  buffer.writeln(
+    'SIZE ${settings.widthMm} mm,${settings.heightMm} mm',
+  );
+  buffer.writeln('DENSITY 8');
+  buffer.writeln('CLS');
+
+  final x =
+      calcPriceLeftMargin(text.length, settings.widthMm) +
+      scaledStartX;
+  if (title == null || title.trim().isEmpty) {
+    buffer.writeln(
+      'TEXT $x,$scaledStartY,"3",0,'
+      '${settings.labelScale},${settings.labelHeight},'
+      '"${formatName(text.toUpperCase())}"',
+    );
+  } else {
+    final titleX =
+        calcTitleLeftMargin(
+          title.length,
+          settings.widthMm,
+        ) +
+        scaledStartX +
+        50;
+
+    final textX =
+        calcPriceLeftMargin(text.length, settings.widthMm) +
+        scaledStartX;
+
+    final spacing = 30 * (settings.heightMm / 30);
+
+    buffer.writeln(
+      'TEXT $titleX,$scaledStartY,'
+      '"3",0,1,1,"${formatName(title.toUpperCase())}"',
+    );
+
+    buffer.writeln(
+      'TEXT $textX,${scaledStartY + spacing},"3",0,'
+      '${settings.labelScale},${settings.labelHeight},'
+      '"${formatName(text.toUpperCase())}"',
+    );
+  }
+
+  buffer.writeln('PRINT 1,1');
 
   return buffer.toString();
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/payment_type_button.dart';
@@ -16,6 +17,8 @@ import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/custom_printing_page/components/custom_label_print_widget.dart';
+import 'package:stockall/pages/custom_printing_page/components/custom_receipt_print_widget.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/item_comment_widget.dart';
 import 'package:stockall/pages/sales/make_sales/page1/platforms/components/project_display_widget.dart';
 import 'package:stockall/pages/sales/make_sales/page1/platforms/components/sub_staff_selection_widget.dart';
@@ -1052,19 +1055,62 @@ class _MakeSalesDesktopTwoState
                                   ),
                                 ),
                                 SizedBox(height: 10),
-                                ItemCommentWidget(
-                                  commentController:
-                                      commentController,
-                                  onTapOutside: (
-                                    pointerDownEvent,
-                                  ) {
-                                    returnSalesProvider()
-                                        .setComment(
-                                          comment:
-                                              commentController
-                                                  .text,
-                                        );
-                                  },
+                                Column(
+                                  spacing: 10,
+                                  children: [
+                                    ItemCommentWidget(
+                                      commentController:
+                                          commentController,
+                                      onTapOutside: (
+                                        pointerDownEvent,
+                                      ) {
+                                        returnSalesProvider()
+                                            .setComment(
+                                              comment:
+                                                  commentController
+                                                      .text,
+                                            );
+                                      },
+                                    ),
+                                    Row(
+                                      spacing: 5,
+                                      children: [
+                                        Expanded(
+                                          child: PrintSalesCommentButton(
+                                            title:
+                                                'Print Sticker',
+                                            widget: CustomLabelPrintWidget(
+                                              mainText:
+                                                  commentController
+                                                          .text
+                                                          .isNotEmpty
+                                                      ? commentController
+                                                          .text
+                                                          .trim()
+                                                      : null,
+                                            ),
+                                          ),
+                                        ),
+
+                                        Expanded(
+                                          child: PrintSalesCommentButton(
+                                            title:
+                                                'Print Comment',
+                                            widget: CustomReceiptPrintWidget(
+                                              mainText:
+                                                  commentController
+                                                          .text
+                                                          .isNotEmpty
+                                                      ? commentController
+                                                          .text
+                                                          .trim()
+                                                      : null,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -1091,6 +1137,67 @@ class _MakeSalesDesktopTwoState
             ).showSuccess('Sales Successful'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class PrintSalesCommentButton extends StatelessWidget {
+  final String title;
+  final Widget widget;
+  const PrintSalesCommentButton({
+    super.key,
+    required this.title,
+    required this.widget,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context, listen: false);
+    return Material(
+      color: Colors.transparent,
+      child: Ink(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(3),
+          color: Colors.grey.shade200,
+        ),
+        child: InkWell(
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (firstContext) {
+                return DialogTemplate(
+                  theme: theme,
+                  message: 'message',
+                  title: 'title',
+                  action: () {},
+                  showTopSection: false,
+                  showBottomActionButtons: false,
+                  widget: SizedBox(
+                    height: screenHeight(context) - 200,
+                    child: widget,
+                  ),
+                );
+              },
+            );
+          },
+          mouseCursor: SystemMouseCursors.click,
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              vertical: 8,
+              horizontal: 10,
+            ),
+            child: Center(
+              child: Text(
+                style: TextStyle(
+                  fontSize: theme.mobileTexts.b4.fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+                title,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

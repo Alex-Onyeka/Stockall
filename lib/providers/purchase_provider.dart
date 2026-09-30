@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_inventory_updates/temp_inventory_update_class.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_item_purchase_record/temp_item_purchase_record.dart';
 import 'package:stockall/classes/temp_item_purchase_record/unsynced/created_item_records/created_item_records.dart';
@@ -9,6 +8,7 @@ import 'package:stockall/classes/temp_purchase/temp_purchase.dart';
 import 'package:stockall/classes/temp_purchase/unsynced/created_purchases/created_purchases.dart';
 import 'package:stockall/classes/temp_purchase/unsynced/deleted_purchase/deleted_purchases.dart';
 import 'package:stockall/classes/temp_purchase/unsynced/updated/updated_purchases.dart';
+import 'package:stockall/classes/temp_storage_item_history/storage_item_history.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
@@ -339,12 +339,13 @@ class PurchaseProvider extends ChangeNotifier {
               var newPro = storageProducts.first.copyWith();
 
               var quantity =
-                  rec.isGroup == true
-                      ? (newPro.quantity ?? 0) -
-                          ((rec.quantity ?? 0) *
-                              (newPro.qttyPerGroup ?? 1))
-                      : (newPro.quantity ?? 0) -
-                          (rec.quantity ?? 0);
+                  (newPro.quantity ?? 0) -
+                  rec
+                      .getSelectedUnit()
+                      .getQuantityEquivMultiplied(
+                        index: 1,
+                        quantityTwo: (rec.quantity ?? 0),
+                      );
 
               try {
                 var product = newPro.copyWith();
@@ -355,48 +356,69 @@ class PurchaseProvider extends ChangeNotifier {
                     .updateProduct(
                       product: product,
                       isQuantityUpdate: true,
-                      quantityChange:
-                          rec.isGroup == true
-                              ? ((rec.quantity ?? 1) *
-                                  (rec.qttyPerGroup ?? 1))
-                              : rec.quantity,
+                      quantityChange: rec
+                          .getSelectedUnit()
+                          .getQuantityEquivMultiplied(
+                            index: 1,
+                            quantityTwo:
+                                (rec.quantity ?? 0),
+                          ),
                       isIncrement: false,
                     );
                 try {
                   if (createUpdate) {
-                    var newUpdate =
-                        TempInventoryUpdateClass(
-                          shopId: shopId(),
-                          title: 'Stock Out',
-                          createdAt: DateTime.now(),
-                          departmentName:
-                              returnDepartmentProvider()
-                                  .currentDepartment()
-                                  ?.name,
-                          departmentUuid:
-                              returnDepartmentProvider()
-                                  .currentDepartment()
-                                  ?.uuid,
-                          departmentNameTwo: null,
-                          departmentUuidTwo: null,
-                          itemName: newPro.name,
-                          itemUuid: newPro.uuid,
-                          staffId: currentUser().userId,
-                          staffName: currentUser().name,
-                          staffIdTwo: null,
-                          staffNameTwo: null,
-                          oldValue:
-                              (newPro.quantity ?? 0)
-                                  .toString(),
-                          newValue: quantity.toString(),
-                          uuid: uuidGen(),
-                          itemTwoOldValue: null,
-                          itemTwoNewValue: null,
-                          itemTwoUuid: null,
-                        );
+                    var newUpdate = StorageItemHistory(
+                      shopId: shopId(),
+                      title: 'Purchase Deleted',
+                      createdAt: DateTime.now(),
+                      storageDepartmentName:
+                          returnDepartmentProvider()
+                              .currentDepartment()
+                              ?.name,
+                      storageDepartmentUuid:
+                          returnDepartmentProvider()
+                              .currentDepartment()
+                              ?.uuid,
+                      storageItemName: rec.itemName,
+                      storageItemUuid: rec.storageItemId,
+                      storageStaffId: currentUser().userId,
+                      storageStaffName: currentUser().name,
+                      storageItemOldValue:
+                          formatLargeNumberDouble(
+                            (newPro
+                                .getPrimaryUnit()
+                                .getQuantityEquivDivided(
+                                  index: 1,
+                                  quantityTwo:
+                                      (newPro.quantity ??
+                                          0),
+                                )),
+                          ),
+                      storageItemNewValue:
+                          formatLargeNumberDouble(
+                            product
+                                .getPrimaryUnit()
+                                .getQuantityEquivDivided(
+                                  index: 1,
+                                  quantityTwo:
+                                      (product.quantity ??
+                                          0),
+                                ),
+                          ),
+                      uuid: uuidGen(),
+                      desc:
+                          '${rec.quantity ?? 0} ${rec.unit} of This Item Return From Purchase Purchased. Purchase Id: #${returnOnlyDigits(rec.purchaseId ?? '')}',
+                      isIncreased: false,
+                      quantityChange: rec.quantity,
+                      storagePrimaryUnit:
+                          rec.getPrimaryUnit().name,
+                      storageUnit: rec.unit,
+                    );
 
-                    await returnInventoryUpdatesProvider()
-                        .createInventoryUpdate(newUpdate);
+                    await returnStorageItemHistoryProvider()
+                        .createStorageItemHistory(
+                          newUpdate,
+                        );
                     await returnData().getProducts(
                       shopId(),
                     );
@@ -418,27 +440,52 @@ class PurchaseProvider extends ChangeNotifier {
                     .where((pro) => pro.uuid == rec.itemId)
                     .toList();
             if (products.isNotEmpty) {
-              var newPro = products.first.copyWith();
+              var oldPro = products.first.copyWith();
+              var newPro = oldPro.copyWith();
               newPro.quantity =
                   (newPro.quantity ?? 0) -
-                  (rec.isGroup == true
-                      ? ((rec.quantity ?? 1) *
-                          (rec.qttyPerGroup ?? 1))
-                      : rec.quantity ?? 0);
+                  rec
+                      .getSelectedUnit()
+                      .getQuantityEquivMultiplied(
+                        index: 1,
+                        quantityTwo: rec.quantity ?? 0,
+                      );
 
               ItemHistory itemHistory = ItemHistory(
-                isIncreased: true,
-                oldValue:
-                    (products.first.quantity ?? 0)
-                        .toString(),
                 desc:
-                    '${(newPro.quantity ?? 0) - (rec.quantity ?? 0)} Quantity(s) of Item Returned From Purchase #${returnOnlyDigits(purchase.uuid ?? '')}',
+                    '${rec.quantity} ${rec.unit} of this Item Was Returned From Purchase. Purchase Id: #${returnOnlyDigits(rec.purchaseId ?? '')}',
                 shopId: shopId(),
-                title: 'Purchased item Returned',
-                quantityChange:
-                    -(newPro.quantity ?? 0) -
-                    (rec.quantity ?? 0),
-                newValue: newPro.quantity?.toString(),
+                isIncreased: false,
+                oldValue: formatLargeNumberDouble(
+                  (oldPro
+                      .getPrimaryUnit()
+                      .getQuantityEquivDivided(
+                        index: 1,
+                        quantityTwo: (oldPro.quantity ?? 0),
+                      )),
+                ),
+                newValue: formatLargeNumberDouble(
+                  newPro
+                      .getPrimaryUnit()
+                      .getQuantityEquivDivided(
+                        index: 1,
+                        quantityTwo: (newPro.quantity ?? 0),
+                      ),
+                ),
+                title: 'Purchased Deleted',
+                quantityChange: rec.quantity,
+                departmentName:
+                    returnDepartmentProvider()
+                        .currentDepartment()
+                        ?.name,
+                departmentUuid:
+                    returnDepartmentProvider()
+                        .currentDepartment()
+                        ?.uuid,
+                itemName: rec.itemName,
+                itemUuid: rec.itemId,
+                primaryUnit: rec.getPrimaryUnit().name,
+                unit: rec.getSelectedUnit().name,
               );
 
               await returnData().updateProduct(
@@ -446,11 +493,12 @@ class PurchaseProvider extends ChangeNotifier {
                 includeQuantity: false,
                 product: newPro,
                 isQuantityUpdate: true,
-                quantityChange:
-                    rec.isGroup == true
-                        ? ((rec.quantity ?? 1) *
-                            (rec.qttyPerGroup ?? 1))
-                        : rec.quantity,
+                quantityChange: rec
+                    .getSelectedUnit()
+                    .getQuantityEquivMultiplied(
+                      index: 1,
+                      quantityTwo: rec.quantity ?? 0,
+                    ),
                 isIncrement: false,
               );
             }
@@ -723,7 +771,7 @@ class PurchaseProvider extends ChangeNotifier {
                 .userShop()
                 ?.manageInventoryStorage ==
             true) {
-          var storageProducts =
+          var storageProduct =
               returnStorageProductProvider()
                   .storageProductListMain
                   .firstWhere(
@@ -731,64 +779,75 @@ class PurchaseProvider extends ChangeNotifier {
                         prod.uuid == item.storageItemId,
                   );
 
-          var newPr = storageProducts.copyWith();
+          var newPr = storageProduct.copyWith();
           newPr.quantity =
-              item.isGroup == true
-                  ? (newPr.quantity ?? 0) +
-                      ((item.quantity ?? 0) *
-                          (newPr.qttyPerGroup ?? 1))
-                  : (newPr.quantity ?? 0) +
-                      (item.quantity ?? 0);
+              (newPr.quantity ?? 0) +
+              item
+                  .getSelectedUnit()
+                  .getQuantityEquivMultiplied(
+                    index: 1,
+                    quantityTwo: (item.quantity ?? 0),
+                  );
           newPr.updatedAt = DateTime.now();
 
           await returnStorageProductProvider()
               .updateProduct(
                 product: newPr,
                 isQuantityUpdate: true,
-                quantityChange:
-                    ((newPr.quantity ?? 0) -
-                        (storageProducts.quantity ?? 0)),
-                isIncrement:
-                    ((newPr.quantity ?? 0) >
-                        (storageProducts.quantity ?? 0)),
+                quantityChange: item
+                    .getSelectedUnit()
+                    .getQuantityEquivMultiplied(
+                      index: 1,
+                      quantityTwo: (item.quantity ?? 0),
+                    ),
+                isIncrement: true,
               );
           try {
-            var newUpdate = TempInventoryUpdateClass(
+            var newUpdate = StorageItemHistory(
               shopId: shopId(),
-              title: 'Stock In',
+              title: 'Stock In From Purchase',
               createdAt: DateTime.now(),
-              departmentName:
+              storageDepartmentName:
                   returnDepartmentProvider()
                       .currentDepartment()
                       ?.name,
-              departmentUuid:
+              storageDepartmentUuid:
                   returnDepartmentProvider()
                       .currentDepartment()
                       ?.uuid,
-              departmentNameTwo: null,
-              departmentUuidTwo: null,
-              itemName: newPr.name,
-              itemUuid: newPr.uuid,
-              staffId: currentUser().userId,
-              staffName: currentUser().name,
-              staffIdTwo: null,
-              staffNameTwo: null,
-              oldValue:
-                  ((newPr.quantity ?? 0) -
-                          (item.isGroup == true
-                              ? ((item.quantity ?? 0) *
-                                  (newPr.qttyPerGroup ?? 1))
-                              : (item.quantity ?? 0)))
-                      .toString(),
-              newValue: newPr.quantity.toString(),
+              storageItemName: newPr.name,
+              storageItemUuid: newPr.uuid,
+              storageStaffId: currentUser().userId,
+              storageStaffName: currentUser().name,
+              storageItemOldValue: formatLargeNumberDouble(
+                (storageProduct
+                    .getPrimaryUnit()
+                    .getQuantityEquivDivided(
+                      index: 1,
+                      quantityTwo:
+                          (storageProduct.quantity ?? 0),
+                    )),
+              ),
+              storageItemNewValue: formatLargeNumberDouble(
+                storageProduct
+                    .getPrimaryUnit()
+                    .getQuantityEquivDivided(
+                      index: 1,
+                      quantityTwo: (newPr.quantity ?? 0),
+                    ),
+              ),
               uuid: uuidGen(),
-              itemTwoOldValue: null,
-              itemTwoNewValue: null,
-              itemTwoUuid: null,
+              desc:
+                  '${item.quantity ?? 0} ${item.unit} of This Item Purchased. Purchase Id: #${returnOnlyDigits(item.purchaseId ?? '')}',
+              isIncreased: true,
+              quantityChange: item.quantity,
+              storagePrimaryUnit:
+                  item.getPrimaryUnit().name,
+              storageUnit: item.unit,
             );
 
-            await returnInventoryUpdatesProvider()
-                .createInventoryUpdate(newUpdate);
+            await returnStorageItemHistoryProvider()
+                .createStorageItemHistory(newUpdate);
           } catch (e) {
             await mainLocalLog(
               '❌❌Error Creating Inventory Update: ${e.toString()}',
@@ -802,36 +861,62 @@ class PurchaseProvider extends ChangeNotifier {
 
           var newPr = product.copyWith();
           newPr.quantity =
-              item.isGroup == true
-                  ? (newPr.quantity ?? 0) +
-                      ((item.quantity ?? 0) *
-                          (newPr.qttyPerGroup ?? 1))
-                  : (newPr.quantity ?? 0) +
-                      (item.quantity ?? 0);
+              (newPr.quantity ?? 0) +
+              item
+                  .getSelectedUnit()
+                  .getQuantityEquivMultiplied(
+                    index: 1,
+                    quantityTwo: (item.quantity ?? 0),
+                  );
           newPr.updatedAt = DateTime.now();
           ItemHistory itemHistory = ItemHistory(
             desc:
-                '${(newPr.quantity ?? 0) - (product.quantity ?? 0)} Quantity(s) purchased. #${returnOnlyDigits(item.purchaseId ?? '')}',
+                '${item.quantity} ${item.unit} of this Item Purchased. Purchase Id: #${returnOnlyDigits(item.purchaseId ?? '')}',
             shopId: shopId(),
             isIncreased: true,
-            oldValue: (product.quantity ?? 0).toString(),
+            oldValue: formatLargeNumberDouble(
+              (product
+                  .getPrimaryUnit()
+                  .getQuantityEquivDivided(
+                    index: 1,
+                    quantityTwo: (product.quantity ?? 0),
+                  )),
+            ),
+            newValue: formatLargeNumberDouble(
+              product
+                  .getPrimaryUnit()
+                  .getQuantityEquivDivided(
+                    index: 1,
+                    quantityTwo: (newPr.quantity ?? 0),
+                  ),
+            ),
             title: 'Item Purchased',
-            quantityChange:
-                -(newPr.quantity ?? 0) -
-                (product.quantity ?? 0),
-            newValue: newPr.quantity?.toString(),
+            quantityChange: item.quantity,
+            departmentName:
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.name,
+            departmentUuid:
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid,
+            itemName: newPr.name,
+            itemUuid: newPr.uuid,
+            primaryUnit: item.getPrimaryUnit().name,
+            unit: item.getSelectedUnit().name,
           );
 
           await returnData().updateProduct(
             itemHistory: itemHistory,
             includeQuantity: false,
-            isIncrement:
-                (newPr.quantity ?? 0) >
-                (product.quantity ?? 0),
+            isIncrement: true,
             isQuantityUpdate: true,
-            quantityChange:
-                (newPr.quantity ?? 0) -
-                (product.quantity ?? 0),
+            quantityChange: item
+                .getSelectedUnit()
+                .getQuantityEquivMultiplied(
+                  index: 1,
+                  quantityTwo: (item.quantity ?? 0),
+                ),
             product: newPr,
           );
         }
@@ -906,35 +991,32 @@ class PurchaseProvider extends ChangeNotifier {
   Future<void> deleteItemPurchaseRecord(
     String recordUuid,
   ) async {
-    bool isOnline = await connectivity.isOnline();
     try {
-      if (isOnline) {
-        await supabase
-            .from(itemPurchaseTableName)
-            .delete()
-            .eq('uuid', recordUuid);
+      // if (isOnline) {
+      //   await supabase
+      //       .from(itemPurchaseTableName)
+      //       .delete()
+      //       .eq('uuid', recordUuid);
 
-        notifyListeners();
+      //   notifyListeners();
+      // } else {
+      await ItemPurchaseFunc().deleteRecord(recordUuid);
+
+      if (CreatedItemPurchaseFunc()
+          .getRecords()
+          .where((rec) => rec.record.uuid == recordUuid)
+          .isNotEmpty) {
+        await CreatedItemPurchaseFunc().deleteRecords(
+          recordUuid,
+        );
       } else {
-        await ItemPurchaseFunc().deleteRecord(recordUuid);
-
-        if (CreatedItemPurchaseFunc()
-            .getRecords()
-            .where((rec) => rec.record.uuid == recordUuid)
-            .isNotEmpty) {
-          await CreatedItemPurchaseFunc().deleteRecords(
-            recordUuid,
-          );
-        } else {
-          DeletedItemPurchaseFunc().createDeletedPurchase(
-            DeletedItemRecords(recordUuid: recordUuid),
-          );
-        }
+        DeletedItemPurchaseFunc().createDeletedPurchase(
+          DeletedItemRecords(recordUuid: recordUuid),
+        );
       }
+      // }
 
-      loadItemPurchaseRecords(
-        returnShopProvider().userShop()!.shopId!,
-      );
+      loadItemPurchaseRecordsOffline();
     } catch (e) {
       await mainLocalLog(
         'Error Deleting Item Purchase Record: ${e.toString()}',

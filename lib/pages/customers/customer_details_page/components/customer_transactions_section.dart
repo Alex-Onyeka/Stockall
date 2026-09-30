@@ -298,7 +298,7 @@ class CustomerTransactionList extends StatelessWidget {
                                 .deleteCustomersTransactions,
                       ),
                   widget: SizedBox(
-                    height: screenHeight(context) - 220,
+                    height: screenHeight(context) - 250,
                     child:
                         CustomterTransactionDetailsWidget(
                           accountReceipt: accountReceipt,

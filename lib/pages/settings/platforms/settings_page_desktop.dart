@@ -23,6 +23,7 @@ import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/barcode_printing_page/barcode_printing_page.dart';
 import 'package:stockall/pages/categories/categories_page.dart';
+import 'package:stockall/pages/custom_printing_page/custom_printing_page.dart';
 import 'package:stockall/pages/dashboard/components/contact_us_float_widget.dart';
 import 'package:stockall/pages/departments/departments_dashboard.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
@@ -763,6 +764,43 @@ class _SettingsPageDesktopState
                                     icon:
                                         Icons
                                             .qr_code_rounded,
+                                  ),
+                                ),
+                              ),
+                              Visibility(
+                                visible: !kIsWeb,
+                                child: SubWrapper(
+                                  isVisible:
+                                      !GeneralSettingsAuthAction()
+                                          .useCustomPrintsAction(
+                                            context:
+                                                context,
+                                          ),
+                                  mainWidget: NavListTileDesktopAlt(
+                                    height: 18,
+                                    action: () {
+                                      GeneralSettingsAuthAction()
+                                          .useCustomPrintsAction(
+                                            context:
+                                                context,
+                                            action: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    return CustomPrintingPage();
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                          );
+                                    },
+                                    title: 'Custom Prints',
+                                    icon:
+                                        Icons
+                                            .print_outlined,
                                   ),
                                 ),
                               ),

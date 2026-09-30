@@ -159,8 +159,9 @@ class _PurchaseListMobileState
                   return CreatePurchase();
                 },
               ),
-            ).then((_) {
-              getPurchases();
+            ).then((_) async {
+              await getPurchases();
+              setState(() {});
             });
           },
           color: theme.lightModeColor.secColor100,

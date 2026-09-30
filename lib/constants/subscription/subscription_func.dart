@@ -79,6 +79,7 @@ List<SubplanClass> subPlans = [
       trackCart: true,
       manageProductions: true,
       manageCustomersAccountAndPoints: true,
+      useCustomPrints: true,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -165,6 +166,7 @@ List<SubplanClass> subPlans = [
       useOnScreenKeyboard: true,
       manageProductions: true,
       manageCustomersAccountAndPoints: true,
+      useCustomPrints: true,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -252,6 +254,7 @@ List<SubplanClass> subPlans = [
       useOnScreenKeyboard: true,
       manageProductions: true,
       manageCustomersAccountAndPoints: true,
+      useCustomPrints: true,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -339,6 +342,7 @@ List<SubplanClass> subPlans = [
       useOnScreenKeyboard: false,
       manageProductions: false,
       manageCustomersAccountAndPoints: false,
+      useCustomPrints: false,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -426,6 +430,7 @@ List<SubplanClass> subPlans = [
       useOnScreenKeyboard: false,
       manageProductions: false,
       manageCustomersAccountAndPoints: false,
+      useCustomPrints: false,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -509,6 +514,7 @@ List<SubplanClass> subPlans = [
       useOnScreenKeyboard: false,
       manageProductions: false,
       manageCustomersAccountAndPoints: false,
+      useCustomPrints: false,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: false,

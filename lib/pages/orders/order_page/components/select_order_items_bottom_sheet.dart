@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_orders/order_items.dart';
 import 'package:stockall/classes/temp_orders/orders.dart';
+import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
-import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/product_details/platforms/components/unit_selection_widget.dart';
 
 void selectOrderItemsBottomSheet({
   required Orders order,
@@ -20,15 +21,78 @@ void selectOrderItemsBottomSheet({
   var theme = returnTheme(context, listen: false);
   bool isGroupTemp = false;
 
-  bool originalUseGroupUnit() {
-    return orderItem.getOriginalUseGroupQuantity();
+  String? unitUuid;
+
+  // Orders orderNew = order.copyWith();
+  OrderItems orderItemNew = orderItem.copyWith();
+
+  void selectUnit(String unit) {
+    unitUuid = unit;
   }
 
-  bool useGroupUnit() {
-    return orderItem.useGroupQuantity ?? false;
+  List<ProductUnitsClass> tempUnitList =
+      orderItemNew.getUnitListFinal();
+
+  ProductUnitsClass getPrimaryUnit() {
+    var items = tempUnitList.where(
+      (item) => item.uuid == unitUuid,
+    );
+    if (items.isEmpty) {
+      var items = tempUnitList.where(
+        (item) => item.isPrimary,
+      );
+      if (items.isNotEmpty) {
+        return items.first;
+      } else {
+        return ProductUnitsClass(
+          uuid: uuidGen(),
+          staffUuid: currentUser().userId,
+          createdAt: DateTime.now(),
+          staffName: currentUser().name,
+          conversion: 1,
+          name:
+              orderItemNew.unit == 'Others'
+                  ? 'Unit(s)'
+                  : orderItemNew.unit ?? 'Unit(s)',
+          isPrimary: true,
+          productUuid: orderItemNew.uuid,
+        );
+      }
+    } else {
+      return items.first;
+    }
   }
 
-  isGroupTemp = orderItem.useGroupQuantity ?? false;
+  unitUuid = orderItemNew.unitUuid ?? getPrimaryUnit().uuid;
+
+  double getPrimaryUnitQuantityMultiplied({
+    BuildContext? context,
+    double? newQuantity,
+  }) {
+    return getPrimaryUnit().getQuantityEquivMultiplied(
+      index: 1,
+      context: context,
+      orderItem: orderItemNew,
+      newQuantity: newQuantity,
+    );
+  }
+
+  // double existingQtty = getPrimaryUnitQuantityMultiplied(
+  //   newQuantity: orderItemNew.quantity,
+  // );
+  void setUnitListFinal() {
+    orderItemNew.unitsList?.clear();
+    orderItemNew.unitsList?.addAll(
+      tempUnitList.map((item) => item.copyWith()).toList(),
+    );
+    orderItemNew.unitUuid = unitUuid;
+  }
+
+  // bool useGroupUnit() {
+  //   return orderItem.useGroupQuantity ?? false;
+  // }
+
+  // isGroupTemp = orderItem.useGroupQuantity ?? false;
   quantityController.text =
       (orderItem.remainingQuantity ?? 0).toString();
 
@@ -54,7 +118,7 @@ void selectOrderItemsBottomSheet({
                     ),
                   ) ??
                   0),
-          useGroupTemp: isGroupTemp,
+          unitUuidNew: unitUuid,
         ) *
         orderItem.revenue;
   }
@@ -103,37 +167,29 @@ void selectOrderItemsBottomSheet({
                       width: 450,
                       child: EditCartTextField(
                         title:
-                            'Enter Item Quantity ${orderItem.getUnit(useGroupTemp: isGroupTemp)}',
+                            'Enter Item Quantity ${orderItem.getUnit()}',
                         hint: 'Quantity',
                         controller: quantityController,
                         theme: theme,
                         onChanged: (value) {
                           var itemRemainingQuantity =
                               orderItem
-                                  .getActualRemainingQuantity(
-                                    useGroupTemp:
-                                        useGroupUnit(),
-                                  );
-                          var itemQttyPerGroup =
-                              orderItem.qttyPerGroup ?? 1;
+                                  .getActualRemainingQuantity();
+                          print(itemRemainingQuantity);
+                          // var itemQttyPerGroup =
+                          //     orderItem.qttyPerGroup ?? 1;
                           var number =
-                              isGroupTemp
-                                  ? (itemQttyPerGroup *
-                                      (double.tryParse(
-                                            value
-                                                .replaceAll(
-                                                  ',',
-                                                  '',
-                                                ),
-                                          ) ??
-                                          0))
-                                  : double.tryParse(
-                                        value.replaceAll(
-                                          ',',
-                                          '',
-                                        ),
-                                      ) ??
-                                      0;
+                              getPrimaryUnitQuantityMultiplied(
+                                newQuantity:
+                                    double.tryParse(
+                                      value.replaceAll(
+                                        ',',
+                                        '',
+                                      ),
+                                    ) ??
+                                    0,
+                              );
+                          print(number);
                           setState(() {
                             if (number >
                                 itemRemainingQuantity) {
@@ -162,45 +218,21 @@ void selectOrderItemsBottomSheet({
                         },
                       ),
                     ),
-                    Visibility(
-                      visible: originalUseGroupUnit(),
-                      child: Column(
-                        children: [
-                          SizedBox(height: 20),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(
-                                  horizontal: 20.0,
-                                ),
-                            child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .spaceBetween,
-                              children: [
-                                Text(
-                                  style: TextStyle(
-                                    fontWeight:
-                                        FontWeight.bold,
-                                  ),
-                                  'Use Group Quantity?',
-                                ),
-                                MyToggleButton(
-                                  boolValue: isGroupTemp,
-                                  toggle: () {
-                                    setState(() {
-                                      isGroupTemp =
-                                          !isGroupTemp;
-                                    });
-                                    quantityController
-                                        .text = '0';
-                                  },
-                                  theme: theme,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                    SizedBox(height: 10),
+                    UnitSelectionWidget(
+                      product: null,
+                      storageProduct: null,
+                      productionItem: null,
+                      material: null,
+                      unitList: tempUnitList,
+                      theme: theme,
+                      unitUuid: unitUuid,
+                      setUnitUuid: (uuid) {
+                        setState(() {
+                          selectUnit(uuid ?? '');
+                        });
+                        quantityController.text = '0';
+                      },
                     ),
 
                     SizedBox(height: 20),
@@ -267,29 +299,21 @@ void selectOrderItemsBottomSheet({
                         SmallButtonMain(
                           theme: theme,
                           action: () {
-                            var itemQttyPerGroup =
-                                orderItem.qttyPerGroup ?? 1;
+                            // var itemQttyPerGroup =
+                            //     orderItem.qttyPerGroup ?? 1;
                             var number =
-                                isGroupTemp
-                                    ? (itemQttyPerGroup *
-                                        (double.tryParse(
-                                              quantityController
-                                                  .text
-                                                  .replaceAll(
-                                                    ',',
-                                                    '',
-                                                  ),
-                                            ) ??
-                                            0))
-                                    : double.tryParse(
-                                          quantityController
-                                              .text
-                                              .replaceAll(
-                                                ',',
-                                                '',
-                                              ),
-                                        ) ??
-                                        0;
+                                getPrimaryUnitQuantityMultiplied(
+                                  newQuantity:
+                                      double.tryParse(
+                                        quantityController
+                                            .text
+                                            .replaceAll(
+                                              ',',
+                                              '',
+                                            ),
+                                      ) ??
+                                      0,
+                                );
                             if (originalItemQuantity() !=
                                     null &&
                                 number >
@@ -319,8 +343,9 @@ void selectOrderItemsBottomSheet({
                                       ) ??
                                       0) >
                                   0) {
+                                setUnitListFinal();
                                 OrderItems item =
-                                    orderItem.copyWith();
+                                    orderItemNew.copyWith();
                                 item.useGroupQuantity =
                                     isGroupTemp;
                                 item.quantity =

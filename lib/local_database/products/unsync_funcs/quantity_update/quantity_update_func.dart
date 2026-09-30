@@ -83,54 +83,77 @@ class QuantityUpdateFunc {
   //   }
   // }
 
+  // Future<int> createQuantityUpdate(
+  //   QuantityUpdate quantityUpdate,
+  // ) async {
+  //   try {
+  //     final existingLogs = getQuantitiesUpdate().where(
+  //       (item) =>
+  //           item.productUuid == quantityUpdate.productUuid,
+  //     );
+
+  //     if (existingLogs.isEmpty) {
+  //       await quantityUpdateBox.put(
+  //         quantityUpdate.uuid,
+  //         quantityUpdate,
+  //       );
+
+  //       await mainLocalLog(
+  //         'Offline Quantity Update inserted successfully ✅',
+  //       );
+  //     } else {
+  //       final existing = existingLogs.first;
+
+  //       // Convert both values to signed numbers
+  //       final double existingValue =
+  //           existing.isIncrement
+  //               ? existing.quantity
+  //               : -existing.quantity;
+
+  //       final double incomingValue =
+  //           quantityUpdate.isIncrement
+  //               ? quantityUpdate.quantity
+  //               : -quantityUpdate.quantity;
+
+  //       // Calculate the net value
+  //       final double total = existingValue + incomingValue;
+
+  //       // Convert back to absolute quantity + direction
+  //       existing.quantity = total.abs();
+  //       existing.isIncrement = total >= 0;
+
+  //       // Save to Hive
+  //       await quantityUpdateBox.put(
+  //         existing.uuid,
+  //         existing,
+  //       );
+
+  //       await mainLocalLog(
+  //         'Offline Quantity Update merged successfully ✅',
+  //       );
+  //     }
+
+  //     return 1;
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       'Offline Quantity Update insertion failed ❌: $e',
+  //     );
+  //     return 0;
+  //   }
+  // }
+
   Future<int> createQuantityUpdate(
     QuantityUpdate quantityUpdate,
   ) async {
     try {
-      final existingLogs = getQuantitiesUpdate().where(
-        (item) =>
-            item.productUuid == quantityUpdate.productUuid,
+      await quantityUpdateBox.put(
+        quantityUpdate.uuid,
+        quantityUpdate,
       );
 
-      if (existingLogs.isEmpty) {
-        await quantityUpdateBox.put(
-          quantityUpdate.uuid,
-          quantityUpdate,
-        );
-
-        await mainLocalLog(
-          'Offline Quantity Update inserted successfully ✅',
-        );
-      } else {
-        final existing = existingLogs.first;
-
-        // Convert both values to signed numbers
-        final double existingValue = existing.isIncrement
-            ? existing.quantity
-            : -existing.quantity;
-
-        final double incomingValue =
-            quantityUpdate.isIncrement
-            ? quantityUpdate.quantity
-            : -quantityUpdate.quantity;
-
-        // Calculate the net value
-        final double total = existingValue + incomingValue;
-
-        // Convert back to absolute quantity + direction
-        existing.quantity = total.abs();
-        existing.isIncrement = total >= 0;
-
-        // Save to Hive
-        await quantityUpdateBox.put(
-          existing.uuid,
-          existing,
-        );
-
-        await mainLocalLog(
-          'Offline Quantity Update merged successfully ✅',
-        );
-      }
+      await mainLocalLog(
+        'Offline Quantity Update inserted successfully ✅',
+      );
 
       return 1;
     } catch (e) {

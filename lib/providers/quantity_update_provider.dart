@@ -59,6 +59,7 @@ class QuantityUpdateProvider with ChangeNotifier {
                 .toList()
                 .map((item) {
                   return {
+                    'hiveUuid': item.uuid,
                     "itemUuid": item.productUuid,
                     "quantity": item.quantity,
                     "isIncrement": item.isIncrement,
@@ -67,15 +68,17 @@ class QuantityUpdateProvider with ChangeNotifier {
                 })
                 .toList();
 
-        var res = await client.rpc(
+        List<Map<String, dynamic>> res = await client.rpc(
           'update_product_quantities',
           params: {'updates': tempQuantityUpdates},
         );
 
-        await QuantityUpdateFunc().clearQuantitiesUpdate();
-        await mainLocalLog(
-          'Unsynced Quantity Updates Cleared: $res',
-        );
+        for (var item in res) {
+          await QuantityUpdateFunc().deleteQuantityUpdate(
+            uuid: item['hiveUuid'],
+          );
+          mainLocalLog('Quantity Updates Successfully');
+        }
       }
     } catch (e) {
       await mainLocalLog(

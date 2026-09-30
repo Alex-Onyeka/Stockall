@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_item_purchase_record/temp_item_purchase_record.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_purchase/purchase_list_item/purchase_list_item.dart';
 import 'package:stockall/classes/temp_purchase/purchase_payments.dart';
 import 'package:stockall/classes/temp_purchase/temp_purchase.dart';
 import 'package:stockall/classes/temp_suppliers/suppliers_class.dart';
@@ -161,6 +162,8 @@ class PurchaseActionProvider extends ChangeNotifier {
           purchaseListItems
               .map(
                 (item) => TempItemPurchaseRecord(
+                  unitUuid: item.unitUuid,
+                  unitsList: item.getUnitListFinal(),
                   unit: item.unit,
                   customPrice: item.customPrice,
                   originalPrice: item.originalPrice,
@@ -227,6 +230,8 @@ class PurchaseActionProvider extends ChangeNotifier {
           records
               .map(
                 (item) => PurchaseListItem(
+                  unitUuid: item.unitUuid,
+                  unitsList: item.getUnitListFinal(),
                   itemName: item.itemName ?? 'Item Name',
                   unit: item.unit ?? 'unit',
                   itemUuid: item.itemId,
@@ -263,66 +268,5 @@ class PurchaseActionProvider extends ChangeNotifier {
         'Error Initiating Edit Purchase: ${e.toString()}',
       );
     }
-  }
-}
-
-class PurchaseListItem {
-  String itemName;
-  String? itemUuid;
-  String? storageItemUuid;
-  double? totalPrice;
-  double quantity;
-  double? customPrice;
-  double? originalPrice;
-  bool isGroup;
-  String? unit;
-  double? qttyPerGroup;
-
-  PurchaseListItem({
-    required this.itemName,
-    required this.itemUuid,
-    required this.totalPrice,
-    required this.quantity,
-    required this.unit,
-    required this.customPrice,
-    required this.originalPrice,
-    required this.storageItemUuid,
-    required this.isGroup,
-    required this.qttyPerGroup,
-  });
-
-  PurchaseListItem copyWith({
-    String? itemUuid,
-    String? itemName,
-    double? totalPrice,
-    double? quantity,
-    double? customPrice,
-    double? originalPrice,
-    String? storageItemUuid,
-    bool? isGroup,
-    double? qttyPerGroup,
-    String? unit,
-  }) {
-    return PurchaseListItem(
-      itemName: itemName ?? this.itemName,
-      itemUuid: itemUuid ?? this.itemUuid,
-      totalPrice: totalPrice ?? this.totalPrice,
-      quantity: quantity ?? this.quantity,
-      customPrice: customPrice ?? this.customPrice,
-      originalPrice: originalPrice ?? this.originalPrice,
-      storageItemUuid:
-          storageItemUuid ?? this.storageItemUuid,
-      isGroup: isGroup ?? this.isGroup,
-      qttyPerGroup: qttyPerGroup ?? this.qttyPerGroup,
-      unit: unit ?? this.unit,
-    );
-  }
-
-  double getPrice() {
-    // if (isGroup) {
-    //   return (totalPrice ?? 0) * quantity;
-    // } else {
-    return totalPrice ?? 0;
-    // }
   }
 }

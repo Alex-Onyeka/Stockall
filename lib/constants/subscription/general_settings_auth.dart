@@ -16,6 +16,7 @@ class GeneralSettingsAuth {
   final bool trackCart;
   final bool manageProductions;
   final bool manageCustomersAccountAndPoints;
+  final bool useCustomPrints;
 
   GeneralSettingsAuth({
     required this.addSocials,
@@ -30,6 +31,7 @@ class GeneralSettingsAuth {
     required this.trackCart,
     required this.manageProductions,
     required this.manageCustomersAccountAndPoints,
+    required this.useCustomPrints,
   });
 }
 
@@ -69,6 +71,29 @@ class GeneralSettingsAuthAction {
         .firstWhere((pl) => pl.plan == plan)
         .generalSettingsAuth
         .useCloseSale) {
+      action == null ? {} : action();
+      return true;
+    } else {
+      if (action != null && context != null) {
+        showUnauthorizedDialog(context);
+      }
+      return false;
+    }
+    // }
+  }
+
+  bool useCustomPrintsAction({
+    required BuildContext? context,
+    Function()? action,
+  }) {
+    var plan = SubscriptionProvider().subscription?.plan;
+    if (plan == null) {
+      return false;
+    }
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .generalSettingsAuth
+        .useCustomPrints) {
       action == null ? {} : action();
       return true;
     } else {

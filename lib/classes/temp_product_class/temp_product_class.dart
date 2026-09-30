@@ -412,6 +412,12 @@ class TempProductClass {
     );
   }
 
+  List<ProductUnitsClass> getUnitListFinal() {
+    return getUnitsList()
+        .map((item) => item.copyWith())
+        .toList();
+  }
+
   String getItemTilePriceWithDiscount({
     required BuildContext context,
   }) {

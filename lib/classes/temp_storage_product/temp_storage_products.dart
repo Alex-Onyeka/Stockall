@@ -187,6 +187,12 @@ class TempStorageProducts {
     unitsList = newItem.unitsList;
   }
 
+  List<ProductUnitsClass> getUnitListFinal() {
+    return getUnitsList()
+        .map((item) => item.copyWith())
+        .toList();
+  }
+
   String getQuantityText({
     BuildContext? context,
     required int index,

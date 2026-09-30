@@ -200,10 +200,10 @@ class _PurchasePageDesktopState
                             action: () {},
                             text: 'Print',
                           ),
-                          ActionButtonSmall(
-                            action: () {},
-                            text: 'Edit',
-                          ),
+                          // ActionButtonSmall(
+                          //   action: () {},
+                          //   text: 'Edit',
+                          // ),
                           ActionButtonSmall(
                             action: () {},
                             text: 'Dowmload',
@@ -487,34 +487,34 @@ class _PurchasePageDesktopState
                             },
                             text: 'Download',
                           ),
-                          ActionButtonSmall(
-                            action: () {
-                              showDialog(
-                                context: context,
-                                builder: (confirmDialog) {
-                                  return ConfirmationAlert(
-                                    theme: theme,
-                                    message:
-                                        'You are about to edit this purchase. Are you sure you want to proceed?',
-                                    title: 'Edit Purchase',
-                                    action: () {
-                                      Navigator.of(
-                                        confirmDialog,
-                                      ).pop();
-                                      returnPurchaseActionProvider()
-                                          .editPurchase(
-                                            purchase:
-                                                purchase,
-                                            context:
-                                                context,
-                                          );
-                                    },
-                                  );
-                                },
-                              );
-                            },
-                            text: 'Edit',
-                          ),
+                          // ActionButtonSmall(
+                          //   action: () {
+                          //     showDialog(
+                          //       context: context,
+                          //       builder: (confirmDialog) {
+                          //         return ConfirmationAlert(
+                          //           theme: theme,
+                          //           message:
+                          //               'You are about to edit this purchase. Are you sure you want to proceed?',
+                          //           title: 'Edit Purchase',
+                          //           action: () {
+                          //             Navigator.of(
+                          //               confirmDialog,
+                          //             ).pop();
+                          //             returnPurchaseActionProvider()
+                          //                 .editPurchase(
+                          //                   purchase:
+                          //                       purchase,
+                          //                   context:
+                          //                       context,
+                          //                 );
+                          //           },
+                          //         );
+                          //       },
+                          //     );
+                          //   },
+                          //   text: 'Edit',
+                          // ),
                           ActionButtonSmall(
                             isLoading: isDeleteLoading,
                             action: () {
@@ -887,7 +887,20 @@ class _PurchasePageDesktopState
                                                                     fontWeight:
                                                                         FontWeight.bold,
                                                                   ),
-                                                                  '[ ${formatLargeNumberDouble(record.quantity ?? 0)} ]',
+                                                                  formatLargeNumberDouble(
+                                                                    record.quantity ??
+                                                                        0,
+                                                                  ),
+                                                                ),
+                                                                Text(
+                                                                  style: TextStyle(
+                                                                    fontSize:
+                                                                        theme.mobileTexts.b4.fontSize,
+                                                                    fontWeight:
+                                                                        FontWeight.bold,
+                                                                  ),
+                                                                  record.unit ??
+                                                                      'Unit(s)',
                                                                 ),
                                                               ],
                                                             ),

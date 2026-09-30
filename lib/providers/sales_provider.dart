@@ -2250,22 +2250,48 @@ class SalesProvider extends ChangeNotifier {
           try {
             for (final cartItem
                 in salesCartItem.getCartItems()) {
+              TempProductClass? mainItem;
+              var products = returnData().productListMain
+                  .where(
+                    (item) =>
+                        item.uuid == cartItem.item.uuid,
+                  );
+              if (products.isNotEmpty) {
+                mainItem = products.first.copyWith();
+              } else {
+                mainItem = cartItem.item.copyWith();
+              }
               ItemHistory itemHistory = ItemHistory(
                 unit: cartItem.getSelectedUnit().name,
-                primaryUnit:
-                    cartItem.getSelectedUnit().name,
+                primaryUnit: cartItem.getPrimaryUnit().name,
                 desc:
-                    '${cartItem.getRealQuantity()} ${cartItem.getSelectedUnit().name} of This Item was Ordered for, but Not Deducted. Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
+                    '${cartItem.quantity} ${cartItem.getSelectedUnit().name} of This Item was Ordered for, but Not Deducted. Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
                 shopId: shopId,
                 isIncreased: false,
-                oldValue:
-                    (cartItem.getItem()!.quantity ?? 0)
-                        .toString(),
                 title: 'Order Created',
                 quantityChange: 0,
-                newValue:
-                    (cartItem.getItem()!.quantity ?? 0)
-                        .toString(),
+                newValue: formatLargeNumberDouble(
+                  cartItem
+                      .getPrimaryUnit()
+                      .getQuantityEquivDivided(
+                        index: 1,
+                        newQuantity:
+                            (cartItem.getItem()!.quantity ??
+                                0),
+                        product: mainItem,
+                      ),
+                ),
+                oldValue: formatLargeNumberDouble(
+                  (cartItem
+                      .getPrimaryUnit()
+                      .getQuantityEquivDivided(
+                        index: 1,
+                        product: mainItem,
+                        newQuantity:
+                            (cartItem.getItem()!.quantity ??
+                                0),
+                      )),
+                ),
               );
               itemHistory.itemName =
                   cartItem.getItem()!.name;
@@ -2299,9 +2325,22 @@ class SalesProvider extends ChangeNotifier {
                   final double wholeSalePrice =
                       record.revenue;
 
+                  var productUuid = record.productUuid;
+
                   TempProductClass
                   product = TempProductClass(
-                    unitsList: [],
+                    unitsList: [
+                      ProductUnitsClass(
+                        uuid: uuidGen(),
+                        staffUuid: currentUser().userId,
+                        createdAt: createdAt,
+                        staffName: currentUser().name,
+                        conversion: 1,
+                        name: 'Unit(s)',
+                        isPrimary: true,
+                        productUuid: productUuid,
+                      ),
+                    ],
                     useGroupUnit: false,
                     categories: [],
                     storageUuid: null,
@@ -2332,7 +2371,7 @@ class SalesProvider extends ChangeNotifier {
                     sizeType: null,
                     startDate: null,
                     updatedAt: DateTime.now(),
-                    uuid: record.productUuid,
+                    uuid: productUuid,
                   );
                   if (context.mounted) {
                     ItemHistory itemHistory = ItemHistory(

@@ -172,6 +172,8 @@ class DialogTemplate extends StatelessWidget {
 
                               child: Center(
                                 child: Text(
+                                  textAlign:
+                                      TextAlign.center,
                                   style: TextStyle(
                                     fontSize:
                                         theme
@@ -225,6 +227,8 @@ class DialogTemplate extends StatelessWidget {
 
                                 child: Center(
                                   child: Text(
+                                    textAlign:
+                                        TextAlign.center,
                                     style: TextStyle(
                                       fontSize:
                                           theme

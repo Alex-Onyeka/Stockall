@@ -5,6 +5,8 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/receipt_printer_class/receipt_printer_class.dart';
+import 'package:stockall/classes/temp_generated_prints/custom_label_printer_class/custom_label_printer_local.dart';
+import 'package:stockall/classes/temp_generated_prints/custom_label_printer_class/custom_label_printer_settings/custom_label_printer_settings.dart';
 import 'package:stockall/classes/temp_generated_prints/temp_barcode_printer_class/barcode_printer_local.dart';
 import 'package:stockall/classes/temp_generated_prints/temp_barcode_printer_class/printer_settings/printer_settings.dart';
 import 'package:stockall/classes/temp_generated_prints/temp_barcode_printer_class/temp_barcode_printer_class/temp_barcode_printer_class.dart';
@@ -24,6 +26,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/barcode_printer_func/barcode_printer_local_func.dart';
+import 'package:stockall/local_database/barcode_printer_func/custom_label_printer_func.dart';
 import 'package:stockall/local_database/barcode_printer_func/price_and_barcode_local_func.dart';
 import 'package:stockall/local_database/barcode_printer_func/price_tag_printer_func.dart';
 import 'package:stockall/local_database/on_screen_keyboard_pin/on_screen_keyboard_pin_func.dart';
@@ -2821,6 +2824,8 @@ class ShopProvider extends ChangeNotifier {
             ?.printer;
   }
 
+  CustomLabelPrinterSettings? customLabelPrinterSettings;
+
   PrinterSettings? printerSettings;
 
   PriceTagPrinterSettings? priceTagPrinterSettings;
@@ -2859,14 +2864,16 @@ class ShopProvider extends ChangeNotifier {
         defaultPriceAndBarcodePrinterSettings;
   }
 
-  // void setPrinterSettingsCacheInit() {
-  //   printerSettings =
-  //       BarcodePrinterLocalFunc()
-  //           .getbarcodePrinterLocal()
-  //           ?.settings ??
-  //       defaultPrinterSettings;
-  //   // notifyListeners();
-  // }
+  CustomLabelPrinterSettings
+  defaultCustomLabelPrinterSettings =
+      CustomLabelPrinterSettings(
+        widthMm: 58,
+        heightMm: 25,
+        startX: 25,
+        startY: 65,
+        labelHeight: 70,
+        labelScale: 3,
+      );
 
   PrinterSettings defaultPrinterSettings = PrinterSettings(
     widthMm: 58,
@@ -2911,6 +2918,25 @@ class ShopProvider extends ChangeNotifier {
       }
     } else {
       return false;
+    }
+  }
+
+  Future<void> updateCustomLabelPrinterSettings(
+    CustomLabelPrinterSettings
+    customLabelPrinterSettingsNew,
+  ) async {
+    if (isDesktop()) {
+      await CustomLabelPrinterFunc()
+          .insertCustomLabelPrinter(
+            CustomLabelPrinterLocal(
+              printer: printerCache!,
+              settings: customLabelPrinterSettingsNew,
+            ),
+          );
+
+      customLabelPrinterSettings =
+          customLabelPrinterSettingsNew;
+      notifyListeners();
     }
   }
 

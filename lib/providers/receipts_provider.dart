@@ -1304,7 +1304,9 @@ class ReceiptsProvider extends ChangeNotifier {
       }
     }
 
-    var currentDate = dateSet ?? DateTime.now();
+    final currentDate =
+        dateSet ?? resolveBusinessDate(DateTime.now());
+
     if (authorization(
       authorized:
           Authorizations().viewAllTransactionRecords,
@@ -1315,7 +1317,7 @@ class ReceiptsProvider extends ChangeNotifier {
                 !record.createdAt.isBefore(
                   fourAm(currentDate),
                 ) &&
-                !record.createdAt.isAfter(
+                record.createdAt.isBefore(
                   fourAmNextDay(currentDate),
                 ),
           )
@@ -1327,7 +1329,7 @@ class ReceiptsProvider extends ChangeNotifier {
                 !record.createdAt.isBefore(
                   fourAm(currentDate),
                 ) &&
-                !record.createdAt.isAfter(
+                record.createdAt.isBefore(
                   fourAmNextDay(currentDate),
                 ) &&
                 record.staffId == currentUser().userId,
@@ -1372,7 +1374,9 @@ class ReceiptsProvider extends ChangeNotifier {
       }
     }
 
-    var currentDate = dateSet ?? DateTime.now();
+    final currentDate =
+        dateSet ?? resolveBusinessDate(DateTime.now());
+
     if (authorization(
       authorized:
           Authorizations().viewAllTransactionRecords,
@@ -1383,7 +1387,7 @@ class ReceiptsProvider extends ChangeNotifier {
                 !record.createdAt.isBefore(
                   fourAm(currentDate),
                 ) &&
-                !record.createdAt.isAfter(
+                record.createdAt.isBefore(
                   fourAmNextDay(currentDate),
                 ),
           )
@@ -1395,7 +1399,7 @@ class ReceiptsProvider extends ChangeNotifier {
                 !record.createdAt.isBefore(
                   fourAm(currentDate),
                 ) &&
-                !record.createdAt.isAfter(
+                record.createdAt.isBefore(
                   fourAmNextDay(currentDate),
                 ) &&
                 record.staffId == currentUser().userId,

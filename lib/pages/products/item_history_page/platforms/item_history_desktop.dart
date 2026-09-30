@@ -50,7 +50,7 @@ class _ItemHistoryDesktopState
     List<ItemHistory>? itemHistories =
         returnItemHistoryProvider(
           context: context,
-        ).itemHistories.where((history) {
+        ).returnItemHistories().where((history) {
           if (widget.productUuid != null) {
             return history.itemUuid == widget.productUuid &&
                 (history.itemName?.toLowerCase().contains(

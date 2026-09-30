@@ -330,37 +330,57 @@ class OrderItems extends HiveObject {
         .toList();
   }
 
-  double getPrimaryUnitQuantity({
-    BuildContext? context,
-    required int index,
-  }) {
+  double getSelectedUnitQuantity({BuildContext? context}) {
     if (unitsList == null || unitsList?.isEmpty == true) {
       return quantity;
     } else {
       var items = unitsList!.where(
-        (item) => item.isPrimary,
+        (item) => item.uuid == unitUuid,
       );
       if (items.isEmpty) {
         return quantity;
       } else {
         var item = items.first;
         return item.getQuantityEquivDivided(
-          index: index,
+          index: 1,
+          context: context,
+          newQuantity: quantity,
+        );
+      }
+    }
+  }
+
+  double getSelectedUnitQuantityMultiplied({
+    BuildContext? context,
+  }) {
+    if (unitsList == null || unitsList?.isEmpty == true) {
+      return quantity;
+    } else {
+      var items = unitsList!.where(
+        (item) => item.uuid == unitUuid,
+      );
+      if (items.isEmpty) {
+        return quantity;
+      } else {
+        var item = items.first;
+        return item.getQuantityEquivMultiplied(
+          index: 1,
+          newQuantity: quantity,
           context: context,
         );
       }
     }
   }
 
-  ProductUnitsClass getProductUnit({String? unitUuid}) {
+  ProductUnitsClass getSelectedUnit({String? unitUuidNew}) {
     var items = getUnitsList().where(
-      (item) => item.uuid == unitUuid,
+      (item) => item.uuid == (unitUuidNew ?? unitUuid),
     );
-    if (unitUuid == null || items.isEmpty) {
+    if (items.isEmpty) {
       return getPrimaryUnit();
     } else {
       return getUnitsList().firstWhere(
-        (item) => item.uuid == unitUuid,
+        (item) => item.uuid == (unitUuidNew ?? unitUuid),
       );
     }
   }
@@ -408,6 +428,19 @@ class OrderItems extends HiveObject {
             productUuid: uuid,
           ),
         ];
+        if (useGroupQuantity == true) {
+          var newItem = ProductUnitsClass(
+            uuid: uuidGen(),
+            staffUuid: currentUser().userId,
+            createdAt: DateTime.now(),
+            staffName: currentUser().name,
+            conversion: qttyPerGroup ?? 1,
+            name: 'Group(s)',
+            isPrimary: false,
+            productUuid: uuid,
+          );
+          tempList.add(newItem);
+        }
         return tempList;
       } else {
         return unitsList ?? [];
@@ -436,78 +469,74 @@ class OrderItems extends HiveObject {
     return (getActualRemainingQuantity() * (revenue));
   }
 
-  double getActualRemainingQuantity({bool? useGroupTemp}) {
-    if (useGroupTemp != null) {
-      return useGroupTemp == true
-          ? ((remainingQuantity ?? 0) * (qttyPerGroup ?? 1))
-          : (remainingQuantity ?? 0);
-    } else {
-      return useGroupQuantity == true
-          ? ((remainingQuantity ?? 0) * (qttyPerGroup ?? 1))
-          : (remainingQuantity ?? 0);
-    }
+  double getActualRemainingQuantity({String? unitUuidNew}) {
+    return getSelectedUnit(
+      unitUuidNew: (unitUuidNew ?? unitUuid),
+    ).getQuantityEquivMultiplied(
+      index: 1,
+      quantityTwo: remainingQuantity,
+    );
   }
 
-  double getTotalRevenue({bool? useGroupTemp}) {
+  double getTotalRevenue({String? unitUuidNew}) {
     return (revenue *
-        getActualQuantity(useGroupTemp: useGroupTemp));
+        getActualQuantity(
+          unitUuidNew: unitUuidNew ?? unitUuid,
+        ));
   }
 
   double getTotalOriginalSellingPrice({
-    bool? useGroupTemp,
+    String? unitUuidNew,
   }) {
     return ((originalCost ?? 0) *
-        getActualQuantity(useGroupTemp: useGroupTemp));
+        getActualQuantity(
+          unitUuidNew: unitUuidNew ?? unitUuid,
+        ));
   }
 
   double getTotalCostPrice() {
     return ((costPrice ?? 0) * quantity);
   }
 
-  double getActualQuantity({bool? useGroupTemp}) {
-    if (useGroupTemp != null) {
-      return useGroupTemp == true
-          ? (quantity * (qttyPerGroup ?? 1))
-          : quantity;
-    } else {
-      return useGroupQuantity == true
-          ? (quantity * (qttyPerGroup ?? 1))
-          : quantity;
-    }
+  double getActualQuantity({String? unitUuidNew}) {
+    return getSelectedUnit(
+      unitUuidNew: (unitUuidNew ?? unitUuid),
+    ).getQuantityEquivMultiplied(
+      index: 1,
+      newQuantity: quantity,
+    );
   }
 
   double getActualQuantityDuringDeliveryCheckout() {
-    if (tempUseGroupQuantity == true &&
-        useGroupQuantity == false) {
-      return (quantity / (qttyPerGroup ?? 1));
-    } else if (tempUseGroupQuantity == false &&
-        useGroupQuantity == true) {
-      return (quantity * (qttyPerGroup ?? 1));
-    } else {
-      return quantity;
-    }
+    // if (tempUseGroupQuantity == true &&
+    //     useGroupQuantity == false) {
+    //   return (quantity / (qttyPerGroup ?? 1));
+    // } else if (tempUseGroupQuantity == false &&
+    //     useGroupQuantity == true) {
+    //   return (quantity * (qttyPerGroup ?? 1));
+    // } else {
+    //   return quantity;
+    // }
+    return getSelectedUnit().getQuantityEquivMultiplied(
+      index: 1,
+      newQuantity: remainingQuantity,
+    );
   }
 
   double calcQuantity({
     required double quantity,
-    bool? useGroupTemp,
+    String? unitUuidNew,
   }) {
-    return quantity *
-        ((useGroupTemp ?? useGroupQuantity ?? false) == true
-            ? (qttyPerGroup ?? 0)
-            : 1);
+    return getSelectedUnit(
+      unitUuidNew: (unitUuidNew ?? unitUuid),
+    ).getQuantityEquivMultiplied(
+      index: 1,
+      newQuantity: quantity,
+    );
   }
 
-  String getUnit({bool? useGroupTemp}) {
-    if (useGroupTemp != null) {
-      return useGroupTemp == true
-          ? (groupUnit ?? 'Group(s)')
-          : (unit ?? 'Unit(s)');
-    } else {
-      return useGroupQuantity == true
-          ? (groupUnit ?? 'Group(s)')
-          : (unit ?? 'Unit(s)');
-    }
+  String getUnit() {
+    return getSelectedUnit().name;
   }
 }
 

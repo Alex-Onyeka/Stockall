@@ -25,7 +25,7 @@ class ClearTotalCacheWidget extends StatelessWidget {
                 message:
                     'View All The Records That have not been Synchronized to the Cloud',
                 title: 'Unsynced Local Records',
-                actionButtonText: 'Clear Local Records?',
+                actionButtonText: 'Clear Cache?',
                 action: () {
                   if (authorization(
                     authorized: Authorizations().clearCache,
@@ -55,7 +55,7 @@ class ClearTotalCacheWidget extends StatelessWidget {
                   }
                 },
                 widget: SizedBox(
-                  height: screenHeight(context) - 230,
+                  height: screenHeight(context) - 280,
                   child: Column(
                     children: [
                       Divider(color: Colors.grey.shade300),

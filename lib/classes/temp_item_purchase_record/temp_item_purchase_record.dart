@@ -1,4 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
+import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/main.dart';
 
 part 'temp_item_purchase_record.g.dart';
 
@@ -55,6 +59,12 @@ class TempItemPurchaseRecord {
   @HiveField(16)
   String? unit;
 
+  @HiveField(17)
+  List<ProductUnitsClass>? unitsList;
+
+  @HiveField(18)
+  String? unitUuid;
+
   TempItemPurchaseRecord({
     required this.createdAt,
     required this.shopId,
@@ -73,6 +83,8 @@ class TempItemPurchaseRecord {
     required this.isGroup,
     required this.qttyPerGroup,
     required this.unit,
+    required this.unitsList,
+    required this.unitUuid,
   });
 
   factory TempItemPurchaseRecord.fromJson(
@@ -101,6 +113,15 @@ class TempItemPurchaseRecord {
       qttyPerGroup:
           (json['qtty_per_group'] as num?)?.toDouble(),
       unit: json['unit'] as String?,
+      unitsList:
+          (json['units_list'] as List<dynamic>? ?? [])
+              .map(
+                (item) => ProductUnitsClass.fromJson(
+                  item as Map<String, dynamic>,
+                ),
+              )
+              .toList(),
+      unitUuid: json['unit_uuid'] as String?,
     );
   }
 
@@ -123,6 +144,11 @@ class TempItemPurchaseRecord {
       'is_group': isGroup,
       'qtty_per_group': qttyPerGroup,
       'unit': unit,
+      'units_list': ProductUnitsClass.getUnitList(
+        tempUnitList: unitsList,
+        productUuid: uuid,
+      ),
+      'unit_uuid': unitUuid,
     };
   }
 
@@ -144,6 +170,8 @@ class TempItemPurchaseRecord {
     bool? isGroup,
     double? qttyPerGroup,
     String? unit,
+    List<ProductUnitsClass>? unitsList,
+    String? unitUuid,
   }) {
     return TempItemPurchaseRecord(
       uuid: uuid ?? this.uuid,
@@ -163,6 +191,141 @@ class TempItemPurchaseRecord {
       isGroup: isGroup ?? this.isGroup,
       qttyPerGroup: qttyPerGroup ?? this.qttyPerGroup,
       unit: unit ?? this.unit,
+      unitsList: unitsList ?? this.unitsList,
+      unitUuid: unitUuid ?? this.unitUuid,
     );
+  }
+
+  List<ProductUnitsClass> getUnitListFinal() {
+    return getUnitsList()
+        .map((item) => item.copyWith())
+        .toList();
+  }
+
+  double getSelectedUnitQuantity({BuildContext? context}) {
+    if (unitsList == null || unitsList?.isEmpty == true) {
+      return quantity ?? 0;
+    } else {
+      var items = unitsList!.where(
+        (item) => item.uuid == unitUuid,
+      );
+      if (items.isEmpty) {
+        return quantity ?? 0;
+      } else {
+        var item = items.first;
+        return item.getQuantityEquivDivided(
+          index: 1,
+          context: context,
+          newQuantity: quantity ?? 0,
+        );
+      }
+    }
+  }
+
+  double getSelectedUnitQuantityMultiplied({
+    BuildContext? context,
+  }) {
+    if (unitsList == null || unitsList?.isEmpty == true) {
+      return quantity ?? 0;
+    } else {
+      var items = unitsList!.where(
+        (item) => item.uuid == unitUuid,
+      );
+      if (items.isEmpty) {
+        return quantity ?? 0;
+      } else {
+        var item = items.first;
+        return item.getQuantityEquivMultiplied(
+          index: 1,
+          newQuantity: quantity ?? 0,
+          context: context,
+        );
+      }
+    }
+  }
+
+  ProductUnitsClass getSelectedUnit({String? unitUuidNew}) {
+    var items = getUnitsList().where(
+      (item) => item.uuid == (unitUuidNew ?? unitUuid),
+    );
+    if (items.isEmpty) {
+      return getPrimaryUnit();
+    } else {
+      return getUnitsList().firstWhere(
+        (item) => item.uuid == (unitUuidNew ?? unitUuid),
+      );
+    }
+  }
+
+  ProductUnitsClass getPrimaryUnit() {
+    if (getUnitsList().isEmpty == true ||
+        getUnitsList()
+            .where((item) => item.isPrimary == true)
+            .isEmpty) {
+      return ProductUnitsClass(
+        uuid: uuidGen(),
+        staffUuid: currentUser().userId,
+        createdAt: DateTime.now(),
+        staffName: currentUser().name,
+        conversion: 1,
+        name:
+            unit == 'Others'
+                ? 'Unit(s)'
+                : unit ?? 'Unit(s)',
+        isPrimary: true,
+        productUuid: uuid!,
+      );
+    } else {
+      return getUnitsList()
+          .where((item) => item.isPrimary == true)
+          .first;
+    }
+  }
+
+  List<ProductUnitsClass> getUnitsList() {
+    List<ProductUnitsClass> tempList() {
+      if (unitsList == null || unitsList?.isEmpty == true) {
+        List<ProductUnitsClass> tempList = [
+          ProductUnitsClass(
+            uuid: uuidGen(),
+            staffUuid: currentUser().userId,
+            createdAt: DateTime.now(),
+            staffName: currentUser().name,
+            conversion: 1,
+            name:
+                unit == 'Others'
+                    ? 'Unit(s)'
+                    : unit ?? 'Unit(s)',
+            isPrimary: true,
+            productUuid: uuid!,
+          ),
+        ];
+        if (isGroup == true) {
+          var newItem = ProductUnitsClass(
+            uuid: uuidGen(),
+            staffUuid: currentUser().userId,
+            createdAt: DateTime.now(),
+            staffName: currentUser().name,
+            conversion: qttyPerGroup ?? 1,
+            name: 'Group(s)',
+            isPrimary: false,
+            productUuid: uuid!,
+          );
+          tempList.add(newItem);
+        }
+        return tempList;
+      } else {
+        return unitsList ?? [];
+      }
+    }
+
+    if (tempList().length < 2) {
+      return tempList();
+    } else {
+      return [
+        tempList().firstWhere((item) => item.isPrimary),
+        ...tempList().where((item) => !item.isPrimary),
+      ];
+    }
   }
 }

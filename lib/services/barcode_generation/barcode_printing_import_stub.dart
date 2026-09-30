@@ -7,6 +7,14 @@ Future<bool> printBarcodeDesktop(
   return true;
 }
 
+Future<bool> printLabelDesktop({
+  required String printerName,
+  required String text,
+  String? title,
+}) async {
+  return true;
+}
+
 Future<bool> sendRawToUsbPrinter(
   String printerName,
   String command,
