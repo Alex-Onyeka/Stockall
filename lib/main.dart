@@ -124,10 +124,7 @@ void main(List<String> args) async {
         DeviceOrientation.portraitDown,
       ]);
 
-      await Supabase.initialize(
-        url: supabaseUrl,
-        anonKey: supabaseAnonKey,
-      );
+      await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
       await MainDatabase().initHive();
       if (returnShopProvider().isDesktop()) {
         await windowManager.ensureInitialized();
@@ -153,12 +150,8 @@ void syncData() {
 }
 
 void maxWindow() {
-  if (Platform.isLinux ||
-      Platform.isMacOS ||
-      Platform.isWindows) {
-    timer = Timer.periodic(Duration(seconds: 1), (
-      timer,
-    ) async {
+  if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
+    timer = Timer.periodic(Duration(seconds: 1), (timer) async {
       var isMax = await windowManager.isMaximized();
       if (!isMax) {
         await windowManager.maximize();
@@ -175,9 +168,7 @@ Future<void> initMainLog() async {
   if (kIsWeb) {
     return;
   } else {
-    if (Platform.isLinux ||
-        Platform.isMacOS ||
-        Platform.isWindows) {
+    if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
       final dir = await getApplicationSupportDirectory();
       final file = File('${dir.path}/mainLog.log');
 
@@ -202,9 +193,7 @@ Future<void> mainLocalLog(
   if (kIsWeb) {
     return;
   } else {
-    if (Platform.isLinux ||
-        Platform.isMacOS ||
-        Platform.isWindows) {
+    if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
       final dir = await getApplicationSupportDirectory();
 
       // startup.log goes directly inside the app support directory
@@ -225,14 +214,12 @@ Future<void> mainLocalLog(
 
       buffer.writeln();
 
-      await file.writeAsString(
-        buffer.toString(),
-        mode: FileMode.append,
-      );
+      await file.writeAsString(buffer.toString(), mode: FileMode.append);
     }
   }
 }
 
+//Testing staging
 TempUserClass currentUser() {
   return UserProvider().currentUserMain ??
       TempUserClass(
@@ -251,9 +238,7 @@ DepartmentClass? currentDepartment() {
   return returnDepartmentProvider().currentDepartment();
 }
 
-SubscriptionClass? currentSubscription({
-  BuildContext? context,
-}) {
+SubscriptionClass? currentSubscription({BuildContext? context}) {
   if (context == null) {
     return SubscriptionProvider().subscription;
   } else {
@@ -265,26 +250,16 @@ TempCart currentCart({BuildContext? context}) {
   if (context == null) {
     return returnSalesProvider().currentCart();
   } else {
-    return returnSalesProviderContext(
-      context,
-    ).currentCart();
+    return returnSalesProviderContext(context).currentCart();
   }
 }
 
 bool isStoreKeeper() {
-  return currentUser().role == 'Store Keeper'
-      ? true
-      : false;
+  return currentUser().role == 'Store Keeper' ? true : false;
 }
 
-TempUserClass userGeneral(
-  BuildContext context, {
-  bool listen = true,
-}) {
-  return returnUserProvider(
-        context,
-        listen: listen,
-      ).currentUserMain ??
+TempUserClass userGeneral(BuildContext context, {bool listen = true}) {
+  return returnUserProvider(context, listen: listen).currentUserMain ??
       TempUserClass(
         password: 'password',
         name: 'name',
@@ -308,30 +283,21 @@ ReportProvider returnReportProvider(
   BuildContext context, {
   bool listen = true,
 }) {
-  return Provider.of<ReportProvider>(
-    context,
-    listen: listen,
-  );
+  return Provider.of<ReportProvider>(context, listen: listen);
 }
 
 ExpensesProvider returnExpensesProvider(
   BuildContext context, {
   bool listen = true,
 }) {
-  return Provider.of<ExpensesProvider>(
-    context,
-    listen: listen,
-  );
+  return Provider.of<ExpensesProvider>(context, listen: listen);
 }
 
 ExpensesProvider returnExpensesProviderSingle() {
   return ExpensesProvider();
 }
 
-AuthService returnAuth(
-  BuildContext context, {
-  bool listen = true,
-}) {
+AuthService returnAuth(BuildContext context, {bool listen = true}) {
   return Provider.of<AuthService>(context, listen: listen);
 }
 
@@ -339,10 +305,7 @@ NotificationProvider returnNotificationProvider(
   BuildContext context, {
   bool listen = true,
 }) {
-  return Provider.of<NotificationProvider>(
-    context,
-    listen: listen,
-  );
+  return Provider.of<NotificationProvider>(context, listen: listen);
 }
 
 ReceiptsProvider returnReceiptProviderSingle() {
@@ -353,15 +316,10 @@ ReceiptsProvider returnReceiptProvider(
   BuildContext context, {
   bool listen = true,
 }) {
-  return Provider.of<ReceiptsProvider>(
-    context,
-    listen: listen,
-  );
+  return Provider.of<ReceiptsProvider>(context, listen: listen);
 }
 
-InvoicesProvider returnInvoicesProvider({
-  BuildContext? context,
-}) {
+InvoicesProvider returnInvoicesProvider({BuildContext? context}) {
   if (context == null) {
     return InvoicesProvider();
   } else {
@@ -369,9 +327,7 @@ InvoicesProvider returnInvoicesProvider({
   }
 }
 
-StorageProductProvider returnStorageProductProvider({
-  BuildContext? context,
-}) {
+StorageProductProvider returnStorageProductProvider({BuildContext? context}) {
   if (context == null) {
     return StorageProductProvider();
   } else {
@@ -379,9 +335,7 @@ StorageProductProvider returnStorageProductProvider({
   }
 }
 
-ShopDashboardProvider returnShopDashboardProvider({
-  BuildContext? context,
-}) {
+ShopDashboardProvider returnShopDashboardProvider({BuildContext? context}) {
   if (context == null) {
     return ShopDashboardProvider();
   } else {
@@ -389,22 +343,17 @@ ShopDashboardProvider returnShopDashboardProvider({
   }
 }
 
-DepartmentsDashboardProvider
-returnDepartmentsDashboardProvider({
+DepartmentsDashboardProvider returnDepartmentsDashboardProvider({
   BuildContext? context,
 }) {
   if (context == null) {
     return DepartmentsDashboardProvider();
   } else {
-    return Provider.of<DepartmentsDashboardProvider>(
-      context,
-    );
+    return Provider.of<DepartmentsDashboardProvider>(context);
   }
 }
 
-CategoriesProvider returnCategoriesProvider({
-  BuildContext? context,
-}) {
+CategoriesProvider returnCategoriesProvider({BuildContext? context}) {
   if (context == null) {
     return CategoriesProvider();
   } else {
@@ -412,9 +361,7 @@ CategoriesProvider returnCategoriesProvider({
   }
 }
 
-SubStaffProvider returnSubStaffProvider({
-  BuildContext? context,
-}) {
+SubStaffProvider returnSubStaffProvider({BuildContext? context}) {
   if (context == null) {
     return SubStaffProvider();
   } else {
@@ -444,10 +391,7 @@ UserProvider returnUserProviderSingle() {
   return UserProvider();
 }
 
-UserProvider returnUserProvider(
-  BuildContext context, {
-  bool listen = true,
-}) {
+UserProvider returnUserProvider(BuildContext context, {bool listen = true}) {
   return Provider.of<UserProvider>(context, listen: listen);
 }
 
@@ -463,20 +407,11 @@ ValidateInputProvider returnValidate(
   BuildContext context, {
   bool listen = true,
 }) {
-  return Provider.of<ValidateInputProvider>(
-    context,
-    listen: listen,
-  );
+  return Provider.of<ValidateInputProvider>(context, listen: listen);
 }
 
-ThemeProvider returnTheme(
-  BuildContext context, {
-  bool listen = true,
-}) {
-  return Provider.of<ThemeProvider>(
-    context,
-    listen: listen,
-  );
+ThemeProvider returnTheme(BuildContext context, {bool listen = true}) {
+  return Provider.of<ThemeProvider>(context, listen: listen);
 }
 
 DataProvider returnData({BuildContext? context}) {
@@ -487,9 +422,7 @@ DataProvider returnData({BuildContext? context}) {
   }
 }
 
-PermissionProvider returnPermissionProvider({
-  BuildContext? context,
-}) {
+PermissionProvider returnPermissionProvider({BuildContext? context}) {
   if (context == null) {
     return PermissionProvider();
   } else {
@@ -497,14 +430,8 @@ PermissionProvider returnPermissionProvider({
   }
 }
 
-CustomersProvider returnCustomers(
-  BuildContext context, {
-  bool listen = true,
-}) {
-  return Provider.of<CustomersProvider>(
-    context,
-    listen: listen,
-  );
+CustomersProvider returnCustomers(BuildContext context, {bool listen = true}) {
+  return Provider.of<CustomersProvider>(context, listen: listen);
 }
 
 CustomersProvider returnCustomersSingle() {
@@ -515,16 +442,10 @@ SubscriptionProvider returnSubcsription(
   BuildContext context, {
   bool listen = true,
 }) {
-  return Provider.of<SubscriptionProvider>(
-    context,
-    listen: listen,
-  );
+  return Provider.of<SubscriptionProvider>(context, listen: listen);
 }
 
-NavProvider returnNavProvider(
-  BuildContext context, {
-  bool listen = true,
-}) {
+NavProvider returnNavProvider(BuildContext context, {bool listen = true}) {
   return Provider.of<NavProvider>(context, listen: listen);
 }
 
@@ -532,10 +453,7 @@ NavProvider returnNavProviderSingle() {
   return NavProvider();
 }
 
-CompProvider returnCompProvider(
-  BuildContext context, {
-  bool listen = true,
-}) {
+CompProvider returnCompProvider(BuildContext context, {bool listen = true}) {
   return Provider.of<CompProvider>(context, listen: listen);
 }
 
@@ -543,9 +461,7 @@ SalesProvider returnSalesProvider() {
   return SalesProvider();
 }
 
-SalesProvider returnSalesProviderContext(
-  BuildContext context,
-) {
+SalesProvider returnSalesProviderContext(BuildContext context) {
   return Provider.of<SalesProvider>(context);
 }
 
@@ -553,15 +469,10 @@ TranslationProvider returnTranslationProvider(
   BuildContext context, {
   bool listen = true,
 }) {
-  return Provider.of<TranslationProvider>(
-    context,
-    listen: listen,
-  );
+  return Provider.of<TranslationProvider>(context, listen: listen);
 }
 
-ConnectivityProvider returnConnectivityProvider({
-  BuildContext? context,
-}) {
+ConnectivityProvider returnConnectivityProvider({BuildContext? context}) {
   if (context == null) {
     return ConnectivityProvider();
   } else {
@@ -569,9 +480,7 @@ ConnectivityProvider returnConnectivityProvider({
   }
 }
 
-SubPaymentProvider returnSubPaymentProvider({
-  BuildContext? context,
-}) {
+SubPaymentProvider returnSubPaymentProvider({BuildContext? context}) {
   if (context == null) {
     return SubPaymentProvider();
   } else {
@@ -583,25 +492,18 @@ AppVersionProvider returnAppVersionProvider(
   BuildContext context, {
   bool listen = true,
 }) {
-  return Provider.of<AppVersionProvider>(
-    context,
-    listen: listen,
-  );
+  return Provider.of<AppVersionProvider>(context, listen: listen);
 }
 
 MultiDisplayProvider returnMultiDisplayProvider() {
   return MultiDisplayProvider();
 }
 
-MultiDisplayProvider returnMultiDisplayProviderContext(
-  BuildContext context,
-) {
+MultiDisplayProvider returnMultiDisplayProviderContext(BuildContext context) {
   return Provider.of<MultiDisplayProvider>(context);
 }
 
-EventsLogProvider returnEventsLogProvider({
-  BuildContext? context,
-}) {
+EventsLogProvider returnEventsLogProvider({BuildContext? context}) {
   if (context == null) {
     return EventsLogProvider();
   } else {
@@ -609,9 +511,7 @@ EventsLogProvider returnEventsLogProvider({
   }
 }
 
-ErrorLogProvider returnErrorLogProvider({
-  BuildContext? context,
-}) {
+ErrorLogProvider returnErrorLogProvider({BuildContext? context}) {
   if (context == null) {
     return ErrorLogProvider();
   } else {
@@ -619,9 +519,7 @@ ErrorLogProvider returnErrorLogProvider({
   }
 }
 
-DepartmentProvider returnDepartmentProvider({
-  BuildContext? context,
-}) {
+DepartmentProvider returnDepartmentProvider({BuildContext? context}) {
   if (context == null) {
     return DepartmentProvider();
   } else {
@@ -629,9 +527,7 @@ DepartmentProvider returnDepartmentProvider({
   }
 }
 
-PurchaseProvider returnPurchaseProvider({
-  BuildContext? context,
-}) {
+PurchaseProvider returnPurchaseProvider({BuildContext? context}) {
   if (context == null) {
     return PurchaseProvider();
   } else {
@@ -639,9 +535,7 @@ PurchaseProvider returnPurchaseProvider({
   }
 }
 
-SuppliersProvider returnSuppliersProvider({
-  BuildContext? context,
-}) {
+SuppliersProvider returnSuppliersProvider({BuildContext? context}) {
   if (context == null) {
     return SuppliersProvider();
   } else {
@@ -649,9 +543,7 @@ SuppliersProvider returnSuppliersProvider({
   }
 }
 
-PurchaseActionProvider returnPurchaseActionProvider({
-  BuildContext? context,
-}) {
+PurchaseActionProvider returnPurchaseActionProvider({BuildContext? context}) {
   if (context == null) {
     return PurchaseActionProvider();
   } else {
@@ -669,9 +561,7 @@ PurchaseActionProvider returnPurchaseActionProvider({
 //   }
 // }
 
-UtilityWidgetProvider returnUtilityWidgetProvider({
-  BuildContext? context,
-}) {
+UtilityWidgetProvider returnUtilityWidgetProvider({BuildContext? context}) {
   if (context == null) {
     return UtilityWidgetProvider();
   } else {
@@ -679,9 +569,7 @@ UtilityWidgetProvider returnUtilityWidgetProvider({
   }
 }
 
-UtilityConstantProvider returnUtilityConstantProvider({
-  BuildContext? context,
-}) {
+UtilityConstantProvider returnUtilityConstantProvider({BuildContext? context}) {
   if (context == null) {
     return UtilityConstantProvider();
   } else {
@@ -689,9 +577,7 @@ UtilityConstantProvider returnUtilityConstantProvider({
   }
 }
 
-CountryProvider returnCountryProvider({
-  BuildContext? context,
-}) {
+CountryProvider returnCountryProvider({BuildContext? context}) {
   if (context == null) {
     return CountryProvider();
   } else {
@@ -699,9 +585,7 @@ CountryProvider returnCountryProvider({
   }
 }
 
-QuantityUpdateProvider returnQuantityUpdateProvider({
-  BuildContext? context,
-}) {
+QuantityUpdateProvider returnQuantityUpdateProvider({BuildContext? context}) {
   if (context == null) {
     return QuantityUpdateProvider();
   } else {
@@ -709,9 +593,7 @@ QuantityUpdateProvider returnQuantityUpdateProvider({
   }
 }
 
-ItemHistoryProvider returnItemHistoryProvider({
-  BuildContext? context,
-}) {
+ItemHistoryProvider returnItemHistoryProvider({BuildContext? context}) {
   if (context == null) {
     return ItemHistoryProvider();
   } else {
@@ -719,35 +601,27 @@ ItemHistoryProvider returnItemHistoryProvider({
   }
 }
 
-ProductionItemHistoryProvider
-returnProductionItemHistoryProvider({
+ProductionItemHistoryProvider returnProductionItemHistoryProvider({
   BuildContext? context,
 }) {
   if (context == null) {
     return ProductionItemHistoryProvider();
   } else {
-    return Provider.of<ProductionItemHistoryProvider>(
-      context,
-    );
+    return Provider.of<ProductionItemHistoryProvider>(context);
   }
 }
 
-MaterialsItemHistoryProvider
-returnMaterialsItemHistoryProvider({
+MaterialsItemHistoryProvider returnMaterialsItemHistoryProvider({
   BuildContext? context,
 }) {
   if (context == null) {
     return MaterialsItemHistoryProvider();
   } else {
-    return Provider.of<MaterialsItemHistoryProvider>(
-      context,
-    );
+    return Provider.of<MaterialsItemHistoryProvider>(context);
   }
 }
 
-MaterialsProvider returnMaterialsProvider({
-  BuildContext? context,
-}) {
+MaterialsProvider returnMaterialsProvider({BuildContext? context}) {
   if (context == null) {
     return MaterialsProvider();
   } else {
@@ -755,22 +629,17 @@ MaterialsProvider returnMaterialsProvider({
   }
 }
 
-MaterialQuantityUpdateProvider
-returnMaterialsQuantityUpdateProvider({
+MaterialQuantityUpdateProvider returnMaterialsQuantityUpdateProvider({
   BuildContext? context,
 }) {
   if (context == null) {
     return MaterialQuantityUpdateProvider();
   } else {
-    return Provider.of<MaterialQuantityUpdateProvider>(
-      context,
-    );
+    return Provider.of<MaterialQuantityUpdateProvider>(context);
   }
 }
 
-ProductionItemsProvider returnProductionItemsProvider({
-  BuildContext? context,
-}) {
+ProductionItemsProvider returnProductionItemsProvider({BuildContext? context}) {
   if (context == null) {
     return ProductionItemsProvider();
   } else {
@@ -779,15 +648,11 @@ ProductionItemsProvider returnProductionItemsProvider({
 }
 
 ProductionItemsQuantityUpdateProvider
-returnProductionItemsQuantityUpdateProvider({
-  BuildContext? context,
-}) {
+returnProductionItemsQuantityUpdateProvider({BuildContext? context}) {
   if (context == null) {
     return ProductionItemsQuantityUpdateProvider();
   } else {
-    return Provider.of<
-      ProductionItemsQuantityUpdateProvider
-    >(context);
+    return Provider.of<ProductionItemsQuantityUpdateProvider>(context);
   }
 }
 
@@ -811,9 +676,7 @@ ProductionsActionProvider returnProductionsActionProvider({
   }
 }
 
-MaterialsUsageProvider returnMaterialsUsageProvider({
-  BuildContext? context,
-}) {
+MaterialsUsageProvider returnMaterialsUsageProvider({BuildContext? context}) {
   if (context == null) {
     return MaterialsUsageProvider();
   } else {
@@ -821,35 +684,27 @@ MaterialsUsageProvider returnMaterialsUsageProvider({
   }
 }
 
-MaterialsUsageActionProvider
-returnMaterialsUsageActionProvider({
+MaterialsUsageActionProvider returnMaterialsUsageActionProvider({
   BuildContext? context,
 }) {
   if (context == null) {
     return MaterialsUsageActionProvider();
   } else {
-    return Provider.of<MaterialsUsageActionProvider>(
-      context,
-    );
+    return Provider.of<MaterialsUsageActionProvider>(context);
   }
 }
 
-CustomerAccountReceiptsProvider
-returnCustomerAccountReceiptsProvider({
+CustomerAccountReceiptsProvider returnCustomerAccountReceiptsProvider({
   BuildContext? context,
 }) {
   if (context == null) {
     return CustomerAccountReceiptsProvider();
   } else {
-    return Provider.of<CustomerAccountReceiptsProvider>(
-      context,
-    );
+    return Provider.of<CustomerAccountReceiptsProvider>(context);
   }
 }
 
-OrdersProvider returnOrdersProvider({
-  BuildContext? context,
-}) {
+OrdersProvider returnOrdersProvider({BuildContext? context}) {
   if (context == null) {
     return OrdersProvider();
   } else {
@@ -857,9 +712,7 @@ OrdersProvider returnOrdersProvider({
   }
 }
 
-OrdersActionProvider returnOrdersActionProvider({
-  BuildContext? context,
-}) {
+OrdersActionProvider returnOrdersActionProvider({BuildContext? context}) {
   if (context == null) {
     return OrdersActionProvider();
   } else {
@@ -867,8 +720,9 @@ OrdersActionProvider returnOrdersActionProvider({
   }
 }
 
-StorageItemHistoryProvider
-returnStorageItemHistoryProvider({BuildContext? context}) {
+StorageItemHistoryProvider returnStorageItemHistoryProvider({
+  BuildContext? context,
+}) {
   if (context == null) {
     return StorageItemHistoryProvider();
   } else {
@@ -876,11 +730,7 @@ returnStorageItemHistoryProvider({BuildContext? context}) {
   }
 }
 
-Widget colorWidget(
-  Widget widget,
-  bool isPrimary,
-  BuildContext context,
-) {
+Widget colorWidget(Widget widget, bool isPrimary, BuildContext context) {
   return Builder(
     builder: (context) {
       final colors =
@@ -915,173 +765,67 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => ThemeProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => SalesProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => CompProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => NavProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => DataProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => CustomersProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ValidateInputProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ShopProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => UserProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ReceiptsProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => InvoicesProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => VisibilityBox(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => AuthService(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => NotificationProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ExpensesProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ReportProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => TranslationProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ConnectivityProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => SubscriptionProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => SubPaymentProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => AppVersionProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => MultiDisplayProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => EventsLogProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => DepartmentProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => InventoryUpdatesProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => SubStaffProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ShopDashboardProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => PermissionProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => CategoriesProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => DepartmentsDashboardProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => StorageProductProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => SuppliersProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => PurchaseProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => PurchaseActionProvider(),
-        ),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => SalesProvider()),
+        ChangeNotifierProvider(create: (_) => CompProvider()),
+        ChangeNotifierProvider(create: (_) => NavProvider()),
+        ChangeNotifierProvider(create: (_) => DataProvider()),
+        ChangeNotifierProvider(create: (_) => CustomersProvider()),
+        ChangeNotifierProvider(create: (_) => ValidateInputProvider()),
+        ChangeNotifierProvider(create: (_) => ShopProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => ReceiptsProvider()),
+        ChangeNotifierProvider(create: (_) => InvoicesProvider()),
+        ChangeNotifierProvider(create: (_) => VisibilityBox()),
+        ChangeNotifierProvider(create: (_) => AuthService()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
+        ChangeNotifierProvider(create: (_) => ExpensesProvider()),
+        ChangeNotifierProvider(create: (_) => ReportProvider()),
+        ChangeNotifierProvider(create: (_) => TranslationProvider()),
+        ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
+        ChangeNotifierProvider(create: (_) => SubscriptionProvider()),
+        ChangeNotifierProvider(create: (_) => SubPaymentProvider()),
+        ChangeNotifierProvider(create: (_) => AppVersionProvider()),
+        ChangeNotifierProvider(create: (_) => MultiDisplayProvider()),
+        ChangeNotifierProvider(create: (_) => EventsLogProvider()),
+        ChangeNotifierProvider(create: (_) => DepartmentProvider()),
+        ChangeNotifierProvider(create: (_) => InventoryUpdatesProvider()),
+        ChangeNotifierProvider(create: (_) => SubStaffProvider()),
+        ChangeNotifierProvider(create: (_) => ShopDashboardProvider()),
+        ChangeNotifierProvider(create: (_) => PermissionProvider()),
+        ChangeNotifierProvider(create: (_) => CategoriesProvider()),
+        ChangeNotifierProvider(create: (_) => DepartmentsDashboardProvider()),
+        ChangeNotifierProvider(create: (_) => StorageProductProvider()),
+        ChangeNotifierProvider(create: (_) => SuppliersProvider()),
+        ChangeNotifierProvider(create: (_) => PurchaseProvider()),
+        ChangeNotifierProvider(create: (_) => PurchaseActionProvider()),
         // ChangeNotifierProvider(
         //   create: (_) => WaybillProvider(),
         // ),
+        ChangeNotifierProvider(create: (_) => UtilityWidgetProvider()),
+        ChangeNotifierProvider(create: (_) => UtilityConstantProvider()),
+        ChangeNotifierProvider(create: (_) => CountryProvider()),
+        ChangeNotifierProvider(create: (_) => ErrorLogProvider()),
+        ChangeNotifierProvider(create: (_) => QuantityUpdateProvider()),
+        ChangeNotifierProvider(create: (_) => ItemHistoryProvider()),
+        ChangeNotifierProvider(create: (_) => ProductionItemHistoryProvider()),
+        ChangeNotifierProvider(create: (_) => MaterialsItemHistoryProvider()),
+        ChangeNotifierProvider(create: (_) => MaterialsProvider()),
+        ChangeNotifierProvider(create: (_) => MaterialQuantityUpdateProvider()),
+        ChangeNotifierProvider(create: (_) => ProductionItemsProvider()),
         ChangeNotifierProvider(
-          create: (_) => UtilityWidgetProvider(),
+          create: (_) => ProductionItemsQuantityUpdateProvider(),
         ),
-        ChangeNotifierProvider(
-          create: (_) => UtilityConstantProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => CountryProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ErrorLogProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => QuantityUpdateProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ItemHistoryProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ProductionItemHistoryProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => MaterialsItemHistoryProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => MaterialsProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => MaterialQuantityUpdateProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ProductionItemsProvider(),
-        ),
-        ChangeNotifierProvider(
-          create:
-              (_) =>
-                  ProductionItemsQuantityUpdateProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ProductionRecordsProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ProductionsActionProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => MaterialsUsageProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => MaterialsUsageActionProvider(),
-        ),
+        ChangeNotifierProvider(create: (_) => ProductionRecordsProvider()),
+        ChangeNotifierProvider(create: (_) => ProductionsActionProvider()),
+        ChangeNotifierProvider(create: (_) => MaterialsUsageProvider()),
+        ChangeNotifierProvider(create: (_) => MaterialsUsageActionProvider()),
         ChangeNotifierProvider(
           create: (_) => CustomerAccountReceiptsProvider(),
         ),
-        ChangeNotifierProvider(
-          create: (_) => OrdersProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => OrdersActionProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => StorageItemHistoryProvider(),
-        ),
+        ChangeNotifierProvider(create: (_) => OrdersProvider()),
+        ChangeNotifierProvider(create: (_) => OrdersActionProvider()),
+        ChangeNotifierProvider(create: (_) => StorageItemHistoryProvider()),
       ],
       child: MaterialApp(
         navigatorKey: navigatorKey,
@@ -1090,17 +834,13 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (context) => home,
           '/launch': (context) => LaunchScreen(),
-          '/login':
-              (context) => LoginPage(useDemoLogin: false),
+          '/login': (context) => LoginPage(useDemoLogin: false),
           '/splash': (context) => SplashScreen(),
-          '/reset-password':
-              (context) => EnterNewPassword(),
+          '/reset-password': (context) => EnterNewPassword(),
           '/subscription': (context) => SubscriptionPage(),
           '/delete-account': (context) => DeleteAccount(),
-          '/payment-result':
-              (context) => PaymentResultPage(),
-          '/subscription-page':
-              (context) => SubscriptionPage(),
+          '/payment-result': (context) => PaymentResultPage(),
+          '/subscription-page': (context) => SubscriptionPage(),
         },
 
         debugShowCheckedModeBanner: false,
@@ -1120,12 +860,7 @@ class MyApp extends StatelessWidget {
 
           fontFamily: 'Plus Jakarta Sans',
 
-          primaryColor: const Color.fromRGBO(
-            25,
-            43,
-            117,
-            1,
-          ),
+          primaryColor: const Color.fromRGBO(25, 43, 117, 1),
         ),
       ),
     );
@@ -1139,11 +874,7 @@ class MyAppAlt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (_) => ThemeProvider(),
-        ),
-      ],
+      providers: [ChangeNotifierProvider(create: (_) => ThemeProvider())],
       child: MaterialApp(
         title: 'Stockall Business Dashboard',
         home: home,
@@ -1152,9 +883,7 @@ class MyAppAlt extends StatelessWidget {
           datePickerTheme: DatePickerThemeData(
             backgroundColor: Colors.white,
             cancelButtonStyle: ButtonStyle(
-              padding: WidgetStateProperty.all(
-                EdgeInsets.all(50),
-              ),
+              padding: WidgetStateProperty.all(EdgeInsets.all(50)),
             ),
           ),
           appBarTheme: AppBarTheme(
@@ -1168,12 +897,7 @@ class MyAppAlt extends StatelessWidget {
           ),
           scaffoldBackgroundColor: Colors.white,
           fontFamily: 'Plus Jakarta Sans',
-          primaryColor: const Color.fromRGBO(
-            25,
-            43,
-            117,
-            1,
-          ),
+          primaryColor: const Color.fromRGBO(25, 43, 117, 1),
         ),
       ),
     );
