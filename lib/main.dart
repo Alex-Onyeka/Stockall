@@ -219,7 +219,6 @@ Future<void> mainLocalLog(
   }
 }
 
-//Testing staging
 TempUserClass currentUser() {
   return UserProvider().currentUserMain ??
       TempUserClass(
