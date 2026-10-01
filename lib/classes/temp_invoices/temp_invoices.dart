@@ -183,6 +183,15 @@ class TempInvoice extends HiveObject {
     };
   }
 
+  double getCustomerReward() {
+    double value =
+        returnShopProvider()
+            .userShop()
+            ?.customerPercentageReward ??
+        0;
+    return (getTotalMainRevenueInvoice() * (value / 100));
+  }
+
   double getTotalMainRevenueInvoice() {
     var total = ((bank + cashAlt));
 

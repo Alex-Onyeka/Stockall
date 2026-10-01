@@ -695,12 +695,18 @@ class InvoicesProvider extends ChangeNotifier {
           );
           await returnMultiDisplayProvider().updateWindow(
             cartClass: AltCartClass(
+              manageCustomerReward:
+                  returnShopProvider()
+                      .userShop()!
+                      .manageCustomerReward ??
+                  false,
               cartId: tempCart.id!,
               cartItems:
                   tempCart.cartItems.reversed.toList(),
               fixedDiscount: invoice.fixedDiscount,
               percentDiscount: invoice.generalDiscount,
               vat: invoice.vat ?? 0,
+              cashBack: invoice.getCustomerReward(),
               currency:
                   returnShopProvider().userShop()!.currency,
             ),

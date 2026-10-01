@@ -533,12 +533,18 @@ class OrdersProvider extends ChangeNotifier {
           );
           await returnMultiDisplayProvider().updateWindow(
             cartClass: AltCartClass(
+              manageCustomerReward:
+                  returnShopProvider()
+                      .userShop()!
+                      .manageCustomerReward ??
+                  false,
               cartId: tempCart.id!,
               cartItems:
                   tempCart.cartItems.reversed.toList(),
               fixedDiscount: order.fixedDiscount,
               percentDiscount: order.generalDiscount,
               vat: order.vat ?? 0,
+              cashBack: null,
               currency:
                   returnShopProvider().userShop()!.currency,
             ),

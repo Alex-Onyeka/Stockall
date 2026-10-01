@@ -615,6 +615,15 @@ class SalesProvider extends ChangeNotifier {
   Future<void> selectCart(String cartId) async {
     cartIdCache = cartId;
     var cartClass = AltCartClass(
+      manageCustomerReward:
+          returnShopProvider()
+              .userShop()!
+              .manageCustomerReward ??
+          false,
+      cashBack:
+          returnShopProvider()
+              .userShop()!
+              .customerPercentageReward,
       cartId: currentCart().id!,
       cartItems:
           currentCart().getCartItemsAll().reversed.toList(),
@@ -946,6 +955,15 @@ class SalesProvider extends ChangeNotifier {
     CartFunc().updateMainCart(currentMainCart());
     returnMultiDisplayProvider().updateWindow(
       cartClass: AltCartClass(
+        manageCustomerReward:
+            returnShopProvider()
+                .userShop()!
+                .manageCustomerReward ??
+            false,
+        cashBack:
+            returnShopProvider()
+                .userShop()!
+                .customerPercentageReward,
         cartId: currentCart().id!,
         currency: returnShopProvider().userShop()!.currency,
         cartItems:
@@ -977,6 +995,15 @@ class SalesProvider extends ChangeNotifier {
     CartFunc().updateMainCart(currentMainCart());
     returnMultiDisplayProvider().updateWindow(
       cartClass: AltCartClass(
+        manageCustomerReward:
+            returnShopProvider()
+                .userShop()!
+                .manageCustomerReward ??
+            false,
+        cashBack:
+            returnShopProvider()
+                .userShop()!
+                .customerPercentageReward,
         cartId: currentCart().id!,
         currency: returnShopProvider().userShop()!.currency,
         cartItems:
@@ -2476,6 +2503,15 @@ class SalesProvider extends ChangeNotifier {
     currentCart().timeOfDay = null;
     await returnMultiDisplayProvider().updateWindow(
       cartClass: AltCartClass(
+        manageCustomerReward:
+            returnShopProvider()
+                .userShop()!
+                .manageCustomerReward ??
+            false,
+        cashBack:
+            returnShopProvider()
+                .userShop()!
+                .customerPercentageReward,
         cartId: currentCart().id!,
         currency: returnShopProvider().userShop()!.currency,
         cartItems: [],
@@ -2955,6 +2991,15 @@ class SalesProvider extends ChangeNotifier {
         addAnyDiscount();
         await returnMultiDisplayProvider().updateWindow(
           cartClass: AltCartClass(
+            manageCustomerReward:
+                returnShopProvider()
+                    .userShop()!
+                    .manageCustomerReward ??
+                false,
+            cashBack:
+                returnShopProvider()
+                    .userShop()!
+                    .customerPercentageReward,
             cartId: currentCart().id!,
             currency:
                 returnShopProvider().userShop()!.currency,
@@ -3067,6 +3112,11 @@ class SalesProvider extends ChangeNotifier {
         }
         await returnMultiDisplayProvider().updateWindow(
           cartClass: AltCartClass(
+            manageCustomerReward:
+                returnShopProvider()
+                    .userShop()!
+                    .manageCustomerReward ??
+                false,
             cartId: currentCart().id!,
             currency:
                 returnShopProvider().userShop()!.currency,
@@ -3075,6 +3125,10 @@ class SalesProvider extends ChangeNotifier {
                     .getCartItemsAll()
                     .reversed
                     .toList(),
+            cashBack:
+                returnShopProvider()
+                    .userShop()!
+                    .customerPercentageReward,
             fixedDiscount: currentCart().fixedDiscount,
             percentDiscount: currentCart().discount,
             vat:
@@ -3089,6 +3143,9 @@ class SalesProvider extends ChangeNotifier {
         //   items.first.quantity += newItem.quantity;
         //   await returnMultiDisplayProvider().updateWindow(
         //     cartClass: AltCartClass(
+        // manageCustomerReward: returnShopProvider()
+        //                     .userShop()!
+        //                     .manageCustomerReward ?? false,
         //       cartId: currentCart().id!,
         //       currency:
         //           returnShopProvider().userShop()!.currency,
@@ -3111,6 +3168,15 @@ class SalesProvider extends ChangeNotifier {
         currentCart().cartItems.add(newItem);
         await returnMultiDisplayProvider().updateWindow(
           cartClass: AltCartClass(
+            manageCustomerReward:
+                returnShopProvider()
+                    .userShop()!
+                    .manageCustomerReward ??
+                false,
+            cashBack:
+                returnShopProvider()
+                    .userShop()!
+                    .customerPercentageReward,
             cartId: currentCart().id!,
             currency:
                 returnShopProvider().userShop()!.currency,
@@ -3195,8 +3261,18 @@ class SalesProvider extends ChangeNotifier {
       cartItem.customPrice = customPrice;
       cartItem.setTotalPrice = setTotalPrice;
       cartItem.setCustomPrice = setCustomPrice;
+      await updateCurrentCartItem(cartItem);
       await returnMultiDisplayProvider().updateWindow(
         cartClass: AltCartClass(
+          manageCustomerReward:
+              returnShopProvider()
+                  .userShop()!
+                  .manageCustomerReward ??
+              false,
+          cashBack:
+              returnShopProvider()
+                  .userShop()!
+                  .customerPercentageReward,
           cartId: currentCart().id!,
           currency:
               returnShopProvider().userShop()!.currency,
@@ -3213,7 +3289,7 @@ class SalesProvider extends ChangeNotifier {
                   : 0,
         ),
       );
-      await updateCurrentCartItem(cartItem);
+
       await CartFunc().updateMainCart(currentMainCart());
       notifyListeners();
     } else {
@@ -3250,6 +3326,15 @@ class SalesProvider extends ChangeNotifier {
     currentCart().cartItems.remove(item);
     await returnMultiDisplayProvider().updateWindow(
       cartClass: AltCartClass(
+        manageCustomerReward:
+            returnShopProvider()
+                .userShop()!
+                .manageCustomerReward ??
+            false,
+        cashBack:
+            returnShopProvider()
+                .userShop()!
+                .customerPercentageReward,
         cartId: currentCart().id!,
         currency: returnShopProvider().userShop()!.currency,
         cartItems:
@@ -3566,6 +3651,12 @@ class SalesProvider extends ChangeNotifier {
           await addNewCart(context, tempCart);
           await returnMultiDisplayProvider().updateWindow(
             cartClass: AltCartClass(
+              manageCustomerReward:
+                  returnShopProvider()
+                      .userShop()!
+                      .manageCustomerReward ??
+                  false,
+              cashBack: receipt.getCustomerReward(),
               cartId: tempCart.id!,
               cartItems:
                   tempCart

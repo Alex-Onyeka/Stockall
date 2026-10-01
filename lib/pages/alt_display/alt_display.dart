@@ -174,7 +174,7 @@ class AltDisplayState extends State<AltDisplay> {
     for (var item in cartClass!.cartItems.where(
       (item) => item.isVoid != true,
     )) {
-      tempTotal += item.totalCostForAltScreen();
+      tempTotal += item.totalCost();
     }
     return tempTotal;
   }
@@ -194,12 +194,15 @@ class AltDisplayState extends State<AltDisplay> {
 
   void initCartClass() {
     cartClass = AltCartClass(
+      // customerUuid: null,
       cartId: widget.cartId,
       cartItems: [],
       fixedDiscount: 0,
       percentDiscount: 0,
+      cashBack: 0,
       vat: 0,
       currency: '#',
+      manageCustomerReward: false,
     );
   }
 
@@ -215,26 +218,19 @@ class AltDisplayState extends State<AltDisplay> {
     } else {
       double tempTotalDiscount = 0;
       for (var item in cartClass!.cartItems) {
-        if (item.useGroupQuantity == true) {
-          if (item.item.discount != null &&
-              item.customPrice == null) {
-            double discountPerUnit =
-                (item.item.sellingPrice ?? 0) *
-                (item.item.discount! / 100);
-            tempTotalDiscount +=
-                discountPerUnit *
-                (item.quantity *
-                    item.getQttyPerGroupForAltScreen());
-          }
-        } else {
-          if (item.item.discount != null &&
-              item.customPrice == null) {
-            double discountPerUnit =
-                (item.item.sellingPrice ?? 0) *
-                (item.item.discount! / 100);
-            tempTotalDiscount +=
-                discountPerUnit * item.quantity;
-          }
+        if (item.item.discount != null &&
+            item.customPrice == null) {
+          double discountPerUnit =
+              (item.item.sellingPrice ?? 0) *
+              (item.item.discount! / 100);
+          tempTotalDiscount +=
+              discountPerUnit *
+              item
+                  .getSelectedUnit()
+                  .getQuantityEquivMultiplied(
+                    index: 1,
+                    product: item.item,
+                  );
         }
       }
       return tempTotalDiscount;
@@ -244,7 +240,7 @@ class AltDisplayState extends State<AltDisplay> {
   double calcSubTotal() {
     double tempTotal = 0;
     for (var item in cartClass!.cartItems) {
-      tempTotal += item.totalCostForAltScreen();
+      tempTotal += item.totalCost();
     }
     return tempTotal.roundToDouble();
   }
@@ -535,7 +531,7 @@ class AltDisplayState extends State<AltDisplay> {
                                             style: TextStyle(
                                               fontSize:
                                                   mobileTexts
-                                                      .b2
+                                                      .b3
                                                       .fontSize,
                                             ),
                                             'Subtotal',
@@ -544,7 +540,7 @@ class AltDisplayState extends State<AltDisplay> {
                                             style: TextStyle(
                                               fontSize:
                                                   mobileTexts
-                                                      .b2
+                                                      .b3
                                                       .fontSize,
                                               fontWeight:
                                                   FontWeight
@@ -583,7 +579,7 @@ class AltDisplayState extends State<AltDisplay> {
                                                     Text(
                                                       style: TextStyle(
                                                         fontSize:
-                                                            mobileTexts.b2.fontSize,
+                                                            mobileTexts.b3.fontSize,
                                                         // fontWeight: FontWeight.bold,
                                                       ),
                                                       'Discount',
@@ -595,12 +591,12 @@ class AltDisplayState extends State<AltDisplay> {
                                                       child: Text(
                                                         style: TextStyle(
                                                           fontSize:
-                                                              mobileTexts.b2.fontSize,
+                                                              mobileTexts.b3.fontSize,
                                                           fontWeight:
                                                               FontWeight.bold,
                                                           // fontWeight: FontWeight.bold,
                                                         ),
-                                                        ' (${formatLargeNumberDouble(cartClass!.percentDiscount ?? 0)}%)',
+                                                        ' [ ${formatLargeNumberDouble(cartClass!.percentDiscount ?? 0)}% ]',
                                                       ),
                                                     ),
                                                   ],
@@ -608,7 +604,7 @@ class AltDisplayState extends State<AltDisplay> {
                                                 Text(
                                                   style: TextStyle(
                                                     fontSize:
-                                                        mobileTexts.b2.fontSize,
+                                                        mobileTexts.b3.fontSize,
                                                     // fontWeight: FontWeight.bold,
                                                   ),
                                                   '- ${formatMoneyAlt(amount: calcDiscountMain(), currency: cartClass!.currency)}',
@@ -633,7 +629,7 @@ class AltDisplayState extends State<AltDisplay> {
                                                   Text(
                                                     style: TextStyle(
                                                       fontSize:
-                                                          mobileTexts.b2.fontSize,
+                                                          mobileTexts.b3.fontSize,
                                                       // fontWeight: FontWeight.bold,
                                                     ),
                                                     'VAT:',
@@ -641,12 +637,12 @@ class AltDisplayState extends State<AltDisplay> {
                                                   Text(
                                                     style: TextStyle(
                                                       fontSize:
-                                                          mobileTexts.b2.fontSize,
+                                                          mobileTexts.b3.fontSize,
                                                       fontWeight:
                                                           FontWeight.bold,
                                                       // fontWeight: FontWeight.bold,
                                                     ),
-                                                    ' ${cartClass!.vat.toString()}%',
+                                                    ' [ ${cartClass!.vat.toString()} ]%',
                                                   ),
                                                 ],
                                               ),
@@ -654,7 +650,7 @@ class AltDisplayState extends State<AltDisplay> {
                                                 style: TextStyle(
                                                   fontSize:
                                                       mobileTexts
-                                                          .b2
+                                                          .b3
                                                           .fontSize,
                                                   fontWeight:
                                                       FontWeight
@@ -677,6 +673,77 @@ class AltDisplayState extends State<AltDisplay> {
                                           ),
                                         ],
                                       ),
+                                      // Visibility(
+                                      //   visible:
+                                      //       cartClass!
+                                      //               .cashBack !=
+                                      //           null &&
+                                      //       cartClass!
+                                      //               .cashBack !=
+                                      //           0 &&
+                                      //       cartClass!
+                                      //           .manageCustomerReward &&
+                                      //       cartClass!
+                                      //               .customerUuid !=
+                                      //           null,
+                                      //   child: Column(
+                                      //     children: [
+                                      //       SizedBox(
+                                      //         height: 5,
+                                      //       ),
+                                      //       Row(
+                                      //         mainAxisAlignment:
+                                      //             MainAxisAlignment
+                                      //                 .spaceBetween,
+                                      //         children: [
+                                      //           Row(
+                                      //             children: [
+                                      //               Text(
+                                      //                 style: TextStyle(
+                                      //                   fontSize:
+                                      //                       mobileTexts.b3.fontSize,
+                                      //                 ),
+                                      //                 'Cashback:',
+                                      //               ),
+                                      //               Text(
+                                      //                 style: TextStyle(
+                                      //                   fontSize:
+                                      //                       mobileTexts.b3.fontSize,
+                                      //                   fontWeight:
+                                      //                       FontWeight.bold,
+                                      //                   // fontWeight: FontWeight.bold,
+                                      //                 ),
+                                      //                 ' [ ${cartClass!.cashBack.toString()}% ]',
+                                      //               ),
+                                      //             ],
+                                      //           ),
+                                      //           Text(
+                                      //             style: TextStyle(
+                                      //               fontSize:
+                                      //                   mobileTexts.b3.fontSize,
+                                      //               fontWeight:
+                                      //                   FontWeight.bold,
+                                      //             ),
+                                      //             formatMoneyAlt(
+                                      //               currency:
+                                      //                   cartClass!.currency,
+                                      //               amount:
+                                      //                   cartClass!.cashBack !=
+                                      //                               0 &&
+                                      //                           cartClass!.cashBack !=
+                                      //                               null
+                                      //                       ? (calcFinalTotalMain() *
+                                      //                           ((cartClass!.cashBack ??
+                                      //                                   0) /
+                                      //                               100))
+                                      //                       : 0,
+                                      //             ),
+                                      //           ),
+                                      //         ],
+                                      //       ),
+                                      //     ],
+                                      //   ),
+                                      // ),
                                       SizedBox(height: 5),
                                       Row(
                                         mainAxisAlignment:
@@ -687,7 +754,7 @@ class AltDisplayState extends State<AltDisplay> {
                                             style: TextStyle(
                                               fontSize:
                                                   mobileTexts
-                                                      .h3
+                                                      .h4
                                                       .fontSize,
                                               fontWeight:
                                                   FontWeight
@@ -699,7 +766,7 @@ class AltDisplayState extends State<AltDisplay> {
                                             style: TextStyle(
                                               fontSize:
                                                   mobileTexts
-                                                      .h3
+                                                      .h4
                                                       .fontSize,
                                               fontWeight:
                                                   FontWeight
@@ -742,17 +809,23 @@ class AltCartClass {
   final String cartId;
   final List<TempCartItem> cartItems;
   final double vat;
+  final double? cashBack;
   final double? fixedDiscount;
   final double? percentDiscount;
   final String currency;
+  final bool manageCustomerReward;
+  // final String? customerUuid;
 
   AltCartClass({
     required this.cartId,
     required this.cartItems,
     required this.vat,
+    required this.cashBack,
     required this.currency,
     this.fixedDiscount,
     this.percentDiscount,
+    required this.manageCustomerReward,
+    // required this.customerUuid,
   });
 
   Map<String, dynamic> toJson() => {
@@ -762,6 +835,9 @@ class AltCartClass {
     'currency': currency,
     'fixed_discount': fixedDiscount,
     'percent_discount': percentDiscount,
+    'cash_back': cashBack,
+    'manage_customer_reward': manageCustomerReward,
+    // 'customer_uuid': customerUuid,
   };
 
   // Create from JSON
@@ -780,8 +856,12 @@ class AltCartClass {
           (json['fixed_discount'] as num?)?.toDouble(),
       percentDiscount:
           (json['percent_discount'] as num?)?.toDouble(),
+      cashBack: (json['cash_back'] as num?)?.toDouble(),
       vat: (json['vat'] as num).toDouble(),
       currency: json['currency'] as String,
+      manageCustomerReward:
+          json['manage_customer_reward'] as bool,
+      // customerUuid: json['customer_uuid'] as String?,
     );
   }
 }
@@ -939,7 +1019,7 @@ class _CartItemAltState extends State<CartItemAlt> {
                                 formatMoneyAlt(
                                   amount:
                                       widget.cartItem
-                                          .totalCostForAltScreen(),
+                                          .totalCost(),
                                   currency: widget.currency,
                                 ),
                               ),
@@ -974,21 +1054,46 @@ class _CartItemAltState extends State<CartItemAlt> {
                                     spacing: 10,
                                     children: [
                                       Center(
-                                        child: Text(
-                                          style: TextStyle(
-                                            color:
-                                                lightModeColor
-                                                    .prColor300,
-                                            fontSize: 18,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
-                                          ),
-                                          formatLargeNumberDouble(
-                                            widget
-                                                .cartItem
-                                                .quantity,
-                                          ),
+                                        child: Row(
+                                          spacing: 3,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                color:
+                                                    lightModeColor
+                                                        .prColor300,
+                                                fontSize:
+                                                    18,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              formatLargeNumberDouble(
+                                                widget
+                                                    .cartItem
+                                                    .quantity,
+                                              ),
+                                            ),
+                                            Text(
+                                              style: TextStyle(
+                                                color:
+                                                    lightModeColor
+                                                        .prColor300,
+                                                fontSize:
+                                                    10,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              cutLongText(
+                                                widget
+                                                    .cartItem
+                                                    .getSelectedUnit()
+                                                    .name,
+                                                7,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],

@@ -288,19 +288,19 @@ class TempCartItem extends HiveObject {
     }
   }
 
-  double discountCostForAltScreen() {
-    if (returnDiscount() != null) {
-      return (totalCostForAltScreen() *
-          ((returnDiscount() ?? 0) / 100));
-    } else if (returnFixedDiscount() != null) {
-      return returnFixedDiscount() ?? 0;
-    } else if (item.discount != null) {
-      return (totalCostForAltScreen() *
-          ((item.discount ?? 0) / 100));
-    } else {
-      return 0;
-    }
-  }
+  // double discountCostForAltScreen() {
+  //   if (returnDiscount() != null) {
+  //     return (totalCostForAltScreen() *
+  //         ((returnDiscount() ?? 0) / 100));
+  //   } else if (returnFixedDiscount() != null) {
+  //     return returnFixedDiscount() ?? 0;
+  //   } else if (item.discount != null) {
+  //     return (totalCostForAltScreen() *
+  //         ((item.discount ?? 0) / 100));
+  //   } else {
+  //     return 0;
+  //   }
+  // }
 
   double totalCost() {
     if (useWholeSalePrice) {
@@ -335,44 +335,38 @@ class TempCartItem extends HiveObject {
     }
   }
 
-  double totalCostForAltScreen() {
-    if (useGroupQuantity == true) {
-      if (useWholeSalePrice) {
-        return item.wholeSalePrice != null
-            ? (item.wholeSalePrice ?? 0) *
-                (quantity * getQttyPerGroup())
-            : 0;
-      } else if (customPrice != null) {
-        if (setTotalPrice) {
-          return customPrice!;
-        } else {
-          return customPrice! *
-              (quantity * getQttyPerGroup());
-        }
-      } else {
-        return item.sellingPrice != null
-            ? (item.sellingPrice ?? 0) *
-                (quantity * getQttyPerGroup())
-            : 0;
-      }
-    } else {
-      if (useWholeSalePrice) {
-        return item.wholeSalePrice != null
-            ? (item.wholeSalePrice ?? 0) * quantity
-            : 0;
-      } else if (customPrice != null) {
-        if (setTotalPrice) {
-          return customPrice!;
-        } else {
-          return customPrice! * quantity;
-        }
-      } else {
-        return item.sellingPrice != null
-            ? (item.sellingPrice ?? 0) * quantity
-            : 0;
-      }
-    }
-  }
+  // double totalCostForAltScreen() {
+  //   if (useWholeSalePrice) {
+  //     return item.wholeSalePrice != null
+  //         ? (item.wholeSalePrice ?? 0) *
+  //             getSelectedUnit().getQuantityEquivMultiplied(
+  //               index: 1,
+  //               product: item,
+  //               newQuantity: quantity,
+  //             )
+  //         : 0;
+  //   } else if (customPrice != null) {
+  //     if (setTotalPrice) {
+  //       return customPrice!;
+  //     } else {
+  //       return customPrice! *
+  //           getSelectedUnit().getQuantityEquivMultiplied(
+  //             index: 1,
+  //             product: item,
+  //             newQuantity: quantity,
+  //           );
+  //     }
+  //   } else {
+  //     return item.sellingPrice != null
+  //         ? (item.sellingPrice ?? 0) *
+  //             getSelectedUnit().getQuantityEquivMultiplied(
+  //               index: 1,
+  //               product: item,
+  //               newQuantity: quantity,
+  //             )
+  //         : 0;
+  //   }
+  // }
 
   double revenue() {
     if (returnShopProvider().userShop()!.applyVAT!) {
@@ -391,16 +385,16 @@ class TempCartItem extends HiveObject {
         );
   }
 
-  double revenueForAltScreen() {
-    if (returnShopProvider().userShop()!.applyVAT!) {
-      return (totalCostForAltScreen() -
-              discountCostForAltScreen()) +
-          (totalCostForAltScreen() * (vat / 100));
-    } else {
-      return totalCostForAltScreen() -
-          discountCostForAltScreen();
-    }
-  }
+  // double revenueForAltScreen() {
+  //   if (returnShopProvider().userShop()!.applyVAT!) {
+  //     return (totalCostForAltScreen() -
+  //             discountCostForAltScreen()) +
+  //         (totalCostForAltScreen() * (vat / 100));
+  //   } else {
+  //     return totalCostForAltScreen() -
+  //         discountCostForAltScreen();
+  //   }
+  // }
 
   double? costPrice() {
     return (getItem()?.costPrice ?? 0) == 0
@@ -412,18 +406,16 @@ class TempCartItem extends HiveObject {
             );
   }
 
-  double? costPriceForAltScreen() {
-    if (useGroupQuantity == true) {
-      return (item.costPrice) == 0
-          ? null
-          : (item.costPrice) *
-              (quantity * getQttyPerGroupForAltScreen());
-    } else {
-      return (item.costPrice) == 0
-          ? null
-          : (item.costPrice) * quantity;
-    }
-  }
+  // double? costPriceForAltScreen() {
+  //   return (item.costPrice) == 0
+  //       ? null
+  //       : (item.costPrice) *
+  //           getSelectedUnit().getQuantityEquivMultiplied(
+  //             index: 1,
+  //             product: item,
+  //             newQuantity: quantity,
+  //           );
+  // }
 
   double getItemDiscountedRemainingCost() {
     if (getItem()?.discount != null) {
@@ -453,69 +445,57 @@ class TempCartItem extends HiveObject {
     }
   }
 
-  double getItemDiscountedRemainingCostForAltScreen() {
-    if (useGroupQuantity == true) {
-      if (item.discount != null) {
-        if (useWholeSalePrice) {
-          return (((item.wholeSalePrice ?? 0) -
-                  ((item.wholeSalePrice ?? 0) *
-                      (item.discount ?? 0) /
-                      100)) *
-              (quantity * getQttyPerGroupForAltScreen()));
-        } else {
-          return (((item.sellingPrice ?? 0) -
-                  ((item.sellingPrice ?? 0) *
-                      (item.discount ?? 0) /
-                      100)) *
-              (quantity * getQttyPerGroupForAltScreen()));
-        }
-      } else {
-        return totalCostForAltScreen();
-      }
-    } else {
-      if (item.discount != null) {
-        if (useWholeSalePrice) {
-          return (((item.wholeSalePrice ?? 0) -
-                  ((item.wholeSalePrice ?? 0) *
-                      (item.discount ?? 0) /
-                      100)) *
-              quantity);
-        } else {
-          return (((item.sellingPrice ?? 0) -
-                  ((item.sellingPrice ?? 0) *
-                      (item.discount ?? 0) /
-                      100)) *
-              quantity);
-        }
-      } else {
-        return totalCostForAltScreen();
-      }
-    }
-  }
+  // double getItemDiscountedRemainingCostForAltScreen() {
+  //   if (item.discount != null) {
+  //     if (useWholeSalePrice) {
+  //       return (((item.wholeSalePrice ?? 0) -
+  //               ((item.wholeSalePrice ?? 0) *
+  //                   (item.discount ?? 0) /
+  //                   100)) *
+  //           getSelectedUnit().getQuantityEquivMultiplied(
+  //             index: 1,
+  //             product: item,
+  //             newQuantity: quantity,
+  //           ));
+  //     } else {
+  //       return (((item.sellingPrice ?? 0) -
+  //               ((item.sellingPrice ?? 0) *
+  //                   (item.discount ?? 0) /
+  //                   100)) *
+  //           getSelectedUnit().getQuantityEquivMultiplied(
+  //             index: 1,
+  //             product: item,
+  //             newQuantity: quantity,
+  //           ));
+  //     }
+  //   } else {
+  //     return totalCostForAltScreen();
+  //   }
+  // }
 
-  double getQttyPerGroup() {
-    return getItem()?.qttyPerGroup ?? 1;
-  }
+  // double getQttyPerGroup() {
+  //   return getItem()?.qttyPerGroup ?? 1;
+  // }
 
-  double getQttyPerGroupForAltScreen() {
-    return item.qttyPerGroup ?? 1;
-  }
+  // double getQttyPerGroupForAltScreen() {
+  //   return item.qttyPerGroup ?? 1;
+  // }
 
   // double unitTogetQttyPerGroup() {
   //   return quantity / getQttyPerGroup();
   // }
 
-  double unitTogetQttyPerGroupForAltScreen() {
-    return quantity / getQttyPerGroupForAltScreen();
-  }
+  // double unitTogetQttyPerGroupForAltScreen() {
+  //   return quantity / getQttyPerGroupForAltScreen();
+  // }
 
   // double groupToUnitQuantity() {
   //   return quantity * getQttyPerGroup();
   // }
 
-  double groupToUnitQuantityForAltScreen() {
-    return quantity * getQttyPerGroupForAltScreen();
-  }
+  // double groupToUnitQuantityForAltScreen() {
+  //   return quantity * getQttyPerGroupForAltScreen();
+  // }
 
   double getRealQuantity() {
     return getSelectedUnit().getQuantityEquivMultiplied(
@@ -531,13 +511,13 @@ class TempCartItem extends HiveObject {
     );
   }
 
-  double getRealQuantityForAltScreen() {
-    if (useGroupQuantity == true) {
-      return quantity * getQttyPerGroupForAltScreen();
-    } else {
-      return quantity;
-    }
-  }
+  // double getRealQuantityForAltScreen() {
+  //   if (useGroupQuantity == true) {
+  //     return quantity * getQttyPerGroupForAltScreen();
+  //   } else {
+  //     return quantity;
+  //   }
+  // }
 
   String getUnit() {
     var priUnit = getSelectedUnit();
@@ -548,22 +528,22 @@ class TempCartItem extends HiveObject {
     }
   }
 
-  String getUnitForAltScreen() {
-    if (useGroupQuantity == true) {
-      if (item.groupUnit == 'Others' ||
-          item.groupUnit == null) {
-        return "Group(s)";
-      } else {
-        return item.groupUnit ?? 'Group(s)';
-      }
-    } else {
-      if (item.unit == 'Others') {
-        return "Unit(s)";
-      } else {
-        return item.unit;
-      }
-    }
-  }
+  // String getUnitForAltScreen() {
+  //   if (useGroupQuantity == true) {
+  //     if (item.groupUnit == 'Others' ||
+  //         item.groupUnit == null) {
+  //       return "Group(s)";
+  //     } else {
+  //       return item.groupUnit ?? 'Group(s)';
+  //     }
+  //   } else {
+  //     if (item.unit == 'Others') {
+  //       return "Unit(s)";
+  //     } else {
+  //       return item.unit;
+  //     }
+  //   }
+  // }
 
   // double profitOrLoss() {
   //   return item.costPrice == 0

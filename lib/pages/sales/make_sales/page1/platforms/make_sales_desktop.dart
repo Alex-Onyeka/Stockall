@@ -910,6 +910,20 @@ class _MakeSalesDesktopState
               .cartQueue) {
         await returnMultiDisplayProvider().updateWindow(
           cartClass: AltCartClass(
+            manageCustomerReward:
+                returnShopProvider()
+                    .userShop()!
+                    .manageCustomerReward ??
+                false,
+            cashBack:
+                returnShopProvider()
+                            .userShop()!
+                            .manageCustomerReward ==
+                        true
+                    ? returnShopProvider()
+                        .userShop()!
+                        .customerPercentageReward
+                    : 0,
             cartId: cart.id!,
             currency:
                 returnShopProvider().userShop()!.currency,
@@ -934,6 +948,11 @@ class _MakeSalesDesktopState
       await returnMultiDisplayProvider().updateWindow(
         showCart: false,
         cartClass: AltCartClass(
+          manageCustomerReward:
+              returnShopProvider()
+                  .userShop()!
+                  .manageCustomerReward ??
+              false,
           cartId: returnSalesProvider().currentCart().id!,
           currency:
               returnShopProvider().userShop()!.currency,
@@ -952,6 +971,15 @@ class _MakeSalesDesktopState
           vat:
               returnShopProvider().userShop()!.applyVAT!
                   ? vat
+                  : 0,
+          cashBack:
+              returnShopProvider()
+                          .userShop()!
+                          .manageCustomerReward ==
+                      true
+                  ? returnShopProvider()
+                      .userShop()!
+                      .customerPercentageReward
                   : 0,
         ),
       );
