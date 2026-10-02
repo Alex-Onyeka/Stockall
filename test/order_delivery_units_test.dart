@@ -152,6 +152,16 @@ void main() {
   test(
     'legacy group orders retain their group conversion',
     () {
+      final legacyGroupUnit = ProductUnitsClass(
+        uuid: 'legacy-group',
+        staffUuid: null,
+        createdAt: DateTime.utc(2026),
+        staffName: null,
+        conversion: 6,
+        name: 'Group(s)',
+        isPrimary: false,
+        productUuid: 'product-1',
+      );
       final legacyOrderLine = OrderItems(
         uuid: 'legacy-line',
         orderId: 'legacy-order',
@@ -183,7 +193,7 @@ void main() {
         remainingQuantity: 2,
         originalUseGroupQuantity: true,
         tempUseGroupQuantity: true,
-        unitsList: [primaryUnit],
+        unitsList: [primaryUnit, legacyGroupUnit],
         unitUuid: null,
       );
 

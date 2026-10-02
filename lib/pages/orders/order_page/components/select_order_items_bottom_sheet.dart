@@ -478,7 +478,8 @@ void selectItemsForOrderDeliveryBottomSheet({
                     .orderListItems
                     .any(
                       (selected) =>
-                          selected.uuid == item.uuid,
+                          selected.productUuid ==
+                          item.productUuid,
                     )) {
                   return false;
                 } else {

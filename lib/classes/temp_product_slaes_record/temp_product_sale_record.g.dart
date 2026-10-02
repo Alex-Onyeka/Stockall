@@ -55,7 +55,6 @@ class TempProductSaleRecordAdapter
       unitsList:
           (fields[33] as List?)?.cast<ProductUnitsClass>(),
       unitUuid: fields[34] as String?,
-      orderItemUuid: fields[35] as String?,
     );
   }
 
@@ -65,7 +64,7 @@ class TempProductSaleRecordAdapter
     TempProductSaleRecord obj,
   ) {
     writer
-      ..writeByte(36)
+      ..writeByte(35)
       ..writeByte(0)
       ..write(obj.productRecordId)
       ..writeByte(1)
@@ -135,9 +134,7 @@ class TempProductSaleRecordAdapter
       ..writeByte(33)
       ..write(obj.unitsList)
       ..writeByte(34)
-      ..write(obj.unitUuid)
-      ..writeByte(35)
-      ..write(obj.orderItemUuid);
+      ..write(obj.unitUuid);
   }
 
   @override

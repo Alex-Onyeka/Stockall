@@ -1001,7 +1001,6 @@ class OrdersProvider extends ChangeNotifier {
                 useWholeSalePrice: record.useWholeSalePrice,
                 useGroupQuantity: record.useGroupQuantity,
                 qttyPerGroup: record.qttyPerGroup,
-                orderItemUuid: record.uuid,
                 // orderUuid: order.uuid,
               );
             }).toList();
@@ -1191,23 +1190,13 @@ class OrdersProvider extends ChangeNotifier {
         }
 
         final matchingLines =
-            record.orderItemUuid != null
-                ? orderToUpdate.orderItems
-                    .where(
-                      (item) =>
-                          item.uuid ==
-                              record.orderItemUuid &&
-                          item.productUuid ==
-                              record.productUuid,
-                    )
-                    .toList()
-                : orderToUpdate.orderItems
-                    .where(
-                      (item) =>
-                          item.productUuid ==
-                          record.productUuid,
-                    )
-                    .toList();
+            orderToUpdate.orderItems
+                .where(
+                  (item) =>
+                      item.productUuid ==
+                      record.productUuid,
+                )
+                .toList();
         if (matchingLines.length != 1) {
           await mainLocalLog(
             'Cannot safely restore order quantity for ${record.productName}: '

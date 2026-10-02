@@ -113,9 +113,6 @@ class TempProductSaleRecord {
   @HiveField(34)
   String? unitUuid;
 
-  @HiveField(35)
-  String? orderItemUuid;
-
   TempProductSaleRecord({
     this.productRecordId,
     required this.createdAt,
@@ -152,7 +149,6 @@ class TempProductSaleRecord {
     required this.isVoid,
     required this.unitsList,
     required this.unitUuid,
-    this.orderItemUuid,
   });
 
   factory TempProductSaleRecord.fromJson(
@@ -206,7 +202,6 @@ class TempProductSaleRecord {
               )
               .toList(),
       unitUuid: json['unit_uuid'] as String?,
-      orderItemUuid: json['order_item_uuid'] as String?,
     );
   }
 
@@ -248,7 +243,6 @@ class TempProductSaleRecord {
         productUuid: uuid,
       ),
       'unit_uuid': unitUuid,
-      'order_item_uuid': orderItemUuid,
     };
   }
 
@@ -286,7 +280,6 @@ class TempProductSaleRecord {
     bool? isVoid,
     List<ProductUnitsClass>? unitsList,
     String? unitUuid,
-    String? orderItemUuid,
   }) {
     return TempProductSaleRecord(
       productRecordId:
@@ -327,7 +320,6 @@ class TempProductSaleRecord {
       isVoid: isVoid ?? this.isVoid,
       unitsList: unitsList ?? this.unitsList,
       unitUuid: unitUuid ?? this.unitUuid,
-      orderItemUuid: orderItemUuid ?? this.orderItemUuid,
     );
   }
 
