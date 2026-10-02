@@ -1057,6 +1057,9 @@ class OrdersProvider extends ChangeNotifier {
               product.quantity =
                   oldQuantity - quantityChange;
               final newQuantity = product.quantity ?? 0;
+              final primaryUnit = product.getPrimaryUnit();
+              final primaryUnitConversion =
+                  primaryUnit.conversion;
               ItemHistory itemHistory = ItemHistory(
                 shopId: shopId(),
                 desc:
@@ -1065,13 +1068,13 @@ class OrdersProvider extends ChangeNotifier {
                 title: 'Order Item Delivered',
                 quantityChange: -item.quantity,
                 oldValue: formatLargeNumberDouble(
-                  oldQuantity,
+                  oldQuantity / primaryUnitConversion,
                 ),
                 newValue: formatLargeNumberDouble(
-                  newQuantity,
+                  newQuantity / primaryUnitConversion,
                 ),
                 unit: item.getUnit(),
-                primaryUnit: product.getPrimaryUnit().name,
+                primaryUnit: primaryUnit.name,
               );
               await returnData().updateProduct(
                 itemHistory: itemHistory,
@@ -1083,19 +1086,23 @@ class OrdersProvider extends ChangeNotifier {
                 isIncrement: false,
               );
             } else {
+              final primaryUnit = product.getPrimaryUnit();
+              final primaryUnitConversion =
+                  primaryUnit.conversion;
+              final stockQuantity = product.quantity ?? 0;
               ItemHistory itemHistory = ItemHistory(
                 desc:
                     '${item.quantity} ${item.getUnit()} of This Item was Delivered, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}... Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
                 shopId: shopId(),
                 isIncreased: false,
                 oldValue: formatLargeNumberDouble(
-                  product.quantity ?? 0,
+                  stockQuantity / primaryUnitConversion,
                 ),
                 newValue: formatLargeNumberDouble(
-                  product.quantity ?? 0,
+                  stockQuantity / primaryUnitConversion,
                 ),
                 unit: item.getUnit(),
-                primaryUnit: product.getPrimaryUnit().name,
+                primaryUnit: primaryUnit.name,
                 title: 'Order Item Delivered (Unmanaged)',
                 quantityChange: 0,
               );

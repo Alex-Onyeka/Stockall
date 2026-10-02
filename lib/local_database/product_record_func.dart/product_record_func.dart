@@ -137,6 +137,9 @@ class ProductRecordFunc {
                 record.getActualQuantity();
             product.quantity = oldQuantity + quantityChange;
             final newQuantity = product.quantity ?? 0;
+            final primaryUnit = product.getPrimaryUnit();
+            final primaryUnitConversion =
+                primaryUnit.conversion;
             ItemHistory itemHistory = ItemHistory(
               shopId: shopId(),
               title: 'Item Returned',
@@ -144,14 +147,14 @@ class ProductRecordFunc {
                   '${record.quantity} ${record.unit} of This Item was Returned. Receipt Id: #${returnOnlyDigits(receiptUuid)}.',
               quantityChange: record.quantity,
               newValue: formatLargeNumberDouble(
-                newQuantity,
+                newQuantity / primaryUnitConversion,
               ),
               isIncreased: true,
               oldValue: formatLargeNumberDouble(
-                oldQuantity,
+                oldQuantity / primaryUnitConversion,
               ),
               unit: record.unit,
-              primaryUnit: product.getPrimaryUnit().name,
+              primaryUnit: primaryUnit.name,
             );
             await returnData().updateProduct(
               itemHistory: itemHistory,
