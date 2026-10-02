@@ -1161,100 +1161,96 @@ class OrdersProvider extends ChangeNotifier {
     required String? orderUuid,
   }) async {
     try {
+      Orders? orderToUpdate;
       if (orderUuid == null) {
         await mainLocalLog(
-          'Cannot delete order delivery receipt without its order UUID.',
+          'Skipping order quantity restoration: delivery receipt has no order UUID.',
         );
-        return 0;
-      }
-      final matchingOrders =
-          orders
-              .where((item) => item.uuid == orderUuid)
-              .toList();
-      if (matchingOrders.length != 1) {
-        await mainLocalLog(
-          'Cannot safely delete order delivery receipt: expected one matching order, found ${matchingOrders.length}.',
-        );
-        return 0;
-      }
-      final orderToUpdate = matchingOrders.first;
-
-      final orderLinesByRecordUuid = <String, OrderItems>{};
-      for (final record in records) {
-        final recordUuid = record.uuid;
-        if (recordUuid == null) {
-          await mainLocalLog(
-            'Cannot restore order quantity: delivery record has no UUID.',
-          );
-          return 0;
-        }
-
-        final matchingLines =
-            orderToUpdate.orderItems
-                .where(
-                  (item) =>
-                      item.productUuid ==
-                      record.productUuid,
-                )
+      } else {
+        final matchingOrders =
+            orders
+                .where((item) => item.uuid == orderUuid)
                 .toList();
-        if (matchingLines.length != 1) {
+        if (matchingOrders.length == 1) {
+          orderToUpdate = matchingOrders.first;
+        } else {
           await mainLocalLog(
-            'Cannot safely restore order quantity for ${record.productName}: '
-            'expected one order line, found ${matchingLines.length}.',
+            'Skipping order quantity restoration: expected one matching order, found ${matchingOrders.length}.',
           );
-          return 0;
         }
-        orderLinesByRecordUuid[recordUuid] =
-            matchingLines.first;
       }
 
-      final orderTemp = orderToUpdate.copyWith(
-        orderItems:
-            orderToUpdate.orderItems
-                .map((item) => item.copyWith())
-                .toList(),
-      );
-      for (final record in records) {
-        final orderLine =
-            orderLinesByRecordUuid[record.uuid];
-        if (orderLine == null) {
-          await mainLocalLog(
-            'Cannot restore order quantity: delivery record ${record.uuid} was not matched to an order line.',
-          );
-          return 0;
-        }
-        final updatedOrderLine = orderTemp.getOrderItem(
-          newItem: orderLine,
+      Orders? updatedOrder;
+      bool orderQuantitiesUpdated = false;
+      if (orderToUpdate != null) {
+        updatedOrder = orderToUpdate.copyWith(
+          orderItems:
+              orderToUpdate.orderItems
+                  .map((item) => item.copyWith())
+                  .toList(),
         );
-        if (updatedOrderLine == null) {
-          await mainLocalLog(
-            'Cannot restore order quantity: order line ${orderLine.uuid} disappeared.',
-          );
-          return 0;
-        }
+        bool restoredAnyQuantity = false;
 
-        final deliveredInOrderUnit = updatedOrderLine
-            .getQuantityFromPrimaryUnits(
-              record.getActualQuantity(),
+        for (final record in records) {
+          final matchingLines =
+              updatedOrder.orderItems
+                  .where(
+                    (item) =>
+                        item.productUuid ==
+                        record.productUuid,
+                  )
+                  .toList();
+          if (matchingLines.length != 1) {
+            await mainLocalLog(
+              'Skipping order quantity restoration for ${record.productName}: '
+              'expected one matching order line, found ${matchingLines.length}.',
             );
-        final restoredQuantity =
-            (updatedOrderLine.remainingQuantity ??
-                updatedOrderLine.quantity) +
-            deliveredInOrderUnit;
-        updatedOrderLine.remainingQuantity =
-            restoredQuantity > updatedOrderLine.quantity
-                ? updatedOrderLine.quantity
-                : restoredQuantity;
-      }
+            continue;
+          }
 
-      final orderUpdateResult = await updateOrder(
-        order: orderTemp,
-      );
-      if (orderUpdateResult != 1) {
-        await mainLocalLog(
-          'Delivery receipt could not be deleted because its order quantities could not be restored.',
-        );
-        return 0;
+          final orderLine = updatedOrder.getOrderItem(
+            newItem: matchingLines.first,
+          );
+          if (orderLine == null) {
+            await mainLocalLog(
+              'Skipping order quantity restoration for ${record.productName}: '
+              'the matching order line could not be loaded.',
+            );
+            continue;
+          }
+
+          try {
+            final deliveredInOrderUnit = orderLine
+                .getQuantityFromPrimaryUnits(
+                  record.getActualQuantity(),
+                );
+            final restoredQuantity =
+                (orderLine.remainingQuantity ??
+                    orderLine.quantity) +
+                deliveredInOrderUnit;
+            orderLine.remainingQuantity =
+                restoredQuantity > orderLine.quantity
+                    ? orderLine.quantity
+                    : restoredQuantity;
+            restoredAnyQuantity = true;
+          } catch (e) {
+            await mainLocalLog(
+              'Skipping order quantity restoration for ${record.productName}: ${e.toString()}',
+            );
+          }
+        }
+
+        if (restoredAnyQuantity) {
+          final orderUpdateResult = await updateOrder(
+            order: updatedOrder,
+          );
+          orderQuantitiesUpdated = orderUpdateResult == 1;
+          if (!orderQuantitiesUpdated) {
+            await mainLocalLog(
+              'Order quantities could not be restored for delivery receipt ${receipt.uuid}; continuing with receipt deletion.',
+            );
+          }
+        }
       }
 
       final deleteResult =
@@ -1263,18 +1259,21 @@ class OrdersProvider extends ChangeNotifier {
             records.map((rec) => rec.productName).toList(),
           );
       if (deleteResult != 1) {
-        final rollbackResult = await updateOrder(
-          order: orderToUpdate.copyWith(
-            orderItems:
-                orderToUpdate.orderItems
-                    .map((item) => item.copyWith())
-                    .toList(),
-          ),
-        );
-        if (rollbackResult != 1) {
-          await mainLocalLog(
-            'Receipt deletion failed and the restored order quantities could not be rolled back.',
+        if (orderQuantitiesUpdated &&
+            orderToUpdate != null) {
+          final rollbackResult = await updateOrder(
+            order: orderToUpdate.copyWith(
+              orderItems:
+                  orderToUpdate.orderItems
+                      .map((item) => item.copyWith())
+                      .toList(),
+            ),
           );
+          if (rollbackResult != 1) {
+            await mainLocalLog(
+              'Receipt deletion failed and the restored order quantities could not be rolled back.',
+            );
+          }
         }
         return deleteResult;
       }
