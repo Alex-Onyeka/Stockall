@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_production_folder/temp_materials_item_history/materials_item_history.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_materials_usage/production_materials_usage.dart';
+import 'package:stockall/classes/temp_production_folder/production_unit_snapshot.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_materials_usage/unsynced/created/created_production_materials_usage.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_materials_usage/unsynced/deleted/deleted_production_materials_usage.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -56,6 +57,48 @@ class MaterialsUsageProvider extends ChangeNotifier {
       await mainLocalLog(
         'Inner Production Materials Usage Creation Started',
       );
+      _snapshotUsageUnits(productionMaterialsUsage);
+      final selectedUnit =
+          (productionMaterialsUsage.unitsList ?? []).where(
+            (unit) =>
+                unit.uuid ==
+                productionMaterialsUsage.unitUuid,
+          );
+      if (productionMaterialsUsage.unitUuid != null &&
+          productionMaterialsUsage.unitsList?.isNotEmpty ==
+              true &&
+          (selectedUnit.isEmpty ||
+              !selectedUnit.first.conversion.isFinite ||
+              selectedUnit.first.conversion <= 0)) {
+        await mainLocalLog(
+          'Material usage could not be saved because its selected unit conversion is invalid.',
+        );
+        return null;
+      }
+      final usageQuantity =
+          productionMaterialsUsage.getQuantity();
+      if (!usageQuantity.isFinite || usageQuantity <= 0) {
+        await mainLocalLog(
+          'Material usage quantity must be greater than zero.',
+        );
+        return null;
+      }
+      final material =
+          returnMaterialsProvider().materialListMain
+              .where(
+                (item) =>
+                    item.uuid ==
+                    productionMaterialsUsage.materialUuid,
+              )
+              .toList();
+      if (productionMaterialsUsage.isManaged != false &&
+          material.isNotEmpty &&
+          usageQuantity > (material.first.quantity ?? 0)) {
+        await mainLocalLog(
+          'Material usage exceeds available stock for ${material.first.name}.',
+        );
+        return null;
+      }
       productionMaterialsUsage.createdAt = DateTime.now();
       await ProductionMaterialsUsageFunc()
           .createProductionMaterialsUsage(
@@ -77,31 +120,9 @@ class MaterialsUsageProvider extends ChangeNotifier {
                 productionMaterialsUsage.materialUuid,
           );
       if (materials.isNotEmpty) {
-        var oldMaterial = materials.first;
-        var newMaterial = oldMaterial.copyWith();
-        newMaterial.quantity =
-            (newMaterial.quantity ?? 0) -
-            productionMaterialsUsage.getQuantity();
-        MaterialsItemHistory
-        materialsItemHistory = MaterialsItemHistory(
-          shopId: newMaterial.shopId,
-          title: 'Material Used',
-          newValue: (newMaterial.quantity ?? 0).toString(),
-          oldValue: (oldMaterial.quantity ?? 0).toString(),
-          quantityChange:
-              -productionMaterialsUsage.getQuantity(),
-          desc: 'This Material Was used.',
-          isIncreased: false,
-        );
-        await returnMaterialsProvider().updateMaterial(
-          material: newMaterial,
-          isQuantityUpdate: true,
-          includeQuantity: true,
-          isMultipleUpdate: true,
-          quantityChange:
-              productionMaterialsUsage.getQuantity(),
-          isIncrement: false,
-          materialsItemHistory: materialsItemHistory,
+        await _applyMaterialUsage(
+          productionMaterialsUsage,
+          increment: false,
         );
       }
 
@@ -116,6 +137,92 @@ class MaterialsUsageProvider extends ChangeNotifier {
       );
       return null;
     }
+  }
+
+  void _snapshotUsageUnits(ProductionMaterialsUsage usage) {
+    final materials = returnMaterialsProvider()
+        .materialListMain
+        .where((item) => item.uuid == usage.materialUuid);
+    if (materials.isEmpty) return;
+    final material = materials.first;
+    final units =
+        usage.unitsList?.isNotEmpty == true
+            ? usage.unitsList!
+            : material.getUnitsList();
+    usage.unitsList =
+        units.map((unit) => unit.copyWith()).toList();
+    if (usage.unitUuid == null) {
+      usage.unitUuid = legacyProductionUnitUuid(
+        unitsList: units,
+        useGroupQuantity: usage.isGroup,
+        groupUnit: usage.groupUnit,
+      );
+    }
+  }
+
+  Future<void> _applyMaterialUsage(
+    ProductionMaterialsUsage usage, {
+    required bool increment,
+  }) async {
+    final materials = returnMaterialsProvider()
+        .materialListMain
+        .where((item) => item.uuid == usage.materialUuid);
+    if (materials.isEmpty) return;
+
+    final oldMaterial = materials.first;
+    if (!usage.isManaged) {
+      await mainLocalLog(
+        'Skipping stock adjustment for unmanaged material ${usage.materialName}.',
+      );
+      return;
+    }
+    final newMaterial = oldMaterial.copyWith();
+    final actualQuantity = usage.getQuantity();
+    final signedQuantity =
+        increment ? actualQuantity : -actualQuantity;
+    newMaterial.quantity =
+        (oldMaterial.quantity ?? 0) + signedQuantity;
+    final primaryUnit = productionPrimaryUnitName(
+      usage.unitsList,
+      fallback: oldMaterial.getPrimaryUnit().name,
+    );
+    final primaryUnitConversion =
+        productionPrimaryUnitConversion(
+          usage.unitsList,
+          fallback: oldMaterial.getPrimaryUnit().conversion,
+        );
+    final history = MaterialsItemHistory(
+      shopId: oldMaterial.shopId,
+      title:
+          increment
+              ? 'Material Usage Deleted'
+              : 'Material Used',
+      oldValue:
+          ((oldMaterial.quantity ?? 0) /
+                  primaryUnitConversion)
+              .toString(),
+      newValue:
+          ((newMaterial.quantity ?? 0) /
+                  primaryUnitConversion)
+              .toString(),
+      quantityChange: signedQuantity,
+      desc:
+          increment
+              ? 'This Material Usage Was Deleted.'
+              : 'This Material Was used.',
+      isIncreased: increment,
+      unit: usage.getUnit(),
+      primaryUnit: primaryUnit,
+    );
+    await returnMaterialsProvider().updateMaterial(
+      material: newMaterial,
+      isQuantityUpdate: true,
+      includeQuantity: true,
+      isMultipleUpdate: true,
+      quantityChange: actualQuantity,
+      isIncrement: increment,
+      materialsItemHistory: history,
+    );
   }
 
   // READ all ProductionMaterialsUsage for a shop
@@ -289,45 +396,10 @@ class MaterialsUsageProvider extends ChangeNotifier {
             );
       }
       if (updateInventory == true) {
-        var materials = returnMaterialsProvider()
-            .materialListMain
-            .where(
-              (item) =>
-                  item.uuid ==
-                  productionMaterialsUsage.materialUuid,
-            );
-        if (materials.isNotEmpty) {
-          var oldMaterial = materials.first;
-          var newMaterial = oldMaterial.copyWith();
-          newMaterial.quantity =
-              (newMaterial.quantity ?? 0) +
-              productionMaterialsUsage.getQuantity();
-
-          MaterialsItemHistory materialsItemHistory =
-              MaterialsItemHistory(
-                shopId: newMaterial.shopId,
-                title: 'Material Usage Deleted',
-                newValue:
-                    (newMaterial.quantity ?? 0).toString(),
-                oldValue:
-                    (oldMaterial.quantity ?? 0).toString(),
-                quantityChange:
-                    productionMaterialsUsage.getQuantity(),
-                desc:
-                    'This Material Usage Used Was Deleted.',
-                isIncreased: true,
-              );
-          await returnMaterialsProvider().updateMaterial(
-            isMultipleUpdate: false,
-            material: newMaterial,
-            isQuantityUpdate: true,
-            includeQuantity: true,
-            quantityChange:
-                productionMaterialsUsage.getQuantity(),
-            isIncrement: true,
-            materialsItemHistory: materialsItemHistory,
-          );
-        }
+        await _applyMaterialUsage(
+          productionMaterialsUsage,
+          increment: true,
+        );
       }
 
       // returnData().syncData();

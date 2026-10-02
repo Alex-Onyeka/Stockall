@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
+import 'package:stockall/classes/temp_production_folder/production_unit_snapshot.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions_cart/temp_production_material_cart_item/production_material_cart_item.dart';
-import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
 
 part 'production_record_materials.g.dart';
@@ -70,6 +71,12 @@ class ProductionRecordMaterials extends HiveObject {
   @HiveField(20)
   bool? isManaged;
 
+  @HiveField(21)
+  String? unitUuid;
+
+  @HiveField(22)
+  List<ProductUnitsClass>? unitsList;
+
   ProductionRecordMaterials({
     required this.uuid,
     this.productionRecordId,
@@ -92,6 +99,8 @@ class ProductionRecordMaterials extends HiveObject {
     required this.originalCostPerItem,
     required this.originalUseGroupQuantity,
     required this.isManaged,
+    this.unitUuid,
+    this.unitsList,
   });
 
   factory ProductionRecordMaterials.fromJson(
@@ -128,6 +137,15 @@ class ProductionRecordMaterials extends HiveObject {
       originalUseGroupQuantity:
           json['original_use_group_quantity'] as bool?,
       isManaged: json['is_managed'] as bool?,
+      unitUuid: json['unit_uuid'] as String?,
+      unitsList:
+          (json['units_list'] as List<dynamic>?)
+              ?.map(
+                (item) => ProductUnitsClass.fromJson(
+                  item as Map<String, dynamic>,
+                ),
+              )
+              .toList(),
     );
   }
 
@@ -155,6 +173,9 @@ class ProductionRecordMaterials extends HiveObject {
           originalUseGroupQuantity,
       'original_cost_per_item': originalCostPerItem,
       'is_managed': isManaged,
+      'unit_uuid': unitUuid,
+      'units_list':
+          unitsList?.map((item) => item.toJson()).toList(),
     };
   }
 
@@ -184,6 +205,10 @@ class ProductionRecordMaterials extends HiveObject {
             setCustomPrice: false,
             unit: item.unit,
             isManaged: item.isManaged,
+            unitUuid: item.unitUuid,
+            unitsList: copyProductionUnitSnapshot(
+              item.unitsList,
+            ),
           ),
         )
         .toList();
@@ -218,6 +243,10 @@ class ProductionRecordMaterials extends HiveObject {
             originalCostPerItem: item.originalCostPerItem,
             originalUseGroupQuantity:
                 item.originalUseGroupQuantity,
+            unitUuid: item.unitUuid,
+            unitsList: copyProductionUnitSnapshot(
+              item.unitsList,
+            ),
           ),
         )
         .toList();
@@ -245,6 +274,8 @@ class ProductionRecordMaterials extends HiveObject {
     double? originalCostPerItem,
     bool? originalUseGroupQuantity,
     bool? isManaged,
+    String? unitUuid,
+    List<ProductUnitsClass>? unitsList,
   }) {
     return ProductionRecordMaterials(
       uuid: uuid ?? this.uuid,
@@ -273,22 +304,36 @@ class ProductionRecordMaterials extends HiveObject {
           originalUseGroupQuantity ??
           this.originalUseGroupQuantity,
       isManaged: isManaged ?? this.isManaged,
+      unitUuid: unitUuid ?? this.unitUuid,
+      unitsList: copyProductionUnitSnapshot(
+        unitsList ?? this.unitsList,
+      ),
+    );
+  }
+
+  double getActualQuantity() {
+    return quantity *
+        productionUnitConversion(
+          unitUuid: unitUuid,
+          unitsList: unitsList,
+          useGroupQuantity: isGroup,
+          qttyPerGroup: qttyPerGroup,
+          groupUnitName: groupUnit,
+        );
+  }
+
+  String getUnit() {
+    return productionUnitName(
+      unitUuid: unitUuid,
+      unitsList: unitsList,
+      useGroupQuantity: isGroup,
+      unit: unit,
+      groupUnit: groupUnit,
+      qttyPerGroup: qttyPerGroup,
     );
   }
 
   double getTotalCost() {
     return customCost ?? (totalCost ?? 0);
-  }
-
-  String getUnit() {
-    if (isGroup == true) {
-      return groupUnit == 'Others'
-          ? 'Group(s)'
-          : groupUnit ?? 'Group(s)';
-    } else {
-      return unit == 'Others'
-          ? 'Unit(s)'
-          : unit ?? 'Unit(s)';
-    }
   }
 }

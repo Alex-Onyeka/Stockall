@@ -1,4 +1,6 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
+import 'package:stockall/classes/temp_production_folder/production_unit_snapshot.dart';
 
 part 'productions_cart_item.g.dart';
 
@@ -49,6 +51,12 @@ class ProductionsCartItem extends HiveObject {
   @HiveField(14)
   String? salesItemUuid;
 
+  @HiveField(15)
+  String? unitUuid;
+
+  @HiveField(16)
+  List<ProductUnitsClass>? unitsList;
+
   ProductionsCartItem({
     required this.uuid,
     required this.itemUuid,
@@ -65,6 +73,8 @@ class ProductionsCartItem extends HiveObject {
     this.unit,
     required this.originalCostPerItem,
     required this.originalUseGroupQuantity,
+    this.unitUuid,
+    this.unitsList,
   });
 
   Map<String, dynamic> toJson() => {
@@ -83,6 +93,9 @@ class ProductionsCartItem extends HiveObject {
     'original_cost_per_item': originalCostPerItem,
     'original_use_group_quantity': originalUseGroupQuantity,
     'sales_item_uuid': salesItemUuid,
+    'unit_uuid': unitUuid,
+    'units_list':
+        unitsList?.map((item) => item.toJson()).toList(),
   };
 
   factory ProductionsCartItem.fromJson(
@@ -105,6 +118,15 @@ class ProductionsCartItem extends HiveObject {
       originalUseGroupQuantity:
           json['original_use_group_quantity'],
       salesItemUuid: json['sales_item_uuid'],
+      unitUuid: json['unit_uuid'] as String?,
+      unitsList:
+          (json['units_list'] as List<dynamic>?)
+              ?.map(
+                (item) => ProductUnitsClass.fromJson(
+                  item as Map<String, dynamic>,
+                ),
+              )
+              .toList(),
     );
   }
 
@@ -125,11 +147,14 @@ class ProductionsCartItem extends HiveObject {
   }
 
   double getRealQuantity() {
-    if (useGroupQuantity == true) {
-      return quantity * getQttyPerGroup();
-    } else {
-      return quantity;
-    }
+    return quantity *
+        productionUnitConversion(
+          unitUuid: unitUuid,
+          unitsList: unitsList,
+          useGroupQuantity: useGroupQuantity,
+          qttyPerGroup: qttyPerGroup,
+          groupUnitName: groupUnit,
+        );
   }
 
   double getRealQuantityForSales({
@@ -155,19 +180,14 @@ class ProductionsCartItem extends HiveObject {
   }
 
   String getUnit() {
-    if (useGroupQuantity == true) {
-      if (groupUnit == 'Others' || groupUnit == null) {
-        return "Group(s)";
-      } else {
-        return groupUnit ?? 'Group(s)';
-      }
-    } else {
-      if (unit == 'Others') {
-        return "Unit(s)";
-      } else {
-        return unit ?? 'Unit(s)';
-      }
-    }
+    return productionUnitName(
+      unitUuid: unitUuid,
+      unitsList: unitsList,
+      useGroupQuantity: useGroupQuantity,
+      unit: unit,
+      groupUnit: groupUnit,
+      qttyPerGroup: qttyPerGroup,
+    );
   }
 
   String getUnitForSales({required bool? useGroup}) {
@@ -202,6 +222,8 @@ class ProductionsCartItem extends HiveObject {
     double? originalCostPerItem,
     bool? originalUseGroupQuantity,
     String? salesItemUuid,
+    String? unitUuid,
+    List<ProductUnitsClass>? unitsList,
   }) {
     return ProductionsCartItem(
       uuid: uuid ?? this.uuid,
@@ -223,6 +245,10 @@ class ProductionsCartItem extends HiveObject {
           originalUseGroupQuantity ??
           this.originalUseGroupQuantity,
       salesItemUuid: salesItemUuid ?? this.salesItemUuid,
+      unitUuid: unitUuid ?? this.unitUuid,
+      unitsList: copyProductionUnitSnapshot(
+        unitsList ?? this.unitsList,
+      ),
     );
   }
 }

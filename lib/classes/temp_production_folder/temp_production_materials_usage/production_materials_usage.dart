@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
-import 'package:stockall/pages/production/production_dashboard/productions_section/create_production/functions/create_production_functions.dart';
+import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
+import 'package:stockall/classes/temp_production_folder/production_unit_snapshot.dart';
 
 part 'production_materials_usage.g.dart';
 
@@ -71,6 +72,12 @@ class ProductionMaterialsUsage extends HiveObject {
   @HiveField(22)
   bool? isManaged;
 
+  @HiveField(23)
+  String? unitUuid;
+
+  @HiveField(24)
+  List<ProductUnitsClass>? unitsList;
+
   ProductionMaterialsUsage({
     required this.uuid,
     required this.shopId,
@@ -94,6 +101,8 @@ class ProductionMaterialsUsage extends HiveObject {
     required this.originalUseGroupQuantity,
     required this.selectedCostInt,
     required this.isManaged,
+    this.unitUuid,
+    this.unitsList,
   });
 
   factory ProductionMaterialsUsage.fromJson(
@@ -132,6 +141,15 @@ class ProductionMaterialsUsage extends HiveObject {
           json['original_use_group_quantity'] as bool?,
       selectedCostInt: json['selected_cost_int'] as int?,
       isManaged: json['is_managed'] as bool?,
+      unitUuid: json['unit_uuid'] as String?,
+      unitsList:
+          (json['units_list'] as List<dynamic>?)
+              ?.map(
+                (item) => ProductUnitsClass.fromJson(
+                  item as Map<String, dynamic>,
+                ),
+              )
+              .toList(),
     );
   }
 
@@ -160,6 +178,9 @@ class ProductionMaterialsUsage extends HiveObject {
       'original_cost_per_item': originalCostPerItem,
       'selected_cost_int': selectedCostInt,
       'is_managed': isManaged,
+      'unit_uuid': unitUuid,
+      'units_list':
+          unitsList?.map((item) => item.toJson()).toList(),
     };
   }
 
@@ -186,6 +207,8 @@ class ProductionMaterialsUsage extends HiveObject {
     bool? originalUseGroupQuantity,
     int? selectedCostInt,
     bool? isManaged,
+    String? unitUuid,
+    List<ProductUnitsClass>? unitsList,
   }) {
     return ProductionMaterialsUsage(
       uuid: uuid ?? this.uuid,
@@ -214,26 +237,33 @@ class ProductionMaterialsUsage extends HiveObject {
       selectedCostInt:
           selectedCostInt ?? this.selectedCostInt,
       isManaged: isManaged ?? this.isManaged,
+      unitUuid: unitUuid ?? this.unitUuid,
+      unitsList: copyProductionUnitSnapshot(
+        unitsList ?? this.unitsList,
+      ),
     );
   }
 
-  String getUnit() {
-    if (customUnit != null) {
-      return customUnit ?? 'Unit(s)';
-    } else {
-      if (isGroup == true) {
-        return groupUnit ?? 'Group(s)';
-      } else {
-        return unit ?? 'Unit(s)';
-      }
-    }
+  double getQuantity() {
+    return quantity *
+        productionUnitConversion(
+          unitUuid: unitUuid,
+          unitsList: unitsList,
+          useGroupQuantity: isGroup,
+          qttyPerGroup: qttyPerGroup,
+          groupUnitName: groupUnit,
+        );
   }
 
-  double getQuantity() {
-    return quantityConversion(
-      isGroup: isGroup ?? false,
-      quantity: quantity,
-      qttyPerItem: qttyPerGroup,
+  String getUnit() {
+    if (customUnit != null) return customUnit!;
+    return productionUnitName(
+      unitUuid: unitUuid,
+      unitsList: unitsList,
+      useGroupQuantity: isGroup,
+      unit: unit,
+      groupUnit: groupUnit,
+      qttyPerGroup: qttyPerGroup,
     );
   }
 

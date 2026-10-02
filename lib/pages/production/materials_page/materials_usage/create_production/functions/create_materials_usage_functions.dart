@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_production_folder/temp_material_class/material_class.dart';
+import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
+import 'package:stockall/classes/temp_production_folder/production_unit_snapshot.dart';
 import 'package:stockall/classes/temp_production_folder/temp_materials_usage_cart/temp_materials_usage_cart_item/materials_usage_cart_item.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
-import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/production/production_dashboard/productions_section/create_production/components/select_total_cost_widget.dart';
+import 'package:stockall/pages/production/components/production_unit_dropdown.dart';
 
 class CreateMaterialsUsageFunctions {
   //
@@ -244,7 +246,39 @@ class CreateMaterialsUsageFunctions {
     showDialog(
       context: secondContext,
       builder: (thirdContext) {
-        bool useGroupUnit = false;
+        final units =
+            (editMaterialItem?.unitsList ??
+                    selectedMaterial?.getUnitsList() ??
+                    [])
+                .map((unit) => unit.copyWith())
+                .toList();
+        String? selectedUnitUuid =
+            editMaterialItem?.unitUuid ??
+            legacyProductionUnitUuid(
+              unitsList: units,
+              useGroupQuantity:
+                  editMaterialItem?.useGroupQuantity,
+              groupUnit: editMaterialItem?.groupUnit,
+            );
+        if (selectedUnitUuid == null && units.isNotEmpty) {
+          final primaryUnits =
+              units
+                  .where((unit) => unit.isPrimary)
+                  .toList();
+          selectedUnitUuid =
+              primaryUnits.isEmpty
+                  ? units.first.uuid
+                  : primaryUnits.first.uuid;
+        }
+        ProductUnitsClass? currentUnit() {
+          for (final unit in units) {
+            if (unit.uuid == selectedUnitUuid) return unit;
+          }
+          return null;
+        }
+
+        bool useGroupUnit =
+            currentUnit()?.isPrimary == false;
         final quantityController = TextEditingController();
         final unitController = TextEditingController();
         final customCostController =
@@ -254,19 +288,15 @@ class CreateMaterialsUsageFunctions {
         if (editMaterialItem != null) {
           quantityController.text =
               editMaterialItem.quantity.toString();
-          useGroupUnit =
-              editMaterialItem.useGroupQuantity ?? false;
-          customUnit = editMaterialItem.customUnit;
           customCostController.text =
               (editMaterialItem.customPrice)?.toString() ??
               '';
+          customUnit = editMaterialItem.customUnit;
           currentSelection =
               editMaterialItem.selectedCostInt;
         }
 
-        void checkIsManagedAndClearTextFieldAction(
-          bool isTextFieldUse,
-        ) {
+        void checkIsManagedAndClearTextFieldAction() {
           bool isManaged =
               (editMaterialItem?.isManaged ??
                   selectedMaterial?.isManaged ??
@@ -284,30 +314,58 @@ class CreateMaterialsUsageFunctions {
             quantity = (materials.first.quantity ?? 0);
           }
 
+          final enteredQuantity =
+              double.tryParse(
+                quantityController.text.replaceAll(',', ''),
+              ) ??
+              0;
+          final availableQuantity =
+              quantity +
+              (editMaterialItem?.getRealQuantity() ?? 0);
           if (isManaged &&
-              (quantityConversion(
-                    isGroup:
-                        isTextFieldUse
-                            ? useGroupUnit
-                            : !useGroupUnit,
-                    quantity:
-                        double.tryParse(
-                          quantityController.text
-                              .replaceAll(',', ''),
-                        ) ??
-                        0,
-                    qttyPerItem:
-                        editMaterialItem?.qttyPerGroup ??
-                        selectedMaterial?.qttyPerGroup,
-                  ) >
-                  quantity)) {
+              enteredQuantity *
+                      (currentUnit()?.conversion ?? 1) >
+                  availableQuantity) {
             quantityController.text = '0';
           }
         }
 
         Future<void> onSubmit() async {
           if (quantityController.text.isNotEmpty &&
-              quantityController.text != '0') {
+              quantityController.text != '0' &&
+              currentUnit() != null) {
+            final unit = currentUnit()!;
+            final quantity =
+                double.tryParse(
+                  quantityController.text.replaceAll(
+                    ',',
+                    '',
+                  ),
+                ) ??
+                0;
+            if (!unit.conversion.isFinite ||
+                unit.conversion <= 0 ||
+                !quantity.isFinite ||
+                quantity <= 0) {
+              return;
+            }
+            final originalCost =
+                editMaterialItem?.originalCostPerItem ??
+                selectedMaterial?.costPrice ??
+                0;
+            final customCost = double.tryParse(
+              customCostController.text.replaceAll(',', ''),
+            );
+            if (currentSelection == 2 &&
+                (customCost == null ||
+                    !customCost.isFinite ||
+                    customCost < 0)) {
+              return;
+            }
+            final primaryUnits =
+                units
+                    .where((item) => item.isPrimary)
+                    .toList();
             var tempCartItem = MaterialsUsageCartItem(
               isManaged:
                   editMaterialItem?.isManaged ??
@@ -324,13 +382,8 @@ class CreateMaterialsUsageFunctions {
                   selectedMaterial?.costPrice ??
                   0,
               selectedCostInt: currentSelection,
-              customPrice: double.tryParse(
-                customCostController.text.replaceAll(
-                  ',',
-                  '',
-                ),
-              ),
-              uuid: uuidGen(),
+              customPrice: customCost,
+              uuid: editMaterialItem?.uuid ?? uuidGen(),
               materialItemUuid:
                   editMaterialItem?.materialItemUuid ??
                   selectedMaterial?.uuid ??
@@ -339,58 +392,23 @@ class CreateMaterialsUsageFunctions {
                   editMaterialItem?.name ??
                   selectedMaterial?.name ??
                   'Not Set',
-              quantity:
-                  double.tryParse(
-                    quantityController.text.replaceAll(
-                      ',',
-                      '',
-                    ),
-                  ) ??
-                  0,
+              quantity: quantity,
               addToStock: false,
-              useGroupQuantity: useGroupUnit,
-              costPrice: costPriceConversion(
-                originalCostPrice:
-                    currentSelection == 1
-                        ? (editMaterialItem
-                                ?.originalCostPerItem ??
-                            selectedMaterial?.costPrice)
-                        : double.tryParse(
-                              customCostController.text
-                                  .replaceAll(',', ''),
-                            ) ??
-                            0,
-                isGroup:
-                    currentSelection == 1
-                        ? useGroupUnit
-                        : false,
-                quantity:
-                    currentSelection == 1
-                        ? double.tryParse(
-                              quantityController.text
-                                  .replaceAll(',', ''),
-                            ) ??
-                            0
-                        : 1,
-                qttyPerItem:
-                    currentSelection == 1
-                        ? (editMaterialItem
-                                ?.getQttyPerGroup() ??
-                            selectedMaterial?.qttyPerGroup)
-                        : 1,
-              ),
-              groupUnit:
-                  editMaterialItem?.groupUnit ??
-                  selectedMaterial?.groupUnit ??
-                  'Group(s)',
-              qttyPerGroup:
-                  editMaterialItem?.qttyPerGroup ??
-                  selectedMaterial?.qttyPerGroup ??
-                  0,
+              useGroupQuantity: !unit.isPrimary,
+              costPrice:
+                  currentSelection == 1
+                      ? originalCost *
+                          quantity *
+                          unit.conversion
+                      : customCost,
+              groupUnit: unit.isPrimary ? null : unit.name,
+              qttyPerGroup: unit.conversion,
               unit:
-                  editMaterialItem?.unit ??
-                  selectedMaterial?.unit ??
-                  'Unit(s)',
+                  primaryUnits.isEmpty
+                      ? 'Unit(s)'
+                      : primaryUnits.first.name,
+              unitUuid: unit.uuid,
+              unitsList: units,
             );
             await returnMaterialsUsageActionProvider()
                 .addMaterialItemToCart(item: tempCartItem);
@@ -423,9 +441,7 @@ class CreateMaterialsUsageFunctions {
                       title: 'Quantity',
                       showTitle: false,
                       onChanged: (p0) {
-                        checkIsManagedAndClearTextFieldAction(
-                          true,
-                        );
+                        checkIsManagedAndClearTextFieldAction();
 
                         setState2(() {});
                       },
@@ -433,60 +449,21 @@ class CreateMaterialsUsageFunctions {
                         onSubmit();
                       },
                     ),
-                    Visibility(
-                      visible:
-                          ((editMaterialItem
-                                      ?.originalUseGroupQuantity ??
-                                  selectedMaterial
-                                      ?.useGroupUnit) ==
-                              true),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: 200,
-                        ),
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                vertical: 10.0,
-                              ),
-                          child: Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
-                            spacing: 10,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                'Add Group?',
-                              ),
-                              MyToggleButton(
-                                theme: theme,
-                                toggle: () {
-                                  checkIsManagedAndClearTextFieldAction(
-                                    false,
-                                  );
-
-                                  setState2(() {
-                                    useGroupUnit =
-                                        !useGroupUnit;
-                                    customUnit = null;
-                                  });
-                                },
-                                boolValue: useGroupUnit,
-                              ),
-                            ],
-                          ),
-                        ),
+                    if (units.length > 1)
+                      ProductionUnitDropdown(
+                        units: units,
+                        value: selectedUnitUuid,
+                        onChanged: (value) {
+                          setState2(() {
+                            selectedUnitUuid = value;
+                            useGroupUnit =
+                                currentUnit()?.isPrimary ==
+                                false;
+                            customUnit = null;
+                          });
+                          checkIsManagedAndClearTextFieldAction();
+                        },
                       ),
-                    ),
                     Column(
                       spacing: 5,
                       children: [
@@ -673,10 +650,9 @@ class CreateMaterialsUsageFunctions {
                                       qttyPerItem:
                                           currentSelection ==
                                                   1
-                                              ? (editMaterialItem
-                                                      ?.getQttyPerGroup() ??
-                                                  selectedMaterial
-                                                      ?.qttyPerGroup)
+                                              ? currentUnit()
+                                                      ?.conversion ??
+                                                  1
                                               : 1,
                                     ),
                                     context: context,
@@ -778,17 +754,9 @@ class CreateMaterialsUsageFunctions {
                                                     .bold,
                                           ),
                                           customUnit ??
-                                              (editMaterialItem !=
-                                                      null
-                                                  ? editMaterialItem.getUnitForSales(
-                                                    useGroup:
-                                                        useGroupUnit,
-                                                  )
-                                                  : selectedMaterial?.getUnitForSales(
-                                                        useGroup:
-                                                            useGroupUnit,
-                                                      ) ??
-                                                      'Unit(s)'),
+                                              currentUnit()
+                                                  ?.name ??
+                                              'Unit(s)',
                                         ),
                                         Icon(
                                           size: 16,

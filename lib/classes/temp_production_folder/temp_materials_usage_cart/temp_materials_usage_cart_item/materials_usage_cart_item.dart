@@ -1,4 +1,6 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
+import 'package:stockall/classes/temp_production_folder/production_unit_snapshot.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_materials_usage/production_materials_usage.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
@@ -61,6 +63,12 @@ class MaterialsUsageCartItem extends HiveObject {
   @HiveField(17)
   bool? isManaged;
 
+  @HiveField(18)
+  String? unitUuid;
+
+  @HiveField(19)
+  List<ProductUnitsClass>? unitsList;
+
   MaterialsUsageCartItem({
     required this.uuid,
     required this.materialItemUuid,
@@ -80,6 +88,8 @@ class MaterialsUsageCartItem extends HiveObject {
     required this.productionItemId,
     required this.productionItemName,
     required this.isManaged,
+    this.unitUuid,
+    this.unitsList,
   });
 
   Map<String, dynamic> toJson() => {
@@ -101,6 +111,9 @@ class MaterialsUsageCartItem extends HiveObject {
     'production_item_name': productionItemName,
     'production_item_uuid': productionItemId,
     'is_managed': isManaged,
+    'unit_uuid': unitUuid,
+    'units_list':
+        unitsList?.map((item) => item.toJson()).toList(),
   };
 
   factory MaterialsUsageCartItem.fromJson(
@@ -126,6 +139,15 @@ class MaterialsUsageCartItem extends HiveObject {
       productionItemId: json['production_item_uuid'],
       productionItemName: json['production_item_name'],
       isManaged: json['is_managed'],
+      unitUuid: json['unit_uuid'] as String?,
+      unitsList:
+          (json['units_list'] as List<dynamic>?)
+              ?.map(
+                (item) => ProductUnitsClass.fromJson(
+                  item as Map<String, dynamic>,
+                ),
+              )
+              .toList(),
     );
   }
 
@@ -154,6 +176,10 @@ class MaterialsUsageCartItem extends HiveObject {
             selectedCostInt: item.selectedCostInt ?? 1,
             unit: item.unit,
             isManaged: item.isManaged,
+            unitUuid: item.unitUuid,
+            unitsList: copyProductionUnitSnapshot(
+              item.unitsList,
+            ),
           ),
         )
         .toList();
@@ -191,6 +217,10 @@ class MaterialsUsageCartItem extends HiveObject {
             originalUseGroupQuantity:
                 item.originalUseGroupQuantity,
             isManaged: item.isManaged,
+            unitUuid: item.unitUuid,
+            unitsList: copyProductionUnitSnapshot(
+              item.unitsList,
+            ),
           ),
         )
         .toList();
@@ -219,21 +249,15 @@ class MaterialsUsageCartItem extends HiveObject {
   String getUnit() {
     if (customUnit != null) {
       return customUnit ?? 'Unit(s)';
-    } else {
-      if (useGroupQuantity == true) {
-        if (groupUnit == 'Others' || groupUnit == null) {
-          return "Group(s)";
-        } else {
-          return groupUnit ?? 'Group(s)';
-        }
-      } else {
-        if (unit == 'Others') {
-          return "Unit(s)";
-        } else {
-          return unit ?? 'Unit(s)';
-        }
-      }
     }
+    return productionUnitName(
+      unitUuid: unitUuid,
+      unitsList: unitsList,
+      useGroupQuantity: useGroupQuantity,
+      unit: unit,
+      groupUnit: groupUnit,
+      qttyPerGroup: qttyPerGroup,
+    );
   }
 
   String getUnitForSales({required bool? useGroup}) {
@@ -271,6 +295,8 @@ class MaterialsUsageCartItem extends HiveObject {
     String? productionItemName,
     String? productionItemId,
     bool? isManaged,
+    String? unitUuid,
+    List<ProductUnitsClass>? unitsList,
   }) {
     return MaterialsUsageCartItem(
       uuid: uuid ?? this.uuid,
@@ -299,6 +325,10 @@ class MaterialsUsageCartItem extends HiveObject {
       productionItemName:
           productionItemName ?? this.productionItemName,
       isManaged: isManaged ?? this.isManaged,
+      unitUuid: unitUuid ?? this.unitUuid,
+      unitsList: copyProductionUnitSnapshot(
+        unitsList ?? this.unitsList,
+      ),
     );
   }
 }

@@ -1,4 +1,6 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
+import 'package:stockall/classes/temp_production_folder/production_unit_snapshot.dart';
 
 part 'production_material_cart_item.g.dart';
 
@@ -58,6 +60,12 @@ class ProductionMaterialCartItem extends HiveObject {
   @HiveField(17)
   bool? isManaged;
 
+  @HiveField(18)
+  String? unitUuid;
+
+  @HiveField(19)
+  List<ProductUnitsClass>? unitsList;
+
   ProductionMaterialCartItem({
     required this.uuid,
     required this.materialItemUuid,
@@ -77,6 +85,8 @@ class ProductionMaterialCartItem extends HiveObject {
     required this.productionItemId,
     required this.productionItemName,
     required this.isManaged,
+    this.unitUuid,
+    this.unitsList,
   });
 
   Map<String, dynamic> toJson() => {
@@ -98,6 +108,9 @@ class ProductionMaterialCartItem extends HiveObject {
     'production_item_name': productionItemName,
     'production_item_uuid': productionItemId,
     'is_managed': isManaged,
+    'unit_uuid': unitUuid,
+    'units_list':
+        unitsList?.map((item) => item.toJson()).toList(),
   };
 
   factory ProductionMaterialCartItem.fromJson(
@@ -123,6 +136,15 @@ class ProductionMaterialCartItem extends HiveObject {
       productionItemId: json['production_item_uuid'],
       productionItemName: json['production_item_name'],
       isManaged: json['is_managed'],
+      unitUuid: json['unit_uuid'] as String?,
+      unitsList:
+          (json['units_list'] as List<dynamic>?)
+              ?.map(
+                (item) => ProductUnitsClass.fromJson(
+                  item as Map<String, dynamic>,
+                ),
+              )
+              .toList(),
     );
   }
 
@@ -147,31 +169,28 @@ class ProductionMaterialCartItem extends HiveObject {
   }
 
   double getRealQuantity() {
-    if (useGroupQuantity == true) {
-      return quantity * getQttyPerGroup();
-    } else {
-      return quantity;
-    }
+    return quantity *
+        productionUnitConversion(
+          unitUuid: unitUuid,
+          unitsList: unitsList,
+          useGroupQuantity: useGroupQuantity,
+          qttyPerGroup: qttyPerGroup,
+          groupUnitName: groupUnit,
+        );
   }
 
   String getUnit() {
     if (customUnit != null) {
       return customUnit ?? 'Unit(s)';
-    } else {
-      if (useGroupQuantity == true) {
-        if (groupUnit == 'Others' || groupUnit == null) {
-          return "Group(s)";
-        } else {
-          return groupUnit ?? 'Group(s)';
-        }
-      } else {
-        if (unit == 'Others') {
-          return "Unit(s)";
-        } else {
-          return unit ?? 'Unit(s)';
-        }
-      }
     }
+    return productionUnitName(
+      unitUuid: unitUuid,
+      unitsList: unitsList,
+      useGroupQuantity: useGroupQuantity,
+      unit: unit,
+      groupUnit: groupUnit,
+      qttyPerGroup: qttyPerGroup,
+    );
   }
 
   String getUnitForSales({required bool? useGroup}) {
@@ -209,6 +228,8 @@ class ProductionMaterialCartItem extends HiveObject {
     String? productionItemName,
     String? productionItemId,
     bool? isManaged,
+    String? unitUuid,
+    List<ProductUnitsClass>? unitsList,
   }) {
     return ProductionMaterialCartItem(
       uuid: uuid ?? this.uuid,
@@ -236,6 +257,10 @@ class ProductionMaterialCartItem extends HiveObject {
       productionItemName:
           productionItemName ?? this.productionItemName,
       isManaged: isManaged ?? this.isManaged,
+      unitUuid: unitUuid ?? this.unitUuid,
+      unitsList: copyProductionUnitSnapshot(
+        unitsList ?? this.unitsList,
+      ),
     );
   }
 }
