@@ -246,6 +246,17 @@ class MaterialsUsageCartItem extends HiveObject {
     return quantity * getQttyPerGroup();
   }
 
+  double getRealQuantity() {
+    return quantity *
+        productionUnitConversion(
+          unitUuid: unitUuid,
+          unitsList: unitsList,
+          useGroupQuantity: useGroupQuantity,
+          qttyPerGroup: qttyPerGroup,
+          groupUnitName: groupUnit,
+        );
+  }
+
   String getUnit() {
     if (customUnit != null) {
       return customUnit ?? 'Unit(s)';
