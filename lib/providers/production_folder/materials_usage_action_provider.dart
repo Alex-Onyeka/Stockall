@@ -158,6 +158,12 @@ class MaterialsUsageActionProvider extends ChangeNotifier {
     required ProductionMaterialsUsage record,
   }) async {
     try {
+      if (record.productionRecordUuid != null) {
+        await mainLocalLog(
+          'Production-linked material usage must be changed by editing its production record.',
+        );
+        return 0;
+      }
       var item = MaterialsUsageCartItem.toCartMaterialsItem(
         items: [record],
       );

@@ -15,7 +15,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/production/production_dashboard/productions_section/create_production/components/select_total_cost_widget.dart';
-import 'package:stockall/pages/production/components/production_unit_dropdown.dart';
+import 'package:stockall/pages/products/product_details/platforms/components/unit_selection_widget.dart';
 
 class CreateProductionFunctions {
   void setTotalCostValue({required BuildContext context}) {
@@ -719,11 +719,35 @@ class CreateProductionFunctions {
     showDialog(
       context: secondContext,
       builder: (thirdContext) {
+        final productionItemUnits =
+            returnProductionItemsProvider()
+                .productionItemListMain
+                .where(
+                  (item) => item.uuid == editItem?.itemUuid,
+                )
+                .toList();
+        final salesItemUnits =
+            returnData().productListMain
+                .where(
+                  (item) =>
+                      item.uuid == editItem?.salesItemUuid,
+                )
+                .toList();
         final sourceUnits =
-            editItem?.unitsList ??
+            (editItem?.unitsList?.isNotEmpty == true
+                ? editItem!.unitsList
+                : null) ??
             (useProductionitems
-                ? selectedItem?.getUnitsList()
-                : selectedSalesItem?.getUnitsList()) ??
+                ? selectedItem?.getUnitsList() ??
+                    (productionItemUnits.isEmpty
+                        ? null
+                        : productionItemUnits.first
+                            .getUnitsList())
+                : selectedSalesItem?.getUnitsList() ??
+                    (salesItemUnits.isEmpty
+                        ? null
+                        : salesItemUnits.first
+                            .getUnitsList())) ??
             [];
         final units =
             sourceUnits
@@ -874,16 +898,20 @@ class CreateProductionFunctions {
                         onSubmit();
                       },
                     ),
-                    if (units.length > 1)
-                      ProductionUnitDropdown(
-                        units: units,
-                        value: selectedUnitUuid,
-                        onChanged: (value) {
-                          setState2(() {
-                            selectedUnitUuid = value;
-                          });
-                        },
-                      ),
+                    UnitSelectionWidget(
+                      product: null,
+                      storageProduct: null,
+                      productionItem: null,
+                      material: null,
+                      theme: theme,
+                      unitUuid: selectedUnitUuid,
+                      unitList: units,
+                      setUnitUuid: (value) {
+                        setState2(() {
+                          selectedUnitUuid = value;
+                        });
+                      },
+                    ),
                     Container(
                       padding: EdgeInsets.symmetric(
                         vertical: 12,
@@ -1290,9 +1318,25 @@ class CreateProductionFunctions {
     showDialog(
       context: secondContext,
       builder: (thirdContext) {
+        final existingMaterial =
+            returnMaterialsProvider().materialListMain
+                .where(
+                  (item) =>
+                      item.uuid ==
+                      (editMaterialItem?.materialItemUuid ??
+                          selectedMaterial?.uuid),
+                )
+                .toList();
         final units =
-            (editMaterialItem?.unitsList ??
+            ((editMaterialItem?.unitsList?.isNotEmpty ==
+                            true
+                        ? editMaterialItem!.unitsList
+                        : null) ??
                     selectedMaterial?.getUnitsList() ??
+                    (existingMaterial.isEmpty
+                        ? null
+                        : existingMaterial.first
+                            .getUnitsList()) ??
                     [])
                 .map((unit) => unit.copyWith())
                 .toList();
@@ -1330,46 +1374,59 @@ class CreateProductionFunctions {
               editMaterialItem.quantity.toString();
         }
 
-        // void checkIsManagedAndClearTextFieldAction(
-        //   bool isTextFieldUse,
-        // ) {
-        //   bool isManaged =
-        //       (editMaterialItem?.isManaged ??
-        //           selectedMaterial?.isManaged ??
-        //           false);
-        //   var materials = returnMaterialsProvider()
-        //       .materialListMain
-        //       .where(
-        //         (item) =>
-        //             item.uuid ==
-        //             (editMaterialItem?.materialItemUuid ??
-        //                 selectedMaterial?.uuid),
-        //       );
-        //   double quantity = 0;
-        //   if (materials.isNotEmpty) {
-        //     quantity = (materials.first.quantity ?? 0);
-        //   }
+        bool hasEnoughManagedStock(double enteredQuantity) {
+          final materialUuid =
+              editMaterialItem?.materialItemUuid ??
+              selectedMaterial?.uuid;
+          final isManaged =
+              editMaterialItem?.isManaged ??
+              selectedMaterial?.isManaged ??
+              false;
+          if (!isManaged || materialUuid == null)
+            return true;
 
-        //   if (isManaged &&
-        //       (quantityConversion(
-        //             isGroup:
-        //                 isTextFieldUse
-        //                     ? useGroupUnit
-        //                     : !useGroupUnit,
-        //             quantity:
-        //                 double.tryParse(
-        //                   quantityController.text
-        //                       .replaceAll(',', ''),
-        //                 ) ??
-        //                 0,
-        //             qttyPerItem:
-        //                 editMaterialItem?.qttyPerGroup ??
-        //                 selectedMaterial?.qttyPerGroup,
-        //           ) >
-        //           quantity)) {
-        //     quantityController.text = '0';
-        //   }
-        // }
+          final materials = returnMaterialsProvider()
+              .materialListMain
+              .where((item) => item.uuid == materialUuid);
+          if (materials.isEmpty) return false;
+
+          final cartItems =
+              returnProductionsActionProvider()
+                  .getProductionsCart()
+                  ?.getMaterialsCartItemsAll() ??
+              [];
+          final otherCartDemand = cartItems
+              .where(
+                (item) =>
+                    item.materialItemUuid == materialUuid &&
+                    item.uuid != editMaterialItem?.uuid &&
+                    item.isManaged != false,
+              )
+              .fold<double>(
+                0,
+                (total, item) =>
+                    total + item.getRealQuantity(),
+              );
+          final available =
+              (materials.first.quantity ?? 0) -
+              otherCartDemand +
+              (editMaterialItem?.getRealQuantity() ?? 0);
+          return enteredQuantity *
+                  (currentUnit()?.conversion ?? 0) <=
+              available;
+        }
+
+        void validateEnteredStock() {
+          final enteredQuantity =
+              double.tryParse(
+                quantityController.text.replaceAll(',', ''),
+              ) ??
+              0;
+          if (enteredQuantity > 0 &&
+              !hasEnoughManagedStock(enteredQuantity)) {
+            quantityController.text = '0';
+          }
+        }
 
         Future<void> onSubmit() async {
           if (quantityController.text.isNotEmpty &&
@@ -1387,7 +1444,12 @@ class CreateProductionFunctions {
             if (!unit.conversion.isFinite ||
                 unit.conversion <= 0 ||
                 !quantity.isFinite ||
-                quantity <= 0) {
+                quantity <= 0 ||
+                !hasEnoughManagedStock(quantity)) {
+              if (quantity > 0 &&
+                  !hasEnoughManagedStock(quantity)) {
+                quantityController.text = '0';
+              }
               return;
             }
             final originalCost =
@@ -1478,28 +1540,31 @@ class CreateProductionFunctions {
                       title: 'Quantity',
                       showTitle: false,
                       onChanged: (p0) {
-                        // checkIsManagedAndClearTextFieldAction(
-                        //   true,
-                        // );
+                        validateEnteredStock();
                         setState2(() {});
                       },
                       onSubmitted: (p0) {
                         onSubmit();
                       },
                     ),
-                    if (units.length > 1)
-                      ProductionUnitDropdown(
-                        units: units,
-                        value: selectedUnitUuid,
-                        onChanged: (value) {
-                          setState2(() {
-                            selectedUnitUuid = value;
-                            useGroupUnit =
-                                currentUnit()?.isPrimary ==
-                                false;
-                          });
-                        },
-                      ),
+                    UnitSelectionWidget(
+                      product: null,
+                      storageProduct: null,
+                      productionItem: null,
+                      material: null,
+                      theme: theme,
+                      unitUuid: selectedUnitUuid,
+                      unitList: units,
+                      setUnitUuid: (value) {
+                        setState2(() {
+                          selectedUnitUuid = value;
+                          useGroupUnit =
+                              currentUnit()?.isPrimary ==
+                              false;
+                        });
+                        validateEnteredStock();
+                      },
+                    ),
                     Container(
                       padding: EdgeInsets.symmetric(
                         vertical: 12,

@@ -204,7 +204,9 @@ class ProductionRecordsProvider extends ChangeNotifier {
               isIncreased: increment,
               itemName: oldItem.name,
               itemUuid: oldItem.uuid,
-              quantityChange: signedQuantity,
+              quantityChange:
+                  (increment ? 1 : -1) *
+                  (record.quantity ?? 0),
               unit: record.getUnit(),
               primaryUnit: productionPrimaryUnitName(
                 record.unitsList,
@@ -253,7 +255,8 @@ class ProductionRecordsProvider extends ChangeNotifier {
         isIncreased: increment,
         itemName: oldItem.name,
         itemUuid: oldItem.uuid,
-        quantityChange: signedQuantity,
+        quantityChange:
+            (increment ? 1 : -1) * (record.quantity ?? 0),
         unit: record.getUnit(),
         primaryUnit: productionPrimaryUnitName(
           record.unitsList,
@@ -320,7 +323,9 @@ class ProductionRecordsProvider extends ChangeNotifier {
               ((newMaterial.quantity ?? 0) /
                       primaryUnitConversion)
                   .toString(),
-          quantityChange: signedQuantity,
+          quantityChange:
+              (increment ? 1 : -1) *
+              materialRecord.quantity,
           desc:
               increment
                   ? 'Production record material usage was restored.'
@@ -373,7 +378,6 @@ class ProductionRecordsProvider extends ChangeNotifier {
     final materialDemand = <String, double>{};
     final restoredByOldRecord = <String, double>{};
     for (final material in record.materials) {
-      if (material.isManaged == false) continue;
       if (!_hasValidSelectedUnit(
         unitUuid: material.unitUuid,
         unitsList: material.unitsList,
@@ -390,6 +394,7 @@ class ProductionRecordsProvider extends ChangeNotifier {
         );
         return false;
       }
+      if (material.isManaged == false) continue;
       materialDemand.update(
         material.materialUuid,
         (existing) => existing + quantity,
@@ -508,15 +513,24 @@ class ProductionRecordsProvider extends ChangeNotifier {
               createdProductionRecord: productionRecord,
             ),
           );
+      final usageRecordsCreated =
+          await returnMaterialsUsageProvider()
+              .createUsageRecordsForProduction(
+                productionRecord,
+              );
+      if (!usageRecordsCreated) {
+        await deleteProductionRecords(
+          productionRecord,
+          false,
+          true,
+        );
+        return null;
+      }
       notifyListeners();
       await getProductionRecordsOffline();
       await _applyProductionInventory(
         productionRecord,
         increment: true,
-      );
-      await _applyEmbeddedMaterialInventory(
-        productionRecord,
-        increment: false,
       );
       returnData().syncData();
       return productionRecord;
@@ -638,6 +652,28 @@ class ProductionRecordsProvider extends ChangeNotifier {
       await mainLocalLog(
         'Deleting Production Records Offline',
       );
+      await returnMaterialsUsageProvider()
+          .getProductionMaterialsUsageOffline();
+      final linkedUsageRecords =
+          returnMaterialsUsageProvider()
+              .productionMaterialsUsage
+              .where(
+                (usage) =>
+                    usage.productionRecordUuid ==
+                    productionRecord.uuid,
+              )
+              .toList();
+      for (final usage in linkedUsageRecords) {
+        final usageDeleteResult =
+            await returnMaterialsUsageProvider()
+                .deleteProductionMaterialsUsage(
+                  usage,
+                  updateInventory,
+                  createUpdate,
+                  allowProductionLinked: true,
+                );
+        if (usageDeleteResult != 1) return 0;
+      }
       await ProductionRecordsFunc().deleteProductionRecord(
         productionRecord.uuid!,
       );
@@ -684,10 +720,12 @@ class ProductionRecordsProvider extends ChangeNotifier {
           productionRecord,
           increment: false,
         );
-        await _applyEmbeddedMaterialInventory(
-          productionRecord,
-          increment: true,
-        );
+        if (linkedUsageRecords.isEmpty) {
+          await _applyEmbeddedMaterialInventory(
+            productionRecord,
+            increment: true,
+          );
+        }
       }
       returnData().syncData();
 

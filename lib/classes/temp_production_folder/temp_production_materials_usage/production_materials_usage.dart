@@ -78,6 +78,9 @@ class ProductionMaterialsUsage extends HiveObject {
   @HiveField(24)
   List<ProductUnitsClass>? unitsList;
 
+  @HiveField(25)
+  String? productionRecordUuid;
+
   ProductionMaterialsUsage({
     required this.uuid,
     required this.shopId,
@@ -103,6 +106,7 @@ class ProductionMaterialsUsage extends HiveObject {
     required this.isManaged,
     this.unitUuid,
     this.unitsList,
+    this.productionRecordUuid,
   });
 
   factory ProductionMaterialsUsage.fromJson(
@@ -150,6 +154,8 @@ class ProductionMaterialsUsage extends HiveObject {
                 ),
               )
               .toList(),
+      productionRecordUuid:
+          json['production_record_uuid'] as String?,
     );
   }
 
@@ -181,6 +187,7 @@ class ProductionMaterialsUsage extends HiveObject {
       'unit_uuid': unitUuid,
       'units_list':
           unitsList?.map((item) => item.toJson()).toList(),
+      'production_record_uuid': productionRecordUuid,
     };
   }
 
@@ -209,6 +216,7 @@ class ProductionMaterialsUsage extends HiveObject {
     bool? isManaged,
     String? unitUuid,
     List<ProductUnitsClass>? unitsList,
+    String? productionRecordUuid,
   }) {
     return ProductionMaterialsUsage(
       uuid: uuid ?? this.uuid,
@@ -241,6 +249,8 @@ class ProductionMaterialsUsage extends HiveObject {
       unitsList: copyProductionUnitSnapshot(
         unitsList ?? this.unitsList,
       ),
+      productionRecordUuid:
+          productionRecordUuid ?? this.productionRecordUuid,
     );
   }
 
