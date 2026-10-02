@@ -170,7 +170,7 @@ class MaterialsUsageProvider extends ChangeNotifier {
     if (materials.isEmpty) return;
 
     final oldMaterial = materials.first;
-    if (!usage.isManaged) {
+    if (!(usage.isManaged ?? false)) {
       await mainLocalLog(
         'Skipping stock adjustment for unmanaged material ${usage.materialName}.',
       );

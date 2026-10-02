@@ -2,6 +2,7 @@ import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/classes/temp_production_folder/production_unit_snapshot.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions_cart/temp_production_material_cart_item/production_material_cart_item.dart';
+import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
 
 part 'production_record_materials.g.dart';

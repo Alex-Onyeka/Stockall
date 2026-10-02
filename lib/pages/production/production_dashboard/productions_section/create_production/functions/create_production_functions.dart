@@ -1321,6 +1321,7 @@ class CreateProductionFunctions {
           return null;
         }
 
+        // ignore: unused_local_variable
         bool useGroupUnit =
             currentUnit()?.isPrimary == false;
         final quantityController = TextEditingController();
