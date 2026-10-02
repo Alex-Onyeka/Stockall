@@ -42,7 +42,8 @@ class OrdersActionProvider extends ChangeNotifier {
           (it) => it.uuid == item.productUuid,
         );
         var tempItem = item.copyWith();
-        tempItem.quantity = (item.remainingQuantity ?? 0);
+        tempItem.quantity =
+            (item.remainingQuantity ?? item.quantity);
         if (products.isNotEmpty) {
           var pr = products.first;
 

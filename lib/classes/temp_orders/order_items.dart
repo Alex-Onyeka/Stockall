@@ -373,14 +373,23 @@ class OrderItems extends HiveObject {
   }
 
   ProductUnitsClass getSelectedUnit({String? unitUuidNew}) {
+    final requestedUnitUuid = unitUuidNew ?? unitUuid;
     var items = getUnitsList().where(
-      (item) => item.uuid == (unitUuidNew ?? unitUuid),
+      (item) => item.uuid == requestedUnitUuid,
     );
     if (items.isEmpty) {
+      if (useGroupQuantity == true) {
+        final groupUnits = getUnitsList().where(
+          (item) => !item.isPrimary,
+        );
+        if (groupUnits.isNotEmpty) {
+          return groupUnits.first;
+        }
+      }
       return getPrimaryUnit();
     } else {
       return getUnitsList().firstWhere(
-        (item) => item.uuid == (unitUuidNew ?? unitUuid),
+        (item) => item.uuid == requestedUnitUuid,
       );
     }
   }
@@ -443,7 +452,25 @@ class OrderItems extends HiveObject {
         }
         return tempList;
       } else {
-        return unitsList ?? [];
+        final tempList = List<ProductUnitsClass>.from(
+          unitsList!,
+        );
+        if (useGroupQuantity == true &&
+            tempList.every((item) => item.isPrimary)) {
+          tempList.add(
+            ProductUnitsClass(
+              uuid: uuidGen(),
+              staffUuid: currentUser().userId,
+              createdAt: DateTime.now(),
+              staffName: currentUser().name,
+              conversion: qttyPerGroup ?? 1,
+              name: groupUnit ?? 'Group(s)',
+              isPrimary: false,
+              productUuid: productUuid,
+            ),
+          );
+        }
+        return tempList;
       }
     }
 
@@ -470,11 +497,9 @@ class OrderItems extends HiveObject {
   }
 
   double getActualRemainingQuantity({String? unitUuidNew}) {
-    return getSelectedUnit(
-      unitUuidNew: (unitUuidNew ?? unitUuid),
-    ).getQuantityEquivMultiplied(
-      index: 1,
-      quantityTwo: remainingQuantity,
+    return getQuantityInPrimaryUnits(
+      remainingQuantity ?? quantity,
+      unitUuid: unitUuidNew ?? unitUuid,
     );
   }
 
@@ -495,44 +520,56 @@ class OrderItems extends HiveObject {
   }
 
   double getTotalCostPrice() {
-    return ((costPrice ?? 0) * quantity);
+    return ((costPrice ?? 0) * getActualQuantity());
   }
 
   double getActualQuantity({String? unitUuidNew}) {
-    return getSelectedUnit(
-      unitUuidNew: (unitUuidNew ?? unitUuid),
-    ).getQuantityEquivMultiplied(
-      index: 1,
-      newQuantity: quantity,
+    return getQuantityInPrimaryUnits(
+      quantity,
+      unitUuid: unitUuidNew ?? unitUuid,
     );
   }
 
   double getActualQuantityDuringDeliveryCheckout() {
-    // if (tempUseGroupQuantity == true &&
-    //     useGroupQuantity == false) {
-    //   return (quantity / (qttyPerGroup ?? 1));
-    // } else if (tempUseGroupQuantity == false &&
-    //     useGroupQuantity == true) {
-    //   return (quantity * (qttyPerGroup ?? 1));
-    // } else {
-    //   return quantity;
-    // }
-    return getSelectedUnit().getQuantityEquivMultiplied(
-      index: 1,
-      newQuantity: remainingQuantity,
-    );
+    return getActualQuantity();
   }
 
   double calcQuantity({
     required double quantity,
     String? unitUuidNew,
   }) {
-    return getSelectedUnit(
-      unitUuidNew: (unitUuidNew ?? unitUuid),
-    ).getQuantityEquivMultiplied(
-      index: 1,
-      newQuantity: quantity,
+    return getQuantityInPrimaryUnits(
+      quantity,
+      unitUuid: unitUuidNew ?? unitUuid,
     );
+  }
+
+  double getQuantityInPrimaryUnits(
+    double quantity, {
+    String? unitUuid,
+  }) {
+    final conversion =
+        getSelectedUnit(unitUuidNew: unitUuid).conversion;
+    if (!conversion.isFinite || conversion <= 0) {
+      throw StateError(
+        'Unit conversion must be greater than zero to convert quantities.',
+      );
+    }
+    return quantity * conversion;
+  }
+
+  double getQuantityFromPrimaryUnits(
+    double quantity, {
+    String? unitUuid,
+  }) {
+    final conversion =
+        getSelectedUnit(unitUuidNew: unitUuid).conversion;
+    if (!conversion.isFinite || conversion <= 0) {
+      throw StateError(
+        'Unit conversion must be greater than zero to convert quantities.',
+      );
+    }
+    return quantity / conversion;
   }
 
   String getUnit() {

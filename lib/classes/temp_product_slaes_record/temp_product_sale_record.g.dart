@@ -6,7 +6,8 @@ part of 'temp_product_sale_record.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class TempProductSaleRecordAdapter extends TypeAdapter<TempProductSaleRecord> {
+class TempProductSaleRecordAdapter
+    extends TypeAdapter<TempProductSaleRecord> {
   @override
   final int typeId = 6;
 
@@ -14,7 +15,8 @@ class TempProductSaleRecordAdapter extends TypeAdapter<TempProductSaleRecord> {
   TempProductSaleRecord read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++)
+        reader.readByte(): reader.read(),
     };
     return TempProductSaleRecord(
       productRecordId: fields[0] as int?,
@@ -50,15 +52,20 @@ class TempProductSaleRecordAdapter extends TypeAdapter<TempProductSaleRecord> {
       useGroupQuantity: fields[30] as bool?,
       qttyPerGroup: fields[31] as double?,
       isVoid: fields[32] as bool?,
-      unitsList: (fields[33] as List?)?.cast<ProductUnitsClass>(),
+      unitsList:
+          (fields[33] as List?)?.cast<ProductUnitsClass>(),
       unitUuid: fields[34] as String?,
+      orderItemUuid: fields[35] as String?,
     );
   }
 
   @override
-  void write(BinaryWriter writer, TempProductSaleRecord obj) {
+  void write(
+    BinaryWriter writer,
+    TempProductSaleRecord obj,
+  ) {
     writer
-      ..writeByte(35)
+      ..writeByte(36)
       ..writeByte(0)
       ..write(obj.productRecordId)
       ..writeByte(1)
@@ -128,7 +135,9 @@ class TempProductSaleRecordAdapter extends TypeAdapter<TempProductSaleRecord> {
       ..writeByte(33)
       ..write(obj.unitsList)
       ..writeByte(34)
-      ..write(obj.unitUuid);
+      ..write(obj.unitUuid)
+      ..writeByte(35)
+      ..write(obj.orderItemUuid);
   }
 
   @override

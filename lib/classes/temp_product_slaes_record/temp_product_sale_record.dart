@@ -113,6 +113,9 @@ class TempProductSaleRecord {
   @HiveField(34)
   String? unitUuid;
 
+  @HiveField(35)
+  String? orderItemUuid;
+
   TempProductSaleRecord({
     this.productRecordId,
     required this.createdAt,
@@ -149,6 +152,7 @@ class TempProductSaleRecord {
     required this.isVoid,
     required this.unitsList,
     required this.unitUuid,
+    this.orderItemUuid,
   });
 
   factory TempProductSaleRecord.fromJson(
@@ -202,6 +206,7 @@ class TempProductSaleRecord {
               )
               .toList(),
       unitUuid: json['unit_uuid'] as String?,
+      orderItemUuid: json['order_item_uuid'] as String?,
     );
   }
 
@@ -243,6 +248,7 @@ class TempProductSaleRecord {
         productUuid: uuid,
       ),
       'unit_uuid': unitUuid,
+      'order_item_uuid': orderItemUuid,
     };
   }
 
@@ -280,6 +286,7 @@ class TempProductSaleRecord {
     bool? isVoid,
     List<ProductUnitsClass>? unitsList,
     String? unitUuid,
+    String? orderItemUuid,
   }) {
     return TempProductSaleRecord(
       productRecordId:
@@ -320,6 +327,7 @@ class TempProductSaleRecord {
       isVoid: isVoid ?? this.isVoid,
       unitsList: unitsList ?? this.unitsList,
       unitUuid: unitUuid ?? this.unitUuid,
+      orderItemUuid: orderItemUuid ?? this.orderItemUuid,
     );
   }
 
@@ -372,14 +380,23 @@ class TempProductSaleRecord {
   }
 
   ProductUnitsClass getSelectedUnit({String? unitUuidNew}) {
+    final requestedUnitUuid = unitUuidNew ?? unitUuid;
     var items = getUnitsList().where(
-      (item) => item.uuid == (unitUuidNew ?? unitUuid),
+      (item) => item.uuid == requestedUnitUuid,
     );
     if (items.isEmpty) {
+      if (useGroupQuantity == true) {
+        final groupUnits = getUnitsList().where(
+          (item) => !item.isPrimary,
+        );
+        if (groupUnits.isNotEmpty) {
+          return groupUnits.first;
+        }
+      }
       return getPrimaryUnit();
     } else {
       return getUnitsList().firstWhere(
-        (item) => item.uuid == (unitUuidNew ?? unitUuid),
+        (item) => item.uuid == requestedUnitUuid,
       );
     }
   }
@@ -442,7 +459,25 @@ class TempProductSaleRecord {
         }
         return tempList;
       } else {
-        return unitsList ?? [];
+        final tempList = List<ProductUnitsClass>.from(
+          unitsList!,
+        );
+        if (useGroupQuantity == true &&
+            tempList.every((item) => item.isPrimary)) {
+          tempList.add(
+            ProductUnitsClass(
+              uuid: uuidGen(),
+              staffUuid: currentUser().userId,
+              createdAt: DateTime.now(),
+              staffName: currentUser().name,
+              conversion: qttyPerGroup ?? 1,
+              name: 'Group(s)',
+              isPrimary: false,
+              productUuid: productUuid ?? '',
+            ),
+          );
+        }
+        return tempList;
       }
     }
 
@@ -457,10 +492,12 @@ class TempProductSaleRecord {
   }
 
   double getActualQuantity() {
-    if (useGroupQuantity == true) {
-      return quantity * (qttyPerGroup ?? 1);
-    } else {
-      return quantity;
+    final conversion = getSelectedUnit().conversion;
+    if (!conversion.isFinite || conversion <= 0) {
+      throw StateError(
+        'Unit conversion must be greater than zero to convert quantities.',
+      );
     }
+    return quantity * conversion;
   }
 }

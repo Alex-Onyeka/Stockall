@@ -1950,6 +1950,7 @@ class _ReceiptDetailsContainerState
                                 setState(() {
                                   isLoading = true;
                                 });
+                                var deleteResult = 1;
                                 if (widget.mainReceipt
                                         .getSalesTypeIndex() ==
                                     1) {
@@ -1976,7 +1977,7 @@ class _ReceiptDetailsContainerState
                                         .mainReceipt
                                         .getSalesTypeIndex() ==
                                     3) {
-                                  await returnOrdersProvider()
+                                  deleteResult = await returnOrdersProvider()
                                       .deleteDeliveryReceipt(
                                         receipt:
                                             widget
@@ -1987,6 +1988,24 @@ class _ReceiptDetailsContainerState
                                                 .mainReceipt
                                                 .orderUuid,
                                       );
+                                }
+
+                                if (deleteResult != 1) {
+                                  setState(() {
+                                    isLoading = false;
+                                  });
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(
+                                      context,
+                                    ).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Receipt was not deleted because its order quantities could not be restored safely.',
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  return;
                                 }
 
                                 setState(() {

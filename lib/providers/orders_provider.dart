@@ -817,6 +817,62 @@ class OrdersProvider extends ChangeNotifier {
   }
   //
 
+  bool areOrderDeliveryQuantitiesValid(Orders order) {
+    final deliveredByProduct = <String, double>{};
+
+    for (final deliveryItem
+        in returnOrdersActionProvider().orderListItems) {
+      if (!deliveryItem.quantity.isFinite ||
+          deliveryItem.quantity <= 0) {
+        return false;
+      }
+
+      final orderItem = order.getOrderItem(
+        newItem: deliveryItem,
+      );
+      if (orderItem == null) {
+        return false;
+      }
+
+      final deliveryUnit = deliveryItem.getSelectedUnit();
+      final orderUnit = orderItem.getSelectedUnit();
+      if (!deliveryUnit.conversion.isFinite ||
+          deliveryUnit.conversion <= 0 ||
+          !orderUnit.conversion.isFinite ||
+          orderUnit.conversion <= 0) {
+        return false;
+      }
+
+      final deliveredPrimary =
+          deliveryItem.getActualQuantity();
+      final remainingPrimary =
+          orderItem.getActualRemainingQuantity();
+      if (deliveredPrimary > remainingPrimary + 1e-9) {
+        return false;
+      }
+
+      if (deliveryItem.isProductManaged ?? false) {
+        deliveredByProduct.update(
+          deliveryItem.productUuid,
+          (quantity) => quantity + deliveredPrimary,
+          ifAbsent: () => deliveredPrimary,
+        );
+      }
+    }
+
+    for (final entry in deliveredByProduct.entries) {
+      final products = returnData().productListMain.where(
+        (product) => product.uuid == entry.key,
+      );
+      if (products.length != 1 ||
+          entry.value >
+              (products.first.quantity ?? 0) + 1e-9) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   Future<void> makeOrderItemDelivery({
     required Orders order,
     required BuildContext context,
@@ -825,6 +881,24 @@ class OrdersProvider extends ChangeNotifier {
     required double customerAmount,
   }) async {
     try {
+      if (!areOrderDeliveryQuantitiesValid(order)) {
+        await mainLocalLog(
+          'Order delivery quantities are invalid or exceed order remainder/stock.',
+        );
+        showDialog(
+          context: context,
+          builder: (errorContext) {
+            return InfoAlert(
+              theme: returnTheme(context, listen: false),
+              message:
+                  'One or more delivery quantities exceed the remaining order quantity or available stock. Review the quantities and try again.',
+              title: 'Delivery Quantity Changed',
+            );
+          },
+        );
+        return;
+      }
+
       final createdAt = DateTime.now().toUtc();
       TempMainReceipt receipt = TempMainReceipt(
         salesTypeIndex: 3,
@@ -927,6 +1001,7 @@ class OrdersProvider extends ChangeNotifier {
                 useWholeSalePrice: record.useWholeSalePrice,
                 useGroupQuantity: record.useGroupQuantity,
                 qttyPerGroup: record.qttyPerGroup,
+                orderItemUuid: record.uuid,
                 // orderUuid: order.uuid,
               );
             }).toList();
@@ -940,19 +1015,24 @@ class OrdersProvider extends ChangeNotifier {
               isPartPayment: false,
             );
         await mainLocalLog('Sales Record Inserted');
-        var newOrder = order.copyWith();
+        var newOrder = order.copyWith(
+          orderItems:
+              order.orderItems
+                  .map((item) => item.copyWith())
+                  .toList(),
+        );
 
         for (var item in orderItemsTemp) {
           var itemTemp = newOrder.getOrderItem(
             newItem: item,
           );
           if (itemTemp != null) {
-            print(
-              'Item Name: ${item.productName}... Item Remaining Quantity: ${item.remainingQuantity}... Item Actual Remaining Quantity: ${item.getActualRemainingQuantity()}... Item Quantity: ${item.quantity}... Item Actual Quantity: ${item.getActualQuantity()}... Item Actual Quantity During Delivery Checkout: ${item.getActualQuantityDuringDeliveryCheckout()}...',
-            );
             itemTemp.remainingQuantity =
-                (itemTemp.remainingQuantity ?? 0) -
-                item.getActualQuantityDuringDeliveryCheckout();
+                (itemTemp.remainingQuantity ??
+                    itemTemp.quantity) -
+                itemTemp.getQuantityFromPrimaryUnits(
+                  item.getActualQuantityDuringDeliveryCheckout(),
+                );
             if ((itemTemp.remainingQuantity ?? 0) <= 0) {
               itemTemp.remainingQuantity = 0;
             }
@@ -971,11 +1051,13 @@ class OrdersProvider extends ChangeNotifier {
           if (products.isNotEmpty) {
             var productTemp = products.first;
             var product = productTemp.copyWith();
-            if (((product.quantity ?? 0) > 0) &&
-                (item.isProductManaged ?? false)) {
+            if (item.isProductManaged ?? false) {
+              final oldQuantity = product.quantity ?? 0;
+              final quantityChange =
+                  item.getActualQuantityDuringDeliveryCheckout();
               product.quantity =
-                  (product.quantity ?? 0) -
-                  item.getActualQuantity();
+                  oldQuantity - quantityChange;
+              final newQuantity = product.quantity ?? 0;
               ItemHistory itemHistory = ItemHistory(
                 shopId: shopId(),
                 desc:
@@ -984,41 +1066,20 @@ class OrdersProvider extends ChangeNotifier {
                 title: 'Order Item Delivered',
                 quantityChange: -item.quantity,
                 oldValue: formatLargeNumberDouble(
-                  item
-                      .getSelectedUnit()
-                      .getQuantityEquivDivided(
-                        index: 1,
-                        newQuantity:
-                            ((product.quantity ?? 0) +
-                                item.quantity),
-                      ),
+                  oldQuantity,
                 ),
                 newValue: formatLargeNumberDouble(
-                  item
-                      .getSelectedUnit()
-                      .getQuantityEquivDivided(
-                        index: 1,
-                        newQuantity: product.quantity,
-                      ),
+                  newQuantity,
                 ),
                 unit: item.getUnit(),
                 primaryUnit: product.getPrimaryUnit().name,
               );
               await returnData().updateProduct(
-                itemHistory:
-                    returnData()
-                            .productList()
-                            .where(
-                              (pro) =>
-                                  pro.name == product.name,
-                            )
-                            .isEmpty
-                        ? null
-                        : itemHistory,
+                itemHistory: itemHistory,
                 includeQuantity: false,
                 product: product,
                 isQuantityUpdate: true,
-                quantityChange: item.getActualQuantity(),
+                quantityChange: quantityChange,
                 isMultipleUpdate: true,
                 isIncrement: false,
               );
@@ -1029,22 +1090,10 @@ class OrdersProvider extends ChangeNotifier {
                 shopId: shopId(),
                 isIncreased: false,
                 oldValue: formatLargeNumberDouble(
-                  item
-                      .getSelectedUnit()
-                      .getQuantityEquivDivided(
-                        index: 1,
-                        newQuantity:
-                            (product.quantity ?? 0),
-                      ),
+                  product.quantity ?? 0,
                 ),
                 newValue: formatLargeNumberDouble(
-                  item
-                      .getSelectedUnit()
-                      .getQuantityEquivDivided(
-                        index: 1,
-                        newQuantity:
-                            (product.quantity ?? 0),
-                      ),
+                  product.quantity ?? 0,
                 ),
                 unit: item.getUnit(),
                 primaryUnit: product.getPrimaryUnit().name,
@@ -1113,38 +1162,134 @@ class OrdersProvider extends ChangeNotifier {
     required String? orderUuid,
   }) async {
     try {
-      await returnReceiptProviderSingle().deleteReceipt(
-        receipt,
-        records.map((rec) => rec.productName).toList(),
-      );
-      if (orderUuid != null) {
-        List<Orders> ordersTemp =
-            orders
-                .where((item) => item.uuid == orderUuid)
-                .toList();
-        if (ordersTemp.isNotEmpty) {
-          var orderTemp = orders.first.copyWith();
-          for (var item in records) {
-            var orderItems = orderTemp.orderItems.where(
-              (it) => it.productUuid == item.productUuid,
-            );
-            if (orderItems.isNotEmpty) {
-              var orderItem = orderItems.first;
-              orderItem.remainingQuantity =
-                  (orderItem.remainingQuantity ?? 0) +
-                  item.getActualQuantity();
-              if ((orderItem.remainingQuantity ?? 0) >
-                  orderItem.quantity) {
-                orderItem.remainingQuantity =
-                    orderItem.quantity;
-              }
-            }
-          }
-
-          await updateOrder(order: orderTemp);
-          syncData();
-        }
+      if (orderUuid == null) {
+        await mainLocalLog(
+          'Cannot delete order delivery receipt without its order UUID.',
+        );
+        return 0;
       }
+      final matchingOrders =
+          orders
+              .where((item) => item.uuid == orderUuid)
+              .toList();
+      if (matchingOrders.length != 1) {
+        await mainLocalLog(
+          'Cannot safely delete order delivery receipt: expected one matching order, found ${matchingOrders.length}.',
+        );
+        return 0;
+      }
+      final orderToUpdate = matchingOrders.first;
+
+      final orderLinesByRecordUuid = <String, OrderItems>{};
+      for (final record in records) {
+        final recordUuid = record.uuid;
+        if (recordUuid == null) {
+          await mainLocalLog(
+            'Cannot restore order quantity: delivery record has no UUID.',
+          );
+          return 0;
+        }
+
+        final matchingLines =
+            record.orderItemUuid != null
+                ? orderToUpdate.orderItems
+                    .where(
+                      (item) =>
+                          item.uuid ==
+                              record.orderItemUuid &&
+                          item.productUuid ==
+                              record.productUuid,
+                    )
+                    .toList()
+                : orderToUpdate.orderItems
+                    .where(
+                      (item) =>
+                          item.productUuid ==
+                          record.productUuid,
+                    )
+                    .toList();
+        if (matchingLines.length != 1) {
+          await mainLocalLog(
+            'Cannot safely restore order quantity for ${record.productName}: '
+            'expected one order line, found ${matchingLines.length}.',
+          );
+          return 0;
+        }
+        orderLinesByRecordUuid[recordUuid] =
+            matchingLines.first;
+      }
+
+      final orderTemp = orderToUpdate.copyWith(
+        orderItems:
+            orderToUpdate.orderItems
+                .map((item) => item.copyWith())
+                .toList(),
+      );
+      for (final record in records) {
+        final orderLine =
+            orderLinesByRecordUuid[record.uuid];
+        if (orderLine == null) {
+          await mainLocalLog(
+            'Cannot restore order quantity: delivery record ${record.uuid} was not matched to an order line.',
+          );
+          return 0;
+        }
+        final updatedOrderLine = orderTemp.getOrderItem(
+          newItem: orderLine,
+        );
+        if (updatedOrderLine == null) {
+          await mainLocalLog(
+            'Cannot restore order quantity: order line ${orderLine.uuid} disappeared.',
+          );
+          return 0;
+        }
+
+        final deliveredInOrderUnit = updatedOrderLine
+            .getQuantityFromPrimaryUnits(
+              record.getActualQuantity(),
+            );
+        final restoredQuantity =
+            (updatedOrderLine.remainingQuantity ??
+                updatedOrderLine.quantity) +
+            deliveredInOrderUnit;
+        updatedOrderLine.remainingQuantity =
+            restoredQuantity > updatedOrderLine.quantity
+                ? updatedOrderLine.quantity
+                : restoredQuantity;
+      }
+
+      final orderUpdateResult = await updateOrder(
+        order: orderTemp,
+      );
+      if (orderUpdateResult != 1) {
+        await mainLocalLog(
+          'Delivery receipt could not be deleted because its order quantities could not be restored.',
+        );
+        return 0;
+      }
+
+      final deleteResult =
+          await returnReceiptProviderSingle().deleteReceipt(
+            receipt,
+            records.map((rec) => rec.productName).toList(),
+          );
+      if (deleteResult != 1) {
+        final rollbackResult = await updateOrder(
+          order: orderToUpdate.copyWith(
+            orderItems:
+                orderToUpdate.orderItems
+                    .map((item) => item.copyWith())
+                    .toList(),
+          ),
+        );
+        if (rollbackResult != 1) {
+          await mainLocalLog(
+            'Receipt deletion failed and the restored order quantities could not be rolled back.',
+          );
+        }
+        return deleteResult;
+      }
+      syncData();
 
       return 1;
     } catch (e) {

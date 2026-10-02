@@ -82,16 +82,22 @@ void addProductUnitAction({
   }
 
   void addAction() {
-    if (nameController.text.isEmpty ||
-        quantityController.text.isEmpty) {
+    final conversion = double.tryParse(
+      quantityController.text.replaceAll(',', '').trim(),
+    );
+    if (nameController.text.trim().isEmpty ||
+        conversion == null ||
+        !conversion.isFinite ||
+        conversion <= 0 ||
+        (unit?.isPrimary == true && conversion != 1)) {
       showDialog(
         context: context,
         builder: (context) {
           return InfoAlert(
             theme: theme,
             message:
-                'Unit Name or Quantity Conversion Cannot be empty. Please enter Product Unit Values and try again.',
-            title: 'Name and Conversion Empty',
+                'Enter a unit name and a positive conversion. The primary unit conversion must be 1.',
+            title: 'Invalid Unit Details',
           );
         },
       );
@@ -106,25 +112,13 @@ void addProductUnitAction({
             action: () async {
               Navigator.of(mainDialog).pop();
               unit?.name = nameController.text.trim();
-              unit?.conversion =
-                  (double.tryParse(
-                        quantityController.text
-                            .replaceAll(',', '')
-                            .trim(),
-                      ) ??
-                      0);
+              unit?.conversion = conversion;
               var unitListSingle = ProductUnitsClass(
                 uuid: uuidGen(),
                 staffUuid: currentUser().userId!,
                 createdAt: DateTime.now(),
                 staffName: currentUser().name,
-                conversion:
-                    (double.tryParse(
-                          quantityController.text
-                              .replaceAll(',', '')
-                              .trim(),
-                        ) ??
-                        0),
+                conversion: conversion,
                 name: nameController.text.trim(),
                 isPrimary:
                     returnData().tempUnitsList.isEmpty

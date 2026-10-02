@@ -28,6 +28,7 @@ void selectOrderItemsBottomSheet({
 
   void selectUnit(String unit) {
     unitUuid = unit;
+    orderItemNew.unitUuid = unit;
   }
 
   List<ProductUnitsClass> tempUnitList =
@@ -63,7 +64,22 @@ void selectOrderItemsBottomSheet({
     }
   }
 
-  unitUuid = orderItemNew.unitUuid ?? getPrimaryUnit().uuid;
+  final selectedUnits = tempUnitList.where(
+    (item) => item.uuid == orderItemNew.unitUuid,
+  );
+  if (selectedUnits.isNotEmpty) {
+    unitUuid = selectedUnits.first.uuid;
+  } else {
+    final defaultUnits =
+        orderItemNew.useGroupQuantity == true
+            ? tempUnitList.where((item) => !item.isPrimary)
+            : tempUnitList.where((item) => item.isPrimary);
+    unitUuid =
+        defaultUnits.isNotEmpty
+            ? defaultUnits.first.uuid
+            : tempUnitList.first.uuid;
+  }
+  orderItemNew.unitUuid = unitUuid;
 
   double getPrimaryUnitQuantityMultiplied({
     BuildContext? context,
@@ -81,10 +97,10 @@ void selectOrderItemsBottomSheet({
   //   newQuantity: orderItemNew.quantity,
   // );
   void setUnitListFinal() {
-    orderItemNew.unitsList?.clear();
-    orderItemNew.unitsList?.addAll(
-      tempUnitList.map((item) => item.copyWith()).toList(),
-    );
+    orderItemNew.unitsList =
+        tempUnitList
+            .map((item) => item.copyWith())
+            .toList();
     orderItemNew.unitUuid = unitUuid;
   }
 
@@ -94,7 +110,8 @@ void selectOrderItemsBottomSheet({
 
   // isGroupTemp = orderItem.useGroupQuantity ?? false;
   quantityController.text =
-      (orderItem.remainingQuantity ?? 0).toString();
+      (orderItem.remainingQuantity ?? orderItem.quantity)
+          .toString();
 
   double? originalItemQuantity() {
     var items = returnData().productListMain.where(
@@ -167,17 +184,11 @@ void selectOrderItemsBottomSheet({
                       width: 450,
                       child: EditCartTextField(
                         title:
-                            'Enter Item Quantity ${orderItem.getUnit()}',
+                            'Enter Item Quantity ${orderItemNew.getUnit()}',
                         hint: 'Quantity',
                         controller: quantityController,
                         theme: theme,
                         onChanged: (value) {
-                          var itemRemainingQuantity =
-                              orderItem
-                                  .getActualRemainingQuantity();
-                          print(itemRemainingQuantity);
-                          // var itemQttyPerGroup =
-                          //     orderItem.qttyPerGroup ?? 1;
                           var number =
                               getPrimaryUnitQuantityMultiplied(
                                 newQuantity:
@@ -189,13 +200,16 @@ void selectOrderItemsBottomSheet({
                                     ) ??
                                     0,
                               );
-                          print(number);
                           setState(() {
                             if (number >
-                                itemRemainingQuantity) {
+                                orderItem
+                                    .getActualRemainingQuantity()) {
                               quantityController.text = '0';
                             }
-                            if (originalItemQuantity() !=
+                            if ((orderItem
+                                        .isProductManaged ??
+                                    false) &&
+                                originalItemQuantity() !=
                                     null &&
                                 number >
                                     (originalItemQuantity() ??
@@ -228,10 +242,39 @@ void selectOrderItemsBottomSheet({
                       theme: theme,
                       unitUuid: unitUuid,
                       setUnitUuid: (uuid) {
+                        final selectedUnit = orderItemNew
+                            .getSelectedUnit(
+                              unitUuidNew: uuid,
+                            );
+                        if (!selectedUnit
+                                .conversion
+                                .isFinite ||
+                            selectedUnit.conversion <= 0) {
+                          showDialog(
+                            context: context,
+                            builder: (errorContext) {
+                              return InfoAlert(
+                                theme: theme,
+                                message:
+                                    'This unit has an invalid conversion. Update the unit before delivering this item.',
+                                title:
+                                    'Invalid Unit Conversion',
+                              );
+                            },
+                          );
+                          return;
+                        }
                         setState(() {
                           selectUnit(uuid ?? '');
+                          final remainingPrimary =
+                              orderItem
+                                  .getActualRemainingQuantity();
+                          quantityController.text =
+                              (remainingPrimary /
+                                      selectedUnit
+                                          .conversion)
+                                  .toString();
                         });
-                        quantityController.text = '0';
                       },
                     ),
 
@@ -314,7 +357,27 @@ void selectOrderItemsBottomSheet({
                                       ) ??
                                       0,
                                 );
-                            if (originalItemQuantity() !=
+                            if (number >
+                                orderItem
+                                    .getActualRemainingQuantity()) {
+                              showDialog(
+                                context: context,
+                                builder: (errorContext) {
+                                  return InfoAlert(
+                                    theme: theme,
+                                    message:
+                                        'The Quantity you are trying to Deliver Exceeds the Remaining Order Quantity.',
+                                    title:
+                                        'Quantity Exceeds Order',
+                                  );
+                                },
+                              );
+                              return;
+                            }
+                            if ((orderItem
+                                        .isProductManaged ??
+                                    false) &&
+                                originalItemQuantity() !=
                                     null &&
                                 number >
                                     (originalItemQuantity() ??
@@ -413,8 +476,10 @@ void selectItemsForOrderDeliveryBottomSheet({
               order.orderItems.where((item) {
                 if (returnOrdersActionProvider()
                     .orderListItems
-                    .map((it) => it.productUuid)
-                    .contains(item.productUuid)) {
+                    .any(
+                      (selected) =>
+                          selected.uuid == item.uuid,
+                    )) {
                   return false;
                 } else {
                   return true;
@@ -699,7 +764,7 @@ void selectItemsForOrderDeliveryBottomSheet({
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                           ),
-                                                          "${formatLargeNumberDouble(pro.remainingQuantity ?? 0)} ${pro.getUnit()}",
+                                                          "${formatLargeNumberDouble(pro.remainingQuantity ?? pro.quantity)} ${pro.getUnit()}",
                                                         ),
                                                         Icon(
                                                           size:
