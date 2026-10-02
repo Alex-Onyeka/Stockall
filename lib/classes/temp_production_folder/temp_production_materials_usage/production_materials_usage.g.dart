@@ -44,6 +44,7 @@ class ProductionMaterialsUsageAdapter
       unitUuid: fields[23] as String?,
       unitsList:
           (fields[24] as List?)?.cast<ProductUnitsClass>(),
+      productionRecordUuid: fields[25] as String?,
     );
   }
 
@@ -53,7 +54,7 @@ class ProductionMaterialsUsageAdapter
     ProductionMaterialsUsage obj,
   ) {
     writer
-      ..writeByte(24)
+      ..writeByte(25)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -101,7 +102,9 @@ class ProductionMaterialsUsageAdapter
       ..writeByte(23)
       ..write(obj.unitUuid)
       ..writeByte(24)
-      ..write(obj.unitsList);
+      ..write(obj.unitsList)
+      ..writeByte(25)
+      ..write(obj.productionRecordUuid);
   }
 
   @override

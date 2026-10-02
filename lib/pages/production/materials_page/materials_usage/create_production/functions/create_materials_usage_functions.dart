@@ -12,7 +12,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/production/production_dashboard/productions_section/create_production/components/select_total_cost_widget.dart';
-import 'package:stockall/pages/production/components/production_unit_dropdown.dart';
+import 'package:stockall/pages/products/product_details/platforms/components/unit_selection_widget.dart';
 
 class CreateMaterialsUsageFunctions {
   //
@@ -246,9 +246,25 @@ class CreateMaterialsUsageFunctions {
     showDialog(
       context: secondContext,
       builder: (thirdContext) {
+        final existingMaterial =
+            returnMaterialsProvider().materialListMain
+                .where(
+                  (item) =>
+                      item.uuid ==
+                      (editMaterialItem?.materialItemUuid ??
+                          selectedMaterial?.uuid),
+                )
+                .toList();
         final units =
-            (editMaterialItem?.unitsList ??
+            ((editMaterialItem?.unitsList?.isNotEmpty ==
+                            true
+                        ? editMaterialItem!.unitsList
+                        : null) ??
                     selectedMaterial?.getUnitsList() ??
+                    (existingMaterial.isEmpty
+                        ? null
+                        : existingMaterial.first
+                            .getUnitsList()) ??
                     [])
                 .map((unit) => unit.copyWith())
                 .toList();
@@ -319,8 +335,27 @@ class CreateMaterialsUsageFunctions {
                 quantityController.text.replaceAll(',', ''),
               ) ??
               0;
+          final otherCartDemand =
+              returnMaterialsUsageActionProvider()
+                  .getMaterials()
+                  .where(
+                    (item) =>
+                        item.materialItemUuid ==
+                            (editMaterialItem
+                                    ?.materialItemUuid ??
+                                selectedMaterial?.uuid) &&
+                        item.uuid !=
+                            editMaterialItem?.uuid &&
+                        item.isManaged != false,
+                  )
+                  .fold<double>(
+                    0,
+                    (total, item) =>
+                        total + item.getRealQuantity(),
+                  );
           final availableQuantity =
-              quantity +
+              quantity -
+              otherCartDemand +
               (editMaterialItem?.getRealQuantity() ?? 0);
           if (isManaged &&
               enteredQuantity *
@@ -449,21 +484,25 @@ class CreateMaterialsUsageFunctions {
                         onSubmit();
                       },
                     ),
-                    if (units.length > 1)
-                      ProductionUnitDropdown(
-                        units: units,
-                        value: selectedUnitUuid,
-                        onChanged: (value) {
-                          setState2(() {
-                            selectedUnitUuid = value;
-                            useGroupUnit =
-                                currentUnit()?.isPrimary ==
-                                false;
-                            customUnit = null;
-                          });
-                          checkIsManagedAndClearTextFieldAction();
-                        },
-                      ),
+                    UnitSelectionWidget(
+                      product: null,
+                      storageProduct: null,
+                      productionItem: null,
+                      material: null,
+                      theme: theme,
+                      unitUuid: selectedUnitUuid,
+                      unitList: units,
+                      setUnitUuid: (value) {
+                        setState2(() {
+                          selectedUnitUuid = value;
+                          useGroupUnit =
+                              currentUnit()?.isPrimary ==
+                              false;
+                          customUnit = null;
+                        });
+                        checkIsManagedAndClearTextFieldAction();
+                      },
+                    ),
                     Column(
                       spacing: 5,
                       children: [
