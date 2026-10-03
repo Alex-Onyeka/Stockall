@@ -304,6 +304,7 @@ class CreateMaterialsUsageFunctions {
           return 1;
         }
 
+        // ignore: unused_local_variable
         bool useGroupUnit =
             currentUnit()?.isPrimary == false;
         final quantityController = TextEditingController();
