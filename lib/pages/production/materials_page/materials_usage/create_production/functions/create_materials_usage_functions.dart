@@ -293,17 +293,6 @@ class CreateMaterialsUsageFunctions {
           return null;
         }
 
-        double primaryUnitConversion() {
-          for (final unit in units) {
-            if (unit.isPrimary &&
-                unit.conversion.isFinite &&
-                unit.conversion > 0) {
-              return unit.conversion;
-            }
-          }
-          return 1;
-        }
-
         bool useGroupUnit =
             currentUnit()?.isPrimary == false;
         final quantityController = TextEditingController();
@@ -412,14 +401,6 @@ class CreateMaterialsUsageFunctions {
                 units
                     .where((item) => item.isPrimary)
                     .toList();
-            final primaryUnitConversion =
-                primaryUnits.isEmpty
-                    ? 1.0
-                    : primaryUnits.first.conversion;
-            if (!primaryUnitConversion.isFinite ||
-                primaryUnitConversion <= 0) {
-              return;
-            }
             var tempCartItem = MaterialsUsageCartItem(
               isManaged:
                   editMaterialItem?.isManaged ??
@@ -453,8 +434,7 @@ class CreateMaterialsUsageFunctions {
                   currentSelection == 1
                       ? originalCost *
                           quantity *
-                          unit.conversion /
-                          primaryUnitConversion
+                          unit.conversion
                       : customCost,
               groupUnit: unit.isPrimary ? null : unit.name,
               qttyPerGroup: unit.conversion,
@@ -687,9 +667,8 @@ class CreateMaterialsUsageFunctions {
                                                     ) ??
                                                     0) *
                                                 (currentUnit()
-                                                        ?.conversion ??
-                                                    1) /
-                                                primaryUnitConversion()
+                                                    ?.conversion ??
+                                                1)
                                             : double.tryParse(
                                                   customCostController
                                                       .text
