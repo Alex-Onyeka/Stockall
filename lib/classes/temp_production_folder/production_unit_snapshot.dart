@@ -21,10 +21,12 @@ String? legacyProductionUnitUuid({
             : nonPrimary
                 .where((unit) => unit.name == groupUnit)
                 .toList();
-    if (matchingGroup.isNotEmpty)
+    if (matchingGroup.isNotEmpty) {
       return matchingGroup.first.uuid;
-    if (nonPrimary.length == 1)
+    }
+    if (nonPrimary.length == 1) {
       return nonPrimary.first.uuid;
+    }
   } else {
     final primary = units.where((unit) => unit.isPrimary);
     if (primary.isNotEmpty) return primary.first.uuid;

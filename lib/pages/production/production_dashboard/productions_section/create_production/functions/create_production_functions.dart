@@ -14,6 +14,7 @@ import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/production/materials_page/materials_usage/create_material_usage/functions/create_materials_usage_functions.dart';
 import 'package:stockall/pages/production/production_dashboard/productions_section/create_production/components/select_total_cost_widget.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/unit_selection_widget.dart';
 
@@ -991,92 +992,23 @@ class CreateProductionFunctions {
                                           .map(
                                             (
                                               item,
-                                            ) => Material(
-                                              color:
-                                                  Colors
-                                                      .transparent,
-                                              child: InkWell(
-                                                mouseCursor:
-                                                    SystemMouseCursors
-                                                        .click,
-                                                onTap: () {
-                                                  setState(() {
-                                                    if (selectedMaterial?.uuid ==
-                                                        item.uuid) {
-                                                      selectedMaterial =
-                                                          null;
-                                                    } else {
-                                                      selectedMaterial =
-                                                          item;
-                                                    }
-                                                  });
-                                                },
-                                                child: Padding(
-                                                  padding: const EdgeInsets.symmetric(
-                                                    vertical:
-                                                        9.0,
-                                                    horizontal:
-                                                        10,
-                                                  ),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.spaceBetween,
-                                                    children: [
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              theme.mobileTexts.b3.fontSize,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                        item.name,
-                                                      ),
-                                                      Row(
-                                                        spacing:
-                                                            15,
-                                                        children: [
-                                                          Text(
-                                                            style: TextStyle(
-                                                              fontSize:
-                                                                  theme.mobileTexts.b3.fontSize,
-                                                              fontWeight:
-                                                                  FontWeight.bold,
-                                                            ),
-                                                            '${item.quantity ?? 0}',
-                                                          ),
-                                                          Container(
-                                                            padding: EdgeInsets.all(
-                                                              2,
-                                                            ),
-                                                            decoration: BoxDecoration(
-                                                              shape:
-                                                                  BoxShape.circle,
-                                                              border: Border.all(
-                                                                color:
-                                                                    Colors.grey,
-                                                              ),
-                                                            ),
-                                                            child: Container(
-                                                              padding: EdgeInsets.all(
-                                                                5,
-                                                              ),
-                                                              decoration: BoxDecoration(
-                                                                shape:
-                                                                    BoxShape.circle,
-                                                                color:
-                                                                    selectedMaterial?.uuid ==
-                                                                            item.uuid
-                                                                        ? theme.lightModeColor.prColor250
-                                                                        : Colors.transparent,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
+                                            ) => SelectMaterialItemTile(
+                                              action: () {
+                                                setState(() {
+                                                  if (selectedMaterial
+                                                          ?.uuid ==
+                                                      item.uuid) {
+                                                    selectedMaterial =
+                                                        null;
+                                                  } else {
+                                                    selectedMaterial =
+                                                        item;
+                                                  }
+                                                });
+                                              },
+                                              item: item,
+                                              selectedMaterial:
+                                                  selectedMaterial,
                                             ),
                                           )
                                           .toList(),

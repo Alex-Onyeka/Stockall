@@ -130,92 +130,23 @@ class CreateMaterialsUsageFunctions {
                                           .map(
                                             (
                                               item,
-                                            ) => Material(
-                                              color:
-                                                  Colors
-                                                      .transparent,
-                                              child: InkWell(
-                                                mouseCursor:
-                                                    SystemMouseCursors
-                                                        .click,
-                                                onTap: () {
-                                                  setState(() {
-                                                    if (selectedMaterial?.uuid ==
-                                                        item.uuid) {
-                                                      selectedMaterial =
-                                                          null;
-                                                    } else {
-                                                      selectedMaterial =
-                                                          item;
-                                                    }
-                                                  });
-                                                },
-                                                child: Padding(
-                                                  padding: const EdgeInsets.symmetric(
-                                                    vertical:
-                                                        9.0,
-                                                    horizontal:
-                                                        10,
-                                                  ),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.spaceBetween,
-                                                    children: [
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              theme.mobileTexts.b3.fontSize,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                        item.name,
-                                                      ),
-                                                      Row(
-                                                        spacing:
-                                                            15,
-                                                        children: [
-                                                          Text(
-                                                            style: TextStyle(
-                                                              fontSize:
-                                                                  theme.mobileTexts.b3.fontSize,
-                                                              fontWeight:
-                                                                  FontWeight.bold,
-                                                            ),
-                                                            '${formatLargeNumberDouble(item.getPrimaryUnit().getQuantityEquivDivided(index: 3, material: item))} ${cutLongText(item.getPrimaryUnit().name, 8)}',
-                                                          ),
-                                                          Container(
-                                                            padding: EdgeInsets.all(
-                                                              2,
-                                                            ),
-                                                            decoration: BoxDecoration(
-                                                              shape:
-                                                                  BoxShape.circle,
-                                                              border: Border.all(
-                                                                color:
-                                                                    Colors.grey,
-                                                              ),
-                                                            ),
-                                                            child: Container(
-                                                              padding: EdgeInsets.all(
-                                                                5,
-                                                              ),
-                                                              decoration: BoxDecoration(
-                                                                shape:
-                                                                    BoxShape.circle,
-                                                                color:
-                                                                    selectedMaterial?.uuid ==
-                                                                            item.uuid
-                                                                        ? theme.lightModeColor.prColor250
-                                                                        : Colors.transparent,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
+                                            ) => SelectMaterialItemTile(
+                                              action: () {
+                                                setState(() {
+                                                  if (selectedMaterial
+                                                          ?.uuid ==
+                                                      item.uuid) {
+                                                    selectedMaterial =
+                                                        null;
+                                                  } else {
+                                                    selectedMaterial =
+                                                        item;
+                                                  }
+                                                });
+                                              },
+                                              item: item,
+                                              selectedMaterial:
+                                                  selectedMaterial,
                                             ),
                                           )
                                           .toList(),
@@ -308,7 +239,6 @@ class CreateMaterialsUsageFunctions {
         bool useGroupUnit =
             currentUnit()?.isPrimary == false;
         final quantityController = TextEditingController();
-        final unitController = TextEditingController();
         final customCostController =
             TextEditingController();
         int currentSelection = 1;
@@ -706,116 +636,6 @@ class CreateMaterialsUsageFunctions {
                               ],
                             ),
                           ),
-                          Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
-                            spacing: 10,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.normal,
-                                ),
-                                'Unit:',
-                              ),
-                              Material(
-                                type:
-                                    MaterialType
-                                        .transparency,
-                                child: InkWell(
-                                  onTap: () {
-                                    if (customUnit !=
-                                        null) {
-                                      setState2(() {
-                                        customUnit = null;
-                                      });
-                                    } else {
-                                      setCustomUnitForMaterial(
-                                        context: context,
-                                        selectUnit: (
-                                          value,
-                                        ) {
-                                          setState2(() {
-                                            customUnit =
-                                                value;
-                                            useGroupUnit =
-                                                false;
-                                          });
-                                          Navigator.of(
-                                            context,
-                                          ).pop();
-                                        },
-                                        setUnitCustom: () {
-                                          setState2(() {
-                                            customUnit =
-                                                unitController
-                                                    .text;
-                                            useGroupUnit =
-                                                false;
-                                          });
-                                          unitController
-                                              .clear();
-                                          Navigator.of(
-                                            context,
-                                          ).pop();
-                                          Navigator.of(
-                                            secondContext,
-                                          ).pop();
-                                        },
-                                        unitController:
-                                            unitController,
-                                      );
-                                    }
-                                  },
-                                  mouseCursor:
-                                      SystemMouseCursors
-                                          .click,
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(
-                                          8.0,
-                                          5,
-                                          2,
-                                          5,
-                                        ),
-                                    child: Row(
-                                      spacing: 5,
-                                      children: [
-                                        Text(
-                                          style: TextStyle(
-                                            fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b3
-                                                    .fontSize,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
-                                          ),
-                                          customUnit ??
-                                              currentUnit()
-                                                  ?.name ??
-                                              'Unit(s)',
-                                        ),
-                                        Icon(
-                                          size: 16,
-                                          customUnit != null
-                                              ? Icons.clear
-                                              : Icons.edit,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
                         ],
                       ),
                     ),
@@ -827,199 +647,277 @@ class CreateMaterialsUsageFunctions {
     );
   }
 
-  void setCustomUnitForMaterial({
-    required BuildContext context,
-    required Function(String value) selectUnit,
-    required Function() setUnitCustom,
-    required TextEditingController unitController,
-  }) {
-    var theme = returnTheme(context, listen: false);
-    showDialog(
-      context: context,
-      builder: (firstContextt) {
-        bool isSearch = false;
-        final searchController = TextEditingController();
+  // void setCustomUnitForMaterial({
+  //   required BuildContext context,
+  //   required Function(String value) selectUnit,
+  //   required Function() setUnitCustom,
+  //   required TextEditingController unitController,
+  // }) {
+  //   var theme = returnTheme(context, listen: false);
+  //   showDialog(
+  //     context: context,
+  //     builder: (firstContextt) {
+  //       bool isSearch = false;
+  //       final searchController = TextEditingController();
 
-        return StatefulBuilder(
-          builder:
-              (context, setState) => DialogTemplate(
-                theme: theme,
-                message:
-                    'Select A unit from the List To set Custom Unit',
-                title: 'Select Custom Unit',
-                action: () {},
-                topLeftWidget: InkWell(
-                  onTap: () {
-                    setState(() {
-                      isSearch = !isSearch;
-                    });
-                  },
-                  mouseCursor: SystemMouseCursors.click,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Icon(
-                      size: 20,
-                      isSearch ? Icons.clear : Icons.search,
-                    ),
-                  ),
+  //       return StatefulBuilder(
+  //         builder:
+  //             (context, setState) => DialogTemplate(
+  //               theme: theme,
+  //               message:
+  //                   'Select A unit from the List To set Custom Unit',
+  //               title: 'Select Custom Unit',
+  //               action: () {},
+  //               topLeftWidget: InkWell(
+  //                 onTap: () {
+  //                   setState(() {
+  //                     isSearch = !isSearch;
+  //                   });
+  //                 },
+  //                 mouseCursor: SystemMouseCursors.click,
+  //                 child: Padding(
+  //                   padding: const EdgeInsets.all(8.0),
+  //                   child: Icon(
+  //                     size: 20,
+  //                     isSearch ? Icons.clear : Icons.search,
+  //                   ),
+  //                 ),
+  //               ),
+  //               topRightWidget: InkWell(
+  //                 onTap: () {
+  //                   showDialog(
+  //                     context: context,
+  //                     builder: (secondContext) {
+  //                       return DialogTemplate(
+  //                         theme: theme,
+  //                         message:
+  //                             'Enter Any Custom unit of your Choice.',
+  //                         title: 'Enter Custom Unit',
+  //                         action: setUnitCustom,
+  //                         widget: Padding(
+  //                           padding:
+  //                               EdgeInsetsGeometry.symmetric(
+  //                                 horizontal: 15,
+  //                               ),
+  //                           child: GeneralTextfieldOnly(
+  //                             autoFocus: true,
+  //                             hint: 'Enter Unit',
+  //                             controller: unitController,
+  //                             lines: 1,
+  //                             theme: theme,
+  //                             onSubmitted: (value) {
+  //                               setUnitCustom();
+  //                             },
+  //                           ),
+  //                         ),
+  //                       );
+  //                     },
+  //                   );
+  //                 },
+  //                 mouseCursor: SystemMouseCursors.click,
+  //                 child: Padding(
+  //                   padding: const EdgeInsets.all(8.0),
+  //                   child: Row(
+  //                     spacing: 3,
+  //                     children: [
+  //                       Text(
+  //                         style: TextStyle(
+  //                           fontSize:
+  //                               theme
+  //                                   .mobileTexts
+  //                                   .b3
+  //                                   .fontSize,
+  //                           fontWeight: FontWeight.bold,
+  //                         ),
+  //                         'Add',
+  //                       ),
+  //                       Icon(size: 16, Icons.add),
+  //                     ],
+  //                   ),
+  //                 ),
+  //               ),
+  //               showBottomActionButtons: false,
+  //               widget: SizedBox(
+  //                 height: screenHeight(context) - 270,
+  //                 child: Padding(
+  //                   padding: const EdgeInsets.all(8.0),
+  //                   child: Column(
+  //                     children: [
+  //                       Visibility(
+  //                         visible: isSearch,
+  //                         child: ConstrainedBox(
+  //                           constraints: BoxConstraints(
+  //                             maxWidth: 350,
+  //                             maxHeight: 35,
+  //                           ),
+  //                           child: GeneralTextfieldOnly(
+  //                             autoFocus: true,
+  //                             hint: 'Search Unit',
+  //                             controller: searchController,
+  //                             lines: 1,
+  //                             theme: theme,
+  //                             onChanged: (p0) {
+  //                               setState(() {});
+  //                             },
+  //                           ),
+  //                         ),
+  //                       ),
+  //                       Expanded(
+  //                         child: SingleChildScrollView(
+  //                           child: Column(
+  //                             children:
+  //                                 returnData().units
+  //                                     .where(
+  //                                       (item) => item
+  //                                           .toLowerCase()
+  //                                           .contains(
+  //                                             searchController
+  //                                                 .text
+  //                                                 .toLowerCase(),
+  //                                           ),
+  //                                     )
+  //                                     .map(
+  //                                       (item) => Material(
+  //                                         type:
+  //                                             MaterialType
+  //                                                 .transparency,
+  //                                         child: InkWell(
+  //                                           onTap: () {
+  //                                             selectUnit(
+  //                                               item,
+  //                                             );
+  //                                           },
+  //                                           mouseCursor:
+  //                                               SystemMouseCursors
+  //                                                   .click,
+  //                                           child: Container(
+  //                                             margin:
+  //                                                 EdgeInsets.symmetric(
+  //                                                   vertical:
+  //                                                       4,
+  //                                                 ),
+  //                                             padding:
+  //                                                 EdgeInsets.symmetric(
+  //                                                   vertical:
+  //                                                       10,
+  //                                                   horizontal:
+  //                                                       15,
+  //                                                 ),
+  //                                             decoration:
+  //                                                 BoxDecoration(),
+  //                                             child: Row(
+  //                                               spacing: 5,
+  //                                               mainAxisAlignment:
+  //                                                   MainAxisAlignment
+  //                                                       .spaceBetween,
+  //                                               children: [
+  //                                                 Expanded(
+  //                                                   child: Text(
+  //                                                     style: TextStyle(
+  //                                                       fontSize:
+  //                                                           theme.mobileTexts.b3.fontSize,
+  //                                                       fontWeight: FontWeight(
+  //                                                         600,
+  //                                                       ),
+  //                                                     ),
+  //                                                     item,
+  //                                                   ),
+  //                                                 ),
+  //                                               ],
+  //                                             ),
+  //                                           ),
+  //                                         ),
+  //                                       ),
+  //                                     )
+  //                                     .toList(),
+  //                           ),
+  //                         ),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //       );
+  //     },
+  //   );
+  // }
+}
+
+class SelectMaterialItemTile extends StatelessWidget {
+  final MaterialClass? selectedMaterial;
+  final MaterialClass item;
+  final Function()? action;
+  const SelectMaterialItemTile({
+    super.key,
+    this.selectedMaterial,
+    required this.item,
+    required this.action,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context, listen: false);
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
+        onTap: action,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: 9.0,
+            horizontal: 10,
+          ),
+          child: Row(
+            mainAxisAlignment:
+                MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                style: TextStyle(
+                  fontSize: theme.mobileTexts.b3.fontSize,
+                  fontWeight: FontWeight.bold,
                 ),
-                topRightWidget: InkWell(
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (secondContext) {
-                        return DialogTemplate(
-                          theme: theme,
-                          message:
-                              'Enter Any Custom unit of your Choice.',
-                          title: 'Enter Custom Unit',
-                          action: setUnitCustom,
-                          widget: Padding(
-                            padding:
-                                EdgeInsetsGeometry.symmetric(
-                                  horizontal: 15,
-                                ),
-                            child: GeneralTextfieldOnly(
-                              autoFocus: true,
-                              hint: 'Enter Unit',
-                              controller: unitController,
-                              lines: 1,
-                              theme: theme,
-                              onSubmitted: (value) {
-                                setUnitCustom();
-                              },
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  mouseCursor: SystemMouseCursors.click,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      spacing: 3,
-                      children: [
-                        Text(
-                          style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          'Add',
-                        ),
-                        Icon(size: 16, Icons.add),
-                      ],
-                    ),
-                  ),
-                ),
-                showBottomActionButtons: false,
-                widget: SizedBox(
-                  height: screenHeight(context) - 270,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Visibility(
-                          visible: isSearch,
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxWidth: 350,
-                              maxHeight: 35,
-                            ),
-                            child: GeneralTextfieldOnly(
-                              autoFocus: true,
-                              hint: 'Search Unit',
-                              controller: searchController,
-                              lines: 1,
-                              theme: theme,
-                              onChanged: (p0) {
-                                setState(() {});
-                              },
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children:
-                                  returnData().units
-                                      .where(
-                                        (item) => item
-                                            .toLowerCase()
-                                            .contains(
-                                              searchController
-                                                  .text
-                                                  .toLowerCase(),
-                                            ),
-                                      )
-                                      .map(
-                                        (item) => Material(
-                                          type:
-                                              MaterialType
-                                                  .transparency,
-                                          child: InkWell(
-                                            onTap: () {
-                                              selectUnit(
-                                                item,
-                                              );
-                                            },
-                                            mouseCursor:
-                                                SystemMouseCursors
-                                                    .click,
-                                            child: Container(
-                                              margin:
-                                                  EdgeInsets.symmetric(
-                                                    vertical:
-                                                        4,
-                                                  ),
-                                              padding:
-                                                  EdgeInsets.symmetric(
-                                                    vertical:
-                                                        10,
-                                                    horizontal:
-                                                        15,
-                                                  ),
-                                              decoration:
-                                                  BoxDecoration(),
-                                              child: Row(
-                                                spacing: 5,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Expanded(
-                                                    child: Text(
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            theme.mobileTexts.b3.fontSize,
-                                                        fontWeight: FontWeight(
-                                                          600,
-                                                        ),
-                                                      ),
-                                                      item,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                      .toList(),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                item.name,
               ),
-        );
-      },
+              Row(
+                spacing: 15,
+                children: [
+                  Text(
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b3.fontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    '${formatLargeNumberDouble(item.getPrimaryUnit().getQuantityEquivDivided(index: 3, material: item))} ${cutLongText(item.getPrimaryUnit().name, 8)}',
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.grey,
+                      ),
+                    ),
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color:
+                            selectedMaterial?.uuid ==
+                                    item.uuid
+                                ? theme
+                                    .lightModeColor
+                                    .prColor250
+                                : Colors.transparent,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
