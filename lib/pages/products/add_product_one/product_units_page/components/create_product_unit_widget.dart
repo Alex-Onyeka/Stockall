@@ -88,15 +88,14 @@ void addProductUnitAction({
     if (nameController.text.trim().isEmpty ||
         conversion == null ||
         !conversion.isFinite ||
-        conversion <= 0 ||
-        (unit?.isPrimary == true && conversion != 1)) {
+        conversion <= 0) {
       showDialog(
         context: context,
         builder: (context) {
           return InfoAlert(
             theme: theme,
             message:
-                'Enter a unit name and a positive conversion. The primary unit conversion must be 1.',
+                'Enter a unit name and a positive conversion.',
             title: 'Invalid Unit Details',
           );
         },
