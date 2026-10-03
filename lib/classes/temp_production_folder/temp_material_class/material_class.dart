@@ -302,12 +302,7 @@ class MaterialClass {
       if (quantity == null || quantity == 0) {
         return 'Stock Out';
       } else {
-        return formatLargeNumberDouble(
-          getPrimaryUnitQuantity(
-            context: context,
-            index: index,
-          ),
-        );
+        return "${formatLargeNumberDouble(getPrimaryUnitQuantity(context: context, index: index))} ${cutLongText(getPrimaryUnit().name, 8)}";
       }
     }
   }
