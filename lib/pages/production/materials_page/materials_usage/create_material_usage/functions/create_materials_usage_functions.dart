@@ -224,20 +224,18 @@ class CreateMaterialsUsageFunctions {
           return null;
         }
 
-        bool useGroupUnit =
-            currentUnit()?.isPrimary == false;
         final quantityController = TextEditingController();
         final customCostController =
             TextEditingController();
         int currentSelection = 1;
-        String? customUnit;
+        // String? customUnit;
         if (editMaterialItem != null) {
           quantityController.text =
               editMaterialItem.quantity.toString();
           customCostController.text =
               (editMaterialItem.customPrice)?.toString() ??
               '';
-          customUnit = editMaterialItem.customUnit;
+          // customUnit = editMaterialItem.customUnit;
           currentSelection =
               editMaterialItem.selectedCostInt;
         }
@@ -341,7 +339,7 @@ class CreateMaterialsUsageFunctions {
                   editMaterialItem
                       ?.originalUseGroupQuantity ??
                   selectedMaterial?.useGroupUnit,
-              customUnit: customUnit,
+              customUnit: null,
               originalCostPerItem:
                   editMaterialItem?.originalCostPerItem ??
                   selectedMaterial?.costPrice ??
@@ -425,10 +423,6 @@ class CreateMaterialsUsageFunctions {
                       setUnitUuid: (value) {
                         setState2(() {
                           selectedUnitUuid = value;
-                          useGroupUnit =
-                              currentUnit()?.isPrimary ==
-                              false;
-                          customUnit = null;
                         });
                         checkIsManagedAndClearTextFieldAction();
                       },
@@ -597,8 +591,8 @@ class CreateMaterialsUsageFunctions {
                                                     ) ??
                                                     0) *
                                                 (currentUnit()
-                                                    ?.conversion ??
-                                                1)
+                                                        ?.conversion ??
+                                                    1)
                                             : double.tryParse(
                                                   customCostController
                                                       .text
