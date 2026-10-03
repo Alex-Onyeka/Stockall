@@ -134,7 +134,7 @@ class ProductionsCartItem extends HiveObject {
     if (setCustomPrice) {
       return (customPrice ?? 0);
     } else {
-      return (costPrice ?? 0) * getRealQuantity();
+      return (costPrice ?? 0);
     }
   }
 

@@ -574,10 +574,6 @@ class CreateProductionFunctions {
                 units
                     .where((unit) => unit.isPrimary)
                     .toList();
-            final primaryUnitConversion =
-                primaryUnits.isEmpty
-                    ? 1.0
-                    : primaryUnits.first.conversion;
             final primaryUnitName =
                 primaryUnits.isEmpty
                     ? 'Unit(s)'
@@ -592,8 +588,6 @@ class CreateProductionFunctions {
                 0;
             if (!selectedUnit.conversion.isFinite ||
                 selectedUnit.conversion <= 0 ||
-                !primaryUnitConversion.isFinite ||
-                primaryUnitConversion <= 0 ||
                 !quantity.isFinite ||
                 quantity <= 0) {
               return;
@@ -638,10 +632,7 @@ class CreateProductionFunctions {
               addToStock: false,
               useGroupQuantity: !selectedUnit.isPrimary,
               costPrice:
-                  originalCost *
-                  quantity *
-                  selectedUnit.conversion /
-                  primaryUnitConversion,
+                  originalCost * quantity * selectedUnit.conversion,
               groupUnit:
                   selectedUnit.isPrimary
                       ? null
@@ -1182,14 +1173,6 @@ class CreateProductionFunctions {
                 units
                     .where((item) => item.isPrimary)
                     .toList();
-            final primaryUnitConversion =
-                primaryUnits.isEmpty
-                    ? 1.0
-                    : primaryUnits.first.conversion;
-            if (!primaryUnitConversion.isFinite ||
-                primaryUnitConversion <= 0) {
-              return;
-            }
             var tempCartItem = ProductionMaterialCartItem(
               isManaged:
                   editMaterialItem?.isManaged ??
@@ -1229,10 +1212,7 @@ class CreateProductionFunctions {
               addToStock: false,
               useGroupQuantity: !unit.isPrimary,
               costPrice:
-                  originalCost *
-                  quantity *
-                  unit.conversion /
-                  primaryUnitConversion,
+                  originalCost * quantity * unit.conversion,
               groupUnit: unit.isPrimary ? null : unit.name,
               qttyPerGroup: unit.conversion,
               unit:
