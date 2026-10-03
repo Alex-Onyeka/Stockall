@@ -132,8 +132,9 @@ class _AddProductMobileState
                 isMultiple: false,
                 itemHistory: itemHistory,
                 product: TempProductClass(
-                  unitsList:
-                      dataProvider.tempUnitsList.toList(),
+                  unitsList: dataProvider.getTempUnitList(),
+                  pricesList:
+                      dataProvider.getTempPriceList(),
                   useGroupUnit: dataProvider.useGroupUnit,
                   categories:
                       dataProvider.selectedCategories
@@ -274,7 +275,8 @@ class _AddProductMobileState
               isQuantityUpdate: false,
               quantityChange: null,
               product: TempProductClass(
-                unitsList: provider.tempUnitsList.toList(),
+                unitsList: provider.getTempUnitList(),
+                pricesList: provider.getTempPriceList(),
                 useGroupUnit: provider.useGroupUnit,
                 categories:
                     provider.selectedCategories.toList(),
@@ -451,6 +453,11 @@ class _AddProductMobileState
       returnData().initUnitsList(
         productUuid: createdProductUuid,
         unitsListNew: widget.product?.getUnitsList() ?? [],
+      );
+      returnData().initPricesList(
+        productUuid: createdProductUuid,
+        pricesListNew:
+            widget.product?.getPricesList() ?? [],
       );
       returnData().setCustomPrice =
           widget.product!.setCustomPrice;
@@ -977,6 +984,9 @@ class _AddProductMobileState
                                                     var tempProduct = TempProductClass(
                                                       unitsList:
                                                           widget.product?.unitsList ??
+                                                          [],
+                                                      pricesList:
+                                                          widget.product?.pricesList ??
                                                           [],
                                                       categories:
                                                           widget.product?.categories ??

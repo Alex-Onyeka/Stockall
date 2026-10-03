@@ -137,6 +137,8 @@ class _AddProductDesktopState
                 itemHistory: itemHistory,
                 product: TempProductClass(
                   unitsList: dataProvider.getTempUnitList(),
+                  pricesList:
+                      dataProvider.getTempPriceList(),
                   useGroupUnit: dataProvider.useGroupUnit,
                   categories:
                       dataProvider.selectedCategories
@@ -276,6 +278,7 @@ class _AddProductDesktopState
               quantityChange: null,
               product: TempProductClass(
                 unitsList: provider.getTempUnitList(),
+                pricesList: provider.getTempPriceList(),
                 useGroupUnit: provider.useGroupUnit,
                 categories:
                     provider.selectedCategories.toList(),
@@ -464,6 +467,11 @@ class _AddProductDesktopState
       returnData().initUnitsList(
         productUuid: createdProductUuid,
         unitsListNew: widget.product?.getUnitsList() ?? [],
+      );
+      returnData().initPricesList(
+        productUuid: createdProductUuid,
+        pricesListNew:
+            widget.product?.getPricesList() ?? [],
       );
       returnData().selectGroupUnit(
         unit: widget.product!.groupUnit,
@@ -944,6 +952,9 @@ class _AddProductDesktopState
                                                       }
 
                                                       var tempProduct = TempProductClass(
+                                                        pricesList:
+                                                            widget.product?.pricesList ??
+                                                            [],
                                                         unitsList:
                                                             widget.product?.unitsList ??
                                                             [],

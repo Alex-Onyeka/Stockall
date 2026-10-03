@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_product_class/prices_class/product_prices_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -64,6 +65,9 @@ class TempCartItem extends HiveObject {
   @HiveField(17)
   String? unitUuid;
 
+  @HiveField(18)
+  String? priceUuid;
+
   TempCartItem({
     required this.item,
     required this.itemUuid,
@@ -83,6 +87,7 @@ class TempCartItem extends HiveObject {
     this.remainingQuantity,
     this.remainingBalance,
     required this.unitUuid,
+    required this.priceUuid,
   });
 
   Map<String, dynamic> toJson() => {
@@ -104,6 +109,7 @@ class TempCartItem extends HiveObject {
     'remaining_quantity': remainingQuantity,
     'remaining_balance': remainingBalance,
     'unit_uuid': unitUuid,
+    'price_uuid': priceUuid,
   };
 
   factory TempCartItem.fromJson(Map<String, dynamic> json) {
@@ -126,6 +132,7 @@ class TempCartItem extends HiveObject {
       remainingBalance: json['remaining_balance'],
       remainingQuantity: json['remaining_quantity'],
       unitUuid: json['unit_uuid'],
+      priceUuid: json['price_uuid'],
     );
   }
 
@@ -148,6 +155,7 @@ class TempCartItem extends HiveObject {
     double? remainingQuantity,
     double? remainingBalance,
     String? unitUuid,
+    String? priceUuid,
   }) {
     return TempCartItem(
       item: item ?? this.item,
@@ -172,8 +180,80 @@ class TempCartItem extends HiveObject {
       remainingBalance:
           remainingBalance ?? this.remainingBalance,
       unitUuid: unitUuid ?? this.unitUuid,
+      priceUuid: priceUuid ?? this.priceUuid,
     );
   }
+
+  //
+  //
+  //
+  //
+  //
+
+  List<ProductPricesClass> getPriceListFinal() {
+    return getPricesList()
+        .map((item) => item.copyWith())
+        .toList();
+  }
+
+  ProductPricesClass getSelectedPrice({
+    String? priceUuidNew,
+  }) {
+    var items = getPricesList().where(
+      (item) => item.uuid == (priceUuidNew ?? priceUuid),
+    );
+    if (items.isNotEmpty) {
+      return items.first;
+    } else {
+      return getPricesList().firstWhere(
+        (item) => item.isPrimary,
+      );
+    }
+  }
+
+  ProductPricesClass getPrimaryPrice({
+    String? priceUuidNew,
+  }) {
+    var items = getPricesList().where(
+      (item) => item.isPrimary,
+    );
+    if (items.isNotEmpty) {
+      return items.first;
+    } else {
+      return getPricesList()
+          .where(
+            (item) =>
+                item.uuid == (priceUuidNew ?? priceUuid),
+          )
+          .first;
+    }
+  }
+
+  ProductPricesClass defaultPrice() {
+    return ProductPricesClass(
+      uuid: uuidGen(),
+      staffUuid: currentUser().userId,
+      createdAt: DateTime.now(),
+      staffName: currentUser().name,
+      priceValue: 0,
+      name: 'Price',
+      isPrimary: true,
+      itemUuid: uuid!,
+    );
+  }
+
+  List<ProductPricesClass> getPricesList() {
+    return item.getPricesList();
+  }
+
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
 
   List<ProductUnitsClass> getUnitListFinal() {
     return getUnitsList()

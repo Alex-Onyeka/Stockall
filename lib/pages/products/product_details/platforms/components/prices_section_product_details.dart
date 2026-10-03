@@ -450,6 +450,8 @@ class _PricesSectionProductDetailsState
                                                           product: TempProductClass(
                                                             unitsList:
                                                                 widget.product.unitsList,
+                                                            pricesList:
+                                                                widget.product.pricesList,
                                                             useGroupUnit:
                                                                 widget.product.useGroupUnit,
                                                             categories:

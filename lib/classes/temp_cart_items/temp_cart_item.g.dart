@@ -35,13 +35,14 @@ class TempCartItemAdapter extends TypeAdapter<TempCartItem> {
       remainingQuantity: fields[15] as double?,
       remainingBalance: fields[16] as double?,
       unitUuid: fields[17] as String?,
+      priceUuid: fields[18] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempCartItem obj) {
     writer
-      ..writeByte(18)
+      ..writeByte(19)
       ..writeByte(0)
       ..write(obj.item)
       ..writeByte(1)
@@ -77,7 +78,9 @@ class TempCartItemAdapter extends TypeAdapter<TempCartItem> {
       ..writeByte(16)
       ..write(obj.remainingBalance)
       ..writeByte(17)
-      ..write(obj.unitUuid);
+      ..write(obj.unitUuid)
+      ..writeByte(18)
+      ..write(obj.priceUuid);
   }
 
   @override

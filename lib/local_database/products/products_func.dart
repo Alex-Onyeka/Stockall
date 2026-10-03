@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/temp_product_class/prices_class/product_prices_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/local_database/products/unsync_funcs/quantity_update/quantity_update_func.dart';
@@ -20,6 +21,7 @@ class ProductsFunc {
     try {
       Hive.registerAdapter(TempProductClassAdapter());
       Hive.registerAdapter(ProductUnitsClassAdapter());
+      Hive.registerAdapter(ProductPricesClassAdapter());
       productBox = await Hive.openBox(productBoxName);
       await CreatedProductFunc().init();
       await DeletedProductsFunc().init();

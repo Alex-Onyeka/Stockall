@@ -6,8 +6,7 @@ part of 'productions_cart_item.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class ProductionsCartItemAdapter
-    extends TypeAdapter<ProductionsCartItem> {
+class ProductionsCartItemAdapter extends TypeAdapter<ProductionsCartItem> {
   @override
   final int typeId = 118;
 
@@ -15,8 +14,7 @@ class ProductionsCartItemAdapter
   ProductionsCartItem read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++)
-        reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ProductionsCartItem(
       uuid: fields[0] as String?,
@@ -35,8 +33,7 @@ class ProductionsCartItemAdapter
       originalCostPerItem: fields[12] as double?,
       originalUseGroupQuantity: fields[13] as bool?,
       unitUuid: fields[15] as String?,
-      unitsList:
-          (fields[16] as List?)?.cast<ProductUnitsClass>(),
+      unitsList: (fields[16] as List?)?.cast<ProductUnitsClass>(),
     );
   }
 

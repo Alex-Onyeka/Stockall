@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/temp_product_class/prices_class/product_prices_class.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
@@ -117,6 +118,9 @@ class TempProductClass {
   @HiveField(35)
   List<ProductUnitsClass>? unitsList;
 
+  @HiveField(36)
+  List<ProductPricesClass>? pricesList;
+
   TempProductClass({
     this.id,
     required this.name,
@@ -154,6 +158,7 @@ class TempProductClass {
     required this.categories,
     required this.useGroupUnit,
     required this.unitsList,
+    required this.pricesList,
   });
 
   factory TempProductClass.fromJson(
@@ -234,6 +239,14 @@ class TempProductClass {
                 ),
               )
               .toList(),
+      pricesList:
+          (json['prices_list'] as List<dynamic>? ?? [])
+              .map(
+                (item) => ProductPricesClass.fromJson(
+                  item as Map<String, dynamic>,
+                ),
+              )
+              .toList(),
     );
   }
 
@@ -283,6 +296,10 @@ class TempProductClass {
           tempUnitList: unitsList,
           productUuid: uuid,
         ),
+        'prices_list': ProductPricesClass.getPricesList(
+          tempPricesList: pricesList,
+          itemUuid: uuid,
+        ),
       };
     } else {
       return {
@@ -327,6 +344,10 @@ class TempProductClass {
           tempUnitList: unitsList,
           productUuid: uuid,
         ),
+        'prices_list': ProductPricesClass.getPricesList(
+          tempPricesList: pricesList,
+          itemUuid: uuid,
+        ),
       };
     }
   }
@@ -368,6 +389,7 @@ class TempProductClass {
     List<String>? categories,
     bool? useGroupUnit,
     List<ProductUnitsClass>? unitsList,
+    List<ProductPricesClass>? pricesList,
   }) {
     return TempProductClass(
       id: id ?? this.id,
@@ -409,8 +431,112 @@ class TempProductClass {
       categories: categories ?? this.categories,
       useGroupUnit: useGroupUnit ?? this.useGroupUnit,
       unitsList: unitsList ?? this.unitsList,
+      pricesList: pricesList ?? this.pricesList,
     );
   }
+
+  //
+  //
+  //
+  //
+
+  List<ProductPricesClass> getPriceListFinal() {
+    return getPricesList()
+        .map((item) => item.copyWith())
+        .toList();
+  }
+
+  ProductPricesClass getProductPrice({String? unitUuid}) {
+    var items = getPricesList().where(
+      (item) => item.uuid == unitUuid,
+    );
+    if (unitUuid == null || items.isEmpty) {
+      return getPrimaryPrice();
+    } else {
+      return getPricesList().firstWhere(
+        (item) => item.uuid == unitUuid,
+      );
+    }
+  }
+
+  ProductPricesClass getPrimaryPrice() {
+    if (getPricesList().isEmpty == true ||
+        getPricesList()
+            .where((item) => item.isPrimary == true)
+            .isEmpty) {
+      return ProductPricesClass(
+        uuid: uuidGen(),
+        staffUuid: currentUser().userId,
+        createdAt: DateTime.now(),
+        staffName: currentUser().name,
+        priceValue: sellingPrice ?? 0,
+        name: 'Price',
+        isPrimary: true,
+        itemUuid: uuid!,
+      );
+    } else {
+      return getPricesList()
+          .where((item) => item.isPrimary == true)
+          .first;
+    }
+  }
+
+  List<ProductPricesClass> getPricesList() {
+    List<ProductPricesClass> tempList() {
+      if (unitsList == null || unitsList?.isEmpty == true) {
+        List<ProductPricesClass> tempList = [
+          ProductPricesClass(
+            uuid: uuidGen(),
+            staffUuid: currentUser().userId,
+            createdAt: DateTime.now(),
+            staffName: currentUser().name,
+            priceValue: sellingPrice ?? 0,
+            name: 'Price',
+            isPrimary: true,
+            itemUuid: uuid!,
+          ),
+        ];
+        if (wholeSalePrice != null) {
+          ProductPricesClass newItem = ProductPricesClass(
+            uuid: uuidGen(),
+            staffUuid: currentUser().userId,
+            createdAt: DateTime.now(),
+            staffName: currentUser().name,
+            priceValue: wholeSalePrice ?? 0,
+            name: 'Whole-Sale Price',
+            isPrimary: false,
+            itemUuid: uuid!,
+          );
+          tempList.add(newItem);
+        }
+        return tempList;
+      } else {
+        return pricesList ?? [];
+      }
+    }
+
+    if (tempList().length < 2) {
+      return tempList();
+    } else {
+      return [
+        tempList().firstWhere((item) => item.isPrimary),
+        ...tempList().where((item) => !item.isPrimary),
+      ];
+    }
+  }
+
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
 
   List<ProductUnitsClass> getUnitListFinal() {
     return getUnitsList()

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stockall/classes/temp_categories/category_class.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_product_class/prices_class/product_prices_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/created_products/created_products.dart';
@@ -3230,6 +3231,103 @@ class DataProvider extends ChangeNotifier {
   //
   //
   //
+
+  //
+  //
+  //
+  //
+
+  List<ProductPricesClass> tempPricesList = [];
+
+  List<ProductPricesClass> getTempPriceList() {
+    return tempPricesList
+        .map((item) => item.copyWith())
+        .toList();
+  }
+
+  List<ProductPricesClass> tempPricesListSorted() {
+    tempPricesList.sort(
+      (a, b) => a.priceValue.compareTo(b.priceValue),
+    );
+    // if (tempPricesList.length < 2) {
+    return tempPricesList;
+    // } else {
+    //   return [
+    //     tempPricesList.firstWhere((item) => item.isPrimary),
+    //     ...tempPricesList.where((item) => !item.isPrimary),
+    //   ];
+    // }
+  }
+
+  void clearTempPricesList() {
+    tempPricesList.clear();
+    notifyListeners();
+  }
+
+  bool isPriceListOpen = false;
+
+  void createOrUpdatePriceList({
+    required ProductPricesClass priceListSingle,
+  }) {
+    if (tempPricesList
+        .where((item) => item.uuid == priceListSingle.uuid)
+        .isNotEmpty) {
+      tempPricesList.removeWhere(
+        (item) => item.uuid == priceListSingle.uuid,
+      );
+    }
+    tempPricesList.add(priceListSingle);
+    notifyListeners();
+  }
+
+  void deleteProductPrice({
+    required ProductPricesClass priceListSingle,
+  }) {
+    if (tempPricesList.length > 1) {
+      tempPricesList.removeWhere(
+        (item) => item.uuid == priceListSingle.uuid,
+      );
+      if (priceListSingle.isPrimary) {
+        selectPrimaryPrice(
+          priceListSingle: tempPricesList.first,
+        );
+      }
+    }
+    notifyListeners();
+  }
+
+  void initPricesList({
+    required List<ProductPricesClass> pricesListNew,
+    required String? productUuid,
+  }) {
+    tempPricesList.clear();
+    tempPricesList.addAll(
+      pricesListNew.map((item) {
+        if (productUuid == null) {
+          return item.copyWith();
+        } else {
+          return item.copyWith(itemUuid: productUuid);
+        }
+      }),
+    );
+    print(
+      'Temp Prices: ${tempPricesList.length} | New Prices: ${pricesListNew.length}',
+    );
+    notifyListeners();
+  }
+
+  void selectPrimaryPrice({
+    required ProductPricesClass priceListSingle,
+  }) {
+    for (var item in tempPricesList) {
+      if (item.uuid == priceListSingle.uuid) {
+        item.isPrimary = true;
+      } else {
+        item.isPrimary = false;
+      }
+    }
+    notifyListeners();
+  }
 
   //
   //
