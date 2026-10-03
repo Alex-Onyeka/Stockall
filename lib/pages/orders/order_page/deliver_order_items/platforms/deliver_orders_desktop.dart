@@ -256,9 +256,9 @@ class _DeliverOrdersDesktopState
                                             .cashController,
                                     context: context,
                                     order: widget.order,
-                                    toggleLoading: () {
+                                    setLoading: (value) {
                                       setState(() {
-                                        isLoading = true;
+                                        isLoading = value;
                                       });
                                     },
                                   );
@@ -300,7 +300,7 @@ void checkFields({
   required TextEditingController cashController,
   required TextEditingController bankController,
   required Orders order,
-  required Function() toggleLoading,
+  required Function(bool) setLoading,
 }) async {
   if (returnOrdersActionProvider().orderListItems.isEmpty) {
     showDialog(
@@ -312,6 +312,19 @@ void checkFields({
           message:
               'No Item has been added to the List. Please add items to the list before proceeding',
           title: 'Empty List',
+        );
+      },
+    );
+  } else if (!returnOrdersProvider()
+      .areOrderDeliveryQuantitiesValid(order)) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return InfoAlert(
+          theme: returnTheme(context),
+          message:
+              'One or more delivery quantities now exceed the remaining order quantity or available stock. Review the quantities and try again.',
+          title: 'Delivery Quantity Changed',
         );
       },
     );
@@ -366,7 +379,7 @@ void checkFields({
           title: 'Proceed With Action',
           action: () async {
             Navigator.of(confirmDialog).pop();
-            toggleLoading();
+            setLoading(true);
             int index =
                 returnOrdersActionProvider().paymentOption;
             double totalAmount =
@@ -420,6 +433,7 @@ void checkFields({
                   order: order,
                   context: context,
                 );
+            setLoading(false);
             cashController.clear();
             bankController.clear();
           },

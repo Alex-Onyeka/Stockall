@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_production_folder/temp_materials_item_history/materials_item_history.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_materials_usage/production_materials_usage.dart';
+import 'package:stockall/classes/temp_production_folder/temp_productions/production_record.dart';
+import 'package:stockall/classes/temp_production_folder/production_unit_snapshot.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_materials_usage/unsynced/created/created_production_materials_usage.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_materials_usage/unsynced/deleted/deleted_production_materials_usage.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -50,24 +52,80 @@ class MaterialsUsageProvider extends ChangeNotifier {
   // CREATE a new ProductionMaterialsUsage
   Future<ProductionMaterialsUsage?>
   createProductionMaterialsUsage(
-    ProductionMaterialsUsage productionMaterialsUsage,
-  ) async {
+    ProductionMaterialsUsage productionMaterialsUsage, {
+    bool applyInventory = true,
+    bool validateStock = true,
+    bool removeFromCart = true,
+  }) async {
     try {
       await mainLocalLog(
         'Inner Production Materials Usage Creation Started',
       );
+      _snapshotUsageUnits(productionMaterialsUsage);
+      final selectedUnit =
+          (productionMaterialsUsage.unitsList ?? []).where(
+            (unit) =>
+                unit.uuid ==
+                productionMaterialsUsage.unitUuid,
+          );
+      if (productionMaterialsUsage.unitUuid != null &&
+          productionMaterialsUsage.unitsList?.isNotEmpty ==
+              true &&
+          (selectedUnit.isEmpty ||
+              !selectedUnit.first.conversion.isFinite ||
+              selectedUnit.first.conversion <= 0)) {
+        await mainLocalLog(
+          'Material usage could not be saved because its selected unit conversion is invalid.',
+        );
+        return null;
+      }
+      final usageQuantity =
+          productionMaterialsUsage.getQuantity();
+      if (!usageQuantity.isFinite || usageQuantity <= 0) {
+        await mainLocalLog(
+          'Material usage quantity must be greater than zero.',
+        );
+        return null;
+      }
+      final material =
+          returnMaterialsProvider().materialListMain
+              .where(
+                (item) =>
+                    item.uuid ==
+                    productionMaterialsUsage.materialUuid,
+              )
+              .toList();
+      if (validateStock &&
+          productionMaterialsUsage.isManaged != false &&
+          material.isNotEmpty &&
+          usageQuantity > (material.first.quantity ?? 0)) {
+        await mainLocalLog(
+          'Material usage exceeds available stock for ${material.first.name}.',
+        );
+        return null;
+      }
       productionMaterialsUsage.createdAt = DateTime.now();
-      await ProductionMaterialsUsageFunc()
-          .createProductionMaterialsUsage(
-            productionMaterialsUsage,
-          );
-      await CreatedProductionMaterialsUsageFunc()
-          .createProductionMaterialsUsage(
-            CreatedProductionMaterialsUsage(
-              createdProductionMaterialsUsage:
-                  productionMaterialsUsage,
-            ),
-          );
+      final localResult =
+          await ProductionMaterialsUsageFunc()
+              .createProductionMaterialsUsage(
+                productionMaterialsUsage,
+              );
+      if (localResult != 1) return null;
+      final unsyncedResult =
+          await CreatedProductionMaterialsUsageFunc()
+              .createProductionMaterialsUsage(
+                CreatedProductionMaterialsUsage(
+                  createdProductionMaterialsUsage:
+                      productionMaterialsUsage,
+                ),
+              );
+      if (unsyncedResult != 1) {
+        await ProductionMaterialsUsageFunc()
+            .deleteProductionMaterialsUsage(
+              productionMaterialsUsage.uuid,
+            );
+        return null;
+      }
       notifyListeners();
       var materials = returnMaterialsProvider()
           .materialListMain
@@ -76,39 +134,19 @@ class MaterialsUsageProvider extends ChangeNotifier {
                 item.uuid ==
                 productionMaterialsUsage.materialUuid,
           );
-      if (materials.isNotEmpty) {
-        var oldMaterial = materials.first;
-        var newMaterial = oldMaterial.copyWith();
-        newMaterial.quantity =
-            (newMaterial.quantity ?? 0) -
-            productionMaterialsUsage.getQuantity();
-        MaterialsItemHistory
-        materialsItemHistory = MaterialsItemHistory(
-          shopId: newMaterial.shopId,
-          title: 'Material Used',
-          newValue: (newMaterial.quantity ?? 0).toString(),
-          oldValue: (oldMaterial.quantity ?? 0).toString(),
-          quantityChange:
-              -productionMaterialsUsage.getQuantity(),
-          desc: 'This Material Was used.',
-          isIncreased: false,
-        );
-        await returnMaterialsProvider().updateMaterial(
-          material: newMaterial,
-          isQuantityUpdate: true,
-          includeQuantity: true,
-          isMultipleUpdate: true,
-          quantityChange:
-              productionMaterialsUsage.getQuantity(),
-          isIncrement: false,
-          materialsItemHistory: materialsItemHistory,
+      if (applyInventory && materials.isNotEmpty) {
+        await _applyMaterialUsage(
+          productionMaterialsUsage,
+          increment: false,
         );
       }
 
-      await returnMaterialsUsageActionProvider()
-          .removeMaterialItemFromCart(
-            itemUuid: productionMaterialsUsage.uuid,
-          );
+      if (removeFromCart) {
+        await returnMaterialsUsageActionProvider()
+            .removeMaterialItemFromCart(
+              itemUuid: productionMaterialsUsage.uuid,
+            );
+      }
       return productionMaterialsUsage;
     } catch (e) {
       await mainLocalLog(
@@ -116,6 +154,155 @@ class MaterialsUsageProvider extends ChangeNotifier {
       );
       return null;
     }
+  }
+
+  Future<bool> createUsageRecordsForProduction(
+    ProductionRecord record,
+  ) async {
+    final productionRecordUuid = record.uuid;
+    if (productionRecordUuid == null) {
+      await mainLocalLog(
+        'Cannot create material usage records for a production without a UUID.',
+      );
+      return false;
+    }
+    final createdUsages = <ProductionMaterialsUsage>[];
+    for (final material in record.materials) {
+      final usage = ProductionMaterialsUsage(
+        uuid: uuidGen(),
+        shopId: record.shopId ?? shopId(),
+        quantity: material.quantity,
+        materialUuid: material.materialUuid,
+        materialName: material.materialName,
+        isGroup: material.isGroup,
+        qttyPerGroup: material.qttyPerGroup,
+        totalCost: material.totalCost,
+        createdAt: record.createdAt ?? DateTime.now(),
+        staffUuid: material.staffUuid,
+        staffName: material.staffName,
+        departmentUuid: material.departmentUuid,
+        departmentName: material.departmentName,
+        unit: material.unit,
+        customCost: material.customCost,
+        updatedAt: material.createdAt,
+        originalCostPerItem: material.originalCostPerItem,
+        customUnit: material.customUnit,
+        originalUseGroupQuantity:
+            material.originalUseGroupQuantity,
+        groupUnit: material.groupUnit,
+        selectedCostInt: 1,
+        isManaged: material.isManaged,
+        unitUuid: material.unitUuid,
+        unitsList: copyProductionUnitSnapshot(
+          material.unitsList,
+        ),
+        productionRecordUuid: productionRecordUuid,
+      );
+      final created = await createProductionMaterialsUsage(
+        usage,
+        removeFromCart: false,
+      );
+      if (created == null) {
+        for (final priorUsage in createdUsages.reversed) {
+          await deleteProductionMaterialsUsage(
+            priorUsage,
+            true,
+            true,
+            allowProductionLinked: true,
+          );
+        }
+        return false;
+      }
+      createdUsages.add(created);
+    }
+    await getProductionMaterialsUsageOffline();
+    return true;
+  }
+
+  void _snapshotUsageUnits(ProductionMaterialsUsage usage) {
+    final materials = returnMaterialsProvider()
+        .materialListMain
+        .where((item) => item.uuid == usage.materialUuid);
+    if (materials.isEmpty) return;
+    final material = materials.first;
+    final units =
+        usage.unitsList?.isNotEmpty == true
+            ? usage.unitsList!
+            : material.getUnitsList();
+    usage.unitsList =
+        units.map((unit) => unit.copyWith()).toList();
+    if (usage.unitUuid == null) {
+      usage.unitUuid = legacyProductionUnitUuid(
+        unitsList: units,
+        useGroupQuantity: usage.isGroup,
+        groupUnit: usage.groupUnit,
+      );
+    }
+  }
+
+  Future<void> _applyMaterialUsage(
+    ProductionMaterialsUsage usage, {
+    required bool increment,
+  }) async {
+    final materials = returnMaterialsProvider()
+        .materialListMain
+        .where((item) => item.uuid == usage.materialUuid);
+    if (materials.isEmpty) return;
+
+    final oldMaterial = materials.first;
+    if (!(usage.isManaged ?? false)) {
+      await mainLocalLog(
+        'Skipping stock adjustment for unmanaged material ${usage.materialName}.',
+      );
+      return;
+    }
+    final newMaterial = oldMaterial.copyWith();
+    final actualQuantity = usage.getQuantity();
+    final signedQuantity =
+        increment ? actualQuantity : -actualQuantity;
+    newMaterial.quantity =
+        (oldMaterial.quantity ?? 0) + signedQuantity;
+    final primaryUnit = productionPrimaryUnitName(
+      usage.unitsList,
+      fallback: oldMaterial.getPrimaryUnit().name,
+    );
+    final primaryUnitConversion =
+        productionPrimaryUnitConversion(
+          usage.unitsList,
+          fallback: oldMaterial.getPrimaryUnit().conversion,
+        );
+    final history = MaterialsItemHistory(
+      shopId: oldMaterial.shopId,
+      title:
+          increment
+              ? 'Material Usage Deleted'
+              : 'Material Used',
+      oldValue:
+          ((oldMaterial.quantity ?? 0) /
+                  primaryUnitConversion)
+              .toString(),
+      newValue:
+          ((newMaterial.quantity ?? 0) /
+                  primaryUnitConversion)
+              .toString(),
+      quantityChange: (increment ? 1 : -1) * usage.quantity,
+      desc:
+          increment
+              ? 'This Material Usage Was Deleted.'
+              : 'This Material Was used.',
+      isIncreased: increment,
+      unit: usage.getUnit(),
+      primaryUnit: primaryUnit,
+    );
+    await returnMaterialsProvider().updateMaterial(
+      material: newMaterial,
+      isQuantityUpdate: true,
+      includeQuantity: true,
+      isMultipleUpdate: true,
+      quantityChange: actualQuantity,
+      isIncrement: increment,
+      materialsItemHistory: history,
+    );
   }
 
   // READ all ProductionMaterialsUsage for a shop
@@ -234,12 +421,21 @@ class MaterialsUsageProvider extends ChangeNotifier {
   Future<int> deleteProductionMaterialsUsage(
     ProductionMaterialsUsage productionMaterialsUsage,
     bool? updateInventory,
-    bool createUpdate,
-  ) async {
+    bool createUpdate, {
+    bool allowProductionLinked = false,
+  }) async {
     await mainLocalLog(
       'Deleting Production Materials Usage',
     );
     try {
+      if (productionMaterialsUsage.productionRecordUuid !=
+              null &&
+          !allowProductionLinked) {
+        await mainLocalLog(
+          'Production-linked material usage must be changed by editing or deleting its production record.',
+        );
+        return 0;
+      }
       await mainLocalLog(
         'Deleting ProductionMaterialsUsage Offline',
       );
@@ -289,45 +485,10 @@ class MaterialsUsageProvider extends ChangeNotifier {
             );
       }
       if (updateInventory == true) {
-        var materials = returnMaterialsProvider()
-            .materialListMain
-            .where(
-              (item) =>
-                  item.uuid ==
-                  productionMaterialsUsage.materialUuid,
-            );
-        if (materials.isNotEmpty) {
-          var oldMaterial = materials.first;
-          var newMaterial = oldMaterial.copyWith();
-          newMaterial.quantity =
-              (newMaterial.quantity ?? 0) +
-              productionMaterialsUsage.getQuantity();
-
-          MaterialsItemHistory materialsItemHistory =
-              MaterialsItemHistory(
-                shopId: newMaterial.shopId,
-                title: 'Material Usage Deleted',
-                newValue:
-                    (newMaterial.quantity ?? 0).toString(),
-                oldValue:
-                    (oldMaterial.quantity ?? 0).toString(),
-                quantityChange:
-                    productionMaterialsUsage.getQuantity(),
-                desc:
-                    'This Material Usage Used Was Deleted.',
-                isIncreased: true,
-              );
-          await returnMaterialsProvider().updateMaterial(
-            isMultipleUpdate: false,
-            material: newMaterial,
-            isQuantityUpdate: true,
-            includeQuantity: true,
-            quantityChange:
-                productionMaterialsUsage.getQuantity(),
-            isIncrement: true,
-            materialsItemHistory: materialsItemHistory,
-          );
-        }
+        await _applyMaterialUsage(
+          productionMaterialsUsage,
+          increment: true,
+        );
       }
 
       // returnData().syncData();

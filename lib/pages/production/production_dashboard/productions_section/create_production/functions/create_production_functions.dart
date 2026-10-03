@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
+import 'package:stockall/classes/temp_production_folder/production_unit_snapshot.dart';
 import 'package:stockall/classes/temp_production_folder/temp_material_class/material_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_items/production_item.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions_cart/temp_production_material_cart_item/production_material_cart_item.dart';
@@ -9,11 +11,12 @@ import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
-import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/production/materials_page/materials_usage/create_material_usage/functions/create_materials_usage_functions.dart';
 import 'package:stockall/pages/production/production_dashboard/productions_section/create_production/components/select_total_cost_widget.dart';
+import 'package:stockall/pages/products/product_details/platforms/components/unit_selection_widget.dart';
 
 class CreateProductionFunctions {
   void setTotalCostValue({required BuildContext context}) {
@@ -144,225 +147,6 @@ class CreateProductionFunctions {
       },
     );
   }
-
-  // void selectSalesItemForProduction({
-  //   required BuildContext firstContext,
-  // }) {
-  //   var theme = returnTheme(firstContext, listen: false);
-  //   final searchController = TextEditingController();
-
-  //   showDialog(
-  //     context: firstContext,
-  //     builder: (secondContext) {
-  //       return StatefulBuilder(
-  //         builder: (statefulContext, setState) {
-  //           return DialogTemplate(
-  //             theme: theme,
-  //             message: 'Select an Item From the List Below',
-  //             title: 'Select Item',
-  //             action: () {
-  //               if (selectedItem != null) {
-  //                 addSelectedItemToCart(
-  //                   secondContext: secondContext,
-  //                   selectedItem: selectedItem,
-  //                 );
-  //               }
-  //             },
-  //             widget: SizedBox(
-  //               height: screenHeight(statefulContext) - 200,
-  //               child: Column(
-  //                 children: [
-  //                   Row(
-  //                     mainAxisAlignment:
-  //                         MainAxisAlignment.center,
-  //                     children: [
-  //                       Expanded(
-  //                         child: ConstrainedBox(
-  //                           constraints: BoxConstraints(
-  //                             maxWidth: 400,
-  //                             maxHeight: 40,
-  //                           ),
-  //                           child: GeneralTextfieldOnly(
-  //                             autoFocus: true,
-  //                             onChanged: (p0) {
-  //                               setState(() {});
-  //                             },
-  //                             hint: 'Search Name',
-  //                             controller: searchController,
-  //                             lines: 1,
-  //                             theme: theme,
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     ],
-  //                   ),
-  //                   SizedBox(height: 5),
-  //                   Expanded(
-  //                     child: SingleChildScrollView(
-  //                       child: Padding(
-  //                         padding:
-  //                             const EdgeInsets.symmetric(
-  //                               horizontal: 5.0,
-  //                               vertical: 10,
-  //                             ),
-  //                         child: Builder(
-  //                           builder: (context) {
-  //                             if (returnData()
-  //                                 .productList()
-  //                                 .where(
-  //                                   (item) => item.name
-  //                                       .toLowerCase()
-  //                                       .contains(
-  //                                         searchController
-  //                                             .text
-  //                                             .toLowerCase(),
-  //                                       ),
-  //                                 )
-  //                                 .isEmpty) {
-  //                               return SizedBox(
-  //                                 height: 400,
-  //                                 child: EmptyWidgetDisplayOnly(
-  //                                   title: 'No Item Found',
-  //                                   subText:
-  //                                       'No item was found.',
-  //                                   theme: theme,
-  //                                   height: 30,
-  //                                   altAction: () async {
-  //                                     await returnData()
-  //                                         .getProducts(
-  //                                           shopId(),
-  //                                         );
-  //                                     setState(() {});
-  //                                   },
-  //                                   altActionText:
-  //                                       'Refresh',
-  //                                   icon: Icons.clear,
-  //                                 ),
-  //                               );
-  //                             } else {
-  //                               return Column(
-  //                                 spacing: 5,
-  //                                 children:
-  //                                     returnData()
-  //                                         .productList()
-  //                                         .where(
-  //                                           (item) => item
-  //                                               .name
-  //                                               .toLowerCase()
-  //                                               .contains(
-  //                                                 searchController
-  //                                                     .text
-  //                                                     .toLowerCase(),
-  //                                               ),
-  //                                         )
-  //                                         .map(
-  //                                           (
-  //                                             item,
-  //                                           ) => Material(
-  //                                             color:
-  //                                                 Colors
-  //                                                     .transparent,
-  //                                             child: InkWell(
-  //                                               mouseCursor:
-  //                                                   SystemMouseCursors
-  //                                                       .click,
-  //                                               onTap: () {
-  //                                                 setState(() {
-  //                                                   if (selectedItem?.uuid ==
-  //                                                       item.uuid) {
-  //                                                     selectedItem =
-  //                                                         null;
-  //                                                   } else {
-  //                                                     selectedItem =
-  //                                                         item;
-  //                                                   }
-  //                                                 });
-  //                                               },
-  //                                               child: Padding(
-  //                                                 padding: const EdgeInsets.symmetric(
-  //                                                   vertical:
-  //                                                       9.0,
-  //                                                   horizontal:
-  //                                                       10,
-  //                                                 ),
-  //                                                 child: Row(
-  //                                                   mainAxisAlignment:
-  //                                                       MainAxisAlignment.spaceBetween,
-  //                                                   children: [
-  //                                                     Text(
-  //                                                       style: TextStyle(
-  //                                                         fontSize:
-  //                                                             theme.mobileTexts.b3.fontSize,
-  //                                                         fontWeight:
-  //                                                             FontWeight.bold,
-  //                                                       ),
-  //                                                       item.name,
-  //                                                     ),
-  //                                                     Row(
-  //                                                       spacing:
-  //                                                           15,
-  //                                                       children: [
-  //                                                         Text(
-  //                                                           style: TextStyle(
-  //                                                             fontSize:
-  //                                                                 theme.mobileTexts.b3.fontSize,
-  //                                                             fontWeight:
-  //                                                                 FontWeight.bold,
-  //                                                           ),
-  //                                                           '${item.quantity ?? 0}',
-  //                                                         ),
-  //                                                         Container(
-  //                                                           padding: EdgeInsets.all(
-  //                                                             2,
-  //                                                           ),
-  //                                                           decoration: BoxDecoration(
-  //                                                             shape:
-  //                                                                 BoxShape.circle,
-  //                                                             border: Border.all(
-  //                                                               color:
-  //                                                                   Colors.grey,
-  //                                                             ),
-  //                                                           ),
-  //                                                           child: Container(
-  //                                                             padding: EdgeInsets.all(
-  //                                                               5,
-  //                                                             ),
-  //                                                             decoration: BoxDecoration(
-  //                                                               shape:
-  //                                                                   BoxShape.circle,
-  //                                                               color:
-  //                                                                   selectedItem?.uuid ==
-  //                                                                           item.uuid
-  //                                                                       ? theme.lightModeColor.prColor250
-  //                                                                       : Colors.transparent,
-  //                                                             ),
-  //                                                           ),
-  //                                                         ),
-  //                                                       ],
-  //                                                     ),
-  //                                                   ],
-  //                                                 ),
-  //                                               ),
-  //                                             ),
-  //                                           ),
-  //                                         )
-  //                                         .toList(),
-  //                               );
-  //                             }
-  //                           },
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //           );
-  //         },
-  //       );
-  //     },
-  //   );
-  // }
 
   void selectItemForProduction({
     required BuildContext firstContext,
@@ -554,7 +338,7 @@ class CreateProductionFunctions {
                                                                   fontWeight:
                                                                       FontWeight.bold,
                                                                 ),
-                                                                '${item.quantity ?? 0}',
+                                                                '${formatLargeNumberDouble(item.getPrimaryUnit().getQuantityEquivDivided(index: 2, quantityTwo: item.quantity ?? 0))} ${cutLongText(item.getPrimaryUnit().name, 8)}',
                                                               ),
                                                               Container(
                                                                 padding: EdgeInsets.all(
@@ -646,7 +430,7 @@ class CreateProductionFunctions {
                                                                   fontWeight:
                                                                       FontWeight.bold,
                                                                 ),
-                                                                '${item.quantity ?? 0}',
+                                                                '${formatLargeNumberDouble(item.getPrimaryUnit().getQuantityEquivDivided(index: 1, quantityTwo: item.quantity ?? 0))} ${cutLongText(item.getPrimaryUnit().name, 8)}',
                                                               ),
                                                               Container(
                                                                 padding: EdgeInsets.all(
@@ -717,17 +501,103 @@ class CreateProductionFunctions {
     showDialog(
       context: secondContext,
       builder: (thirdContext) {
-        bool useGroupUnit = false;
+        final productionItemUnits =
+            returnProductionItemsProvider()
+                .productionItemListMain
+                .where(
+                  (item) => item.uuid == editItem?.itemUuid,
+                )
+                .toList();
+        final salesItemUnits =
+            returnData().productListMain
+                .where(
+                  (item) =>
+                      item.uuid == editItem?.salesItemUuid,
+                )
+                .toList();
+        final sourceUnits =
+            (editItem?.unitsList?.isNotEmpty == true
+                ? editItem!.unitsList
+                : null) ??
+            (useProductionitems
+                ? selectedItem?.getUnitsList() ??
+                    (productionItemUnits.isEmpty
+                        ? null
+                        : productionItemUnits.first
+                            .getUnitsList())
+                : selectedSalesItem?.getUnitsList() ??
+                    (salesItemUnits.isEmpty
+                        ? null
+                        : salesItemUnits.first
+                            .getUnitsList())) ??
+            [];
+        final units =
+            sourceUnits
+                .map((unit) => unit.copyWith())
+                .toList();
+        String? selectedUnitUuid =
+            editItem?.unitUuid ??
+            legacyProductionUnitUuid(
+              unitsList: units,
+              useGroupQuantity: editItem?.useGroupQuantity,
+              groupUnit: editItem?.groupUnit,
+            );
+        if (selectedUnitUuid == null) {
+          final primaryUnits = units.where(
+            (unit) => unit.isPrimary,
+          );
+          if (primaryUnits.isNotEmpty) {
+            selectedUnitUuid = primaryUnits.first.uuid;
+          }
+        }
+        ProductUnitsClass? currentUnit() {
+          for (final unit in units) {
+            if (unit.uuid == selectedUnitUuid) return unit;
+          }
+          return null;
+        }
+
         final quantityController = TextEditingController();
         if (editItem != null) {
           quantityController.text =
               editItem.quantity.toString();
-          useGroupUnit = editItem.useGroupQuantity ?? false;
         }
 
         Future<void> onSubmit() async {
           if (quantityController.text.isNotEmpty &&
-              quantityController.text != '0') {
+              quantityController.text != '0' &&
+              selectedUnitUuid != null) {
+            final selectedUnit = units.firstWhere(
+              (unit) => unit.uuid == selectedUnitUuid,
+            );
+            final primaryUnits =
+                units
+                    .where((unit) => unit.isPrimary)
+                    .toList();
+            final primaryUnitName =
+                primaryUnits.isEmpty
+                    ? 'Unit(s)'
+                    : primaryUnits.first.name;
+            final quantity =
+                double.tryParse(
+                  quantityController.text.replaceAll(
+                    ',',
+                    '',
+                  ),
+                ) ??
+                0;
+            if (!selectedUnit.conversion.isFinite ||
+                selectedUnit.conversion <= 0 ||
+                !quantity.isFinite ||
+                quantity <= 0) {
+              return;
+            }
+            final originalCost =
+                editItem?.originalCostPerItem ??
+                (useProductionitems
+                    ? selectedItem?.costPrice
+                    : selectedSalesItem?.costPrice) ??
+                0;
             var tempCartItem = ProductionsCartItem(
               originalUseGroupQuantity:
                   editItem?.originalUseGroupQuantity ??
@@ -758,55 +628,19 @@ class CreateProductionFunctions {
                       ? selectedItem?.name
                       : selectedSalesItem?.name) ??
                   'Not Set',
-              quantity:
-                  double.tryParse(
-                    quantityController.text.replaceAll(
-                      ',',
-                      '',
-                    ),
-                  ) ??
-                  0,
+              quantity: quantity,
               addToStock: false,
-              useGroupQuantity: useGroupUnit,
-              costPrice: costPriceConversion(
-                originalCostPrice:
-                    editItem?.originalCostPerItem ??
-                    (useProductionitems
-                        ? selectedItem?.costPrice
-                        : selectedSalesItem?.costPrice),
-                isGroup: useGroupUnit,
-                quantity:
-                    double.tryParse(
-                      quantityController.text.replaceAll(
-                        ',',
-                        '',
-                      ),
-                    ) ??
-                    0,
-                qttyPerItem:
-                    editItem?.getQttyPerGroup() ??
-                    (useProductionitems
-                        ? selectedItem?.qttyPerGroup
-                        : selectedSalesItem?.qttyPerGroup),
-              ),
+              useGroupQuantity: !selectedUnit.isPrimary,
+              costPrice:
+                  originalCost * quantity * selectedUnit.conversion,
               groupUnit:
-                  editItem?.groupUnit ??
-                  (useProductionitems
-                      ? selectedItem?.groupUnit
-                      : selectedSalesItem?.groupUnit) ??
-                  'Group(s)',
-              qttyPerGroup:
-                  editItem?.qttyPerGroup ??
-                  (useProductionitems
-                      ? selectedItem?.qttyPerGroup
-                      : selectedSalesItem?.qttyPerGroup) ??
-                  1,
-              unit:
-                  editItem?.unit ??
-                  (useProductionitems
-                      ? selectedItem?.unit
-                      : selectedSalesItem?.unit) ??
-                  'Unit(s)',
+                  selectedUnit.isPrimary
+                      ? null
+                      : selectedUnit.name,
+              qttyPerGroup: selectedUnit.conversion,
+              unit: primaryUnitName,
+              unitUuid: selectedUnit.uuid,
+              unitsList: units,
             );
             await returnProductionsActionProvider()
                 .addItemToCart(item: tempCartItem);
@@ -845,57 +679,19 @@ class CreateProductionFunctions {
                         onSubmit();
                       },
                     ),
-                    Visibility(
-                      visible:
-                          (editItem
-                                  ?.originalUseGroupQuantity ??
-                              (useProductionitems
-                                  ? selectedItem
-                                      ?.useGroupUnit
-                                  : selectedSalesItem
-                                      ?.useGroupUnit)) ==
-                          true,
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: 200,
-                        ),
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                vertical: 10.0,
-                              ),
-                          child: Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
-                            spacing: 10,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                'Add Group?',
-                              ),
-                              MyToggleButton(
-                                theme: theme,
-                                toggle: () {
-                                  setState2(() {
-                                    useGroupUnit =
-                                        !useGroupUnit;
-                                  });
-                                },
-                                boolValue: useGroupUnit,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                    UnitSelectionWidget(
+                      product: null,
+                      storageProduct: null,
+                      productionItem: null,
+                      material: null,
+                      theme: theme,
+                      unitUuid: selectedUnitUuid,
+                      unitList: units,
+                      setUnitUuid: (value) {
+                        setState2(() {
+                          selectedUnitUuid = value;
+                        });
+                      },
                     ),
                     Container(
                       padding: EdgeInsets.symmetric(
@@ -982,35 +778,27 @@ class CreateProductionFunctions {
                                       FontWeight.bold,
                                 ),
                                 formatMoneyBig(
-                                  amount: costPriceConversion(
-                                    originalCostPrice:
-                                        editItem
-                                            ?.originalCostPerItem ??
-                                        (useProductionitems
-                                            ? selectedItem
-                                                ?.costPrice
-                                            : selectedSalesItem
-                                                ?.costPrice),
-                                    isGroup: useGroupUnit,
-                                    quantity:
-                                        double.tryParse(
-                                          quantityController
-                                              .text
-                                              .replaceAll(
-                                                ',',
-                                                '',
-                                              ),
-                                        ) ??
-                                        0,
-                                    qttyPerItem:
-                                        editItem
-                                            ?.getQttyPerGroup() ??
-                                        (useProductionitems
-                                            ? selectedItem
-                                                ?.qttyPerGroup
-                                            : selectedSalesItem
-                                                ?.qttyPerGroup),
-                                  ),
+                                  amount:
+                                      (editItem
+                                              ?.originalCostPerItem ??
+                                          (useProductionitems
+                                              ? selectedItem
+                                                  ?.costPrice
+                                              : selectedSalesItem
+                                                  ?.costPrice) ??
+                                          0) *
+                                      (double.tryParse(
+                                            quantityController
+                                                .text
+                                                .replaceAll(
+                                                  ',',
+                                                  '',
+                                                ),
+                                          ) ??
+                                          0) *
+                                      (currentUnit()
+                                              ?.conversion ??
+                                          1),
                                   context: context,
                                 ),
                               ),
@@ -1044,24 +832,8 @@ class CreateProductionFunctions {
                                   fontWeight:
                                       FontWeight.bold,
                                 ),
-                                (editItem != null
-                                    ? editItem
-                                        .getUnitForSales(
-                                          useGroup:
-                                              useGroupUnit,
-                                        )
-                                    : (useProductionitems
-                                            ? selectedItem
-                                                ?.getUnitForSales(
-                                                  useGroup:
-                                                      useGroupUnit,
-                                                )
-                                            : selectedSalesItem
-                                                ?.getUnitForSales(
-                                                  useGroup:
-                                                      useGroupUnit,
-                                                )) ??
-                                        'Unit(s)'),
+                                currentUnit()?.name ??
+                                    'Unit(s)',
                               ),
                             ],
                           ),
@@ -1211,92 +983,23 @@ class CreateProductionFunctions {
                                           .map(
                                             (
                                               item,
-                                            ) => Material(
-                                              color:
-                                                  Colors
-                                                      .transparent,
-                                              child: InkWell(
-                                                mouseCursor:
-                                                    SystemMouseCursors
-                                                        .click,
-                                                onTap: () {
-                                                  setState(() {
-                                                    if (selectedMaterial?.uuid ==
-                                                        item.uuid) {
-                                                      selectedMaterial =
-                                                          null;
-                                                    } else {
-                                                      selectedMaterial =
-                                                          item;
-                                                    }
-                                                  });
-                                                },
-                                                child: Padding(
-                                                  padding: const EdgeInsets.symmetric(
-                                                    vertical:
-                                                        9.0,
-                                                    horizontal:
-                                                        10,
-                                                  ),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.spaceBetween,
-                                                    children: [
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              theme.mobileTexts.b3.fontSize,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                        item.name,
-                                                      ),
-                                                      Row(
-                                                        spacing:
-                                                            15,
-                                                        children: [
-                                                          Text(
-                                                            style: TextStyle(
-                                                              fontSize:
-                                                                  theme.mobileTexts.b3.fontSize,
-                                                              fontWeight:
-                                                                  FontWeight.bold,
-                                                            ),
-                                                            '${item.quantity ?? 0}',
-                                                          ),
-                                                          Container(
-                                                            padding: EdgeInsets.all(
-                                                              2,
-                                                            ),
-                                                            decoration: BoxDecoration(
-                                                              shape:
-                                                                  BoxShape.circle,
-                                                              border: Border.all(
-                                                                color:
-                                                                    Colors.grey,
-                                                              ),
-                                                            ),
-                                                            child: Container(
-                                                              padding: EdgeInsets.all(
-                                                                5,
-                                                              ),
-                                                              decoration: BoxDecoration(
-                                                                shape:
-                                                                    BoxShape.circle,
-                                                                color:
-                                                                    selectedMaterial?.uuid ==
-                                                                            item.uuid
-                                                                        ? theme.lightModeColor.prColor250
-                                                                        : Colors.transparent,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
+                                            ) => SelectMaterialItemTile(
+                                              action: () {
+                                                setState(() {
+                                                  if (selectedMaterial
+                                                          ?.uuid ==
+                                                      item.uuid) {
+                                                    selectedMaterial =
+                                                        null;
+                                                  } else {
+                                                    selectedMaterial =
+                                                        item;
+                                                  }
+                                                });
+                                              },
+                                              item: item,
+                                              selectedMaterial:
+                                                  selectedMaterial,
                                             ),
                                           )
                                           .toList(),
@@ -1327,62 +1030,149 @@ class CreateProductionFunctions {
     showDialog(
       context: secondContext,
       builder: (thirdContext) {
-        bool useGroupUnit = false;
+        final existingMaterial =
+            returnMaterialsProvider().materialListMain
+                .where(
+                  (item) =>
+                      item.uuid ==
+                      (editMaterialItem?.materialItemUuid ??
+                          selectedMaterial?.uuid),
+                )
+                .toList();
+        final units =
+            ((editMaterialItem?.unitsList?.isNotEmpty ==
+                            true
+                        ? editMaterialItem!.unitsList
+                        : null) ??
+                    selectedMaterial?.getUnitsList() ??
+                    (existingMaterial.isEmpty
+                        ? null
+                        : existingMaterial.first
+                            .getUnitsList()) ??
+                    [])
+                .map((unit) => unit.copyWith())
+                .toList();
+        String? selectedUnitUuid =
+            editMaterialItem?.unitUuid ??
+            legacyProductionUnitUuid(
+              unitsList: units,
+              useGroupQuantity:
+                  editMaterialItem?.useGroupQuantity,
+              groupUnit: editMaterialItem?.groupUnit,
+            );
+        if (selectedUnitUuid == null && units.isNotEmpty) {
+          final primaryUnits =
+              units
+                  .where((unit) => unit.isPrimary)
+                  .toList();
+          selectedUnitUuid =
+              primaryUnits.isEmpty
+                  ? units.first.uuid
+                  : primaryUnits.first.uuid;
+        }
+        ProductUnitsClass? currentUnit() {
+          for (final unit in units) {
+            if (unit.uuid == selectedUnitUuid) return unit;
+          }
+          return null;
+        }
+
+        // ignore: unused_local_variable
+        bool useGroupUnit =
+            currentUnit()?.isPrimary == false;
         final quantityController = TextEditingController();
-        final unitController = TextEditingController();
-        String? customUnit;
         if (editMaterialItem != null) {
           quantityController.text =
               editMaterialItem.quantity.toString();
-          useGroupUnit =
-              editMaterialItem.useGroupQuantity ?? false;
-          customUnit = editMaterialItem.customUnit;
         }
 
-        // void checkIsManagedAndClearTextFieldAction(
-        //   bool isTextFieldUse,
-        // ) {
-        //   bool isManaged =
-        //       (editMaterialItem?.isManaged ??
-        //           selectedMaterial?.isManaged ??
-        //           false);
-        //   var materials = returnMaterialsProvider()
-        //       .materialListMain
-        //       .where(
-        //         (item) =>
-        //             item.uuid ==
-        //             (editMaterialItem?.materialItemUuid ??
-        //                 selectedMaterial?.uuid),
-        //       );
-        //   double quantity = 0;
-        //   if (materials.isNotEmpty) {
-        //     quantity = (materials.first.quantity ?? 0);
-        //   }
+        bool hasEnoughManagedStock(double enteredQuantity) {
+          final materialUuid =
+              editMaterialItem?.materialItemUuid ??
+              selectedMaterial?.uuid;
+          final isManaged =
+              editMaterialItem?.isManaged ??
+              selectedMaterial?.isManaged ??
+              false;
+          if (!isManaged || materialUuid == null) {
+            return true;
+          }
 
-        //   if (isManaged &&
-        //       (quantityConversion(
-        //             isGroup:
-        //                 isTextFieldUse
-        //                     ? useGroupUnit
-        //                     : !useGroupUnit,
-        //             quantity:
-        //                 double.tryParse(
-        //                   quantityController.text
-        //                       .replaceAll(',', ''),
-        //                 ) ??
-        //                 0,
-        //             qttyPerItem:
-        //                 editMaterialItem?.qttyPerGroup ??
-        //                 selectedMaterial?.qttyPerGroup,
-        //           ) >
-        //           quantity)) {
-        //     quantityController.text = '0';
-        //   }
-        // }
+          final materials = returnMaterialsProvider()
+              .materialListMain
+              .where((item) => item.uuid == materialUuid);
+          if (materials.isEmpty) return false;
+
+          final cartItems =
+              returnProductionsActionProvider()
+                  .getProductionsCart()
+                  ?.getMaterialsCartItemsAll() ??
+              [];
+          final otherCartDemand = cartItems
+              .where(
+                (item) =>
+                    item.materialItemUuid == materialUuid &&
+                    item.uuid != editMaterialItem?.uuid &&
+                    item.isManaged != false,
+              )
+              .fold<double>(
+                0,
+                (total, item) =>
+                    total + item.getRealQuantity(),
+              );
+          final available =
+              (materials.first.quantity ?? 0) -
+              otherCartDemand +
+              (editMaterialItem?.getRealQuantity() ?? 0);
+          return enteredQuantity *
+                  (currentUnit()?.conversion ?? 0) <=
+              available;
+        }
+
+        void validateEnteredStock() {
+          final enteredQuantity =
+              double.tryParse(
+                quantityController.text.replaceAll(',', ''),
+              ) ??
+              0;
+          if (enteredQuantity > 0 &&
+              !hasEnoughManagedStock(enteredQuantity)) {
+            quantityController.text = '0';
+          }
+        }
 
         Future<void> onSubmit() async {
           if (quantityController.text.isNotEmpty &&
-              quantityController.text != '0') {
+              quantityController.text != '0' &&
+              currentUnit() != null) {
+            final unit = currentUnit()!;
+            final quantity =
+                double.tryParse(
+                  quantityController.text.replaceAll(
+                    ',',
+                    '',
+                  ),
+                ) ??
+                0;
+            if (!unit.conversion.isFinite ||
+                unit.conversion <= 0 ||
+                !quantity.isFinite ||
+                quantity <= 0 ||
+                !hasEnoughManagedStock(quantity)) {
+              if (quantity > 0 &&
+                  !hasEnoughManagedStock(quantity)) {
+                quantityController.text = '0';
+              }
+              return;
+            }
+            final originalCost =
+                editMaterialItem?.originalCostPerItem ??
+                selectedMaterial?.costPrice ??
+                0;
+            final primaryUnits =
+                units
+                    .where((item) => item.isPrimary)
+                    .toList();
             var tempCartItem = ProductionMaterialCartItem(
               isManaged:
                   editMaterialItem?.isManaged ??
@@ -1402,14 +1192,14 @@ class CreateProductionFunctions {
                   editMaterialItem
                       ?.originalUseGroupQuantity ??
                   selectedMaterial?.useGroupUnit,
-              customUnit: customUnit,
+              customUnit: null,
               originalCostPerItem:
                   editMaterialItem?.originalCostPerItem ??
                   selectedMaterial?.costPrice ??
                   0,
               setCustomPrice: false,
               customPrice: null,
-              uuid: uuidGen(),
+              uuid: editMaterialItem?.uuid ?? uuidGen(),
               materialItemUuid:
                   editMaterialItem?.materialItemUuid ??
                   selectedMaterial?.uuid ??
@@ -1418,45 +1208,19 @@ class CreateProductionFunctions {
                   editMaterialItem?.name ??
                   selectedMaterial?.name ??
                   'Not Set',
-              quantity:
-                  double.tryParse(
-                    quantityController.text.replaceAll(
-                      ',',
-                      '',
-                    ),
-                  ) ??
-                  0,
+              quantity: quantity,
               addToStock: false,
-              useGroupQuantity: useGroupUnit,
-              costPrice: costPriceConversion(
-                originalCostPrice:
-                    editMaterialItem?.originalCostPerItem ??
-                    selectedMaterial?.costPrice,
-                isGroup: useGroupUnit,
-                quantity:
-                    double.tryParse(
-                      quantityController.text.replaceAll(
-                        ',',
-                        '',
-                      ),
-                    ) ??
-                    0,
-                qttyPerItem:
-                    editMaterialItem?.getQttyPerGroup() ??
-                    selectedMaterial?.qttyPerGroup,
-              ),
-              groupUnit:
-                  editMaterialItem?.groupUnit ??
-                  selectedMaterial?.groupUnit ??
-                  'Group(s)',
-              qttyPerGroup:
-                  editMaterialItem?.qttyPerGroup ??
-                  selectedMaterial?.qttyPerGroup ??
-                  0,
+              useGroupQuantity: !unit.isPrimary,
+              costPrice:
+                  originalCost * quantity * unit.conversion,
+              groupUnit: unit.isPrimary ? null : unit.name,
+              qttyPerGroup: unit.conversion,
               unit:
-                  editMaterialItem?.unit ??
-                  selectedMaterial?.unit ??
-                  'Unit(s)',
+                  primaryUnits.isEmpty
+                      ? 'Unit(s)'
+                      : primaryUnits.first.name,
+              unitUuid: unit.uuid,
+              unitsList: units,
             );
             await returnProductionsActionProvider()
                 .addMaterialItemToCart(item: tempCartItem);
@@ -1489,67 +1253,30 @@ class CreateProductionFunctions {
                       title: 'Quantity',
                       showTitle: false,
                       onChanged: (p0) {
-                        // checkIsManagedAndClearTextFieldAction(
-                        //   true,
-                        // );
+                        validateEnteredStock();
                         setState2(() {});
                       },
                       onSubmitted: (p0) {
                         onSubmit();
                       },
                     ),
-                    Visibility(
-                      visible:
-                          ((editMaterialItem
-                                      ?.originalUseGroupQuantity ??
-                                  selectedMaterial
-                                      ?.useGroupUnit) ==
-                              true),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: 200,
-                        ),
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                vertical: 10.0,
-                              ),
-                          child: Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
-                            spacing: 10,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                'Add Group?',
-                              ),
-                              MyToggleButton(
-                                theme: theme,
-                                toggle: () {
-                                  // checkIsManagedAndClearTextFieldAction(
-                                  //   false,
-                                  // );
-                                  setState2(() {
-                                    useGroupUnit =
-                                        !useGroupUnit;
-                                    customUnit = null;
-                                  });
-                                },
-                                boolValue: useGroupUnit,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                    UnitSelectionWidget(
+                      product: null,
+                      storageProduct: null,
+                      productionItem: null,
+                      material: null,
+                      theme: theme,
+                      unitUuid: selectedUnitUuid,
+                      unitList: units,
+                      setUnitUuid: (value) {
+                        setState2(() {
+                          selectedUnitUuid = value;
+                          useGroupUnit =
+                              currentUnit()?.isPrimary ==
+                              false;
+                        });
+                        validateEnteredStock();
+                      },
                     ),
                     Container(
                       padding: EdgeInsets.symmetric(
@@ -1647,152 +1374,29 @@ class CreateProductionFunctions {
                                         FontWeight.bold,
                                   ),
                                   formatMoneyBig(
-                                    amount: costPriceConversion(
-                                      originalCostPrice:
-                                          editMaterialItem
-                                              ?.originalCostPerItem ??
-                                          selectedMaterial
-                                              ?.costPrice,
-                                      isGroup: useGroupUnit,
-                                      quantity:
-                                          double.tryParse(
-                                            quantityController
-                                                .text
-                                                .replaceAll(
-                                                  ',',
-                                                  '',
-                                                ),
-                                          ) ??
-                                          0,
-                                      qttyPerItem:
-                                          editMaterialItem
-                                              ?.getQttyPerGroup() ??
-                                          selectedMaterial
-                                              ?.qttyPerGroup,
-                                    ),
+                                    amount:
+                                        (editMaterialItem
+                                                ?.originalCostPerItem ??
+                                            selectedMaterial
+                                                ?.costPrice ??
+                                            0) *
+                                        (double.tryParse(
+                                              quantityController
+                                                  .text
+                                                  .replaceAll(
+                                                    ',',
+                                                    '',
+                                                  ),
+                                            ) ??
+                                            0) *
+                                        (currentUnit()
+                                                ?.conversion ??
+                                            1),
                                     context: context,
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                          Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
-                            spacing: 10,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.normal,
-                                ),
-                                'Unit:',
-                              ),
-                              Material(
-                                type:
-                                    MaterialType
-                                        .transparency,
-                                child: InkWell(
-                                  onTap: () {
-                                    if (customUnit !=
-                                        null) {
-                                      setState2(() {
-                                        customUnit = null;
-                                      });
-                                    } else {
-                                      setCustomUnitForMaterial(
-                                        context: context,
-                                        selectUnit: (
-                                          value,
-                                        ) {
-                                          setState2(() {
-                                            customUnit =
-                                                value;
-                                            useGroupUnit =
-                                                false;
-                                          });
-                                          Navigator.of(
-                                            context,
-                                          ).pop();
-                                        },
-                                        setUnitCustom: () {
-                                          setState2(() {
-                                            customUnit =
-                                                unitController
-                                                    .text;
-                                            useGroupUnit =
-                                                false;
-                                          });
-                                          unitController
-                                              .clear();
-                                          Navigator.of(
-                                            context,
-                                          ).pop();
-                                          Navigator.of(
-                                            secondContext,
-                                          ).pop();
-                                        },
-                                        unitController:
-                                            unitController,
-                                      );
-                                    }
-                                  },
-                                  mouseCursor:
-                                      SystemMouseCursors
-                                          .click,
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(
-                                          8.0,
-                                          5,
-                                          2,
-                                          5,
-                                        ),
-                                    child: Row(
-                                      spacing: 5,
-                                      children: [
-                                        Text(
-                                          style: TextStyle(
-                                            fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b3
-                                                    .fontSize,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
-                                          ),
-                                          customUnit ??
-                                              (editMaterialItem !=
-                                                      null
-                                                  ? editMaterialItem.getUnitForSales(
-                                                    useGroup:
-                                                        useGroupUnit,
-                                                  )
-                                                  : selectedMaterial?.getUnitForSales(
-                                                        useGroup:
-                                                            useGroupUnit,
-                                                      ) ??
-                                                      'Unit(s)'),
-                                        ),
-                                        Icon(
-                                          size: 16,
-                                          customUnit != null
-                                              ? Icons.clear
-                                              : Icons.edit,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
                           ),
                         ],
                       ),

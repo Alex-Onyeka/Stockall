@@ -78,7 +78,7 @@ class OrderItemListTileOrderPage extends StatelessWidget {
                       visible:
                           (record.quantity >
                               (record.remainingQuantity ??
-                                  0)),
+                                  record.quantity)),
                       child: Row(
                         spacing: 3,
                         children: [
@@ -102,7 +102,7 @@ class OrderItemListTileOrderPage extends StatelessWidget {
                                       .fontSize,
                               fontWeight: FontWeight.bold,
                             ),
-                            "${formatLargeNumberDouble(record.remainingQuantity ?? 0)} ${record.getUnit()}",
+                            "${formatLargeNumberDouble(record.remainingQuantity ?? record.quantity)} ${record.getUnit()}",
                           ),
                         ],
                       ),

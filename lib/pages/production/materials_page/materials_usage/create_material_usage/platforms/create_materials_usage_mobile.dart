@@ -6,9 +6,9 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/production/materials_page/materials_usage/create_production/components/material_usage_cart_item_tile.dart';
-import 'package:stockall/pages/production/materials_page/materials_usage/create_production/functions/create_materials_usage_functions.dart';
-import 'package:stockall/pages/production/materials_page/materials_usage/create_production/platforms/create_materials_usage_desktop.dart';
+import 'package:stockall/pages/production/materials_page/materials_usage/create_material_usage/components/material_usage_cart_item_tile.dart';
+import 'package:stockall/pages/production/materials_page/materials_usage/create_material_usage/functions/create_materials_usage_functions.dart';
+import 'package:stockall/pages/production/materials_page/materials_usage/create_material_usage/platforms/create_materials_usage_desktop.dart';
 
 class CreateMaterialsUsageMobile extends StatefulWidget {
   const CreateMaterialsUsageMobile({super.key});

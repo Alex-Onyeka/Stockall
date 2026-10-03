@@ -1,9 +1,10 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
+import 'package:stockall/classes/temp_production_folder/production_unit_snapshot.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions/production_record_materials.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions_cart/productions_cart.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions_cart/temp_productions_cart_item/productions_cart_item.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/production/production_dashboard/productions_section/create_production/functions/create_production_functions.dart';
 
 part 'production_record.g.dart';
 
@@ -81,6 +82,12 @@ class ProductionRecord {
   @HiveField(23)
   String? salesItemUuid;
 
+  @HiveField(24)
+  String? unitUuid;
+
+  @HiveField(25)
+  List<ProductUnitsClass>? unitsList;
+
   ProductionRecord({
     required this.uuid,
     required this.createdAt,
@@ -105,6 +112,8 @@ class ProductionRecord {
     required this.originalUseGroupQuantity,
     required this.useGroupQuantity,
     required this.groupUnit,
+    this.unitUuid,
+    this.unitsList,
   });
 
   /// FROM JSON
@@ -154,6 +163,15 @@ class ProductionRecord {
           json['original_use_group_quantity'] as bool?,
       useGroupQuantity: json['use_group_quantity'] as bool?,
       groupUnit: json['group_unit'] as String?,
+      unitUuid: json['unit_uuid'] as String?,
+      unitsList:
+          (json['units_list'] as List<dynamic>?)
+              ?.map(
+                (item) => ProductUnitsClass.fromJson(
+                  item as Map<String, dynamic>,
+                ),
+              )
+              .toList(),
     );
   }
 
@@ -186,6 +204,9 @@ class ProductionRecord {
           originalUseGroupQuantity,
       'use_group_quantity': useGroupQuantity,
       'group_unit': groupUnit,
+      'unit_uuid': unitUuid,
+      'units_list':
+          unitsList?.map((item) => item.toJson()).toList(),
     };
   }
 
@@ -229,6 +250,10 @@ class ProductionRecord {
       useGroupQuantity:
           cartItem.productionsCartItem?.useGroupQuantity,
       groupUnit: cartItem.productionsCartItem?.groupUnit,
+      unitUuid: cartItem.productionsCartItem?.unitUuid,
+      unitsList: copyProductionUnitSnapshot(
+        cartItem.productionsCartItem?.unitsList,
+      ),
     );
   }
 
@@ -246,6 +271,8 @@ class ProductionRecord {
         originalUseGroupQuantity:
             originalUseGroupQuantity ?? false,
         groupUnit: groupUnit,
+        unitUuid: unitUuid,
+        unitsList: copyProductionUnitSnapshot(unitsList),
         costPrice: totalCost,
         customPrice: customCost,
         qttyPerGroup: qttyPerGroup,
@@ -299,6 +326,8 @@ class ProductionRecord {
     bool? useGroupQuantity,
     String? groupUnit,
     String? salesItemUuid,
+    String? unitUuid,
+    List<ProductUnitsClass>? unitsList,
   }) {
     return ProductionRecord(
       uuid: uuid ?? this.uuid,
@@ -330,6 +359,10 @@ class ProductionRecord {
       useGroupQuantity:
           useGroupQuantity ?? this.useGroupQuantity,
       groupUnit: groupUnit ?? this.groupUnit,
+      unitUuid: unitUuid ?? this.unitUuid,
+      unitsList: copyProductionUnitSnapshot(
+        unitsList ?? this.unitsList,
+      ),
     );
   }
 
@@ -338,22 +371,24 @@ class ProductionRecord {
   }
 
   double getQuantity() {
-    return quantityConversion(
-      isGroup: useGroupQuantity ?? false,
-      quantity: quantity ?? 0,
-      qttyPerItem: qttyPerGroup,
-    );
+    return (quantity ?? 0) *
+        productionUnitConversion(
+          unitUuid: unitUuid,
+          unitsList: unitsList,
+          useGroupQuantity: useGroupQuantity,
+          qttyPerGroup: qttyPerGroup,
+          groupUnitName: groupUnit,
+        );
   }
 
   String getUnit() {
-    if (useGroupQuantity == true) {
-      return groupUnit == 'Others'
-          ? 'Group(s)'
-          : groupUnit ?? 'Group(s)';
-    } else {
-      return unit == 'Others'
-          ? 'Unit(s)'
-          : unit ?? 'Unit(s)';
-    }
+    return productionUnitName(
+      unitUuid: unitUuid,
+      unitsList: unitsList,
+      useGroupQuantity: useGroupQuantity,
+      unit: unit,
+      groupUnit: groupUnit,
+      qttyPerGroup: qttyPerGroup,
+    );
   }
 }

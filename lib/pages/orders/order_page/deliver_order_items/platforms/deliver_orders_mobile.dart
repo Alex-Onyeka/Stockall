@@ -246,9 +246,9 @@ class DeliverOrdersMobileState
                                             .cashController,
                                     context: context,
                                     order: widget.order,
-                                    toggleLoading: () {
+                                    setLoading: (value) {
                                       setState(() {
-                                        isLoading = true;
+                                        isLoading = value;
                                       });
                                     },
                                   );

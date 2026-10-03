@@ -100,18 +100,44 @@ class MaterialsUsageActionProvider extends ChangeNotifier {
           MaterialsUsageCartItem.fromCartMaterialItem(
             items: items,
           );
+      final usageProvider = returnMaterialsUsageProvider();
       for (var item in supabaseItems) {
         var isEdit = getMaterialsUsageCart()?.isEdit;
+        ProductionMaterialsUsage? existingUsage;
         if (isEdit == true) {
-          await returnMaterialsUsageProvider()
-              .deleteProductionMaterialsUsage(
-                item,
-                true,
-                true,
-              );
+          for (final usage
+              in usageProvider.productionMaterialsUsage) {
+            if (usage.uuid == item.uuid) {
+              existingUsage = usage;
+              break;
+            }
+          }
+          if (existingUsage == null) return 0;
+          final deleteResult =
+              await returnMaterialsUsageProvider()
+                  .deleteProductionMaterialsUsage(
+                    existingUsage,
+                    true,
+                    true,
+                  );
+          if (deleteResult != 1) return 0;
         }
-        await returnMaterialsUsageProvider()
+        final createdUsage = await usageProvider
             .createProductionMaterialsUsage(item);
+        if (createdUsage == null) {
+          if (existingUsage != null) {
+            final restoredUsage = await usageProvider
+                .createProductionMaterialsUsage(
+                  existingUsage,
+                );
+            if (restoredUsage == null) {
+              await mainLocalLog(
+                'Failed to restore material usage ${existingUsage.uuid} after its replacement failed.',
+              );
+            }
+          }
+          return 0;
+        }
       }
       await returnMaterialsUsageProvider()
           .getProductionMaterialsUsageOffline();
@@ -132,6 +158,12 @@ class MaterialsUsageActionProvider extends ChangeNotifier {
     required ProductionMaterialsUsage record,
   }) async {
     try {
+      if (record.productionRecordUuid != null) {
+        await mainLocalLog(
+          'Production-linked material usage must be changed by editing its production record.',
+        );
+        return 0;
+      }
       var item = MaterialsUsageCartItem.toCartMaterialsItem(
         items: [record],
       );

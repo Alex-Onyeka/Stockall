@@ -6,8 +6,8 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/production/materials_page/materials_usage/create_production/components/material_usage_cart_item_tile.dart';
-import 'package:stockall/pages/production/materials_page/materials_usage/create_production/functions/create_materials_usage_functions.dart';
+import 'package:stockall/pages/production/materials_page/materials_usage/create_material_usage/components/material_usage_cart_item_tile.dart';
+import 'package:stockall/pages/production/materials_page/materials_usage/create_material_usage/functions/create_materials_usage_functions.dart';
 
 class CreateMaterialsUsageDesktop extends StatefulWidget {
   const CreateMaterialsUsageDesktop({super.key});

@@ -6,7 +6,8 @@ part of 'productions_cart_item.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class ProductionsCartItemAdapter extends TypeAdapter<ProductionsCartItem> {
+class ProductionsCartItemAdapter
+    extends TypeAdapter<ProductionsCartItem> {
   @override
   final int typeId = 118;
 
@@ -14,7 +15,8 @@ class ProductionsCartItemAdapter extends TypeAdapter<ProductionsCartItem> {
   ProductionsCartItem read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++)
+        reader.readByte(): reader.read(),
     };
     return ProductionsCartItem(
       uuid: fields[0] as String?,
@@ -32,13 +34,16 @@ class ProductionsCartItemAdapter extends TypeAdapter<ProductionsCartItem> {
       unit: fields[9] as String?,
       originalCostPerItem: fields[12] as double?,
       originalUseGroupQuantity: fields[13] as bool?,
+      unitUuid: fields[15] as String?,
+      unitsList:
+          (fields[16] as List?)?.cast<ProductUnitsClass>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, ProductionsCartItem obj) {
     writer
-      ..writeByte(15)
+      ..writeByte(17)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -68,7 +73,11 @@ class ProductionsCartItemAdapter extends TypeAdapter<ProductionsCartItem> {
       ..writeByte(13)
       ..write(obj.originalUseGroupQuantity)
       ..writeByte(14)
-      ..write(obj.salesItemUuid);
+      ..write(obj.salesItemUuid)
+      ..writeByte(15)
+      ..write(obj.unitUuid)
+      ..writeByte(16)
+      ..write(obj.unitsList);
   }
 
   @override

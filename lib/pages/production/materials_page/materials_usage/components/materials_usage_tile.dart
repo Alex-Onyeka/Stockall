@@ -10,7 +10,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/production/materials_page/materials_details/materials_details_page.dart';
-import 'package:stockall/pages/production/materials_page/materials_usage/create_production/create_materials_usage_page.dart';
+import 'package:stockall/pages/production/materials_page/materials_usage/create_material_usage/create_materials_usage_page.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/edit_button.dart';
 
 class MaterialsUsageTile extends StatefulWidget {
@@ -416,149 +416,161 @@ class _MaterialUsageDetailsWidgetState
               ],
             ),
           ),
-          Row(
-            spacing: 10,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                child: EditButton(
-                  action: () {
-                    showDialog(
-                      context: context,
-                      builder: (confirmDialog) {
-                        bool updateInventory = false;
-                        return StatefulBuilder(
-                          builder:
-                              (
-                                newContext,
-                                setStatee,
-                              ) => DialogTemplate(
-                                theme: theme,
-                                message:
-                                    'You are about to delete this Usage Record, are you sure you want to proceed?',
-                                title:
-                                    'Delete Usage Record?',
-                                action: () async {
-                                  Navigator.of(
-                                    confirmDialog,
-                                  ).pop();
-                                  var res = await returnMaterialsUsageProvider()
-                                      .deleteProductionMaterialsUsage(
-                                        widget
-                                            .materialsUsage!,
-                                        updateInventory,
-                                        true,
-                                      );
-                                  if (res == 1) {
-                                    await returnMaterialsUsageProvider()
-                                        .getProductionMaterialsUsageOffline();
+          if (widget.materialsUsage?.productionRecordUuid ==
+              null)
+            Row(
+              spacing: 10,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: EditButton(
+                    action: () {
+                      showDialog(
+                        context: context,
+                        builder: (confirmDialog) {
+                          bool updateInventory = false;
+                          return StatefulBuilder(
+                            builder:
+                                (
+                                  newContext,
+                                  setStatee,
+                                ) => DialogTemplate(
+                                  theme: theme,
+                                  message:
+                                      'You are about to delete this Usage Record, are you sure you want to proceed?',
+                                  title:
+                                      'Delete Usage Record?',
+                                  action: () async {
                                     Navigator.of(
-                                      context,
+                                      confirmDialog,
                                     ).pop();
-                                  }
-                                },
-                                widget: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(
-                                        horizontal: 20.0,
-                                        vertical: 10,
-                                      ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                    var res = await returnMaterialsUsageProvider()
+                                        .deleteProductionMaterialsUsage(
+                                          widget
+                                              .materialsUsage!,
+                                          updateInventory,
+                                          true,
+                                        );
+                                    if (res == 1) {
+                                      await returnMaterialsUsageProvider()
+                                          .getProductionMaterialsUsageOffline();
+                                      Navigator.of(
+                                        context,
+                                      ).pop();
+                                    }
+                                  },
+                                  widget: Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(
+                                          horizontal: 20.0,
+                                          vertical: 10,
                                         ),
-                                        'Update Item Quantity?',
-                                      ),
-                                      MyToggleButton(
-                                        boolValue:
-                                            updateInventory,
-                                        toggle: () {
-                                          setStatee(() {
-                                            updateInventory =
-                                                !updateInventory;
-                                          });
-                                        },
-                                        theme: theme,
-                                      ),
-                                    ],
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .spaceBetween,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          'Update Item Quantity?',
+                                        ),
+                                        MyToggleButton(
+                                          boolValue:
+                                              updateInventory,
+                                          toggle: () {
+                                            setStatee(() {
+                                              updateInventory =
+                                                  !updateInventory;
+                                            });
+                                          },
+                                          theme: theme,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                        );
-                      },
-                    );
-                  },
-                  text: 'Delete',
-                  theme: theme,
-                  icon: Icons.delete_forever_outlined,
-                  color: Colors.redAccent,
+                          );
+                        },
+                      );
+                    },
+                    text: 'Delete',
+                    theme: theme,
+                    icon: Icons.delete_forever_outlined,
+                    color: Colors.redAccent,
+                  ),
                 ),
-              ),
-              Expanded(
-                child: EditButton(
-                  action: () {
-                    if (returnMaterialsUsageActionProvider()
-                        .isCartEmpty()) {
-                      showDialog(
-                        context: context,
-                        builder: (confirmContext) {
-                          return ConfirmationAlert(
-                            action: () async {
-                              var res = await returnMaterialsUsageActionProvider()
-                                  .editMaterialsUsageRecord(
-                                    record:
-                                        widget
-                                            .materialsUsage!,
+                Expanded(
+                  child: EditButton(
+                    action: () {
+                      if (returnMaterialsUsageActionProvider()
+                          .isCartEmpty()) {
+                        showDialog(
+                          context: context,
+                          builder: (confirmContext) {
+                            return ConfirmationAlert(
+                              action: () async {
+                                var res = await returnMaterialsUsageActionProvider()
+                                    .editMaterialsUsageRecord(
+                                      record:
+                                          widget
+                                              .materialsUsage!,
+                                    );
+                                if (res == 1) {
+                                  Navigator.of(
+                                    confirmContext,
+                                  ).pop();
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (
+                                        navContext,
+                                      ) {
+                                        return CreateMaterialsUsagePage();
+                                      },
+                                    ),
                                   );
-                              if (res == 1) {
-                                Navigator.of(
-                                  confirmContext,
-                                ).pop();
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (navContext) {
-                                      return CreateMaterialsUsagePage();
-                                    },
-                                  ),
-                                );
-                              }
-                            },
-                            message:
-                                'Are you sure you want to Proceed to Edit this Usage Record?',
-                            theme: theme,
-                            title: 'Edit Usage Record',
-                          );
-                        },
-                      );
-                    } else {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return InfoAlert(
-                            theme: theme,
-                            message:
-                                'Materials Cart it Not Empty.',
-                            title: 'Cart Not Empty',
-                          );
-                        },
-                      );
-                    }
-                  },
-                  text: 'Edit',
-                  theme: theme,
-                  icon: Icons.edit,
+                                }
+                              },
+                              message:
+                                  'Are you sure you want to Proceed to Edit this Usage Record?',
+                              theme: theme,
+                              title: 'Edit Usage Record',
+                            );
+                          },
+                        );
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return InfoAlert(
+                              theme: theme,
+                              message:
+                                  'Materials Cart it Not Empty.',
+                              title: 'Cart Not Empty',
+                            );
+                          },
+                        );
+                      }
+                    },
+                    text: 'Edit',
+                    theme: theme,
+                    icon: Icons.edit,
+                  ),
                 ),
+              ],
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                'This usage is managed by its production record. Edit or delete the production record to change it.',
+                textAlign: TextAlign.center,
               ),
-            ],
-          ),
+            ),
           Visibility(
             visible:
                 !widget.fromDetails &&

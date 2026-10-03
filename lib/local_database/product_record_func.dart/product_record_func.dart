@@ -132,9 +132,14 @@ class ProductRecordFunc {
           if (products.isNotEmpty) {
             var oldProduct = products.first;
             var product = oldProduct.copyWith();
-            product.quantity =
-                (product.quantity ?? 0) +
-                record.getSelectedUnitQuantityMultiplied();
+            final oldQuantity = oldProduct.quantity ?? 0;
+            final quantityChange =
+                record.getActualQuantity();
+            product.quantity = oldQuantity + quantityChange;
+            final newQuantity = product.quantity ?? 0;
+            final primaryUnit = product.getPrimaryUnit();
+            final primaryUnitConversion =
+                primaryUnit.conversion;
             ItemHistory itemHistory = ItemHistory(
               shopId: shopId(),
               title: 'Item Returned',
@@ -142,26 +147,14 @@ class ProductRecordFunc {
                   '${record.quantity} ${record.unit} of This Item was Returned. Receipt Id: #${returnOnlyDigits(receiptUuid)}.',
               quantityChange: record.quantity,
               newValue: formatLargeNumberDouble(
-                product
-                    .getProductUnit()
-                    .getQuantityEquivDivided(
-                      index: 1,
-                      newQuantity: product.quantity,
-                      product: product,
-                    ),
+                newQuantity / primaryUnitConversion,
               ),
               isIncreased: true,
               oldValue: formatLargeNumberDouble(
-                oldProduct
-                    .getProductUnit()
-                    .getQuantityEquivDivided(
-                      index: 1,
-                      newQuantity: oldProduct.quantity,
-                      product: oldProduct,
-                    ),
+                oldQuantity / primaryUnitConversion,
               ),
               unit: record.unit,
-              primaryUnit: product.getPrimaryUnit().name,
+              primaryUnit: primaryUnit.name,
             );
             await returnData().updateProduct(
               itemHistory: itemHistory,
@@ -169,9 +162,7 @@ class ProductRecordFunc {
               isMultipleUpdate: true,
               product: product,
               isQuantityUpdate: true,
-              quantityChange:
-                  record
-                      .getSelectedUnitQuantityMultiplied(),
+              quantityChange: record.getActualQuantity(),
               isIncrement: true,
             );
           }
