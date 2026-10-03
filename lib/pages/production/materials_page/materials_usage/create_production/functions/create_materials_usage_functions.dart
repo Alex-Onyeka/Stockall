@@ -181,7 +181,7 @@ class CreateMaterialsUsageFunctions {
                                                               fontWeight:
                                                                   FontWeight.bold,
                                                             ),
-                                                            '${item.quantity ?? 0}',
+                                                            '${formatLargeNumberDouble(item.getPrimaryUnit().getQuantityEquivDivided(index: 3, material: item))} ${cutLongText(item.getPrimaryUnit().name, 8)}',
                                                           ),
                                                           Container(
                                                             padding: EdgeInsets.all(
@@ -293,6 +293,17 @@ class CreateMaterialsUsageFunctions {
           return null;
         }
 
+        double primaryUnitConversion() {
+          for (final unit in units) {
+            if (unit.isPrimary &&
+                unit.conversion.isFinite &&
+                unit.conversion > 0) {
+              return unit.conversion;
+            }
+          }
+          return 1;
+        }
+
         bool useGroupUnit =
             currentUnit()?.isPrimary == false;
         final quantityController = TextEditingController();
@@ -401,6 +412,14 @@ class CreateMaterialsUsageFunctions {
                 units
                     .where((item) => item.isPrimary)
                     .toList();
+            final primaryUnitConversion =
+                primaryUnits.isEmpty
+                    ? 1.0
+                    : primaryUnits.first.conversion;
+            if (!primaryUnitConversion.isFinite ||
+                primaryUnitConversion <= 0) {
+              return;
+            }
             var tempCartItem = MaterialsUsageCartItem(
               isManaged:
                   editMaterialItem?.isManaged ??
@@ -434,7 +453,8 @@ class CreateMaterialsUsageFunctions {
                   currentSelection == 1
                       ? originalCost *
                           quantity *
-                          unit.conversion
+                          unit.conversion /
+                          primaryUnitConversion
                       : customCost,
               groupUnit: unit.isPrimary ? null : unit.name,
               qttyPerGroup: unit.conversion,
@@ -651,49 +671,34 @@ class CreateMaterialsUsageFunctions {
                                         FontWeight.bold,
                                   ),
                                   formatMoneyBig(
-                                    amount: costPriceConversion(
-                                      originalCostPrice:
-                                          currentSelection ==
-                                                  1
-                                              ? (editMaterialItem
-                                                      ?.originalCostPerItem ??
-                                                  selectedMaterial
-                                                      ?.costPrice)
-                                              : double.tryParse(
-                                                    customCostController
-                                                        .text
-                                                        .replaceAll(
-                                                          ',',
-                                                          '',
-                                                        ),
-                                                  ) ??
-                                                  0,
-                                      isGroup:
-                                          currentSelection ==
-                                                  1
-                                              ? useGroupUnit
-                                              : false,
-                                      quantity:
-                                          currentSelection ==
-                                                  1
-                                              ? double.tryParse(
-                                                    quantityController
-                                                        .text
-                                                        .replaceAll(
-                                                          ',',
-                                                          '',
-                                                        ),
-                                                  ) ??
-                                                  0
-                                              : 1,
-                                      qttyPerItem:
-                                          currentSelection ==
-                                                  1
-                                              ? currentUnit()
-                                                      ?.conversion ??
-                                                  1
-                                              : 1,
-                                    ),
+                                    amount:
+                                        currentSelection ==
+                                                1
+                                            ? (editMaterialItem
+                                                        ?.originalCostPerItem ??
+                                                    selectedMaterial
+                                                        ?.costPrice ??
+                                                    0) *
+                                                (double.tryParse(
+                                                      quantityController.text.replaceAll(
+                                                        ',',
+                                                        '',
+                                                      ),
+                                                    ) ??
+                                                    0) *
+                                                (currentUnit()
+                                                        ?.conversion ??
+                                                    1) /
+                                                primaryUnitConversion()
+                                            : double.tryParse(
+                                                  customCostController
+                                                      .text
+                                                      .replaceAll(
+                                                        ',',
+                                                        '',
+                                                      ),
+                                                ) ??
+                                                0,
                                     context: context,
                                   ),
                                 ),
@@ -1016,30 +1021,4 @@ class CreateMaterialsUsageFunctions {
       },
     );
   }
-}
-
-double quantityConversion({
-  required bool isGroup,
-  required double quantity,
-  required double? qttyPerItem,
-}) {
-  if (isGroup) {
-    return quantity * (qttyPerItem ?? 1);
-  } else {
-    return quantity;
-  }
-}
-
-double costPriceConversion({
-  required double? originalCostPrice,
-  required bool isGroup,
-  required double quantity,
-  required double? qttyPerItem,
-}) {
-  return (originalCostPrice ?? 0) *
-      quantityConversion(
-        isGroup: isGroup,
-        quantity: quantity,
-        qttyPerItem: qttyPerItem,
-      );
 }

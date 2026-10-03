@@ -556,7 +556,7 @@ class CreateProductionFunctions {
                                                                   fontWeight:
                                                                       FontWeight.bold,
                                                                 ),
-                                                                '${item.quantity ?? 0}',
+                                                                '${formatLargeNumberDouble(item.getPrimaryUnit().getQuantityEquivDivided(index: 2, quantityTwo: item.quantity ?? 0))} ${cutLongText(item.getPrimaryUnit().name, 8)}',
                                                               ),
                                                               Container(
                                                                 padding: EdgeInsets.all(
@@ -648,7 +648,7 @@ class CreateProductionFunctions {
                                                                   fontWeight:
                                                                       FontWeight.bold,
                                                                 ),
-                                                                '${item.quantity ?? 0}',
+                                                                '${formatLargeNumberDouble(item.getPrimaryUnit().getQuantityEquivDivided(index: 1, quantityTwo: item.quantity ?? 0))} ${cutLongText(item.getPrimaryUnit().name, 8)}',
                                                               ),
                                                               Container(
                                                                 padding: EdgeInsets.all(
@@ -788,9 +788,14 @@ class CreateProductionFunctions {
             final selectedUnit = units.firstWhere(
               (unit) => unit.uuid == selectedUnitUuid,
             );
-            final primaryUnits = units.where(
-              (unit) => unit.isPrimary,
-            );
+            final primaryUnits =
+                units
+                    .where((unit) => unit.isPrimary)
+                    .toList();
+            final primaryUnitConversion =
+                primaryUnits.isEmpty
+                    ? 1.0
+                    : primaryUnits.first.conversion;
             final primaryUnitName =
                 primaryUnits.isEmpty
                     ? 'Unit(s)'
@@ -805,6 +810,8 @@ class CreateProductionFunctions {
                 0;
             if (!selectedUnit.conversion.isFinite ||
                 selectedUnit.conversion <= 0 ||
+                !primaryUnitConversion.isFinite ||
+                primaryUnitConversion <= 0 ||
                 !quantity.isFinite ||
                 quantity <= 0) {
               return;
@@ -851,7 +858,8 @@ class CreateProductionFunctions {
               costPrice:
                   originalCost *
                   quantity *
-                  selectedUnit.conversion,
+                  selectedUnit.conversion /
+                  primaryUnitConversion,
               groupUnit:
                   selectedUnit.isPrimary
                       ? null
@@ -1459,6 +1467,14 @@ class CreateProductionFunctions {
                 units
                     .where((item) => item.isPrimary)
                     .toList();
+            final primaryUnitConversion =
+                primaryUnits.isEmpty
+                    ? 1.0
+                    : primaryUnits.first.conversion;
+            if (!primaryUnitConversion.isFinite ||
+                primaryUnitConversion <= 0) {
+              return;
+            }
             var tempCartItem = ProductionMaterialCartItem(
               isManaged:
                   editMaterialItem?.isManaged ??
@@ -1498,7 +1514,10 @@ class CreateProductionFunctions {
               addToStock: false,
               useGroupQuantity: !unit.isPrimary,
               costPrice:
-                  originalCost * quantity * unit.conversion,
+                  originalCost *
+                  quantity *
+                  unit.conversion /
+                  primaryUnitConversion,
               groupUnit: unit.isPrimary ? null : unit.name,
               qttyPerGroup: unit.conversion,
               unit:
