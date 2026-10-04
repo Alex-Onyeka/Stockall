@@ -170,6 +170,9 @@ class ProductionItemsFunc {
         DeletedProductionItemsFunc()
             .getProductionItemIds()
             .isEmpty &&
+        ProductionItemsQuantityUpdateFunc()
+            .getProductionItemsQuantitiesUpdate()
+            .isEmpty &&
         returnData().isSyncing == false) {
       return true;
     } else {

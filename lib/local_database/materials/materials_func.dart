@@ -143,6 +143,9 @@ class MaterialsFunc {
     if (CreatedMaterialsFunc().getMaterials().isEmpty &&
         UpdatedMaterialsFunc().getMaterials().isEmpty &&
         DeletedMaterialsFunc().getMaterialIds().isEmpty &&
+        MaterialsQuantityUpdateFunc()
+            .getMaterialsQuantitiesUpdate()
+            .isEmpty &&
         returnData().isSyncing == false) {
       return true;
     } else {
