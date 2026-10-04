@@ -151,6 +151,9 @@ class ProductsFunc {
     if (CreatedProductFunc().getProducts().isEmpty &&
         UpdatedProductsFunc().getProducts().isEmpty &&
         DeletedProductsFunc().getProductIds().isEmpty &&
+        QuantityUpdateFunc()
+            .getQuantitiesUpdate()
+            .isEmpty &&
         returnData().isSyncing == false) {
       return true;
     } else {
