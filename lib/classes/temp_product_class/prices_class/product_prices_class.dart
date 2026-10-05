@@ -105,7 +105,7 @@ class ProductPricesClass extends HiveObject {
         createdAt: DateTime.now(),
         staffName: currentUser().name,
         priceValue: price ?? 0,
-        name: 'Prices(s)',
+        name: 'Prices',
         isPrimary: true,
         itemUuid: itemUuid ?? '',
       );

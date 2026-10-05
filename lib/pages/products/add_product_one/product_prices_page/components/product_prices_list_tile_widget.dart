@@ -130,7 +130,7 @@ class _ProductPriceListTileWidgetState
                                     fontWeight:
                                         FontWeight.normal,
                                   ),
-                                  "Conversion:",
+                                  "Price-Value:",
                                 ),
                                 Text(
                                   style: TextStyle(
@@ -309,7 +309,7 @@ class _ProductPriceListTileWidgetState
                             onTap: () {
                               addProductPriceAction(
                                 context: context,
-                                quantityController:
+                                priceController:
                                     quantityController,
                                 nameController:
                                     nameController,

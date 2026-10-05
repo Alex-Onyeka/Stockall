@@ -446,15 +446,15 @@ class TempProductClass {
         .toList();
   }
 
-  ProductPricesClass getProductPrice({String? unitUuid}) {
+  ProductPricesClass getProductPrice({String? priceUuid}) {
     var items = getPricesList().where(
-      (item) => item.uuid == unitUuid,
+      (item) => item.uuid == priceUuid,
     );
-    if (unitUuid == null || items.isEmpty) {
+    if (priceUuid == null || items.isEmpty) {
       return getPrimaryPrice();
     } else {
       return getPricesList().firstWhere(
-        (item) => item.uuid == unitUuid,
+        (item) => item.uuid == priceUuid,
       );
     }
   }
@@ -483,7 +483,8 @@ class TempProductClass {
 
   List<ProductPricesClass> getPricesList() {
     List<ProductPricesClass> tempList() {
-      if (unitsList == null || unitsList?.isEmpty == true) {
+      if (pricesList == null ||
+          pricesList?.isEmpty == true) {
         List<ProductPricesClass> tempList = [
           ProductPricesClass(
             uuid: uuidGen(),
@@ -548,11 +549,11 @@ class TempProductClass {
     required BuildContext context,
   }) {
     if (discount == null) {
-      if (sellingPrice != null) {
+      if (getPrimaryPrice().priceValue != 0) {
         return formatMoneyMid(
           amount:
               getPrimaryUnit().conversion *
-              (sellingPrice ?? 0),
+              (getPrimaryPrice().priceValue),
           context: context,
         );
       } else {
@@ -562,8 +563,8 @@ class TempProductClass {
       return formatMoneyMid(
         amount:
             getPrimaryUnit().conversion *
-            (((sellingPrice ?? 0.0) -
-                ((sellingPrice ?? 0.0) *
+            ((getPrimaryPrice().priceValue -
+                (getPrimaryPrice().priceValue *
                     (discount! / 100)))),
         context: context,
       );
@@ -573,11 +574,11 @@ class TempProductClass {
   String getItemTilePriceNoDiscount({
     required BuildContext context,
   }) {
-    if (sellingPrice != null) {
+    if (getPrimaryPrice().priceValue != 0) {
       return formatMoneyMid(
         amount:
             getPrimaryUnit().conversion *
-            (sellingPrice ?? 0),
+            getPrimaryPrice().priceValue,
         context: context,
       );
     } else {

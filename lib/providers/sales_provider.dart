@@ -2577,13 +2577,12 @@ class SalesProvider extends ChangeNotifier {
   double discountCheck(TempProductClass product) {
     double tempValue = 0;
     if (product.discount == null || product.discount == 0) {
-      tempValue = product.sellingPrice ?? 0;
+      tempValue = product.getPrimaryPrice().priceValue;
     } else {
       tempValue =
-          product.sellingPrice ??
-          0 -
-              (product.sellingPrice ??
-                  0 * (product.discount! / 100));
+          product.getPrimaryPrice().priceValue -
+          (product.getPrimaryPrice().priceValue *
+              (product.discount! / 100));
     }
     return tempValue;
   }
@@ -2600,7 +2599,11 @@ class SalesProvider extends ChangeNotifier {
         if (item.getItem()?.discount != null &&
             item.customPrice == null) {
           double discountPerUnit =
-              (item.getItem()?.sellingPrice ?? 0) *
+              (item
+                      .getItem()
+                      ?.getPrimaryPrice()
+                      .priceValue ??
+                  0) *
               ((item.getItem()?.discount ?? 1) / 100);
           tempTotalDiscount +=
               discountPerUnit * item.quantity;

@@ -517,8 +517,9 @@ Future<Uint8List> _buildPdfRoll(
                                               ),
                                           formatMoneyMid(
                                             amount:
-                                                (record.sellingPrice ??
-                                                    0) *
+                                                (record
+                                                    .getPrimaryPrice()
+                                                    .priceValue) *
                                                 (record.quantity ??
                                                     1),
                                             context:
@@ -695,8 +696,7 @@ Future<Uint8List> _buildPdfRoll(
                                                               ),
                                                               formatMoneyMid(
                                                                     amount:
-                                                                        ((record.sellingPrice ??
-                                                                                0) *
+                                                                        ((record.getPrimaryPrice().priceValue) *
                                                                             (record.quantity ??
                                                                                 1)),
                                                                     context:
@@ -849,8 +849,7 @@ Future<Uint8List> _buildPdfRoll(
                                                   ),
                                                   formatMoneyMid(
                                                     amount:
-                                                        ((record.sellingPrice ??
-                                                                0) *
+                                                        ((record.getPrimaryPrice().priceValue) *
                                                             (record.quantity ??
                                                                 1)),
                                                     context:

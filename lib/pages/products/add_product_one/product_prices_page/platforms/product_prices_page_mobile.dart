@@ -7,12 +7,12 @@ import 'package:stockall/pages/products/add_product_one/product_prices_page/comp
 
 class ProductPricesPageMobile extends StatefulWidget {
   final String productUuid;
-  final TextEditingController quantityController;
+  final TextEditingController priceController;
   final TextEditingController nameController;
   const ProductPricesPageMobile({
     super.key,
     required this.productUuid,
-    required this.quantityController,
+    required this.priceController,
     required this.nameController,
   });
 
@@ -37,7 +37,7 @@ class _ProductPricesPageMobileState
           padding: const EdgeInsets.only(right: 10.0),
           child: CreateProductPriceWidget(
             nameController: widget.nameController,
-            quantityController: widget.quantityController,
+            priceController: widget.priceController,
             productUuid: widget.productUuid,
             setStateAction: () {
               setState(() {});
@@ -74,8 +74,8 @@ class _ProductPricesPageMobileState
                                   widget.nameController,
                               productUuid:
                                   widget.productUuid,
-                              quantityController:
-                                  widget.quantityController,
+                              priceController:
+                                  widget.priceController,
                               setStateAction: () {
                                 setState(() {});
                               },

@@ -7,12 +7,12 @@ import 'package:stockall/pages/products/add_product_one/product_prices_page/comp
 
 class ProductPricesPageDesktop extends StatefulWidget {
   final String productUuid;
-  final TextEditingController quantityController;
+  final TextEditingController priceController;
   final TextEditingController nameController;
   const ProductPricesPageDesktop({
     super.key,
     required this.productUuid,
-    required this.quantityController,
+    required this.priceController,
     required this.nameController,
   });
 
@@ -117,8 +117,7 @@ class _ProductPricesPageDesktopState
               CreateProductPriceWidget(
                 productUuid: widget.productUuid,
                 nameController: widget.nameController,
-                quantityController:
-                    widget.quantityController,
+                priceController: widget.priceController,
                 setStateAction: () {
                   setState(() {});
                 },
@@ -144,8 +143,8 @@ class _ProductPricesPageDesktopState
                           nameController:
                               widget.nameController,
                           productUuid: widget.productUuid,
-                          quantityController:
-                              widget.quantityController,
+                          priceController:
+                              widget.priceController,
                           setStateAction: () {
                             setState(() {});
                           },

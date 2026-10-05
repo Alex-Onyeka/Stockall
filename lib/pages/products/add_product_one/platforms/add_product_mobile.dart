@@ -20,6 +20,7 @@ import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/add_product_one/product_prices_page/product_prices_page.dart';
 import 'package:stockall/pages/products/add_product_one/product_units_page/product_units_page.dart';
 import 'package:stockall/providers/data_provider.dart';
 
@@ -556,71 +557,61 @@ class _AddProductMobileState
                                     widget.nameController,
                               ),
                               SizedBox(height: 10),
-                              Row(
-                                children: [
-                                  Visibility(
-                                    visible: authorization(
-                                      authorized:
-                                          Authorizations()
-                                              .manageCostPrice,
-                                    ),
-                                    child: Expanded(
-                                      child: MoneyTextfield(
-                                        theme: theme,
-                                        hint:
-                                            'Enter Real Cost',
-                                        title:
-                                            'Cost - Price (Optional)',
-                                        controller:
-                                            widget
-                                                .costController,
-                                      ),
-                                    ),
-                                  ),
-                                  Visibility(
-                                    visible: authorization(
-                                      authorized:
-                                          Authorizations()
-                                              .manageCostPrice,
-                                    ),
-                                    child: SizedBox(
-                                      width: 10,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: MoneyTextfield(
-                                      theme: theme,
-                                      hint:
-                                          'Enter Sale Price',
-                                      title:
-                                          'Selling-Price (Optional)',
-                                      controller:
-                                          widget
-                                              .sellingController,
-                                    ),
-                                  ),
-                                ],
-                              ),
                               Visibility(
-                                visible:
-                                    shop(
-                                      context,
-                                    )?.wholeSale ==
-                                    true,
-                                child: Column(
-                                  children: [
-                                    SizedBox(height: 10),
-                                    MoneyTextfield(
-                                      theme: theme,
-                                      hint:
-                                          'Enter Whole Sale Price',
-                                      title:
-                                          'Whole-Sale-Price (Optional)',
-                                      controller:
-                                          widget
-                                              .wholeSaleController,
+                                visible: authorization(
+                                  authorized:
+                                      Authorizations()
+                                          .manageCostPrice,
+                                ),
+                                child: MoneyTextfield(
+                                  theme: theme,
+                                  hint: 'Enter Real Cost',
+                                  title:
+                                      'Cost - Price (Optional)',
+                                  controller:
+                                      widget.costController,
+                                ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(
+                                      bottom: 10.0,
+                                      top: 10,
                                     ),
-                                  ],
+                                child: MainDropdown(
+                                  valueSet:
+                                      returnData()
+                                          .tempPricesList
+                                          .isNotEmpty,
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return ProductPricesPage(
+                                            productUuid:
+                                                createdProductUuid ??
+                                                '',
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                  isOpen:
+                                      returnData()
+                                          .tempPricesList
+                                          .isNotEmpty,
+                                  title: 'Selling Price(s)',
+                                  hint:
+                                      returnData(
+                                                context:
+                                                    context,
+                                              )
+                                              .tempPricesList
+                                              .isEmpty
+                                          ? 'Price Not Set'
+                                          : "${returnData(context: context).tempPricesList.firstWhere((item) => item.isPrimary).priceValue} and (${returnData(context: context).tempPricesList.length - 1}) More",
+                                  theme: theme,
                                 ),
                               ),
                               Column(

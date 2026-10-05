@@ -12,7 +12,7 @@ import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/bottom_info_section.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/edit_button.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/manage_this_item_toggle_switch.dart';
-import 'package:stockall/pages/products/product_details/platforms/components/prices_section_product_details.dart';
+import 'package:stockall/pages/products/product_details/platforms/components/price_section_widget.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/product_details_more_widget.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/quanitity_in_stock_widget.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/transfer_item_quantity.dart';
@@ -149,8 +149,10 @@ class _ProductDetailsMobileState
                             ],
                           ),
                           SizedBox(height: 20),
-                          PricesSectionProductDetails(
-                            product: product,
+                          priceSectionWidget(
+                            context,
+                            product,
+                            shopI,
                           ),
                           SizedBox(height: 20),
                           Column(

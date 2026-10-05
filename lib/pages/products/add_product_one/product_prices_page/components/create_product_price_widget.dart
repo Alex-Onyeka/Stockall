@@ -6,18 +6,17 @@ import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/constants/calculations.dart';
-import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/main.dart';
 
 class CreateProductPriceWidget extends StatefulWidget {
-  final TextEditingController quantityController;
+  final TextEditingController priceController;
   final TextEditingController nameController;
   final String productUuid;
   final Function() setStateAction;
   const CreateProductPriceWidget({
     super.key,
     required this.productUuid,
-    required this.quantityController,
+    required this.priceController,
     required this.nameController,
     required this.setStateAction,
   });
@@ -41,7 +40,7 @@ class _CreateProductPriceWidgetState
             context: context,
             nameController: widget.nameController,
             productUuid: widget.productUuid,
-            quantityController: widget.quantityController,
+            priceController: widget.priceController,
             setStateAction: widget.setStateAction,
           );
         },
@@ -68,7 +67,7 @@ class _CreateProductPriceWidgetState
 
 void addProductPriceAction({
   required BuildContext context,
-  required TextEditingController quantityController,
+  required TextEditingController priceController,
   required TextEditingController nameController,
   required String productUuid,
   ProductPricesClass? price,
@@ -76,16 +75,15 @@ void addProductPriceAction({
 }) {
   var theme = returnTheme(context, listen: false);
   if (price != null) {
-    quantityController.text = price.priceValue.toString();
+    priceController.text = price.priceValue.toString();
     nameController.text = price.name ?? 'Price';
   }
 
   void addAction() {
     final priceValue = double.tryParse(
-      quantityController.text.replaceAll(',', '').trim(),
+      priceController.text.replaceAll(',', '').trim(),
     );
-    if (nameController.text.trim().isEmpty ||
-        priceValue == null ||
+    if (priceValue == null ||
         !priceValue.isFinite ||
         priceValue <= 0) {
       showDialog(
@@ -94,8 +92,8 @@ void addProductPriceAction({
           return InfoAlert(
             theme: theme,
             message:
-                'Enter a price name and a positive priceValue.',
-            title: 'Invalid Price Details',
+                'Price Value Cannot Be Empty. Please enter a Value to Proceed',
+            title: 'Invalid Price',
           );
         },
       );
@@ -117,7 +115,10 @@ void addProductPriceAction({
                 createdAt: DateTime.now(),
                 staffName: currentUser().name,
                 priceValue: priceValue,
-                name: nameController.text.trim(),
+                name:
+                    nameController.text.isEmpty
+                        ? 'Price'
+                        : nameController.text.trim(),
                 isPrimary:
                     returnData().tempPricesList.isEmpty
                         ? true
@@ -135,90 +136,71 @@ void addProductPriceAction({
     }
   }
 
-  ItemsAuthAction().applyVariationsAction(
+  showDialog(
     context: context,
-    action: () {
-      showDialog(
-        context: context,
-        builder: (confirmDialog) {
-          return StatefulBuilder(
-            builder: (context, setState) {
-              return DialogTemplate(
-                theme: theme,
-                message: 'Enter Product Price Name',
-                title:
-                    '${price == null ? 'Create' : 'Update'} Product Price',
-                action: () async {
-                  addAction();
-                },
-                widget: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: 500,
-                  ),
-                  child: Container(
-                    color: const Color.fromARGB(
-                      47,
-                      255,
-                      255,
-                      255,
+    builder: (confirmDialog) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return DialogTemplate(
+            theme: theme,
+            message: 'Enter Product Price Name',
+            title:
+                '${price == null ? 'Create' : 'Update'} Product Price',
+            action: () async {
+              addAction();
+            },
+            widget: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 500),
+              child: Container(
+                color: const Color.fromARGB(
+                  47,
+                  255,
+                  255,
+                  255,
+                ),
+                // height: 150,
+                // width: 500,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 30.0,
                     ),
-                    // height: 150,
-                    // width: 500,
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30.0,
+                    child: Column(
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: 10,
+                      children: [
+                        GeneralTextField(
+                          title: 'Price Name (Optional)',
+                          hint: 'Enter Name',
+                          controller: nameController,
+                          lines: 1,
+                          theme: theme,
                         ),
-                        child: Column(
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          spacing: 10,
-                          children: [
-                            Row(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.end,
-                              spacing: 5,
-                              children: [
-                                Expanded(
-                                  child: GeneralTextField(
-                                    title:
-                                        'Product Price Name *',
-                                    hint: 'Enter Name',
-                                    controller:
-                                        nameController,
-                                    lines: 1,
-                                    theme: theme,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            EditCartTextField(
-                              title: 'Conversion',
-                              autoFocus: false,
-                              hint: 'Enter Conversion',
-                              controller:
-                                  quantityController,
-                              theme: theme,
-                              onSubmitted: (p0) {
-                                addAction();
-                              },
-                            ),
-                          ],
+                        EditCartTextField(
+                          title: 'Value',
+                          autoFocus: false,
+                          hint: 'Enter Value',
+                          controller: priceController,
+                          theme: theme,
+                          onSubmitted: (p0) {
+                            addAction();
+                          },
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ),
-              );
-            },
+              ),
+            ),
           );
         },
-      ).then((_) {
-        quantityController.clear();
-        nameController.clear();
-        setStateAction();
-      });
+      );
     },
-  );
+  ).then((_) {
+    priceController.clear();
+    nameController.clear();
+    setStateAction();
+  });
 }

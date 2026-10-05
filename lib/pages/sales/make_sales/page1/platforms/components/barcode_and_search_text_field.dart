@@ -278,8 +278,7 @@ class _BarcodeAndSearchTextFieldState
                                                   ),
                                                   formatMoneyMid(
                                                     amount:
-                                                        item.sellingPrice ??
-                                                        0,
+                                                        item.getPrimaryPrice().priceValue,
                                                     context:
                                                         context,
                                                   ),

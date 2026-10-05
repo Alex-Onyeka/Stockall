@@ -18,7 +18,7 @@ class ProductPricesPage extends StatefulWidget {
 class _ProductPricesPageState
     extends State<ProductPricesPage> {
   final nameController = TextEditingController();
-  final quantityController = TextEditingController();
+  final priceController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -27,12 +27,12 @@ class _ProductPricesPageState
           return ProductPricesPageMobile(
             productUuid: widget.productUuid,
             nameController: nameController,
-            quantityController: quantityController,
+            priceController: priceController,
           );
         } else {
           return ProductPricesPageDesktop(
             nameController: nameController,
-            quantityController: quantityController,
+            priceController: priceController,
             productUuid: widget.productUuid,
           );
         }

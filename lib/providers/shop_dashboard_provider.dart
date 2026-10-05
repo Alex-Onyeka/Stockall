@@ -401,7 +401,9 @@ class ShopDashboardProvider extends ChangeNotifier {
     double temp = 0;
     for (var item in returnItems(shop: shop)) {
       if (item.quantity != null && item.quantity != 0) {
-        temp += (item.quantity! * (item.sellingPrice ?? 0));
+        temp +=
+            (item.quantity! *
+                (item.getPrimaryPrice().priceValue));
       }
     }
     return temp;

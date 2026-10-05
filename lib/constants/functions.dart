@@ -3309,7 +3309,7 @@ Future<Uint8List> _buildPdfProducts(
   double totalSellingPrice() {
     double tempQtty = 0;
     for (var element in products) {
-      tempQtty += element.sellingPrice ?? 0;
+      tempQtty += element.getPrimaryPrice().priceValue;
     }
     return tempQtty;
   }
@@ -3766,8 +3766,8 @@ Future<Uint8List> _buildPdfProducts(
                                   formatMoneyMid(
                                     amount:
                                         product
-                                            .sellingPrice ??
-                                        0,
+                                            .getPrimaryPrice()
+                                            .priceValue,
                                     context: context,
                                   ),
                                 ),

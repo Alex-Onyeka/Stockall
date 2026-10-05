@@ -71,7 +71,11 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
       }
     } else {
       return (qqty *
-              (cartItem.getItem()?.sellingPrice ?? 1))
+              (cartItem
+                      .getItem()
+                      ?.getPrimaryPrice()
+                      .priceValue ??
+                  1))
           .toString();
     }
   }

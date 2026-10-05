@@ -383,16 +383,17 @@ class TempCartItem extends HiveObject {
   // }
 
   double totalCost() {
-    if (useWholeSalePrice) {
-      return getItem()?.wholeSalePrice != null
-          ? (getItem()?.wholeSalePrice ?? 0) *
-              getSelectedUnit().getQuantityEquivMultiplied(
-                index: 1,
-                product: item,
-                newQuantity: quantity,
-              )
-          : 0;
-    } else if (customPrice != null) {
+    // if (useWholeSalePrice) {
+    //   return getItem()?.wholeSalePrice != null
+    //       ? (getItem()?.wholeSalePrice ?? 0) *
+    //           getSelectedUnit().getQuantityEquivMultiplied(
+    //             index: 1,
+    //             product: item,
+    //             newQuantity: quantity,
+    //           )
+    //       : 0;
+    // } else
+    if (customPrice != null) {
       if (setTotalPrice) {
         return customPrice!;
       } else {
@@ -404,14 +405,13 @@ class TempCartItem extends HiveObject {
             );
       }
     } else {
-      return getItem()?.sellingPrice != null
-          ? (getItem()?.sellingPrice ?? 0) *
-              getSelectedUnit().getQuantityEquivMultiplied(
-                index: 1,
-                product: item,
-                newQuantity: quantity,
-              )
-          : 0;
+      return (getItem()?.getPrimaryPrice().priceValue ??
+              0) *
+          getSelectedUnit().getQuantityEquivMultiplied(
+            index: 1,
+            product: item,
+            newQuantity: quantity,
+          );
     }
   }
 
@@ -499,27 +499,29 @@ class TempCartItem extends HiveObject {
 
   double getItemDiscountedRemainingCost() {
     if (getItem()?.discount != null) {
-      if (useWholeSalePrice) {
-        return (((getItem()?.wholeSalePrice ?? 0) -
-                ((getItem()?.wholeSalePrice ?? 0) *
-                    (getItem()?.discount ?? 0) /
-                    100)) *
-            getSelectedUnit().getQuantityEquivMultiplied(
-              index: 1,
-              product: item,
-              newQuantity: quantity,
-            ));
-      } else {
-        return (((getItem()?.sellingPrice ?? 0) -
-                ((getItem()?.sellingPrice ?? 0) *
-                    (getItem()?.discount ?? 0) /
-                    100)) *
-            getSelectedUnit().getQuantityEquivMultiplied(
-              index: 1,
-              product: item,
-              newQuantity: quantity,
-            ));
-      }
+      // if (useWholeSalePrice) {
+      //   return (((getItem()?.wholeSalePrice ?? 0) -
+      //           ((getItem()?.wholeSalePrice ?? 0) *
+      //               (getItem()?.discount ?? 0) /
+      //               100)) *
+      //       getSelectedUnit().getQuantityEquivMultiplied(
+      //         index: 1,
+      //         product: item,
+      //         newQuantity: quantity,
+      //       ));
+      // } else {
+      return (((getItem()?.getPrimaryPrice().priceValue ??
+                  0) -
+              ((getItem()?.getPrimaryPrice().priceValue ??
+                      0) *
+                  (getItem()?.discount ?? 0) /
+                  100)) *
+          getSelectedUnit().getQuantityEquivMultiplied(
+            index: 1,
+            product: item,
+            newQuantity: quantity,
+          ));
+      // }
     } else {
       return totalCost();
     }

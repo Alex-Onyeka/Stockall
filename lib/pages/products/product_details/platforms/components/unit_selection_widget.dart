@@ -53,7 +53,7 @@ class _UnitSelectionWidgetState
           ),
         ),
         ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 210),
+          constraints: BoxConstraints(maxWidth: 250),
           child: PopupMenuButton(
             // offset: Offset(-20, 30),
             color: Colors.white,

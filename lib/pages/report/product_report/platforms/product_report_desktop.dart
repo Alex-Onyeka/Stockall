@@ -1102,7 +1102,8 @@ class _SummaryTableHeadingBarState
     double tempTotal = 0;
     for (var item in widget.product) {
       tempTotal +=
-          ((item.sellingPrice ?? 0) * (item.quantity ?? 0));
+          ((item.getPrimaryPrice().priceValue) *
+              (item.quantity ?? 0));
     }
     return tempTotal;
   }
@@ -1858,8 +1859,9 @@ class _TableRowRecordWidgetState
                         ),
                         formatMoneyBig(
                           amount:
-                              widget.product.sellingPrice ??
-                              0,
+                              widget.product
+                                  .getPrimaryPrice()
+                                  .priceValue,
                           context: context,
                         ),
                       ),
@@ -1902,10 +1904,9 @@ class _TableRowRecordWidgetState
                         ),
                         formatMoneyBig(
                           amount:
-                              (widget
-                                      .product
-                                      .sellingPrice ??
-                                  0) *
+                              (widget.product
+                                  .getPrimaryPrice()
+                                  .priceValue) *
                               (widget.product.quantity ??
                                   0),
                           context: context,

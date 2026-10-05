@@ -221,7 +221,7 @@ class AltDisplayState extends State<AltDisplay> {
         if (item.item.discount != null &&
             item.customPrice == null) {
           double discountPerUnit =
-              (item.item.sellingPrice ?? 0) *
+              (item.item.getPrimaryPrice().priceValue) *
               (item.item.discount! / 100);
           tempTotalDiscount +=
               discountPerUnit *

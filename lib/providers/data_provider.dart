@@ -3548,30 +3548,30 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  double getTotalWholeSalePrice({
-    List<TempProductClass>? products,
-  }) {
-    double tempTotal = 0;
+  // double getTotalWholeSalePrice({
+  //   List<TempProductClass>? products,
+  // }) {
+  //   double tempTotal = 0;
 
-    // if (returnShopProvider()
-    //         .userShop()
-    //         ?.manageInventoryStorage ==
-    //     true) {
-    //   for (var item in (products ?? productListMain)) {
-    //     tempTotal +=
-    //         ((item.wholeSalePrice ?? 0) *
-    //             ((item.quantity ?? 0) +
-    //                 (item.totalQttyInStorageDouble ?? 0)));
-    //   }
-    // } else {
-    for (var item in (products ?? productListMain)) {
-      tempTotal +=
-          ((item.wholeSalePrice ?? 0) *
-              (item.quantity ?? 0));
-      // }
-    }
-    return tempTotal;
-  }
+  //   // if (returnShopProvider()
+  //   //         .userShop()
+  //   //         ?.manageInventoryStorage ==
+  //   //     true) {
+  //   //   for (var item in (products ?? productListMain)) {
+  //   //     tempTotal +=
+  //   //         ((item.wholeSalePrice ?? 0) *
+  //   //             ((item.quantity ?? 0) +
+  //   //                 (item.totalQttyInStorageDouble ?? 0)));
+  //   //   }
+  //   // } else {
+  //   for (var item in (products ?? productListMain)) {
+  //     tempTotal +=
+  //         ((item.wholeSalePrice ?? 0) *
+  //             (item.quantity ?? 0));
+  //     // }
+  //   }
+  //   return tempTotal;
+  // }
 
   double getTotalSellingPrice({
     List<TempProductClass>? products,
@@ -3596,7 +3596,8 @@ class DataProvider extends ChangeNotifier {
     // } else {
     for (var item in (products ?? productListMain)) {
       tempTotal +=
-          ((item.sellingPrice ?? 0) * (item.quantity ?? 0));
+          ((item.getPrimaryPrice().priceValue) *
+              (item.quantity ?? 0));
       // }
     }
     return tempTotal;
@@ -3916,7 +3917,7 @@ class DataProvider extends ChangeNotifier {
               updatedAt: DateTime.now(),
               qttyPerGroup: pr.qttyPerGroup,
               costPrice: pr.costPrice,
-              sellingPrice: pr.sellingPrice,
+              sellingPrice: pr.getPrimaryPrice().priceValue,
             );
         List<ProductUnitsClass> tempItems =
             (pr.unitsList ?? [])
