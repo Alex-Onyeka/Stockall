@@ -5,13 +5,22 @@ import 'package:bluetooth_print_plus/bluetooth_print_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
+import 'package:stockall/classes/temp_orders/order_items.dart';
+import 'package:stockall/classes/temp_orders/orders.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart'
+    show buildReceiptRollPdf;
 import 'package:stockall/constants/generate_barcode.dart';
+import 'package:stockall/constants/invoice_print_and_download.dart'
+    show buildInvoiceRollPdf;
+import 'package:stockall/constants/order_print_and_download.dart'
+    show buildOrderRollPdf;
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/pos_printer/device_service.dart';
+import 'package:stockall/services/printing/pdf_escpos_raster.dart';
 
 class BluetoothDevicesPage extends StatefulWidget {
   const BluetoothDevicesPage({super.key});
@@ -604,6 +613,7 @@ void scanBluetoothPrinters({
   required TempMainReceipt receipt,
   required List<TempProductSaleRecord> records,
   required TempShopClass shop,
+  required String staffName,
   required BuildContext context,
 }) async {
   await mainLocalLog('Main Bluetooth Scanning Started');
@@ -613,6 +623,7 @@ void scanBluetoothPrinters({
       receipt: receipt,
       records: records,
       shop: shop,
+      staffName: staffName,
     );
   } else {
     showDialog(
@@ -636,22 +647,42 @@ void connectToPrinter({
   required TempMainReceipt receipt,
   required List<TempProductSaleRecord> records,
   required TempShopClass shop,
+  required String staffName,
 }) async {
-  if (safeContext.mounted) {
-    final data = generateStyledReceipt(
-      receipt: receipt,
-      records: records,
-      shop: shop,
-      context: safeContext,
-    );
-    await BluetoothPrintPlus.write(data);
+  try {
+    if (safeContext.mounted) {
+      // Same roll PDF as desktop, rasterized for the thermal printer.
+      final printerType = shop.printType ?? 1;
+      final pdfBytes = await buildReceiptRollPdf(
+        receipt: receipt,
+        records: records,
+        staffName: staffName,
+        shop: shop,
+        context: safeContext,
+        printerType: printerType,
+      );
+      await _writeRaster(pdfBytes, printerType);
+    }
+  } finally {
+    if (safeContext.mounted) {
+      returnReceiptProvider(
+        safeContext,
+        listen: false,
+      ).toggleIsLoading(false);
+    }
   }
+}
 
-  if (safeContext.mounted) {
-    returnReceiptProvider(
-      safeContext,
-      listen: false,
-    ).toggleIsLoading(false);
+Future<void> _writeRaster(
+  Uint8List pdfBytes,
+  int printerType,
+) async {
+  final bands = await pdfToEscPosRaster(
+    pdfBytes,
+    printerType: printerType,
+  );
+  for (final band in bands) {
+    await BluetoothPrintPlus.write(band);
   }
 }
 
@@ -1016,6 +1047,7 @@ class ReceiptBuilder {
 
 void scanBluetoothPrintersinvoice({
   required TempInvoice invoice,
+  required List<TempMainReceipt> receipts,
   required List<TempProductSaleRecord> records,
   required TempShopClass shop,
   required BuildContext context,
@@ -1026,6 +1058,7 @@ void scanBluetoothPrintersinvoice({
       safeContext: context,
       // receipt: receipt,
       invoice: invoice,
+      receipts: receipts,
       records: records,
       shop: shop,
     );
@@ -1042,17 +1075,70 @@ void scanBluetoothPrintersinvoice({
 void connectToPrinterInvoice({
   required BuildContext safeContext,
   required TempInvoice invoice,
+  required List<TempMainReceipt> receipts,
   required List<TempProductSaleRecord> records,
   required TempShopClass shop,
 }) async {
   if (safeContext.mounted) {
-    final data = generateStyledInvoice(
+    // Same roll PDF as desktop, rasterized for the thermal printer.
+    final printerType = shop.printType ?? 1;
+    final pdfBytes = await buildInvoiceRollPdf(
       invoice: invoice,
+      receipts: receipts,
       records: records,
+      staffName: invoice.staffName,
       shop: shop,
       context: safeContext,
+      printerType: printerType,
     );
-    await BluetoothPrintPlus.write(data);
+    await _writeRaster(pdfBytes, printerType);
+  }
+}
+
+// ORDER PRINTING
+
+void scanBluetoothPrintersOrder({
+  required Orders order,
+  required List<OrderItems> records,
+  required TempShopClass shop,
+  required BuildContext context,
+}) async {
+  await mainLocalLog('Main Bluetooth Scanning Started');
+  if (!context.mounted) return;
+  if (BluetoothPrintPlus.isConnected) {
+    connectToPrinterOrder(
+      safeContext: context,
+      order: order,
+      records: records,
+      shop: shop,
+    );
+  } else {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return BluetoothDevicesPage();
+      },
+    );
+  }
+}
+
+void connectToPrinterOrder({
+  required BuildContext safeContext,
+  required Orders order,
+  required List<OrderItems> records,
+  required TempShopClass shop,
+}) async {
+  if (safeContext.mounted) {
+    final printerType = shop.printType ?? 1;
+    final pdfBytes = await buildOrderRollPdf(
+      order: order,
+      records: records,
+      staffName: order.staffName ?? 'Not Set',
+      shop: shop,
+      context: safeContext,
+      printerType: printerType,
+    );
+    await _writeRaster(pdfBytes, printerType);
   }
 }
 

@@ -1513,7 +1513,7 @@ Future<Uint8List> _buildPdfRollInvoice({
       margin: pw.EdgeInsets.only(
         left: kIsWeb ? 2 : 0,
         top: 5,
-        right: kIsWeb ? 15 : 25,
+        right: kIsWeb ? 15 : 0,
         bottom: 10,
       ),
 
@@ -2669,50 +2669,50 @@ Future<Uint8List> _buildPdfRollInvoice({
                     ),
                   ],
                 ),
-                pw.SizedBox(height: 35),
-                pw.Text(
-                  textAlign: pw.TextAlign.center,
-                  style: pw.TextStyle(
-                    fontSize: totalText,
-                    fontWeight: pw.FontWeight.bold,
-                    // color: PdfColor(50, 50, 050),
-                  ),
-                  '------------',
-                ),
-                pw.Builder(
-                  builder: (beansContext) {
-                    if (records.length > 15) {
-                      return pw.Text(
-                        textAlign: pw.TextAlign.center,
-                        style: pw.TextStyle(
-                          fontSize: totalText,
-                          fontWeight: pw.FontWeight.bold,
-                          // color: PdfColor(50, 50, 050),
-                        ),
-                        '------------',
-                      );
-                    } else {
-                      return pw.Container();
-                    }
-                  },
-                ),
-                pw.Builder(
-                  builder: (beansContext) {
-                    if (records.length > 15) {
-                      return pw.Text(
-                        textAlign: pw.TextAlign.center,
-                        style: pw.TextStyle(
-                          fontSize: totalText,
-                          fontWeight: pw.FontWeight.bold,
-                          // color: PdfColor(50, 50, 050),
-                        ),
-                        '------------',
-                      );
-                    } else {
-                      return pw.Container();
-                    }
-                  },
-                ),
+                pw.SizedBox(height: 20),
+                // pw.Text(
+                //   textAlign: pw.TextAlign.center,
+                //   style: pw.TextStyle(
+                //     fontSize: totalText,
+                //     fontWeight: pw.FontWeight.bold,
+                //     // color: PdfColor(50, 50, 050),
+                //   ),
+                //   '------------',
+                // ),
+                // pw.Builder(
+                //   builder: (beansContext) {
+                //     if (records.length > 15) {
+                //       return pw.Text(
+                //         textAlign: pw.TextAlign.center,
+                //         style: pw.TextStyle(
+                //           fontSize: totalText,
+                //           fontWeight: pw.FontWeight.bold,
+                //           // color: PdfColor(50, 50, 050),
+                //         ),
+                //         '------------',
+                //       );
+                //     } else {
+                //       return pw.Container();
+                //     }
+                //   },
+                // ),
+                // pw.Builder(
+                //   builder: (beansContext) {
+                //     if (records.length > 15) {
+                //       return pw.Text(
+                //         textAlign: pw.TextAlign.center,
+                //         style: pw.TextStyle(
+                //           fontSize: totalText,
+                //           fontWeight: pw.FontWeight.bold,
+                //           // color: PdfColor(50, 50, 050),
+                //         ),
+                //         '------------',
+                //       );
+                //     } else {
+                //       return pw.Container();
+                //     }
+                //   },
+                // ),
               ],
             ),
           ),
@@ -2750,5 +2750,27 @@ Future<void> generateAndPreviewPdfRollInvoice({
         onLayout: (_) async => pdfBytes,
       );
     },
+  );
+}
+
+// Same roll layout as generateAndPreviewPdfRollInvoice, returned as PDF
+// bytes so Bluetooth printing can rasterize it.
+Future<Uint8List> buildInvoiceRollPdf({
+  required TempInvoice invoice,
+  required List<TempMainReceipt> receipts,
+  required List<TempProductSaleRecord> records,
+  required String staffName,
+  required TempShopClass shop,
+  required BuildContext context,
+  required int printerType,
+}) {
+  return _buildPdfRollInvoice(
+    invoice: invoice,
+    receipts: receipts,
+    records: records,
+    staffName: staffName,
+    shop: shop,
+    context: context,
+    printerType: printerType,
   );
 }
