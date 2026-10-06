@@ -45,7 +45,9 @@ void openWhatsApp() async {
   final phone = getContactPhoneNumber(
     formatIndex: 2,
   ).substring(1); // your number
-  final message = Uri.encodeComponent("Hello, Stockall Solutions; ");
+  final message = Uri.encodeComponent(
+    "Hello, Stockall Solutions; ",
+  );
   final url = 'https://wa.me/$phone?text=$message';
 
   await launchUrlMain(url);
@@ -53,7 +55,10 @@ void openWhatsApp() async {
 
 Future<void> launchUrlMain(url) async {
   if (await canLaunchUrl(Uri.parse(url))) {
-    await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    await launchUrl(
+      Uri.parse(url),
+      mode: LaunchMode.externalApplication,
+    );
   } else {
     await mainLocalLog('Could not launch $url');
   }
@@ -82,17 +87,24 @@ bool usesBluetoothPrint() {
 }
 
 bool usesSystemPrintDialog() {
-  return !kIsWeb && defaultTargetPlatform == TargetPlatform.windows;
+  return !kIsWeb &&
+      defaultTargetPlatform == TargetPlatform.windows;
 }
 
 bool isValidEmail(String email) {
-  final emailRegex = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
+  final emailRegex = RegExp(
+    r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
+  );
   return emailRegex.hasMatch(email);
 }
 
 int getDayDifference(DateTime inputDate) {
   final today = DateTime.now();
-  final todayDateOnly = DateTime(today.year, today.month, today.day);
+  final todayDateOnly = DateTime(
+    today.year,
+    today.month,
+    today.day,
+  );
   final inputDateOnly = DateTime(
     inputDate.year,
     inputDate.month,
@@ -115,8 +127,10 @@ class Authorizations {
   String deleteProduct = 'Delete Items';
   String transferProduct = 'Transfer Items';
   String manageMultipleUnits = 'Manage Multiple Units';
-  String selectMultiplePriceDuringSales = 'Select Multiple Price During Sales';
-  String setCustomPriceDuringSales = 'Set Custom Price During Sales';
+  String selectMultiplePriceDuringSales =
+      'Select Multiple Price During Sales';
+  String setCustomPriceDuringSales =
+      'Set Custom Price During Sales';
   String addCustomer = 'Add Customers';
   String updateCustomer = 'Update Customers';
   String deleteCustomer = 'Delete Customers';
@@ -124,13 +138,18 @@ class Authorizations {
   String updateSupplier = 'Update Suppliers';
   String deleteSupplier = 'Delete Suppliers';
   String viewCustomersAccount = 'View Customers Account';
-  String deleteCustomersTransactions = 'Delete Customers Transactions';
-  String toggleManageCustomersReward = 'Toggle Manage Customers Reward';
-  String toggleManageCustomersAccount = 'Toggle Manage Customers Account';
+  String deleteCustomersTransactions =
+      'Delete Customers Transactions';
+  String toggleManageCustomersReward =
+      'Toggle Manage Customers Reward';
+  String toggleManageCustomersAccount =
+      'Toggle Manage Customers Account';
   String redeemCustomersReward = 'Redeem Customers Reward';
-  String creditCustomersAccount = 'Credit Customers Account';
+  String creditCustomersAccount =
+      'Credit Customers Account';
   String debitCustomersAccount = 'Debit Customers Account';
-  String makeSalesFromCustomersAccount = 'Make Sales From Customers Account';
+  String makeSalesFromCustomersAccount =
+      'Make Sales From Customers Account';
   String makeSale = 'Make Sale';
   String deleteSale = 'Delete Sales';
   String updateSale = 'Update Sales';
@@ -160,48 +179,64 @@ class Authorizations {
   String manageInventoryStorage = 'Manage Invetory Storage';
   String viewItemsSummary = 'View Items Summary';
   String viewItemsHistory = 'View Items History';
-  String viewAllTransactionRecords = 'View All Transaction Records';
+  String viewAllTransactionRecords =
+      'View All Transaction Records';
   String toggleBulkSale = 'Toggle Bulk Sale';
   String manageSubStaff = 'Manage Sub Staff';
   String manageShopDashboard = 'Manage Store Dashboard';
   String toggleUseGroupUnit = 'Toggle Use Group Unit';
-  String toggleOnScreenKeyboard = 'Toggle On Screen Keyboard';
-  String togglePrintSalesDocket = 'Toggle Print Sales Docket';
+  String toggleOnScreenKeyboard =
+      'Toggle On Screen Keyboard';
+  String togglePrintSalesDocket =
+      'Toggle Print Sales Docket';
   String viewAllDepartments = 'View All Departments';
   String updateItemQuantity = 'Update Item Quantity';
   String viewItemQuantity = 'View Item Quantity';
-  String setCustomReceiptCreatedDate = 'Set Custom Receipt Created Date';
+  String setCustomReceiptCreatedDate =
+      'Set Custom Receipt Created Date';
   String toggleTrackCart = 'Toggle Track Cart';
   String manageAccessPin = 'Manage Access Pin';
   String manageCostPrice = 'Manage Cost Price';
   String viewGeneralReport = 'View General Report';
   String viewItemsReport = 'View Items Report';
-  String viewReceiptSalesReport = 'View Receipt Sales Report';
-  String viewInvoiceSalesReport = 'View Invoice Sales Report';
+  String viewReceiptSalesReport =
+      'View Receipt Sales Report';
+  String viewInvoiceSalesReport =
+      'View Invoice Sales Report';
   String viewItemSalesReport = 'View Item Sales Report';
   String managePurchases = 'Manage Purchases';
   String updateInvoice = 'Update Invoice';
   String deleteInvoice = 'Delete Invoice';
-  String toggleManageProductions = 'Toggle Manage Productions';
-  String toggleManageProductionsStorage = 'Toggle Manage Productions Storage';
-  String toggleManageProductionItems = 'Toggle Manage Production Items';
+  String toggleManageProductions =
+      'Toggle Manage Productions';
+  String toggleManageProductionsStorage =
+      'Toggle Manage Productions Storage';
+  String toggleManageProductionItems =
+      'Toggle Manage Production Items';
   String viewProductions = 'View Productions';
-  String manageProductionsStorage = 'Manage Productions Storage';
+  String manageProductionsStorage =
+      'Manage Productions Storage';
   String addMaterials = 'Add Materials';
   String updateMaterials = 'Update Materials';
   String deleteMaterials = 'Delete Materials';
   String transferMaterials = 'Transfer Materials';
-  String updateMaterialQuantity = 'Update Material Quantity';
+  String updateMaterialQuantity =
+      'Update Material Quantity';
   String viewMaterialQuantity = 'View Material Quantity';
   String addProductionItems = 'Add Production Items';
   String updateProductionItems = 'Update Production Items';
   String deleteProductionItems = 'Delete Production Items';
-  String transferProductionItems = 'Transfer Production Items';
-  String updateProductionItemQuantity = 'Update Production Item Quantity';
-  String viewProductionItemQuantity = 'View Production Item Quantity';
+  String transferProductionItems =
+      'Transfer Production Items';
+  String updateProductionItemQuantity =
+      'Update Production Item Quantity';
+  String viewProductionItemQuantity =
+      'View Production Item Quantity';
   String addProductionRecords = 'Add Production Records';
-  String updateProductionRecords = 'Update Production Records';
-  String deleteProductionRecords = 'Delete Production Records';
+  String updateProductionRecords =
+      'Update Production Records';
+  String deleteProductionRecords =
+      'Delete Production Records';
   String addMaterialsUsage = 'Add Materials Usage';
   String updateMaterialsUsage = 'Update Materials Usage';
   String deleteMaterialsUsage = 'Delete Materials Usage';
@@ -220,46 +255,106 @@ bool authorization({required String authorized}) {
 }
 
 final List<CurrencyClass> currencies = [
-  CurrencyClass(country: 'Nigeria', currency: 'Naira', symbol: '₦'),
+  CurrencyClass(
+    country: 'Nigeria',
+    currency: 'Naira',
+    symbol: '₦',
+  ),
   CurrencyClass(
     country: 'Cameroon',
     currency: 'Central African CFA Franc',
     symbol: 'FCFA',
   ),
-  CurrencyClass(country: 'United States', currency: 'US Dollar', symbol: '\$'),
+  CurrencyClass(
+    country: 'United States',
+    currency: 'US Dollar',
+    symbol: '\$',
+  ),
   CurrencyClass(
     country: 'United Kingdom',
     currency: 'British Pound',
     symbol: '£',
   ),
-  CurrencyClass(country: 'European Union', currency: 'Euro', symbol: '€'),
-  CurrencyClass(country: 'Ghana', currency: 'Ghanaian Cedi', symbol: '₵'),
-  CurrencyClass(country: 'Kenya', currency: 'Kenyan Shilling', symbol: 'KSh'),
+  CurrencyClass(
+    country: 'European Union',
+    currency: 'Euro',
+    symbol: '€',
+  ),
+  CurrencyClass(
+    country: 'Ghana',
+    currency: 'Ghanaian Cedi',
+    symbol: '₵',
+  ),
+  CurrencyClass(
+    country: 'Kenya',
+    currency: 'Kenyan Shilling',
+    symbol: 'KSh',
+  ),
   CurrencyClass(
     country: 'South Africa',
     currency: 'South African Rand',
     symbol: 'R',
   ),
-  CurrencyClass(country: 'Canada', currency: 'Canadian Dollar', symbol: 'C\$'),
-  CurrencyClass(country: 'India', currency: 'Indian Rupee', symbol: '₹'),
+  CurrencyClass(
+    country: 'Canada',
+    currency: 'Canadian Dollar',
+    symbol: 'C\$',
+  ),
+  CurrencyClass(
+    country: 'India',
+    currency: 'Indian Rupee',
+    symbol: '₹',
+  ),
   CurrencyClass(
     country: 'Australia',
     currency: 'Australian Dollar',
     symbol: 'A\$',
   ),
-  CurrencyClass(country: 'China', currency: 'Yuan Renminbi', symbol: '¥'),
-  CurrencyClass(country: 'Japan', currency: 'Japanese Yen', symbol: '¥'),
-  CurrencyClass(country: 'Brazil', currency: 'Brazilian Real', symbol: 'R\$'),
-  CurrencyClass(country: 'Mexico', currency: 'Mexican Peso', symbol: '\$'),
-  CurrencyClass(country: 'Egypt', currency: 'Egyptian Pound', symbol: 'E£'),
+  CurrencyClass(
+    country: 'China',
+    currency: 'Yuan Renminbi',
+    symbol: '¥',
+  ),
+  CurrencyClass(
+    country: 'Japan',
+    currency: 'Japanese Yen',
+    symbol: '¥',
+  ),
+  CurrencyClass(
+    country: 'Brazil',
+    currency: 'Brazilian Real',
+    symbol: 'R\$',
+  ),
+  CurrencyClass(
+    country: 'Mexico',
+    currency: 'Mexican Peso',
+    symbol: '\$',
+  ),
+  CurrencyClass(
+    country: 'Egypt',
+    currency: 'Egyptian Pound',
+    symbol: 'E£',
+  ),
   CurrencyClass(
     country: 'Tanzania',
     currency: 'Tanzanian Shilling',
     symbol: 'TSh',
   ),
-  CurrencyClass(country: 'Uganda', currency: 'Ugandan Shilling', symbol: 'USh'),
-  CurrencyClass(country: 'Rwanda', currency: 'Rwandan Franc', symbol: 'FRw'),
-  CurrencyClass(country: 'Turkey', currency: 'Turkish Lira', symbol: '₺'),
+  CurrencyClass(
+    country: 'Uganda',
+    currency: 'Ugandan Shilling',
+    symbol: 'USh',
+  ),
+  CurrencyClass(
+    country: 'Rwanda',
+    currency: 'Rwandan Franc',
+    symbol: 'FRw',
+  ),
+  CurrencyClass(
+    country: 'Turkey',
+    currency: 'Turkish Lira',
+    symbol: '₺',
+  ),
   CurrencyClass(
     country: 'United Arab Emirates',
     currency: 'Dirham',
@@ -286,7 +381,10 @@ Future<void> generateAndPreviewPdf({
   SalesAuthAction().downloadReceiptAction(
     context: context,
     action: () async {
-      returnReceiptProvider(context, listen: false).toggleIsLoading(true);
+      returnReceiptProvider(
+        context,
+        listen: false,
+      ).toggleIsLoading(true);
       final Uint8List bytes = await _buildPdf(
         receipt,
         staffName,
@@ -294,7 +392,10 @@ Future<void> generateAndPreviewPdf({
         shop,
         context,
       );
-      var receiptId = receipt.uuid!.toString().substring(0, 5);
+      var receiptId = receipt.uuid!.toString().substring(
+        0,
+        5,
+      );
       var name =
           "Stockall_Receipt_$receiptId.${DateTime.now().millisecondsSinceEpoch}";
 
@@ -308,13 +409,19 @@ Future<void> generateAndPreviewPdf({
       // 2. Open native print/share/save dialog (cross-platform)
       // await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
       if (context.mounted) {
-        returnReceiptProvider(context, listen: false).toggleIsLoading(false);
+        returnReceiptProvider(
+          context,
+          listen: false,
+        ).toggleIsLoading(false);
       }
     },
   );
 }
 
-Future<void> savePdfDesktop(Uint8List bytes, String name) async {
+Future<void> savePdfDesktop(
+  Uint8List bytes,
+  String name,
+) async {
   await FileSaver.instance.saveFile(
     name: name,
     fileExtension: "pdf",
@@ -323,8 +430,14 @@ Future<void> savePdfDesktop(Uint8List bytes, String name) async {
   );
 }
 
-Future<void> savePdfMobile(Uint8List bytes, String name) async {
-  await Printing.sharePdf(bytes: bytes, filename: '$name.pdf');
+Future<void> savePdfMobile(
+  Uint8List bytes,
+  String name,
+) async {
+  await Printing.sharePdf(
+    bytes: bytes,
+    filename: '$name.pdf',
+  );
 }
 
 Future<void> generateAndPreviewPdfRoll({
@@ -338,7 +451,10 @@ Future<void> generateAndPreviewPdfRoll({
   SalesAuthAction().printReceiptAction(
     context: context,
     action: () async {
-      returnReceiptProvider(context, listen: false).toggleIsLoading(true);
+      returnReceiptProvider(
+        context,
+        listen: false,
+      ).toggleIsLoading(true);
       final Uint8List pdfBytes = await _buildPdfRoll(
         receipt,
         records,
@@ -348,9 +464,14 @@ Future<void> generateAndPreviewPdfRoll({
         printerType,
       );
 
-      await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
+      await Printing.layoutPdf(
+        onLayout: (_) async => pdfBytes,
+      );
       if (context.mounted) {
-        returnReceiptProvider(context, listen: false).toggleIsLoading(false);
+        returnReceiptProvider(
+          context,
+          listen: false,
+        ).toggleIsLoading(false);
       }
     },
   );
@@ -366,7 +487,14 @@ Future<Uint8List> buildReceiptRollPdf({
   required BuildContext context,
   required int printerType,
 }) {
-  return _buildPdfRoll(receipt, records, staffName, shop, context, printerType);
+  return _buildPdfRoll(
+    receipt,
+    records,
+    staffName,
+    shop,
+    context,
+    printerType,
+  );
 }
 
 Future<Uint8List> _buildPdf(
@@ -380,10 +508,14 @@ Future<Uint8List> _buildPdf(
 
   // Load Plus Jakarta Sans from assets
   final fontRegular = pw.Font.ttf(
-    await rootBundle.load('assets/fonts/PlusJakartaSans-Regular.ttf'),
+    await rootBundle.load(
+      'assets/fonts/PlusJakartaSans-Regular.ttf',
+    ),
   );
   final fontBold = pw.Font.ttf(
-    await rootBundle.load('assets/fonts/PlusJakartaSans-Bold.ttf'),
+    await rootBundle.load(
+      'assets/fonts/PlusJakartaSans-Bold.ttf',
+    ),
   );
 
   pdf.addPage(
@@ -398,21 +530,29 @@ Future<Uint8List> _buildPdf(
       // 🔹 HEADER
       header:
           (pw.Context pdfcontext) => pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.center,
+            crossAxisAlignment:
+                pw.CrossAxisAlignment.center,
             children: [
               pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.center,
+                mainAxisAlignment:
+                    pw.MainAxisAlignment.center,
                 children: [
                   pw.Column(
                     children: [
                       pw.Column(
                         children: [
                           pw.Builder(
-                            builder: (pw.Context pdfContext) {
-                              if (returnShopProvider().selectedLogo != null) {
+                            builder: (
+                              pw.Context pdfContext,
+                            ) {
+                              if (returnShopProvider()
+                                      .selectedLogo !=
+                                  null) {
                                 return pw.Container(
                                   height:
-                                      (returnShopProvider().imageWidth ?? 0) >
+                                      (returnShopProvider()
+                                                      .imageWidth ??
+                                                  0) >
                                               (2 *
                                                   (returnShopProvider()
                                                           .imageHeight ??
@@ -422,7 +562,8 @@ Future<Uint8List> _buildPdf(
                                   width: 200,
                                   child: pw.Image(
                                     pw.MemoryImage(
-                                      returnShopProvider().selectedLogo ??
+                                      returnShopProvider()
+                                              .selectedLogo ??
                                           Uint8List(12),
                                     ),
                                     fit: pw.BoxFit.contain,
@@ -435,10 +576,12 @@ Future<Uint8List> _buildPdf(
                           ),
                           pw.SizedBox(height: 1),
                           pw.Row(
-                            mainAxisAlignment: pw.MainAxisAlignment.center,
+                            mainAxisAlignment:
+                                pw.MainAxisAlignment.center,
                             children: [
                               pw.Text(
-                                textAlign: pw.TextAlign.center,
+                                textAlign:
+                                    pw.TextAlign.center,
                                 "#Shop Id: ${shopRef()}",
                                 style: pw.TextStyle(
                                   font: fontBold,
@@ -449,19 +592,29 @@ Future<Uint8List> _buildPdf(
                             ],
                           ),
                           pw.Builder(
-                            builder: (pw.Context pdfContext) {
+                            builder: (
+                              pw.Context pdfContext,
+                            ) {
                               if (shop.showShopName!) {
                                 return pw.Column(
                                   children: [
                                     pw.SizedBox(height: 4),
                                     pw.Container(
                                       width:
-                                          PdfPageFormat.a5.availableWidth -
+                                          PdfPageFormat
+                                              .a5
+                                              .availableWidth -
                                           60, // match margins
-                                      alignment: pw.Alignment.center,
+                                      alignment:
+                                          pw
+                                              .Alignment
+                                              .center,
                                       child: pw.Text(
                                         shop.name,
-                                        textAlign: pw.TextAlign.center,
+                                        textAlign:
+                                            pw
+                                                .TextAlign
+                                                .center,
                                         style: pw.TextStyle(
                                           font: fontBold,
                                           fontSize: 16,
@@ -477,18 +630,30 @@ Future<Uint8List> _buildPdf(
                           ),
 
                           pw.Builder(
-                            builder: (pw.Context pdfContext) {
-                              if (shop.showEmail! && shop.email != null) {
+                            builder: (
+                              pw.Context pdfContext,
+                            ) {
+                              if (shop.showEmail! &&
+                                  shop.email != null) {
                                 return pw.Column(
                                   children: [
                                     pw.SizedBox(height: 4),
                                     pw.Container(
                                       width:
-                                          PdfPageFormat.a5.availableWidth - 60,
-                                      alignment: pw.Alignment.center,
+                                          PdfPageFormat
+                                              .a5
+                                              .availableWidth -
+                                          60,
+                                      alignment:
+                                          pw
+                                              .Alignment
+                                              .center,
                                       child: pw.Text(
                                         shop.email ?? '',
-                                        textAlign: pw.TextAlign.center,
+                                        textAlign:
+                                            pw
+                                                .TextAlign
+                                                .center,
                                         style: pw.TextStyle(
                                           font: fontRegular,
                                           fontSize: 9,
@@ -504,19 +669,28 @@ Future<Uint8List> _buildPdf(
                           ),
 
                           pw.Builder(
-                            builder: (pw.Context pdfContext) {
+                            builder: (
+                              pw.Context pdfContext,
+                            ) {
                               if (shop.showPhone!) {
                                 return pw.Column(
                                   children: [
                                     pw.SizedBox(height: 1),
 
                                     pw.Text(
-                                      textAlign: pw.TextAlign.center,
-                                      shop.phoneNumber ?? '',
+                                      textAlign:
+                                          pw
+                                              .TextAlign
+                                              .center,
+                                      shop.phoneNumber ??
+                                          '',
                                       style: pw.TextStyle(
                                         font: fontRegular,
                                         fontSize:
-                                            shop.phoneNumber == null ? 1 : 9,
+                                            shop.phoneNumber ==
+                                                    null
+                                                ? 1
+                                                : 9,
                                       ),
                                     ),
                                   ],
@@ -528,18 +702,30 @@ Future<Uint8List> _buildPdf(
                           ),
 
                           pw.Builder(
-                            builder: (pw.Context pdfContext) {
+                            builder: (
+                              pw.Context pdfContext,
+                            ) {
                               if (shop.showAddress!) {
                                 return pw.Column(
                                   children: [
                                     pw.SizedBox(height: 1),
                                     pw.Container(
                                       width:
-                                          PdfPageFormat.a5.availableWidth - 60,
-                                      alignment: pw.Alignment.center,
+                                          PdfPageFormat
+                                              .a5
+                                              .availableWidth -
+                                          60,
+                                      alignment:
+                                          pw
+                                              .Alignment
+                                              .center,
                                       child: pw.Text(
-                                        shop.shopAddress ?? 'Address Not Set',
-                                        textAlign: pw.TextAlign.center,
+                                        shop.shopAddress ??
+                                            'Address Not Set',
+                                        textAlign:
+                                            pw
+                                                .TextAlign
+                                                .center,
                                         style: pw.TextStyle(
                                           font: fontRegular,
                                           fontSize: 9,
@@ -555,33 +741,51 @@ Future<Uint8List> _buildPdf(
                           ),
 
                           pw.Builder(
-                            builder: (pw.Context pdfContext) {
+                            builder: (
+                              pw.Context pdfContext,
+                            ) {
                               if (shop.showFacebookTop!) {
                                 return pw.Column(
                                   children: [
                                     pw.SizedBox(height: 1),
                                     pw.Container(
                                       width:
-                                          PdfPageFormat.a5.availableWidth - 60,
-                                      alignment: pw.Alignment.center,
+                                          PdfPageFormat
+                                              .a5
+                                              .availableWidth -
+                                          60,
+                                      alignment:
+                                          pw
+                                              .Alignment
+                                              .center,
                                       child: pw.Row(
                                         mainAxisAlignment:
-                                            pw.MainAxisAlignment.center,
+                                            pw
+                                                .MainAxisAlignment
+                                                .center,
                                         children: [
                                           pw.Text(
                                             'Facebook: ',
-                                            textAlign: pw.TextAlign.center,
+                                            textAlign:
+                                                pw
+                                                    .TextAlign
+                                                    .center,
                                             style: pw.TextStyle(
-                                              font: fontBold,
+                                              font:
+                                                  fontBold,
                                               fontSize: 7,
                                             ),
                                           ),
                                           pw.Text(
                                             shop.faceBookHandle ??
                                                 'Facebook Not Set',
-                                            textAlign: pw.TextAlign.center,
+                                            textAlign:
+                                                pw
+                                                    .TextAlign
+                                                    .center,
                                             style: pw.TextStyle(
-                                              font: fontRegular,
+                                              font:
+                                                  fontRegular,
                                               fontSize: 9,
                                             ),
                                           ),
@@ -597,33 +801,51 @@ Future<Uint8List> _buildPdf(
                           ),
 
                           pw.Builder(
-                            builder: (pw.Context pdfContext) {
+                            builder: (
+                              pw.Context pdfContext,
+                            ) {
                               if (shop.showInstaTop!) {
                                 return pw.Column(
                                   children: [
                                     pw.SizedBox(height: 1),
                                     pw.Container(
                                       width:
-                                          PdfPageFormat.a5.availableWidth - 60,
-                                      alignment: pw.Alignment.center,
+                                          PdfPageFormat
+                                              .a5
+                                              .availableWidth -
+                                          60,
+                                      alignment:
+                                          pw
+                                              .Alignment
+                                              .center,
                                       child: pw.Row(
                                         mainAxisAlignment:
-                                            pw.MainAxisAlignment.center,
+                                            pw
+                                                .MainAxisAlignment
+                                                .center,
                                         children: [
                                           pw.Text(
                                             'Instagrm: ',
-                                            textAlign: pw.TextAlign.center,
+                                            textAlign:
+                                                pw
+                                                    .TextAlign
+                                                    .center,
                                             style: pw.TextStyle(
-                                              font: fontBold,
+                                              font:
+                                                  fontBold,
                                               fontSize: 7,
                                             ),
                                           ),
                                           pw.Text(
                                             shop.instaHandle ??
                                                 'Instagram Not Set',
-                                            textAlign: pw.TextAlign.center,
+                                            textAlign:
+                                                pw
+                                                    .TextAlign
+                                                    .center,
                                             style: pw.TextStyle(
-                                              font: fontRegular,
+                                              font:
+                                                  fontRegular,
                                               fontSize: 9,
                                             ),
                                           ),
@@ -644,7 +866,10 @@ Future<Uint8List> _buildPdf(
                 ],
               ),
               pw.SizedBox(height: 5),
-              pw.Divider(color: PdfColor.fromHex('#D3D3D3'), thickness: 0.5),
+              pw.Divider(
+                color: PdfColor.fromHex('#D3D3D3'),
+                thickness: 0.5,
+              ),
             ],
           ),
       // 🔹 FOOTER
@@ -658,7 +883,10 @@ Future<Uint8List> _buildPdf(
                     padding: pw.EdgeInsets.only(right: 10),
                     child: pw.SvgImage(
                       svg: pw.Barcode.ean13().toSvg(
-                        receipt.barcode ?? returnOnlyDigits(receipt.uuid ?? ''),
+                        receipt.barcode ??
+                            returnOnlyDigits(
+                              receipt.uuid ?? '',
+                            ),
                         width: 110,
                         height: 30,
                         fontHeight: 8,
@@ -672,16 +900,23 @@ Future<Uint8List> _buildPdf(
               pw.Align(
                 alignment: pw.Alignment.centerRight,
                 child: pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.center,
+                  mainAxisAlignment:
+                      pw.MainAxisAlignment.center,
                   children: [
                     pw.Text(
                       '( Page ${context.pageNumber} of ${context.pagesCount} )',
-                      style: pw.TextStyle(font: fontRegular, fontSize: 9),
+                      style: pw.TextStyle(
+                        font: fontRegular,
+                        fontSize: 9,
+                      ),
                     ),
                     pw.SizedBox(width: 15),
                     pw.Text(
                       'Created by $appName Solutions - ( www.stockallapp.com )',
-                      style: pw.TextStyle(font: fontRegular, fontSize: 9),
+                      style: pw.TextStyle(
+                        font: fontRegular,
+                        fontSize: 9,
+                      ),
                     ),
                   ],
                 ),
@@ -691,17 +926,25 @@ Future<Uint8List> _buildPdf(
       build:
           (pw.Context pdfContext) => [
             pw.DefaultTextStyle(
-              style: pw.TextStyle(font: fontRegular, fontSize: 12),
+              style: pw.TextStyle(
+                font: fontRegular,
+                fontSize: 12,
+              ),
               child: pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    pw.CrossAxisAlignment.start,
                 children: [
                   pw.Row(
-                    mainAxisAlignment: pw.MainAxisAlignment.center,
+                    mainAxisAlignment:
+                        pw.MainAxisAlignment.center,
                     children: [
                       pw.Text(
                         textAlign: pw.TextAlign.center,
                         'Receipt of Payment',
-                        style: pw.TextStyle(font: fontRegular, fontSize: 10),
+                        style: pw.TextStyle(
+                          font: fontRegular,
+                          fontSize: 10,
+                        ),
                       ),
                     ],
                   ),
@@ -717,12 +960,16 @@ Future<Uint8List> _buildPdf(
                           children: [
                             pw.Row(
                               mainAxisAlignment:
-                                  pw.MainAxisAlignment.spaceEvenly,
+                                  pw
+                                      .MainAxisAlignment
+                                      .spaceEvenly,
                               children: [
                                 pw.Expanded(
                                   child: pw.Column(
                                     crossAxisAlignment:
-                                        pw.CrossAxisAlignment.start,
+                                        pw
+                                            .CrossAxisAlignment
+                                            .start,
                                     children: [
                                       pw.Text(
                                         style: pw.TextStyle(
@@ -731,7 +978,9 @@ Future<Uint8List> _buildPdf(
                                         ),
                                         'Staff Name:',
                                       ),
-                                      pw.SizedBox(height: 5),
+                                      pw.SizedBox(
+                                        height: 5,
+                                      ),
                                       pw.Text(
                                         style: pw.TextStyle(
                                           font: fontBold,
@@ -744,26 +993,36 @@ Future<Uint8List> _buildPdf(
                                 ),
                                 pw.Builder(
                                   builder: (context) {
-                                    if (receipt.customerUuid != null) {
+                                    if (receipt
+                                            .customerUuid !=
+                                        null) {
                                       return pw.Expanded(
                                         child: pw.Column(
                                           crossAxisAlignment:
-                                              pw.CrossAxisAlignment.start,
+                                              pw
+                                                  .CrossAxisAlignment
+                                                  .start,
                                           children: [
                                             pw.Text(
                                               style: pw.TextStyle(
-                                                font: fontRegular,
+                                                font:
+                                                    fontRegular,
                                                 fontSize: 9,
                                               ),
                                               'Customer Name:',
                                             ),
-                                            pw.SizedBox(height: 5),
+                                            pw.SizedBox(
+                                              height: 5,
+                                            ),
                                             pw.Text(
                                               style: pw.TextStyle(
-                                                font: fontBold,
-                                                fontSize: 10,
+                                                font:
+                                                    fontBold,
+                                                fontSize:
+                                                    10,
                                               ),
-                                              receipt.customerName ?? 'Not Set',
+                                              receipt.customerName ??
+                                                  'Not Set',
                                             ),
                                           ],
                                         ),
@@ -777,31 +1036,44 @@ Future<Uint8List> _buildPdf(
                             ),
                             pw.Builder(
                               builder: (beansContext) {
-                                if (receipt.subStaffName != null) {
+                                if (receipt.subStaffName !=
+                                    null) {
                                   return pw.Column(
                                     children: [
-                                      pw.SizedBox(height: 10),
+                                      pw.SizedBox(
+                                        height: 10,
+                                      ),
                                       pw.Row(
                                         mainAxisAlignment:
-                                            pw.MainAxisAlignment.spaceEvenly,
+                                            pw
+                                                .MainAxisAlignment
+                                                .spaceEvenly,
                                         children: [
                                           pw.Expanded(
                                             child: pw.Column(
                                               crossAxisAlignment:
-                                                  pw.CrossAxisAlignment.start,
+                                                  pw
+                                                      .CrossAxisAlignment
+                                                      .start,
                                               children: [
                                                 pw.Text(
                                                   style: pw.TextStyle(
-                                                    font: fontRegular,
-                                                    fontSize: 9,
+                                                    font:
+                                                        fontRegular,
+                                                    fontSize:
+                                                        9,
                                                   ),
                                                   'Waiter:',
                                                 ),
-                                                pw.SizedBox(height: 5),
+                                                pw.SizedBox(
+                                                  height: 5,
+                                                ),
                                                 pw.Text(
                                                   style: pw.TextStyle(
-                                                    font: fontBold,
-                                                    fontSize: 10,
+                                                    font:
+                                                        fontBold,
+                                                    fontSize:
+                                                        10,
                                                   ),
                                                   receipt.subStaffName ??
                                                       'Not Set',
@@ -812,22 +1084,31 @@ Future<Uint8List> _buildPdf(
                                           pw.Expanded(
                                             child: pw.Column(
                                               crossAxisAlignment:
-                                                  pw.CrossAxisAlignment.start,
+                                                  pw
+                                                      .CrossAxisAlignment
+                                                      .start,
                                               children: [
                                                 pw.Text(
                                                   style: pw.TextStyle(
-                                                    font: fontRegular,
-                                                    fontSize: 9,
+                                                    font:
+                                                        fontRegular,
+                                                    fontSize:
+                                                        9,
                                                   ),
                                                   'Receipt Id:',
                                                 ),
-                                                pw.SizedBox(height: 5),
+                                                pw.SizedBox(
+                                                  height: 5,
+                                                ),
                                                 pw.Text(
                                                   style: pw.TextStyle(
-                                                    font: fontBold,
-                                                    fontSize: 10,
+                                                    font:
+                                                        fontBold,
+                                                    fontSize:
+                                                        10,
                                                   ),
-                                                  receipt.cartName ?? 'Not Set',
+                                                  receipt.cartName ??
+                                                      'Not Set',
                                                 ),
                                               ],
                                             ),
@@ -856,12 +1137,16 @@ Future<Uint8List> _buildPdf(
                             pw.SizedBox(height: 10),
                             pw.Row(
                               mainAxisAlignment:
-                                  pw.MainAxisAlignment.spaceEvenly,
+                                  pw
+                                      .MainAxisAlignment
+                                      .spaceEvenly,
                               children: [
                                 pw.Expanded(
                                   child: pw.Column(
                                     crossAxisAlignment:
-                                        pw.CrossAxisAlignment.start,
+                                        pw
+                                            .CrossAxisAlignment
+                                            .start,
                                     children: [
                                       pw.Text(
                                         style: pw.TextStyle(
@@ -870,30 +1155,42 @@ Future<Uint8List> _buildPdf(
                                         ),
                                         'Payment Method:',
                                       ),
-                                      pw.SizedBox(height: 5),
+                                      pw.SizedBox(
+                                        height: 5,
+                                      ),
                                       pw.Builder(
-                                        builder: (beansContext) {
-                                          if (receipt.bank == 0) {
+                                        builder: (
+                                          beansContext,
+                                        ) {
+                                          if (receipt
+                                                  .bank ==
+                                              0) {
                                             return pw.Text(
                                               style: pw.TextStyle(
-                                                font: fontRegular,
+                                                font:
+                                                    fontRegular,
                                                 fontSize: 8,
                                               ),
                                               'Cash: ${formatMoneyMid(amount: receipt.cashAlt, context: context)}',
                                             );
-                                          } else if (receipt.cashAlt == 0) {
+                                          } else if (receipt
+                                                  .cashAlt ==
+                                              0) {
                                             return pw.Text(
                                               style: pw.TextStyle(
-                                                font: fontRegular,
+                                                font:
+                                                    fontRegular,
                                                 fontSize: 8,
                                               ),
                                               'Bank: ${formatMoneyMid(amount: receipt.bank, context: context)}',
                                             );
-                                          } else if (receipt.customerAccount !=
+                                          } else if (receipt
+                                                  .customerAccount !=
                                               0) {
                                             return pw.Text(
                                               style: pw.TextStyle(
-                                                font: fontRegular,
+                                                font:
+                                                    fontRegular,
                                                 fontSize: 8,
                                               ),
                                               'Account: ${formatMoneyMid(amount: receipt.customerAccount ?? 0, context: context)}',
@@ -901,19 +1198,25 @@ Future<Uint8List> _buildPdf(
                                           } else {
                                             return pw.Column(
                                               crossAxisAlignment:
-                                                  pw.CrossAxisAlignment.start,
+                                                  pw
+                                                      .CrossAxisAlignment
+                                                      .start,
                                               children: [
                                                 pw.Text(
                                                   style: pw.TextStyle(
-                                                    font: fontRegular,
-                                                    fontSize: 8,
+                                                    font:
+                                                        fontRegular,
+                                                    fontSize:
+                                                        8,
                                                   ),
                                                   'Cash: ${formatMoneyMid(amount: receipt.cashAlt, context: context)}',
                                                 ),
                                                 pw.Text(
                                                   style: pw.TextStyle(
-                                                    font: fontRegular,
-                                                    fontSize: 8,
+                                                    font:
+                                                        fontRegular,
+                                                    fontSize:
+                                                        8,
                                                   ),
                                                   'Bank: ${formatMoneyMid(amount: receipt.bank, context: context)}',
                                                 ),
@@ -928,7 +1231,9 @@ Future<Uint8List> _buildPdf(
                                 pw.Expanded(
                                   child: pw.Column(
                                     crossAxisAlignment:
-                                        pw.CrossAxisAlignment.start,
+                                        pw
+                                            .CrossAxisAlignment
+                                            .start,
                                     children: [
                                       pw.Text(
                                         style: pw.TextStyle(
@@ -937,7 +1242,9 @@ Future<Uint8List> _buildPdf(
                                         ),
                                         '#Ticket Id:',
                                       ),
-                                      pw.SizedBox(height: 5),
+                                      pw.SizedBox(
+                                        height: 5,
+                                      ),
                                       pw.Text(
                                         style: pw.TextStyle(
                                           font: fontBold,
@@ -945,7 +1252,8 @@ Future<Uint8List> _buildPdf(
                                         ),
                                         receipt.barcode ??
                                             returnOnlyDigits(
-                                              receipt.uuid ?? '',
+                                              receipt.uuid ??
+                                                  '',
                                             ),
                                       ),
                                     ],
@@ -968,12 +1276,16 @@ Future<Uint8List> _buildPdf(
                             pw.SizedBox(height: 10),
                             pw.Row(
                               mainAxisAlignment:
-                                  pw.MainAxisAlignment.spaceEvenly,
+                                  pw
+                                      .MainAxisAlignment
+                                      .spaceEvenly,
                               children: [
                                 pw.Expanded(
                                   child: pw.Column(
                                     crossAxisAlignment:
-                                        pw.CrossAxisAlignment.start,
+                                        pw
+                                            .CrossAxisAlignment
+                                            .start,
                                     children: [
                                       pw.Text(
                                         style: pw.TextStyle(
@@ -982,13 +1294,17 @@ Future<Uint8List> _buildPdf(
                                         ),
                                         'Date:',
                                       ),
-                                      pw.SizedBox(height: 5),
+                                      pw.SizedBox(
+                                        height: 5,
+                                      ),
                                       pw.Text(
                                         style: pw.TextStyle(
                                           font: fontBold,
                                           fontSize: 10,
                                         ),
-                                        formatDateTime(receipt.createdAt),
+                                        formatDateTime(
+                                          receipt.createdAt,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -996,7 +1312,9 @@ Future<Uint8List> _buildPdf(
                                 pw.Expanded(
                                   child: pw.Column(
                                     crossAxisAlignment:
-                                        pw.CrossAxisAlignment.start,
+                                        pw
+                                            .CrossAxisAlignment
+                                            .start,
                                     children: [
                                       pw.Text(
                                         style: pw.TextStyle(
@@ -1005,13 +1323,17 @@ Future<Uint8List> _buildPdf(
                                         ),
                                         'Time:',
                                       ),
-                                      pw.SizedBox(height: 5),
+                                      pw.SizedBox(
+                                        height: 5,
+                                      ),
                                       pw.Text(
                                         style: pw.TextStyle(
                                           font: fontBold,
                                           fontSize: 10,
                                         ),
-                                        formatTime(receipt.createdAt),
+                                        formatTime(
+                                          receipt.createdAt,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -1028,18 +1350,23 @@ Future<Uint8List> _buildPdf(
                   pw.Builder(
                     builder: (pw.Context pdfContext) {
                       if (receipt.comment != null &&
-                          receipt.comment?.isNotEmpty == true) {
+                          receipt.comment?.isNotEmpty ==
+                              true) {
                         return pw.Column(
                           children: [
                             pw.SizedBox(height: 10),
                             pw.Row(
                               mainAxisAlignment:
-                                  pw.MainAxisAlignment.spaceEvenly,
+                                  pw
+                                      .MainAxisAlignment
+                                      .spaceEvenly,
                               children: [
                                 pw.Expanded(
                                   child: pw.Column(
                                     crossAxisAlignment:
-                                        pw.CrossAxisAlignment.start,
+                                        pw
+                                            .CrossAxisAlignment
+                                            .start,
                                     children: [
                                       pw.Text(
                                         style: pw.TextStyle(
@@ -1048,13 +1375,16 @@ Future<Uint8List> _buildPdf(
                                         ),
                                         'Comment:',
                                       ),
-                                      pw.SizedBox(height: 5),
+                                      pw.SizedBox(
+                                        height: 5,
+                                      ),
                                       pw.Text(
                                         style: pw.TextStyle(
                                           font: fontBold,
                                           fontSize: 10,
                                         ),
-                                        receipt.comment ?? 'Comment Not Set',
+                                        receipt.comment ??
+                                            'Comment Not Set',
                                       ),
                                     ],
                                   ),
@@ -1072,27 +1402,37 @@ Future<Uint8List> _buildPdf(
                   pw.Divider(),
 
                   pw.Row(
-                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment:
+                        pw.MainAxisAlignment.spaceBetween,
                     children: [
                       pw.Expanded(
                         flex: 5,
                         child: pw.Text(
                           'Items:',
-                          style: pw.TextStyle(font: fontBold, fontSize: 12),
+                          style: pw.TextStyle(
+                            font: fontBold,
+                            fontSize: 12,
+                          ),
                         ),
                       ),
                       pw.Expanded(
                         flex: 1,
                         child: pw.Text(
                           'Qty:',
-                          style: pw.TextStyle(font: fontRegular, fontSize: 10),
+                          style: pw.TextStyle(
+                            font: fontRegular,
+                            fontSize: 10,
+                          ),
                         ),
                       ),
                       pw.Expanded(
                         flex: 3,
                         child: pw.Text(
                           'Price:',
-                          style: pw.TextStyle(font: fontRegular, fontSize: 10),
+                          style: pw.TextStyle(
+                            font: fontRegular,
+                            fontSize: 10,
+                          ),
                         ),
                       ),
                     ],
@@ -1101,36 +1441,49 @@ Future<Uint8List> _buildPdf(
 
                   ...records.map(
                     (record) => pw.Container(
-                      margin: pw.EdgeInsets.symmetric(vertical: 3),
-                      padding: const pw.EdgeInsets.symmetric(
-                        vertical: 6,
-                        horizontal: 5,
+                      margin: pw.EdgeInsets.symmetric(
+                        vertical: 3,
                       ),
+                      padding:
+                          const pw.EdgeInsets.symmetric(
+                            vertical: 6,
+                            horizontal: 5,
+                          ),
                       /**alpha: 1, red: 0.961, green: 0.961, blue: 0.961 */
                       decoration: pw.BoxDecoration(
                         color: PdfColor.fromHex('#EFEFEF'),
                       ),
                       child: pw.Row(
-                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment:
+                            pw
+                                .MainAxisAlignment
+                                .spaceBetween,
                         children: [
                           pw.Expanded(
                             flex: 5,
                             child: pw.Text(
-                              style: pw.TextStyle(fontSize: 10),
+                              style: pw.TextStyle(
+                                fontSize: 10,
+                              ),
                               '${record.productName} ',
                             ),
                           ),
                           pw.Expanded(
                             flex: 1,
                             child: pw.Text(
-                              style: pw.TextStyle(fontSize: 8),
+                              style: pw.TextStyle(
+                                fontSize: 8,
+                              ),
                               '[ ${formatLargeNumberDouble(record.quantity)} ] ',
                             ),
                           ),
                           pw.Expanded(
                             flex: 3,
                             child: pw.Column(
-                              crossAxisAlignment: pw.CrossAxisAlignment.start,
+                              crossAxisAlignment:
+                                  pw
+                                      .CrossAxisAlignment
+                                      .start,
                               children: [
                                 pw.Text(
                                   style: pw.TextStyle(
@@ -1139,13 +1492,19 @@ Future<Uint8List> _buildPdf(
                                   ),
                                   formatMoneyMid(
                                     amount:
-                                        (receipt.fixedDiscount == null &&
+                                        (receipt.fixedDiscount ==
+                                                        null &&
                                                     receipt.generalDiscount ==
                                                         null) &&
-                                                record.discount != null
-                                            ? ((record.originalCost ?? 0) -
-                                                (record.discountedAmount ?? 0))
-                                            : (record.originalCost ?? 0),
+                                                record.discount !=
+                                                    null
+                                            ? ((record.originalCost ??
+                                                    0) -
+                                                (record.discountedAmount ??
+                                                    0))
+                                            : (record
+                                                    .originalCost ??
+                                                0),
                                     context: context,
                                   ),
                                 ),
@@ -1199,24 +1558,33 @@ Future<Uint8List> _buildPdf(
                   pw.Divider(),
 
                   pw.Row(
-                    mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment:
+                        pw.MainAxisAlignment.spaceEvenly,
                     children: [
                       pw.Expanded(
                         flex: 2,
                         child: pw.Text(
-                          style: pw.TextStyle(font: fontRegular, fontSize: 8),
+                          style: pw.TextStyle(
+                            font: fontRegular,
+                            fontSize: 8,
+                          ),
                           'Subtotal:',
                         ),
                       ),
                       pw.Expanded(
                         flex: 1,
                         child: pw.Text(
-                          style: pw.TextStyle(font: fontRegular, fontSize: 9),
+                          style: pw.TextStyle(
+                            font: fontRegular,
+                            fontSize: 9,
+                          ),
                           formatMoneyMid(
                             amount: returnReceiptProvider(
                               context,
                               listen: false,
-                            ).getOriginalCostReceipt(receipt),
+                            ).getOriginalCostReceipt(
+                              receipt,
+                            ),
                             context: context,
                           ),
                         ),
@@ -1233,7 +1601,9 @@ Future<Uint8List> _buildPdf(
                             pw.SizedBox(height: 5),
                             pw.Row(
                               mainAxisAlignment:
-                                  pw.MainAxisAlignment.spaceEvenly,
+                                  pw
+                                      .MainAxisAlignment
+                                      .spaceEvenly,
                               children: [
                                 pw.Expanded(
                                   flex: 2,
@@ -1251,7 +1621,8 @@ Future<Uint8List> _buildPdf(
                                           font: fontRegular,
                                           fontSize: 8,
                                         ),
-                                        receipt.generalDiscount != null
+                                        receipt.generalDiscount !=
+                                                null
                                             ? " (${receipt.generalDiscount}%)"
                                             : '',
                                       ),
@@ -1269,7 +1640,9 @@ Future<Uint8List> _buildPdf(
                                       amount: returnReceiptProvider(
                                         context,
                                         listen: false,
-                                      ).getDiscountAmountForReceipt(receipt),
+                                      ).getDiscountAmountForReceipt(
+                                        receipt,
+                                      ),
                                       context: context,
                                     ),
                                   ),
@@ -1285,7 +1658,8 @@ Future<Uint8List> _buildPdf(
                   ),
                   pw.SizedBox(height: 5),
                   pw.Row(
-                    mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment:
+                        pw.MainAxisAlignment.spaceEvenly,
                     children: [
                       pw.Expanded(
                         flex: 2,
@@ -1311,7 +1685,10 @@ Future<Uint8List> _buildPdf(
                       pw.Expanded(
                         flex: 1,
                         child: pw.Text(
-                          style: pw.TextStyle(font: fontRegular, fontSize: 10),
+                          style: pw.TextStyle(
+                            font: fontRegular,
+                            fontSize: 10,
+                          ),
                           formatMoneyMid(
                             amount: returnReceiptProvider(
                               context,
@@ -1331,7 +1708,9 @@ Future<Uint8List> _buildPdf(
                           children: [
                             pw.Row(
                               mainAxisAlignment:
-                                  pw.MainAxisAlignment.spaceEvenly,
+                                  pw
+                                      .MainAxisAlignment
+                                      .spaceEvenly,
                               children: [
                                 pw.Expanded(
                                   flex: 2,
@@ -1355,7 +1734,9 @@ Future<Uint8List> _buildPdf(
                                       fontSize: 10,
                                     ),
                                     formatMoneyMid(
-                                      amount: (receipt.balance ?? 0),
+                                      amount:
+                                          (receipt.balance ??
+                                              0),
                                       context: context,
                                     ),
                                   ),
@@ -1372,24 +1753,33 @@ Future<Uint8List> _buildPdf(
                   ),
 
                   pw.Row(
-                    mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment:
+                        pw.MainAxisAlignment.spaceEvenly,
                     children: [
                       pw.Expanded(
                         flex: 2,
                         child: pw.Text(
-                          style: pw.TextStyle(font: fontRegular, fontSize: 10),
+                          style: pw.TextStyle(
+                            font: fontRegular,
+                            fontSize: 10,
+                          ),
                           'Total:',
                         ),
                       ),
                       pw.Expanded(
                         flex: 1,
                         child: pw.Text(
-                          style: pw.TextStyle(font: fontBold, fontSize: 12),
+                          style: pw.TextStyle(
+                            font: fontBold,
+                            fontSize: 12,
+                          ),
                           formatMoneyMid(
                             amount: returnReceiptProvider(
                               context,
                               listen: false,
-                            ).getTotalMainRevenueReceipt(receipt),
+                            ).getTotalMainRevenueReceipt(
+                              receipt,
+                            ),
                             context: context,
                           ),
                         ),
@@ -1423,48 +1813,65 @@ Future<Uint8List> _buildPdfRoll(
 
   // Load Plus Jakarta Sans from assets
   final fontRegular = pw.Font.ttf(
-    await rootBundle.load('assets/fonts/PlusJakartaSans-Regular.ttf'),
+    await rootBundle.load(
+      'assets/fonts/PlusJakartaSans-Regular.ttf',
+    ),
   );
   final fontBold = pw.Font.ttf(
-    await rootBundle.load('assets/fonts/PlusJakartaSans-Bold.ttf'),
+    await rootBundle.load(
+      'assets/fonts/PlusJakartaSans-Bold.ttf',
+    ),
   );
 
   pdf.addPage(
     pw.Page(
       pageFormat:
-          printerType == 1 ? PdfPageFormat.roll57 : PdfPageFormat.roll80,
+          printerType == 1
+              ? PdfPageFormat.roll57
+              : PdfPageFormat.roll80,
       margin: pw.EdgeInsets.only(
         left: kIsWeb ? 2 : 0,
         top: 5,
-        right: kIsWeb ? 15 : 25,
+        right: kIsWeb ? 15 : 0,
         bottom: 10,
       ),
 
       // 🔹 HEADER
       build:
           (pw.Context pdfContext) => pw.DefaultTextStyle(
-            style: pw.TextStyle(font: fontRegular, fontSize: 10),
+            style: pw.TextStyle(
+              font: fontRegular,
+              fontSize: 10,
+            ),
             child: pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.center,
+              crossAxisAlignment:
+                  pw.CrossAxisAlignment.center,
               children: [
                 pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.center,
+                  crossAxisAlignment:
+                      pw.CrossAxisAlignment.center,
                   children: [
                     pw.Column(
                       children: [
-                        if (returnShopProvider().selectedLogo != null)
+                        if (returnShopProvider()
+                                .selectedLogo !=
+                            null)
                           pw.Container(
                             height:
-                                (returnShopProvider().imageWidth ?? 0) >
+                                (returnShopProvider()
+                                                .imageWidth ??
+                                            0) >
                                         (2 *
-                                            (returnShopProvider().imageHeight ??
+                                            (returnShopProvider()
+                                                    .imageHeight ??
                                                 0))
                                     ? 25
                                     : 75,
                             width: 200,
                             child: pw.Image(
                               pw.MemoryImage(
-                                returnShopProvider().selectedLogo ??
+                                returnShopProvider()
+                                        .selectedLogo ??
                                     Uint8List(12),
                               ),
                               fit: pw.BoxFit.contain,
@@ -1472,10 +1879,12 @@ Future<Uint8List> _buildPdfRoll(
                           ),
                         pw.SizedBox(height: 1),
                         pw.Row(
-                          mainAxisAlignment: pw.MainAxisAlignment.center,
+                          mainAxisAlignment:
+                              pw.MainAxisAlignment.center,
                           children: [
                             pw.Text(
-                              textAlign: pw.TextAlign.center,
+                              textAlign:
+                                  pw.TextAlign.center,
                               "#Shop Id: ${shopRef()}",
                               style: pw.TextStyle(
                                 font: fontBold,
@@ -1485,7 +1894,9 @@ Future<Uint8List> _buildPdfRoll(
                             ),
                           ],
                         ),
-                        if (returnShopProvider().selectedLogo != null)
+                        if (returnShopProvider()
+                                .selectedLogo !=
+                            null)
                           pw.SizedBox(height: 2),
                         pw.Builder(
                           builder: (pw.Context pdfContext) {
@@ -1493,14 +1904,18 @@ Future<Uint8List> _buildPdfRoll(
                               return pw.Column(
                                 children: [
                                   pw.Text(
-                                    textAlign: pw.TextAlign.center,
+                                    textAlign:
+                                        pw.TextAlign.center,
                                     shop.name,
                                     style: pw.TextStyle(
                                       font: fontBold,
                                       fontSize: headingText,
                                     ),
                                     // maxLines: 2,
-                                    overflow: pw.TextOverflow.clip,
+                                    overflow:
+                                        pw
+                                            .TextOverflow
+                                            .clip,
                                   ),
                                 ],
                               );
@@ -1511,18 +1926,23 @@ Future<Uint8List> _buildPdfRoll(
                         ),
                         pw.Builder(
                           builder: (pw.Context pdfContext) {
-                            if (shop.showEmail! && shop.email != null) {
+                            if (shop.showEmail! &&
+                                shop.email != null) {
                               return pw.Column(
                                 children: [
                                   pw.SizedBox(height: 1),
                                   pw.Text(
-                                    textAlign: pw.TextAlign.center,
+                                    textAlign:
+                                        pw.TextAlign.center,
                                     shop.email ?? '',
                                     style: pw.TextStyle(
                                       font: fontRegular,
                                       fontSize: parText,
                                     ),
-                                    overflow: pw.TextOverflow.clip,
+                                    overflow:
+                                        pw
+                                            .TextOverflow
+                                            .clip,
                                   ),
                                 ],
                               );
@@ -1539,12 +1959,14 @@ Future<Uint8List> _buildPdfRoll(
                                 children: [
                                   pw.SizedBox(height: 1),
                                   pw.Text(
-                                    textAlign: pw.TextAlign.center,
+                                    textAlign:
+                                        pw.TextAlign.center,
                                     shop.phoneNumber ?? '',
                                     style: pw.TextStyle(
                                       font: fontRegular,
                                       fontSize:
-                                          shop.phoneNumber == null
+                                          shop.phoneNumber ==
+                                                  null
                                               ? 1
                                               : parText,
                                     ),
@@ -1564,12 +1986,14 @@ Future<Uint8List> _buildPdfRoll(
                                 children: [
                                   pw.SizedBox(height: 1),
                                   pw.Text(
-                                    textAlign: pw.TextAlign.center,
+                                    textAlign:
+                                        pw.TextAlign.center,
                                     shop.shopAddress ?? '',
                                     style: pw.TextStyle(
                                       font: fontRegular,
                                       fontSize:
-                                          shop.shopAddress == null
+                                          shop.shopAddress ==
+                                                  null
                                               ? 1
                                               : parText,
                                     ),
@@ -1590,27 +2014,38 @@ Future<Uint8List> _buildPdfRoll(
                                   pw.SizedBox(height: 1),
                                   pw.Row(
                                     mainAxisAlignment:
-                                        pw.MainAxisAlignment.center,
+                                        pw
+                                            .MainAxisAlignment
+                                            .center,
                                     children: [
                                       pw.Text(
-                                        textAlign: pw.TextAlign.center,
+                                        textAlign:
+                                            pw
+                                                .TextAlign
+                                                .center,
 
                                         'Facebook:',
                                         style: pw.TextStyle(
                                           font: fontBold,
                                           fontSize:
-                                              shop.faceBookHandle == null
+                                              shop.faceBookHandle ==
+                                                      null
                                                   ? 1
                                                   : parTextAlt,
                                         ),
                                       ),
                                       pw.Text(
-                                        textAlign: pw.TextAlign.center,
-                                        shop.faceBookHandle ?? '',
+                                        textAlign:
+                                            pw
+                                                .TextAlign
+                                                .center,
+                                        shop.faceBookHandle ??
+                                            '',
                                         style: pw.TextStyle(
                                           font: fontRegular,
                                           fontSize:
-                                              shop.faceBookHandle == null
+                                              shop.faceBookHandle ==
+                                                      null
                                                   ? 1
                                                   : parText,
                                         ),
@@ -1633,27 +2068,38 @@ Future<Uint8List> _buildPdfRoll(
                                   pw.SizedBox(height: 1),
                                   pw.Row(
                                     mainAxisAlignment:
-                                        pw.MainAxisAlignment.center,
+                                        pw
+                                            .MainAxisAlignment
+                                            .center,
                                     children: [
                                       pw.Text(
-                                        textAlign: pw.TextAlign.center,
+                                        textAlign:
+                                            pw
+                                                .TextAlign
+                                                .center,
 
                                         'Instagram:',
                                         style: pw.TextStyle(
                                           font: fontBold,
                                           fontSize:
-                                              shop.instaHandle == null
+                                              shop.instaHandle ==
+                                                      null
                                                   ? 1
                                                   : parTextAlt,
                                         ),
                                       ),
                                       pw.Text(
-                                        textAlign: pw.TextAlign.center,
-                                        shop.instaHandle ?? '',
+                                        textAlign:
+                                            pw
+                                                .TextAlign
+                                                .center,
+                                        shop.instaHandle ??
+                                            '',
                                         style: pw.TextStyle(
                                           font: fontRegular,
                                           fontSize:
-                                              shop.instaHandle == null
+                                              shop.instaHandle ==
+                                                      null
                                                   ? 1
                                                   : parText,
                                         ),
@@ -1678,12 +2124,16 @@ Future<Uint8List> _buildPdfRoll(
                   ],
                 ),
                 pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.center,
+                  mainAxisAlignment:
+                      pw.MainAxisAlignment.center,
                   children: [
                     pw.Text(
                       textAlign: pw.TextAlign.center,
                       'Payment Receipt',
-                      style: pw.TextStyle(font: fontRegular, fontSize: parText),
+                      style: pw.TextStyle(
+                        font: fontRegular,
+                        fontSize: parText,
+                      ),
                     ),
                   ],
                 ),
@@ -1700,12 +2150,17 @@ Future<Uint8List> _buildPdfRoll(
                       return pw.Column(
                         children: [
                           pw.Row(
-                            mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                            mainAxisAlignment:
+                                pw
+                                    .MainAxisAlignment
+                                    .spaceEvenly,
                             children: [
                               pw.Expanded(
                                 child: pw.Column(
                                   crossAxisAlignment:
-                                      pw.CrossAxisAlignment.start,
+                                      pw
+                                          .CrossAxisAlignment
+                                          .start,
                                   children: [
                                     pw.Text(
                                       style: pw.TextStyle(
@@ -1727,26 +2182,37 @@ Future<Uint8List> _buildPdfRoll(
                               ),
                               pw.Builder(
                                 builder: (context) {
-                                  if (receipt.customerUuid != null) {
+                                  if (receipt
+                                          .customerUuid !=
+                                      null) {
                                     return pw.Expanded(
                                       child: pw.Column(
                                         crossAxisAlignment:
-                                            pw.CrossAxisAlignment.start,
+                                            pw
+                                                .CrossAxisAlignment
+                                                .start,
                                         children: [
                                           pw.Text(
                                             style: pw.TextStyle(
-                                              font: fontRegular,
-                                              fontSize: parText,
+                                              font:
+                                                  fontRegular,
+                                              fontSize:
+                                                  parText,
                                             ),
                                             'Customer Name:',
                                           ),
-                                          pw.SizedBox(height: 1),
+                                          pw.SizedBox(
+                                            height: 1,
+                                          ),
                                           pw.Text(
                                             style: pw.TextStyle(
-                                              font: fontBold,
-                                              fontSize: parText,
+                                              font:
+                                                  fontBold,
+                                              fontSize:
+                                                  parText,
                                             ),
-                                            receipt.customerName ?? 'Not Set',
+                                            receipt.customerName ??
+                                                'Not Set',
                                           ),
                                         ],
                                       ),
@@ -1760,31 +2226,42 @@ Future<Uint8List> _buildPdfRoll(
                           ),
                           pw.Builder(
                             builder: (beansContext) {
-                              if (receipt.subStaffName != null) {
+                              if (receipt.subStaffName !=
+                                  null) {
                                 return pw.Column(
                                   children: [
                                     pw.SizedBox(height: 3),
                                     pw.Row(
                                       mainAxisAlignment:
-                                          pw.MainAxisAlignment.spaceEvenly,
+                                          pw
+                                              .MainAxisAlignment
+                                              .spaceEvenly,
                                       children: [
                                         pw.Expanded(
                                           child: pw.Column(
                                             crossAxisAlignment:
-                                                pw.CrossAxisAlignment.start,
+                                                pw
+                                                    .CrossAxisAlignment
+                                                    .start,
                                             children: [
                                               pw.Text(
                                                 style: pw.TextStyle(
-                                                  font: fontRegular,
-                                                  fontSize: parText,
+                                                  font:
+                                                      fontRegular,
+                                                  fontSize:
+                                                      parText,
                                                 ),
                                                 'Waiter:',
                                               ),
-                                              pw.SizedBox(height: 1),
+                                              pw.SizedBox(
+                                                height: 1,
+                                              ),
                                               pw.Text(
                                                 style: pw.TextStyle(
-                                                  font: fontBold,
-                                                  fontSize: parText,
+                                                  font:
+                                                      fontBold,
+                                                  fontSize:
+                                                      parText,
                                                 ),
                                                 receipt.subStaffName ??
                                                     'Not Set',
@@ -1795,22 +2272,31 @@ Future<Uint8List> _buildPdfRoll(
                                         pw.Expanded(
                                           child: pw.Column(
                                             crossAxisAlignment:
-                                                pw.CrossAxisAlignment.start,
+                                                pw
+                                                    .CrossAxisAlignment
+                                                    .start,
                                             children: [
                                               pw.Text(
                                                 style: pw.TextStyle(
-                                                  font: fontRegular,
-                                                  fontSize: parText,
+                                                  font:
+                                                      fontRegular,
+                                                  fontSize:
+                                                      parText,
                                                 ),
                                                 'Receipt Id:',
                                               ),
-                                              pw.SizedBox(height: 1),
+                                              pw.SizedBox(
+                                                height: 1,
+                                              ),
                                               pw.Text(
                                                 style: pw.TextStyle(
-                                                  font: fontBold,
-                                                  fontSize: parText,
+                                                  font:
+                                                      fontBold,
+                                                  fontSize:
+                                                      parText,
                                                 ),
-                                                receipt.cartName ?? 'Not Set',
+                                                receipt.cartName ??
+                                                    'Not Set',
                                               ),
                                             ],
                                           ),
@@ -1838,12 +2324,17 @@ Future<Uint8List> _buildPdfRoll(
                         children: [
                           pw.SizedBox(height: 3),
                           pw.Row(
-                            mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                            mainAxisAlignment:
+                                pw
+                                    .MainAxisAlignment
+                                    .spaceEvenly,
                             children: [
                               pw.Expanded(
                                 child: pw.Column(
                                   crossAxisAlignment:
-                                      pw.CrossAxisAlignment.start,
+                                      pw
+                                          .CrossAxisAlignment
+                                          .start,
                                   children: [
                                     pw.Text(
                                       style: pw.TextStyle(
@@ -1854,28 +2345,39 @@ Future<Uint8List> _buildPdfRoll(
                                     ),
                                     pw.SizedBox(height: 1),
                                     pw.Builder(
-                                      builder: (beansContext) {
-                                        if (receipt.bank == 0) {
-                                          return pw.Text(
-                                            style: pw.TextStyle(
-                                              font: fontRegular,
-                                              fontSize: parTextAlt,
-                                            ),
-                                            'Cash: ${formatMoneyMid(amount: receipt.cashAlt, context: context)}',
-                                          );
-                                        } else if (receipt.cashAlt == 0) {
-                                          return pw.Text(
-                                            style: pw.TextStyle(
-                                              font: fontRegular,
-                                              fontSize: parTextAlt,
-                                            ),
-                                            'Bank: ${formatMoneyMid(amount: receipt.bank, context: context)}',
-                                          );
-                                        } else if (receipt.customerAccount !=
+                                      builder: (
+                                        beansContext,
+                                      ) {
+                                        if (receipt.bank ==
                                             0) {
                                           return pw.Text(
                                             style: pw.TextStyle(
-                                              font: fontRegular,
+                                              font:
+                                                  fontRegular,
+                                              fontSize:
+                                                  parTextAlt,
+                                            ),
+                                            'Cash: ${formatMoneyMid(amount: receipt.cashAlt, context: context)}',
+                                          );
+                                        } else if (receipt
+                                                .cashAlt ==
+                                            0) {
+                                          return pw.Text(
+                                            style: pw.TextStyle(
+                                              font:
+                                                  fontRegular,
+                                              fontSize:
+                                                  parTextAlt,
+                                            ),
+                                            'Bank: ${formatMoneyMid(amount: receipt.bank, context: context)}',
+                                          );
+                                        } else if (receipt
+                                                .customerAccount !=
+                                            0) {
+                                          return pw.Text(
+                                            style: pw.TextStyle(
+                                              font:
+                                                  fontRegular,
                                               fontSize: 8,
                                             ),
                                             'Account: ${formatMoneyMid(amount: receipt.customerAccount ?? 0, context: context)}',
@@ -1883,19 +2385,25 @@ Future<Uint8List> _buildPdfRoll(
                                         } else {
                                           return pw.Column(
                                             crossAxisAlignment:
-                                                pw.CrossAxisAlignment.start,
+                                                pw
+                                                    .CrossAxisAlignment
+                                                    .start,
                                             children: [
                                               pw.Text(
                                                 style: pw.TextStyle(
-                                                  font: fontRegular,
-                                                  fontSize: parTextAlt,
+                                                  font:
+                                                      fontRegular,
+                                                  fontSize:
+                                                      parTextAlt,
                                                 ),
                                                 'Cash: ${formatMoneyMid(amount: receipt.cashAlt, context: context)}',
                                               ),
                                               pw.Text(
                                                 style: pw.TextStyle(
-                                                  font: fontRegular,
-                                                  fontSize: parTextAlt,
+                                                  font:
+                                                      fontRegular,
+                                                  fontSize:
+                                                      parTextAlt,
                                                 ),
                                                 'Bank: ${formatMoneyMid(amount: receipt.bank, context: context)}',
                                               ),
@@ -1910,7 +2418,9 @@ Future<Uint8List> _buildPdfRoll(
                               pw.Expanded(
                                 child: pw.Column(
                                   crossAxisAlignment:
-                                      pw.CrossAxisAlignment.start,
+                                      pw
+                                          .CrossAxisAlignment
+                                          .start,
                                   children: [
                                     pw.Text(
                                       style: pw.TextStyle(
@@ -1926,7 +2436,10 @@ Future<Uint8List> _buildPdfRoll(
                                         fontSize: parText,
                                       ),
                                       receipt.barcode ??
-                                          returnOnlyDigits(receipt.uuid ?? ''),
+                                          returnOnlyDigits(
+                                            receipt.uuid ??
+                                                '',
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -1947,12 +2460,17 @@ Future<Uint8List> _buildPdfRoll(
                         children: [
                           pw.SizedBox(height: 3),
                           pw.Row(
-                            mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                            mainAxisAlignment:
+                                pw
+                                    .MainAxisAlignment
+                                    .spaceEvenly,
                             children: [
                               pw.Expanded(
                                 child: pw.Column(
                                   crossAxisAlignment:
-                                      pw.CrossAxisAlignment.start,
+                                      pw
+                                          .CrossAxisAlignment
+                                          .start,
                                   children: [
                                     pw.Text(
                                       style: pw.TextStyle(
@@ -1967,7 +2485,9 @@ Future<Uint8List> _buildPdfRoll(
                                         font: fontBold,
                                         fontSize: parText,
                                       ),
-                                      formatDateTime(receipt.createdAt),
+                                      formatDateTime(
+                                        receipt.createdAt,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -1975,7 +2495,9 @@ Future<Uint8List> _buildPdfRoll(
                               pw.Expanded(
                                 child: pw.Column(
                                   crossAxisAlignment:
-                                      pw.CrossAxisAlignment.start,
+                                      pw
+                                          .CrossAxisAlignment
+                                          .start,
                                   children: [
                                     pw.Text(
                                       style: pw.TextStyle(
@@ -1990,7 +2512,9 @@ Future<Uint8List> _buildPdfRoll(
                                         font: fontBold,
                                         fontSize: parText,
                                       ),
-                                      formatTime(receipt.createdAt),
+                                      formatTime(
+                                        receipt.createdAt,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -2007,17 +2531,23 @@ Future<Uint8List> _buildPdfRoll(
                 pw.Builder(
                   builder: (pw.Context pdfContext) {
                     if (receipt.comment != null &&
-                        receipt.comment?.isNotEmpty == true) {
+                        receipt.comment?.isNotEmpty ==
+                            true) {
                       return pw.Column(
                         children: [
                           pw.SizedBox(height: 3),
                           pw.Row(
-                            mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                            mainAxisAlignment:
+                                pw
+                                    .MainAxisAlignment
+                                    .spaceEvenly,
                             children: [
                               pw.Expanded(
                                 child: pw.Column(
                                   crossAxisAlignment:
-                                      pw.CrossAxisAlignment.start,
+                                      pw
+                                          .CrossAxisAlignment
+                                          .start,
                                   children: [
                                     pw.Text(
                                       style: pw.TextStyle(
@@ -2032,7 +2562,8 @@ Future<Uint8List> _buildPdfRoll(
                                         font: fontBold,
                                         fontSize: parText,
                                       ),
-                                      receipt.comment ?? 'Comment',
+                                      receipt.comment ??
+                                          'Comment',
                                     ),
                                   ],
                                 ),
@@ -2055,21 +2586,30 @@ Future<Uint8List> _buildPdfRoll(
                       flex: 6,
                       child: pw.Text(
                         'Items:',
-                        style: pw.TextStyle(fontSize: parText, font: fontBold),
+                        style: pw.TextStyle(
+                          fontSize: parText,
+                          font: fontBold,
+                        ),
                       ),
                     ),
                     pw.Expanded(
                       flex: 2,
                       child: pw.Text(
                         'Qty:',
-                        style: pw.TextStyle(fontSize: parText, font: fontBold),
+                        style: pw.TextStyle(
+                          fontSize: parText,
+                          font: fontBold,
+                        ),
                       ),
                     ),
                     pw.Expanded(
                       flex: 4,
                       child: pw.Text(
                         'Price:',
-                        style: pw.TextStyle(fontSize: parText, font: fontBold),
+                        style: pw.TextStyle(
+                          fontSize: parText,
+                          font: fontBold,
+                        ),
                       ),
                     ),
                   ],
@@ -2078,40 +2618,56 @@ Future<Uint8List> _buildPdfRoll(
 
                 ...records.map(
                   (record) => pw.Padding(
-                    padding: const pw.EdgeInsets.symmetric(vertical: 2),
+                    padding: const pw.EdgeInsets.symmetric(
+                      vertical: 2,
+                    ),
                     child: pw.Row(
-                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment:
+                          pw.MainAxisAlignment.spaceBetween,
                       children: [
                         pw.Expanded(
                           flex: 6,
                           child: pw.Text(
-                            style: pw.TextStyle(fontSize: parText),
+                            style: pw.TextStyle(
+                              fontSize: parText,
+                            ),
                             '${record.productName} ',
                           ),
                         ),
                         pw.Expanded(
                           flex: 2,
                           child: pw.Text(
-                            style: pw.TextStyle(fontSize: parText),
+                            style: pw.TextStyle(
+                              fontSize: parText,
+                            ),
                             '[ ${formatLargeNumberDouble(record.quantity)} ] ',
                           ),
                         ),
                         pw.Expanded(
                           flex: 4,
                           child: pw.Column(
-                            crossAxisAlignment: pw.CrossAxisAlignment.start,
+                            crossAxisAlignment:
+                                pw.CrossAxisAlignment.start,
                             children: [
                               pw.Text(
-                                style: pw.TextStyle(fontSize: parText),
+                                style: pw.TextStyle(
+                                  fontSize: parText,
+                                ),
                                 formatMoneyMid(
                                   amount:
-                                      (receipt.fixedDiscount == null &&
+                                      (receipt.fixedDiscount ==
+                                                      null &&
                                                   receipt.generalDiscount ==
                                                       null) &&
-                                              record.discount != null
-                                          ? ((record.originalCost ?? 0) -
-                                              (record.discountedAmount ?? 0))
-                                          : (record.originalCost ?? 0),
+                                              record.discount !=
+                                                  null
+                                          ? ((record.originalCost ??
+                                                  0) -
+                                              (record.discountedAmount ??
+                                                  0))
+                                          : (record
+                                                  .originalCost ??
+                                              0),
                                   context: context,
                                 ),
                               ),
@@ -2165,7 +2721,8 @@ Future<Uint8List> _buildPdfRoll(
                 pw.Divider(thickness: 0.6, height: 10),
 
                 pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment:
+                      pw.MainAxisAlignment.spaceEvenly,
                   children: [
                     pw.Expanded(
                       flex: 9,
@@ -2203,7 +2760,10 @@ Future<Uint8List> _buildPdfRoll(
                         children: [
                           pw.SizedBox(height: 1),
                           pw.Row(
-                            mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                            mainAxisAlignment:
+                                pw
+                                    .MainAxisAlignment
+                                    .spaceEvenly,
                             children: [
                               pw.Expanded(
                                 flex: 9,
@@ -2212,16 +2772,19 @@ Future<Uint8List> _buildPdfRoll(
                                     pw.Text(
                                       style: pw.TextStyle(
                                         font: fontRegular,
-                                        fontSize: parTextAlt,
+                                        fontSize:
+                                            parTextAlt,
                                       ),
                                       'Discount:',
                                     ),
                                     pw.Text(
                                       style: pw.TextStyle(
                                         font: fontRegular,
-                                        fontSize: parTextAlt,
+                                        fontSize:
+                                            parTextAlt,
                                       ),
-                                      receipt.generalDiscount != null
+                                      receipt.generalDiscount !=
+                                              null
                                           ? " (${receipt.generalDiscount}%)"
                                           : '',
                                     ),
@@ -2239,7 +2802,9 @@ Future<Uint8List> _buildPdfRoll(
                                     amount: returnReceiptProvider(
                                       context,
                                       listen: false,
-                                    ).getDiscountAmountForReceipt(receipt),
+                                    ).getDiscountAmountForReceipt(
+                                      receipt,
+                                    ),
                                     context: context,
                                   ),
                                 ),
@@ -2261,7 +2826,10 @@ Future<Uint8List> _buildPdfRoll(
                       return pw.Column(
                         children: [
                           pw.Row(
-                            mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                            mainAxisAlignment:
+                                pw
+                                    .MainAxisAlignment
+                                    .spaceEvenly,
                             children: [
                               pw.Expanded(
                                 flex: 9,
@@ -2270,14 +2838,16 @@ Future<Uint8List> _buildPdfRoll(
                                     pw.Text(
                                       style: pw.TextStyle(
                                         font: fontRegular,
-                                        fontSize: parTextAlt,
+                                        fontSize:
+                                            parTextAlt,
                                       ),
                                       'VAT:',
                                     ),
                                     pw.Text(
                                       style: pw.TextStyle(
                                         font: fontRegular,
-                                        fontSize: parTextAlt,
+                                        fontSize:
+                                            parTextAlt,
                                       ),
                                       '(${receipt.vat ?? 0}%)',
                                     ),
@@ -2292,10 +2862,13 @@ Future<Uint8List> _buildPdfRoll(
                                     fontSize: parText,
                                   ),
                                   formatMoneyMid(
-                                    amount: returnReceiptProvider(
-                                      context,
-                                      listen: false,
-                                    ).getVATForReceipt(receipt),
+                                    amount:
+                                        returnReceiptProvider(
+                                          context,
+                                          listen: false,
+                                        ).getVATForReceipt(
+                                          receipt,
+                                        ),
                                     context: context,
                                   ),
                                 ),
@@ -2316,7 +2889,10 @@ Future<Uint8List> _buildPdfRoll(
                       return pw.Column(
                         children: [
                           pw.Row(
-                            mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                            mainAxisAlignment:
+                                pw
+                                    .MainAxisAlignment
+                                    .spaceEvenly,
                             children: [
                               pw.Expanded(
                                 flex: 9,
@@ -2325,7 +2901,8 @@ Future<Uint8List> _buildPdfRoll(
                                     pw.Text(
                                       style: pw.TextStyle(
                                         font: fontRegular,
-                                        fontSize: parTextAlt,
+                                        fontSize:
+                                            parTextAlt,
                                       ),
                                       'Balance:',
                                     ),
@@ -2340,7 +2917,9 @@ Future<Uint8List> _buildPdfRoll(
                                     fontSize: parTextAlt,
                                   ),
                                   formatMoneyMid(
-                                    amount: (receipt.balance ?? 0),
+                                    amount:
+                                        (receipt.balance ??
+                                            0),
                                     context: context,
                                   ),
                                 ),
@@ -2356,7 +2935,8 @@ Future<Uint8List> _buildPdfRoll(
                   },
                 ),
                 pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment:
+                      pw.MainAxisAlignment.spaceEvenly,
                   children: [
                     pw.Expanded(
                       flex: 9,
@@ -2379,7 +2959,9 @@ Future<Uint8List> _buildPdfRoll(
                           amount: returnReceiptProvider(
                             context,
                             listen: false,
-                          ).getTotalMainRevenueReceipt(receipt),
+                          ).getTotalMainRevenueReceipt(
+                            receipt,
+                          ),
                           context: context,
                         ),
                       ),
@@ -2391,11 +2973,15 @@ Future<Uint8List> _buildPdfRoll(
                 pw.Column(
                   children: [
                     pw.Padding(
-                      padding: pw.EdgeInsets.only(right: 10),
+                      padding: pw.EdgeInsets.only(
+                        right: 10,
+                      ),
                       child: pw.SvgImage(
                         svg: pw.Barcode.ean13().toSvg(
                           receipt.barcode ??
-                              returnOnlyDigits(receipt.uuid ?? ''),
+                              returnOnlyDigits(
+                                receipt.uuid ?? '',
+                              ),
                           width: 110,
                           height: 30,
                           fontHeight: 8,
@@ -2408,7 +2994,8 @@ Future<Uint8List> _buildPdfRoll(
                 ),
                 pw.SizedBox(height: 5),
                 pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.center,
+                  mainAxisAlignment:
+                      pw.MainAxisAlignment.center,
                   children: [
                     pw.Flexible(
                       child: pw.Text(
@@ -2419,55 +3006,56 @@ Future<Uint8List> _buildPdfRoll(
                           // color: PdfColor(50, 50, 050),
                         ),
                         shop.bottomText?.toUpperCase() ??
-                            'Thank you for shopping with us'.toUpperCase(),
+                            'Thank you for shopping with us'
+                                .toUpperCase(),
                       ),
                     ),
                   ],
                 ),
-                pw.SizedBox(height: 35),
-                pw.Text(
-                  textAlign: pw.TextAlign.center,
-                  style: pw.TextStyle(
-                    fontSize: totalText,
-                    fontWeight: pw.FontWeight.bold,
-                    // color: PdfColor(50, 50, 050),
-                  ),
-                  '------------',
-                ),
-                pw.Builder(
-                  builder: (beansContext) {
-                    if (records.length > 15) {
-                      return pw.Text(
-                        textAlign: pw.TextAlign.center,
-                        style: pw.TextStyle(
-                          fontSize: totalText,
-                          fontWeight: pw.FontWeight.bold,
-                          // color: PdfColor(50, 50, 050),
-                        ),
-                        '------------',
-                      );
-                    } else {
-                      return pw.Container();
-                    }
-                  },
-                ),
-                pw.Builder(
-                  builder: (beansContext) {
-                    if (records.length > 15) {
-                      return pw.Text(
-                        textAlign: pw.TextAlign.center,
-                        style: pw.TextStyle(
-                          fontSize: totalText,
-                          fontWeight: pw.FontWeight.bold,
-                          // color: PdfColor(50, 50, 050),
-                        ),
-                        '------------',
-                      );
-                    } else {
-                      return pw.Container();
-                    }
-                  },
-                ),
+                pw.SizedBox(height: 20),
+                // pw.Text(
+                //   textAlign: pw.TextAlign.center,
+                //   style: pw.TextStyle(
+                //     fontSize: totalText,
+                //     fontWeight: pw.FontWeight.bold,
+                //     // color: PdfColor(50, 50, 050),
+                //   ),
+                //   '------------',
+                // ),
+                // pw.Builder(
+                //   builder: (beansContext) {
+                //     if (records.length > 15) {
+                //       return pw.Text(
+                //         textAlign: pw.TextAlign.center,
+                //         style: pw.TextStyle(
+                //           fontSize: totalText,
+                //           fontWeight: pw.FontWeight.bold,
+                //           // color: PdfColor(50, 50, 050),
+                //         ),
+                //         '------------',
+                //       );
+                //     } else {
+                //       return pw.Container();
+                //     }
+                //   },
+                // ),
+                // pw.Builder(
+                //   builder: (beansContext) {
+                //     if (records.length > 15) {
+                //       return pw.Text(
+                //         textAlign: pw.TextAlign.center,
+                //         style: pw.TextStyle(
+                //           fontSize: totalText,
+                //           fontWeight: pw.FontWeight.bold,
+                //           // color: PdfColor(50, 50, 050),
+                //         ),
+                //         '------------',
+                //       );
+                //     } else {
+                //       return pw.Container();
+                //     }
+                //   },
+                // ),
               ],
             ),
           ),
@@ -2481,10 +3069,14 @@ Future<Uint8List> _buildPdfRoll(
 
 class PdfPreviewPage extends StatefulWidget {
   final Function() generatePdf;
-  const PdfPreviewPage({super.key, required this.generatePdf});
+  const PdfPreviewPage({
+    super.key,
+    required this.generatePdf,
+  });
 
   @override
-  State<PdfPreviewPage> createState() => _PdfPreviewPageState();
+  State<PdfPreviewPage> createState() =>
+      _PdfPreviewPageState();
 }
 
 class _PdfPreviewPageState extends State<PdfPreviewPage> {
@@ -2493,7 +3085,9 @@ class _PdfPreviewPageState extends State<PdfPreviewPage> {
     return Scaffold(
       appBar: AppBar(title: const Text("PDF Preview")),
       body: PdfPreview(
-        build: (format) async => (await widget.generatePdf()).save(),
+        build:
+            (format) async =>
+                (await widget.generatePdf()).save(),
         allowPrinting: true,
         allowSharing: true,
         initialPageFormat: PdfPageFormat.a4,
@@ -2522,7 +3116,9 @@ void downloadPdfWeb({
           returnShopProvider().userShop()!,
           context,
         );
-        final blob = html.Blob([pdfBytes], 'application/pdf');
+        final blob = html.Blob([
+          pdfBytes,
+        ], 'application/pdf');
         final url = html.Url.createObjectUrlFromBlob(blob);
 
         final anchor =
@@ -2537,10 +3133,15 @@ void downloadPdfWeb({
         html.Url.revokeObjectUrl(url);
 
         if (context.mounted) {
-          returnReceiptProvider(context, listen: false).toggleIsLoading(false);
+          returnReceiptProvider(
+            context,
+            listen: false,
+          ).toggleIsLoading(false);
         }
       } catch (e, stackTrace) {
-        await mainLocalLog('❌ Error downloading PDF: $e\n$stackTrace');
+        await mainLocalLog(
+          '❌ Error downloading PDF: $e\n$stackTrace',
+        );
         returnErrorLogProvider().createLog(
           error: 'Error downloading PDF: $e\n$stackTrace',
         );
@@ -2576,7 +3177,9 @@ void downloadPdfWebRoll({
         final pdfUint8 = Uint8List.fromList(pdfBytes);
 
         // Step 1: Download
-        final blob = html.Blob([pdfUint8], 'application/pdf');
+        final blob = html.Blob([
+          pdfUint8,
+        ], 'application/pdf');
         final url = html.Url.createObjectUrlFromBlob(blob);
 
         final anchor =
@@ -2590,14 +3193,21 @@ void downloadPdfWebRoll({
         html.Url.revokeObjectUrl(url);
 
         // Step 2: Print (make sure this runs in same click event if possible)
-        await Printing.layoutPdf(onLayout: (format) async => pdfUint8);
+        await Printing.layoutPdf(
+          onLayout: (format) async => pdfUint8,
+        );
 
         if (context.mounted) {
-          returnReceiptProvider(context, listen: false).toggleIsLoading(false);
+          returnReceiptProvider(
+            context,
+            listen: false,
+          ).toggleIsLoading(false);
         }
         // return pdfUint8;
       } catch (e, stackTrace) {
-        await mainLocalLog('❌ Error downloading/printing PDF: $e\n$stackTrace');
+        await mainLocalLog(
+          '❌ Error downloading/printing PDF: $e\n$stackTrace',
+        );
       }
     },
   );
@@ -2635,7 +3245,11 @@ Future<void> generateAndPreviewPdfProducts({
 }) async {
   // 1. Build the PDF once (fastest way)
   returnData().toggleIsLoading(true);
-  final Uint8List pdfBytes = await _buildPdfProducts(products, shop, context);
+  final Uint8List pdfBytes = await _buildPdfProducts(
+    products,
+    shop,
+    context,
+  );
 
   // 2. Open native print/share/save dialog (cross-platform)
   await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
@@ -2653,7 +3267,11 @@ Future<Uint8List> _buildPdfProducts(
 
   // Split products into chunks of 70
   final productChunks = <List<TempProductClass>>[];
-  for (var i = 0; i < products.length; i += productsPerPage) {
+  for (
+    var i = 0;
+    i < products.length;
+    i += productsPerPage
+  ) {
     productChunks.add(
       products.sublist(
         i,
@@ -2676,7 +3294,8 @@ Future<Uint8List> _buildPdfProducts(
   int lowStock() {
     int tempStock = 0;
     for (var element in products) {
-      if ((element.quantity ?? 0) <= (element.lowQtty ?? 0) &&
+      if ((element.quantity ?? 0) <=
+              (element.lowQtty ?? 0) &&
           element.quantity != 0) {
         tempStock += 1;
       }
@@ -2742,10 +3361,14 @@ Future<Uint8List> _buildPdfProducts(
 
   // Load Plus Jakarta Sans from assets
   final fontRegular = pw.Font.ttf(
-    await rootBundle.load('assets/fonts/PlusJakartaSans-Regular.ttf'),
+    await rootBundle.load(
+      'assets/fonts/PlusJakartaSans-Regular.ttf',
+    ),
   );
   final fontBold = pw.Font.ttf(
-    await rootBundle.load('assets/fonts/PlusJakartaSans-Bold.ttf'),
+    await rootBundle.load(
+      'assets/fonts/PlusJakartaSans-Bold.ttf',
+    ),
   );
 
   pdf.addPage(
@@ -2760,23 +3383,31 @@ Future<Uint8List> _buildPdfProducts(
       // 🔹 HEADER
       header:
           (context) => pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.center,
+            crossAxisAlignment:
+                pw.CrossAxisAlignment.center,
             children: [
               pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.center,
+                mainAxisAlignment:
+                    pw.MainAxisAlignment.center,
                 children: [
                   pw.Column(
                     children: [
                       pw.Text(
                         textAlign: pw.TextAlign.center,
                         shop.name,
-                        style: pw.TextStyle(font: fontBold, fontSize: 16),
+                        style: pw.TextStyle(
+                          font: fontBold,
+                          fontSize: 16,
+                        ),
                       ),
                       pw.SizedBox(height: 5),
                       pw.Text(
                         textAlign: pw.TextAlign.center,
                         shop.email ?? 'Email not Set',
-                        style: pw.TextStyle(font: fontRegular, fontSize: 9),
+                        style: pw.TextStyle(
+                          font: fontRegular,
+                          fontSize: 9,
+                        ),
                       ),
                       pw.SizedBox(height: 5),
 
@@ -2785,7 +3416,10 @@ Future<Uint8List> _buildPdfProducts(
                         shop.phoneNumber ?? '',
                         style: pw.TextStyle(
                           font: fontRegular,
-                          fontSize: shop.phoneNumber == null ? 1 : 9,
+                          fontSize:
+                              shop.phoneNumber == null
+                                  ? 1
+                                  : 9,
                         ),
                       ),
                     ],
@@ -2793,7 +3427,10 @@ Future<Uint8List> _buildPdfProducts(
                 ],
               ),
               pw.SizedBox(height: 5),
-              pw.Divider(color: PdfColor.fromHex('#D3D3D3'), thickness: 0.5),
+              pw.Divider(
+                color: PdfColor.fromHex('#D3D3D3'),
+                thickness: 0.5,
+              ),
             ],
           ),
       // 🔹 FOOTER
@@ -2805,16 +3442,23 @@ Future<Uint8List> _buildPdfProducts(
               pw.Align(
                 alignment: pw.Alignment.centerRight,
                 child: pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.center,
+                  mainAxisAlignment:
+                      pw.MainAxisAlignment.center,
                   children: [
                     pw.Text(
                       '( Page ${context.pageNumber} of ${context.pagesCount} )',
-                      style: pw.TextStyle(font: fontRegular, fontSize: 9),
+                      style: pw.TextStyle(
+                        font: fontRegular,
+                        fontSize: 9,
+                      ),
                     ),
                     pw.SizedBox(width: 15),
                     pw.Text(
                       'Created by $appName Solutions - ( www.stockallapp.com )',
-                      style: pw.TextStyle(font: fontRegular, fontSize: 9),
+                      style: pw.TextStyle(
+                        font: fontRegular,
+                        fontSize: 9,
+                      ),
                     ),
                   ],
                 ),
@@ -2824,20 +3468,30 @@ Future<Uint8List> _buildPdfProducts(
       build:
           (pw.Context pdfContext) => [
             pw.DefaultTextStyle(
-              style: pw.TextStyle(font: fontRegular, fontSize: 12),
+              style: pw.TextStyle(
+                font: fontRegular,
+                fontSize: 12,
+              ),
               child: pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    pw.CrossAxisAlignment.start,
                 children: [
                   pw.Padding(
-                    padding: pw.EdgeInsets.symmetric(horizontal: 15),
+                    padding: pw.EdgeInsets.symmetric(
+                      horizontal: 15,
+                    ),
                     child: pw.Row(
-                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment:
+                          pw.MainAxisAlignment.spaceBetween,
                       children: [
                         pw.Column(
                           children: [
                             pw.Text('Total Products'),
                             pw.Text(
-                              style: pw.TextStyle(font: fontBold, fontSize: 15),
+                              style: pw.TextStyle(
+                                font: fontBold,
+                                fontSize: 15,
+                              ),
                               products.length.toString(),
                             ),
                           ],
@@ -2846,7 +3500,10 @@ Future<Uint8List> _buildPdfProducts(
                           children: [
                             pw.Text('Total In Stock'),
                             pw.Text(
-                              style: pw.TextStyle(font: fontBold, fontSize: 15),
+                              style: pw.TextStyle(
+                                font: fontBold,
+                                fontSize: 15,
+                              ),
                               inStock().toString(),
                             ),
                           ],
@@ -2855,7 +3512,10 @@ Future<Uint8List> _buildPdfProducts(
                           children: [
                             pw.Text('Low On Stock'),
                             pw.Text(
-                              style: pw.TextStyle(font: fontBold, fontSize: 15),
+                              style: pw.TextStyle(
+                                font: fontBold,
+                                fontSize: 15,
+                              ),
                               lowStock().toString(),
                             ),
                           ],
@@ -2864,7 +3524,10 @@ Future<Uint8List> _buildPdfProducts(
                           children: [
                             pw.Text('Out of Stock'),
                             pw.Text(
-                              style: pw.TextStyle(font: fontBold, fontSize: 15),
+                              style: pw.TextStyle(
+                                font: fontBold,
+                                fontSize: 15,
+                              ),
                               outOfStock().toString(),
                             ),
                           ],
@@ -2873,7 +3536,10 @@ Future<Uint8List> _buildPdfProducts(
                           children: [
                             pw.Text('Is Managed'),
                             pw.Text(
-                              style: pw.TextStyle(font: fontBold, fontSize: 15),
+                              style: pw.TextStyle(
+                                font: fontBold,
+                                fontSize: 15,
+                              ),
                               isManaged().toString(),
                             ),
                           ],
@@ -2882,7 +3548,10 @@ Future<Uint8List> _buildPdfProducts(
                           children: [
                             pw.Text('Not Managed'),
                             pw.Text(
-                              style: pw.TextStyle(font: fontBold, fontSize: 15),
+                              style: pw.TextStyle(
+                                font: fontBold,
+                                fontSize: 15,
+                              ),
                               unManaged().toString(),
                             ),
                           ],
@@ -2891,13 +3560,18 @@ Future<Uint8List> _buildPdfProducts(
                           children: [
                             pw.Text('Expired'),
                             pw.Text(
-                              style: pw.TextStyle(font: fontBold, fontSize: 15),
+                              style: pw.TextStyle(
+                                font: fontBold,
+                                fontSize: 15,
+                              ),
                               products
                                   .where(
                                     (item) =>
-                                        item.expiryDate != null &&
+                                        item.expiryDate !=
+                                            null &&
                                         getDayDifference(
-                                              item.expiryDate ?? DateTime.now(),
+                                              item.expiryDate ??
+                                                  DateTime.now(),
                                             ) ==
                                             0,
                                   )
@@ -2934,95 +3608,124 @@ Future<Uint8List> _buildPdfProducts(
                       children: [
                         pw.TableRow(
                           verticalAlignment:
-                              pw.TableCellVerticalAlignment.middle,
+                              pw
+                                  .TableCellVerticalAlignment
+                                  .middle,
                           children: [
                             pw.Padding(
-                              padding: pw.EdgeInsets.symmetric(
+                              padding: pw
+                                  .EdgeInsets.symmetric(
                                 horizontal: 5,
                                 vertical: 10,
                               ),
                               child: pw.Text(
-                                style: pw.TextStyle(font: fontBold),
+                                style: pw.TextStyle(
+                                  font: fontBold,
+                                ),
                                 'S/N',
                               ),
                             ),
                             pw.Padding(
-                              padding: pw.EdgeInsets.symmetric(
+                              padding: pw
+                                  .EdgeInsets.symmetric(
                                 horizontal: 5,
                                 vertical: 10,
                               ),
                               child: pw.Text(
-                                style: pw.TextStyle(font: fontBold),
+                                style: pw.TextStyle(
+                                  font: fontBold,
+                                ),
                                 'Item Name',
                               ),
                             ),
                             pw.Padding(
-                              padding: pw.EdgeInsets.symmetric(
+                              padding: pw
+                                  .EdgeInsets.symmetric(
                                 horizontal: 5,
                                 vertical: 10,
                               ),
                               child: pw.Text(
-                                style: pw.TextStyle(font: fontBold),
+                                style: pw.TextStyle(
+                                  font: fontBold,
+                                ),
                                 'Qtty',
                               ),
                             ),
                             pw.Padding(
-                              padding: pw.EdgeInsets.symmetric(
+                              padding: pw
+                                  .EdgeInsets.symmetric(
                                 horizontal: 5,
                                 vertical: 10,
                               ),
                               child: pw.Text(
-                                style: pw.TextStyle(font: fontBold),
+                                style: pw.TextStyle(
+                                  font: fontBold,
+                                ),
                                 'Selling Price',
                               ),
                             ),
                             pw.Padding(
-                              padding: pw.EdgeInsets.symmetric(
+                              padding: pw
+                                  .EdgeInsets.symmetric(
                                 horizontal: 5,
                                 vertical: 10,
                               ),
                               child: pw.Text(
-                                style: pw.TextStyle(font: fontBold),
+                                style: pw.TextStyle(
+                                  font: fontBold,
+                                ),
                                 'Cost Price',
                               ),
                             ),
                             pw.Padding(
-                              padding: pw.EdgeInsets.symmetric(
+                              padding: pw
+                                  .EdgeInsets.symmetric(
                                 horizontal: 5,
                                 vertical: 10,
                               ),
                               child: pw.Text(
-                                style: pw.TextStyle(font: fontBold),
+                                style: pw.TextStyle(
+                                  font: fontBold,
+                                ),
                                 'Unit',
                               ),
                             ),
                             pw.Padding(
-                              padding: pw.EdgeInsets.symmetric(
+                              padding: pw
+                                  .EdgeInsets.symmetric(
                                 horizontal: 5,
                                 vertical: 10,
                               ),
                               child: pw.Text(
-                                style: pw.TextStyle(font: fontBold),
+                                style: pw.TextStyle(
+                                  font: fontBold,
+                                ),
                                 'Category',
                               ),
                             ),
                             pw.Padding(
-                              padding: pw.EdgeInsets.symmetric(
+                              padding: pw
+                                  .EdgeInsets.symmetric(
                                 horizontal: 5,
                                 vertical: 10,
                               ),
                               child: pw.Text(
-                                style: pw.TextStyle(font: fontBold),
+                                style: pw.TextStyle(
+                                  font: fontBold,
+                                ),
                                 'Expiry Date',
                               ),
                             ),
                             pw.Padding(
-                              padding: pw.EdgeInsets.symmetric(
+                              padding: pw
+                                  .EdgeInsets.symmetric(
                                 horizontal: 5,
                                 vertical: 10,
                               ),
                               child: pw.Text(
-                                style: pw.TextStyle(font: fontBold),
+                                style: pw.TextStyle(
+                                  font: fontBold,
+                                ),
                                 'Managed',
                               ),
                             ),
@@ -3049,90 +3752,119 @@ Future<Uint8List> _buildPdfProducts(
                         products.map((product) {
                           return pw.TableRow(
                             verticalAlignment:
-                                pw.TableCellVerticalAlignment.middle,
+                                pw
+                                    .TableCellVerticalAlignment
+                                    .middle,
                             children: [
                               pw.Padding(
-                                padding: pw.EdgeInsets.symmetric(
+                                padding: pw
+                                    .EdgeInsets.symmetric(
                                   horizontal: 5,
                                   vertical: 5,
                                 ),
                                 child: pw.Text(
-                                  (products.indexOf(product) + 1).toString(),
+                                  (products.indexOf(
+                                            product,
+                                          ) +
+                                          1)
+                                      .toString(),
                                 ),
                               ),
                               pw.Padding(
-                                padding: pw.EdgeInsets.symmetric(
-                                  horizontal: 5,
-                                  vertical: 5,
-                                ),
-                                child: pw.Text(product.name),
-                              ),
-                              pw.Padding(
-                                padding: pw.EdgeInsets.symmetric(
+                                padding: pw
+                                    .EdgeInsets.symmetric(
                                   horizontal: 5,
                                   vertical: 5,
                                 ),
                                 child: pw.Text(
-                                  (product.quantity ?? 0).toStringAsFixed(0),
+                                  product.name,
                                 ),
                               ),
                               pw.Padding(
-                                padding: pw.EdgeInsets.symmetric(
+                                padding: pw
+                                    .EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                  vertical: 5,
+                                ),
+                                child: pw.Text(
+                                  (product.quantity ?? 0)
+                                      .toStringAsFixed(0),
+                                ),
+                              ),
+                              pw.Padding(
+                                padding: pw
+                                    .EdgeInsets.symmetric(
                                   horizontal: 5,
                                   vertical: 5,
                                 ),
                                 child: pw.Text(
                                   formatMoneyMid(
                                     amount:
-                                        product.getPrimaryPrice().priceValue,
+                                        product
+                                            .getPrimaryPrice()
+                                            .priceValue,
                                     context: context,
                                   ),
                                 ),
                               ),
                               pw.Padding(
-                                padding: pw.EdgeInsets.symmetric(
+                                padding: pw
+                                    .EdgeInsets.symmetric(
                                   horizontal: 5,
                                   vertical: 5,
                                 ),
                                 child: pw.Text(
                                   formatMoneyMid(
-                                    amount: product.costPrice,
+                                    amount:
+                                        product.costPrice,
                                     context: context,
                                   ),
                                 ),
                               ),
                               pw.Padding(
-                                padding: pw.EdgeInsets.symmetric(
-                                  horizontal: 5,
-                                  vertical: 5,
-                                ),
-                                child: pw.Text(product.unit),
-                              ),
-                              pw.Padding(
-                                padding: pw.EdgeInsets.symmetric(
+                                padding: pw
+                                    .EdgeInsets.symmetric(
                                   horizontal: 5,
                                   vertical: 5,
                                 ),
                                 child: pw.Text(
-                                  returnCategoriesProvider(context: context)
+                                  product.unit,
+                                ),
+                              ),
+                              pw.Padding(
+                                padding: pw
+                                    .EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                  vertical: 5,
+                                ),
+                                child: pw.Text(
+                                  returnCategoriesProvider(
+                                            context:
+                                                context,
+                                          )
                                           .categories()
                                           .where(
                                             (cat) =>
-                                                product.categories?.contains(
-                                                  cat.uuid,
-                                                ) ==
+                                                product
+                                                    .categories
+                                                    ?.contains(
+                                                      cat.uuid,
+                                                    ) ==
                                                 true,
                                           )
                                           .isNotEmpty
                                       ? returnCategoriesProvider(
-                                            context: context,
+                                            context:
+                                                context,
                                           )
                                           .categories()
                                           .where(
                                             (cat) =>
-                                                product.categories?.contains(
-                                                  cat.uuid,
-                                                ) ==
+                                                product
+                                                    .categories
+                                                    ?.contains(
+                                                      cat.uuid,
+                                                    ) ==
                                                 true,
                                           )
                                           .first
@@ -3141,7 +3873,8 @@ Future<Uint8List> _buildPdfProducts(
                                 ),
                               ),
                               pw.Padding(
-                                padding: pw.EdgeInsets.symmetric(
+                                padding: pw
+                                    .EdgeInsets.symmetric(
                                   horizontal: 5,
                                   vertical: 5,
                                 ),
@@ -3161,11 +3894,15 @@ Future<Uint8List> _buildPdfProducts(
                                 ),
                               ),
                               pw.Padding(
-                                padding: pw.EdgeInsets.symmetric(
+                                padding: pw
+                                    .EdgeInsets.symmetric(
                                   horizontal: 5,
                                   vertical: 5,
                                 ),
-                                child: pw.Text(product.isManaged.toString()),
+                                child: pw.Text(
+                                  product.isManaged
+                                      .toString(),
+                                ),
                               ),
                             ],
                           );
@@ -3188,20 +3925,26 @@ Future<Uint8List> _buildPdfProducts(
                       children: [
                         pw.TableRow(
                           verticalAlignment:
-                              pw.TableCellVerticalAlignment.middle,
+                              pw
+                                  .TableCellVerticalAlignment
+                                  .middle,
                           children: [
                             pw.Padding(
-                              padding: pw.EdgeInsets.symmetric(
+                              padding: pw
+                                  .EdgeInsets.symmetric(
                                 horizontal: 5,
                                 vertical: 10,
                               ),
                               child: pw.Text(
-                                style: pw.TextStyle(font: fontBold),
+                                style: pw.TextStyle(
+                                  font: fontBold,
+                                ),
                                 '',
                               ),
                             ),
                             pw.Padding(
-                              padding: pw.EdgeInsets.symmetric(
+                              padding: pw
+                                  .EdgeInsets.symmetric(
                                 horizontal: 5,
                                 vertical: 10,
                               ),
@@ -3214,35 +3957,46 @@ Future<Uint8List> _buildPdfProducts(
                               ),
                             ),
                             pw.Padding(
-                              padding: pw.EdgeInsets.symmetric(
+                              padding: pw
+                                  .EdgeInsets.symmetric(
                                 horizontal: 5,
                                 vertical: 10,
                               ),
                               child: pw.Text(
-                                style: pw.TextStyle(font: fontBold),
-                                totalQuantity().toStringAsFixed(0),
+                                style: pw.TextStyle(
+                                  font: fontBold,
+                                ),
+                                totalQuantity()
+                                    .toStringAsFixed(0),
                               ),
                             ),
                             pw.Padding(
-                              padding: pw.EdgeInsets.symmetric(
+                              padding: pw
+                                  .EdgeInsets.symmetric(
                                 horizontal: 5,
                                 vertical: 10,
                               ),
                               child: pw.Text(
-                                style: pw.TextStyle(font: fontBold),
+                                style: pw.TextStyle(
+                                  font: fontBold,
+                                ),
                                 formatMoneyMid(
-                                  amount: totalSellingPrice(),
+                                  amount:
+                                      totalSellingPrice(),
                                   context: context,
                                 ),
                               ),
                             ),
                             pw.Padding(
-                              padding: pw.EdgeInsets.symmetric(
+                              padding: pw
+                                  .EdgeInsets.symmetric(
                                 horizontal: 5,
                                 vertical: 10,
                               ),
                               child: pw.Text(
-                                style: pw.TextStyle(font: fontBold),
+                                style: pw.TextStyle(
+                                  font: fontBold,
+                                ),
                                 formatMoneyMid(
                                   amount: totalCostPrice(),
                                   context: context,
@@ -3250,42 +4004,54 @@ Future<Uint8List> _buildPdfProducts(
                               ),
                             ),
                             pw.Padding(
-                              padding: pw.EdgeInsets.symmetric(
+                              padding: pw
+                                  .EdgeInsets.symmetric(
                                 horizontal: 5,
                                 vertical: 10,
                               ),
                               child: pw.Text(
-                                style: pw.TextStyle(font: fontBold),
+                                style: pw.TextStyle(
+                                  font: fontBold,
+                                ),
                                 '',
                               ),
                             ),
                             pw.Padding(
-                              padding: pw.EdgeInsets.symmetric(
+                              padding: pw
+                                  .EdgeInsets.symmetric(
                                 horizontal: 5,
                                 vertical: 10,
                               ),
                               child: pw.Text(
-                                style: pw.TextStyle(font: fontBold),
+                                style: pw.TextStyle(
+                                  font: fontBold,
+                                ),
                                 '',
                               ),
                             ),
                             pw.Padding(
-                              padding: pw.EdgeInsets.symmetric(
+                              padding: pw
+                                  .EdgeInsets.symmetric(
                                 horizontal: 5,
                                 vertical: 10,
                               ),
                               child: pw.Text(
-                                style: pw.TextStyle(font: fontBold),
+                                style: pw.TextStyle(
+                                  font: fontBold,
+                                ),
                                 '',
                               ),
                             ),
                             pw.Padding(
-                              padding: pw.EdgeInsets.symmetric(
+                              padding: pw
+                                  .EdgeInsets.symmetric(
                                 horizontal: 5,
                                 vertical: 10,
                               ),
                               child: pw.Text(
-                                style: pw.TextStyle(font: fontBold),
+                                style: pw.TextStyle(
+                                  font: fontBold,
+                                ),
                                 '',
                               ),
                             ),
@@ -3336,7 +4102,9 @@ void downloadPdfWebProducts({
       returnData().toggleIsLoading(false);
     }
   } catch (e, stackTrace) {
-    await mainLocalLog('❌ Error downloading PDF: $e\n$stackTrace');
+    await mainLocalLog(
+      '❌ Error downloading PDF: $e\n$stackTrace',
+    );
   }
 }
 
@@ -3366,7 +4134,11 @@ Future<void> generateAndPreviewPdfSales({
 }) async {
   // 1. Build the PDF once (fastest way)
   returnSalesProvider().toggleIsLoading(true);
-  final Uint8List pdfBytes = await _buildPdfSales(records, shop, context);
+  final Uint8List pdfBytes = await _buildPdfSales(
+    records,
+    shop,
+    context,
+  );
 
   // 2. Open native print/share/save dialog (cross-platform)
   await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
@@ -3414,7 +4186,10 @@ Future<Uint8List> _buildPdfSales(
     return tempQtty;
   }
 
-  String profit(TempProductSaleRecord record, BuildContext context) {
+  String profit(
+    TempProductSaleRecord record,
+    BuildContext context,
+  ) {
     String tempQtty =
         record.costPrice != null
             ? formatMoneyMid(
@@ -3429,10 +4204,14 @@ Future<Uint8List> _buildPdfSales(
 
   // Load Plus Jakarta Sans from assets
   final fontRegular = pw.Font.ttf(
-    await rootBundle.load('assets/fonts/PlusJakartaSans-Regular.ttf'),
+    await rootBundle.load(
+      'assets/fonts/PlusJakartaSans-Regular.ttf',
+    ),
   );
   final fontBold = pw.Font.ttf(
-    await rootBundle.load('assets/fonts/PlusJakartaSans-Bold.ttf'),
+    await rootBundle.load(
+      'assets/fonts/PlusJakartaSans-Bold.ttf',
+    ),
   );
 
   pdf.addPage(
@@ -3447,23 +4226,31 @@ Future<Uint8List> _buildPdfSales(
       // 🔹 HEADER
       header:
           (context) => pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.center,
+            crossAxisAlignment:
+                pw.CrossAxisAlignment.center,
             children: [
               pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.center,
+                mainAxisAlignment:
+                    pw.MainAxisAlignment.center,
                 children: [
                   pw.Column(
                     children: [
                       pw.Text(
                         textAlign: pw.TextAlign.center,
                         shop.name,
-                        style: pw.TextStyle(font: fontBold, fontSize: 16),
+                        style: pw.TextStyle(
+                          font: fontBold,
+                          fontSize: 16,
+                        ),
                       ),
                       pw.SizedBox(height: 5),
                       pw.Text(
                         textAlign: pw.TextAlign.center,
                         shop.email ?? 'Email Not Set',
-                        style: pw.TextStyle(font: fontRegular, fontSize: 9),
+                        style: pw.TextStyle(
+                          font: fontRegular,
+                          fontSize: 9,
+                        ),
                       ),
                       pw.SizedBox(height: 5),
 
@@ -3472,7 +4259,10 @@ Future<Uint8List> _buildPdfSales(
                         shop.phoneNumber ?? '',
                         style: pw.TextStyle(
                           font: fontRegular,
-                          fontSize: shop.phoneNumber == null ? 1 : 9,
+                          fontSize:
+                              shop.phoneNumber == null
+                                  ? 1
+                                  : 9,
                         ),
                       ),
                     ],
@@ -3480,7 +4270,10 @@ Future<Uint8List> _buildPdfSales(
                 ],
               ),
               pw.SizedBox(height: 5),
-              pw.Divider(color: PdfColor.fromHex('#D3D3D3'), thickness: 0.5),
+              pw.Divider(
+                color: PdfColor.fromHex('#D3D3D3'),
+                thickness: 0.5,
+              ),
             ],
           ),
       // 🔹 FOOTER
@@ -3492,16 +4285,23 @@ Future<Uint8List> _buildPdfSales(
               pw.Align(
                 alignment: pw.Alignment.centerRight,
                 child: pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.center,
+                  mainAxisAlignment:
+                      pw.MainAxisAlignment.center,
                   children: [
                     pw.Text(
                       '( Page ${context.pageNumber} of ${context.pagesCount} )',
-                      style: pw.TextStyle(font: fontRegular, fontSize: 9),
+                      style: pw.TextStyle(
+                        font: fontRegular,
+                        fontSize: 9,
+                      ),
                     ),
                     pw.SizedBox(width: 15),
                     pw.Text(
                       'Created by $appName Solutions - ( www.stockallapp.com )',
-                      style: pw.TextStyle(font: fontRegular, fontSize: 9),
+                      style: pw.TextStyle(
+                        font: fontRegular,
+                        fontSize: 9,
+                      ),
                     ),
                   ],
                 ),
@@ -3513,9 +4313,13 @@ Future<Uint8List> _buildPdfSales(
             pw.Builder(
               builder: (pw.Context pdfContext) {
                 return pw.DefaultTextStyle(
-                  style: pw.TextStyle(font: fontRegular, fontSize: 12),
+                  style: pw.TextStyle(
+                    font: fontRegular,
+                    fontSize: 12,
+                  ),
                   child: pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    crossAxisAlignment:
+                        pw.CrossAxisAlignment.start,
                     children: [
                       pw.SizedBox(height: 10),
                       pw.Container(
@@ -3534,85 +4338,111 @@ Future<Uint8List> _buildPdfSales(
                           children: [
                             pw.TableRow(
                               verticalAlignment:
-                                  pw.TableCellVerticalAlignment.middle,
+                                  pw
+                                      .TableCellVerticalAlignment
+                                      .middle,
                               children: [
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     'S/N',
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     'Item Name',
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     'Qtty',
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     'Selling Price',
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     'Cost Price',
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     'Profit',
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     'Date',
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     'Time',
                                   ),
                                 ),
@@ -3638,81 +4468,115 @@ Future<Uint8List> _buildPdfSales(
                             records.map((record) {
                               return pw.TableRow(
                                 verticalAlignment:
-                                    pw.TableCellVerticalAlignment.middle,
+                                    pw
+                                        .TableCellVerticalAlignment
+                                        .middle,
                                 children: [
                                   pw.Padding(
-                                    padding: pw.EdgeInsets.symmetric(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
                                       horizontal: 5,
                                       vertical: 5,
                                     ),
                                     child: pw.Text(
-                                      (records.indexOf(record) + 1).toString(),
+                                      (records.indexOf(
+                                                record,
+                                              ) +
+                                              1)
+                                          .toString(),
                                     ),
                                   ),
                                   pw.Padding(
-                                    padding: pw.EdgeInsets.symmetric(
-                                      horizontal: 5,
-                                      vertical: 5,
-                                    ),
-                                    child: pw.Text(record.productName),
-                                  ),
-                                  pw.Padding(
-                                    padding: pw.EdgeInsets.symmetric(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
                                       horizontal: 5,
                                       vertical: 5,
                                     ),
                                     child: pw.Text(
-                                      style: pw.TextStyle(fontSize: 8),
-                                      (record.quantity).toStringAsFixed(0),
+                                      record.productName,
                                     ),
                                   ),
                                   pw.Padding(
-                                    padding: pw.EdgeInsets.symmetric(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                      vertical: 5,
+                                    ),
+                                    child: pw.Text(
+                                      style: pw.TextStyle(
+                                        fontSize: 8,
+                                      ),
+                                      (record.quantity)
+                                          .toStringAsFixed(
+                                            0,
+                                          ),
+                                    ),
+                                  ),
+                                  pw.Padding(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
                                       horizontal: 5,
                                       vertical: 5,
                                     ),
                                     child: pw.Text(
                                       formatMoneyMid(
-                                        amount: record.revenue,
+                                        amount:
+                                            record.revenue,
                                         context: context,
                                       ),
                                     ),
                                   ),
                                   pw.Padding(
-                                    padding: pw.EdgeInsets.symmetric(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
                                       horizontal: 5,
                                       vertical: 5,
                                     ),
                                     child: pw.Text(
                                       formatMoneyMid(
-                                        amount: record.costPrice ?? 0,
+                                        amount:
+                                            record
+                                                .costPrice ??
+                                            0,
                                         context: context,
                                       ),
                                     ),
                                   ),
                                   pw.Padding(
-                                    padding: pw.EdgeInsets.symmetric(
-                                      horizontal: 5,
-                                      vertical: 5,
-                                    ),
-                                    child: pw.Text(profit(record, context)),
-                                  ),
-                                  pw.Padding(
-                                    padding: pw.EdgeInsets.symmetric(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
                                       horizontal: 5,
                                       vertical: 5,
                                     ),
                                     child: pw.Text(
-                                      formatDateWithoutYear(record.createdAt),
+                                      profit(
+                                        record,
+                                        context,
+                                      ),
                                     ),
                                   ),
                                   pw.Padding(
-                                    padding: pw.EdgeInsets.symmetric(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
                                       horizontal: 5,
                                       vertical: 5,
                                     ),
                                     child: pw.Text(
-                                      formatTime(record.createdAt),
+                                      formatDateWithoutYear(
+                                        record.createdAt,
+                                      ),
+                                    ),
+                                  ),
+                                  pw.Padding(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                      vertical: 5,
+                                    ),
+                                    child: pw.Text(
+                                      formatTime(
+                                        record.createdAt,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -3735,20 +4599,26 @@ Future<Uint8List> _buildPdfSales(
                           children: [
                             pw.TableRow(
                               verticalAlignment:
-                                  pw.TableCellVerticalAlignment.middle,
+                                  pw
+                                      .TableCellVerticalAlignment
+                                      .middle,
                               children: [
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     '',
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
@@ -3761,48 +4631,63 @@ Future<Uint8List> _buildPdfSales(
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
-                                    totalQuantity().toStringAsFixed(0),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    totalQuantity()
+                                        .toStringAsFixed(0),
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     formatMoneyMid(
-                                      amount: totalSellingPrice(),
+                                      amount:
+                                          totalSellingPrice(),
                                       context: context,
                                     ),
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     formatMoneyMid(
-                                      amount: totalCostPrice(),
+                                      amount:
+                                          totalCostPrice(),
                                       context: context,
                                     ),
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     formatMoneyMid(
                                       amount: totalProfit(),
                                       context: context,
@@ -3810,22 +4695,28 @@ Future<Uint8List> _buildPdfSales(
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     '',
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     '',
                                   ),
                                 ),
@@ -3878,7 +4769,9 @@ void downloadPdfWebSales({
       returnSalesProvider().toggleIsLoading(false);
     }
   } catch (e, stackTrace) {
-    await mainLocalLog('❌ Error downloading PDF: $e\n$stackTrace');
+    await mainLocalLog(
+      '❌ Error downloading PDF: $e\n$stackTrace',
+    );
   }
 }
 
@@ -3948,10 +4841,14 @@ Future<Uint8List> _buildPdfSalesSummary(
 
   // Load Plus Jakarta Sans from assets
   final fontRegular = pw.Font.ttf(
-    await rootBundle.load('assets/fonts/PlusJakartaSans-Regular.ttf'),
+    await rootBundle.load(
+      'assets/fonts/PlusJakartaSans-Regular.ttf',
+    ),
   );
   final fontBold = pw.Font.ttf(
-    await rootBundle.load('assets/fonts/PlusJakartaSans-Bold.ttf'),
+    await rootBundle.load(
+      'assets/fonts/PlusJakartaSans-Bold.ttf',
+    ),
   );
 
   pdf.addPage(
@@ -3966,23 +4863,31 @@ Future<Uint8List> _buildPdfSalesSummary(
       // 🔹 HEADER
       header:
           (context) => pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.center,
+            crossAxisAlignment:
+                pw.CrossAxisAlignment.center,
             children: [
               pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.center,
+                mainAxisAlignment:
+                    pw.MainAxisAlignment.center,
                 children: [
                   pw.Column(
                     children: [
                       pw.Text(
                         textAlign: pw.TextAlign.center,
                         shop.name,
-                        style: pw.TextStyle(font: fontBold, fontSize: 16),
+                        style: pw.TextStyle(
+                          font: fontBold,
+                          fontSize: 16,
+                        ),
                       ),
                       pw.SizedBox(height: 5),
                       pw.Text(
                         textAlign: pw.TextAlign.center,
                         shop.email ?? 'Email not Set',
-                        style: pw.TextStyle(font: fontRegular, fontSize: 9),
+                        style: pw.TextStyle(
+                          font: fontRegular,
+                          fontSize: 9,
+                        ),
                       ),
                       pw.SizedBox(height: 5),
 
@@ -3991,7 +4896,10 @@ Future<Uint8List> _buildPdfSalesSummary(
                         shop.phoneNumber ?? '',
                         style: pw.TextStyle(
                           font: fontRegular,
-                          fontSize: shop.phoneNumber == null ? 1 : 9,
+                          fontSize:
+                              shop.phoneNumber == null
+                                  ? 1
+                                  : 9,
                         ),
                       ),
                     ],
@@ -3999,7 +4907,10 @@ Future<Uint8List> _buildPdfSalesSummary(
                 ],
               ),
               pw.SizedBox(height: 5),
-              pw.Divider(color: PdfColor.fromHex('#D3D3D3'), thickness: 0.5),
+              pw.Divider(
+                color: PdfColor.fromHex('#D3D3D3'),
+                thickness: 0.5,
+              ),
             ],
           ),
       // 🔹 FOOTER
@@ -4011,16 +4922,23 @@ Future<Uint8List> _buildPdfSalesSummary(
               pw.Align(
                 alignment: pw.Alignment.centerRight,
                 child: pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.center,
+                  mainAxisAlignment:
+                      pw.MainAxisAlignment.center,
                   children: [
                     pw.Text(
                       '( Page ${context.pageNumber} of ${context.pagesCount} )',
-                      style: pw.TextStyle(font: fontRegular, fontSize: 9),
+                      style: pw.TextStyle(
+                        font: fontRegular,
+                        fontSize: 9,
+                      ),
                     ),
                     pw.SizedBox(width: 15),
                     pw.Text(
                       'Created by $appName Solutions - ( www.stockallapp.com )',
-                      style: pw.TextStyle(font: fontRegular, fontSize: 9),
+                      style: pw.TextStyle(
+                        font: fontRegular,
+                        fontSize: 9,
+                      ),
                     ),
                   ],
                 ),
@@ -4032,9 +4950,13 @@ Future<Uint8List> _buildPdfSalesSummary(
             pw.Builder(
               builder: (pw.Context pdfContext) {
                 return pw.DefaultTextStyle(
-                  style: pw.TextStyle(font: fontRegular, fontSize: 12),
+                  style: pw.TextStyle(
+                    font: fontRegular,
+                    fontSize: 12,
+                  ),
                   child: pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    crossAxisAlignment:
+                        pw.CrossAxisAlignment.start,
                     children: [
                       pw.SizedBox(height: 10),
                       pw.Container(
@@ -4051,65 +4973,85 @@ Future<Uint8List> _buildPdfSalesSummary(
                           children: [
                             pw.TableRow(
                               verticalAlignment:
-                                  pw.TableCellVerticalAlignment.middle,
+                                  pw
+                                      .TableCellVerticalAlignment
+                                      .middle,
                               children: [
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     'S/N',
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     'Item Name',
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     'Qtty',
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     'Selling Price',
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     'Cost Price',
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     'Profit',
                                   ),
                                 ),
@@ -4133,65 +5075,85 @@ Future<Uint8List> _buildPdfSalesSummary(
                             summary.map((summ) {
                               return pw.TableRow(
                                 verticalAlignment:
-                                    pw.TableCellVerticalAlignment.middle,
+                                    pw
+                                        .TableCellVerticalAlignment
+                                        .middle,
                                 children: [
                                   pw.Padding(
-                                    padding: pw.EdgeInsets.symmetric(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
                                       horizontal: 5,
                                       vertical: 5,
                                     ),
                                     child: pw.Text(
-                                      (summary.indexOf(summ) + 1).toString(),
+                                      (summary.indexOf(
+                                                summ,
+                                              ) +
+                                              1)
+                                          .toString(),
                                     ),
                                   ),
                                   pw.Padding(
-                                    padding: pw.EdgeInsets.symmetric(
-                                      horizontal: 5,
-                                      vertical: 5,
-                                    ),
-                                    child: pw.Text(summ.itemName),
-                                  ),
-                                  pw.Padding(
-                                    padding: pw.EdgeInsets.symmetric(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
                                       horizontal: 5,
                                       vertical: 5,
                                     ),
                                     child: pw.Text(
-                                      (summ.quantity).toStringAsFixed(0),
+                                      summ.itemName,
                                     ),
                                   ),
                                   pw.Padding(
-                                    padding: pw.EdgeInsets.symmetric(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                      vertical: 5,
+                                    ),
+                                    child: pw.Text(
+                                      (summ.quantity)
+                                          .toStringAsFixed(
+                                            0,
+                                          ),
+                                    ),
+                                  ),
+                                  pw.Padding(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
                                       horizontal: 5,
                                       vertical: 5,
                                     ),
                                     child: pw.Text(
                                       formatMoneyMid(
-                                        amount: summ.totalCost,
+                                        amount:
+                                            summ.totalCost,
                                         context: context,
                                       ),
                                     ),
                                   ),
                                   pw.Padding(
-                                    padding: pw.EdgeInsets.symmetric(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
                                       horizontal: 5,
                                       vertical: 5,
                                     ),
                                     child: pw.Text(
                                       formatMoneyMid(
-                                        amount: summ.costPrice,
+                                        amount:
+                                            summ.costPrice,
                                         context: context,
                                       ),
                                     ),
                                   ),
                                   pw.Padding(
-                                    padding: pw.EdgeInsets.symmetric(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
                                       horizontal: 5,
                                       vertical: 5,
                                     ),
                                     child: pw.Text(
                                       formatMoneyMid(
-                                        amount: summ.profit(),
+                                        amount:
+                                            summ.profit(),
                                         context: context,
                                       ),
                                     ),
@@ -4214,20 +5176,26 @@ Future<Uint8List> _buildPdfSalesSummary(
                           children: [
                             pw.TableRow(
                               verticalAlignment:
-                                  pw.TableCellVerticalAlignment.middle,
+                                  pw
+                                      .TableCellVerticalAlignment
+                                      .middle,
                               children: [
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     '',
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
@@ -4240,48 +5208,63 @@ Future<Uint8List> _buildPdfSalesSummary(
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
-                                    totalQuantity().toStringAsFixed(0),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    totalQuantity()
+                                        .toStringAsFixed(0),
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     formatMoneyMid(
-                                      amount: totalSellingPrice(),
+                                      amount:
+                                          totalSellingPrice(),
                                       context: context,
                                     ),
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     formatMoneyMid(
-                                      amount: totalCostPrice(),
+                                      amount:
+                                          totalCostPrice(),
                                       context: context,
                                     ),
                                   ),
                                 ),
                                 pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
                                     horizontal: 5,
                                     vertical: 10,
                                   ),
                                   child: pw.Text(
-                                    style: pw.TextStyle(font: fontBold),
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
                                     formatMoneyMid(
                                       amount: totalProfit(),
                                       context: context,
@@ -4337,7 +5320,9 @@ void downloadPdfWebSalesSummary({
       returnSalesProvider().toggleIsLoading(false);
     }
   } catch (e, stackTrace) {
-    await mainLocalLog('❌ Error downloading PDF: $e\n$stackTrace');
+    await mainLocalLog(
+      '❌ Error downloading PDF: $e\n$stackTrace',
+    );
   }
 }
 
@@ -4353,7 +5338,9 @@ void downloadPdfWebSalesSummary({
 //
 //
 
-Future<void> downloadApkFromApp({required BuildContext context}) async {
+Future<void> downloadApkFromApp({
+  required BuildContext context,
+}) async {
   final url =
       screenWidth(context) > tabletScreenSmall
           ? Uri.parse(
@@ -4366,7 +5353,10 @@ Future<void> downloadApkFromApp({required BuildContext context}) async {
           );
 
   if (await canLaunchUrl(url)) {
-    await launchUrl(url, mode: LaunchMode.externalApplication);
+    await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
+    );
   } else {
     throw 'Could not launch. $url. Please Try Again';
   }

@@ -73,7 +73,8 @@ Future<Uint8List> _buildPdfRollOrder({
       children: [
         pw.SizedBox(height: 3),
         pw.Row(
-          mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment:
+              pw.MainAxisAlignment.spaceEvenly,
           children: cells,
         ),
       ],
@@ -89,14 +90,16 @@ Future<Uint8List> _buildPdfRollOrder({
     return pw.Column(
       children: [
         pw.Row(
-          mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment:
+              pw.MainAxisAlignment.spaceEvenly,
           children: [
             pw.Expanded(
               flex: 9,
               child: pw.Text(
                 style: pw.TextStyle(
                   font: fontRegular,
-                  fontSize: emphasize ? parText : parTextAlt,
+                  fontSize:
+                      emphasize ? parText : parTextAlt,
                 ),
                 label,
               ),
@@ -106,7 +109,8 @@ Future<Uint8List> _buildPdfRollOrder({
               child: pw.Text(
                 style: pw.TextStyle(
                   font: emphasize ? fontBold : fontRegular,
-                  fontSize: emphasize ? parText : parTextAlt,
+                  fontSize:
+                      emphasize ? parText : parTextAlt,
                 ),
                 value,
               ),
@@ -181,7 +185,7 @@ Future<Uint8List> _buildPdfRollOrder({
       margin: pw.EdgeInsets.only(
         left: kIsWeb ? 2 : 0,
         top: 5,
-        right: kIsWeb ? 15 : 25,
+        right: kIsWeb ? 15 : 0,
         bottom: 10,
       ),
 
@@ -193,12 +197,15 @@ Future<Uint8List> _buildPdfRollOrder({
               fontSize: 10,
             ),
             child: pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.center,
+              crossAxisAlignment:
+                  pw.CrossAxisAlignment.center,
               children: [
-                if (returnShopProvider().selectedLogo != null)
+                if (returnShopProvider().selectedLogo !=
+                    null)
                   pw.Container(
                     height:
-                        (returnShopProvider().imageWidth ?? 0) >
+                        (returnShopProvider().imageWidth ??
+                                    0) >
                                 (2 *
                                     (returnShopProvider()
                                             .imageHeight ??
@@ -216,7 +223,8 @@ Future<Uint8List> _buildPdfRollOrder({
                   ),
                 pw.SizedBox(height: 1),
                 pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.center,
+                  mainAxisAlignment:
+                      pw.MainAxisAlignment.center,
                   children: [
                     pw.Text(
                       textAlign: pw.TextAlign.center,
@@ -228,20 +236,29 @@ Future<Uint8List> _buildPdfRollOrder({
                     ),
                   ],
                 ),
-                if (returnShopProvider().selectedLogo != null)
+                if (returnShopProvider().selectedLogo !=
+                    null)
                   pw.SizedBox(height: 2),
                 if (shop.showShopName!)
                   shopLine(shop.name, bold: true),
                 if (shop.showEmail! && shop.email != null)
                   shopLine(shop.email ?? ''),
-                if (shop.showPhone! && shop.phoneNumber != null)
+                if (shop.showPhone! &&
+                    shop.phoneNumber != null)
                   shopLine(shop.phoneNumber ?? ''),
-                if (shop.showAddress! && shop.shopAddress != null)
+                if (shop.showAddress! &&
+                    shop.shopAddress != null)
                   shopLine(shop.shopAddress ?? ''),
                 if (shop.showFacebookTop!)
-                  socialLine('Facebook:', shop.faceBookHandle),
+                  socialLine(
+                    'Facebook:',
+                    shop.faceBookHandle,
+                  ),
                 if (shop.showInstaTop!)
-                  socialLine('Instagram:', shop.instaHandle),
+                  socialLine(
+                    'Instagram:',
+                    shop.instaHandle,
+                  ),
                 pw.SizedBox(height: 3),
                 pw.Divider(
                   color: PdfColor.fromHex('#1C1C1C'),
@@ -249,7 +266,8 @@ Future<Uint8List> _buildPdfRollOrder({
                   height: 4,
                 ),
                 pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.center,
+                  mainAxisAlignment:
+                      pw.MainAxisAlignment.center,
                   children: [
                     pw.Text(
                       textAlign: pw.TextAlign.center,
@@ -282,7 +300,8 @@ Future<Uint8List> _buildPdfRollOrder({
                       ),
                     ],
                   ),
-                if (shop.showSecond! && order.subStaffName != null)
+                if (shop.showSecond! &&
+                    order.subStaffName != null)
                   infoRow([
                     infoCell(
                       'Waiter:',
@@ -299,13 +318,19 @@ Future<Uint8List> _buildPdfRollOrder({
                       'Date:',
                       formatDateTime(order.createdAt),
                     ),
-                    infoCell('Time:', formatTime(order.createdAt)),
+                    infoCell(
+                      'Time:',
+                      formatTime(order.createdAt),
+                    ),
                   ]),
                 infoRow([infoCell('#Ticket ID', ticketId)]),
                 if (order.comment != null &&
                     order.comment?.isNotEmpty == true)
                   infoRow([
-                    infoCell('Comment:', order.comment ?? 'Comment'),
+                    infoCell(
+                      'Comment:',
+                      order.comment ?? 'Comment',
+                    ),
                   ]),
                 pw.SizedBox(height: 3),
                 pw.Divider(thickness: 0.6, height: 6),
@@ -388,7 +413,11 @@ Future<Uint8List> _buildPdfRollOrder({
                 // 🔹 TOTALS
                 totalRow(
                   'Subtotal:',
-                  money(ordersProvider.getOriginalCostOrder(order)),
+                  money(
+                    ordersProvider.getOriginalCostOrder(
+                      order,
+                    ),
+                  ),
                 ),
                 if (order.fixedDiscount != null ||
                     order.generalDiscount != null)
@@ -397,22 +426,32 @@ Future<Uint8List> _buildPdfRollOrder({
                         ? 'Discount: (${order.generalDiscount}%)'
                         : 'Discount:',
                     money(
-                      ordersProvider.getDiscountAmountForOrder(order),
+                      ordersProvider
+                          .getDiscountAmountForOrder(order),
                     ),
                   ),
                 if (order.vat != null)
                   totalRow(
                     'VAT: (${order.vat ?? 0}%)',
-                    money(ordersProvider.getVATForOrder(order)),
+                    money(
+                      ordersProvider.getVATForOrder(order),
+                    ),
                   ),
-                if (order.getCalculatedRemainingBalance() > 0)
+                if (order.getCalculatedRemainingBalance() >
+                    0)
                   totalRow(
                     'Balance:',
-                    money(order.getCalculatedRemainingBalance()),
+                    money(
+                      order.getCalculatedRemainingBalance(),
+                    ),
                   ),
                 totalRow(
                   'Paid:',
-                  money(ordersProvider.getAmountPaid(order: order)),
+                  money(
+                    ordersProvider.getAmountPaid(
+                      order: order,
+                    ),
+                  ),
                 ),
                 totalRow(
                   'Status:',
@@ -450,7 +489,8 @@ Future<Uint8List> _buildPdfRollOrder({
                 pw.Divider(height: 8),
                 pw.SizedBox(height: 5),
                 pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.center,
+                  mainAxisAlignment:
+                      pw.MainAxisAlignment.center,
                   children: [
                     pw.Flexible(
                       child: pw.Text(
@@ -466,15 +506,15 @@ Future<Uint8List> _buildPdfRollOrder({
                     ),
                   ],
                 ),
-                pw.SizedBox(height: 35),
-                pw.Text(
-                  textAlign: pw.TextAlign.center,
-                  style: pw.TextStyle(
-                    fontSize: totalText,
-                    fontWeight: pw.FontWeight.bold,
-                  ),
-                  '------------',
-                ),
+                pw.SizedBox(height: 20),
+                // pw.Text(
+                //   textAlign: pw.TextAlign.center,
+                //   style: pw.TextStyle(
+                //     fontSize: totalText,
+                //     fontWeight: pw.FontWeight.bold,
+                //   ),
+                //   '------------',
+                // ),
               ],
             ),
           ),
