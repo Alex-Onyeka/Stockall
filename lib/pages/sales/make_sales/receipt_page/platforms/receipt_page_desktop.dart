@@ -2461,17 +2461,7 @@ class _ReceiptDetailsContainerState
                                                 .printType!,
                                       );
                                     }
-                                    if (!kIsWeb &&
-                                        (platforms(
-                                                  context,
-                                                ) ==
-                                                TargetPlatform
-                                                    .android ||
-                                            platforms(
-                                                  context,
-                                                ) ==
-                                                TargetPlatform
-                                                    .iOS)) {
+                                    if (usesBluetoothPrint()) {
                                       scanBluetoothPrinters(
                                         receipt:
                                             widget
@@ -2482,6 +2472,12 @@ class _ReceiptDetailsContainerState
                                         shop:
                                             returnShopProvider()
                                                 .userShop()!,
+                                        staffName:
+                                            staff?.name ??
+                                            widget
+                                                .mainReceipt
+                                                .staffName ??
+                                            "Not Set",
                                       );
                                       // }
                                     } else {
