@@ -20,6 +20,8 @@ import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/invoices/invoice_page/components/payment_type_button_invoice.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/services/auth_service.dart';
+import 'package:stockall/services/printing/printer_service_mobile.dart'
+    show scanBluetoothPrintersinvoice;
 
 class InvoicePageDesktop extends StatefulWidget {
   final CheckoutResponse checkoutResponse;
@@ -312,6 +314,28 @@ class _InvoicePageDesktopState
                                             returnShopProvider()
                                                 .userShop()!
                                                 .printType!,
+                                      );
+                                    } else if (usesBluetoothPrint()) {
+                                      scanBluetoothPrintersinvoice(
+                                        invoice: invoice,
+                                        receipts:
+                                            returnReceiptProviderSingle()
+                                                .returnOwnReceiptsByDayOrWeek()
+                                                .where(
+                                                  (rec) =>
+                                                      rec.invoiceUuid ==
+                                                      widget
+                                                          .checkoutResponse
+                                                          .invoice
+                                                          ?.uuid,
+                                                )
+                                                .toList(),
+                                        records:
+                                            saleRecords,
+                                        shop:
+                                            returnShopProvider()
+                                                .userShop()!,
+                                        context: context,
                                       );
                                     } else {
                                       await generateAndPreviewPdfRollInvoice(

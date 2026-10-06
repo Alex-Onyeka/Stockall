@@ -352,16 +352,54 @@ class _InvoicePageMobileState
                                                 isPrintingInvoice =
                                                     true;
                                               });
-                                              scanBluetoothPrintersinvoice(
-                                                invoice:
-                                                    invoice,
-                                                records:
-                                                    saleRecords,
-                                                shop:
-                                                    shopSingle()!,
-                                                context:
-                                                    context,
-                                              );
+                                              final invoiceReceipts =
+                                                  returnReceiptProviderSingle()
+                                                      .returnOwnReceiptsByDayOrWeek()
+                                                      .where(
+                                                        (rec) =>
+                                                            rec.invoiceUuid ==
+                                                            widget
+                                                                .checkoutResponse
+                                                                .invoice
+                                                                ?.uuid,
+                                                      )
+                                                      .toList();
+                                              if (usesSystemPrintDialog()) {
+                                                generateAndPreviewPdfRollInvoice(
+                                                  invoice:
+                                                      invoice,
+                                                  printerType:
+                                                      returnShopProvider()
+                                                          .userShop()!
+                                                          .printType ??
+                                                      1,
+                                                  staffName:
+                                                      invoice
+                                                          .staffName,
+                                                  context:
+                                                      context,
+                                                  receipts:
+                                                      invoiceReceipts,
+                                                  records:
+                                                      saleRecords,
+                                                  shop:
+                                                      returnShopProvider()
+                                                          .userShop()!,
+                                                );
+                                              } else {
+                                                scanBluetoothPrintersinvoice(
+                                                  invoice:
+                                                      invoice,
+                                                  receipts:
+                                                      invoiceReceipts,
+                                                  records:
+                                                      saleRecords,
+                                                  shop:
+                                                      shopSingle()!,
+                                                  context:
+                                                      context,
+                                                );
+                                              }
                                               Navigator.of(
                                                 confirmDialog,
                                               ).pop();

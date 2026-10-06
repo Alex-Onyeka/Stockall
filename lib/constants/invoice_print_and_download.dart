@@ -2752,3 +2752,25 @@ Future<void> generateAndPreviewPdfRollInvoice({
     },
   );
 }
+
+// Same roll layout as generateAndPreviewPdfRollInvoice, returned as PDF
+// bytes so Bluetooth printing can rasterize it.
+Future<Uint8List> buildInvoiceRollPdf({
+  required TempInvoice invoice,
+  required List<TempMainReceipt> receipts,
+  required List<TempProductSaleRecord> records,
+  required String staffName,
+  required TempShopClass shop,
+  required BuildContext context,
+  required int printerType,
+}) {
+  return _buildPdfRollInvoice(
+    invoice: invoice,
+    receipts: receipts,
+    records: records,
+    staffName: staffName,
+    shop: shop,
+    context: context,
+    printerType: printerType,
+  );
+}

@@ -2191,20 +2191,51 @@ class _ReceiptDetailsContainerState
                                       Navigator.of(
                                         context,
                                       ).pop();
-                                      await mainLocalLog(
-                                        'Bluetooth Scanning Started',
-                                      );
-                                      scanBluetoothPrinters(
-                                        receipt:
-                                            widget
-                                                .mainReceipt,
-                                        context:
-                                            safeContext,
-                                        records: records,
-                                        shop:
-                                            returnShopProvider()
-                                                .userShop()!,
-                                      );
+                                      if (usesSystemPrintDialog()) {
+                                        await generateAndPreviewPdfRoll(
+                                          printerType:
+                                              widget
+                                                  .shop
+                                                  .printType ??
+                                              1,
+                                          staffName:
+                                              staff?.name ??
+                                              widget
+                                                  .mainReceipt
+                                                  .staffName ??
+                                              "Not Set",
+                                          context:
+                                              safeContext,
+                                          receipt:
+                                              widget
+                                                  .mainReceipt,
+                                          records: records,
+                                          shop:
+                                              returnShopProvider()
+                                                  .userShop()!,
+                                        );
+                                      } else {
+                                        await mainLocalLog(
+                                          'Bluetooth Scanning Started',
+                                        );
+                                        scanBluetoothPrinters(
+                                          receipt:
+                                              widget
+                                                  .mainReceipt,
+                                          context:
+                                              safeContext,
+                                          records: records,
+                                          shop:
+                                              returnShopProvider()
+                                                  .userShop()!,
+                                          staffName:
+                                              staff?.name ??
+                                              widget
+                                                  .mainReceipt
+                                                  .staffName ??
+                                              "Not Set",
+                                        );
+                                      }
                                       // }
                                       // }
                                       if (safeContext
