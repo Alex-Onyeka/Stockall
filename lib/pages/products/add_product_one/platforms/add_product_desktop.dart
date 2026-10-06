@@ -22,6 +22,7 @@ import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/add_product_one/product_prices_page/product_prices_page.dart';
 import 'package:stockall/pages/products/add_product_one/product_units_page/product_units_page.dart';
 import 'package:stockall/providers/data_provider.dart';
 
@@ -137,6 +138,8 @@ class _AddProductDesktopState
                 itemHistory: itemHistory,
                 product: TempProductClass(
                   unitsList: dataProvider.getTempUnitList(),
+                  pricesList:
+                      dataProvider.getTempPriceList(),
                   useGroupUnit: dataProvider.useGroupUnit,
                   categories:
                       dataProvider.selectedCategories
@@ -276,6 +279,7 @@ class _AddProductDesktopState
               quantityChange: null,
               product: TempProductClass(
                 unitsList: provider.getTempUnitList(),
+                pricesList: provider.getTempPriceList(),
                 useGroupUnit: provider.useGroupUnit,
                 categories:
                     provider.selectedCategories.toList(),
@@ -465,6 +469,11 @@ class _AddProductDesktopState
         productUuid: createdProductUuid,
         unitsListNew: widget.product?.getUnitsList() ?? [],
       );
+      returnData().initPricesList(
+        productUuid: createdProductUuid,
+        pricesListNew:
+            widget.product?.getPricesList() ?? [],
+      );
       returnData().selectGroupUnit(
         unit: widget.product!.groupUnit,
       );
@@ -621,91 +630,134 @@ class _AddProductDesktopState
                                               ),
                                             ),
                                           ),
-                                          Visibility(
-                                            visible: authorization(
-                                              authorized:
-                                                  Authorizations()
-                                                      .manageCostPrice,
-                                            ),
-                                            child: SizedBox(
-                                              width: 10,
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: MoneyTextfield(
-                                              focusNode:
-                                                  sellingFieldNode,
-                                              onSubmitted: (
-                                                value,
-                                              ) {
-                                                returnShopProvider().userShop()?.wholeSale ==
-                                                        true
-                                                    ? FocusScope.of(
-                                                      context,
-                                                    ).requestFocus(
-                                                      wholeSaleFieldNode,
-                                                    )
-                                                    : {};
-                                                // : FocusScope.of(
-                                                //   context,
-                                                // ).requestFocus(
-                                                //   quantityFieldNode,
-                                                // );
-                                              },
-                                              onChanged:
-                                                  (
-                                                    value,
-                                                  ) {},
-                                              theme: theme,
-                                              hint:
-                                                  'Enter Sale Price',
-                                              title:
-                                                  'Selling-Price (Optional)',
-                                              controller:
-                                                  widget
-                                                      .sellingController,
-                                            ),
-                                          ),
+                                          // Visibility(
+                                          //   visible: authorization(
+                                          //     authorized:
+                                          //         Authorizations()
+                                          //             .manageCostPrice,
+                                          //   ),
+                                          //   child: SizedBox(
+                                          //     width: 10,
+                                          //   ),
+                                          // ),
+                                          // Expanded(
+                                          //   child: MoneyTextfield(
+                                          //     focusNode:
+                                          //         sellingFieldNode,
+                                          //     onSubmitted: (
+                                          //       value,
+                                          //     ) {
+                                          //       returnShopProvider().userShop()?.wholeSale ==
+                                          //               true
+                                          //           ? FocusScope.of(
+                                          //             context,
+                                          //           ).requestFocus(
+                                          //             wholeSaleFieldNode,
+                                          //           )
+                                          //           : {};
+                                          //       // : FocusScope.of(
+                                          //       //   context,
+                                          //       // ).requestFocus(
+                                          //       //   quantityFieldNode,
+                                          //       // );
+                                          //     },
+                                          //     onChanged:
+                                          //         (
+                                          //           value,
+                                          //         ) {},
+                                          //     theme: theme,
+                                          //     hint:
+                                          //         'Enter Sale Price',
+                                          //     title:
+                                          //         'Selling-Price (Optional)',
+                                          //     controller:
+                                          //         widget
+                                          //             .sellingController,
+                                          //   ),
+                                          // ),
                                         ],
                                       ),
+                                      // SizedBox(height: 10),
+                                      // Visibility(
+                                      //   visible:
+                                      //       shop(
+                                      //         context,
+                                      //       )?.wholeSale ==
+                                      //       true,
+                                      //   child: Column(
+                                      //     children: [
+                                      //       MoneyTextfield(
+                                      //         focusNode:
+                                      //             wholeSaleFieldNode,
+                                      //         onSubmitted: (
+                                      //           value,
+                                      //         ) {
+                                      //           // FocusScope.of(
+                                      //           //   context,
+                                      //           // ).requestFocus(
+                                      //           //   quantityFieldNode,
+                                      //           // );
+                                      //         },
+                                      //         onChanged:
+                                      //             (
+                                      //               value,
+                                      //             ) {},
+                                      //         theme: theme,
+                                      //         hint:
+                                      //             'Enter Whole Sale Price',
+                                      //         title:
+                                      //             'Whole-Sale-Price (Optional)',
+                                      //         controller:
+                                      //             widget
+                                      //                 .wholeSaleController,
+                                      //       ),
+                                      //       SizedBox(
+                                      //         height: 10,
+                                      //       ),
+                                      //     ],
+                                      //   ),
+                                      // ),
                                       SizedBox(height: 10),
-                                      Visibility(
-                                        visible:
-                                            shop(
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(
+                                              bottom: 10.0,
+                                            ),
+                                        child: MainDropdown(
+                                          valueSet:
+                                              returnData()
+                                                  .tempPricesList
+                                                  .isNotEmpty,
+                                          onTap: () {
+                                            Navigator.push(
                                               context,
-                                            )?.wholeSale ==
-                                            true,
-                                        child: Column(
-                                          children: [
-                                            MoneyTextfield(
-                                              focusNode:
-                                                  wholeSaleFieldNode,
-                                              onSubmitted: (
-                                                value,
-                                              ) {
-                                                // FocusScope.of(
-                                                //   context,
-                                                // ).requestFocus(
-                                                //   quantityFieldNode,
-                                                // );
-                                              },
-                                              onChanged:
-                                                  (
-                                                    value,
-                                                  ) {},
-                                              theme: theme,
-                                              hint:
-                                                  'Enter Whole Sale Price',
-                                              title:
-                                                  'Whole-Sale-Price (Optional)',
-                                              controller:
-                                                  widget
-                                                      .wholeSaleController,
-                                            ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                          ],
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return ProductPricesPage(
+                                                    productUuid:
+                                                        createdProductUuid ??
+                                                        '',
+                                                  );
+                                                },
+                                              ),
+                                            );
+                                          },
+                                          isOpen:
+                                              returnData()
+                                                  .tempPricesList
+                                                  .isNotEmpty,
+                                          title:
+                                              'Selling Price(s)',
+                                          hint:
+                                              returnData(
+                                                    context:
+                                                        context,
+                                                  ).tempPricesList.isEmpty
+                                                  ? 'Price Not Set'
+                                                  : "${returnData(context: context).tempPricesList.firstWhere((item) => item.isPrimary).priceValue} and (${returnData(context: context).tempPricesList.length - 1}) More",
+                                          theme: theme,
                                         ),
                                       ),
                                     ],
@@ -944,6 +996,9 @@ class _AddProductDesktopState
                                                       }
 
                                                       var tempProduct = TempProductClass(
+                                                        pricesList:
+                                                            widget.product?.pricesList ??
+                                                            [],
                                                         unitsList:
                                                             widget.product?.unitsList ??
                                                             [],

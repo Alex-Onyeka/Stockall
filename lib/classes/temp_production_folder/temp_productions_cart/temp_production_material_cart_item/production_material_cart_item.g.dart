@@ -15,8 +15,7 @@ class ProductionMaterialCartItemAdapter
   ProductionMaterialCartItem read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++)
-        reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ProductionMaterialCartItem(
       uuid: fields[0] as String?,
@@ -38,16 +37,12 @@ class ProductionMaterialCartItemAdapter
       productionItemName: fields[15] as String?,
       isManaged: fields[17] as bool?,
       unitUuid: fields[18] as String?,
-      unitsList:
-          (fields[19] as List?)?.cast<ProductUnitsClass>(),
+      unitsList: (fields[19] as List?)?.cast<ProductUnitsClass>(),
     );
   }
 
   @override
-  void write(
-    BinaryWriter writer,
-    ProductionMaterialCartItem obj,
-  ) {
+  void write(BinaryWriter writer, ProductionMaterialCartItem obj) {
     writer
       ..writeByte(20)
       ..writeByte(0)

@@ -15,8 +15,7 @@ class ProductionMaterialsUsageAdapter
   ProductionMaterialsUsage read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++)
-        reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ProductionMaterialsUsage(
       uuid: fields[0] as String,
@@ -42,17 +41,13 @@ class ProductionMaterialsUsageAdapter
       selectedCostInt: fields[21] as int?,
       isManaged: fields[22] as bool?,
       unitUuid: fields[23] as String?,
-      unitsList:
-          (fields[24] as List?)?.cast<ProductUnitsClass>(),
+      unitsList: (fields[24] as List?)?.cast<ProductUnitsClass>(),
       productionRecordUuid: fields[25] as String?,
     );
   }
 
   @override
-  void write(
-    BinaryWriter writer,
-    ProductionMaterialsUsage obj,
-  ) {
+  void write(BinaryWriter writer, ProductionMaterialsUsage obj) {
     writer
       ..writeByte(25)
       ..writeByte(0)

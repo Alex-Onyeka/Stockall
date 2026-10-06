@@ -58,6 +58,8 @@ class _ManageThisItemToggleSwitchState
                         isQuantityUpdate: false,
                         quantityChange: null,
                         product: TempProductClass(
+                          pricesList:
+                              widget.product.pricesList,
                           unitsList:
                               widget.product.unitsList,
                           categories:

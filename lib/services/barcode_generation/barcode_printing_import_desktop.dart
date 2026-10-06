@@ -126,7 +126,7 @@ String generateTsplForPriceTag(
     // final digits = returnOnlyDigits(pb.product.uuid!);
     final productName = pb.product.name.toUpperCase();
     String productPrice = formatPrice(
-      pb.product.sellingPrice,
+      pb.product.getPrimaryPrice().priceValue,
     );
 
     final settings =
@@ -219,7 +219,7 @@ String generateTsplForBarcodesAndPriceTag(
     final digits = returnOnlyDigits(pb.product.uuid!);
     final productName = pb.product.name.toUpperCase();
     final productPrice =
-        "PRICE: ${formatPrice(pb.product.sellingPrice)}";
+        "PRICE: ${formatPrice(pb.product.getPrimaryPrice().priceValue)}";
 
     final settings =
         returnShopProvider()

@@ -72,6 +72,7 @@ class _BarcodeAndSearchTextFieldState
                           // isEdit: false,
                           context: context,
                           newItem: TempCartItem(
+                            priceUuid: null,
                             unitUuid: null,
                             uuid: uuidGen(),
                             itemUuid: items.first.uuid,
@@ -277,8 +278,7 @@ class _BarcodeAndSearchTextFieldState
                                                   ),
                                                   formatMoneyMid(
                                                     amount:
-                                                        item.sellingPrice ??
-                                                        0,
+                                                        item.getPrimaryPrice().priceValue,
                                                     context:
                                                         context,
                                                   ),

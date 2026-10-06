@@ -75,7 +75,7 @@ class MainDropdown extends StatelessWidget {
                   width: isOpen ? 1.3 : 1,
                 ),
                 borderRadius: BorderRadius.circular(
-                  isOpen ? 10 : 5,
+                  isOpen ? 5 : 2,
                 ),
               ),
             ),

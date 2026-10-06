@@ -71,7 +71,11 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
       }
     } else {
       return (qqty *
-              (cartItem.getItem()?.sellingPrice ?? 1))
+              (cartItem
+                      .getItem()
+                      ?.getPrimaryPrice()
+                      .priceValue ??
+                  1))
           .toString();
     }
   }
@@ -1111,6 +1115,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                     ).pop();
                                   },
                                   editCartItem: TempCartItem(
+                                    priceUuid: null,
                                     unitUuid: null,
                                     itemUuid: null,
                                     uuid: uuidGen(),
@@ -1123,6 +1128,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         returnSalesProvider()
                                             .setTotalPrice,
                                     item: TempProductClass(
+                                      pricesList: [],
                                       unitsList: [],
                                       useGroupUnit: false,
                                       categories: [],
@@ -1202,6 +1208,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   ).pop();
                                 },
                                 editCartItem: TempCartItem(
+                                  priceUuid: null,
                                   unitUuid: null,
                                   itemUuid: null,
                                   uuid: uuidGen(),
@@ -1213,6 +1220,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       returnSalesProvider()
                                           .setTotalPrice,
                                   item: TempProductClass(
+                                    pricesList: [],
                                     unitsList: [],
                                     useGroupUnit: false,
                                     categories: [],
@@ -1318,6 +1326,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         ).pop();
                                       },
                                       editCartItem: TempCartItem(
+                                        priceUuid: null,
                                         unitUuid: null,
                                         itemUuid: null,
                                         uuid: uuidGen(),
@@ -1331,6 +1340,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                             returnSalesProvider()
                                                 .setTotalPrice,
                                         item: TempProductClass(
+                                          pricesList: [],
                                           unitsList: [],
                                           useGroupUnit:
                                               false,
@@ -1419,6 +1429,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   ).pop();
                                 },
                                 editCartItem: TempCartItem(
+                                  priceUuid: null,
                                   unitUuid: null,
                                   itemUuid: null,
                                   uuid: uuidGen(),
@@ -1430,6 +1441,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       returnSalesProvider()
                                           .setTotalPrice,
                                   item: TempProductClass(
+                                    pricesList: [],
                                     unitsList: [],
                                     useGroupUnit: false,
                                     categories: [],
@@ -1612,6 +1624,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                           ).pop();
                                                         },
                                                         editCartItem: TempCartItem(
+                                                          priceUuid:
+                                                              null,
                                                           unitUuid:
                                                               null,
                                                           itemUuid:
@@ -1629,6 +1643,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                           setTotalPrice:
                                                               returnSalesProvider().setTotalPrice,
                                                           item: TempProductClass(
+                                                            pricesList:
+                                                                [],
                                                             unitsList:
                                                                 [],
                                                             useGroupUnit:
@@ -2044,6 +2060,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                 context:
                                                                     context,
                                                                 newItem: TempCartItem(
+                                                                  priceUuid:
+                                                                      null,
                                                                   unitUuid:
                                                                       null,
                                                                   uuid:
@@ -2308,6 +2326,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               ).pop();
                                                             },
                                                             editCartItem: TempCartItem(
+                                                              priceUuid:
+                                                                  null,
                                                               unitUuid:
                                                                   null,
                                                               itemUuid:
@@ -2325,6 +2345,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               setTotalPrice:
                                                                   returnSalesProvider().setTotalPrice,
                                                               item: TempProductClass(
+                                                                pricesList:
+                                                                    [],
                                                                 unitsList:
                                                                     [],
                                                                 useGroupUnit:

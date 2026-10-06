@@ -116,6 +116,10 @@ class Authorizations {
   String deleteProduct = 'Delete Items';
   String transferProduct = 'Transfer Items';
   String manageMultipleUnits = 'Manage Multiple Units';
+  String selectMultiplePriceDuringSales =
+      'Select Multiple Price During Sales';
+  String setCustomPriceDuringSales =
+      'Set Custom Price During Sales';
   String addCustomer = 'Add Customers';
   String updateCustomer = 'Update Customers';
   String deleteCustomer = 'Delete Customers';
@@ -3309,7 +3313,7 @@ Future<Uint8List> _buildPdfProducts(
   double totalSellingPrice() {
     double tempQtty = 0;
     for (var element in products) {
-      tempQtty += element.sellingPrice ?? 0;
+      tempQtty += element.getPrimaryPrice().priceValue;
     }
     return tempQtty;
   }
@@ -3766,8 +3770,8 @@ Future<Uint8List> _buildPdfProducts(
                                   formatMoneyMid(
                                     amount:
                                         product
-                                            .sellingPrice ??
-                                        0,
+                                            .getPrimaryPrice()
+                                            .priceValue,
                                     context: context,
                                   ),
                                 ),

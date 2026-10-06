@@ -6,8 +6,7 @@ part of 'production_record.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class ProductionRecordAdapter
-    extends TypeAdapter<ProductionRecord> {
+class ProductionRecordAdapter extends TypeAdapter<ProductionRecord> {
   @override
   final int typeId = 100;
 
@@ -15,8 +14,7 @@ class ProductionRecordAdapter
   ProductionRecord read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++)
-        reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ProductionRecord(
       uuid: fields[0] as String?,
@@ -27,9 +25,7 @@ class ProductionRecordAdapter
       departmentId: fields[5] as String?,
       departmentName: fields[6] as String?,
       updatedAt: fields[7] as DateTime?,
-      materials:
-          (fields[8] as List)
-              .cast<ProductionRecordMaterials>(),
+      materials: (fields[8] as List).cast<ProductionRecordMaterials>(),
       itemName: fields[10] as String?,
       itemUuid: fields[11] as String?,
       salesItemUuid: fields[23] as String?,
@@ -45,8 +41,7 @@ class ProductionRecordAdapter
       useGroupQuantity: fields[19] as bool?,
       groupUnit: fields[22] as String?,
       unitUuid: fields[24] as String?,
-      unitsList:
-          (fields[25] as List?)?.cast<ProductUnitsClass>(),
+      unitsList: (fields[25] as List?)?.cast<ProductUnitsClass>(),
     );
   }
 

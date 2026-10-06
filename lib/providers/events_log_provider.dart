@@ -412,7 +412,7 @@ class EventsLogProvider with ChangeNotifier {
           returnDepartmentProvider()
               .currentDepartment()
               ?.uuid,
-      amount: product.sellingPrice,
+      amount: product.getPrimaryPrice().priceValue,
     );
   }
 

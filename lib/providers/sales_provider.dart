@@ -11,6 +11,7 @@ import 'package:stockall/classes/temp_main_cart/temp_main_cart.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_orders/order_items.dart';
 import 'package:stockall/classes/temp_orders/orders.dart';
+import 'package:stockall/classes/temp_product_class/prices_class/product_prices_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
@@ -363,6 +364,7 @@ class SalesProvider extends ChangeNotifier {
           cartItem.remainingQuantity;
       tempItem.unitUuid = cartItem.unitUuid;
       tempItem.remainingBalance = cartItem.remainingBalance;
+      tempItem.priceUuid = cartItem.priceUuid;
     } else {
       await mainLocalLog('Couldn\'t Find Cart Item');
     }
@@ -1277,6 +1279,8 @@ class SalesProvider extends ChangeNotifier {
                 );
 
                 return TempProductSaleRecord(
+                  priceUuid: cartItem.priceUuid,
+                  pricesList: cartItem.getPriceListFinal(),
                   unitUuid: cartItem.unitUuid,
                   unitsList: cartItem.getUnitListFinal(),
                   isVoid: cartItem.isVoid ?? false,
@@ -1492,6 +1496,18 @@ class SalesProvider extends ChangeNotifier {
 
                   TempProductClass
                   product = TempProductClass(
+                    pricesList: [
+                      ProductPricesClass(
+                        uuid: uuidGen(),
+                        staffUuid: currentUser().userId,
+                        createdAt: createdAt,
+                        staffName: currentUser().name,
+                        priceValue: 0,
+                        name: 'Price',
+                        isPrimary: true,
+                        itemUuid: productUuid,
+                      ),
+                    ],
                     unitsList: [
                       ProductUnitsClass(
                         uuid: uuidGen(),
@@ -1738,6 +1754,8 @@ class SalesProvider extends ChangeNotifier {
               ) {
                 final product = cartItem.getItem();
                 return TempProductSaleRecord(
+                  priceUuid: cartItem.priceUuid,
+                  pricesList: cartItem.getPriceListFinal(),
                   unitUuid: cartItem.unitUuid,
                   unitsList: cartItem.getUnitListFinal(),
                   isVoid: cartItem.isVoid ?? false,
@@ -1802,6 +1820,8 @@ class SalesProvider extends ChangeNotifier {
                 );
 
                 return TempProductSaleRecord(
+                  priceUuid: cartItem.priceUuid,
+                  pricesList: cartItem.getPriceListFinal(),
                   unitUuid: cartItem.unitUuid,
                   unitsList: cartItem.getUnitListFinal(),
                   isVoid: cartItem.isVoid ?? false,
@@ -2020,6 +2040,18 @@ class SalesProvider extends ChangeNotifier {
 
                   TempProductClass
                   product = TempProductClass(
+                    pricesList: [
+                      ProductPricesClass(
+                        uuid: uuidGen(),
+                        staffUuid: currentUser().userId,
+                        createdAt: createdAt,
+                        staffName: currentUser().name,
+                        priceValue: 0,
+                        name: 'Price',
+                        isPrimary: true,
+                        itemUuid: productUuid,
+                      ),
+                    ],
                     unitsList: [
                       ProductUnitsClass(
                         uuid: uuidGen(),
@@ -2209,6 +2241,8 @@ class SalesProvider extends ChangeNotifier {
               );
 
               return OrderItems(
+                priceUuid: cartItem.priceUuid,
+                pricesList: cartItem.getPriceListFinal(),
                 unitUuid: cartItem.unitUuid,
                 unitsList: cartItem.getUnitListFinal(),
                 originalUseGroupQuantity:
@@ -2356,6 +2390,18 @@ class SalesProvider extends ChangeNotifier {
 
                   TempProductClass
                   product = TempProductClass(
+                    pricesList: [
+                      ProductPricesClass(
+                        uuid: uuidGen(),
+                        staffUuid: currentUser().userId,
+                        createdAt: createdAt,
+                        staffName: currentUser().name,
+                        priceValue: 0,
+                        name: 'Price',
+                        isPrimary: true,
+                        itemUuid: productUuid,
+                      ),
+                    ],
                     unitsList: [
                       ProductUnitsClass(
                         uuid: uuidGen(),
@@ -2532,13 +2578,12 @@ class SalesProvider extends ChangeNotifier {
   double discountCheck(TempProductClass product) {
     double tempValue = 0;
     if (product.discount == null || product.discount == 0) {
-      tempValue = product.sellingPrice ?? 0;
+      tempValue = product.getPrimaryPrice().priceValue;
     } else {
       tempValue =
-          product.sellingPrice ??
-          0 -
-              (product.sellingPrice ??
-                  0 * (product.discount! / 100));
+          product.getPrimaryPrice().priceValue -
+          (product.getPrimaryPrice().priceValue *
+              (product.discount! / 100));
     }
     return tempValue;
   }
@@ -2555,7 +2600,11 @@ class SalesProvider extends ChangeNotifier {
         if (item.getItem()?.discount != null &&
             item.customPrice == null) {
           double discountPerUnit =
-              (item.getItem()?.sellingPrice ?? 0) *
+              (item
+                      .getItem()
+                      ?.getPrimaryPrice()
+                      .priceValue ??
+                  0) *
               ((item.getItem()?.discount ?? 1) / 100);
           tempTotalDiscount +=
               discountPerUnit * item.quantity;
@@ -3473,6 +3522,7 @@ class SalesProvider extends ChangeNotifier {
       }
     }
     return TempCartItem(
+      priceUuid: record.priceUuid,
       unitUuid: record.unitUuid,
       uuid: record.uuid,
       itemUuid: product.uuid,
@@ -3542,6 +3592,7 @@ class SalesProvider extends ChangeNotifier {
                     record.quantity;
 
         TempProductClass productNew = TempProductClass(
+          pricesList: record.getPriceListFinal(),
           unitsList: record.getUnitListFinal(),
           useGroupUnit: false,
           categories: [],

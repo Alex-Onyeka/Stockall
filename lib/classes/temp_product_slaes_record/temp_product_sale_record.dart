@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/temp_product_class/prices_class/product_prices_class.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
@@ -113,6 +114,12 @@ class TempProductSaleRecord {
   @HiveField(34)
   String? unitUuid;
 
+  @HiveField(35)
+  List<ProductPricesClass>? pricesList;
+
+  @HiveField(36)
+  String? priceUuid;
+
   TempProductSaleRecord({
     this.productRecordId,
     required this.createdAt,
@@ -149,6 +156,8 @@ class TempProductSaleRecord {
     required this.isVoid,
     required this.unitsList,
     required this.unitUuid,
+    required this.pricesList,
+    required this.priceUuid,
   });
 
   factory TempProductSaleRecord.fromJson(
@@ -202,6 +211,15 @@ class TempProductSaleRecord {
               )
               .toList(),
       unitUuid: json['unit_uuid'] as String?,
+      pricesList:
+          (json['prices_list'] as List<dynamic>? ?? [])
+              .map(
+                (item) => ProductPricesClass.fromJson(
+                  item as Map<String, dynamic>,
+                ),
+              )
+              .toList(),
+      priceUuid: json['price_uuid'] as String?,
     );
   }
 
@@ -243,6 +261,11 @@ class TempProductSaleRecord {
         productUuid: uuid,
       ),
       'unit_uuid': unitUuid,
+      'prices_list': ProductPricesClass.getPricesList(
+        tempPricesList: pricesList,
+        itemUuid: uuid,
+      ),
+      'price_uuid': priceUuid,
     };
   }
 
@@ -280,6 +303,8 @@ class TempProductSaleRecord {
     bool? isVoid,
     List<ProductUnitsClass>? unitsList,
     String? unitUuid,
+    List<ProductPricesClass>? pricesList,
+    String? priceUuid,
   }) {
     return TempProductSaleRecord(
       productRecordId:
@@ -320,8 +345,100 @@ class TempProductSaleRecord {
       isVoid: isVoid ?? this.isVoid,
       unitsList: unitsList ?? this.unitsList,
       unitUuid: unitUuid ?? this.unitUuid,
+      pricesList: pricesList ?? this.pricesList,
+      priceUuid: priceUuid ?? this.priceUuid,
     );
   }
+
+  //
+  //
+  //
+  //
+  //
+
+  List<ProductPricesClass> getPriceListFinal() {
+    return getPricesList()
+        .map((item) => item.copyWith())
+        .toList();
+  }
+
+  ProductPricesClass getSelectedPrice({
+    String? priceUuidNew,
+  }) {
+    final requestedPriceUuid = priceUuidNew ?? priceUuid;
+    var items = getPricesList().where(
+      (item) => item.uuid == requestedPriceUuid,
+    );
+    if (items.isEmpty) {
+      return getPrimaryPrice();
+    } else {
+      return getPricesList().firstWhere(
+        (item) => item.uuid == requestedPriceUuid,
+      );
+    }
+  }
+
+  ProductPricesClass getPrimaryPrice() {
+    if (getPricesList().isEmpty == true ||
+        getPricesList()
+            .where((item) => item.isPrimary == true)
+            .isEmpty) {
+      return ProductPricesClass(
+        uuid: uuidGen(),
+        staffUuid: currentUser().userId,
+        createdAt: DateTime.now(),
+        staffName: currentUser().name,
+        priceValue: revenue,
+        name: 'Price',
+        isPrimary: true,
+        itemUuid: uuid!,
+      );
+    } else {
+      return getPricesList()
+          .where((item) => item.isPrimary == true)
+          .first;
+    }
+  }
+
+  List<ProductPricesClass> getPricesList() {
+    List<ProductPricesClass> tempList() {
+      if (pricesList == null ||
+          pricesList?.isEmpty == true) {
+        List<ProductPricesClass> tempList = [
+          ProductPricesClass(
+            uuid: uuidGen(),
+            staffUuid: currentUser().userId,
+            createdAt: DateTime.now(),
+            staffName: currentUser().name,
+            priceValue: revenue,
+            name: 'Price',
+            isPrimary: true,
+            itemUuid: uuid!,
+          ),
+        ];
+        return tempList;
+      } else {
+        return pricesList ?? [];
+      }
+    }
+
+    if (tempList().length < 2) {
+      return tempList();
+    } else {
+      return [
+        tempList().firstWhere((item) => item.isPrimary),
+        ...tempList().where((item) => !item.isPrimary),
+      ];
+    }
+  }
+
+  //
+  //
+  //
+  //
+  //
+  //
+  //
 
   List<ProductUnitsClass> getUnitListFinal() {
     return getUnitsList()

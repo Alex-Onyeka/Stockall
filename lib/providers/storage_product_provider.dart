@@ -692,7 +692,8 @@ class StorageProductProvider extends ChangeNotifier {
     var products = returnData().productListMain;
     for (var item in products) {
       tempTotal +=
-          ((item.sellingPrice ?? 0) * (item.quantity ?? 0));
+          ((item.getPrimaryPrice().priceValue) *
+              (item.quantity ?? 0));
     }
     for (var item in storageProductListMain) {
       tempTotal +=

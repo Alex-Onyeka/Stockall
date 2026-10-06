@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_categories/category_class.dart';
+import 'package:stockall/classes/temp_product_class/prices_class/product_prices_class.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
@@ -29,6 +30,7 @@ import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/categories/categories_page.dart';
 import 'package:stockall/pages/products/compnents/product_tile_cart_search.dart';
+import 'package:stockall/pages/products/product_details/platforms/components/price_selection_widget.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/unit_selection_widget.dart';
 import 'package:stockall/pages/sales/make_sales/page1/platforms/components/right_bar_section.dart';
 import 'package:stockall/providers/data_provider.dart';
@@ -1268,10 +1270,11 @@ void selectProductSales({
   bool isOnscreenKeyboardClicked = false;
   int currentFocus = 1;
   double qqty = 0;
-  bool useWholeSalePriceTemp = false;
+  // bool useWholeSalePriceTemp = false;
   TempCartItem cartItem = cartItemTemp.copyWith();
 
   String? unitUuid;
+  String? priceUuid;
 
   void selectUnit(String unit) {
     unitUuid = unit;
@@ -1337,8 +1340,66 @@ void selectProductSales({
     // print(cartItem.getSelectedUnit().name);
   }
 
+  //
+  //
+  //
+  //
+  //
+
+  void selectPrice(String price) {
+    priceUuid = price;
+  }
+
+  List<ProductPricesClass> tempPriceList =
+      cartItem.getPriceListFinal();
+
+  ProductPricesClass getPrimaryPrice() {
+    var items = tempPriceList.where(
+      (item) => item.uuid == priceUuid,
+    );
+    if (items.isEmpty) {
+      var items = tempPriceList.where(
+        (item) => item.isPrimary,
+      );
+      if (items.isNotEmpty) {
+        return items.first;
+      } else {
+        return ProductPricesClass(
+          uuid: uuidGen(),
+          staffUuid: currentUser().userId,
+          createdAt: DateTime.now(),
+          staffName: currentUser().name,
+          priceValue: cartItem.item.sellingPrice ?? 0,
+          name: 'Price',
+          isPrimary: true,
+          itemUuid: cartItem.item.uuid!,
+        );
+      }
+    } else {
+      return items.first;
+    }
+  }
+
+  priceUuid = cartItem.priceUuid ?? getPrimaryPrice().uuid;
+
+  void setPriceListFinal() {
+    cartItem.getItem()?.pricesList?.clear();
+    cartItem.getItem()?.pricesList?.addAll(
+      tempPriceList.map((item) => item.copyWith()).toList(),
+    );
+    // print(cartItem.getSelectedUnit().name);
+    cartItem.priceUuid = priceUuid;
+    // print(cartItem.getSelectedUnit().name);
+  }
+
+  //
+  //
+  //
+  //
+  //
+
   if (isEdit) {
-    useWholeSalePriceTemp = cartItem.useWholeSalePrice;
+    // useWholeSalePriceTemp = cartItem.useWholeSalePrice;
     qttyNode.requestFocus();
     quantityController.text = cartItem.quantity.toString();
     qqty = cartItem.quantity.toDouble();
@@ -1357,14 +1418,7 @@ void selectProductSales({
   qttyNode.requestFocus();
 
   String formatSellingPrice(TempCartItem cartItem) {
-    if (useWholeSalePriceTemp) {
-      return (getPrimaryUnitQuantityMultiplied(
-                context: context,
-                newQuantity: qqty,
-              ) *
-              (cartItem.getItem()?.wholeSalePrice ?? 0))
-          .toString();
-    } else if (priceController.text.isNotEmpty) {
+    if (priceController.text.isNotEmpty) {
       if (returnSalesProvider().setTotalPrice) {
         return priceController.text.replaceAll(',', '');
       } else {
@@ -1387,10 +1441,9 @@ void selectProductSales({
                 context: context,
                 newQuantity: qqty,
               ) *
-              (cartItem.getItem()?.sellingPrice ?? 0))
+              (getPrimaryPrice().priceValue))
           .toString();
     }
-    // }
   }
 
   showDialog(
@@ -1562,12 +1615,47 @@ void selectProductSales({
                                 qqty = 0;
                               },
                             ),
+
+                            Visibility(
+                              visible:
+                                  cartItemTemp
+                                          .getPrimaryPrice()
+                                          .priceValue !=
+                                      0 &&
+                                  priceController
+                                      .text
+                                      .isEmpty &&
+                                  !returnSalesProviderContext(
+                                    context,
+                                  ).isSetCustomPrice() &&
+                                  authorization(
+                                    authorized:
+                                        Authorizations()
+                                            .selectMultiplePriceDuringSales,
+                                  ),
+                              child: PriceSelectionWidget(
+                                priceList: tempPriceList,
+                                // product: cartItem.item,
+                                conversion:
+                                    getPrimaryUnit()
+                                        .conversion,
+                                theme: theme,
+                                priceUuid:
+                                    getPrimaryPrice().uuid,
+                                setPriceUuid: (d) {
+                                  setState(() {
+                                    selectPrice(d ?? '');
+                                  });
+                                },
+                              ),
+                            ),
                             Visibility(
                               visible:
                                   cartItem
                                               .getItem()
-                                              ?.sellingPrice ==
-                                          null
+                                              ?.getPrimaryPrice()
+                                              .priceValue ==
+                                          0
                                       ? true
                                       : returnSalesProviderContext(
                                             context,
@@ -1639,7 +1727,11 @@ void selectProductSales({
                                           .getItem()
                                           ?.setCustomPrice ??
                                       false) &&
-                                  !useWholeSalePriceTemp,
+                                  authorization(
+                                    authorized:
+                                        Authorizations()
+                                            .setCustomPriceDuringSales,
+                                  ),
                               child: Column(
                                 children: [
                                   InkWell(
@@ -1780,56 +1872,6 @@ void selectProductSales({
                                     ),
                                   ),
                                 ],
-                              ),
-                            ),
-                            Visibility(
-                              visible:
-                                  returnShopProvider()
-                                      .userShop()
-                                      ?.wholeSale ==
-                                  true,
-                              child: ConstrainedBox(
-                                constraints: BoxConstraints(
-                                  maxWidth: 230,
-                                ),
-                                child: Column(
-                                  children: [
-                                    SizedBox(height: 20),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .spaceBetween,
-                                      children: [
-                                        Text(
-                                          style: TextStyle(
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
-                                          ),
-                                          'Use Whole Sale Price?',
-                                        ),
-                                        MyToggleButton(
-                                          boolValue:
-                                              useWholeSalePriceTemp,
-                                          toggle: () {
-                                            var salesProvider =
-                                                returnSalesProvider();
-
-                                            setState(() {
-                                              useWholeSalePriceTemp =
-                                                  !useWholeSalePriceTemp;
-                                            });
-                                            priceController
-                                                .clear();
-                                            salesProvider
-                                                .closeCustomPrice();
-                                          },
-                                          theme: theme,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
                               ),
                             ),
                             SizedBox(height: 20),
@@ -2043,8 +2085,9 @@ void selectProductSales({
                                   action: () async {
                                     if (cartItem
                                                 .getItem()
-                                                ?.sellingPrice ==
-                                            null &&
+                                                ?.getPrimaryPrice()
+                                                .priceValue ==
+                                            0 &&
                                         priceController
                                             .text
                                             .isEmpty) {
@@ -2081,6 +2124,7 @@ void selectProductSales({
                                         );
                                       } else {
                                         setUnitListFinal();
+                                        setPriceListFinal();
                                         if (priceController
                                             .text
                                             .isNotEmpty) {
@@ -2121,8 +2165,6 @@ void selectProductSales({
                                                       false,
                                                 );
                                             if (res) {
-                                              cartItem.useWholeSalePrice =
-                                                  useWholeSalePriceTemp;
                                               cartItem.useGroupQuantity =
                                                   true;
 
@@ -2158,8 +2200,6 @@ void selectProductSales({
                                               ).pop();
                                             }
                                           } else {
-                                            cartItem.useWholeSalePrice =
-                                                useWholeSalePriceTemp;
                                             cartItem.useGroupQuantity =
                                                 true;
                                             returnSalesProvider().editCartItemQuantity(
@@ -2205,8 +2245,6 @@ void selectProductSales({
                                                   true) {
                                             cartItem.useGroupQuantity =
                                                 true;
-                                            cartItem.useWholeSalePrice =
-                                                useWholeSalePriceTemp;
                                             returnSalesProvider()
                                                 .addItemToTempCart(
                                                   item:
@@ -2274,8 +2312,6 @@ void selectProductSales({
                                               if (res) {
                                                 cartItem.useGroupQuantity =
                                                     true;
-                                                cartItem.useWholeSalePrice =
-                                                    useWholeSalePriceTemp;
                                                 returnSalesProvider().addItemToCart(
                                                   // isEdit:
                                                   //     isEdit,
@@ -2304,8 +2340,6 @@ void selectProductSales({
                                             } else {
                                               cartItem.useGroupQuantity =
                                                   true;
-                                              cartItem.useWholeSalePrice =
-                                                  useWholeSalePriceTemp;
                                               returnSalesProvider().addItemToCart(
                                                 // isEdit:
                                                 //     isEdit,

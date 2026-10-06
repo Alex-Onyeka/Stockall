@@ -515,6 +515,10 @@ class _UpdateItemQuantityWidgetState
                                               widget
                                                   .product
                                                   .unitsList,
+                                          pricesList:
+                                              widget
+                                                  .product
+                                                  .pricesList,
                                           categories:
                                               widget
                                                   .product

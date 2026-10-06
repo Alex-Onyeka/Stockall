@@ -183,23 +183,19 @@ class _GenerateBarcodeScreenState
                           ),
                           Text(
                             widget
-                                            .productBarcodes[0]
-                                            .product
-                                            .sellingPrice ==
-                                        null ||
-                                    widget
-                                            .productBarcodes[0]
-                                            .product
-                                            .sellingPrice ==
-                                        0
+                                        .productBarcodes[0]
+                                        .product
+                                        .getPrimaryPrice()
+                                        .priceValue ==
+                                    0
                                 ? 'Not Set'
                                 : formatMoneyMid(
                                   amount:
                                       widget
                                           .productBarcodes[0]
                                           .product
-                                          .sellingPrice ??
-                                      0,
+                                          .getPrimaryPrice()
+                                          .priceValue,
                                   context: context,
                                 ),
                             style: const TextStyle(
@@ -340,17 +336,16 @@ class _GenerateBarcodeScreenState
                                           ),
                                     ),
                                     Text(
-                                      pr.product.sellingPrice ==
-                                                  null ||
-                                              pr.product.sellingPrice ==
-                                                  0
+                                      pr.product
+                                                  .getPrimaryPrice()
+                                                  .priceValue ==
+                                              0
                                           ? 'Not Set'
                                           : formatMoneyMid(
                                             amount:
-                                                pr
-                                                    .product
-                                                    .sellingPrice ??
-                                                0,
+                                                pr.product
+                                                    .getPrimaryPrice()
+                                                    .priceValue,
                                             context:
                                                 context,
                                           ),
@@ -449,14 +444,12 @@ Future<bool> printBarcodeWebAndMobile(
                       style: pw.TextStyle(fontSize: 5),
                     ),
                     pw.Text(
-                      productBarcode.product.sellingPrice ==
-                                  null ||
-                              productBarcode
-                                      .product
-                                      .sellingPrice ==
-                                  0
+                      productBarcode.product
+                                  .getPrimaryPrice()
+                                  .priceValue ==
+                              0
                           ? 'Not Set'
-                          : 'N ${formatLargeNumberDouble(productBarcode.product.sellingPrice ?? 0)}',
+                          : 'N ${formatLargeNumberDouble(productBarcode.product.getPrimaryPrice().priceValue)}',
                       style: pw.TextStyle(
                         fontSize: 7,
                         fontWeight: pw.FontWeight.bold,
