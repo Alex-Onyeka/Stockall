@@ -364,6 +364,7 @@ class SalesProvider extends ChangeNotifier {
           cartItem.remainingQuantity;
       tempItem.unitUuid = cartItem.unitUuid;
       tempItem.remainingBalance = cartItem.remainingBalance;
+      tempItem.priceUuid = cartItem.priceUuid;
     } else {
       await mainLocalLog('Couldn\'t Find Cart Item');
     }

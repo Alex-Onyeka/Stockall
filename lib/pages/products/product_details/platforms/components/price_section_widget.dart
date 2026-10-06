@@ -651,15 +651,17 @@ class PriceWidgetProductDetails extends StatelessWidget {
           child: Row(
             spacing: 5,
             children: [
-              Text(
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.b4.fontSize,
-                  color:
-                      price.isPrimary
-                          ? Colors.grey.shade200
-                          : null,
+              Expanded(
+                child: Text(
+                  style: TextStyle(
+                    fontSize: theme.mobileTexts.b4.fontSize,
+                    color:
+                        price.isPrimary
+                            ? Colors.grey.shade200
+                            : null,
+                  ),
+                  "${price.name}:",
                 ),
-                "${price.name}:",
               ),
               Text(
                 style: TextStyle(
@@ -675,6 +677,7 @@ class PriceWidgetProductDetails extends StatelessWidget {
                   context: context,
                 ),
               ),
+              SizedBox(width: 2),
             ],
           ),
         ),

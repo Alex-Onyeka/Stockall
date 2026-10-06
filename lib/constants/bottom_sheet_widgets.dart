@@ -1388,7 +1388,7 @@ void selectProductSales({
       tempPriceList.map((item) => item.copyWith()).toList(),
     );
     // print(cartItem.getSelectedUnit().name);
-    cartItem.unitUuid = unitUuid;
+    cartItem.priceUuid = priceUuid;
     // print(cartItem.getSelectedUnit().name);
   }
 
@@ -1616,17 +1616,38 @@ void selectProductSales({
                               },
                             ),
 
-                            PriceSelectionWidget(
-                              // priceList: tempPriceList,
-                              product: cartItem.item,
-                              theme: theme,
-                              priceUuid:
-                                  getPrimaryPrice().uuid,
-                              setPriceUuid: (d) {
-                                setState(() {
-                                  selectPrice(d ?? '');
-                                });
-                              },
+                            Visibility(
+                              visible:
+                                  cartItemTemp
+                                          .getPrimaryPrice()
+                                          .priceValue !=
+                                      0 &&
+                                  priceController
+                                      .text
+                                      .isEmpty &&
+                                  !returnSalesProviderContext(
+                                    context,
+                                  ).isSetCustomPrice() &&
+                                  authorization(
+                                    authorized:
+                                        Authorizations()
+                                            .selectMultiplePriceDuringSales,
+                                  ),
+                              child: PriceSelectionWidget(
+                                priceList: tempPriceList,
+                                // product: cartItem.item,
+                                conversion:
+                                    getPrimaryUnit()
+                                        .conversion,
+                                theme: theme,
+                                priceUuid:
+                                    getPrimaryPrice().uuid,
+                                setPriceUuid: (d) {
+                                  setState(() {
+                                    selectPrice(d ?? '');
+                                  });
+                                },
+                              ),
                             ),
                             Visibility(
                               visible:
@@ -1705,7 +1726,12 @@ void selectProductSales({
                                   (cartItem
                                           .getItem()
                                           ?.setCustomPrice ??
-                                      false),
+                                      false) &&
+                                  authorization(
+                                    authorized:
+                                        Authorizations()
+                                            .setCustomPriceDuringSales,
+                                  ),
                               child: Column(
                                 children: [
                                   InkWell(
@@ -1848,56 +1874,6 @@ void selectProductSales({
                                 ],
                               ),
                             ),
-                            // Visibility(
-                            //   visible:
-                            //       returnShopProvider()
-                            //           .userShop()
-                            //           ?.wholeSale ==
-                            //       true,
-                            //   child: ConstrainedBox(
-                            //     constraints: BoxConstraints(
-                            //       maxWidth: 230,
-                            //     ),
-                            //     child: Column(
-                            //       children: [
-                            //         SizedBox(height: 20),
-                            //         Row(
-                            //           mainAxisAlignment:
-                            //               MainAxisAlignment
-                            //                   .spaceBetween,
-                            //           children: [
-                            //             Text(
-                            //               style: TextStyle(
-                            //                 fontWeight:
-                            //                     FontWeight
-                            //                         .bold,
-                            //               ),
-                            //               'Use Whole Sale Price?',
-                            //             ),
-                            //             MyToggleButton(
-                            //               boolValue:
-                            //                   useWholeSalePriceTemp,
-                            //               toggle: () {
-                            //                 var salesProvider =
-                            //                     returnSalesProvider();
-
-                            //                 setState(() {
-                            //                   useWholeSalePriceTemp =
-                            //                       !useWholeSalePriceTemp;
-                            //                 });
-                            //                 priceController
-                            //                     .clear();
-                            //                 salesProvider
-                            //                     .closeCustomPrice();
-                            //               },
-                            //               theme: theme,
-                            //             ),
-                            //           ],
-                            //         ),
-                            //       ],
-                            //     ),
-                            //   ),
-                            // ),
                             SizedBox(height: 20),
                             Padding(
                               padding:

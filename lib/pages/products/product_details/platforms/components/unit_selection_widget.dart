@@ -53,7 +53,7 @@ class _UnitSelectionWidgetState
           ),
         ),
         ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 250),
+          constraints: BoxConstraints(maxWidth: 450),
           child: PopupMenuButton(
             // offset: Offset(-20, 30),
             color: Colors.white,
@@ -283,35 +283,30 @@ PopupMenuItem myPopUpMenuItemUnitSelection({
     onTap: () {
       setUnitUuid != null ? setUnitUuid(item.uuid) : {};
     },
-    child: SizedBox(
-      width: 200,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 10.0,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Text(
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.b3.fontSize,
-                  fontWeight:
-                      getBold() ? FontWeight.bold : null,
-                ),
-                item.name,
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              style: TextStyle(
+                fontSize: theme.mobileTexts.b3.fontSize,
+                fontWeight:
+                    getBold() ? FontWeight.bold : null,
               ),
+              item.name,
             ),
-            Visibility(
-              visible: getVisibility(),
-              child: Icon(
-                size: 17,
-                color: Colors.grey.shade700,
-                Icons.check,
-              ),
+          ),
+          Visibility(
+            visible: getVisibility(),
+            child: Icon(
+              size: 17,
+              color: Colors.grey.shade700,
+              Icons.check,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     ),
   );

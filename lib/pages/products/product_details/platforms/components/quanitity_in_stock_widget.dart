@@ -152,15 +152,17 @@ class QuantityWidgetProductDetails extends StatelessWidget {
           child: Row(
             spacing: 5,
             children: [
-              Text(
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.b4.fontSize,
-                  color:
-                      unit.isPrimary
-                          ? Colors.grey.shade200
-                          : null,
+              Expanded(
+                child: Text(
+                  style: TextStyle(
+                    fontSize: theme.mobileTexts.b4.fontSize,
+                    color:
+                        unit.isPrimary
+                            ? Colors.grey.shade200
+                            : null,
+                  ),
+                  "${unit.name}:",
                 ),
-                "${unit.name}:",
               ),
               Text(
                 style: TextStyle(
@@ -178,6 +180,7 @@ class QuantityWidgetProductDetails extends StatelessWidget {
                   ),
                 ),
               ),
+              SizedBox(width: 2),
             ],
           ),
         ),

@@ -11,9 +11,11 @@ class PriceSelectionWidget extends StatefulWidget {
   final Function(String? uuid)? setPriceUuid;
   final bool? showSelectPriceText;
   final List<ProductPricesClass>? priceList;
+  final double? conversion;
   const PriceSelectionWidget({
     super.key,
-    required this.product,
+    this.product,
+    this.conversion,
     required this.theme,
     required this.priceUuid,
     required this.setPriceUuid,
@@ -45,7 +47,7 @@ class _PriceSelectionWidgetState
           ),
         ),
         ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 250),
+          constraints: BoxConstraints(maxWidth: 450),
           child: PopupMenuButton(
             // offset: Offset(-20, 30),
             color: Colors.white,
@@ -56,12 +58,15 @@ class _PriceSelectionWidgetState
                           (item) =>
                               myPopUpMenuItemPriceSelection(
                                 priceList: widget.priceList,
+                                conversion:
+                                    widget.conversion,
                                 item: item,
                                 product: widget.product,
                                 setPriceUuid:
                                     widget.setPriceUuid,
                                 theme: widget.theme,
                                 priceUuid: widget.priceUuid,
+                                context: context,
                               ),
                         )
                         .toList() ??
@@ -73,10 +78,13 @@ class _PriceSelectionWidgetState
                                 priceList: widget.priceList,
                                 item: item,
                                 product: widget.product,
+                                conversion:
+                                    widget.conversion,
                                 setPriceUuid:
                                     widget.setPriceUuid,
                                 theme: widget.theme,
                                 priceUuid: widget.priceUuid,
+                                context: context,
                               ),
                         )
                         .toList() ??
@@ -104,14 +112,8 @@ class _PriceSelectionWidgetState
                       fontWeight: FontWeight.bold,
                     ),
                     widget.priceList != null
-                        ? "${widget.priceList?.firstWhere((item) => item.uuid == widget.priceUuid).name ?? ''}: ${formatMoneyBig(amount: ((widget.priceList?.firstWhere((item) => item.uuid == widget.priceUuid).priceValue ?? 0) * (widget.product?.getProductUnit(unitUuid: widget.priceUuid).conversion ?? 1)), context: context)}"
-                        : widget.product
-                                ?.getProductPrice(
-                                  priceUuid:
-                                      widget.priceUuid,
-                                )
-                                .name ??
-                            'Name',
+                        ? "${widget.priceList?.firstWhere((item) => item.uuid == widget.priceUuid).name ?? ''}: ${formatMoneyBig(amount: ((widget.priceList?.firstWhere((item) => item.uuid == widget.priceUuid).priceValue ?? 0) * (widget.conversion ?? 0)), context: context)}"
+                        : "${widget.product?.getProductPrice(priceUuid: widget.priceUuid).name ?? 'Name'}: ${formatMoneyBig(amount: ((widget.product?.getProductPrice(priceUuid: widget.priceUuid).priceValue ?? 0) * (widget.conversion ?? 0)), context: context)}",
                   ),
                   Icon(Icons.keyboard_arrow_down),
                 ],
@@ -128,10 +130,12 @@ class _PriceSelectionWidgetState
 PopupMenuItem myPopUpMenuItemPriceSelection({
   required Function(String? uuid)? setPriceUuid,
   required ProductPricesClass item,
+  required double? conversion,
   required ThemeProvider theme,
   required String? priceUuid,
   required TempProductClass? product,
   required List<ProductPricesClass>? priceList,
+  required BuildContext context,
 }) {
   bool getBold() {
     if (priceList != null && item.uuid == priceUuid) {
@@ -163,35 +167,30 @@ PopupMenuItem myPopUpMenuItemPriceSelection({
     onTap: () {
       setPriceUuid != null ? setPriceUuid(item.uuid) : {};
     },
-    child: SizedBox(
-      width: 200,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 10.0,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Text(
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.b3.fontSize,
-                  fontWeight:
-                      getBold() ? FontWeight.bold : null,
-                ),
-                item.name ?? 'Name',
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              style: TextStyle(
+                fontSize: theme.mobileTexts.b3.fontSize,
+                fontWeight:
+                    getBold() ? FontWeight.bold : null,
               ),
+              "${item.name ?? 'Name'}: ${formatMoneyBig(amount: item.priceValue * (conversion ?? 1), context: context)}",
             ),
-            Visibility(
-              visible: getVisibility(),
-              child: Icon(
-                size: 17,
-                color: Colors.grey.shade700,
-                Icons.check,
-              ),
+          ),
+          Visibility(
+            visible: getVisibility(),
+            child: Icon(
+              size: 17,
+              color: Colors.grey.shade700,
+              Icons.check,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     ),
   );
