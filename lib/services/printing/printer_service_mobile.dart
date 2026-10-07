@@ -18,6 +18,7 @@ import 'package:stockall/constants/invoice_print_and_download.dart'
     show buildInvoiceRollPdf;
 import 'package:stockall/constants/order_print_and_download.dart'
     show buildOrderRollPdf;
+import 'package:stockall/constants/subscription/branding_watermark.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/pos_printer/device_service.dart';
 import 'package:stockall/services/printing/pdf_escpos_raster.dart';
@@ -865,9 +866,11 @@ Uint8List generateStyledReceipt({
 
   builder.addBarcode(barcode);
 
-  builder.addTextMiddle(
-    'Created by $appName Solutions - ( www.stockallapp.com )',
-  );
+  if (shouldShowBrandingWatermark()) {
+    builder.addTextMiddle(
+      'Created by $appName Solutions - ( www.stockallapp.com )',
+    );
+  }
   builder.addBlank();
   builder.addBlank();
   if (DeviceService.isPos) {
@@ -1319,9 +1322,11 @@ Uint8List generateStyledInvoice({
 
   builder.addBarcode(barcode);
 
-  builder.addTextMiddle(
-    'Created by $appName Solutions - ( www.stockallapp.com )',
-  );
+  if (shouldShowBrandingWatermark()) {
+    builder.addTextMiddle(
+      'Created by $appName Solutions - ( www.stockallapp.com )',
+    );
+  }
   builder.addBlank();
   builder.addBlank();
   if (DeviceService.isPos) {
