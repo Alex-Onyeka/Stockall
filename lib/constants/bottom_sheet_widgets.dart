@@ -1610,9 +1610,27 @@ void selectProductSales({
                                 setState(() {
                                   selectUnit(d ?? '');
                                 });
-                                quantityController.text =
-                                    '0';
-                                qqty = 0;
+                                if (getPrimaryUnit().getQuantityEquivMultiplied(
+                                      index: 1,
+                                      quantityTwo:
+                                          (double.tryParse(
+                                                quantityController
+                                                    .text
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
+                                              ) ??
+                                              0),
+                                    ) >
+                                    (cartItemTemp
+                                            .item
+                                            .quantity ??
+                                        0)) {
+                                  quantityController.text =
+                                      '0';
+                                  qqty = 0;
+                                }
                               },
                             ),
 

@@ -216,7 +216,7 @@ List<SubplanClass> subPlans = [
       numberOfCarts: 5,
       applyDiscount: true,
       invoiceManagement: true,
-      manageOrders: false,
+      manageOrders: true,
       paymentMethodSelection: true,
       addCustomerToSell: true,
       downloadReceipt: true,
