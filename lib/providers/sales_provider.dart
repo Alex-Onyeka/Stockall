@@ -1424,7 +1424,7 @@ class SalesProvider extends ChangeNotifier {
                     primaryUnit:
                         cartItem.getPrimaryUnit().name,
                     desc:
-                        '${cartItem.getRealQuantity()} ${cartItem.getSelectedUnit().name} of This Item was Sold, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
+                        '${cartItem.quantity} ${cartItem.getSelectedUnit().name} of This Item was Sold, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
                     shopId: shopId,
                     isIncreased: false,
                     oldValue: formatLargeNumberDouble(
@@ -1506,6 +1506,7 @@ class SalesProvider extends ChangeNotifier {
                         name: 'Price',
                         isPrimary: true,
                         itemUuid: productUuid,
+                        priceType: 1,
                       ),
                     ],
                     unitsList: [
@@ -1967,7 +1968,7 @@ class SalesProvider extends ChangeNotifier {
                     primaryUnit:
                         cartItem.getPrimaryUnit().name,
                     desc:
-                        '${cartItem.getRealQuantity()} ${cartItem.getSelectedUnit().name} of This Item was Sold On Credit, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
+                        '${cartItem.quantity} ${cartItem.getSelectedUnit().name} of This Item was Sold On Credit, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
                     shopId: shopId,
                     isIncreased: false,
                     oldValue: formatLargeNumberDouble(
@@ -2050,6 +2051,7 @@ class SalesProvider extends ChangeNotifier {
                         name: 'Price',
                         isPrimary: true,
                         itemUuid: productUuid,
+                        priceType: 1,
                       ),
                     ],
                     unitsList: [
@@ -2400,6 +2402,7 @@ class SalesProvider extends ChangeNotifier {
                         name: 'Price',
                         isPrimary: true,
                         itemUuid: productUuid,
+                        priceType: 1,
                       ),
                     ],
                     unitsList: [

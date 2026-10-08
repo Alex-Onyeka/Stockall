@@ -393,6 +393,7 @@ class OrderItems extends HiveObject {
         name: 'Price',
         isPrimary: true,
         itemUuid: uuid,
+        priceType: 1,
       );
     } else {
       return getPricesList()
@@ -411,10 +412,11 @@ class OrderItems extends HiveObject {
             staffUuid: currentUser().userId,
             createdAt: DateTime.now(),
             staffName: currentUser().name,
-            priceValue: 1,
+            priceValue: 0,
             name: 'Price',
             isPrimary: true,
             itemUuid: uuid,
+            priceType: 1,
           ),
         ];
 

@@ -239,6 +239,7 @@ class TempCartItem extends HiveObject {
       name: 'Price',
       isPrimary: true,
       itemUuid: uuid!,
+      priceType: 1,
     );
   }
 
@@ -381,12 +382,17 @@ class TempCartItem extends HiveObject {
             );
       }
     } else {
-      return (getSelectedPrice().priceValue) *
-          getSelectedUnit().getQuantityEquivMultiplied(
-            index: 1,
-            product: item,
-            newQuantity: quantity,
-          );
+      final selectedPrice = getSelectedPrice();
+      if ((selectedPrice.priceType ?? 1) == 1) {
+        return selectedPrice.priceValue *
+            getSelectedUnit().getQuantityEquivMultiplied(
+              index: 1,
+              product: item,
+              newQuantity: quantity,
+            );
+      } else {
+        return selectedPrice.priceValue * quantity;
+      }
     }
   }
 
