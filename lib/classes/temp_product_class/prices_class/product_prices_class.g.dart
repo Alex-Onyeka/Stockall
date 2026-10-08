@@ -6,7 +6,8 @@ part of 'product_prices_class.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class ProductPricesClassAdapter extends TypeAdapter<ProductPricesClass> {
+class ProductPricesClassAdapter
+    extends TypeAdapter<ProductPricesClass> {
   @override
   final int typeId = 147;
 
@@ -14,7 +15,8 @@ class ProductPricesClassAdapter extends TypeAdapter<ProductPricesClass> {
   ProductPricesClass read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++)
+        reader.readByte(): reader.read(),
     };
     return ProductPricesClass(
       uuid: fields[0] as String,
@@ -25,14 +27,15 @@ class ProductPricesClassAdapter extends TypeAdapter<ProductPricesClass> {
       name: fields[5] as String?,
       isPrimary: fields[6] as bool,
       itemUuid: fields[7] as String,
-      isFixed: fields[8] as bool? ?? false,
+      isFixed: fields[8] as bool,
+      priceType: fields[9] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ProductPricesClass obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -50,7 +53,9 @@ class ProductPricesClassAdapter extends TypeAdapter<ProductPricesClass> {
       ..writeByte(7)
       ..write(obj.itemUuid)
       ..writeByte(8)
-      ..write(obj.isFixed);
+      ..write(obj.isFixed)
+      ..writeByte(9)
+      ..write(obj.priceType);
   }
 
   @override

@@ -239,6 +239,7 @@ class TempCartItem extends HiveObject {
       name: 'Price',
       isPrimary: true,
       itemUuid: uuid!,
+      priceType: 1,
     );
   }
 
@@ -382,7 +383,7 @@ class TempCartItem extends HiveObject {
       }
     } else {
       final selectedPrice = getSelectedPrice();
-      if (selectedPrice.isFixed) {
+      if (selectedPrice.priceType == 1) {
         return selectedPrice.priceValue * quantity;
       }
       return selectedPrice.priceValue *

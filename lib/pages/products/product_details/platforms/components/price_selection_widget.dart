@@ -112,8 +112,8 @@ class _PriceSelectionWidgetState
                       fontWeight: FontWeight.bold,
                     ),
                     widget.priceList != null
-                        ? "${widget.priceList?.firstWhere((item) => item.uuid == widget.priceUuid).name ?? ''}: ${formatMoneyBig(amount: ((widget.priceList?.firstWhere((item) => item.uuid == widget.priceUuid).priceValue ?? 0) * (widget.conversion ?? 0)), context: context)}"
-                        : "${widget.product?.getProductPrice(priceUuid: widget.priceUuid).name ?? 'Name'}: ${formatMoneyBig(amount: ((widget.product?.getProductPrice(priceUuid: widget.priceUuid).priceValue ?? 0) * (widget.conversion ?? 0)), context: context)}",
+                        ? "${currentPriceFromList()?.name ?? ''}: ${formatMoneyBig(amount: ((currentPriceFromList()?.priceValue ?? 0) * (((currentPriceFromList()?.priceType ?? 1) == 2) ? 1 : widget.conversion ?? 1)), context: context)}"
+                        : "${productPrice()?.name ?? 'Name'}: ${formatMoneyBig(amount: ((productPrice()?.priceValue ?? 0) * (widget.conversion ?? 0)), context: context)}",
                   ),
                   Icon(Icons.keyboard_arrow_down),
                 ],
@@ -123,6 +123,18 @@ class _PriceSelectionWidgetState
         ),
         SizedBox(height: 10),
       ],
+    );
+  }
+
+  ProductPricesClass? currentPriceFromList() {
+    return widget.priceList?.firstWhere(
+      (item) => item.uuid == widget.priceUuid,
+    );
+  }
+
+  ProductPricesClass? productPrice() {
+    return widget.product?.getProductPrice(
+      priceUuid: widget.priceUuid,
     );
   }
 }
@@ -179,7 +191,7 @@ PopupMenuItem myPopUpMenuItemPriceSelection({
                 fontWeight:
                     getBold() ? FontWeight.bold : null,
               ),
-              "${item.name ?? 'Name'}: ${formatMoneyBig(amount: item.priceValue * (conversion ?? 1), context: context)}",
+              "${item.name ?? 'Name'}: ${formatMoneyBig(amount: item.priceValue * ((item.priceType == 2) ? 1 : (conversion ?? 1)), context: context)}",
             ),
           ),
           Visibility(

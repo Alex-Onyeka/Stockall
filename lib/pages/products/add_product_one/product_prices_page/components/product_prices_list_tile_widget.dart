@@ -50,6 +50,7 @@ class _ProductPriceListTileWidgetState
               itemUuid: '',
               staffName: currentUser().name,
               staffUuid: currentUser().userId!,
+              priceType: 1,
             );
     return Container(
       margin: EdgeInsets.symmetric(vertical: 6),

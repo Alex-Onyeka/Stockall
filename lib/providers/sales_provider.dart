@@ -1506,6 +1506,7 @@ class SalesProvider extends ChangeNotifier {
                         name: 'Price',
                         isPrimary: true,
                         itemUuid: productUuid,
+                        priceType: 1,
                       ),
                     ],
                     unitsList: [
@@ -2050,6 +2051,7 @@ class SalesProvider extends ChangeNotifier {
                         name: 'Price',
                         isPrimary: true,
                         itemUuid: productUuid,
+                        priceType: 1,
                       ),
                     ],
                     unitsList: [
@@ -2400,6 +2402,7 @@ class SalesProvider extends ChangeNotifier {
                         name: 'Price',
                         isPrimary: true,
                         itemUuid: productUuid,
+                        priceType: 1,
                       ),
                     ],
                     unitsList: [

@@ -7,6 +7,7 @@ import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/add_product_one/product_prices_page/components/price_type_selection_widget.dart';
 
 class CreateProductPriceWidget extends StatefulWidget {
   final TextEditingController priceController;
@@ -78,8 +79,8 @@ void addProductPriceAction({
     priceController.text = price.priceValue.toString();
     nameController.text = price.name ?? 'Price';
   }
-  var isFixed = price?.isFixed ?? false;
-
+  // var isFixed = price?.isFixed ?? false;
+  int currentSelection = price?.priceType ?? 1;
   void addAction() {
     final priceValue = double.tryParse(
       priceController.text.replaceAll(',', '').trim(),
@@ -108,7 +109,9 @@ void addProductPriceAction({
               Navigator.of(mainDialog).pop();
               price?.name = nameController.text.trim();
               price?.priceValue = priceValue;
-              price?.isFixed = isFixed;
+              price?.isFixed =
+                  currentSelection == 1 ? false : true;
+              price?.priceType = currentSelection;
               var priceListSingle = ProductPricesClass(
                 uuid: uuidGen(),
                 staffUuid: currentUser().userId!,
@@ -124,7 +127,9 @@ void addProductPriceAction({
                         ? true
                         : false,
                 itemUuid: productUuid,
-                isFixed: isFixed,
+                isFixed:
+                    currentSelection == 1 ? false : true,
+                priceType: currentSelection,
               );
               returnData().createOrUpdatePriceList(
                 priceListSingle: price ?? priceListSingle,
@@ -179,27 +184,15 @@ void addProductPriceAction({
                           lines: 1,
                           theme: theme,
                         ),
-                        DropdownButtonFormField<bool>(
-                          value: isFixed,
-                          decoration: const InputDecoration(
-                            labelText: 'Price Type',
-                          ),
-                          items: const [
-                            DropdownMenuItem(
-                              value: false,
-                              child: Text('Dynamic'),
-                            ),
-                            DropdownMenuItem(
-                              value: true,
-                              child: Text('Fixed'),
-                            ),
-                          ],
-                          onChanged: (value) {
-                            if (value != null) {
-                              setState(() {
-                                isFixed = value;
-                              });
-                            }
+                        SizedBox(height: 5),
+                        PriceTypeSelectionWidget(
+                          theme: theme,
+                          currentSelection:
+                              currentSelection,
+                          setPriceType: (index) {
+                            setState(() {
+                              currentSelection = index ?? 1;
+                            });
                           },
                         ),
                         EditCartTextField(

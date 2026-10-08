@@ -1365,6 +1365,7 @@ void selectProductSales({
         return items.first;
       } else {
         return ProductPricesClass(
+          priceType: 1,
           uuid: uuidGen(),
           staffUuid: currentUser().userId,
           createdAt: DateTime.now(),
@@ -1437,12 +1438,17 @@ void selectProductSales({
             .toString();
       }
     } else {
-      return (getPrimaryUnitQuantityMultiplied(
-                context: context,
-                newQuantity: qqty,
-              ) *
-              (getPrimaryPrice().priceValue))
-          .toString();
+      if ((getPrimaryPrice().priceType ?? 1) == 1) {
+        return (getPrimaryUnitQuantityMultiplied(
+                  context: context,
+                  newQuantity: qqty,
+                ) *
+                (getPrimaryPrice().priceValue))
+            .toString();
+      } else {
+        return (qqty * (getPrimaryPrice().priceValue))
+            .toString();
+      }
     }
   }
 

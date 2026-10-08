@@ -33,6 +33,9 @@ class ProductPricesClass extends HiveObject {
   @HiveField(8)
   bool isFixed;
 
+  @HiveField(9)
+  int? priceType;
+
   ProductPricesClass({
     required this.uuid,
     required this.staffUuid,
@@ -43,6 +46,7 @@ class ProductPricesClass extends HiveObject {
     required this.isPrimary,
     required this.itemUuid,
     this.isFixed = false,
+    this.priceType = 1,
   });
 
   factory ProductPricesClass.fromJson(
@@ -58,6 +62,7 @@ class ProductPricesClass extends HiveObject {
       isPrimary: json['is_primary'] as bool,
       itemUuid: json['item_uuid'] as String,
       isFixed: json['is_fixed'] as bool? ?? false,
+      priceType: json['price_type'] as int? ?? 1,
     );
   }
 
@@ -73,6 +78,7 @@ class ProductPricesClass extends HiveObject {
       'is_primary': isPrimary,
       'item_uuid': itemUuid,
       'is_fixed': isFixed,
+      'price_type': priceType,
     };
   }
 
@@ -86,6 +92,7 @@ class ProductPricesClass extends HiveObject {
     bool? isPrimary,
     String? itemUuid,
     bool? isFixed,
+    int? priceType,
   }) {
     return ProductPricesClass(
       uuid: uuid ?? this.uuid,
@@ -97,6 +104,7 @@ class ProductPricesClass extends HiveObject {
       isPrimary: isPrimary ?? this.isPrimary,
       itemUuid: itemUuid ?? this.itemUuid,
       isFixed: isFixed ?? this.isFixed,
+      priceType: priceType ?? this.priceType,
     );
   }
 
@@ -116,6 +124,7 @@ class ProductPricesClass extends HiveObject {
         name: 'Prices',
         isPrimary: true,
         itemUuid: itemUuid ?? '',
+        priceType: 1,
       );
       return [value];
     } else {
