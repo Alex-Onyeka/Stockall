@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/payment_entry/payment_entry.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
@@ -21,6 +22,7 @@ class MakeSalesMobileTwo extends StatefulWidget {
   final TextEditingController searchController;
   final TextEditingController cashController;
   final TextEditingController bankController;
+  final TextEditingController accountController;
   final TextEditingController customerController;
   final TextEditingController partPaymentController;
   final TextEditingController commentController;
@@ -28,6 +30,7 @@ class MakeSalesMobileTwo extends StatefulWidget {
     super.key,
     required this.searchController,
     required this.bankController,
+    required this.accountController,
     required this.cashController,
     required this.customerController,
     required this.partPaymentController,
@@ -54,11 +57,38 @@ class _MakeSalesMobileTwoState
         returnSalesProvider().calcFinalTotal().toString();
 
     widget.bankController.text = '0';
+    widget.accountController.text = '0';
     WidgetsBinding.instance.addPostFrameCallback((_) {
       commentController.text =
           returnSalesProvider().currentCart().comment ?? '';
       setState(() {});
     });
+  }
+
+  double _amount(TextEditingController controller) {
+    return double.tryParse(
+          controller.text.replaceAll(',', ''),
+        ) ??
+        0;
+  }
+
+  List<PaymentEntry> _resolvePayments() {
+    return returnSalesProvider().resolvePayments(
+      cash: _amount(widget.cashController),
+      bank: _amount(widget.bankController),
+      account: _amount(widget.accountController),
+    );
+  }
+
+  // Only Real Sales pay at checkout; invoices and orders are unchanged.
+  String? _paymentError() {
+    if (returnSalesProvider().currentCart().cartItemTypeIndex !=
+        1) {
+      return null;
+    }
+    return returnSalesProvider().validatePayments(
+      _resolvePayments(),
+    );
   }
 
   @override
@@ -370,6 +400,9 @@ class _MakeSalesMobileTwoState
                                     cashController:
                                         widget
                                             .cashController,
+                                    accountController:
+                                        widget
+                                            .accountController,
                                   ),
                                 ],
                               ),
@@ -924,21 +957,16 @@ class _MakeSalesMobileTwoState
                                   );
                                 },
                               );
-                            } else if (returnSalesProvider()
-                                        .currentCart()
-                                        .paymentMethod ==
-                                    3 &&
-                                !returnSalesProvider()
-                                    .isBalanceSufficient()) {
+                            } else if (_paymentError() != null) {
                               showDialog(
                                 context: context,
                                 builder: (erroContext) {
                                   return InfoAlert(
                                     theme: theme,
                                     message:
-                                        'This Customers Balance is not enough to make this Purchase. Please Select Another Payment Method and Proceed.',
+                                        _paymentError()!,
                                     title:
-                                        'Insufficient Balance',
+                                        'Check Payment',
                                   );
                                 },
                               );
@@ -992,13 +1020,7 @@ class _MakeSalesMobileTwoState
                                               .currentCart()
                                               .draftUuid;
                                       var res = await returnSalesProvider().checkoutMain(
-                                        customerBalance:
-                                            returnSalesProvider()
-                                                        .returnPaymentMethod() ==
-                                                    'Account'
-                                                ? returnSalesProvider()
-                                                    .calcFinalTotal()
-                                                : 0,
+                                        payments: _resolvePayments(),
                                         context: context,
                                         salesCartItem:
                                             returnSalesProvider()
@@ -1007,43 +1029,6 @@ class _MakeSalesMobileTwoState
                                             returnShopProvider()
                                                 .userShop()!
                                                 .shopId!,
-                                        bank:
-                                            returnSalesProvider()
-                                                        .returnPaymentMethod() ==
-                                                    'Split'
-                                                ? double.tryParse(
-                                                      widget.bankController.text.replaceAll(
-                                                        ',',
-                                                        '',
-                                                      ),
-                                                    ) ??
-                                                    0
-                                                : returnSalesProvider()
-                                                        .returnPaymentMethod() ==
-                                                    'Bank'
-                                                ? returnSalesProvider()
-                                                    .calcFinalTotal()
-                                                : 0,
-                                        cashAlt:
-                                            returnSalesProvider()
-                                                        .returnPaymentMethod() ==
-                                                    'Split'
-                                                ? double.tryParse(
-                                                      widget.cashController.text.replaceAll(
-                                                        ',',
-                                                        '',
-                                                      ),
-                                                    ) ??
-                                                    0
-                                                : returnSalesProvider()
-                                                        .returnPaymentMethod() ==
-                                                    'Cash'
-                                                ? returnSalesProvider()
-                                                    .calcFinalTotal()
-                                                : 0,
-                                        paymentMethod:
-                                            returnSalesProvider()
-                                                .returnPaymentMethod(),
 
                                         partPayment:
                                             double.tryParse(

@@ -1,6 +1,7 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/checkout_response.dart';
+import 'package:stockall/classes/payment_entry/payment_entry.dart';
 import 'package:stockall/classes/temp_customer_account_receipts/customer_account_receipts.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_main_receipt/unsynced/created_receipts/created_receipts.dart';
@@ -116,7 +117,7 @@ class ReceiptsProvider extends ChangeNotifier {
                     .userShop()
                     ?.manageCustomerAccount ==
                 true &&
-            receipt.paymentMethod == 'Account') {
+            (receipt.customerAccount ?? 0) > 0) {
           CustomerAccountReceipts customerAccountReceipt =
               CustomerAccountReceipts(
                 receiptUuid: receipt.uuid,
@@ -979,6 +980,9 @@ class ReceiptsProvider extends ChangeNotifier {
       case 3:
         tempMeth = 'Split';
         break;
+      case 4:
+        tempMeth = 'Account';
+        break;
       default:
         tempMeth = 'All';
     }
@@ -1090,18 +1094,36 @@ class ReceiptsProvider extends ChangeNotifier {
     }
   }
 
+  // Filters by the amounts paid, not the saved label: Cash / Bank / Account
+  // match any receipt that used that method, Split matches 2+ methods.
   List<TempMainReceipt> returnOwnReceiptsByDayOrWeek() {
     if (paymentMethod == 3) {
       return returnReceiptsBasedOnPaymentMethod()
-          .where((rec) => rec.paymentMethod == 'Split')
+          .where((rec) => rec.paymentBreakdown().isSplit)
           .toList();
     } else if (paymentMethod == 1) {
       return returnReceiptsBasedOnPaymentMethod()
-          .where((rec) => rec.paymentMethod == 'Cash')
+          .where(
+            (rec) => rec.showsPaymentMethod(
+              PaymentMethods.cash,
+            ),
+          )
           .toList();
     } else if (paymentMethod == 2) {
       return returnReceiptsBasedOnPaymentMethod()
-          .where((rec) => rec.paymentMethod == 'Bank')
+          .where(
+            (rec) => rec.showsPaymentMethod(
+              PaymentMethods.bank,
+            ),
+          )
+          .toList();
+    } else if (paymentMethod == 4) {
+      return returnReceiptsBasedOnPaymentMethod()
+          .where(
+            (rec) => rec.showsPaymentMethod(
+              PaymentMethods.account,
+            ),
+          )
           .toList();
     } else {
       return returnReceiptsBasedOnPaymentMethod().toList();
@@ -1191,35 +1213,52 @@ class ReceiptsProvider extends ChangeNotifier {
     return res;
   }
 
+  // One row per method actually paid. A split receipt counts under each
+  // method it used; revenue is that method's amount, and balance / cost are
+  // shared out by the same proportion so column totals still match.
   List<ChannelGroupReceipts>
   groupReceiptsByPaymentChannel() {
     final Map<String, ChannelGroupReceipts> grouped = {};
 
     for (final receipt in returnOwnReceiptsByDayOrWeek()) {
-      final paymentMethod = receipt.paymentMethod;
+      final payments = receipt.displayPayments();
+      final receiptTotal = receipt.getTotalRevenue();
 
-      if (!grouped.containsKey(paymentMethod)) {
-        grouped[paymentMethod] = ChannelGroupReceipts(
-          paymentMethod: paymentMethod,
-          number: 0,
-          totalBalance: 0,
-          totalOriginalCost: 0,
-          totalRevenue: 0,
-        );
+      for (final payment in payments) {
+        final paymentMethod = payment.method;
+
+        if (!grouped.containsKey(paymentMethod)) {
+          grouped[paymentMethod] = ChannelGroupReceipts(
+            paymentMethod: paymentMethod,
+            number: 0,
+            totalBalance: 0,
+            totalOriginalCost: 0,
+            totalRevenue: 0,
+          );
+        }
+
+        final group = grouped[paymentMethod]!;
+        final share =
+            receiptTotal > 0
+                ? payment.amount / receiptTotal
+                : 1 / payments.length;
+
+        group.number++;
+        group.totalBalance += (receipt.balance ?? 0) * share;
+        group.totalOriginalCost +=
+            (receipt.originalCost ?? 0) * share;
+        group.totalRevenue += payment.amount;
       }
-
-      final group = grouped[paymentMethod]!;
-
-      group.number++;
-      group.totalBalance += receipt.balance ?? 0;
-      group.totalOriginalCost += receipt.originalCost ?? 0;
-      group.totalRevenue +=
-          receipt.cashAlt +
-          receipt.bank +
-          (receipt.customerAccount ?? 0);
     }
 
     var res = grouped.values.toList();
+    res.sort(
+      (a, b) => PaymentMethods.all
+          .indexOf(a.paymentMethod)
+          .compareTo(
+            PaymentMethods.all.indexOf(b.paymentMethod),
+          ),
+    );
     return res;
   }
 
@@ -2617,11 +2656,9 @@ class ReceiptsProvider extends ChangeNotifier {
     ];
   }
 
+  // Distinct receipts: a split receipt appears under several channels.
   rowChannelTotalQuantity() {
-    return groupReceiptsByPaymentChannel()
-        .map((item) => item.number)
-        .toList()
-        .fold(0, (p, n) => p + n);
+    return returnOwnReceiptsByDayOrWeek().length;
   }
 
   rowChannelTotalBalance() {

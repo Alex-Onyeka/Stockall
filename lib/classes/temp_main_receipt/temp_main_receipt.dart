@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/payment_entry/payment_entry.dart';
 import 'package:stockall/main.dart';
 
 part 'temp_main_receipt.g.dart';
@@ -290,6 +291,44 @@ class TempMainReceipt extends HiveObject {
 
   int getSalesTypeIndex() {
     return salesTypeIndex ?? 1;
+  }
+
+  // Built from the explicit per-method amounts, so it works the same for
+  // receipts saved before split payments supported customer account.
+  PaymentBreakdown paymentBreakdown() {
+    return PaymentBreakdown.fromAmounts(
+      cash: cashAlt,
+      bank: bank,
+      account: customerAccount ?? 0,
+    );
+  }
+
+  List<PaymentEntry> payments() {
+    return paymentBreakdown().compact;
+  }
+
+  // For receipts and PDFs: never empty, so a zero-total receipt still shows
+  // its saved method.
+  List<PaymentEntry> displayPayments() {
+    var entries = payments();
+    if (entries.isEmpty) {
+      return [
+        PaymentEntry(
+          method:
+              paymentMethod == PaymentMethods.split
+                  ? PaymentMethods.cash
+                  : paymentMethod,
+          amount: 0,
+        ),
+      ];
+    }
+    return entries;
+  }
+
+  bool showsPaymentMethod(String method) {
+    return displayPayments().any(
+      (payment) => payment.method == method,
+    );
   }
 }
 
