@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:bluetooth_print_plus/bluetooth_print_plus.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
@@ -20,7 +21,13 @@ import 'package:stockall/constants/order_print_and_download.dart'
     show buildOrderRollPdf;
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/pos_printer/device_service.dart';
+import 'package:stockall/services/printing/escpos_builder.dart';
+import 'package:stockall/services/printing/escpos_receipt.dart';
 import 'package:stockall/services/printing/pdf_escpos_raster.dart';
+
+// true: build ESC/POS text from the receipt data (fast).
+// false: rasterise the roll PDF, as before. Needs a full restart.
+const bool useDirectEscPos = true;
 
 class BluetoothDevicesPage extends StatefulWidget {
   const BluetoothDevicesPage({super.key});
@@ -651,17 +658,34 @@ void connectToPrinter({
 }) async {
   try {
     if (safeContext.mounted) {
-      // Same roll PDF as desktop, rasterized for the thermal printer.
       final printerType = shop.printType ?? 1;
-      final pdfBytes = await buildReceiptRollPdf(
-        receipt: receipt,
-        records: records,
-        staffName: staffName,
-        shop: shop,
-        context: safeContext,
-        printerType: printerType,
-      );
-      await _writeRaster(pdfBytes, printerType);
+      await _sendToPrinter('receipt', () async {
+        if (useDirectEscPos) {
+          return _escPosChunks(
+            buildReceiptEscPos(
+              receipt: receipt,
+              records: records,
+              staffName: staffName,
+              shop: shop,
+              context: safeContext,
+              printerType: printerType,
+            ),
+          );
+        }
+        // Same roll PDF as desktop, rasterized for the thermal printer.
+        final pdfBytes = await buildReceiptRollPdf(
+          receipt: receipt,
+          records: records,
+          staffName: staffName,
+          shop: shop,
+          context: safeContext,
+          printerType: printerType,
+        );
+        return pdfToEscPosRaster(
+          pdfBytes,
+          printerType: printerType,
+        );
+      });
     }
   } finally {
     if (safeContext.mounted) {
@@ -673,17 +697,29 @@ void connectToPrinter({
   }
 }
 
-Future<void> _writeRaster(
-  Uint8List pdfBytes,
-  int printerType,
+// Builds the print data, writes it in order, and logs how long each step
+// took so the ESC/POS and PDF raster paths can be compared.
+Future<void> _sendToPrinter(
+  String document,
+  Future<List<Uint8List>> Function() buildChunks,
 ) async {
-  final bands = await pdfToEscPosRaster(
-    pdfBytes,
-    printerType: printerType,
-  );
-  for (final band in bands) {
-    await BluetoothPrintPlus.write(band);
+  final stopwatch = Stopwatch()..start();
+  final chunks = await buildChunks();
+  final buildMs = stopwatch.elapsedMilliseconds;
+  for (final chunk in chunks) {
+    await BluetoothPrintPlus.write(chunk);
   }
+  final bytes = chunks.fold<int>(0, (a, c) => a + c.length);
+  await mainLocalLog(
+    '${useDirectEscPos ? 'ESC/POS' : 'PDF raster'} $document: '
+    'build ${buildMs}ms, send ${stopwatch.elapsedMilliseconds - buildMs}ms, '
+    '$bytes bytes in ${chunks.length} writes',
+  );
+}
+
+List<Uint8List> _escPosChunks(EscPosBuilder builder) {
+  if (kDebugMode) debugPrint(builder.preview);
+  return builder.build();
 }
 
 Uint8List generateStyledReceipt({
@@ -1080,18 +1116,35 @@ void connectToPrinterInvoice({
   required TempShopClass shop,
 }) async {
   if (safeContext.mounted) {
-    // Same roll PDF as desktop, rasterized for the thermal printer.
     final printerType = shop.printType ?? 1;
-    final pdfBytes = await buildInvoiceRollPdf(
-      invoice: invoice,
-      receipts: receipts,
-      records: records,
-      staffName: invoice.staffName,
-      shop: shop,
-      context: safeContext,
-      printerType: printerType,
-    );
-    await _writeRaster(pdfBytes, printerType);
+    await _sendToPrinter('invoice', () async {
+      if (useDirectEscPos) {
+        return _escPosChunks(
+          buildInvoiceEscPos(
+            invoice: invoice,
+            records: records,
+            staffName: invoice.staffName,
+            shop: shop,
+            context: safeContext,
+            printerType: printerType,
+          ),
+        );
+      }
+      // Same roll PDF as desktop, rasterized for the thermal printer.
+      final pdfBytes = await buildInvoiceRollPdf(
+        invoice: invoice,
+        receipts: receipts,
+        records: records,
+        staffName: invoice.staffName,
+        shop: shop,
+        context: safeContext,
+        printerType: printerType,
+      );
+      return pdfToEscPosRaster(
+        pdfBytes,
+        printerType: printerType,
+      );
+    });
   }
 }
 
@@ -1130,15 +1183,32 @@ void connectToPrinterOrder({
 }) async {
   if (safeContext.mounted) {
     final printerType = shop.printType ?? 1;
-    final pdfBytes = await buildOrderRollPdf(
-      order: order,
-      records: records,
-      staffName: order.staffName ?? 'Not Set',
-      shop: shop,
-      context: safeContext,
-      printerType: printerType,
-    );
-    await _writeRaster(pdfBytes, printerType);
+    await _sendToPrinter('order', () async {
+      if (useDirectEscPos) {
+        return _escPosChunks(
+          buildOrderEscPos(
+            order: order,
+            records: records,
+            staffName: order.staffName ?? 'Not Set',
+            shop: shop,
+            context: safeContext,
+            printerType: printerType,
+          ),
+        );
+      }
+      final pdfBytes = await buildOrderRollPdf(
+        order: order,
+        records: records,
+        staffName: order.staffName ?? 'Not Set',
+        shop: shop,
+        context: safeContext,
+        printerType: printerType,
+      );
+      return pdfToEscPosRaster(
+        pdfBytes,
+        printerType: printerType,
+      );
+    });
   }
 }
 
