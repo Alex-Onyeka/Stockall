@@ -381,7 +381,11 @@ class TempCartItem extends HiveObject {
             );
       }
     } else {
-      return (getSelectedPrice().priceValue) *
+      final selectedPrice = getSelectedPrice();
+      if (selectedPrice.isFixed) {
+        return selectedPrice.priceValue * quantity;
+      }
+      return selectedPrice.priceValue *
           getSelectedUnit().getQuantityEquivMultiplied(
             index: 1,
             product: item,

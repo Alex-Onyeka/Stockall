@@ -30,6 +30,9 @@ class ProductPricesClass extends HiveObject {
   @HiveField(7)
   String itemUuid;
 
+  @HiveField(8)
+  bool isFixed;
+
   ProductPricesClass({
     required this.uuid,
     required this.staffUuid,
@@ -39,6 +42,7 @@ class ProductPricesClass extends HiveObject {
     required this.name,
     required this.isPrimary,
     required this.itemUuid,
+    this.isFixed = false,
   });
 
   factory ProductPricesClass.fromJson(
@@ -53,6 +57,7 @@ class ProductPricesClass extends HiveObject {
       name: json['name'] as String?,
       isPrimary: json['is_primary'] as bool,
       itemUuid: json['item_uuid'] as String,
+      isFixed: json['is_fixed'] as bool? ?? false,
     );
   }
 
@@ -67,6 +72,7 @@ class ProductPricesClass extends HiveObject {
       'name': name,
       'is_primary': isPrimary,
       'item_uuid': itemUuid,
+      'is_fixed': isFixed,
     };
   }
 
@@ -79,6 +85,7 @@ class ProductPricesClass extends HiveObject {
     String? name,
     bool? isPrimary,
     String? itemUuid,
+    bool? isFixed,
   }) {
     return ProductPricesClass(
       uuid: uuid ?? this.uuid,
@@ -89,6 +96,7 @@ class ProductPricesClass extends HiveObject {
       name: name ?? this.name,
       isPrimary: isPrimary ?? this.isPrimary,
       itemUuid: itemUuid ?? this.itemUuid,
+      isFixed: isFixed ?? this.isFixed,
     );
   }
 

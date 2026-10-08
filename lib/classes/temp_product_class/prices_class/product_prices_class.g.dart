@@ -25,13 +25,14 @@ class ProductPricesClassAdapter extends TypeAdapter<ProductPricesClass> {
       name: fields[5] as String?,
       isPrimary: fields[6] as bool,
       itemUuid: fields[7] as String,
+      isFixed: fields[8] as bool? ?? false,
     );
   }
 
   @override
   void write(BinaryWriter writer, ProductPricesClass obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -47,7 +48,9 @@ class ProductPricesClassAdapter extends TypeAdapter<ProductPricesClass> {
       ..writeByte(6)
       ..write(obj.isPrimary)
       ..writeByte(7)
-      ..write(obj.itemUuid);
+      ..write(obj.itemUuid)
+      ..writeByte(8)
+      ..write(obj.isFixed);
   }
 
   @override

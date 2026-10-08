@@ -78,6 +78,7 @@ void addProductPriceAction({
     priceController.text = price.priceValue.toString();
     nameController.text = price.name ?? 'Price';
   }
+  var isFixed = price?.isFixed ?? false;
 
   void addAction() {
     final priceValue = double.tryParse(
@@ -107,6 +108,7 @@ void addProductPriceAction({
               Navigator.of(mainDialog).pop();
               price?.name = nameController.text.trim();
               price?.priceValue = priceValue;
+              price?.isFixed = isFixed;
               var priceListSingle = ProductPricesClass(
                 uuid: uuidGen(),
                 staffUuid: currentUser().userId!,
@@ -122,6 +124,7 @@ void addProductPriceAction({
                         ? true
                         : false,
                 itemUuid: productUuid,
+                isFixed: isFixed,
               );
               returnData().createOrUpdatePriceList(
                 priceListSingle: price ?? priceListSingle,
@@ -175,6 +178,29 @@ void addProductPriceAction({
                           controller: nameController,
                           lines: 1,
                           theme: theme,
+                        ),
+                        DropdownButtonFormField<bool>(
+                          value: isFixed,
+                          decoration: const InputDecoration(
+                            labelText: 'Price Type',
+                          ),
+                          items: const [
+                            DropdownMenuItem(
+                              value: false,
+                              child: Text('Dynamic'),
+                            ),
+                            DropdownMenuItem(
+                              value: true,
+                              child: Text('Fixed'),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                isFixed = value;
+                              });
+                            }
+                          },
                         ),
                         EditCartTextField(
                           title: 'Value',
