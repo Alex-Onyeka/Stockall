@@ -978,6 +978,11 @@ class _MakeSalesMobileTwoState
                                                 commentController
                                                     .text,
                                           );
+                                      // Captured before checkout clears the cart.
+                                      final draftUuid =
+                                          returnSalesProvider()
+                                              .currentCart()
+                                              .draftUuid;
                                       var res = await returnSalesProvider().checkoutMain(
                                         customerBalance:
                                             returnSalesProvider()
@@ -1043,6 +1048,10 @@ class _MakeSalesMobileTwoState
                                                   ),
                                             ),
                                       );
+                                      if (res != null) {
+                                        await returnDraftsProvider()
+                                            .completeDraft(draftUuid);
+                                      }
 
                                       setState(() {
                                         isLoading = false;

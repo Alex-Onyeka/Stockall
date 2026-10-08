@@ -5,6 +5,7 @@ import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
+import 'package:stockall/classes/temp_drafts/drafts.dart';
 import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_main_cart/temp_main_cart.dart';
@@ -333,6 +334,7 @@ class SalesProvider extends ChangeNotifier {
         cart.cartItemTypeIndex;
     currentCart().orderUuidEdit = cart.orderUuidEdit;
     currentCart().orderUuid = cart.orderUuid;
+    currentCart().draftUuid = cart.draftUuid;
   }
 
   Future<void> updateCurrentCartItem(
@@ -713,6 +715,11 @@ class SalesProvider extends ChangeNotifier {
     scanBarcodeCartPageNode.requestFocus();
   }
 
+  // Orders (3) and Drafts (4) don't consume stock.
+  bool isStockFreeCartType(int? cartItemTypeIndex) {
+    return cartItemTypeIndex == 3 || cartItemTypeIndex == 4;
+  }
+
   TempProductClass? getStockConflictForCartSwitch() {
     final Map<String, CartItemConflictClass> cartItems = {};
 
@@ -720,14 +727,14 @@ class SalesProvider extends ChangeNotifier {
 
     for (final mainCart in mainCartQueue) {
       for (final cart in mainCart.cartQueue) {
-        if (currentCartType == 3 &&
-            cart.cartItemTypeIndex == 3 &&
+        if (isStockFreeCartType(currentCartType) &&
+            isStockFreeCartType(cart.cartItemTypeIndex) &&
             cart != currentCart()) {
           continue;
         }
 
-        if (currentCartType != 3 &&
-            cart.cartItemTypeIndex == 3) {
+        if (!isStockFreeCartType(currentCartType) &&
+            isStockFreeCartType(cart.cartItemTypeIndex)) {
           continue;
         }
 
@@ -809,7 +816,11 @@ class SalesProvider extends ChangeNotifier {
     required int value,
     required BuildContext context,
   }) {
-    if (currentCart().cartItemTypeIndex == 3 &&
+    if (value == 4 && !currentCart().canUseDraft()) {
+      return;
+    }
+
+    if (isStockFreeCartType(currentCart().cartItemTypeIndex) &&
         (value == 1 || value == 2)) {
       final conflict = getStockConflictForCartSwitch();
 
@@ -1169,6 +1180,11 @@ class SalesProvider extends ChangeNotifier {
     required double customerBalance,
     double? partPayment,
   }) async {
+    // Drafts are saved with saveDraft(), never checked out.
+    if (currentCart().cartItemTypeIndex == 4) {
+      return null;
+    }
+
     final createdAt = currentCart().returnDate();
 
     if (currentCart().cartItemTypeIndex == 1) {
@@ -2537,9 +2553,77 @@ class SalesProvider extends ChangeNotifier {
 
   // Future<void> deleteCart
 
+  // Saves the current Draft cart (new or continued) and
+  // empties the cart. Returns false if nothing was saved.
+  Future<bool> saveDraft() async {
+    if (currentCart().cartItemTypeIndex != 4 ||
+        !currentCart().canUseDraft() ||
+        currentCart().getCartItemsAll().isEmpty) {
+      return false;
+    }
+
+    final uuid = currentCart().draftUuid ?? uuidGen();
+    // If the draft was completed or deleted elsewhere since it
+    // was opened, it is saved again as a new record.
+    final existing =
+        returnDraftsProvider().drafts
+            .where((draft) => draft.uuid == uuid)
+            .firstOrNull;
+
+    Drafts draft = Drafts(
+      uuid: uuid,
+      createdAt: existing?.createdAt ?? DateTime.now(),
+      updatedAt: DateTime.now(),
+      shopId: shopId(),
+      staffId: existing?.staffId ?? staffUuid(),
+      staffName: existing?.staffName ?? staffName(),
+      subStaffUuid:
+          currentMainCart().subStaff?.uuid ??
+          currentCart().subStaffUuid,
+      subStaffName:
+          currentCart().subStaffName ??
+          currentMainCart().subStaff?.staffName,
+      customerUuid: customerUuid(),
+      customerName: customerName(),
+      departmentUuid: departmentUuid(),
+      departmentName: departmentName(),
+      cartName: currentCart().cartName,
+      comment: currentCart().comment,
+      generalDiscount: currentCart().discount,
+      fixedDiscount: currentCart().fixedDiscount,
+      total: calcFinalTotal(),
+      draftItems: returnDraftsProvider()
+          .cartItemsToDraftItems(
+            cartItems: currentCart().getCartItemsAll(),
+            draftId: uuid,
+          ),
+    );
+
+    if (existing != null) {
+      final res = await returnDraftsProvider().updateDraft(
+        draft: draft,
+      );
+      if (res == 0) {
+        return false;
+      }
+    } else {
+      final res = await returnDraftsProvider().createDraft(
+        draft,
+      );
+      if (res == null) {
+        return false;
+      }
+    }
+
+    await mainLocalLog('Draft Saved: $uuid');
+    await clearCart();
+    return true;
+  }
+
   Future<void> clearCart() async {
     currentCart().cartItems.clear();
     currentCart().cartItemTypeIndex = 1;
+    currentCart().draftUuid = null;
     currentCart().selectedCustomer = null;
     currentCart().selectedCustomerName = null;
     currentCart().paymentMethod = 0;
@@ -2757,7 +2841,7 @@ class SalesProvider extends ChangeNotifier {
 
     for (var mainCart in mainCartQueue) {
       for (final cart in mainCart.cartQueue.where(
-        (item) => item.cartItemTypeIndex != 3,
+        (item) => !isStockFreeCartType(item.cartItemTypeIndex),
       )) {
         for (final cartItem in cart.getCartItems()) {
           final cartItemUuid =
@@ -2818,7 +2902,7 @@ class SalesProvider extends ChangeNotifier {
     double totalInAllCarts = 0;
     for (var mainCart in mainCartQueue) {
       for (final cart in mainCart.cartQueue.where(
-        (item) => item.cartItemTypeIndex != 3,
+        (item) => !isStockFreeCartType(item.cartItemTypeIndex),
       )) {
         for (final cartItem in cart.getCartItems().where(
           (item) => item.getItem()?.uuid == product.uuid,
@@ -2908,7 +2992,7 @@ class SalesProvider extends ChangeNotifier {
     required bool isEdit,
   }) {
     // This cart type does not have stock restrictions.
-    if (currentCart().cartItemTypeIndex == 3) {
+    if (isStockFreeCartType(currentCart().cartItemTypeIndex)) {
       return true;
     }
 

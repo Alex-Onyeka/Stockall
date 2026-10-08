@@ -922,6 +922,11 @@ class _MakeSalesDesktopTwoState
                                                       commentController
                                                           .text,
                                                 );
+                                                // Captured before checkout clears the cart.
+                                                final draftUuid =
+                                                    returnSalesProvider()
+                                                        .currentCart()
+                                                        .draftUuid;
                                                 var res = await returnSalesProvider().checkoutMain(
                                                   customerBalance:
                                                       returnSalesProvider().returnPaymentMethod() ==
@@ -978,6 +983,10 @@ class _MakeSalesDesktopTwoState
                                                         ),
                                                   ),
                                                 );
+                                                if (res != null) {
+                                                  await returnDraftsProvider()
+                                                      .completeDraft(draftUuid);
+                                                }
                                                 setState(() {
                                                   isLoading =
                                                       false;
