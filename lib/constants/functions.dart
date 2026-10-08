@@ -1162,67 +1162,21 @@ Future<Uint8List> _buildPdf(
                                         builder: (
                                           beansContext,
                                         ) {
-                                          if (receipt
-                                                  .bank ==
-                                              0) {
-                                            return pw.Text(
-                                              style: pw.TextStyle(
-                                                font:
-                                                    fontRegular,
-                                                fontSize: 8,
-                                              ),
-                                              'Cash: ${formatMoneyMid(amount: receipt.cashAlt, context: context)}',
-                                            );
-                                          } else if (receipt
-                                                  .cashAlt ==
-                                              0) {
-                                            return pw.Text(
-                                              style: pw.TextStyle(
-                                                font:
-                                                    fontRegular,
-                                                fontSize: 8,
-                                              ),
-                                              'Bank: ${formatMoneyMid(amount: receipt.bank, context: context)}',
-                                            );
-                                          } else if (receipt
-                                                  .customerAccount !=
-                                              0) {
-                                            return pw.Text(
-                                              style: pw.TextStyle(
-                                                font:
-                                                    fontRegular,
-                                                fontSize: 8,
-                                              ),
-                                              'Account: ${formatMoneyMid(amount: receipt.customerAccount ?? 0, context: context)}',
-                                            );
-                                          } else {
-                                            return pw.Column(
-                                              crossAxisAlignment:
-                                                  pw
-                                                      .CrossAxisAlignment
-                                                      .start,
-                                              children: [
-                                                pw.Text(
+                                          return pw.Column(
+                                            crossAxisAlignment:
+                                                pw.CrossAxisAlignment.start,
+                                            children: [
+                                              ...receipt.displayPayments().map(
+                                                (payment) => pw.Text(
                                                   style: pw.TextStyle(
-                                                    font:
-                                                        fontRegular,
-                                                    fontSize:
-                                                        8,
+                                                    font: fontRegular,
+                                                    fontSize: 8,
                                                   ),
-                                                  'Cash: ${formatMoneyMid(amount: receipt.cashAlt, context: context)}',
+                                                  '${payment.method}: ${formatMoneyMid(amount: payment.amount, context: context)}',
                                                 ),
-                                                pw.Text(
-                                                  style: pw.TextStyle(
-                                                    font:
-                                                        fontRegular,
-                                                    fontSize:
-                                                        8,
-                                                  ),
-                                                  'Bank: ${formatMoneyMid(amount: receipt.bank, context: context)}',
-                                                ),
-                                              ],
-                                            );
-                                          }
+                                              ),
+                                            ],
+                                          );
                                         },
                                       ),
                                     ],
@@ -2348,68 +2302,21 @@ Future<Uint8List> _buildPdfRoll(
                                       builder: (
                                         beansContext,
                                       ) {
-                                        if (receipt.bank ==
-                                            0) {
-                                          return pw.Text(
-                                            style: pw.TextStyle(
-                                              font:
-                                                  fontRegular,
-                                              fontSize:
-                                                  parTextAlt,
-                                            ),
-                                            'Cash: ${formatMoneyMid(amount: receipt.cashAlt, context: context)}',
-                                          );
-                                        } else if (receipt
-                                                .cashAlt ==
-                                            0) {
-                                          return pw.Text(
-                                            style: pw.TextStyle(
-                                              font:
-                                                  fontRegular,
-                                              fontSize:
-                                                  parTextAlt,
-                                            ),
-                                            'Bank: ${formatMoneyMid(amount: receipt.bank, context: context)}',
-                                          );
-                                        } else if (receipt
-                                                .customerAccount !=
-                                            0) {
-                                          return pw.Text(
-                                            style: pw.TextStyle(
-                                              font:
-                                                  fontRegular,
-                                              fontSize: 8,
-                                            ),
-                                            'Account: ${formatMoneyMid(amount: receipt.customerAccount ?? 0, context: context)}',
-                                          );
-                                        } else {
-                                          return pw.Column(
-                                            crossAxisAlignment:
-                                                pw
-                                                    .CrossAxisAlignment
-                                                    .start,
-                                            children: [
-                                              pw.Text(
+                                        return pw.Column(
+                                          crossAxisAlignment:
+                                              pw.CrossAxisAlignment.start,
+                                          children: [
+                                            ...receipt.displayPayments().map(
+                                              (payment) => pw.Text(
                                                 style: pw.TextStyle(
-                                                  font:
-                                                      fontRegular,
-                                                  fontSize:
-                                                      parTextAlt,
+                                                  font: fontRegular,
+                                                  fontSize: parTextAlt,
                                                 ),
-                                                'Cash: ${formatMoneyMid(amount: receipt.cashAlt, context: context)}',
+                                                '${payment.method}: ${formatMoneyMid(amount: payment.amount, context: context)}',
                                               ),
-                                              pw.Text(
-                                                style: pw.TextStyle(
-                                                  font:
-                                                      fontRegular,
-                                                  fontSize:
-                                                      parTextAlt,
-                                                ),
-                                                'Bank: ${formatMoneyMid(amount: receipt.bank, context: context)}',
-                                              ),
-                                            ],
-                                          );
-                                        }
+                                            ),
+                                          ],
+                                        );
                                       },
                                     ),
                                   ],

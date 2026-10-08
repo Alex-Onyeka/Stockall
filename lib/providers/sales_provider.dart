@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/checkout_response.dart';
+import 'package:stockall/classes/payment_entry/payment_entry.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
@@ -20,7 +21,9 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
+import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/local_database/cart_func/cart_func.dart';
@@ -333,6 +336,7 @@ class SalesProvider extends ChangeNotifier {
         cart.cartItemTypeIndex;
     currentCart().orderUuidEdit = cart.orderUuidEdit;
     currentCart().orderUuid = cart.orderUuid;
+    currentCart().splitPayments = cart.splitPayments;
   }
 
   Future<void> updateCurrentCartItem(
@@ -1163,15 +1167,20 @@ class SalesProvider extends ChangeNotifier {
     required BuildContext context,
     required TempCart salesCartItem,
     required int shopId,
-    required String paymentMethod,
-    required double cashAlt,
-    required double bank,
-    required double customerBalance,
+    required List<PaymentEntry> payments,
     double? partPayment,
   }) async {
     final createdAt = currentCart().returnDate();
+    final breakdown = PaymentBreakdown(payments);
 
     if (currentCart().cartItemTypeIndex == 1) {
+      final paymentError = validatePayments(payments);
+      if (paymentError != null) {
+        await mainLocalLog(
+          'Checkout Blocked, Invalid Payments: $paymentError',
+        );
+        return null;
+      }
       final uuid =
           currentCart().receiptUuidEdit ??
           currentCart().id ??
@@ -1190,10 +1199,10 @@ class SalesProvider extends ChangeNotifier {
         shopId: shopId,
         staffId: staffUuid(), // staffId,
         staffName: staffName(), // staffName,
-        paymentMethod: paymentMethod,
-        customerAccount: customerBalance,
-        bank: bank,
-        cashAlt: cashAlt,
+        paymentMethod: breakdown.label,
+        customerAccount: breakdown.account,
+        bank: breakdown.bank,
+        cashAlt: breakdown.cash,
         isInvoice: salesCartItem.cartItemTypeIndex == 2,
         customerName: customerName(),
         customerUuid: customerUuid(),
@@ -1664,9 +1673,9 @@ class SalesProvider extends ChangeNotifier {
         shopId: shopId,
         staffId: staffUuid(),
         staffName: staffName(),
-        paymentMethod: paymentMethod,
-        bank: bank,
-        cashAlt: cashAlt,
+        paymentMethod: breakdown.label,
+        bank: breakdown.bank,
+        cashAlt: breakdown.cash,
         customerName: customerName(),
         customerUuid: customerUuid(),
         uuid:
@@ -1799,8 +1808,8 @@ class SalesProvider extends ChangeNotifier {
               }).toList();
 
           await returnInvoicesProvider().makeInvoicePayment(
-            bankAmount: bank,
-            cashAmount: cashAlt,
+            bankAmount: breakdown.bank,
+            cashAmount: breakdown.cash,
             customerAmount: 0,
             invoice: invoice,
             salesRecords: productSaleRecords,
@@ -2546,6 +2555,7 @@ class SalesProvider extends ChangeNotifier {
     currentCart().selectedCustomer = null;
     currentCart().selectedCustomerName = null;
     currentCart().paymentMethod = 0;
+    currentCart().splitPayments = null;
     currentCart().discount = null;
     currentCart().fixedDiscount = null;
     currentCart().customDate = null;
@@ -2626,7 +2636,10 @@ class SalesProvider extends ChangeNotifier {
             100);
   }
 
-  bool isBalanceSufficient() {
+  // Null when no customer is selected. When editing a receipt for the same
+  // customer, its old account debit is added back because saving the edit
+  // reverses that debit first.
+  double? availableAccountBalance() {
     List<TempCustomersClass> customers =
         returnCustomersSingle().customers
             .where(
@@ -2635,12 +2648,141 @@ class SalesProvider extends ChangeNotifier {
                   currentCart().selectedCustomer,
             )
             .toList();
-    if (customers.isNotEmpty) {
-      var customer = customers.first;
-      return customer.getBalance() >= calcFinalTotal();
+    if (customers.isEmpty) {
+      return null;
+    }
+    double balance = customers.first.getBalance();
+    if (currentCart().isReceiptEdit &&
+        currentCart().receiptUuidEdit != null) {
+      var editedReceipts =
+          returnReceiptProviderSingle().receipts
+              .where(
+                (rec) =>
+                    rec.uuid ==
+                        currentCart().receiptUuidEdit &&
+                    rec.customerUuid ==
+                        currentCart().selectedCustomer,
+              )
+              .toList();
+      if (editedReceipts.isNotEmpty) {
+        balance += editedReceipts.first.customerAccount ?? 0;
+      }
+    }
+    return balance;
+  }
+
+  bool isBalanceSufficient() {
+    var balance = availableAccountBalance();
+    if (balance != null) {
+      return balance >= calcFinalTotal();
     } else {
       return false;
     }
+  }
+
+  // Customer account payments are restricted to Real Sales for now.
+  bool canUseAccount() {
+    return currentCart().cartItemTypeIndex == 1 &&
+        GeneralSettingsAuthAction()
+                .manageCustomersAccountAndPoints(
+                  context: null,
+                ) ==
+            true &&
+        returnShopProvider()
+                .userShop()
+                ?.manageCustomerAccount ==
+            true &&
+        currentCart().selectedCustomer != null &&
+        authorization(
+          authorized:
+              Authorizations().makeSalesFromCustomersAccount,
+        );
+  }
+
+  // Builds the payment entries for checkout from the selected option.
+  // The split amounts are only read when Split is selected.
+  List<PaymentEntry> resolvePayments({
+    required double cash,
+    required double bank,
+    required double account,
+  }) {
+    double total = calcFinalTotal();
+    switch (currentCart().paymentMethod) {
+      case 1:
+        return [
+          PaymentEntry(
+            method: PaymentMethods.bank,
+            amount: total,
+          ),
+        ];
+      case 2:
+        return PaymentBreakdown.fromAmounts(
+          cash: cash,
+          bank: bank,
+          account: canUseAccount() ? account : 0,
+        ).compact;
+      case 3:
+        return [
+          PaymentEntry(
+            method: PaymentMethods.account,
+            amount: total,
+          ),
+        ];
+      default:
+        return [
+          PaymentEntry(
+            method: PaymentMethods.cash,
+            amount: total,
+          ),
+        ];
+    }
+  }
+
+  // Null when valid, otherwise a user-facing message.
+  String? validatePayments(List<PaymentEntry> payments) {
+    var breakdown = PaymentBreakdown(payments);
+    if (breakdown.account > 0 && !canUseAccount()) {
+      return 'Customer Account payments are only available for Real Sales with a selected customer.';
+    }
+    if (currentCart().paymentMethod == 3 &&
+        !isBalanceSufficient()) {
+      return 'This Customers Balance is not enough to make this Purchase. Top up the balance, or pay the remainder with Cash or Bank.';
+    }
+    return breakdown.validate(
+      total: calcFinalTotal(),
+      accountBalance: availableAccountBalance(),
+    );
+  }
+
+  Future<void> setSplitPayments(
+    List<PaymentEntry>? payments,
+  ) async {
+    currentCart().splitPayments = payments;
+    await CartFunc().updateMainCart(currentMainCart());
+    notifyListeners();
+  }
+
+  // Insufficient balance shortcut: use the whole available balance and pay
+  // the rest with [method] (cash or bank) as a split payment.
+  Future<List<PaymentEntry>> splitRemainderWith(
+    String method,
+  ) async {
+    double total = calcFinalTotal();
+    double balance = availableAccountBalance() ?? 0;
+    double accountPart = balance < 0 ? 0 : balance;
+    if (accountPart > total) {
+      accountPart = total;
+    }
+    var payments = [
+      PaymentEntry(
+        method: PaymentMethods.account,
+        amount: accountPart,
+      ),
+      PaymentEntry(method: method, amount: total - accountPart),
+    ];
+    currentCart().paymentMethod = 2;
+    await setSplitPayments(payments);
+    return payments;
   }
 
   double calcVatAmount() {
@@ -3409,6 +3551,7 @@ class SalesProvider extends ChangeNotifier {
 
   Future<void> resetPaymentMethod() async {
     currentCart().paymentMethod = 0;
+    currentCart().splitPayments = null;
     await CartFunc().updateMainCart(currentMainCart());
     notifyListeners();
   }
@@ -3427,7 +3570,7 @@ class SalesProvider extends ChangeNotifier {
     {
       'number': 2,
       'method': 'Split Payment',
-      'subText': 'Use Both Cash and Bank to Pay',
+      'subText': 'Combine Cash, Bank and Customer Account',
     },
     {
       'number': 3,
@@ -3462,6 +3605,33 @@ class SalesProvider extends ChangeNotifier {
         return 'Account';
       default:
         return 'Cash';
+    }
+  }
+
+  // Maps a saved receipt back to a checkout option using its amounts, so
+  // old receipts and account receipts reopen on the right option.
+  int paymentMethodIndexForReceipt(TempMainReceipt receipt) {
+    // Invoice / order receipts keep the old mapping; customer account
+    // splits are Real Sales only for now.
+    if (receipt.invoiceUuid != null ||
+        receipt.orderUuid != null) {
+      return receipt.paymentMethod == PaymentMethods.cash
+          ? 0
+          : receipt.paymentMethod == PaymentMethods.bank
+          ? 1
+          : 2;
+    }
+    var breakdown = receipt.paymentBreakdown();
+    if (breakdown.isSplit) {
+      return 2;
+    }
+    switch (breakdown.label) {
+      case PaymentMethods.bank:
+        return 1;
+      case PaymentMethods.account:
+        return 3;
+      default:
+        return 0;
     }
   }
 
@@ -3692,12 +3862,15 @@ class SalesProvider extends ChangeNotifier {
                     : 1,
             discount: receipt.generalDiscount,
             receiptUuidEdit: receipt.uuid,
-            paymentMethod:
-                receipt.paymentMethod == 'Cash'
-                    ? 0
-                    : receipt.paymentMethod == 'Bank'
-                    ? 1
-                    : 2,
+            paymentMethod: paymentMethodIndexForReceipt(
+              receipt,
+            ),
+            splitPayments:
+                receipt.invoiceUuid == null &&
+                        receipt.orderUuid == null &&
+                        receipt.paymentBreakdown().isSplit
+                    ? receipt.payments()
+                    : null,
             selectedCustomer: receipt.customerUuid,
             selectedCustomerName: receipt.customerName,
             isReceiptEdit: true,

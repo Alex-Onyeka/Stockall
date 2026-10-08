@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/payment_entry/payment_entry.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_main_cart/temp_main_cart.dart';
@@ -15,6 +16,7 @@ class CartFunc {
     Hive.registerAdapter(TempMainCartAdapter());
     Hive.registerAdapter(TempCartAdapter());
     Hive.registerAdapter(TempCartItemAdapter());
+    Hive.registerAdapter(PaymentEntryAdapter());
     cartBox = await Hive.openBox(cartBoxName);
     await mainLocalLog('MainCart Box Initialized');
   }
