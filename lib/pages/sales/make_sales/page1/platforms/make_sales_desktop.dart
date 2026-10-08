@@ -3004,17 +3004,6 @@ class _MakeSalesDesktopState
                                     MainButtonP(
                                       themeProvider: theme,
                                       action: () {
-                                        if (returnSalesProvider()
-                                                .currentCart()
-                                                .cartItemTypeIndex ==
-                                            4) {
-                                          saveDraftAction(
-                                            context,
-                                          );
-                                          return;
-                                        }
-                                        // returnSalesProvider()
-                                        //     .removeListenerScanBarcode();
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
@@ -3036,14 +3025,7 @@ class _MakeSalesDesktopState
                                           }
                                         });
                                       },
-                                      text:
-                                          currentCart(
-                                                    context:
-                                                        context,
-                                                  ).cartItemTypeIndex ==
-                                                  4
-                                              ? 'Save Draft'
-                                              : 'Proceed',
+                                      text: 'Proceed',
                                     ),
                                     SizedBox(height: 20),
                                   ],

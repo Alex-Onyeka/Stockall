@@ -200,9 +200,9 @@ class TempCart extends HiveObject {
       }
     } else if (index == 4) {
       if (index == cartItemTypeIndex) {
-        return theme.lightModeColor.warningColor200;
+        return const Color.fromARGB(255, 94, 194, 124);
       } else {
-        return theme.lightModeColor.warningColor100;
+        return const Color.fromARGB(255, 194, 221, 202);
       }
     } else {
       return Colors.amber;

@@ -820,7 +820,9 @@ class SalesProvider extends ChangeNotifier {
       return;
     }
 
-    if (isStockFreeCartType(currentCart().cartItemTypeIndex) &&
+    if (isStockFreeCartType(
+          currentCart().cartItemTypeIndex,
+        ) &&
         (value == 1 || value == 2)) {
       final conflict = getStockConflictForCartSwitch();
 
@@ -2566,8 +2568,6 @@ class SalesProvider extends ChangeNotifier {
     }
 
     final uuid = currentCart().draftUuid ?? uuidGen();
-    // If the draft was completed or deleted elsewhere since it
-    // was opened, it is saved again as a new record.
     final existing =
         returnDraftsProvider().drafts
             .where((draft) => draft.uuid == uuid)
@@ -2590,7 +2590,7 @@ class SalesProvider extends ChangeNotifier {
       customerName: customerName(),
       departmentUuid: departmentUuid(),
       departmentName: departmentName(),
-      cartName: currentCart().cartName,
+      cartName: currentCart().cartName ?? 'Draft',
       comment: currentCart().comment,
       generalDiscount: currentCart().discount,
       fixedDiscount: currentCart().fixedDiscount,
@@ -2844,7 +2844,8 @@ class SalesProvider extends ChangeNotifier {
 
     for (var mainCart in mainCartQueue) {
       for (final cart in mainCart.cartQueue.where(
-        (item) => !isStockFreeCartType(item.cartItemTypeIndex),
+        (item) =>
+            !isStockFreeCartType(item.cartItemTypeIndex),
       )) {
         for (final cartItem in cart.getCartItems()) {
           final cartItemUuid =
@@ -2905,7 +2906,8 @@ class SalesProvider extends ChangeNotifier {
     double totalInAllCarts = 0;
     for (var mainCart in mainCartQueue) {
       for (final cart in mainCart.cartQueue.where(
-        (item) => !isStockFreeCartType(item.cartItemTypeIndex),
+        (item) =>
+            !isStockFreeCartType(item.cartItemTypeIndex),
       )) {
         for (final cartItem in cart.getCartItems().where(
           (item) => item.getItem()?.uuid == product.uuid,
@@ -2995,7 +2997,9 @@ class SalesProvider extends ChangeNotifier {
     required bool isEdit,
   }) {
     // This cart type does not have stock restrictions.
-    if (isStockFreeCartType(currentCart().cartItemTypeIndex)) {
+    if (isStockFreeCartType(
+      currentCart().cartItemTypeIndex,
+    )) {
       return true;
     }
 

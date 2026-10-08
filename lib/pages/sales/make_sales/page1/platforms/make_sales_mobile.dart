@@ -2156,27 +2156,6 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                 ),
                                               ),
                                               SwitchSaleTypeWidgetMobile(),
-                                              Visibility(
-                                                visible:
-                                                    !currentCart(
-                                                      context:
-                                                          context,
-                                                    ).isReceiptEdit,
-                                                child: Align(
-                                                  alignment:
-                                                      Alignment
-                                                          .centerLeft,
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                          bottom:
-                                                              5,
-                                                        ),
-                                                    child:
-                                                        DraftsButton(),
-                                                  ),
-                                                ),
-                                              ),
                                               DiscountSetterWidget(
                                                 discountPercentController:
                                                     discountPercentController,
@@ -2655,15 +2634,6 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                             themeProvider:
                                                 theme,
                                             action: () {
-                                              if (returnSalesProvider()
-                                                      .currentCart()
-                                                      .cartItemTypeIndex ==
-                                                  4) {
-                                                saveDraftAction(
-                                                  context,
-                                                );
-                                                return;
-                                              }
                                               Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
@@ -2676,13 +2646,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                               );
                                             },
                                             text:
-                                                currentCart(
-                                                          context:
-                                                              context,
-                                                        ).cartItemTypeIndex ==
-                                                        4
-                                                    ? 'Save Draft'
-                                                    : 'Proceed to Check Out',
+                                                'Proceed to Check Out',
                                           ),
                                           SizedBox(
                                             height: 10,
@@ -3170,8 +3134,7 @@ class _SwitchSaleTypeWidgetMobileState
                   ),
                 ),
                 PopupMenuItem(
-                  enabled:
-                      currentCart().canUseDraft(),
+                  enabled: currentCart().canUseDraft(),
                   mouseCursor: SystemMouseCursors.click,
                   onTap: () {
                     switchAction(4);
@@ -3202,7 +3165,7 @@ class _SwitchSaleTypeWidgetMobileState
                                       .b3
                                       .fontSize,
                             ),
-                            'Save as Draft',
+                            'Create Draft',
                           ),
                         ),
                         Visibility(
@@ -3217,6 +3180,53 @@ class _SwitchSaleTypeWidgetMobileState
                                     .lightModeColor
                                     .warningColor200,
                             Icons.check,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                PopupMenuItem(
+                  enabled:
+                      currentCart().canUseDraft() &&
+                      returnDraftsProvider()
+                          .drafts
+                          .isNotEmpty,
+                  mouseCursor: SystemMouseCursors.click,
+                  onTap: () {
+                    DraftsListSheet.show(context);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      left: 5.0,
+                      right: 15,
+                    ),
+                    child: Row(
+                      spacing: 10,
+                      children: [
+                        Icon(
+                          size: 16,
+                          color:
+                              returnDraftsProvider()
+                                      .drafts
+                                      .isNotEmpty
+                                  ? theme
+                                      .lightModeColor
+                                      .warningColor200
+                                  : Colors.grey,
+                          Icons.visibility,
+                        ),
+                        Expanded(
+                          child: Text(
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                            ),
+                            'View Drafts: ${returnDraftsProvider().drafts.length}',
                           ),
                         ),
                       ],
