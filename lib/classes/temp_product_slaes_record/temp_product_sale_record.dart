@@ -392,6 +392,7 @@ class TempProductSaleRecord {
         name: 'Price',
         isPrimary: true,
         itemUuid: uuid!,
+        priceType: 1,
       );
     } else {
       return getPricesList()
@@ -414,6 +415,7 @@ class TempProductSaleRecord {
             name: 'Price',
             isPrimary: true,
             itemUuid: uuid!,
+            priceType: 1,
           ),
         ];
         return tempList;

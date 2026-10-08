@@ -7,6 +7,7 @@ import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/add_product_one/product_prices_page/components/price_type_selection_widget.dart';
 
 class CreateProductPriceWidget extends StatefulWidget {
   final TextEditingController priceController;
@@ -78,14 +79,13 @@ void addProductPriceAction({
     priceController.text = price.priceValue.toString();
     nameController.text = price.name ?? 'Price';
   }
-
+  // var isFixed = price?.isFixed ?? false;
+  int currentSelection = price?.priceType ?? 1;
   void addAction() {
     final priceValue = double.tryParse(
       priceController.text.replaceAll(',', '').trim(),
     );
-    if (priceValue == null ||
-        !priceValue.isFinite ||
-        priceValue <= 0) {
+    if (priceValue == null || !priceValue.isFinite) {
       showDialog(
         context: context,
         builder: (context) {
@@ -109,6 +109,9 @@ void addProductPriceAction({
               Navigator.of(mainDialog).pop();
               price?.name = nameController.text.trim();
               price?.priceValue = priceValue;
+              price?.isFixed =
+                  currentSelection == 1 ? false : true;
+              price?.priceType = currentSelection;
               var priceListSingle = ProductPricesClass(
                 uuid: uuidGen(),
                 staffUuid: currentUser().userId!,
@@ -124,6 +127,9 @@ void addProductPriceAction({
                         ? true
                         : false,
                 itemUuid: productUuid,
+                isFixed:
+                    currentSelection == 1 ? false : true,
+                priceType: currentSelection,
               );
               returnData().createOrUpdatePriceList(
                 priceListSingle: price ?? priceListSingle,
@@ -177,6 +183,17 @@ void addProductPriceAction({
                           controller: nameController,
                           lines: 1,
                           theme: theme,
+                        ),
+                        SizedBox(height: 5),
+                        PriceTypeSelectionWidget(
+                          theme: theme,
+                          currentSelection:
+                              currentSelection,
+                          setPriceType: (index) {
+                            setState(() {
+                              currentSelection = index ?? 1;
+                            });
+                          },
                         ),
                         EditCartTextField(
                           title: 'Value',

@@ -3352,15 +3352,14 @@ class DataProvider extends ChangeNotifier {
   void deleteProductPrice({
     required ProductPricesClass priceListSingle,
   }) {
-    if (tempPricesList.length > 1) {
-      tempPricesList.removeWhere(
-        (item) => item.uuid == priceListSingle.uuid,
+    tempPricesList.removeWhere(
+      (item) => item.uuid == priceListSingle.uuid,
+    );
+
+    if (priceListSingle.isPrimary) {
+      selectPrimaryPrice(
+        priceListSingle: tempPricesList.first,
       );
-      if (priceListSingle.isPrimary) {
-        selectPrimaryPrice(
-          priceListSingle: tempPricesList.first,
-        );
-      }
     }
     notifyListeners();
   }

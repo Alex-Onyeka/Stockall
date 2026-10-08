@@ -360,7 +360,9 @@ Widget priceSectionWidget(
                                                                       ) ??
                                                                       0,
                                                                   sellingPrice:
-                                                                      product.sellingPrice,
+                                                                      returnData().tempPricesList.isEmpty
+                                                                          ? null
+                                                                          : product.sellingPrice,
                                                                   wholeSalePrice:
                                                                       product.wholeSalePrice,
                                                                   quantity:

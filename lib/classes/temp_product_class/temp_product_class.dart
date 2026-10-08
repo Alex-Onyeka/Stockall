@@ -473,6 +473,7 @@ class TempProductClass {
         name: 'Price',
         isPrimary: true,
         itemUuid: uuid!,
+        priceType: 1,
       );
     } else {
       return getPricesList()
@@ -495,6 +496,7 @@ class TempProductClass {
             name: 'Price',
             isPrimary: true,
             itemUuid: uuid!,
+            priceType: 1,
           ),
         ];
         if (wholeSalePrice != null) {
@@ -507,6 +509,7 @@ class TempProductClass {
             name: 'Whole-Sale Price',
             isPrimary: false,
             itemUuid: uuid!,
+            priceType: 1,
           );
           tempList.add(newItem);
         }
