@@ -31,7 +31,7 @@ class ProductPricesClass extends HiveObject {
   String itemUuid;
 
   @HiveField(8)
-  bool isFixed;
+  bool? isFixed;
 
   @HiveField(9)
   int? priceType;

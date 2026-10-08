@@ -15,6 +15,7 @@ import 'package:stockall/local_database/customer_account_receipts/customer_accou
 import 'package:stockall/local_database/customers/customer_func.dart';
 import 'package:stockall/local_database/department_current/current_department_func.dart';
 import 'package:stockall/local_database/department_func/departments_func.dart';
+import 'package:stockall/local_database/drafts_func/drafts_func.dart';
 import 'package:stockall/local_database/error_log/error_log_func.dart';
 import 'package:stockall/local_database/events_log/events_log_func.dart';
 import 'package:stockall/local_database/expenses/expenses_func.dart';
@@ -131,6 +132,7 @@ class MainDatabase extends ChangeNotifier {
       await MaterialsUsageCartFunc().init();
       await NewFeaturePopUpFunc().init();
       await OrdersFunc().init();
+      await DraftsFunc().init();
       await ContinuousPrintDocketFunc().init();
       await StorageItemHistoriesFunc().init();
       await mainLocalLog('init Complete');

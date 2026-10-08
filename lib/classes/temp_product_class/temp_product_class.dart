@@ -772,7 +772,9 @@ class TempProductClass {
     if (!isManaged) {
       return true;
     } else {
-      if (currentCart().cartItemTypeIndex == 3) {
+      if (returnSalesProvider().isStockFreeCartType(
+        currentCart().cartItemTypeIndex,
+      )) {
         return true;
       } else {
         if (quantity == null || (quantity ?? 0) <= 0) {
@@ -786,7 +788,9 @@ class TempProductClass {
 
   bool isExpired() {
     if (isManaged) {
-      if (currentCart().cartItemTypeIndex == 3) {
+      if (returnSalesProvider().isStockFreeCartType(
+        currentCart().cartItemTypeIndex,
+      )) {
         return false;
       } else {
         if (expiryDate != null) {
