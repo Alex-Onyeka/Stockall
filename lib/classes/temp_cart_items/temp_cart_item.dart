@@ -384,14 +384,14 @@ class TempCartItem extends HiveObject {
     } else {
       final selectedPrice = getSelectedPrice();
       if ((selectedPrice.priceType ?? 1) == 1) {
-        return selectedPrice.priceValue * quantity;
-      } else {
         return selectedPrice.priceValue *
             getSelectedUnit().getQuantityEquivMultiplied(
               index: 1,
               product: item,
               newQuantity: quantity,
             );
+      } else {
+        return selectedPrice.priceValue * quantity;
       }
     }
   }
