@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/production/production_dashboard/productions_section/production_records_list/production_records_list.dart';
 import 'package:stockall/pages/products/item_history_page/item_history_page.dart';
@@ -15,7 +16,9 @@ class ProductDetailsMoreWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return Visibility(
-      visible: !isStoreKeeper(),
+      visible: authorization(
+        authorized: Authorizations().viewItemsHistory,
+      ),
       child: Builder(
         builder: (context) {
           if (returnShopProvider()

@@ -121,7 +121,11 @@ class _MaterialsDetailsDesktopState
                         context: context,
                         title: 'Material Details',
                         widget: Visibility(
-                          visible: !isStoreKeeper(),
+                          visible: authorization(
+                            authorized:
+                                Authorizations()
+                                    .viewItemsHistory,
+                          ),
                           child: InkWell(
                             mouseCursor:
                                 SystemMouseCursors.click,

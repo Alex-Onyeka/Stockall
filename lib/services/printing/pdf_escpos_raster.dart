@@ -51,10 +51,17 @@ List<Uint8List> escPosRasterBands(
   img.Image image, {
   bool extraFeed = false,
 }) {
-  final widthBytes = (image.width + 7) ~/ 8;
-  final bands = <Uint8List>[
+  return [
     Uint8List.fromList([0x1B, 0x40]),
+    ...rasterImageBands(image),
+    Uint8List.fromList([0x1B, 0x64, extraFeed ? 3 : 2]),
   ];
+}
+
+// The image alone as 1-bit GS v 0 bands, with no init or feed.
+List<Uint8List> rasterImageBands(img.Image image) {
+  final widthBytes = (image.width + 7) ~/ 8;
+  final bands = <Uint8List>[];
 
   for (var top = 0; top < image.height; top += rasterBandRows) {
     final rows = min(rasterBandRows, image.height - top);
@@ -78,8 +85,6 @@ List<Uint8List> escPosRasterBands(
     }
     bands.add(band);
   }
-
-  bands.add(Uint8List.fromList([0x1B, 0x64, extraFeed ? 3 : 2]));
   return bands;
 }
 

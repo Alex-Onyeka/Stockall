@@ -84,7 +84,10 @@ class _MaterialsDetailsMobileState
               context: context,
               title: 'Details',
               widget: Visibility(
-                visible: !isStoreKeeper(),
+                visible: authorization(
+                  authorized:
+                      Authorizations().viewItemsHistory,
+                ),
                 child: Padding(
                   padding: const EdgeInsets.only(
                     right: 15.0,

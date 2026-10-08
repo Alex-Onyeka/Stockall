@@ -88,7 +88,10 @@ class _ProductionItemsDetailsMobileState
               context: context,
               title: 'Details',
               widget: Visibility(
-                visible: !isStoreKeeper(),
+                visible: authorization(
+                  authorized:
+                      Authorizations().viewItemsHistory,
+                ),
                 child: PopupMenuButton(
                   offset: Offset(-20, 30),
                   color: Colors.white,
