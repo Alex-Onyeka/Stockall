@@ -93,6 +93,9 @@ class TempCart extends HiveObject {
   @HiveField(27)
   String? orderUuid;
 
+  @HiveField(28)
+  String? draftUuid;
+
   TempCart({
     required this.cartItems,
     this.isInvoice = false,
@@ -122,6 +125,7 @@ class TempCart extends HiveObject {
     required this.cartItemTypeIndex,
     required this.orderUuidEdit,
     this.orderUuid,
+    this.draftUuid,
   });
 
   List<TempCartItem> getCartItemsAll() {
@@ -194,6 +198,12 @@ class TempCart extends HiveObject {
       } else {
         return theme.lightModeColor.tertColor100;
       }
+    } else if (index == 4) {
+      if (index == cartItemTypeIndex) {
+        return theme.lightModeColor.warningColor200;
+      } else {
+        return theme.lightModeColor.warningColor100;
+      }
     } else {
       return Colors.amber;
     }
@@ -203,7 +213,10 @@ class TempCart extends HiveObject {
     required int index,
     required ThemeProvider theme,
   }) {
-    if (index == cartItemTypeIndex) {
+    // White text is unreadable on the yellow draft colour.
+    if (index == 4) {
+      return Colors.black;
+    } else if (index == cartItemTypeIndex) {
       return Colors.white;
     } else {
       return Colors.black;
@@ -217,6 +230,8 @@ class TempCart extends HiveObject {
       return 'Credit Sales';
     } else if (index == 3) {
       return 'Order';
+    } else if (index == 4) {
+      return 'Draft';
     } else {
       return 'Sales';
     }
@@ -229,13 +244,23 @@ class TempCart extends HiveObject {
       return 'Credit Sales';
     } else if (cartItemTypeIndex == 3) {
       return 'Create Order';
+    } else if (cartItemTypeIndex == 4) {
+      return 'Draft Sale';
     } else {
       return 'Sales';
     }
   }
 
+  // Drafts are only for new sales, never for edits of an
+  // existing receipt, invoice or order.
+  bool canUseDraft() {
+    return !isReceiptEdit && orderUuidEdit == null;
+  }
+
   String getEditText() {
-    if (isReceiptEdit) {
+    if (draftUuid != null && !isReceiptEdit) {
+      return 'Continue Draft';
+    } else if (isReceiptEdit) {
       if (cartItemTypeIndex == 1) {
         return 'Edit Sales';
       } else if (cartItemTypeIndex == 2) {

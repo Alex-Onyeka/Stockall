@@ -646,6 +646,9 @@ class RefreshFunctions {
                   await returnOrdersProvider().loadOrders(
                     shopId(),
                   );
+                  await returnDraftsProvider().loadDrafts(
+                    shopId(),
+                  );
                 },
               );
             },
@@ -701,6 +704,7 @@ class RefreshFunctions {
           await returnProductionRecordsProvider()
               .getProductionRecords(shopId());
           await returnOrdersProvider().loadOrders(shopId());
+          await returnDraftsProvider().loadDrafts(shopId());
         }
       }
 
@@ -748,4 +752,5 @@ Future<void> loadAllDataOffline({
   await returnProductionRecordsProvider()
       .getProductionRecordsOffline();
   await returnOrdersProvider().loadOrdersOffline(shopId());
+  await returnDraftsProvider().loadDraftsOffline(shopId());
 }

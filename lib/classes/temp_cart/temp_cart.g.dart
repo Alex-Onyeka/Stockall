@@ -45,13 +45,14 @@ class TempCartAdapter extends TypeAdapter<TempCart> {
       cartItemTypeIndex: fields[25] as int?,
       orderUuidEdit: fields[26] as String?,
       orderUuid: fields[27] as String?,
+      draftUuid: fields[28] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempCart obj) {
     writer
-      ..writeByte(28)
+      ..writeByte(29)
       ..writeByte(0)
       ..write(obj.cartItems)
       ..writeByte(1)
@@ -107,7 +108,9 @@ class TempCartAdapter extends TypeAdapter<TempCart> {
       ..writeByte(26)
       ..write(obj.orderUuidEdit)
       ..writeByte(27)
-      ..write(obj.orderUuid);
+      ..write(obj.orderUuid)
+      ..writeByte(28)
+      ..write(obj.draftUuid);
   }
 
   @override

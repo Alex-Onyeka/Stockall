@@ -41,6 +41,7 @@ import 'package:stockall/providers/country_provider.dart';
 import 'package:stockall/providers/item_history_provider.dart';
 import 'package:stockall/providers/orders_action_provider.dart';
 import 'package:stockall/providers/orders_provider.dart';
+import 'package:stockall/providers/drafts_provider.dart';
 import 'package:stockall/providers/production_folder/material_quantity_update_provider.dart';
 import 'package:stockall/providers/production_folder/materials_item_history_provider.dart';
 import 'package:stockall/providers/production_folder/materials_provider.dart';
@@ -857,6 +858,16 @@ OrdersProvider returnOrdersProvider({
   }
 }
 
+DraftsProvider returnDraftsProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return DraftsProvider();
+  } else {
+    return Provider.of<DraftsProvider>(context);
+  }
+}
+
 OrdersActionProvider returnOrdersActionProvider({
   BuildContext? context,
 }) {
@@ -1075,6 +1086,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => OrdersProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => DraftsProvider(),
         ),
         ChangeNotifierProvider(
           create: (_) => OrdersActionProvider(),

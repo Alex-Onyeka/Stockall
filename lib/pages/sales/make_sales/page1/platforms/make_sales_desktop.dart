@@ -37,6 +37,7 @@ import 'package:stockall/pages/sales/make_sales/page1/platforms/components/proje
 import 'package:stockall/pages/sales/make_sales/page1/platforms/components/right_bar_section.dart';
 import 'package:stockall/pages/sales/make_sales/page1/platforms/components/sub_staff_selection_widget.dart';
 import 'package:stockall/pages/sales/make_sales/page2/make_sales_two.dart';
+import 'package:stockall/components/drafts/drafts_list_sheet.dart';
 
 class MakeSalesDesktop extends StatefulWidget {
   final TextEditingController searchController;
@@ -3003,6 +3004,15 @@ class _MakeSalesDesktopState
                                     MainButtonP(
                                       themeProvider: theme,
                                       action: () {
+                                        if (returnSalesProvider()
+                                                .currentCart()
+                                                .cartItemTypeIndex ==
+                                            4) {
+                                          saveDraftAction(
+                                            context,
+                                          );
+                                          return;
+                                        }
                                         // returnSalesProvider()
                                         //     .removeListenerScanBarcode();
                                         Navigator.push(
@@ -3026,7 +3036,14 @@ class _MakeSalesDesktopState
                                           }
                                         });
                                       },
-                                      text: 'Proceed',
+                                      text:
+                                          currentCart(
+                                                    context:
+                                                        context,
+                                                  ).cartItemTypeIndex ==
+                                                  4
+                                              ? 'Save Draft'
+                                              : 'Proceed',
                                     ),
                                     SizedBox(height: 20),
                                   ],
@@ -3105,6 +3122,17 @@ class _SalesTypeSwitchContainerState
                       index: 3,
                     ),
                   ),
+                  Visibility(
+                    visible:
+                        currentCart(
+                          context: context,
+                        ).canUseDraft(),
+                    child: SalesTypeSwitchButton(
+                      action: null,
+                      index: 4,
+                    ),
+                  ),
+                  DraftsButton(),
                 ],
               ),
             ),
