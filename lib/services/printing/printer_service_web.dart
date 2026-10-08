@@ -7,6 +7,7 @@ void scanBluetoothPrinters({
   required TempMainReceipt receipt,
   required List<TempProductSaleRecord> records,
   required TempShopClass shop,
+  required String staffName,
   required BuildContext context,
 }) {}
 

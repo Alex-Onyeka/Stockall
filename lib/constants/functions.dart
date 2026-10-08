@@ -80,6 +80,17 @@ TargetPlatform platforms(BuildContext context) {
   return Theme.of(context).platform;
 }
 
+bool usesBluetoothPrint() {
+  return !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.android ||
+          defaultTargetPlatform == TargetPlatform.iOS);
+}
+
+bool usesSystemPrintDialog() {
+  return !kIsWeb &&
+      defaultTargetPlatform == TargetPlatform.windows;
+}
+
 bool isValidEmail(String email) {
   final emailRegex = RegExp(
     r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
@@ -463,6 +474,26 @@ Future<void> generateAndPreviewPdfRoll({
         ).toggleIsLoading(false);
       }
     },
+  );
+}
+
+// Same roll layout as generateAndPreviewPdfRoll, returned as PDF bytes
+// so Bluetooth printing can rasterize it.
+Future<Uint8List> buildReceiptRollPdf({
+  required TempMainReceipt receipt,
+  required List<TempProductSaleRecord> records,
+  required String staffName,
+  required TempShopClass shop,
+  required BuildContext context,
+  required int printerType,
+}) {
+  return _buildPdfRoll(
+    receipt,
+    records,
+    staffName,
+    shop,
+    context,
+    printerType,
   );
 }
 
@@ -1801,7 +1832,7 @@ Future<Uint8List> _buildPdfRoll(
       margin: pw.EdgeInsets.only(
         left: kIsWeb ? 2 : 0,
         top: 5,
-        right: kIsWeb ? 15 : 25,
+        right: kIsWeb ? 15 : 0,
         bottom: 10,
       ),
 
@@ -2981,50 +3012,50 @@ Future<Uint8List> _buildPdfRoll(
                     ),
                   ],
                 ),
-                pw.SizedBox(height: 35),
-                pw.Text(
-                  textAlign: pw.TextAlign.center,
-                  style: pw.TextStyle(
-                    fontSize: totalText,
-                    fontWeight: pw.FontWeight.bold,
-                    // color: PdfColor(50, 50, 050),
-                  ),
-                  '------------',
-                ),
-                pw.Builder(
-                  builder: (beansContext) {
-                    if (records.length > 15) {
-                      return pw.Text(
-                        textAlign: pw.TextAlign.center,
-                        style: pw.TextStyle(
-                          fontSize: totalText,
-                          fontWeight: pw.FontWeight.bold,
-                          // color: PdfColor(50, 50, 050),
-                        ),
-                        '------------',
-                      );
-                    } else {
-                      return pw.Container();
-                    }
-                  },
-                ),
-                pw.Builder(
-                  builder: (beansContext) {
-                    if (records.length > 15) {
-                      return pw.Text(
-                        textAlign: pw.TextAlign.center,
-                        style: pw.TextStyle(
-                          fontSize: totalText,
-                          fontWeight: pw.FontWeight.bold,
-                          // color: PdfColor(50, 50, 050),
-                        ),
-                        '------------',
-                      );
-                    } else {
-                      return pw.Container();
-                    }
-                  },
-                ),
+                pw.SizedBox(height: 20),
+                // pw.Text(
+                //   textAlign: pw.TextAlign.center,
+                //   style: pw.TextStyle(
+                //     fontSize: totalText,
+                //     fontWeight: pw.FontWeight.bold,
+                //     // color: PdfColor(50, 50, 050),
+                //   ),
+                //   '------------',
+                // ),
+                // pw.Builder(
+                //   builder: (beansContext) {
+                //     if (records.length > 15) {
+                //       return pw.Text(
+                //         textAlign: pw.TextAlign.center,
+                //         style: pw.TextStyle(
+                //           fontSize: totalText,
+                //           fontWeight: pw.FontWeight.bold,
+                //           // color: PdfColor(50, 50, 050),
+                //         ),
+                //         '------------',
+                //       );
+                //     } else {
+                //       return pw.Container();
+                //     }
+                //   },
+                // ),
+                // pw.Builder(
+                //   builder: (beansContext) {
+                //     if (records.length > 15) {
+                //       return pw.Text(
+                //         textAlign: pw.TextAlign.center,
+                //         style: pw.TextStyle(
+                //           fontSize: totalText,
+                //           fontWeight: pw.FontWeight.bold,
+                //           // color: PdfColor(50, 50, 050),
+                //         ),
+                //         '------------',
+                //       );
+                //     } else {
+                //       return pw.Container();
+                //     }
+                //   },
+                // ),
               ],
             ),
           ),

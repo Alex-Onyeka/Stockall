@@ -122,7 +122,11 @@ class _ProductionItemsDetailsDesktopState
                         context: context,
                         title: 'Item Details',
                         widget: Visibility(
-                          visible: !isStoreKeeper(),
+                          visible: authorization(
+                            authorized:
+                                Authorizations()
+                                    .viewItemsHistory,
+                          ),
                           child: PopupMenuButton(
                             offset: Offset(-20, 30),
                             color: Colors.white,

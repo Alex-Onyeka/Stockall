@@ -8,6 +8,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
+import 'package:stockall/constants/order_print_and_download.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
@@ -16,6 +17,8 @@ import 'package:stockall/pages/orders/order_page/components/order_item_list_tile
 import 'package:stockall/pages/orders/order_page/deliver_order_items/deliver_order_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/services/auth_service.dart';
+import 'package:stockall/services/printing/printer_service_mobile.dart'
+    show scanBluetoothPrintersOrder;
 
 class OrderPageMobile extends StatefulWidget {
   final CheckoutResponse checkoutResponse;
@@ -330,49 +333,76 @@ class _OrderPageMobileState extends State<OrderPageMobile> {
                                   SalesAuthAction().printReceiptAction(
                                     context: context,
                                     action: () async {
-                                      // var safeContext =
-                                      //     context;
-                                      // showDialog(
-                                      //   context: context,
-                                      //   builder: (
-                                      //     confirmDialog,
-                                      //   ) {
-                                      //     return ConfirmationAlert(
-                                      //       theme: theme,
-                                      //       message:
-                                      //           'You are about to Print This Order. Are you sure you want to Proceed?',
-                                      //       title:
-                                      //           'Print Order',
-                                      //       action: () async {
-                                      //         setState(() {
-                                      //           isPrintingOrder =
-                                      //               true;
-                                      //         });
-                                      //         scanBluetoothPrintersorder(
-                                      //           order:
-                                      //               order,
-                                      //           records:
-                                      //               saleRecords,
-                                      //           shop:
-                                      //               shopSingle()!,
-                                      //           context:
-                                      //               context,
-                                      //         );
-                                      //         Navigator.of(
-                                      //           confirmDialog,
-                                      //         ).pop();
-                                      //       },
-                                      //     );
-                                      //   },
-                                      // ).then((_) {
-                                      //   if (safeContext
-                                      //       .mounted) {
-                                      //     setState(() {
-                                      //       isPrintingOrder =
-                                      //           false;
-                                      //     });
-                                      //   }
-                                      // });
+                                      // macOS/Linux keep their existing no-op.
+                                      if (!usesSystemPrintDialog() &&
+                                          !usesBluetoothPrint()) {
+                                        return;
+                                      }
+                                      var safeContext =
+                                          context;
+                                      showDialog(
+                                        context: context,
+                                        builder: (
+                                          confirmDialog,
+                                        ) {
+                                          return ConfirmationAlert(
+                                            theme: theme,
+                                            message:
+                                                'You are about to Print This Order. Are you sure you want to Proceed?',
+                                            title:
+                                                'Print Order',
+                                            action: () async {
+                                              setState(() {
+                                                isPrintingOrder =
+                                                    true;
+                                              });
+                                              if (usesSystemPrintDialog()) {
+                                                generateAndPreviewPdfRollOrder(
+                                                  order:
+                                                      order,
+                                                  printerType:
+                                                      returnShopProvider()
+                                                          .userShop()!
+                                                          .printType ??
+                                                      1,
+                                                  staffName:
+                                                      order.staffName ??
+                                                      'Not Set',
+                                                  context:
+                                                      context,
+                                                  records:
+                                                      saleRecords,
+                                                  shop:
+                                                      returnShopProvider()
+                                                          .userShop()!,
+                                                );
+                                              } else {
+                                                scanBluetoothPrintersOrder(
+                                                  order:
+                                                      order,
+                                                  records:
+                                                      saleRecords,
+                                                  shop:
+                                                      shopSingle()!,
+                                                  context:
+                                                      context,
+                                                );
+                                              }
+                                              Navigator.of(
+                                                confirmDialog,
+                                              ).pop();
+                                            },
+                                          );
+                                        },
+                                      ).then((_) {
+                                        if (safeContext
+                                            .mounted) {
+                                          setState(() {
+                                            isPrintingOrder =
+                                                false;
+                                          });
+                                        }
+                                      });
                                     },
                                   );
                                 },
