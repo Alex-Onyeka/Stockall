@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/subscription/branding_watermark.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:universal_html/html.dart' as html;
@@ -176,14 +177,16 @@ Future<Uint8List> _buildPdfCustomerAccountBalance({
                         fontSize: 9,
                       ),
                     ),
-                    pw.SizedBox(width: 15),
-                    pw.Text(
-                      'Created by $appName Solutions - ( www.stockallapp.com )',
-                      style: pw.TextStyle(
-                        font: fontRegular,
-                        fontSize: 9,
+                    if (shouldShowBrandingWatermark()) ...[
+                      pw.SizedBox(width: 15),
+                      pw.Text(
+                        'Created by $appName Solutions - ( www.stockallapp.com )',
+                        style: pw.TextStyle(
+                          font: fontRegular,
+                          fontSize: 9,
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),
