@@ -83,9 +83,7 @@ void addProductPriceAction({
     final priceValue = double.tryParse(
       priceController.text.replaceAll(',', '').trim(),
     );
-    if (priceValue == null ||
-        !priceValue.isFinite ||
-        priceValue <= 0) {
+    if (priceValue == null || !priceValue.isFinite) {
       showDialog(
         context: context,
         builder: (context) {

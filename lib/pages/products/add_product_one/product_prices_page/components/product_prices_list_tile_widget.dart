@@ -245,56 +245,48 @@ class _ProductPriceListTileWidgetState
                     Row(
                       spacing: 2,
                       children: [
-                        Visibility(
-                          visible:
-                              returnData(
+                        Material(
+                          type: MaterialType.transparency,
+                          child: InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
+                            borderRadius:
+                                BorderRadius.circular(5),
+                            onTap: () {
+                              showDialog(
                                 context: context,
-                              ).tempPricesList.length >
-                              1,
-                          child: Material(
-                            type: MaterialType.transparency,
-                            child: InkWell(
-                              mouseCursor:
-                                  SystemMouseCursors.click,
-                              borderRadius:
-                                  BorderRadius.circular(5),
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (mainDialog) {
-                                    return ConfirmationAlert(
-                                      theme: theme,
-                                      message:
-                                          'You are about to delete this Product Price, Are you sure you want to proceed?',
-                                      title:
-                                          'Delete Product Price',
-                                      action: () async {
-                                        Navigator.of(
-                                          mainDialog,
-                                        ).pop();
-                                        returnData()
-                                            .deleteProductPrice(
-                                              priceListSingle:
-                                                  price,
-                                            );
-                                      },
-                                    );
-                                  },
-                                );
-                              },
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(
-                                      horizontal: 18,
-                                      vertical: 3,
-                                    ),
-                                child: Icon(
-                                  size: 18,
-                                  color:
-                                      Colors.red.shade400,
-                                  Icons
-                                      .delete_outline_rounded,
-                                ),
+                                builder: (mainDialog) {
+                                  return ConfirmationAlert(
+                                    theme: theme,
+                                    message:
+                                        'You are about to delete this Product Price, Are you sure you want to proceed?',
+                                    title:
+                                        'Delete Product Price',
+                                    action: () async {
+                                      Navigator.of(
+                                        mainDialog,
+                                      ).pop();
+                                      returnData()
+                                          .deleteProductPrice(
+                                            priceListSingle:
+                                                price,
+                                          );
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal: 18,
+                                    vertical: 3,
+                                  ),
+                              child: Icon(
+                                size: 18,
+                                color: Colors.red.shade400,
+                                Icons
+                                    .delete_outline_rounded,
                               ),
                             ),
                           ),
