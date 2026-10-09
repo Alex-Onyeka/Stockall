@@ -1329,7 +1329,7 @@ class DataProvider extends ChangeNotifier {
             await mainLocalLog(
               'Finished Syncing Deleted Drafts',
             );
-            setSyncProgress(68);
+            setSyncProgress(69);
           }
           if (CreatedDraftsFunc().getDrafts().isNotEmpty &&
               isOnline) {
@@ -1337,7 +1337,7 @@ class DataProvider extends ChangeNotifier {
             await mainLocalLog(
               'Finished Syncing Created Drafts',
             );
-            setSyncProgress(68);
+            setSyncProgress(70);
           }
           if (UpdatedDraftsFunc()
                   .getDraftIds()
@@ -1347,7 +1347,7 @@ class DataProvider extends ChangeNotifier {
             await mainLocalLog(
               'Finished Syncing Updated Drafts',
             );
-            setSyncProgress(68);
+            setSyncProgress(71);
           }
           if (CreatedStorageItemHistoriesFunc()
                   .getCreatedStorageItemHistoriess()
@@ -1358,7 +1358,7 @@ class DataProvider extends ChangeNotifier {
             await mainLocalLog(
               'Finished Syncing Storage Item Histories',
             );
-            setSyncProgress(69);
+            setSyncProgress(72);
           }
 
           toggleSyncing(false);
@@ -1395,7 +1395,7 @@ class DataProvider extends ChangeNotifier {
   bool isSyncing = false;
   double syncProgress = 0;
   void setSyncProgress(int value) {
-    syncProgress = (value / 68) * 100;
+    syncProgress = (value / 72) * 100;
     notifyListeners();
   }
 
