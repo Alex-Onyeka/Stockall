@@ -1275,6 +1275,9 @@ void selectProductSales({
 
   String? unitUuid;
   String? priceUuid;
+  int quantityTypeTemp = 1;
+  final widthController = TextEditingController();
+  final heightController = TextEditingController();
 
   void selectUnit(String unit) {
     unitUuid = unit;
@@ -1500,106 +1503,344 @@ void selectProductSales({
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            SizedBox(
-                              width:
-                                  screenWidth(context) >
-                                          tabletScreenSmall
-                                      ? 450
-                                      : null,
-                              child: EditCartTextField(
-                                onTap: () {
-                                  setState(() {
-                                    currentFocus = 1;
-                                  });
-                                },
-                                focusNode: qttyNode,
-                                onChanged: (value) {
-                                  double entered =
-                                      getPrimaryUnitQuantityMultiplied(
-                                        newQuantity:
-                                            double.tryParse(
-                                              value
-                                                  .replaceAll(
-                                                    ',',
-                                                    '',
+                            Builder(
+                              builder: (context) {
+                                if (quantityTypeTemp == 1) {
+                                  return SizedBox(
+                                    width:
+                                        screenWidth(
+                                                  context,
+                                                ) >
+                                                tabletScreenSmall
+                                            ? 450
+                                            : null,
+                                    child: EditCartTextField(
+                                      onTap: () {
+                                        setState(() {
+                                          currentFocus = 1;
+                                        });
+                                      },
+                                      focusNode: qttyNode,
+                                      onChanged: (value) {
+                                        double
+                                        entered = getPrimaryUnitQuantityMultiplied(
+                                          newQuantity:
+                                              double.tryParse(
+                                                value
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
+                                              ) ??
+                                              0,
+                                        );
+                                        if (cartItem
+                                                .getItem()
+                                                ?.isManaged ??
+                                            false) {
+                                          if (!returnSalesProvider()
+                                              .canAddProductToCart(
+                                                isEdit:
+                                                    isEdit,
+                                                newCartItem:
+                                                    cartItem,
+                                                quantityToAdd:
+                                                    entered,
+                                                // useGroupUnit:
+                                                //     useGroupQuantityTemp,
+                                              )) {
+                                            showDialog(
+                                              context:
+                                                  context,
+                                              builder:
+                                                  (
+                                                    _,
+                                                  ) => InfoAlert(
+                                                    title:
+                                                        "Quantity Limit Reached",
+                                                    message:
+                                                        "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit))} ${getPrimaryUnit().name} available in stock.",
+                                                    theme:
+                                                        theme,
                                                   ),
-                                            ) ??
-                                            0,
-                                      );
-                                  if (cartItem
-                                          .getItem()
-                                          ?.isManaged ??
-                                      false) {
-                                    if (!returnSalesProvider()
-                                        .canAddProductToCart(
-                                          isEdit: isEdit,
-                                          newCartItem:
-                                              cartItem,
-                                          quantityToAdd:
-                                              entered,
-                                          // useGroupUnit:
-                                          //     useGroupQuantityTemp,
-                                        )) {
-                                      showDialog(
-                                        context: context,
-                                        builder:
-                                            (
-                                              _,
-                                            ) => InfoAlert(
-                                              title:
-                                                  "Quantity Limit Reached",
-                                              message:
-                                                  "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit))} ${getPrimaryUnit().name} available in stock.",
-                                              theme: theme,
-                                            ),
-                                      ).then((_) {
-                                        qttyNode
-                                            .requestFocus();
-                                      });
+                                            ).then((_) {
+                                              qttyNode
+                                                  .requestFocus();
+                                            });
 
-                                      Future.delayed(
-                                        Duration(
-                                          milliseconds: 300,
-                                        ),
-                                        () {
+                                            Future.delayed(
+                                              Duration(
+                                                milliseconds:
+                                                    300,
+                                              ),
+                                              () {
+                                                setState(() {
+                                                  qqty = 0;
+                                                  quantityController
+                                                          .text =
+                                                      '0';
+                                                });
+                                              },
+                                            );
+
+                                            return;
+                                          }
+                                        }
+
+                                        if (value.isEmpty) {
                                           setState(() {
-                                            qqty = 0;
                                             quantityController
                                                 .text = '0';
                                           });
-                                        },
-                                      );
+                                        }
 
-                                      return;
-                                    }
-                                  }
+                                        setState(() {
+                                          qqty =
+                                              (double.tryParse(
+                                                    value.replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
+                                                  ) ??
+                                                  0);
+                                        });
+                                      },
 
-                                  if (value.isEmpty) {
-                                    setState(() {
-                                      quantityController
-                                          .text = '0';
-                                    });
-                                  }
-
-                                  setState(() {
-                                    qqty =
-                                        (double.tryParse(
-                                              value
-                                                  .replaceAll(
-                                                    ',',
-                                                    '',
-                                                  ),
-                                            ) ??
-                                            0);
-                                  });
-                                },
-
-                                title:
-                                    'Enter Item Quantity',
-                                hint: 'Quantity',
-                                controller:
-                                    quantityController,
-                                theme: theme,
+                                      title:
+                                          'Enter Item Quantity',
+                                      hint: 'Quantity',
+                                      controller:
+                                          quantityController,
+                                      theme: theme,
+                                    ),
+                                  );
+                                } else {
+                                  return Row(
+                                    spacing: 10,
+                                    children: [
+                                      Expanded(
+                                        child: EditCartTextField(
+                                          onChanged: (
+                                            value,
+                                          ) {
+                                            if (value
+                                                .isEmpty) {
+                                              setState(() {
+                                                widthController
+                                                        .text =
+                                                    '0';
+                                              });
+                                            } else if (value
+                                                    .toString()[0] ==
+                                                '0') {
+                                              setState(() {
+                                                widthController
+                                                    .text = value
+                                                    .substring(
+                                                      1,
+                                                    );
+                                              });
+                                            }
+                                          },
+                                          title:
+                                              '${getPrimaryUnit().name} Width',
+                                          hint:
+                                              'Enter Width',
+                                          controller:
+                                              widthController,
+                                          theme: theme,
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: EditCartTextField(
+                                          onChanged: (
+                                            value,
+                                          ) {
+                                            if (value
+                                                .isEmpty) {
+                                              setState(() {
+                                                heightController
+                                                        .text =
+                                                    '0';
+                                              });
+                                            } else if (value
+                                                    .toString()[0] ==
+                                                '0') {
+                                              setState(() {
+                                                heightController
+                                                    .text = value
+                                                    .substring(
+                                                      1,
+                                                    );
+                                              });
+                                            }
+                                          },
+                                          title:
+                                              '${getPrimaryUnit().name} Height',
+                                          hint:
+                                              'Enter Height',
+                                          controller:
+                                              heightController,
+                                          theme: theme,
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }
+                              },
+                            ),
+                            SizedBox(height: 15),
+                            Visibility(
+                              visible:
+                                  cartItemTemp
+                                      .item
+                                      .quantityType ==
+                                  2,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .center,
+                                spacing: 5,
+                                children: [
+                                  Material(
+                                    color:
+                                        Colors.transparent,
+                                    child: InkWell(
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
+                                      onTap: () {
+                                        setState(() {
+                                          quantityTypeTemp =
+                                              1;
+                                          widthController
+                                              .clear();
+                                          heightController
+                                              .clear();
+                                        });
+                                      },
+                                      child: Container(
+                                        padding:
+                                            EdgeInsets.symmetric(
+                                              horizontal: 6,
+                                              vertical: 6,
+                                            ),
+                                        child: Row(
+                                          spacing: 6,
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color:
+                                                      quantityTypeTemp !=
+                                                              1
+                                                          ? Colors.grey
+                                                          : Colors.transparent,
+                                                ),
+                                                color:
+                                                    quantityTypeTemp ==
+                                                            1
+                                                        ? theme.lightModeColor.prColor250
+                                                        : Colors.transparent,
+                                                shape:
+                                                    BoxShape
+                                                        .circle,
+                                              ),
+                                              child: Icon(
+                                                size: 14,
+                                                color:
+                                                    Colors
+                                                        .white,
+                                                Icons.check,
+                                              ),
+                                            ),
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b4
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              'Enter Whole',
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Material(
+                                    color:
+                                        Colors.transparent,
+                                    child: InkWell(
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
+                                      onTap: () {
+                                        setState(() {
+                                          quantityTypeTemp =
+                                              2;
+                                          quantityController
+                                              .clear();
+                                        });
+                                      },
+                                      child: Container(
+                                        padding:
+                                            EdgeInsets.symmetric(
+                                              vertical: 6,
+                                              horizontal: 6,
+                                            ),
+                                        child: Row(
+                                          spacing: 5,
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color:
+                                                      quantityTypeTemp !=
+                                                              2
+                                                          ? Colors.grey
+                                                          : Colors.transparent,
+                                                ),
+                                                color:
+                                                    quantityTypeTemp ==
+                                                            2
+                                                        ? theme.lightModeColor.prColor250
+                                                        : Colors.transparent,
+                                                shape:
+                                                    BoxShape
+                                                        .circle,
+                                              ),
+                                              child: Icon(
+                                                size: 14,
+                                                color:
+                                                    Colors
+                                                        .white,
+                                                Icons.check,
+                                              ),
+                                            ),
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b4
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              'Enter Dimensions',
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                             SizedBox(height: 15),

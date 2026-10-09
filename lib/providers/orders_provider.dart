@@ -592,6 +592,9 @@ class OrdersProvider extends ChangeNotifier {
       }
     }
     return TempCartItem(
+      heightDimension: record.heightDimension,
+      quantityType: record.quantityType,
+      widthDimension: record.widthDimension,
       priceUuid: record.priceUuid,
       unitUuid: record.unitUuid,
       uuid: record.uuid,
@@ -660,9 +663,12 @@ class OrdersProvider extends ChangeNotifier {
                     record.quantity;
 
         TempProductClass productNew = TempProductClass(
-          pricesList: [],
-          unitsList: [],
-          useGroupUnit: false,
+          heightDimension: record.heightDimension,
+          quantityType: record.quantityType,
+          widthDimension: record.widthDimension,
+          pricesList: record.pricesList ?? [],
+          unitsList: record.unitsList ?? [],
+          useGroupUnit: record.useGroupQuantity ?? false,
           categories: [],
           groupUnit: 'Group(s)',
           storageUuid: null,
@@ -672,7 +678,7 @@ class OrdersProvider extends ChangeNotifier {
           isRefundable: false,
           costPrice: costPrice,
           shopId: shopId(),
-          setCustomPrice: true,
+          setCustomPrice: record.customPriceSet,
           isManaged: false,
           barcode: null,
           brand: null,
@@ -960,6 +966,9 @@ class OrdersProvider extends ChangeNotifier {
                 'Sales Record about to be Created',
               );
               return TempProductSaleRecord(
+                heightDimension: record.heightDimension,
+                quantityType: record.quantityType,
+                widthDimension: record.widthDimension,
                 priceUuid: record.priceUuid,
                 pricesList: record.getPriceListFinal(),
                 unitUuid: record.unitUuid,

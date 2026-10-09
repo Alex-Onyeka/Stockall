@@ -1306,6 +1306,9 @@ class SalesProvider extends ChangeNotifier {
                 );
 
                 return TempProductSaleRecord(
+                  heightDimension: cartItem.heightDimension,
+                  quantityType: cartItem.quantityType,
+                  widthDimension: cartItem.widthDimension,
                   priceUuid: cartItem.priceUuid,
                   pricesList: cartItem.getPriceListFinal(),
                   unitUuid: cartItem.unitUuid,
@@ -1523,6 +1526,9 @@ class SalesProvider extends ChangeNotifier {
 
                   TempProductClass
                   product = TempProductClass(
+                    heightDimension: record.heightDimension,
+                    quantityType: record.quantityType,
+                    widthDimension: record.widthDimension,
                     pricesList: [
                       ProductPricesClass(
                         uuid: uuidGen(),
@@ -1782,6 +1788,9 @@ class SalesProvider extends ChangeNotifier {
               ) {
                 final product = cartItem.getItem();
                 return TempProductSaleRecord(
+                  heightDimension: cartItem.heightDimension,
+                  quantityType: cartItem.quantityType,
+                  widthDimension: cartItem.widthDimension,
                   priceUuid: cartItem.priceUuid,
                   pricesList: cartItem.getPriceListFinal(),
                   unitUuid: cartItem.unitUuid,
@@ -1848,6 +1857,9 @@ class SalesProvider extends ChangeNotifier {
                 );
 
                 return TempProductSaleRecord(
+                  heightDimension: cartItem.heightDimension,
+                  quantityType: cartItem.quantityType,
+                  widthDimension: cartItem.widthDimension,
                   priceUuid: cartItem.priceUuid,
                   pricesList: cartItem.getPriceListFinal(),
                   unitUuid: cartItem.unitUuid,
@@ -2068,6 +2080,9 @@ class SalesProvider extends ChangeNotifier {
 
                   TempProductClass
                   product = TempProductClass(
+                    heightDimension: record.heightDimension,
+                    quantityType: record.quantityType,
+                    widthDimension: record.widthDimension,
                     pricesList: [
                       ProductPricesClass(
                         uuid: uuidGen(),
@@ -2270,6 +2285,9 @@ class SalesProvider extends ChangeNotifier {
               );
 
               return OrderItems(
+                heightDimension: cartItem.heightDimension,
+                quantityType: cartItem.quantityType,
+                widthDimension: cartItem.widthDimension,
                 priceUuid: cartItem.priceUuid,
                 pricesList: cartItem.getPriceListFinal(),
                 unitUuid: cartItem.unitUuid,
@@ -2419,6 +2437,9 @@ class SalesProvider extends ChangeNotifier {
 
                   TempProductClass
                   product = TempProductClass(
+                    heightDimension: record.heightDimension,
+                    quantityType: record.quantityType,
+                    widthDimension: record.widthDimension,
                     pricesList: [
                       ProductPricesClass(
                         uuid: uuidGen(),
@@ -2749,7 +2770,8 @@ class SalesProvider extends ChangeNotifier {
               )
               .toList();
       if (editedReceipts.isNotEmpty) {
-        balance += editedReceipts.first.customerAccount ?? 0;
+        balance +=
+            editedReceipts.first.customerAccount ?? 0;
       }
     }
     return balance;
@@ -2779,7 +2801,8 @@ class SalesProvider extends ChangeNotifier {
         currentCart().selectedCustomer != null &&
         authorization(
           authorized:
-              Authorizations().makeSalesFromCustomersAccount,
+              Authorizations()
+                  .makeSalesFromCustomersAccount,
         );
   }
 
@@ -2862,7 +2885,10 @@ class SalesProvider extends ChangeNotifier {
         method: PaymentMethods.account,
         amount: accountPart,
       ),
-      PaymentEntry(method: method, amount: total - accountPart),
+      PaymentEntry(
+        method: method,
+        amount: total - accountPart,
+      ),
     ];
     currentCart().paymentMethod = 2;
     await setSplitPayments(payments);
@@ -3698,7 +3724,9 @@ class SalesProvider extends ChangeNotifier {
 
   // Maps a saved receipt back to a checkout option using its amounts, so
   // old receipts and account receipts reopen on the right option.
-  int paymentMethodIndexForReceipt(TempMainReceipt receipt) {
+  int paymentMethodIndexForReceipt(
+    TempMainReceipt receipt,
+  ) {
     // Invoice / order receipts keep the old mapping; customer account
     // splits are Real Sales only for now.
     if (receipt.invoiceUuid != null ||
@@ -3783,6 +3811,9 @@ class SalesProvider extends ChangeNotifier {
       }
     }
     return TempCartItem(
+      heightDimension: record.heightDimension,
+      quantityType: record.quantityType,
+      widthDimension: record.widthDimension,
       priceUuid: record.priceUuid,
       unitUuid: record.unitUuid,
       uuid: record.uuid,
@@ -3853,6 +3884,9 @@ class SalesProvider extends ChangeNotifier {
                     record.quantity;
 
         TempProductClass productNew = TempProductClass(
+          heightDimension: record.heightDimension,
+          quantityType: record.quantityType,
+          widthDimension: record.widthDimension,
           pricesList: record.getPriceListFinal(),
           unitsList: record.getUnitListFinal(),
           useGroupUnit: false,

@@ -317,6 +317,12 @@ Widget priceSectionWidget(
                                                                 quantityChange:
                                                                     null,
                                                                 product: TempProductClass(
+                                                                  heightDimension:
+                                                                      product.heightDimension,
+                                                                  widthDimension:
+                                                                      product.widthDimension,
+                                                                  quantityType:
+                                                                      product.quantityType,
                                                                   unitsList:
                                                                       product.unitsList,
                                                                   pricesList:

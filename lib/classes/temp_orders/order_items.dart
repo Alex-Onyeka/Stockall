@@ -117,6 +117,15 @@ class OrderItems extends HiveObject {
   @HiveField(35)
   String? priceUuid;
 
+  @HiveField(36)
+  double? widthDimension;
+
+  @HiveField(37)
+  double? heightDimension;
+
+  @HiveField(38)
+  int? quantityType;
+
   OrderItems({
     required this.uuid,
     required this.orderId,
@@ -154,6 +163,9 @@ class OrderItems extends HiveObject {
     required this.unitUuid,
     required this.pricesList,
     required this.priceUuid,
+    required this.widthDimension,
+    required this.heightDimension,
+    required this.quantityType,
   });
 
   factory OrderItems.fromJson(Map<String, dynamic> json) {
@@ -216,6 +228,11 @@ class OrderItems extends HiveObject {
               )
               .toList(),
       priceUuid: json['price_uuid'] as String?,
+      widthDimension:
+          (json['width_dimension'] as num?)?.toDouble(),
+      heightDimension:
+          (json['height_dimension'] as num?)?.toDouble(),
+      quantityType: json['quantity_type'] as int?,
     );
   }
 
@@ -263,6 +280,9 @@ class OrderItems extends HiveObject {
         itemUuid: uuid,
       ),
       'price_uuid': priceUuid,
+      'width_dimension': widthDimension,
+      'height_dimension': heightDimension,
+      'quantity_type': quantityType,
     };
   }
 
@@ -302,6 +322,9 @@ class OrderItems extends HiveObject {
     String? unitUuid,
     List<ProductPricesClass>? pricesList,
     String? priceUuid,
+    double? widthDimension,
+    double? heightDimension,
+    int? quantityType,
   }) {
     return OrderItems(
       uuid: uuid ?? this.uuid,
@@ -348,6 +371,10 @@ class OrderItems extends HiveObject {
       unitUuid: unitUuid ?? this.unitUuid,
       pricesList: pricesList ?? this.pricesList,
       priceUuid: priceUuid ?? this.priceUuid,
+      widthDimension: widthDimension ?? this.widthDimension,
+      heightDimension:
+          heightDimension ?? this.heightDimension,
+      quantityType: quantityType ?? this.quantityType,
     );
   }
 

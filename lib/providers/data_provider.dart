@@ -2939,6 +2939,9 @@ class DataProvider extends ChangeNotifier {
   double? discount;
   String color = '';
   String barcode = '';
+  // double heightDimension = 0;
+  // double widthDimension = 0;
+  // int quantityType = 1;
 
   void clearFields({bool? setIsManaged}) {
     isProductRefundable = false;
@@ -2959,11 +2962,15 @@ class DataProvider extends ChangeNotifier {
     colorValueSet = false;
     sizeValueSet = false;
     groupUnitValueSet = false;
+    // heightDimension = 0;
+    // widthDimension = 0;
+    // quantityType = 1;
     clearGroupUnit();
     clearExpDate();
     clearDepartment();
     clearUnit();
     clearTempUnitsList();
+    clearTempPricesList();
     notifyListeners();
   }
 
@@ -3105,16 +3112,27 @@ class DataProvider extends ChangeNotifier {
     'Bundle(s)',
     'Can(s)',
     'Carton(s)',
+    'Centimeter(s)',
+    'Cm²(s)',
     'Crate(s)',
     'Cup(s)',
     'Dozen(s)',
+    'Foot(s)',
     'Gallon(s)',
+    'Inch(es)',
+    'Inch²(s)',
     'Item(s)',
     'Jar(s)',
     'Kg(s)',
+    'Kilometer(s)',
+    'Km²(s)',
     'Lb(s)',
     'Liter(s)',
+    'Meter(s)',
+    'M²(s)',
     'Mg(s)',
+    'Millimeter(s)',
+    'Mm²(s)',
     'Ml(s)',
     'Pack(s)',
     'Pair(s)',
@@ -3130,6 +3148,7 @@ class DataProvider extends ChangeNotifier {
     'Tin(s)',
     'Tray(s)',
     'Tube(s)',
+    'Truck(s)',
     'Unit(s)',
     'Other(s)',
   ];

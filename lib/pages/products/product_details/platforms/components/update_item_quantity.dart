@@ -39,7 +39,10 @@ class _UpdateItemQuantityWidgetState
   bool isEditQuantityLoading = false;
   final quantityController = TextEditingController();
   final commentController = TextEditingController();
+  final widthController = TextEditingController();
+  final heightController = TextEditingController();
   bool isAddToQuantity = true;
+  int quantityTypeTemp = 1;
   String? unitUuid;
 
   @override
@@ -64,8 +67,8 @@ class _UpdateItemQuantityWidgetState
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    padding: EdgeInsets.all(30),
-                    margin: EdgeInsets.only(bottom: 100),
+                    padding: EdgeInsets.all(20),
+                    margin: EdgeInsets.only(bottom: 50),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(
@@ -165,33 +168,269 @@ class _UpdateItemQuantityWidgetState
                                   ? 'Quantity Not Set'
                                   : 'Current Quantity in ${widget.product.getProductUnit(unitUuid: unitUuid).name}: ${formatLargeNumberDouble(widget.product.getProductUnit(unitUuid: unitUuid).getQuantityEquivDivided(index: 1, context: context))}',
                             ),
-                            EditCartTextField(
-                              onChanged: (value) {
-                                if (value.isEmpty) {
-                                  setState(() {
-                                    quantityController
-                                        .text = '0';
-                                  });
-                                } else if (value
-                                        .toString()[0] ==
-                                    '0') {
-                                  setState(() {
-                                    quantityController
-                                        .text = value
-                                        .substring(1);
-                                  });
+                            Builder(
+                              builder: (context) {
+                                if (quantityTypeTemp == 1) {
+                                  return EditCartTextField(
+                                    onChanged: (value) {
+                                      if (value.isEmpty) {
+                                        setState(() {
+                                          quantityController
+                                              .text = '0';
+                                        });
+                                      } else if (value
+                                              .toString()[0] ==
+                                          '0') {
+                                        setState(() {
+                                          quantityController
+                                              .text = value
+                                              .substring(1);
+                                        });
+                                      }
+                                    },
+                                    title:
+                                        '${widget.product.getProductUnit(unitUuid: unitUuid).name} Quantity',
+                                    hint:
+                                        'Enter Quantity Amount',
+                                    controller:
+                                        quantityController,
+                                    theme: theme,
+                                  );
+                                } else {
+                                  return Row(
+                                    spacing: 10,
+                                    children: [
+                                      Expanded(
+                                        child: EditCartTextField(
+                                          onChanged: (
+                                            value,
+                                          ) {
+                                            if (value
+                                                .isEmpty) {
+                                              setState(() {
+                                                widthController
+                                                        .text =
+                                                    '0';
+                                              });
+                                            } else if (value
+                                                    .toString()[0] ==
+                                                '0') {
+                                              setState(() {
+                                                widthController
+                                                    .text = value
+                                                    .substring(
+                                                      1,
+                                                    );
+                                              });
+                                            }
+                                          },
+                                          title:
+                                              '${widget.product.getProductUnit(unitUuid: unitUuid).name} Width',
+                                          hint:
+                                              'Enter Width',
+                                          controller:
+                                              widthController,
+                                          theme: theme,
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: EditCartTextField(
+                                          onChanged: (
+                                            value,
+                                          ) {
+                                            if (value
+                                                .isEmpty) {
+                                              setState(() {
+                                                heightController
+                                                        .text =
+                                                    '0';
+                                              });
+                                            } else if (value
+                                                    .toString()[0] ==
+                                                '0') {
+                                              setState(() {
+                                                heightController
+                                                    .text = value
+                                                    .substring(
+                                                      1,
+                                                    );
+                                              });
+                                            }
+                                          },
+                                          title:
+                                              '${widget.product.getProductUnit(unitUuid: unitUuid).name} Height',
+                                          hint:
+                                              'Enter Height',
+                                          controller:
+                                              heightController,
+                                          theme: theme,
+                                        ),
+                                      ),
+                                    ],
+                                  );
                                 }
                               },
-                              title:
-                                  '${widget.product.getProductUnit(unitUuid: unitUuid).name} Quantity',
-                              hint: 'Enter Quantity Amount',
-                              controller:
-                                  quantityController,
-                              theme: theme,
                             ),
                           ],
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: 10),
+                        Visibility(
+                          visible:
+                              widget.product.quantityType ==
+                              2,
+                          child: Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment.center,
+                            spacing: 5,
+                            children: [
+                              Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
+                                  onTap: () {
+                                    setState(() {
+                                      quantityTypeTemp = 1;
+                                      widthController
+                                          .clear();
+                                      heightController
+                                          .clear();
+                                    });
+                                  },
+                                  child: Container(
+                                    padding:
+                                        EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                          vertical: 6,
+                                        ),
+                                    child: Row(
+                                      spacing: 6,
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color:
+                                                  quantityTypeTemp !=
+                                                          1
+                                                      ? Colors
+                                                          .grey
+                                                      : Colors
+                                                          .transparent,
+                                            ),
+                                            color:
+                                                quantityTypeTemp ==
+                                                        1
+                                                    ? theme
+                                                        .lightModeColor
+                                                        .prColor250
+                                                    : Colors
+                                                        .transparent,
+                                            shape:
+                                                BoxShape
+                                                    .circle,
+                                          ),
+                                          child: Icon(
+                                            size: 14,
+                                            color:
+                                                Colors
+                                                    .white,
+                                            Icons.check,
+                                          ),
+                                        ),
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b4
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          'Enter Whole',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
+                                  onTap: () {
+                                    setState(() {
+                                      quantityTypeTemp = 2;
+                                      quantityController
+                                          .clear();
+                                    });
+                                  },
+                                  child: Container(
+                                    padding:
+                                        EdgeInsets.symmetric(
+                                          vertical: 6,
+                                          horizontal: 6,
+                                        ),
+                                    child: Row(
+                                      spacing: 5,
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color:
+                                                  quantityTypeTemp !=
+                                                          2
+                                                      ? Colors
+                                                          .grey
+                                                      : Colors
+                                                          .transparent,
+                                            ),
+                                            color:
+                                                quantityTypeTemp ==
+                                                        2
+                                                    ? theme
+                                                        .lightModeColor
+                                                        .prColor250
+                                                    : Colors
+                                                        .transparent,
+                                            shape:
+                                                BoxShape
+                                                    .circle,
+                                          ),
+                                          child: Icon(
+                                            size: 14,
+                                            color:
+                                                Colors
+                                                    .white,
+                                            Icons.check,
+                                          ),
+                                        ),
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b4
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          'Enter Dimensions',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 10),
                         UnitSelectionWidget(
                           storageProduct: null,
                           material: null,
@@ -466,15 +705,15 @@ class _UpdateItemQuantityWidgetState
                                                       (widget.product.quantity ??
                                                           0)),
                                             ),
-                                        newValue:
-                                            widget.product
-                                                .getProductUnit()
-                                                .getQuantityEquivDivided(
-                                                  index: 1,
-                                                  newQuantity:
-                                                      setQuantity(),
-                                                )
-                                                .toString(),
+                                        newValue: formatLargeNumberDouble(
+                                          widget.product
+                                              .getProductUnit()
+                                              .getQuantityEquivDivided(
+                                                index: 1,
+                                                newQuantity:
+                                                    setQuantity(),
+                                              ),
+                                        ),
                                         desc:
                                             commentController
                                                     .text
@@ -484,16 +723,16 @@ class _UpdateItemQuantityWidgetState
                                                 : 'This Item Quantity Was Updated.',
                                         isIncreased:
                                             isIncrement,
-                                        oldValue:
-                                            widget.product
-                                                .getProductUnit()
-                                                .getQuantityEquivDivided(
-                                                  index: 1,
-                                                  newQuantity:
-                                                      (widget.product.quantity ??
-                                                          0),
-                                                )
-                                                .toString(),
+                                        oldValue: formatLargeNumberDouble(
+                                          widget.product
+                                              .getProductUnit()
+                                              .getQuantityEquivDivided(
+                                                index: 1,
+                                                newQuantity:
+                                                    (widget.product.quantity ??
+                                                        0),
+                                              ),
+                                        ),
                                       );
 
                                       await dataProvider.updateProduct(
@@ -511,6 +750,18 @@ class _UpdateItemQuantityWidgetState
                                                         0))
                                                 .abs(),
                                         product: TempProductClass(
+                                          heightDimension:
+                                              widget
+                                                  .product
+                                                  .heightDimension,
+                                          widthDimension:
+                                              widget
+                                                  .product
+                                                  .widthDimension,
+                                          quantityType:
+                                              widget
+                                                  .product
+                                                  .quantityType,
                                           unitsList:
                                               widget
                                                   .product

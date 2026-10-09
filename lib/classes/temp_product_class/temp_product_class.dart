@@ -121,6 +121,15 @@ class TempProductClass {
   @HiveField(36)
   List<ProductPricesClass>? pricesList;
 
+  @HiveField(37)
+  double? widthDimension;
+
+  @HiveField(38)
+  double? heightDimension;
+
+  @HiveField(39)
+  int? quantityType;
+
   TempProductClass({
     this.id,
     required this.name,
@@ -159,6 +168,9 @@ class TempProductClass {
     required this.useGroupUnit,
     required this.unitsList,
     required this.pricesList,
+    required this.widthDimension,
+    required this.heightDimension,
+    this.quantityType = 1,
   });
 
   factory TempProductClass.fromJson(
@@ -247,6 +259,11 @@ class TempProductClass {
                 ),
               )
               .toList(),
+      widthDimension:
+          (json['width_dimension'] as num?)?.toDouble(),
+      heightDimension:
+          (json['height_dimension'] as num?)?.toDouble(),
+      quantityType: json['quantity_type'] as int? ?? 1,
     );
   }
 
@@ -300,6 +317,9 @@ class TempProductClass {
           tempPricesList: pricesList,
           itemUuid: uuid,
         ),
+        'width_dimension': widthDimension,
+        'height_dimension': heightDimension,
+        'quantity_type': quantityType ?? 1,
       };
     } else {
       return {
@@ -348,6 +368,9 @@ class TempProductClass {
           tempPricesList: pricesList,
           itemUuid: uuid,
         ),
+        'width_dimension': widthDimension,
+        'height_dimension': heightDimension,
+        'quantity_type': quantityType ?? 1,
       };
     }
   }
@@ -390,6 +413,9 @@ class TempProductClass {
     bool? useGroupUnit,
     List<ProductUnitsClass>? unitsList,
     List<ProductPricesClass>? pricesList,
+    double? widthDimension,
+    double? heightDimension,
+    int? quantityType,
   }) {
     return TempProductClass(
       id: id ?? this.id,
@@ -432,6 +458,10 @@ class TempProductClass {
       useGroupUnit: useGroupUnit ?? this.useGroupUnit,
       unitsList: unitsList ?? this.unitsList,
       pricesList: pricesList ?? this.pricesList,
+      widthDimension: widthDimension ?? this.widthDimension,
+      heightDimension:
+          heightDimension ?? this.heightDimension,
+      quantityType: quantityType ?? this.quantityType,
     );
   }
 

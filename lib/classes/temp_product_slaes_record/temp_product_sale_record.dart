@@ -120,6 +120,15 @@ class TempProductSaleRecord {
   @HiveField(36)
   String? priceUuid;
 
+  @HiveField(37)
+  double? widthDimension;
+
+  @HiveField(38)
+  double? heightDimension;
+
+  @HiveField(39)
+  int? quantityType;
+
   TempProductSaleRecord({
     this.productRecordId,
     required this.createdAt,
@@ -158,6 +167,9 @@ class TempProductSaleRecord {
     required this.unitUuid,
     required this.pricesList,
     required this.priceUuid,
+    required this.widthDimension,
+    required this.heightDimension,
+    required this.quantityType,
   });
 
   factory TempProductSaleRecord.fromJson(
@@ -220,6 +232,11 @@ class TempProductSaleRecord {
               )
               .toList(),
       priceUuid: json['price_uuid'] as String?,
+      widthDimension:
+          (json['width_dimension'] as num?)?.toDouble(),
+      heightDimension:
+          (json['height_dimension'] as num?)?.toDouble(),
+      quantityType: json['quantity_type'] as int?,
     );
   }
 
@@ -266,6 +283,9 @@ class TempProductSaleRecord {
         itemUuid: uuid,
       ),
       'price_uuid': priceUuid,
+      'width_dimension': widthDimension,
+      'height_dimension': heightDimension,
+      'quantity_type': quantityType,
     };
   }
 
@@ -305,6 +325,9 @@ class TempProductSaleRecord {
     String? unitUuid,
     List<ProductPricesClass>? pricesList,
     String? priceUuid,
+    double? widthDimension,
+    double? heightDimension,
+    int? quantityType,
   }) {
     return TempProductSaleRecord(
       productRecordId:
@@ -347,6 +370,10 @@ class TempProductSaleRecord {
       unitUuid: unitUuid ?? this.unitUuid,
       pricesList: pricesList ?? this.pricesList,
       priceUuid: priceUuid ?? this.priceUuid,
+      widthDimension: widthDimension ?? this.widthDimension,
+      heightDimension:
+          heightDimension ?? this.heightDimension,
+      quantityType: quantityType ?? this.quantityType,
     );
   }
 
