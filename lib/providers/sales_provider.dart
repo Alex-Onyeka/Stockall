@@ -3371,15 +3371,29 @@ class SalesProvider extends ChangeNotifier {
             index: 1,
             newQuantity: newItem.quantity,
           ),
-      // isEdit: isEdit,
-      // useGroupUnit: newItem.useGroupQuantity ?? false,
     )) {
       String result = '';
-      var items = currentCart().getCartItems().where(
-        (item) =>
+      var items = currentCart().getCartItems().where((
+        item,
+      ) {
+        final sameProduct =
             (item.itemUuid ?? item.item.uuid) ==
-            (newItem.itemUuid ?? newItem.item.uuid),
-      );
+            (newItem.itemUuid ?? newItem.item.uuid);
+
+        if (!sameProduct) return false;
+
+        final is2DItem = newItem.item.quantityType == 2;
+
+        if (is2DItem) {
+          return item.item.quantityType == 2 &&
+              item.widthDimension ==
+                  newItem.widthDimension &&
+              item.heightDimension ==
+                  newItem.heightDimension;
+        }
+
+        return true;
+      });
 
       var voidItems = currentCart()
           .getCartItemsVoid()
@@ -3472,32 +3486,6 @@ class SalesProvider extends ChangeNotifier {
         );
         notifyListeners();
       } else {
-        // if (items.isNotEmpty) {
-        //   items.first.quantity += newItem.quantity;
-        //   await returnMultiDisplayProvider().updateWindow(
-        //     cartClass: AltCartClass(
-        // manageCustomerReward: returnShopProvider()
-        //                     .userShop()!
-        //                     .manageCustomerReward ?? false,
-        //       cartId: currentCart().id!,
-        //       currency:
-        //           returnShopProvider().userShop()!.currency,
-        //       cartItems:
-        //           currentCart()
-        //               .getCartItemsAll()
-        //               .reversed
-        //               .toList(),
-        //       fixedDiscount: currentCart().fixedDiscount,
-        //       percentDiscount: currentCart().discount,
-        //       vat:
-        //           returnShopProvider().userShop()!.applyVAT!
-        //               ? vat
-        //               : 0,
-        //     ),
-        //   );
-        //   notifyListeners();
-        //   result = 'Item Updated Successfully';
-        // } else {
         currentCart().cartItems.add(newItem);
         await returnMultiDisplayProvider().updateWindow(
           cartClass: AltCartClass(
