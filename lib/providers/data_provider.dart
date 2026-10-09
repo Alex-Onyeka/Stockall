@@ -57,6 +57,9 @@ import 'package:stockall/local_database/materials_usage/unsync_funcs/updated/upd
 import 'package:stockall/local_database/orders_func/unsync_funcs/created/created_orders_func.dart';
 import 'package:stockall/local_database/orders_func/unsync_funcs/deleted/deleted_orders_func.dart';
 import 'package:stockall/local_database/orders_func/unsync_funcs/updated/updated_orders_func.dart';
+import 'package:stockall/local_database/drafts_func/unsync_funcs/created/created_drafts_func.dart';
+import 'package:stockall/local_database/drafts_func/unsync_funcs/deleted/deleted_drafts_func.dart';
+import 'package:stockall/local_database/drafts_func/unsync_funcs/updated/updated_drafts_func.dart';
 import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/created/created_records_func.dart';
 import 'package:stockall/local_database/production_item_history/unsync_funcs/created_production_item_histories_func.dart';
 import 'package:stockall/local_database/production_items/unsync_funcs/created/created_production_items_func.dart';
@@ -553,6 +556,10 @@ class DataProvider extends ChangeNotifier {
     await CreatedOrdersFunc().clearOrders();
     await UpdatedOrdersFunc().clearUpdatedOrders();
     await DeletedOrdersFunc().clearDeletedOrders();
+
+    await CreatedDraftsFunc().clearDrafts();
+    await UpdatedDraftsFunc().clearUpdatedDrafts();
+    await DeletedDraftsFunc().clearDeletedDrafts();
     notifyListeners();
   }
 
@@ -1314,6 +1321,34 @@ class DataProvider extends ChangeNotifier {
             );
             setSyncProgress(68);
           }
+          if (DeletedDraftsFunc()
+                  .getDraftIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnDraftsProvider().deleteDraftsSync();
+            await mainLocalLog(
+              'Finished Syncing Deleted Drafts',
+            );
+            setSyncProgress(69);
+          }
+          if (CreatedDraftsFunc().getDrafts().isNotEmpty &&
+              isOnline) {
+            await returnDraftsProvider().createDraftsSync();
+            await mainLocalLog(
+              'Finished Syncing Created Drafts',
+            );
+            setSyncProgress(70);
+          }
+          if (UpdatedDraftsFunc()
+                  .getDraftIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnDraftsProvider().updateDraftsSync();
+            await mainLocalLog(
+              'Finished Syncing Updated Drafts',
+            );
+            setSyncProgress(71);
+          }
           if (CreatedStorageItemHistoriesFunc()
                   .getCreatedStorageItemHistoriess()
                   .isNotEmpty &&
@@ -1323,7 +1358,7 @@ class DataProvider extends ChangeNotifier {
             await mainLocalLog(
               'Finished Syncing Storage Item Histories',
             );
-            setSyncProgress(69);
+            setSyncProgress(72);
           }
 
           toggleSyncing(false);
@@ -1360,7 +1395,7 @@ class DataProvider extends ChangeNotifier {
   bool isSyncing = false;
   double syncProgress = 0;
   void setSyncProgress(int value) {
-    syncProgress = (value / 68) * 100;
+    syncProgress = (value / 72) * 100;
     notifyListeners();
   }
 
@@ -1509,7 +1544,10 @@ class DataProvider extends ChangeNotifier {
               .isEmpty &&
           CreatedOrdersFunc().getOrders().isEmpty &&
           UpdatedOrdersFunc().getOrderIds().isEmpty &&
-          DeletedOrdersFunc().getOrderIds().isEmpty) {
+          DeletedOrdersFunc().getOrderIds().isEmpty &&
+          CreatedDraftsFunc().getDrafts().isEmpty &&
+          UpdatedDraftsFunc().getDraftIds().isEmpty &&
+          DeletedDraftsFunc().getDraftIds().isEmpty) {
         return 1;
       } else {
         return 0;
@@ -2328,6 +2366,37 @@ class DataProvider extends ChangeNotifier {
         UnsyncedItems(
           name: 'Deleted Orders',
           quantity: deletedOrders.length.toDouble(),
+        ),
+      );
+    }
+
+    // Drafts
+    final createdDrafts = CreatedDraftsFunc().getDrafts();
+    if (createdDrafts.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Created Drafts',
+          quantity: createdDrafts.length.toDouble(),
+        ),
+      );
+    }
+
+    final updatedDrafts = UpdatedDraftsFunc().getDraftIds();
+    if (updatedDrafts.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Updated Drafts',
+          quantity: updatedDrafts.length.toDouble(),
+        ),
+      );
+    }
+
+    final deletedDrafts = DeletedDraftsFunc().getDraftIds();
+    if (deletedDrafts.isNotEmpty) {
+      tempItems.add(
+        UnsyncedItems(
+          name: 'Deleted Drafts',
+          quantity: deletedDrafts.length.toDouble(),
         ),
       );
     }
@@ -3283,15 +3352,29 @@ class DataProvider extends ChangeNotifier {
   void deleteProductPrice({
     required ProductPricesClass priceListSingle,
   }) {
-    tempPricesList.removeWhere(
+    var items = tempPricesList.where(
       (item) => item.uuid == priceListSingle.uuid,
     );
-
-    if (priceListSingle.isPrimary) {
-      selectPrimaryPrice(
-        priceListSingle: tempPricesList.first,
+    if (items.isNotEmpty) {
+      tempPricesList.removeWhere(
+        (item) => item.uuid == priceListSingle.uuid,
       );
+
+      if (priceListSingle.isPrimary &&
+          tempPricesList.isNotEmpty) {
+        selectPrimaryPrice(
+          priceListSingle: tempPricesList.first,
+        );
+      }
     }
+    // else {
+    //   var products = productListMain.where(
+    //     (item) => item.uuid == priceListSingle.itemUuid,
+    //   );
+    //   if (products.isNotEmpty) {
+
+    //   }
+    // }
     notifyListeners();
   }
 

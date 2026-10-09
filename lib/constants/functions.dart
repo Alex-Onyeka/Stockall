@@ -8,6 +8,7 @@ import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/generate_barcode.dart';
+import 'package:stockall/constants/subscription/branding_watermark.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/general_report/class/general_report_class.dart';
@@ -910,14 +911,16 @@ Future<Uint8List> _buildPdf(
                         fontSize: 9,
                       ),
                     ),
-                    pw.SizedBox(width: 15),
-                    pw.Text(
-                      'Created by $appName Solutions - ( www.stockallapp.com )',
-                      style: pw.TextStyle(
-                        font: fontRegular,
-                        fontSize: 9,
+                    if (shouldShowBrandingWatermark()) ...[
+                      pw.SizedBox(width: 15),
+                      pw.Text(
+                        'Created by $appName Solutions - ( www.stockallapp.com )',
+                        style: pw.TextStyle(
+                          font: fontRegular,
+                          fontSize: 9,
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),
@@ -3452,14 +3455,16 @@ Future<Uint8List> _buildPdfProducts(
                         fontSize: 9,
                       ),
                     ),
-                    pw.SizedBox(width: 15),
-                    pw.Text(
-                      'Created by $appName Solutions - ( www.stockallapp.com )',
-                      style: pw.TextStyle(
-                        font: fontRegular,
-                        fontSize: 9,
+                    if (shouldShowBrandingWatermark()) ...[
+                      pw.SizedBox(width: 15),
+                      pw.Text(
+                        'Created by $appName Solutions - ( www.stockallapp.com )',
+                        style: pw.TextStyle(
+                          font: fontRegular,
+                          fontSize: 9,
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),
@@ -4295,14 +4300,16 @@ Future<Uint8List> _buildPdfSales(
                         fontSize: 9,
                       ),
                     ),
-                    pw.SizedBox(width: 15),
-                    pw.Text(
-                      'Created by $appName Solutions - ( www.stockallapp.com )',
-                      style: pw.TextStyle(
-                        font: fontRegular,
-                        fontSize: 9,
+                    if (shouldShowBrandingWatermark()) ...[
+                      pw.SizedBox(width: 15),
+                      pw.Text(
+                        'Created by $appName Solutions - ( www.stockallapp.com )',
+                        style: pw.TextStyle(
+                          font: fontRegular,
+                          fontSize: 9,
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),
@@ -4932,14 +4939,16 @@ Future<Uint8List> _buildPdfSalesSummary(
                         fontSize: 9,
                       ),
                     ),
-                    pw.SizedBox(width: 15),
-                    pw.Text(
-                      'Created by $appName Solutions - ( www.stockallapp.com )',
-                      style: pw.TextStyle(
-                        font: fontRegular,
-                        fontSize: 9,
+                    if (shouldShowBrandingWatermark()) ...[
+                      pw.SizedBox(width: 15),
+                      pw.Text(
+                        'Created by $appName Solutions - ( www.stockallapp.com )',
+                        style: pw.TextStyle(
+                          font: fontRegular,
+                          fontSize: 9,
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),

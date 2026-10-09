@@ -28,6 +28,7 @@ import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/compnents/cart_item_main.dart';
 import 'package:stockall/pages/sales/make_sales/page1/platforms/components/sub_staff_selection_widget.dart';
 import 'package:stockall/pages/sales/make_sales/page2/make_sales_two.dart';
+import 'package:stockall/components/drafts/drafts_list_sheet.dart';
 
 class MakeSalesMobile extends StatefulWidget {
   final TextEditingController searchController;
@@ -3126,6 +3127,106 @@ class _SwitchSaleTypeWidgetMobileState
                                     .lightModeColor
                                     .tertColor200,
                             Icons.check,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                PopupMenuItem(
+                  enabled: currentCart().canUseDraft(),
+                  mouseCursor: SystemMouseCursors.click,
+                  onTap: () {
+                    switchAction(4);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      left: 5.0,
+                      right: 15,
+                    ),
+                    child: Row(
+                      spacing: 10,
+                      children: [
+                        Icon(
+                          size: 16,
+                          color:
+                              theme
+                                  .lightModeColor
+                                  .warningColor200,
+                          Icons.edit_note,
+                        ),
+                        Expanded(
+                          child: Text(
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                            ),
+                            'Create Draft',
+                          ),
+                        ),
+                        Visibility(
+                          visible:
+                              currentCart()
+                                  .cartItemTypeIndex ==
+                              4,
+                          child: Icon(
+                            size: 16,
+                            color:
+                                theme
+                                    .lightModeColor
+                                    .warningColor200,
+                            Icons.check,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                PopupMenuItem(
+                  enabled:
+                      currentCart().canUseDraft() &&
+                      returnDraftsProvider()
+                          .drafts
+                          .isNotEmpty,
+                  mouseCursor: SystemMouseCursors.click,
+                  onTap: () {
+                    DraftsListSheet.show(context);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      left: 5.0,
+                      right: 15,
+                    ),
+                    child: Row(
+                      spacing: 10,
+                      children: [
+                        Icon(
+                          size: 16,
+                          color:
+                              returnDraftsProvider()
+                                      .drafts
+                                      .isNotEmpty
+                                  ? theme
+                                      .lightModeColor
+                                      .warningColor200
+                                  : Colors.grey,
+                          Icons.visibility,
+                        ),
+                        Expanded(
+                          child: Text(
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                            ),
+                            'View Drafts: ${returnDraftsProvider().drafts.length}',
                           ),
                         ),
                       ],

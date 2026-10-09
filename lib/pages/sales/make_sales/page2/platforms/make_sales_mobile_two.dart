@@ -4,6 +4,7 @@ import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/payment_type_button.dart';
 import 'package:stockall/components/cart_queue/cart_queue_mobile.dart';
+import 'package:stockall/components/drafts/drafts_list_sheet.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -890,6 +891,13 @@ class _MakeSalesMobileTwoState
                         child: MainButtonP(
                           themeProvider: theme,
                           action: () {
+                            if (returnSalesProvider()
+                                    .currentCart()
+                                    .cartItemTypeIndex ==
+                                4) {
+                              saveDraftAction(context);
+                              return;
+                            }
                             BuildContext safeContext =
                                 context;
                             if ((returnSalesProvider()
@@ -978,6 +986,11 @@ class _MakeSalesMobileTwoState
                                                 commentController
                                                     .text,
                                           );
+                                      // Captured before checkout clears the cart.
+                                      final draftUuid =
+                                          returnSalesProvider()
+                                              .currentCart()
+                                              .draftUuid;
                                       var res = await returnSalesProvider().checkoutMain(
                                         customerBalance:
                                             returnSalesProvider()
@@ -1043,6 +1056,12 @@ class _MakeSalesMobileTwoState
                                                   ),
                                             ),
                                       );
+                                      if (res != null) {
+                                        await returnDraftsProvider()
+                                            .completeDraft(
+                                              draftUuid,
+                                            );
+                                      }
 
                                       setState(() {
                                         isLoading = false;
@@ -1103,7 +1122,12 @@ class _MakeSalesMobileTwoState
                             }
                           },
                           text:
-                              returnSalesProviderContext(
+                              currentCart(
+                                        context: context,
+                                      ).cartItemTypeIndex ==
+                                      4
+                                  ? 'Save Draft'
+                                  : returnSalesProviderContext(
                                         context,
                                       )
                                       .currentCart()

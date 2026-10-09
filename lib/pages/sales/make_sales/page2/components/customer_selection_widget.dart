@@ -117,8 +117,11 @@ class _CustomerSelectionWidgetState
                                         Visibility(
                                           visible:
                                               currentCart()
-                                                  .cartItemTypeIndex ==
-                                              1,
+                                                      .cartItemTypeIndex ==
+                                                  1 ||
+                                              currentCart()
+                                                      .cartItemTypeIndex ==
+                                                  4,
                                           child: Padding(
                                             padding:
                                                 const EdgeInsets.only(
@@ -198,7 +201,7 @@ class _CustomerSelectionWidgetState
                                     .b3
                                     .fontSize,
                           ),
-                          'Select Customer ${returnSalesProviderContext(context).currentCart().cartItemTypeIndex != 1 ? '' : '(Optional)'}',
+                          'Select Customer ${returnSalesProviderContext(context).currentCart().cartItemTypeIndex == 1 || returnSalesProviderContext(context).currentCart().cartItemTypeIndex == 4 ? '(Optional)' : ''}',
                         ),
                         Icon(
                           color: Colors.grey,
