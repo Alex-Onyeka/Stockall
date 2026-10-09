@@ -372,7 +372,7 @@ Widget priceSectionWidget(
                                                                   wholeSalePrice:
                                                                       product.wholeSalePrice,
                                                                   quantity:
-                                                                      product.quantity,
+                                                                      product.getActualQuantity(),
                                                                   shopId:
                                                                       product.shopId,
                                                                   barcode:

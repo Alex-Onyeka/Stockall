@@ -3200,7 +3200,7 @@ class DataProvider extends ChangeNotifier {
   ) {
     return product.quantity != null &&
             product.qttyPerGroup != null
-        ? (product.quantity ?? 0) /
+        ? (product.getActualQuantity() ?? 0) /
             (product.qttyPerGroup ?? 0)
         : 0;
   }
@@ -3724,7 +3724,8 @@ class DataProvider extends ChangeNotifier {
     //   }
     // } else {
     for (var item in (products ?? productListMain)) {
-      tempTotal += item.costPrice * (item.quantity ?? 0);
+      tempTotal +=
+          item.costPrice * (item.getActualQuantity() ?? 0);
       // }
     }
     return tempTotal;
@@ -3735,7 +3736,7 @@ class DataProvider extends ChangeNotifier {
   }) {
     double tempTotal = 0;
     for (var item in (products ?? productListMain)) {
-      tempTotal += item.quantity ?? 0;
+      tempTotal += item.getActualQuantity() ?? 0;
     }
     return tempTotal;
   }

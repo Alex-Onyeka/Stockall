@@ -1821,9 +1821,9 @@ class _GeneralReportMobileState
                                                   (
                                                     product,
                                                   ) =>
-                                                      product.quantity !=
+                                                      product.getActualQuantity() !=
                                                           null &&
-                                                      product.quantity! >
+                                                      product.getActualQuantity()! >
                                                           0,
                                                 )
                                                 .length;
@@ -1834,7 +1834,7 @@ class _GeneralReportMobileState
                                                     product,
                                                   ) =>
                                                       product
-                                                          .quantity ==
+                                                          .getActualQuantity() ==
                                                       0,
                                                 )
                                                 .length;

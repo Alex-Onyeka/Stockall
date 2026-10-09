@@ -413,8 +413,9 @@ class DepartmentsDashboardProvider extends ChangeNotifier {
   double returnAllItems({DepartmentClass? department}) {
     double temp = 0;
     for (var item in returnItems(department: department)) {
-      if (item.quantity != null && item.quantity != 0) {
-        temp += item.quantity!;
+      if (item.getActualQuantity() != null &&
+          item.getActualQuantity() != 0) {
+        temp += item.getActualQuantity()!;
       }
     }
     return temp;
@@ -425,9 +426,10 @@ class DepartmentsDashboardProvider extends ChangeNotifier {
   }) {
     double temp = 0;
     for (var item in returnItems(department: department)) {
-      if (item.quantity != null && item.quantity != 0) {
+      if (item.getActualQuantity() != null &&
+          item.getActualQuantity() != 0) {
         temp +=
-            (item.quantity! *
+            (item.getActualQuantity()! *
                 (item.getPrimaryPrice().priceValue));
       }
     }

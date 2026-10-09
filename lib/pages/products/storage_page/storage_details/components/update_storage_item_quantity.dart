@@ -206,7 +206,7 @@ class _StorageQuantityUpdateWidgetState
                                 .replaceAll(',', ''),
                           ),
                         ) >
-                    (pro.quantity ?? 0)) {
+                    (pro.getActualQuantity() ?? 0)) {
                   quantityController.text = '0';
                 }
               }
@@ -462,7 +462,8 @@ class _StorageQuantityUpdateWidgetState
                                     tempProducts.first;
                                 if (!returnStorageProductProvider()
                                     .isGroupUnit) {
-                                  if ((pro.quantity ?? 0) <
+                                  if ((pro.getActualQuantity() ??
+                                          0) <
                                       (double.tryParse(
                                             (quantityController
                                                 .text
@@ -478,7 +479,9 @@ class _StorageQuantityUpdateWidgetState
                                     });
                                   }
                                 } else {
-                                  if ((pro.quantity ?? 0) <
+                                  if ((pro
+                                              .getActualQuantity() ??
+                                          0) <
                                       (((double.tryParse(
                                                 (quantityController
                                                     .text
@@ -877,7 +880,7 @@ class _StorageQuantityUpdateWidgetState
 
                               final salesOldQuantity =
                                   originalProduct
-                                      ?.quantity ??
+                                      ?.getActualQuantity() ??
                                   0;
 
                               final storageOldQty =
@@ -918,7 +921,8 @@ class _StorageQuantityUpdateWidgetState
                                         ) ??
                                     0;
                                 newPr?.quantity =
-                                    (newPr.quantity ?? 0) -
+                                    (newPr.getActualQuantity() ??
+                                        0) -
                                     equivQuantityForProduct;
                               } else if (currentIndex ==
                                   1) {
@@ -933,12 +937,15 @@ class _StorageQuantityUpdateWidgetState
                                           enteredQuantity,
                                     );
                                 newPr?.quantity =
-                                    (newPr.quantity ?? 0) +
+                                    (newPr.getActualQuantity() ??
+                                        0) +
                                     equivQuantityForProduct;
                               }
 
                               final salesNewQuantity =
-                                  newPr?.quantity ?? 0;
+                                  newPr
+                                      ?.getActualQuantity() ??
+                                  0;
 
                               if ((currentIndex != 2) &&
                                   newPr != null) {

@@ -683,10 +683,10 @@ class ProductReportDesktopState
                                                             //         );
                                                             //       case 2:
                                                             //         return returnNum(
-                                                            //           b.quantity,
+                                                            //           b.getActualQuantity(),
                                                             //         ).compareTo(
                                                             //           returnNum(
-                                                            //             a.quantity,
+                                                            //             a.getActualQuantity(),
                                                             //           ),
                                                             //         );
                                                             //       default:
@@ -1103,7 +1103,7 @@ class _SummaryTableHeadingBarState
     for (var item in widget.product) {
       tempTotal +=
           ((item.getPrimaryPrice().priceValue) *
-              (item.quantity ?? 0));
+              (item.getActualQuantity() ?? 0));
     }
     return tempTotal;
   }
@@ -1111,7 +1111,8 @@ class _SummaryTableHeadingBarState
   double getTotalCostPrice() {
     double tempTotal = 0;
     for (var item in widget.product) {
-      tempTotal += item.costPrice * (item.quantity ?? 0);
+      tempTotal +=
+          item.costPrice * (item.getActualQuantity() ?? 0);
     }
     return tempTotal;
   }
@@ -1119,7 +1120,7 @@ class _SummaryTableHeadingBarState
   double getTotalQuantity() {
     double tempTotal = 0;
     for (var item in widget.product) {
-      tempTotal += item.quantity ?? 0;
+      tempTotal += item.getActualQuantity() ?? 0;
     }
     return tempTotal;
   }
@@ -1733,7 +1734,8 @@ class _TableRowRecordWidgetState
                           fontWeight: FontWeight.bold,
                         ),
                         formatLargeNumber(
-                          widget.product.quantity
+                          widget.product
+                              .getActualQuantity()
                               .toString(),
                         ),
                       ),
@@ -1907,7 +1909,8 @@ class _TableRowRecordWidgetState
                               (widget.product
                                   .getPrimaryPrice()
                                   .priceValue) *
-                              (widget.product.quantity ??
+                              (widget.product
+                                      .getActualQuantity() ??
                                   0),
                           context: context,
                         ),

@@ -495,7 +495,7 @@ Future<Uint8List> _buildPdfRoll(
                                         fontSize: parText,
                                         font: fontBold,
                                       ),
-                                      '[${formatLargeNumberDoubleWidgetDecimal(record.quantity ?? 0)}] ',
+                                      '[${formatLargeNumberDoubleWidgetDecimal(record.getActualQuantity() ?? 0)}] ',
                                     ),
                                   ),
                                   pw.SizedBox(width: 2),
@@ -520,7 +520,7 @@ Future<Uint8List> _buildPdfRoll(
                                                 (record
                                                     .getPrimaryPrice()
                                                     .priceValue) *
-                                                (record.quantity ??
+                                                (record.getActualQuantity() ??
                                                     1),
                                             context:
                                                 context,
@@ -673,7 +673,7 @@ Future<Uint8List> _buildPdfRoll(
                                                             font:
                                                                 fontBold,
                                                           ),
-                                                          '[${formatLargeNumberDoubleWidgetDecimal(record.quantity ?? 0)}] ',
+                                                          '[${formatLargeNumberDoubleWidgetDecimal(record.getActualQuantity() ?? 0)}] ',
                                                         ),
                                                       ),
                                                       pw.SizedBox(
@@ -697,7 +697,7 @@ Future<Uint8List> _buildPdfRoll(
                                                               formatMoneyMid(
                                                                     amount:
                                                                         ((record.getPrimaryPrice().priceValue) *
-                                                                            (record.quantity ??
+                                                                            (record.getActualQuantity() ??
                                                                                 1)),
                                                                     context:
                                                                         context,
@@ -826,7 +826,7 @@ Future<Uint8List> _buildPdfRoll(
                                                 font:
                                                     fontBold,
                                               ),
-                                              '[${formatLargeNumberDoubleWidgetDecimal(record.quantity ?? 0)}] ',
+                                              '[${formatLargeNumberDoubleWidgetDecimal(record.getActualQuantity() ?? 0)}] ',
                                             ),
                                           ),
                                           pw.SizedBox(
@@ -850,7 +850,7 @@ Future<Uint8List> _buildPdfRoll(
                                                   formatMoneyMid(
                                                     amount:
                                                         ((record.getPrimaryPrice().priceValue) *
-                                                            (record.quantity ??
+                                                            (record.getActualQuantity() ??
                                                                 1)),
                                                     context:
                                                         context,

@@ -443,7 +443,7 @@ class PurchaseProvider extends ChangeNotifier {
               var oldPro = products.first.copyWith();
               var newPro = oldPro.copyWith();
               newPro.quantity =
-                  (newPro.quantity ?? 0) -
+                  (newPro.getActualQuantity() ?? 0) -
                   rec
                       .getSelectedUnit()
                       .getQuantityEquivMultiplied(
@@ -461,7 +461,9 @@ class PurchaseProvider extends ChangeNotifier {
                       .getPrimaryUnit()
                       .getQuantityEquivDivided(
                         index: 1,
-                        quantityTwo: (oldPro.quantity ?? 0),
+                        quantityTwo:
+                            (oldPro.getActualQuantity() ??
+                                0),
                       )),
                 ),
                 newValue: formatLargeNumberDouble(
@@ -469,7 +471,9 @@ class PurchaseProvider extends ChangeNotifier {
                       .getPrimaryUnit()
                       .getQuantityEquivDivided(
                         index: 1,
-                        quantityTwo: (newPro.quantity ?? 0),
+                        quantityTwo:
+                            (newPro.getActualQuantity() ??
+                                0),
                       ),
                 ),
                 title: 'Purchased Deleted',

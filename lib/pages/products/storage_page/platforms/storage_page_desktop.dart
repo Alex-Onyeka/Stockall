@@ -1728,8 +1728,9 @@ class StorageSummaryWidget extends StatelessWidget {
                               .productList()
                               .where(
                                 (item) =>
-                                    item.quantity != null &&
-                                    item.quantity != 0,
+                                    item.getActualQuantity() !=
+                                        null &&
+                                    item.getActualQuantity() != 0,
                               )
                               .length
                               .toDouble(),
@@ -1757,8 +1758,9 @@ class StorageSummaryWidget extends StatelessWidget {
                               .productList()
                               .where(
                                 (item) =>
-                                    item.quantity != null &&
-                                    item.quantity == 0,
+                                    item.getActualQuantity() !=
+                                        null &&
+                                    item.getActualQuantity() == 0,
                               )
                               .length
                               .toDouble(),
@@ -1812,9 +1814,14 @@ class StorageSummaryWidget extends StatelessWidget {
                       price: returnData(context: context)
                           .productList()
                           .where(
-                            (item) => item.quantity != null,
+                            (item) =>
+                                item.getActualQuantity() !=
+                                null,
                           )
-                          .map((item) => item.quantity)
+                          .map(
+                            (item) =>
+                                item.getActualQuantity(),
+                          )
                           .fold(0, (a, b) => a + (b ?? 0)),
                       theme: theme,
                       backGround: const Color.fromARGB(

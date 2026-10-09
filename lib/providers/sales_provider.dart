@@ -781,7 +781,8 @@ class SalesProvider extends ChangeNotifier {
         continue;
       }
 
-      final availableQuantity = product.quantity ?? 0;
+      final availableQuantity =
+          product.getActualQuantity() ?? 0;
 
       if (conflict.quantity > availableQuantity) {
         final existsInCurrentCart = currentCart()
@@ -1379,11 +1380,12 @@ class SalesProvider extends ChangeNotifier {
               } else {
                 mainItem = cartItem.item.copyWith();
               }
-              if (((mainItem.quantity ?? 0) > 0) &&
+              if (((mainItem.getActualQuantity() ?? 0) >
+                      0) &&
                   (cartItem.getItem()?.isManaged ??
                       false)) {
                 mainItem.quantity =
-                    (mainItem.quantity ?? 0) -
+                    (mainItem.getActualQuantity() ?? 0) -
                     cartItem.getRealQuantity();
                 ItemHistory itemHistory = ItemHistory(
                   unit: cartItem.getSelectedUnit().name,
@@ -1402,7 +1404,9 @@ class SalesProvider extends ChangeNotifier {
                         .getQuantityEquivDivided(
                           index: 1,
                           newQuantity:
-                              mainItem.quantity ?? 0,
+                              mainItem
+                                  .getActualQuantity() ??
+                              0,
                           product: mainItem,
                         ),
                   ),
@@ -1413,7 +1417,9 @@ class SalesProvider extends ChangeNotifier {
                           index: 1,
                           product: mainItem,
                           newQuantity:
-                              (mainItem.quantity ?? 0) +
+                              (mainItem
+                                      .getActualQuantity() ??
+                                  0) +
                               cartItem.getRealQuantity(),
                         )),
                   ),
@@ -1463,7 +1469,9 @@ class SalesProvider extends ChangeNotifier {
                           .getQuantityEquivDivided(
                             index: 1,
                             newQuantity:
-                                (mainItem.quantity ?? 0),
+                                (mainItem
+                                        .getActualQuantity() ??
+                                    0),
                           ),
                     ),
                     title:
@@ -1475,7 +1483,9 @@ class SalesProvider extends ChangeNotifier {
                           .getQuantityEquivDivided(
                             index: 1,
                             newQuantity:
-                                (mainItem.quantity ?? 0),
+                                (mainItem
+                                        .getActualQuantity() ??
+                                    0),
                           ),
                     ),
                   );
@@ -1932,11 +1942,12 @@ class SalesProvider extends ChangeNotifier {
               } else {
                 mainItem = cartItem.item.copyWith();
               }
-              if (((mainItem.quantity ?? 0) > 0) &&
+              if (((mainItem.getActualQuantity() ?? 0) >
+                      0) &&
                   (cartItem.getItem()?.isManaged ??
                       false)) {
                 mainItem.quantity =
-                    (mainItem.quantity ?? 0) -
+                    (mainItem.getActualQuantity() ?? 0) -
                     cartItem.getRealQuantity();
                 ItemHistory itemHistory = ItemHistory(
                   unit: cartItem.getSelectedUnit().name,
@@ -1955,7 +1966,9 @@ class SalesProvider extends ChangeNotifier {
                         .getQuantityEquivDivided(
                           index: 1,
                           newQuantity:
-                              mainItem.quantity ?? 0,
+                              mainItem
+                                  .getActualQuantity() ??
+                              0,
                           product: mainItem,
                         ),
                   ),
@@ -1966,7 +1979,9 @@ class SalesProvider extends ChangeNotifier {
                           index: 1,
                           product: mainItem,
                           newQuantity:
-                              (mainItem.quantity ?? 0) +
+                              (mainItem
+                                      .getActualQuantity() ??
+                                  0) +
                               cartItem.getRealQuantity(),
                         )),
                   ),
@@ -2016,7 +2031,9 @@ class SalesProvider extends ChangeNotifier {
                           .getQuantityEquivDivided(
                             index: 1,
                             newQuantity:
-                                (mainItem.quantity ?? 0),
+                                (mainItem
+                                        .getActualQuantity() ??
+                                    0),
                           ),
                     ),
                     title:
@@ -2028,7 +2045,9 @@ class SalesProvider extends ChangeNotifier {
                           .getQuantityEquivDivided(
                             index: 1,
                             newQuantity:
-                                (mainItem.quantity ?? 0),
+                                (mainItem
+                                        .getActualQuantity() ??
+                                    0),
                           ),
                     ),
                   );
@@ -2384,7 +2403,9 @@ class SalesProvider extends ChangeNotifier {
                       .getQuantityEquivDivided(
                         index: 1,
                         newQuantity:
-                            (cartItem.getItem()!.quantity ??
+                            (cartItem
+                                    .getItem()!
+                                    .getActualQuantity() ??
                                 0),
                         product: mainItem,
                       ),
@@ -2396,7 +2417,9 @@ class SalesProvider extends ChangeNotifier {
                         index: 1,
                         product: mainItem,
                         newQuantity:
-                            (cartItem.getItem()!.quantity ??
+                            (cartItem
+                                    .getItem()!
+                                    .getActualQuantity() ??
                                 0),
                       )),
                 ),
@@ -3054,13 +3077,14 @@ class SalesProvider extends ChangeNotifier {
           (newCartItem.itemUuid ?? newCartItem.item.uuid),
     );
     if (tempList.isNotEmpty) {
-      return (tempList.first.quantity ?? 0) -
+      return (tempList.first.getActualQuantity() ?? 0) -
           totalInAllCarts(
             newCartItem: newCartItem,
             isEdit: isEdit,
           );
     } else {
-      return (newCartItem.getItem()?.quantity ?? 0) -
+      return (newCartItem.getItem()?.getActualQuantity() ??
+              0) -
           totalInAllCarts(
             newCartItem: newCartItem,
             isEdit: isEdit,
@@ -3094,10 +3118,10 @@ class SalesProvider extends ChangeNotifier {
       (item) => item.uuid == (product.uuid ?? item.uuid),
     );
     if (tempList.isNotEmpty) {
-      return (tempList.first.quantity ?? 0) -
+      return (tempList.first.getActualQuantity() ?? 0) -
           totalItemQuantityInAllCarts(product: product);
     } else {
-      return (product.quantity ?? 0) -
+      return (product.getActualQuantity() ?? 0) -
           totalItemQuantityInAllCarts(product: product);
     }
   }
@@ -3204,7 +3228,8 @@ class SalesProvider extends ChangeNotifier {
     // - It is managed.
     // Therefore stock restrictions apply.
 
-    final availableQuantity = product.quantity ?? 0;
+    final availableQuantity =
+        product.getActualQuantity() ?? 0;
 
     final currentQuantity = totalInAllCarts(
       newCartItem: newCartItem,
@@ -3517,7 +3542,7 @@ class SalesProvider extends ChangeNotifier {
             (_) => InfoAlert(
               title: "Quantity Limit Reached",
               message:
-                  "Only ${newItem.getItem()?.quantity ?? 0} available in stock.",
+                  "Only ${newItem.getItem()?.getActualQuantity() ?? 0} available in stock.",
               theme: returnTheme(context, listen: false),
             ),
       );

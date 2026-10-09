@@ -1167,13 +1167,19 @@ Future<Uint8List> _buildPdf(
                                         ) {
                                           return pw.Column(
                                             crossAxisAlignment:
-                                                pw.CrossAxisAlignment.start,
+                                                pw
+                                                    .CrossAxisAlignment
+                                                    .start,
                                             children: [
                                               ...receipt.displayPayments().map(
-                                                (payment) => pw.Text(
+                                                (
+                                                  payment,
+                                                ) => pw.Text(
                                                   style: pw.TextStyle(
-                                                    font: fontRegular,
-                                                    fontSize: 8,
+                                                    font:
+                                                        fontRegular,
+                                                    fontSize:
+                                                        8,
                                                   ),
                                                   '${payment.method}: ${formatMoneyMid(amount: payment.amount, context: context)}',
                                                 ),
@@ -1431,7 +1437,7 @@ Future<Uint8List> _buildPdf(
                               style: pw.TextStyle(
                                 fontSize: 8,
                               ),
-                              '[ ${formatLargeNumberDouble(record.quantity)} ] ',
+                              '[ ${formatLargeNumberDouble(record.getActualQuantity())} ] ',
                             ),
                           ),
                           pw.Expanded(
@@ -1470,7 +1476,7 @@ Future<Uint8List> _buildPdf(
                                     font: fontRegular,
                                     fontSize: 7,
                                   ),
-                                  "${formatMoneyMid(amount: ((receipt.fixedDiscount == null && receipt.generalDiscount == null) && record.discount != null ? ((record.originalCost ?? 0) - (record.discountedAmount ?? 0)) : (record.originalCost ?? 0) / record.quantity), context: context)} per 1",
+                                  "${formatMoneyMid(amount: ((receipt.fixedDiscount == null && receipt.generalDiscount == null) && record.discount != null ? ((record.originalCost ?? 0) - (record.discountedAmount ?? 0)) : (record.originalCost ?? 0) / record.getActualQuantity()), context: context)} per 1",
                                 ),
                                 // pw.Builder(
                                 //   builder: (pdfContext) {
@@ -2307,13 +2313,19 @@ Future<Uint8List> _buildPdfRoll(
                                       ) {
                                         return pw.Column(
                                           crossAxisAlignment:
-                                              pw.CrossAxisAlignment.start,
+                                              pw
+                                                  .CrossAxisAlignment
+                                                  .start,
                                           children: [
                                             ...receipt.displayPayments().map(
-                                              (payment) => pw.Text(
+                                              (
+                                                payment,
+                                              ) => pw.Text(
                                                 style: pw.TextStyle(
-                                                  font: fontRegular,
-                                                  fontSize: parTextAlt,
+                                                  font:
+                                                      fontRegular,
+                                                  fontSize:
+                                                      parTextAlt,
                                                 ),
                                                 '${payment.method}: ${formatMoneyMid(amount: payment.amount, context: context)}',
                                               ),
@@ -2550,7 +2562,7 @@ Future<Uint8List> _buildPdfRoll(
                             style: pw.TextStyle(
                               fontSize: parText,
                             ),
-                            '[ ${formatLargeNumberDouble(record.quantity)} ] ',
+                            '[ ${formatLargeNumberDouble(record.getActualQuantity())} ] ',
                           ),
                         ),
                         pw.Expanded(
@@ -2586,7 +2598,7 @@ Future<Uint8List> _buildPdfRoll(
                               //     font: fontRegular,
                               //     fontSize: 6,
                               //   ),
-                              //   "1x  ${formatMoneyMid(amount: ((receipt.fixedDiscount == null && receipt.generalDiscount == null) && record.discount != null ? ((record.originalCost ?? 0) - (record.discountedAmount ?? 0)) : (record.originalCost ?? 0) / record.quantity), context: context)}",
+                              //   "1x  ${formatMoneyMid(amount: ((receipt.fixedDiscount == null && receipt.generalDiscount == null) && record.discount != null ? ((record.originalCost ?? 0) - (record.discountedAmount ?? 0)) : (record.originalCost ?? 0) / record.getActualQuantity()), context: context)}",
                               // ),
                               // pw.Builder(
                               //   builder: (pdfContext) {
@@ -3194,7 +3206,7 @@ Future<Uint8List> _buildPdfProducts(
   int inStock() {
     int tempStock = 0;
     for (var element in products) {
-      if ((element.quantity ?? 0) > 0) {
+      if ((element.getActualQuantity() ?? 0) > 0) {
         tempStock += 1;
       }
     }
@@ -3204,9 +3216,9 @@ Future<Uint8List> _buildPdfProducts(
   int lowStock() {
     int tempStock = 0;
     for (var element in products) {
-      if ((element.quantity ?? 0) <=
+      if ((element.getActualQuantity() ?? 0) <=
               (element.lowQtty ?? 0) &&
-          element.quantity != 0) {
+          element.getActualQuantity() != 0) {
         tempStock += 1;
       }
     }
@@ -3216,7 +3228,7 @@ Future<Uint8List> _buildPdfProducts(
   int outOfStock() {
     int tempStock = 0;
     for (var element in products) {
-      if (element.quantity == 0) {
+      if (element.getActualQuantity() == 0) {
         tempStock += 1;
       }
     }
@@ -3246,7 +3258,7 @@ Future<Uint8List> _buildPdfProducts(
   double totalQuantity() {
     double tempQtty = 0;
     for (var element in products) {
-      tempQtty += element.quantity ?? 0;
+      tempQtty += element.getActualQuantity() ?? 0;
     }
     return tempQtty;
   }
@@ -3699,7 +3711,8 @@ Future<Uint8List> _buildPdfProducts(
                                   vertical: 5,
                                 ),
                                 child: pw.Text(
-                                  (product.quantity ?? 0)
+                                  (product.getActualQuantity() ??
+                                          0)
                                       .toStringAsFixed(0),
                                 ),
                               ),
@@ -4067,7 +4080,7 @@ Future<Uint8List> _buildPdfSales(
   double totalQuantity() {
     double tempQtty = 0;
     for (var element in records) {
-      tempQtty += element.quantity;
+      tempQtty += element.getActualQuantity();
     }
     return tempQtty;
   }
@@ -4420,7 +4433,8 @@ Future<Uint8List> _buildPdfSales(
                                       style: pw.TextStyle(
                                         fontSize: 8,
                                       ),
-                                      (record.quantity)
+                                      (record
+                                              .getActualQuantity())
                                           .toStringAsFixed(
                                             0,
                                           ),

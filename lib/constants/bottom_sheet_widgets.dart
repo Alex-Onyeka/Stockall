@@ -1503,191 +1503,183 @@ void selectProductSales({
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Builder(
-                              builder: (context) {
-                                if (quantityTypeTemp == 1) {
-                                  return SizedBox(
-                                    width:
-                                        screenWidth(
-                                                  context,
-                                                ) >
-                                                tabletScreenSmall
-                                            ? 450
-                                            : null,
-                                    child: EditCartTextField(
-                                      onTap: () {
+                            EditCartTextField(
+                              onTap: () {
+                                setState(() {
+                                  currentFocus = 1;
+                                });
+                              },
+                              focusNode: qttyNode,
+                              onChanged: (value) {
+                                double entered =
+                                    getPrimaryUnitQuantityMultiplied(
+                                      newQuantity:
+                                          double.tryParse(
+                                            value
+                                                .replaceAll(
+                                                  ',',
+                                                  '',
+                                                ),
+                                          ) ??
+                                          0,
+                                    );
+                                if (cartItem
+                                        .getItem()
+                                        ?.isManaged ??
+                                    false) {
+                                  if (!returnSalesProvider()
+                                      .canAddProductToCart(
+                                        isEdit: isEdit,
+                                        newCartItem:
+                                            cartItem,
+                                        quantityToAdd:
+                                            entered,
+                                        // useGroupUnit:
+                                        //     useGroupQuantityTemp,
+                                      )) {
+                                    showDialog(
+                                      context: context,
+                                      builder:
+                                          (_) => InfoAlert(
+                                            title:
+                                                "Quantity Limit Reached",
+                                            message:
+                                                "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit))} ${getPrimaryUnit().name} available in stock.",
+                                            theme: theme,
+                                          ),
+                                    ).then((_) {
+                                      qttyNode
+                                          .requestFocus();
+                                    });
+
+                                    Future.delayed(
+                                      Duration(
+                                        milliseconds: 300,
+                                      ),
+                                      () {
                                         setState(() {
-                                          currentFocus = 1;
+                                          qqty = 0;
+                                          quantityController
+                                              .text = '0';
                                         });
                                       },
-                                      focusNode: qttyNode,
-                                      onChanged: (value) {
-                                        double
-                                        entered = getPrimaryUnitQuantityMultiplied(
-                                          newQuantity:
-                                              double.tryParse(
-                                                value
-                                                    .replaceAll(
-                                                      ',',
-                                                      '',
-                                                    ),
-                                              ) ??
-                                              0,
-                                        );
-                                        if (cartItem
-                                                .getItem()
-                                                ?.isManaged ??
-                                            false) {
-                                          if (!returnSalesProvider()
-                                              .canAddProductToCart(
-                                                isEdit:
-                                                    isEdit,
-                                                newCartItem:
-                                                    cartItem,
-                                                quantityToAdd:
-                                                    entered,
-                                                // useGroupUnit:
-                                                //     useGroupQuantityTemp,
-                                              )) {
-                                            showDialog(
-                                              context:
-                                                  context,
-                                              builder:
-                                                  (
-                                                    _,
-                                                  ) => InfoAlert(
-                                                    title:
-                                                        "Quantity Limit Reached",
-                                                    message:
-                                                        "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit))} ${getPrimaryUnit().name} available in stock.",
-                                                    theme:
-                                                        theme,
-                                                  ),
-                                            ).then((_) {
-                                              qttyNode
-                                                  .requestFocus();
-                                            });
+                                    );
 
-                                            Future.delayed(
-                                              Duration(
-                                                milliseconds:
-                                                    300,
-                                              ),
-                                              () {
+                                    return;
+                                  }
+                                }
+
+                                if (value.isEmpty) {
+                                  setState(() {
+                                    quantityController
+                                        .text = '0';
+                                  });
+                                }
+
+                                setState(() {
+                                  qqty =
+                                      (double.tryParse(
+                                            value
+                                                .replaceAll(
+                                                  ',',
+                                                  '',
+                                                ),
+                                          ) ??
+                                          0);
+                                });
+                              },
+
+                              title: 'Enter Item Quantity',
+                              hint: 'Quantity',
+                              controller:
+                                  quantityController,
+                              theme: theme,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(
+                                    top: 10.0,
+                                  ),
+                              child: Builder(
+                                builder: (context) {
+                                  if (quantityTypeTemp ==
+                                      1) {
+                                    return Container();
+                                  } else {
+                                    return Row(
+                                      spacing: 10,
+                                      children: [
+                                        Expanded(
+                                          child: EditCartTextField(
+                                            onChanged: (
+                                              value,
+                                            ) {
+                                              if (value
+                                                  .isEmpty) {
                                                 setState(() {
-                                                  qqty = 0;
-                                                  quantityController
+                                                  widthController
                                                           .text =
                                                       '0';
                                                 });
-                                              },
-                                            );
-
-                                            return;
-                                          }
-                                        }
-
-                                        if (value.isEmpty) {
-                                          setState(() {
-                                            quantityController
-                                                .text = '0';
-                                          });
-                                        }
-
-                                        setState(() {
-                                          qqty =
-                                              (double.tryParse(
-                                                    value.replaceAll(
-                                                      ',',
-                                                      '',
-                                                    ),
-                                                  ) ??
-                                                  0);
-                                        });
-                                      },
-
-                                      title:
-                                          'Enter Item Quantity',
-                                      hint: 'Quantity',
-                                      controller:
-                                          quantityController,
-                                      theme: theme,
-                                    ),
-                                  );
-                                } else {
-                                  return Row(
-                                    spacing: 10,
-                                    children: [
-                                      Expanded(
-                                        child: EditCartTextField(
-                                          onChanged: (
-                                            value,
-                                          ) {
-                                            if (value
-                                                .isEmpty) {
-                                              setState(() {
-                                                widthController
-                                                        .text =
-                                                    '0';
-                                              });
-                                            } else if (value
-                                                    .toString()[0] ==
-                                                '0') {
-                                              setState(() {
-                                                widthController
-                                                    .text = value
-                                                    .substring(
-                                                      1,
-                                                    );
-                                              });
-                                            }
-                                          },
-                                          title:
-                                              '${getPrimaryUnit().name} Width',
-                                          hint:
-                                              'Enter Width',
-                                          controller:
-                                              widthController,
-                                          theme: theme,
+                                              } else if (value
+                                                      .toString()[0] ==
+                                                  '0') {
+                                                setState(() {
+                                                  widthController
+                                                      .text = value
+                                                      .substring(
+                                                        1,
+                                                      );
+                                                });
+                                              }
+                                            },
+                                            title:
+                                                '${getPrimaryUnit().name} Width',
+                                            hint:
+                                                'Enter Width',
+                                            controller:
+                                                widthController,
+                                            theme: theme,
+                                          ),
                                         ),
-                                      ),
-                                      Expanded(
-                                        child: EditCartTextField(
-                                          onChanged: (
-                                            value,
-                                          ) {
-                                            if (value
-                                                .isEmpty) {
-                                              setState(() {
-                                                heightController
-                                                        .text =
-                                                    '0';
-                                              });
-                                            } else if (value
-                                                    .toString()[0] ==
-                                                '0') {
-                                              setState(() {
-                                                heightController
-                                                    .text = value
-                                                    .substring(
-                                                      1,
-                                                    );
-                                              });
-                                            }
-                                          },
-                                          title:
-                                              '${getPrimaryUnit().name} Height',
-                                          hint:
-                                              'Enter Height',
-                                          controller:
-                                              heightController,
-                                          theme: theme,
+                                        Expanded(
+                                          child: EditCartTextField(
+                                            onChanged: (
+                                              value,
+                                            ) {
+                                              if (value
+                                                  .isEmpty) {
+                                                setState(() {
+                                                  heightController
+                                                          .text =
+                                                      '0';
+                                                });
+                                              } else if (value
+                                                      .toString()[0] ==
+                                                  '0') {
+                                                setState(() {
+                                                  heightController
+                                                      .text = value
+                                                      .substring(
+                                                        1,
+                                                      );
+                                                });
+                                              }
+                                            },
+                                            title:
+                                                '${getPrimaryUnit().name} Height',
+                                            hint:
+                                                'Enter Height',
+                                            controller:
+                                                heightController,
+                                            theme: theme,
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  );
-                                }
-                              },
+                                      ],
+                                    );
+                                  }
+                                },
+                              ),
                             ),
                             SizedBox(height: 15),
                             Visibility(
@@ -1870,9 +1862,8 @@ void selectProductSales({
                                               ) ??
                                               0),
                                     ) >
-                                    (cartItemTemp
-                                            .item
-                                            .quantity ??
+                                    (cartItemTemp.item
+                                            .getActualQuantity() ??
                                         0)) {
                                   quantityController.text =
                                       '0';

@@ -709,7 +709,9 @@ void selectItemInADepartmentsProduction({
                             TempProductClass newProduct =
                                 oldProduct.copyWith();
                             newProduct.quantity =
-                                (newProduct.quantity ?? 0) +
+                                (newProduct
+                                        .getActualQuantity() ??
+                                    0) +
                                 mainProductionItem
                                     .getProductUnit(
                                       unitUuid: unitUuid,
@@ -740,7 +742,7 @@ void selectItemInADepartmentsProduction({
                                       index: 1,
                                       newQuantity:
                                           (newProduct
-                                                  .quantity ??
+                                                  .getActualQuantity() ??
                                               0),
                                     ),
                               ),
@@ -751,7 +753,7 @@ void selectItemInADepartmentsProduction({
                                       index: 1,
                                       newQuantity:
                                           (oldProduct
-                                                  .quantity ??
+                                                  .getActualQuantity() ??
                                               0),
                                     ),
                               ),
@@ -1371,7 +1373,9 @@ void selectItemInAShopProduction({
                         TempProductClass newProduct =
                             oldProduct.copyWith();
                         newProduct.quantity =
-                            (newProduct.quantity ?? 0) +
+                            (newProduct
+                                    .getActualQuantity() ??
+                                0) +
                             mainProductionItem
                                 .getProductUnit(
                                   unitUuid: unitUuid,
@@ -1402,7 +1406,7 @@ void selectItemInAShopProduction({
                                   product: newProduct,
                                   newQuantity:
                                       (newProduct
-                                              .quantity ??
+                                              .getActualQuantity() ??
                                           0),
                                 ),
                           ),
@@ -1414,7 +1418,7 @@ void selectItemInAShopProduction({
                                   product: oldProduct,
                                   newQuantity:
                                       (oldProduct
-                                              .quantity ??
+                                              .getActualQuantity() ??
                                           0),
                                 ),
                           ),
@@ -1716,7 +1720,7 @@ void selectItemInAShopProduction({
                                                                   fontWeight:
                                                                       FontWeight.bold,
                                                                 ),
-                                                                '${item.quantity ?? 0}',
+                                                                '${item.getActualQuantity() ?? 0}',
                                                               ),
                                                               Container(
                                                                 padding: EdgeInsets.all(

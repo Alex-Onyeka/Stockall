@@ -109,12 +109,12 @@ class _ManageThisItemToggleSwitchState
                               widget.product.wholeSalePrice,
                           quantity:
                               !widget.product.isManaged &&
-                                      widget
-                                              .product
-                                              .quantity ==
+                                      widget.product
+                                              .getActualQuantity() ==
                                           null
                                   ? 0
-                                  : widget.product.quantity,
+                                  : widget.product
+                                      .getActualQuantity(),
                           shopId: widget.product.shopId,
                           barcode: widget.product.barcode,
                           // categoryUuid:

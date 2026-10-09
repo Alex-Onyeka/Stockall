@@ -225,7 +225,7 @@ class ProductionRecordsProvider extends ChangeNotifier {
     final newItem = oldItem.copyWith();
     final signedQuantity = increment ? quantity : -quantity;
     newItem.quantity =
-        (oldItem.quantity ?? 0) + signedQuantity;
+        (oldItem.getActualQuantity() ?? 0) + signedQuantity;
     final primaryUnitConversion =
         productionPrimaryUnitConversion(
           record.unitsList,
@@ -241,11 +241,11 @@ class ProductionRecordsProvider extends ChangeNotifier {
         shopId: shopId(),
         title: historyTitle,
         oldValue:
-            ((oldItem.quantity ?? 0) /
+            ((oldItem.getActualQuantity() ?? 0) /
                     primaryUnitConversion)
                 .toString(),
         newValue:
-            ((newItem.quantity ?? 0) /
+            ((newItem.getActualQuantity() ?? 0) /
                     primaryUnitConversion)
                 .toString(),
         desc:

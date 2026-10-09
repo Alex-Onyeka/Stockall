@@ -361,9 +361,10 @@ class _ProductPageDesktopState
                                         products
                                             .where(
                                               (product) =>
-                                                  product.quantity !=
+                                                  product
+                                                          .getActualQuantity() !=
                                                       null &&
-                                                  product.quantity! >
+                                                  product.getActualQuantity()! >
                                                       0 &&
                                                   product
                                                       .isManaged,
@@ -376,7 +377,8 @@ class _ProductPageDesktopState
                                         products
                                             .where(
                                               (product) =>
-                                                  product.quantity ==
+                                                  product
+                                                          .getActualQuantity() ==
                                                       0 &&
                                                   product
                                                       .isManaged,

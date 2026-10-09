@@ -465,6 +465,21 @@ class TempProductClass {
     );
   }
 
+  double? getActualQuantity({
+    double? tempWidth,
+    double? tempHeight,
+  }) {
+    if (quantityType == 1) {
+      return quantity;
+    } else if (quantityType == 2) {
+      return (quantity ?? 0) *
+          ((tempWidth ?? widthDimension ?? 1) *
+              (tempHeight ?? heightDimension ?? 1));
+    } else {
+      return quantity;
+    }
+  }
+
   //
   //
   //
@@ -669,7 +684,7 @@ class TempProductClass {
                     product: products.first,
                   );
         } else {
-          tempQuantity = (quantity ?? 0);
+          tempQuantity = (getActualQuantity() ?? 0);
         }
         if (tempQuantity <= 0) {
           return 'Stock Out';
@@ -686,13 +701,13 @@ class TempProductClass {
     double? newQuantity,
   }) {
     if (unitsList == null || unitsList?.isEmpty == true) {
-      return (quantity ?? 0);
+      return (getActualQuantity() ?? 0);
     } else {
       var items = unitsList!.where(
         (item) => item.isPrimary,
       );
       if (items.isEmpty) {
-        return (quantity ?? 0);
+        return (getActualQuantity() ?? 0);
       } else {
         var item = items.first;
         return item.getQuantityEquivDivided(
@@ -807,7 +822,8 @@ class TempProductClass {
       )) {
         return true;
       } else {
-        if (quantity == null || (quantity ?? 0) <= 0) {
+        if (getActualQuantity() == null ||
+            (getActualQuantity() ?? 0) <= 0) {
           return false;
         } else {
           return true;
@@ -865,7 +881,8 @@ class TempProductClass {
 
   double getGroupQuantity() {
     if (useGroupUnit == true) {
-      return (quantity ?? 0) / (qttyPerGroup ?? 1);
+      return (getActualQuantity() ?? 0) /
+          (qttyPerGroup ?? 1);
     } else {
       return 0;
     }

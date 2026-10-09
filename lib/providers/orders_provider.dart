@@ -874,7 +874,8 @@ class OrdersProvider extends ChangeNotifier {
       );
       if (products.length != 1 ||
           entry.value >
-              (products.first.quantity ?? 0) + 1e-9) {
+              (products.first.getActualQuantity() ?? 0) +
+                  1e-9) {
         return false;
       }
     }
@@ -1064,12 +1065,14 @@ class OrdersProvider extends ChangeNotifier {
             var productTemp = products.first;
             var product = productTemp.copyWith();
             if (item.isProductManaged ?? false) {
-              final oldQuantity = product.quantity ?? 0;
+              final oldQuantity =
+                  product.getActualQuantity() ?? 0;
               final quantityChange =
                   item.getActualQuantityDuringDeliveryCheckout();
               product.quantity =
                   oldQuantity - quantityChange;
-              final newQuantity = product.quantity ?? 0;
+              final newQuantity =
+                  product.getActualQuantity() ?? 0;
               final primaryUnit = product.getPrimaryUnit();
               final primaryUnitConversion =
                   primaryUnit.conversion;
@@ -1102,7 +1105,8 @@ class OrdersProvider extends ChangeNotifier {
               final primaryUnit = product.getPrimaryUnit();
               final primaryUnitConversion =
                   primaryUnit.conversion;
-              final stockQuantity = product.quantity ?? 0;
+              final stockQuantity =
+                  product.getActualQuantity() ?? 0;
               ItemHistory itemHistory = ItemHistory(
                 desc:
                     '${item.quantity} ${item.getUnit()} of This Item was Delivered, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}... Order Id: #${returnOnlyDigits(order.uuid ?? '')}',

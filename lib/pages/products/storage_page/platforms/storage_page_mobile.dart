@@ -1507,9 +1507,10 @@ class StorageSummaryWidgetMobile extends StatelessWidget {
                                   .productList()
                                   .where(
                                     (item) =>
-                                        item.quantity !=
+                                        item.getActualQuantity() !=
                                             null &&
-                                        item.quantity != 0,
+                                        item.getActualQuantity() !=
+                                            0,
                                   )
                                   .length
                                   .toDouble(),
@@ -1537,9 +1538,10 @@ class StorageSummaryWidgetMobile extends StatelessWidget {
                                   .productList()
                                   .where(
                                     (item) =>
-                                        item.quantity !=
+                                        item.getActualQuantity() !=
                                             null &&
-                                        item.quantity == 0,
+                                        item.getActualQuantity() ==
+                                            0,
                                   )
                                   .length
                                   .toDouble(),
@@ -1601,9 +1603,13 @@ class StorageSummaryWidgetMobile extends StatelessWidget {
                               .productList()
                               .where(
                                 (item) =>
-                                    item.quantity != null,
+                                    item.getActualQuantity() !=
+                                    null,
                               )
-                              .map((item) => item.quantity)
+                              .map(
+                                (item) =>
+                                    item.getActualQuantity(),
+                              )
                               .fold(
                                 0,
                                 (a, b) => a + (b ?? 0),
