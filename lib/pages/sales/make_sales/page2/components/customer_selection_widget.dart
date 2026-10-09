@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/payment_entry/payment_entry.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
@@ -291,9 +292,15 @@ class _CustomerSelectionWidgetState
                           ? widget.refreshAction!()
                           : {};
                       if (returnSalesProvider()
-                              .currentCart()
-                              .paymentMethod ==
-                          3) {
+                                  .currentCart()
+                                  .paymentMethod ==
+                              3 ||
+                          PaymentBreakdown(
+                            returnSalesProvider()
+                                    .currentCart()
+                                    .splitPayments ??
+                                [],
+                          ).uses(PaymentMethods.account)) {
                         await returnSalesProvider()
                             .resetPaymentMethod();
                       }

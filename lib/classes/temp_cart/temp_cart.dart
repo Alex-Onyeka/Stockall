@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/payment_entry/payment_entry.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/main.dart';
@@ -93,6 +94,8 @@ class TempCart extends HiveObject {
   @HiveField(27)
   String? orderUuid;
 
+  @HiveField(29)
+  List<PaymentEntry>? splitPayments;
   @HiveField(28)
   String? draftUuid;
 
@@ -125,6 +128,7 @@ class TempCart extends HiveObject {
     required this.cartItemTypeIndex,
     required this.orderUuidEdit,
     this.orderUuid,
+    this.splitPayments,
     this.draftUuid,
   });
 

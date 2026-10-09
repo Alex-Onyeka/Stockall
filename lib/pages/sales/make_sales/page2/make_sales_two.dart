@@ -22,6 +22,8 @@ class _MakeSalesPageState extends State<MakeSalesTwo> {
       TextEditingController();
   TextEditingController bankController =
       TextEditingController();
+  TextEditingController accountController =
+      TextEditingController();
   TextEditingController customerController =
       TextEditingController();
   TextEditingController partPaymentController =
@@ -42,6 +44,7 @@ class _MakeSalesPageState extends State<MakeSalesTwo> {
               customerController: customerController,
               bankController: bankController,
               cashController: cashController,
+              accountController: accountController,
               searchController: searchController,
               partPaymentController: partPaymentController,
               commentController: commentController,
@@ -52,6 +55,7 @@ class _MakeSalesPageState extends State<MakeSalesTwo> {
               customerController: customerController,
               bankController: bankController,
               cashController: cashController,
+              accountController: accountController,
               searchController: searchController,
               partPaymentController: partPaymentController,
               commentController: commentController,

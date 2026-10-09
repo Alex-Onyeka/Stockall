@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockall/classes/checkout_response.dart';
+import 'package:stockall/classes/payment_entry/payment_entry.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
@@ -1013,10 +1014,9 @@ class _ReceiptDetailsContainerState
                                               children: [
                                                 Visibility(
                                                   visible:
-                                                      widget.mainReceipt.paymentMethod ==
-                                                          'Split' ||
-                                                      widget.mainReceipt.paymentMethod ==
-                                                          'Cash',
+                                                      widget.mainReceipt.showsPaymentMethod(
+                                                        PaymentMethods.cash,
+                                                      ),
                                                   child: Row(
                                                     spacing:
                                                         5,
@@ -1049,10 +1049,9 @@ class _ReceiptDetailsContainerState
                                                 ),
                                                 Visibility(
                                                   visible:
-                                                      widget.mainReceipt.paymentMethod ==
-                                                          'Split' ||
-                                                      widget.mainReceipt.paymentMethod ==
-                                                          'Bank',
+                                                      widget.mainReceipt.showsPaymentMethod(
+                                                        PaymentMethods.bank,
+                                                      ),
                                                   child: Row(
                                                     spacing:
                                                         5,
@@ -1085,10 +1084,9 @@ class _ReceiptDetailsContainerState
                                                 ),
                                                 Visibility(
                                                   visible:
-                                                      widget
-                                                          .mainReceipt
-                                                          .paymentMethod ==
-                                                      'Account',
+                                                      widget.mainReceipt.showsPaymentMethod(
+                                                        PaymentMethods.account,
+                                                      ),
                                                   child: Row(
                                                     spacing:
                                                         5,

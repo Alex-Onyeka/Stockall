@@ -146,4 +146,4 @@ class MainDatabase extends ChangeNotifier {
   }
 }
 
-int highestHiveClassIndex = 152;
+int highestHiveClassIndex = 153;

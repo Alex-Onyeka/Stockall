@@ -520,6 +520,25 @@ class _TotalSalesDesktopState
                                                           theme,
                                                     ),
                                                   ),
+                                                  Expanded(
+                                                    child: ProductsFilterButton(
+                                                      currentSelected:
+                                                          returnReceiptProvider(
+                                                            context,
+                                                          ).paymentMethod,
+                                                      action: () {
+                                                        returnReceiptProviderSingle().selectPaymentMethod(
+                                                          4,
+                                                        );
+                                                      },
+                                                      number:
+                                                          4,
+                                                      title:
+                                                          'Account',
+                                                      theme:
+                                                          theme,
+                                                    ),
+                                                  ),
                                                 ],
                                               ),
                                             ),
