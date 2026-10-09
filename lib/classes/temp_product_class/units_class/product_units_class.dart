@@ -198,7 +198,17 @@ class ProductUnitsClass extends HiveObject {
     double? quantityTwo,
     required int index,
     TempProductClass? product,
+    double? customWidth,
+    double? customHeight,
   }) {
+    // 2D lines: a given quantity is scaled by the line's
+    // width × height (area). Null dimensions leave it as-is.
+    if (newQuantity != null &&
+        customWidth != null &&
+        customHeight != null) {
+      newQuantity = newQuantity * customWidth * customHeight;
+    }
+
     List items() {
       if (index == 1) {
         return returnData(context: context).productListMain

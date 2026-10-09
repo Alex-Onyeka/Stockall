@@ -406,6 +406,8 @@ class TempCartItem extends HiveObject {
               index: 1,
               product: item,
               newQuantity: quantity,
+              customWidth: widthDimension,
+              customHeight: heightDimension,
             );
       }
     } else {
@@ -416,6 +418,8 @@ class TempCartItem extends HiveObject {
               index: 1,
               product: item,
               newQuantity: quantity,
+              customWidth: widthDimension,
+              customHeight: heightDimension,
             );
       } else {
         return selectedPrice.priceValue * quantity;
@@ -437,6 +441,8 @@ class TempCartItem extends HiveObject {
         getSelectedUnit().getQuantityEquivMultiplied(
           index: 1,
           newQuantity: quantity,
+          customWidth: widthDimension,
+          customHeight: heightDimension,
         );
   }
 
@@ -447,6 +453,8 @@ class TempCartItem extends HiveObject {
             getSelectedUnit().getQuantityEquivMultiplied(
               index: 1,
               newQuantity: quantity,
+              customWidth: widthDimension,
+              customHeight: heightDimension,
             );
   }
 
@@ -462,6 +470,8 @@ class TempCartItem extends HiveObject {
             index: 1,
             product: item,
             newQuantity: quantity,
+            customWidth: widthDimension,
+            customHeight: heightDimension,
           ));
       // }
     } else {
@@ -473,6 +483,8 @@ class TempCartItem extends HiveObject {
     return getSelectedUnit().getQuantityEquivMultiplied(
       index: 1,
       newQuantity: quantity,
+      customWidth: widthDimension,
+      customHeight: heightDimension,
     );
   }
 
@@ -481,6 +493,10 @@ class TempCartItem extends HiveObject {
       index: 1,
       newQuantity: quantity,
     );
+  }
+
+  String dimensionsLabel() {
+    return formatDimensionsLabel(widthDimension, heightDimension);
   }
 
   String getUnit() {

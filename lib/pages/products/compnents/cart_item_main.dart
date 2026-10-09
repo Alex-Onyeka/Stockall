@@ -118,10 +118,7 @@ class _CartItemMainState extends State<CartItemMain> {
                                               FontWeight
                                                   .bold,
                                         ),
-                                        widget.cartItem
-                                                .getItem()
-                                                ?.name ??
-                                            'Item Name',
+                                        '${widget.cartItem.getItem()?.name ?? 'Item Name'}${widget.cartItem.dimensionsLabel()}',
                                       ),
                                       Visibility(
                                         visible:

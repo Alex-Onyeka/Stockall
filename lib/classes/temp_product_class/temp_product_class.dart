@@ -480,6 +480,25 @@ class TempProductClass {
     }
   }
 
+  // Area of one stock unit (sheet) for 2D items, 1 otherwise.
+  // Converts area back to the stored sheet count.
+  double dimensionArea() {
+    if (quantityType == 2) {
+      final area =
+          (widthDimension ?? 1) * (heightDimension ?? 1);
+      return area > 0 ? area : 1;
+    } else {
+      return 1;
+    }
+  }
+
+  // Stored quantity left after removing [removedQuantity]
+  // (in getActualQuantity units, i.e. area for 2D items).
+  double quantityAfterRemoving(double removedQuantity) {
+    return ((getActualQuantity() ?? 0) - removedQuantity) /
+        dimensionArea();
+  }
+
   //
   //
   //

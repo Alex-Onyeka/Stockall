@@ -106,7 +106,7 @@ EscPosBuilder buildReceiptEscPos({
   for (final record in records) {
     _itemRow(
       b,
-      record.productName,
+      '${record.productName}${record.dimensionsLabel()}',
       '[${formatLargeNumberDouble(record.quantity)}]',
       money(
         noReceiptDiscount && record.discount != null
@@ -216,7 +216,7 @@ EscPosBuilder buildInvoiceEscPos({
   for (final record in records) {
     _itemRow(
       b,
-      record.productName,
+      '${record.productName}${record.dimensionsLabel()}',
       '(${formatLargeNumberDouble(record.quantity)})',
       money(
         noInvoiceDiscount && record.discount != null
@@ -322,7 +322,7 @@ EscPosBuilder buildOrderEscPos({
   for (final record in records) {
     _itemRow(
       b,
-      record.productName,
+      '${record.productName}${record.dimensionsLabel()}',
       '(${formatLargeNumberDouble(record.quantity)} ${record.getUnit()})',
       money(record.getTotalRevenue()),
     );

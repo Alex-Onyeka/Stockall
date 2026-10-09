@@ -880,7 +880,7 @@ class _InvoicePageMobileState
                                                                     fontWeight:
                                                                         FontWeight.bold,
                                                                   ),
-                                                                  record.productName,
+                                                                  '${record.productName}${record.dimensionsLabel()}',
                                                                 ),
                                                                 Row(
                                                                   spacing:

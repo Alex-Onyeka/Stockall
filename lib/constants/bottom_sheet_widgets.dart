@@ -1278,6 +1278,88 @@ void selectProductSales({
   int quantityTypeTemp = 1;
   final widthController = TextEditingController();
   final heightController = TextEditingController();
+  final bool is2DItem = cartItem.item.quantityType == 2;
+  final double? originalWidth = cartItem.item.widthDimension;
+  final double? originalHeight = cartItem.item.heightDimension;
+
+  // Editing a line sold at a custom size reopens it in
+  // dimensions mode with the values filled in.
+  if (is2DItem &&
+      cartItem.widthDimension != null &&
+      cartItem.heightDimension != null &&
+      (cartItem.widthDimension != originalWidth ||
+          cartItem.heightDimension != originalHeight)) {
+    quantityTypeTemp = 2;
+    widthController.text = formatDimension(
+      cartItem.widthDimension!,
+    ).replaceAll(',', '');
+    heightController.text = formatDimension(
+      cartItem.heightDimension!,
+    ).replaceAll(',', '');
+  }
+
+  double? parseDimension(TextEditingController controller) {
+    return double.tryParse(
+      controller.text.replaceAll(',', '').trim(),
+    );
+  }
+
+  // Width/height used for this line: the entered value in
+  // dimensions mode (original when left empty), the original
+  // in whole mode, and null for non-2D items.
+  double? resolvedWidth() {
+    if (!is2DItem) return null;
+    if (quantityTypeTemp == 2 &&
+        widthController.text.trim().isNotEmpty) {
+      return parseDimension(widthController);
+    }
+    return originalWidth;
+  }
+
+  double? resolvedHeight() {
+    if (!is2DItem) return null;
+    if (quantityTypeTemp == 2 &&
+        heightController.text.trim().isNotEmpty) {
+      return parseDimension(heightController);
+    }
+    return originalHeight;
+  }
+
+  // Returns an error message, or null when the entered
+  // dimensions are valid.
+  String? checkDimension(
+    TextEditingController controller,
+    String label,
+    double? original,
+  ) {
+    if (controller.text.trim().isEmpty) {
+      return original == null
+          ? '$label is required for this item.'
+          : null;
+    }
+    final value = parseDimension(controller);
+    if (value == null || value <= 0) {
+      return '$label must be a number greater than 0.';
+    }
+    if (original != null && value > original) {
+      return '$label cannot be larger than the item\'s $label (${formatDimension(original)}).';
+    }
+    return null;
+  }
+
+  String? dimensionsError() {
+    if (!is2DItem || quantityTypeTemp != 2) return null;
+    return checkDimension(
+          widthController,
+          'Width',
+          originalWidth,
+        ) ??
+        checkDimension(
+          heightController,
+          'Height',
+          originalHeight,
+        );
+  }
 
   void selectUnit(String unit) {
     unitUuid = unit;
@@ -1327,12 +1409,19 @@ void selectProductSales({
       context: context,
       product: cartItem.item,
       newQuantity: newQuantity,
+      customWidth: resolvedWidth(),
+      customHeight: resolvedHeight(),
     );
   }
 
-  double existingQtty = getPrimaryUnitQuantityMultiplied(
-    newQuantity: cartItem.quantity,
-  );
+  double existingQtty = getPrimaryUnit()
+      .getQuantityEquivMultiplied(
+        index: 1,
+        product: cartItem.item,
+        newQuantity: cartItem.quantity,
+        customWidth: cartItem.widthDimension,
+        customHeight: cartItem.heightDimension,
+      );
   void setUnitListFinal() {
     cartItem.getItem()?.unitsList?.clear();
     cartItem.getItem()?.unitsList?.addAll(
@@ -1611,32 +1700,20 @@ void selectProductSales({
                                       children: [
                                         Expanded(
                                           child: EditCartTextField(
+                                            // Empty uses the item's
+                                            // original width.
                                             onChanged: (
                                               value,
                                             ) {
-                                              if (value
-                                                  .isEmpty) {
-                                                setState(() {
-                                                  widthController
-                                                          .text =
-                                                      '0';
-                                                });
-                                              } else if (value
-                                                      .toString()[0] ==
-                                                  '0') {
-                                                setState(() {
-                                                  widthController
-                                                      .text = value
-                                                      .substring(
-                                                        1,
-                                                      );
-                                                });
-                                              }
+                                              setState(() {});
                                             },
                                             title:
                                                 '${getPrimaryUnit().name} Width',
                                             hint:
-                                                'Enter Width',
+                                                originalWidth !=
+                                                        null
+                                                    ? 'Max ${formatDimension(originalWidth)}'
+                                                    : 'Enter Width',
                                             controller:
                                                 widthController,
                                             theme: theme,
@@ -1644,32 +1721,20 @@ void selectProductSales({
                                         ),
                                         Expanded(
                                           child: EditCartTextField(
+                                            // Empty uses the item's
+                                            // original height.
                                             onChanged: (
                                               value,
                                             ) {
-                                              if (value
-                                                  .isEmpty) {
-                                                setState(() {
-                                                  heightController
-                                                          .text =
-                                                      '0';
-                                                });
-                                              } else if (value
-                                                      .toString()[0] ==
-                                                  '0') {
-                                                setState(() {
-                                                  heightController
-                                                      .text = value
-                                                      .substring(
-                                                        1,
-                                                      );
-                                                });
-                                              }
+                                              setState(() {});
                                             },
                                             title:
                                                 '${getPrimaryUnit().name} Height',
                                             hint:
-                                                'Enter Height',
+                                                originalHeight !=
+                                                        null
+                                                    ? 'Max ${formatDimension(originalHeight)}'
+                                                    : 'Enter Height',
                                             controller:
                                                 heightController,
                                             theme: theme,
@@ -1849,9 +1914,8 @@ void selectProductSales({
                                 setState(() {
                                   selectUnit(d ?? '');
                                 });
-                                if (getPrimaryUnit().getQuantityEquivMultiplied(
-                                      index: 1,
-                                      quantityTwo:
+                                if (getPrimaryUnitQuantityMultiplied(
+                                      newQuantity:
                                           (double.tryParse(
                                                 quantityController
                                                     .text
@@ -2378,9 +2442,60 @@ void selectProductSales({
                                             );
                                           },
                                         );
+                                      } else if (dimensionsError() !=
+                                          null) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return InfoAlert(
+                                              theme: theme,
+                                              message:
+                                                  dimensionsError()!,
+                                              title:
+                                                  'Invalid Dimensions',
+                                            );
+                                          },
+                                        );
+                                      } else if (is2DItem &&
+                                          (cartItem
+                                                  .getItem()
+                                                  ?.isManaged ??
+                                              false) &&
+                                          !returnSalesProvider().canAddProductToCart(
+                                            isEdit: isEdit,
+                                            newCartItem:
+                                                cartItem,
+                                            quantityToAdd:
+                                                getPrimaryUnitQuantityMultiplied(
+                                                  newQuantity:
+                                                      qqty,
+                                                ),
+                                          )) {
+                                        // Dimensions can change after
+                                        // the quantity was checked.
+                                        showDialog(
+                                          context: context,
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return InfoAlert(
+                                              theme: theme,
+                                              title:
+                                                  'Quantity Limit Reached',
+                                              message:
+                                                  "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit))} ${getPrimaryUnit().name} available in stock.",
+                                            );
+                                          },
+                                        );
                                       } else {
                                         setUnitListFinal();
                                         setPriceListFinal();
+                                        cartItem.widthDimension =
+                                            resolvedWidth();
+                                        cartItem.heightDimension =
+                                            resolvedHeight();
                                         if (priceController
                                             .text
                                             .isNotEmpty) {

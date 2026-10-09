@@ -754,7 +754,8 @@ class InvoicesProvider extends ChangeNotifier {
         tempRev = record.originalCost ?? 0;
       } else {
         tempRev =
-            (record.originalCost ?? 0) / record.quantity;
+            (record.originalCost ?? 0) /
+            (record.quantity * record.dimensionArea());
       }
     }
     return TempCartItem(

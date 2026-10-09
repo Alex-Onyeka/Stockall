@@ -701,7 +701,7 @@ class OrderItems extends HiveObject {
         'Unit conversion must be greater than zero to convert quantities.',
       );
     }
-    return quantity * conversion;
+    return quantity * conversion * dimensionArea();
   }
 
   double getQuantityFromPrimaryUnits(
@@ -715,7 +715,21 @@ class OrderItems extends HiveObject {
         'Unit conversion must be greater than zero to convert quantities.',
       );
     }
-    return quantity / conversion;
+    return quantity / (conversion * dimensionArea());
+  }
+
+  // Width × height this line was ordered at, 1 when not set.
+  double dimensionArea() {
+    if (widthDimension == null ||
+        heightDimension == null ||
+        widthDimension! * heightDimension! <= 0) {
+      return 1;
+    }
+    return widthDimension! * heightDimension!;
+  }
+
+  String dimensionsLabel() {
+    return formatDimensionsLabel(widthDimension, heightDimension);
   }
 
   String getUnit() {

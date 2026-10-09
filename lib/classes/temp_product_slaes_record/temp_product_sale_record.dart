@@ -638,4 +638,18 @@ class TempProductSaleRecord {
     }
     return quantity * conversion;
   }
+
+  // Width × height this line was sold at, 1 when not set.
+  double dimensionArea() {
+    if (widthDimension == null ||
+        heightDimension == null ||
+        widthDimension! * heightDimension! <= 0) {
+      return 1;
+    }
+    return widthDimension! * heightDimension!;
+  }
+
+  String dimensionsLabel() {
+    return formatDimensionsLabel(widthDimension, heightDimension);
+  }
 }

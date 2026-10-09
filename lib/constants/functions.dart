@@ -1428,7 +1428,7 @@ Future<Uint8List> _buildPdf(
                               style: pw.TextStyle(
                                 fontSize: 10,
                               ),
-                              '${record.productName} ',
+                              '${record.productName}${record.dimensionsLabel()} ',
                             ),
                           ),
                           pw.Expanded(
@@ -2553,7 +2553,7 @@ Future<Uint8List> _buildPdfRoll(
                             style: pw.TextStyle(
                               fontSize: parText,
                             ),
-                            '${record.productName} ',
+                            '${record.productName}${record.dimensionsLabel()} ',
                           ),
                         ),
                         pw.Expanded(

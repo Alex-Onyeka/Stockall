@@ -371,6 +371,8 @@ class SalesProvider extends ChangeNotifier {
       tempItem.unitUuid = cartItem.unitUuid;
       tempItem.remainingBalance = cartItem.remainingBalance;
       tempItem.priceUuid = cartItem.priceUuid;
+      tempItem.widthDimension = cartItem.widthDimension;
+      tempItem.heightDimension = cartItem.heightDimension;
     } else {
       await mainLocalLog('Couldn\'t Find Cart Item');
     }
@@ -1384,9 +1386,12 @@ class SalesProvider extends ChangeNotifier {
                       0) &&
                   (cartItem.getItem()?.isManaged ??
                       false)) {
-                mainItem.quantity =
-                    (mainItem.getActualQuantity() ?? 0) -
-                    cartItem.getRealQuantity();
+                // Stock math is in area for 2D items; store the
+                // result back as a sheet count.
+                mainItem.quantity = mainItem
+                    .quantityAfterRemoving(
+                      cartItem.getRealQuantity(),
+                    );
                 ItemHistory itemHistory = ItemHistory(
                   unit: cartItem.getSelectedUnit().name,
                   primaryUnit:
@@ -1442,7 +1447,8 @@ class SalesProvider extends ChangeNotifier {
                   product: mainItem,
                   isQuantityUpdate: true,
                   quantityChange:
-                      cartItem.getRealQuantity(),
+                      cartItem.getRealQuantity() /
+                      mainItem.dimensionArea(),
                   isMultipleUpdate: true,
                   isIncrement: false,
                 );
@@ -1946,9 +1952,12 @@ class SalesProvider extends ChangeNotifier {
                       0) &&
                   (cartItem.getItem()?.isManaged ??
                       false)) {
-                mainItem.quantity =
-                    (mainItem.getActualQuantity() ?? 0) -
-                    cartItem.getRealQuantity();
+                // Stock math is in area for 2D items; store the
+                // result back as a sheet count.
+                mainItem.quantity = mainItem
+                    .quantityAfterRemoving(
+                      cartItem.getRealQuantity(),
+                    );
                 ItemHistory itemHistory = ItemHistory(
                   unit: cartItem.getSelectedUnit().name,
                   primaryUnit:
@@ -2004,7 +2013,8 @@ class SalesProvider extends ChangeNotifier {
                   product: mainItem,
                   isQuantityUpdate: true,
                   quantityChange:
-                      cartItem.getRealQuantity(),
+                      cartItem.getRealQuantity() /
+                      mainItem.dimensionArea(),
                   isMultipleUpdate: true,
                   isIncrement: false,
                 );
@@ -3042,8 +3052,14 @@ class SalesProvider extends ChangeNotifier {
           final cartItemUuid =
               cartItem.itemUuid ?? cartItem.item.uuid;
 
-          // During edit, ignore the existing version of this item.
-          if (isEdit && cartItemUuid == itemUuid) {
+          // During edit, ignore only the line being edited, so
+          // other lines of the same item (e.g. other 2D sizes)
+          // still count. Lines without a uuid fall back to
+          // skipping by item.
+          if (isEdit &&
+              (newCartItem.uuid != null
+                  ? cartItem.uuid == newCartItem.uuid
+                  : cartItemUuid == itemUuid)) {
             continue;
           }
 
@@ -3261,12 +3277,45 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // 2D lines added without dimensions (barcode, quick add)
+  // are priced at the item's full width × height.
+  void applyDefaultDimensions(TempCartItem cartItem) {
+    if (cartItem.item.quantityType == 2 &&
+        cartItem.widthDimension == null &&
+        cartItem.heightDimension == null) {
+      cartItem.widthDimension = cartItem.item.widthDimension;
+      cartItem.heightDimension =
+          cartItem.item.heightDimension;
+    }
+  }
+
+  // Same item, and for 2D items the same width × height.
+  bool isSameCartLine(TempCartItem a, TempCartItem b) {
+    final sameProduct =
+        (a.itemUuid ?? a.item.uuid) ==
+        (b.itemUuid ?? b.item.uuid);
+    if (!sameProduct) return false;
+    if (b.item.quantityType == 2) {
+      return a.item.quantityType == 2 &&
+          a.widthDimension == b.widthDimension &&
+          a.heightDimension == b.heightDimension;
+    }
+    return true;
+  }
+
+  // Existing void line for this line's item (and size, for 2D).
+  TempCartItem? findVoidLine(TempCart cart, TempCartItem line) {
+    for (final voidLine in cart.getCartItemsVoid()) {
+      if (isSameCartLine(voidLine, line)) return voidLine;
+    }
+    return null;
+  }
+
   void addItemToTempCart({required TempCartItem item}) {
     var newItem = item.copyWith();
+    applyDefaultDimensions(newItem);
     var items = tempCartItems.where(
-      (cartItem) =>
-          (cartItem.itemUuid ?? cartItem.item.uuid) ==
-          (item.itemUuid ?? item.item.uuid),
+      (cartItem) => isSameCartLine(cartItem, newItem),
     );
     if (items.isNotEmpty) {
       tempCartItems.remove(items.first);
@@ -3301,6 +3350,8 @@ class SalesProvider extends ChangeNotifier {
             .getQuantityEquivMultiplied(
               index: 1,
               newQuantity: newItem.quantity,
+              customWidth: newItem.widthDimension,
+              customHeight: newItem.heightDimension,
             ),
         isEdit: false,
         // isEdit: false,
@@ -3309,9 +3360,7 @@ class SalesProvider extends ChangeNotifier {
         final index = currentCart()
             .getCartItems()
             .indexWhere(
-              (item) =>
-                  (item.itemUuid ?? item.item.uuid) ==
-                  (newItem.itemUuid ?? newItem.item.uuid),
+              (item) => isSameCartLine(item, newItem),
             );
 
         if (index != -1) {
@@ -3362,6 +3411,7 @@ class SalesProvider extends ChangeNotifier {
     required bool isCustomEdit,
     // required bool isEdit,
   }) async {
+    applyDefaultDimensions(newItem);
     if (canAddProductToCart(
       isEdit: false,
       newCartItem: newItem,
@@ -3370,6 +3420,8 @@ class SalesProvider extends ChangeNotifier {
           .getQuantityEquivMultiplied(
             index: 1,
             newQuantity: newItem.quantity,
+            customWidth: newItem.widthDimension,
+            customHeight: newItem.heightDimension,
           ),
     )) {
       String result = '';
@@ -3395,13 +3447,7 @@ class SalesProvider extends ChangeNotifier {
         return true;
       });
 
-      var voidItems = currentCart()
-          .getCartItemsVoid()
-          .where(
-            (voidItem) =>
-                (voidItem.itemUuid ?? voidItem.item.uuid) ==
-                (newItem.itemUuid ?? newItem.item.uuid),
-          );
+      var voidItem = findVoidLine(currentCart(), newItem);
 
       if (items.isNotEmpty) {
         var item = items.first;
@@ -3409,8 +3455,8 @@ class SalesProvider extends ChangeNotifier {
         if (returnShopProvider().userShop()!.trackCart ==
                 true &&
             item.quantity > newItem.quantity) {
-          if (voidItems.isNotEmpty) {
-            var beanItem = voidItems.first;
+          if (voidItem != null) {
+            var beanItem = voidItem;
             beanItem.quantity +=
                 item.quantity - newItem.quantity;
           } else {
@@ -3553,27 +3599,36 @@ class SalesProvider extends ChangeNotifier {
           .getQuantityEquivMultiplied(
             index: 1,
             newQuantity: number,
+            customWidth: cartItem.widthDimension,
+            customHeight: cartItem.heightDimension,
           ),
     )) {
       if (returnShopProvider().userShop()!.trackCart ==
               true &&
           cartItem.quantity > number) {
-        var affectedItems = currentCart().cartItems.where(
-          (item) =>
-              (item.itemUuid ?? item.item.uuid) ==
-                  (cartItem.itemUuid ??
-                      cartItem.item.uuid) &&
-              item.isVoid == true,
+        // The voided quantity is of the line's current size,
+        // which this edit may be changing.
+        final originalLine =
+            currentCart()
+                .getCartItems()
+                .where((item) => item.uuid == cartItem.uuid)
+                .firstOrNull ??
+            cartItem;
+        var voidItem = findVoidLine(
+          currentCart(),
+          originalLine,
         );
 
-        if (affectedItems.isNotEmpty) {
-          var beanItem = affectedItems.first;
+        if (voidItem != null) {
+          var beanItem = voidItem;
           beanItem.quantity += cartItem.quantity - number;
         } else {
           var deletedItem = cartItem.copyWith(
             quantity: cartItem.quantity - number,
             isVoid: true,
             uuid: uuidGen(),
+            widthDimension: originalLine.widthDimension,
+            heightDimension: originalLine.heightDimension,
           );
           currentCart().cartItems.add(deletedItem);
         }
@@ -3630,15 +3685,10 @@ class SalesProvider extends ChangeNotifier {
         isVoid: true,
         uuid: uuidGen(),
       );
-      var affectedItems = currentCart().cartItems.where(
-        (items) =>
-            (items.itemUuid ?? items.item.uuid) ==
-                (item.itemUuid ?? item.item.uuid) &&
-            items.isVoid == true,
-      );
+      var voidItem = findVoidLine(currentCart(), item);
 
-      if (affectedItems.isNotEmpty) {
-        var beanItem = affectedItems.first;
+      if (voidItem != null) {
+        var beanItem = voidItem;
         beanItem.quantity += item.quantity;
       } else {
         currentCart().cartItems.add(newItem);
@@ -3820,7 +3870,8 @@ class SalesProvider extends ChangeNotifier {
         tempRev = record.originalCost ?? 0;
       } else {
         tempRev =
-            (record.originalCost ?? 0) / record.quantity;
+            (record.originalCost ?? 0) /
+            (record.quantity * record.dimensionArea());
       }
     }
     return TempCartItem(

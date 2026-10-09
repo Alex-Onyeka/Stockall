@@ -1069,8 +1069,11 @@ class OrdersProvider extends ChangeNotifier {
                   product.getActualQuantity() ?? 0;
               final quantityChange =
                   item.getActualQuantityDuringDeliveryCheckout();
-              product.quantity =
-                  oldQuantity - quantityChange;
+              // Stock math is in area for 2D items; store the
+              // result back as a sheet count.
+              product.quantity = product.quantityAfterRemoving(
+                quantityChange,
+              );
               final newQuantity =
                   product.getActualQuantity() ?? 0;
               final primaryUnit = product.getPrimaryUnit();
@@ -1097,7 +1100,8 @@ class OrdersProvider extends ChangeNotifier {
                 includeQuantity: false,
                 product: product,
                 isQuantityUpdate: true,
-                quantityChange: quantityChange,
+                quantityChange:
+                    quantityChange / product.dimensionArea(),
                 isMultipleUpdate: true,
                 isIncrement: false,
               );
