@@ -6,6 +6,7 @@ import 'package:stockall/classes/temp_production_folder/temp_material_class/unsy
 import 'package:stockall/classes/temp_production_folder/temp_material_class/unsynced/deleted_materials/deleted_material.dart';
 import 'package:stockall/classes/temp_production_folder/temp_material_class/unsynced/material_quantity_update/material_quantity_update.dart';
 import 'package:stockall/classes/temp_production_folder/temp_material_class/unsynced/updated/updated_material.dart';
+import 'package:stockall/classes/temp_production_folder/temp_materials_item_history/material_item_history_event_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_materials_item_history/materials_item_history.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
@@ -920,26 +921,30 @@ class MaterialsProvider extends ChangeNotifier {
       for (var pr in MaterialsFunc().getMaterials().where(
         (prr) => selectedMaterials.contains(prr),
       )) {
-        MaterialsItemHistory materialsItemHistory =
-            MaterialsItemHistory(
-              shopId: shopId(),
-              title: 'Item Deleted',
-              quantityChange: 0,
-              desc: 'Materials Item Deleted Now',
-              isIncreased: false,
-              oldValue: formatLargeNumberDouble(
-                pr.getProductUnit().getQuantityEquivDivided(
-                  index: 3,
-                ),
-              ),
-              newValue: formatLargeNumberDouble(
-                pr.getProductUnit().getQuantityEquivDivided(
-                  index: 3,
-                ),
-              ),
-              unit: pr.getProductUnit().name,
-              primaryUnit: pr.getProductUnit().name,
-            );
+        MaterialsItemHistory
+        materialsItemHistory = MaterialsItemHistory(
+          event: MaterialItemHistoryEventClass.itemDeleted,
+          isManaged: pr.isManaged,
+          source:
+              MaterialItemHistoryEventClass.unKnownSource,
+          shopId: shopId(),
+          title: 'Item Deleted',
+          quantityChange: 0,
+          desc: 'Materials Item Deleted Now',
+          isIncreased: false,
+          oldValue: formatLargeNumberDouble(
+            pr.getProductUnit().getQuantityEquivDivided(
+              index: 3,
+            ),
+          ),
+          newValue: formatLargeNumberDouble(
+            pr.getProductUnit().getQuantityEquivDivided(
+              index: 3,
+            ),
+          ),
+          unit: pr.getProductUnit().name,
+          primaryUnit: pr.getProductUnit().name,
+        );
         await deleteMaterialMain(
           materialsItemHistory: materialsItemHistory,
           material: pr,
@@ -982,6 +987,10 @@ class MaterialsProvider extends ChangeNotifier {
 
         MaterialsItemHistory
         materialsItemHistory = MaterialsItemHistory(
+          event: MaterialItemHistoryEventClass.itemCreated,
+          isManaged: newMaterial.isManaged,
+          source:
+              MaterialItemHistoryEventClass.unKnownSource,
           shopId: shopId(),
           title: 'Item Created',
           quantityChange: 0,
@@ -1100,6 +1109,12 @@ class MaterialsProvider extends ChangeNotifier {
 
           MaterialsItemHistory
           materialsItemHistory = MaterialsItemHistory(
+            event:
+                MaterialItemHistoryEventClass
+                    .itemDuplicated,
+            isManaged: newMaterial.isManaged,
+            source:
+                MaterialItemHistoryEventClass.unKnownSource,
             shopId: shopId(),
             title: 'Item Created',
             quantityChange: 0,
