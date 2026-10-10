@@ -4,6 +4,7 @@ import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_orders/order_items.dart';
 import 'package:stockall/classes/temp_orders/orders.dart';
@@ -1083,6 +1084,9 @@ class OrdersProvider extends ChangeNotifier {
               final primaryUnitConversion =
                   primaryUnit.conversion;
               ItemHistory itemHistory = ItemHistory(
+                event: ItemHistoryEventClass.delivered,
+                isManaged: item.isProductManaged ?? false,
+                source: ItemHistoryEventClass.orderSource,
                 shopId: shopId(),
                 desc:
                     '${item.quantity} ${item.getUnit()} of This Item was Delivered. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}... Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
@@ -1115,6 +1119,9 @@ class OrdersProvider extends ChangeNotifier {
               final stockQuantity =
                   product.getActualQuantity() ?? 0;
               ItemHistory itemHistory = ItemHistory(
+                event: ItemHistoryEventClass.delivered,
+                isManaged: item.isProductManaged ?? false,
+                source: ItemHistoryEventClass.orderSource,
                 desc:
                     '${item.quantity} ${item.getUnit()} of This Item was Delivered, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}... Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
                 shopId: shopId(),

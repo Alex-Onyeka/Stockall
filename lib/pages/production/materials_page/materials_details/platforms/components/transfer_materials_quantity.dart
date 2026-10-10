@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_departments_class/department_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_material_class/material_class.dart';
+import 'package:stockall/classes/temp_production_folder/temp_materials_item_history/material_item_history_event_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_materials_item_history/materials_item_history.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -742,6 +743,14 @@ void selectItemInADepartmentsMaterial({
                                     );
                             MaterialsItemHistory
                             materialsItemHistory = MaterialsItemHistory(
+                              event:
+                                  MaterialItemHistoryEventClass
+                                      .transferedIn,
+                              isManaged:
+                                  newMaterial.isManaged,
+                              source:
+                                  MaterialItemHistoryEventClass
+                                      .departmentSource,
                               shopId: shopId(),
                               isIncreased: true,
                               departmentName:
@@ -829,6 +838,14 @@ void selectItemInADepartmentsMaterial({
                                         ));
                             MaterialsItemHistory
                             materialsItemHistory2 = MaterialsItemHistory(
+                              event:
+                                  MaterialItemHistoryEventClass
+                                      .transferedOut,
+                              isManaged:
+                                  oldMaterial.isManaged,
+                              source:
+                                  MaterialItemHistoryEventClass
+                                      .departmentSource,
                               shopId: shopId(),
                               isIncreased: false,
                               desc:
@@ -1401,6 +1418,13 @@ void selectItemInAShopMaterial({
                                 );
                         MaterialsItemHistory
                         materialsItemHistory = MaterialsItemHistory(
+                          event:
+                              MaterialItemHistoryEventClass
+                                  .transferedIn,
+                          isManaged: newMaterial.isManaged,
+                          source:
+                              MaterialItemHistoryEventClass
+                                  .branchStoreSource,
                           desc:
                               'Item Quantity Received From Transfer - From Material Item Name: ${mainMaterials.name}. Shop Name: ${returnShopProvider().userShop()?.name}.',
                           shopId: shop.shopId!,
@@ -1474,6 +1498,13 @@ void selectItemInAShopMaterial({
                                     ));
                         MaterialsItemHistory
                         materialsItemHistory2 = MaterialsItemHistory(
+                          event:
+                              MaterialItemHistoryEventClass
+                                  .transferedOut,
+                          isManaged: newMaterial2.isManaged,
+                          source:
+                              MaterialItemHistoryEventClass
+                                  .branchStoreSource,
                           shopId: shopId(),
                           isIncreased: false,
                           desc:

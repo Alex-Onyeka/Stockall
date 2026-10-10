@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_departments_class/department_class.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -724,6 +725,14 @@ void selectItemInADepartmentProducts({
                                     );
                             ItemHistory
                             itemHistory = ItemHistory(
+                              event:
+                                  ItemHistoryEventClass
+                                      .transferedIn,
+                              isManaged:
+                                  newProduct.isManaged,
+                              source:
+                                  ItemHistoryEventClass
+                                      .departmentSource,
                               shopId: shopId(),
                               isIncreased: true,
                               departmentName:
@@ -808,6 +817,14 @@ void selectItemInADepartmentProducts({
                                         ));
                             ItemHistory
                             itemHistory2 = ItemHistory(
+                              event:
+                                  ItemHistoryEventClass
+                                      .transferedOut,
+                              isManaged:
+                                  oldProduct.isManaged,
+                              source:
+                                  ItemHistoryEventClass
+                                      .departmentSource,
                               shopId: shopId(),
                               isIncreased: false,
                               desc:
@@ -1379,6 +1396,13 @@ void selectItemInAShop({
                                 );
                         ItemHistory
                         itemHistory = ItemHistory(
+                          event:
+                              ItemHistoryEventClass
+                                  .transferedIn,
+                          isManaged: oldProduct.isManaged,
+                          source:
+                              ItemHistoryEventClass
+                                  .branchStoreSource,
                           desc:
                               'Item Quantity Received From Transfer - From Item Name: ${mainItem.name}. Shop Name: ${returnShopProvider().userShop()?.name}.',
                           shopId: shop.shopId!,
@@ -1452,6 +1476,13 @@ void selectItemInAShop({
                                     ));
                         ItemHistory
                         itemHistory2 = ItemHistory(
+                          event:
+                              ItemHistoryEventClass
+                                  .transferedOut,
+                          isManaged: oldProduct.isManaged,
+                          source:
+                              ItemHistoryEventClass
+                                  .branchStoreSource,
                           shopId: shopId(),
                           isIncreased: false,
                           desc:

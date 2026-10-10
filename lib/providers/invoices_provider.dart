@@ -406,6 +406,47 @@ class InvoicesProvider extends ChangeNotifier {
     }
   }
 
+  Future<int> payAllCustomersBalance({
+    required List<TempInvoice> invoices,
+    required double cashAmount,
+    required double bankAmount,
+    required double customerAmount,
+  }) async {
+    try {
+      for (var item in invoices) {
+        List<TempProductSaleRecord> salesRecords =
+            returnReceiptProviderSingle()
+                .produtRecordSalesMain
+                .where(
+                  (item) => item.invoiceUuid == item.uuid,
+                )
+                .toList();
+        await makeInvoicePayment(
+          invoice: item,
+          salesRecords: salesRecords,
+          currentPayment: item.getBalance(),
+          cashAmount:
+              cashAmount != 0 ? item.getBalance() : 0,
+          bankAmount:
+              bankAmount != 0 ? item.getBalance() : 0,
+          customerAmount:
+              customerAmount != 0 ? item.getBalance() : 0,
+          isMultiple: true,
+        );
+      }
+      syncData();
+      await mainLocalLog(
+        'Finished Paying all Customers Invoices Success',
+      );
+      return 1;
+    } catch (e) {
+      await mainLocalLog(
+        'Error Paying all Customers Invoices: ${e.toString()}',
+      );
+      return 0;
+    }
+  }
+
   Future<int> makeInvoicePayment({
     required TempInvoice invoice,
     required List<TempProductSaleRecord> salesRecords,
@@ -414,6 +455,7 @@ class InvoicesProvider extends ChangeNotifier {
     required double bankAmount,
     required double customerAmount,
     String? comment,
+    bool? isMultiple,
   }) async {
     try {
       final createdAt = DateTime.now().toUtc();
@@ -569,7 +611,9 @@ class InvoicesProvider extends ChangeNotifier {
         );
         await returnReceiptProviderSingle()
             .loadReceiptsOffline(shopId());
-        returnData().syncData();
+        if (isMultiple != true) {
+          returnData().syncData();
+        }
         await mainLocalLog(
           'Context is Not Mounted So Offline Data Cannot Be Synchronized',
         );

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
@@ -139,6 +140,8 @@ class _AddProductDesktopState
 
               final dataProvider = returnData();
               ItemHistory itemHistory = ItemHistory(
+                event: ItemHistoryEventClass.itemCreated,
+                source: 'Not Set',
                 unit: 'Not Set',
                 shopId: shopId(),
                 title: 'Item Created',
@@ -147,6 +150,7 @@ class _AddProductDesktopState
                 desc: 'Item Created Now',
                 isIncreased: true,
                 oldValue: '0',
+                isManaged: true,
               );
 
               await dataProvider.createProduct(

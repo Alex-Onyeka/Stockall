@@ -9,6 +9,7 @@ import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_drafts/drafts.dart';
 import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_main_cart/temp_main_cart.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_orders/order_items.dart';
@@ -1421,6 +1422,10 @@ class SalesProvider extends ChangeNotifier {
                       cartItem.getRealQuantity(),
                     );
                 ItemHistory itemHistory = ItemHistory(
+                  event: ItemHistoryEventClass.sold,
+                  isManaged: cartItem.item.isManaged,
+                  source:
+                      ItemHistoryEventClass.receiptSource,
                   unit: cartItem.getSelectedUnit().name,
                   primaryUnit:
                       cartItem.getPrimaryUnit().name,
@@ -1490,6 +1495,10 @@ class SalesProvider extends ChangeNotifier {
                     )
                     .isNotEmpty) {
                   ItemHistory itemHistory = ItemHistory(
+                    event: ItemHistoryEventClass.sold,
+                    isManaged: cartItem.item.isManaged,
+                    source:
+                        ItemHistoryEventClass.receiptSource,
                     unit: cartItem.getSelectedUnit().name,
                     primaryUnit:
                         cartItem.getPrimaryUnit().name,
@@ -1632,6 +1641,12 @@ class SalesProvider extends ChangeNotifier {
                   );
                   if (context.mounted) {
                     ItemHistory itemHistory = ItemHistory(
+                      event:
+                          ItemHistoryEventClass.itemCreated,
+                      isManaged: false,
+                      source:
+                          ItemHistoryEventClass
+                              .receiptSource,
                       shopId: shopId,
                       title: 'Item Created',
                       quantityChange: 0,
@@ -1953,6 +1968,10 @@ class SalesProvider extends ChangeNotifier {
                       cartItem.getRealQuantity(),
                     );
                 ItemHistory itemHistory = ItemHistory(
+                  event: ItemHistoryEventClass.sold,
+                  isManaged: cartItem.item.isManaged,
+                  source:
+                      ItemHistoryEventClass.invoiceSource,
                   unit: cartItem.getSelectedUnit().name,
                   primaryUnit:
                       cartItem.getPrimaryUnit().name,
@@ -2022,6 +2041,10 @@ class SalesProvider extends ChangeNotifier {
                     )
                     .isNotEmpty) {
                   ItemHistory itemHistory = ItemHistory(
+                    event: ItemHistoryEventClass.sold,
+                    isManaged: cartItem.item.isManaged,
+                    source:
+                        ItemHistoryEventClass.invoiceSource,
                     unit: cartItem.getSelectedUnit().name,
                     primaryUnit:
                         cartItem.getPrimaryUnit().name,
@@ -2165,6 +2188,12 @@ class SalesProvider extends ChangeNotifier {
                   );
                   if (context.mounted) {
                     ItemHistory itemHistory = ItemHistory(
+                      event:
+                          ItemHistoryEventClass.itemCreated,
+                      isManaged: false,
+                      source:
+                          ItemHistoryEventClass
+                              .invoiceSource,
                       shopId: shopId,
                       title: 'Item Created',
                       quantityChange: 0,
@@ -2393,6 +2422,9 @@ class SalesProvider extends ChangeNotifier {
                 mainItem = cartItem.item.copyWith();
               }
               ItemHistory itemHistory = ItemHistory(
+                event: ItemHistoryEventClass.sold,
+                isManaged: cartItem.item.isManaged,
+                source: ItemHistoryEventClass.orderSource,
                 unit: cartItem.getSelectedUnit().name,
                 primaryUnit: cartItem.getPrimaryUnit().name,
                 desc:
@@ -2526,6 +2558,11 @@ class SalesProvider extends ChangeNotifier {
                   );
                   if (context.mounted) {
                     ItemHistory itemHistory = ItemHistory(
+                      event:
+                          ItemHistoryEventClass.itemCreated,
+                      isManaged: false,
+                      source:
+                          ItemHistoryEventClass.orderSource,
                       shopId: shopId,
                       title: 'Item Created',
                       quantityChange: 0,

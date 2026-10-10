@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_departments_class/department_class.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_item_history/production_item_history.dart';
+import 'package:stockall/classes/temp_production_folder/temp_production_item_history/production_item_history_event_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_items/production_item.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -723,6 +725,14 @@ void selectItemInADepartmentsProduction({
                                     );
                             ItemHistory
                             itemHistory = ItemHistory(
+                              event:
+                                  ItemHistoryEventClass
+                                      .transferedIn,
+                              source:
+                                  ItemHistoryEventClass
+                                      .productionSource,
+                              isManaged:
+                                  newProduct.isManaged,
                               shopId: shopId(),
                               isIncreased: true,
                               departmentName:
@@ -809,6 +819,15 @@ void selectItemInADepartmentsProduction({
                                         ));
                             ProductionItemHistory
                             productionItemHistory2 = ProductionItemHistory(
+                              event:
+                                  ProductionItemHistoryEventClass
+                                      .transferedOut,
+                              source:
+                                  ProductionItemHistoryEventClass
+                                      .departmentSource,
+                              isManaged:
+                                  mainProductionItem
+                                      .isManaged,
                               shopId: shopId(),
                               isIncreased: false,
                               desc:
@@ -1386,6 +1405,13 @@ void selectItemInAShopProduction({
                                 );
                         ItemHistory
                         productionItemHistory = ItemHistory(
+                          event:
+                              ItemHistoryEventClass
+                                  .transferedIn,
+                          source:
+                              ItemHistoryEventClass
+                                  .branchStoreSource,
+                          isManaged: newProduct.isManaged,
                           desc:
                               'Item Quantity Received From Transfer - From Production Item Name: ${mainProductionItem.name}. Shop Name: ${returnShopProvider().userShop()?.name}.',
                           shopId: shop.shopId!,
@@ -1458,6 +1484,14 @@ void selectItemInAShopProduction({
                                     ));
                         ProductionItemHistory
                         productionItemHistory2 = ProductionItemHistory(
+                          event:
+                              ProductionItemHistoryEventClass
+                                  .transferedOut,
+                          source:
+                              ProductionItemHistoryEventClass
+                                  .branchStoreSource,
+                          isManaged:
+                              mainProductionItem.isManaged,
                           shopId: shopId(),
                           isIncreased: false,
                           desc:

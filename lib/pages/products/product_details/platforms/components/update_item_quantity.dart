@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
@@ -719,6 +720,19 @@ class _UpdateItemQuantityWidgetState
                                                         (widget.product.getActualQuantity() ??
                                                             0)),
                                               ),
+                                          event:
+                                              isIncrement
+                                                  ? ItemHistoryEventClass
+                                                      .quantityUpdatedIncrease
+                                                  : ItemHistoryEventClass
+                                                      .quantityUpdatedDecrease,
+                                          isManaged:
+                                              widget
+                                                  .product
+                                                  .isManaged,
+                                          source:
+                                              ItemHistoryEventClass
+                                                  .unKnownSource,
                                           newValue: formatLargeNumberDouble(
                                             widget.product
                                                 .getProductUnit()
