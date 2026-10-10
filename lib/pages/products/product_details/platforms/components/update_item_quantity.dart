@@ -661,8 +661,9 @@ class _UpdateItemQuantityWidgetState
                                                         ),
                                                       ),
                                                     ) +
-                                                (widget.product
-                                                        .getActualQuantity() ??
+                                                (widget
+                                                        .product
+                                                        .quantity ??
                                                     0);
                                           } else {
                                             return widget
