@@ -430,7 +430,7 @@ class CreateProductionFunctions {
                                                                   fontWeight:
                                                                       FontWeight.bold,
                                                                 ),
-                                                                '${formatLargeNumberDouble(item.getPrimaryUnit().getQuantityEquivDivided(index: 1, quantityTwo: item.quantity ?? 0))} ${cutLongText(item.getPrimaryUnit().name, 8)}',
+                                                                '${formatLargeNumberDouble(item.getPrimaryUnit().getQuantityEquivDivided(index: 1, quantityTwo: item.getActualQuantity() ?? 0))} ${cutLongText(item.getPrimaryUnit().name, 8)}',
                                                               ),
                                                               Container(
                                                                 padding: EdgeInsets.all(
@@ -632,7 +632,9 @@ class CreateProductionFunctions {
               addToStock: false,
               useGroupQuantity: !selectedUnit.isPrimary,
               costPrice:
-                  originalCost * quantity * selectedUnit.conversion,
+                  originalCost *
+                  quantity *
+                  selectedUnit.conversion,
               groupUnit:
                   selectedUnit.isPrimary
                       ? null

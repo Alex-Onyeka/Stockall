@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/temp_item_purchase_record/temp_item_purchase_record.dart';
 import 'package:stockall/classes/temp_purchase/purchase_payments.dart';
 
 part 'temp_purchase.g.dart';
@@ -44,6 +45,12 @@ class TempPurchase extends HiveObject {
   @HiveField(12)
   DateTime? updatedAt;
 
+  // Lines bought on this purchase, also written to
+  // item_purchase_records. Null or empty on purchases saved before
+  // this field existed.
+  @HiveField(13)
+  List<TempItemPurchaseRecord>? items;
+
   TempPurchase({
     required this.createdAt,
     required this.shopId,
@@ -58,6 +65,7 @@ class TempPurchase extends HiveObject {
     required this.isCustomPriceSet,
     required this.purchasePayments,
     required this.updatedAt,
+    this.items,
   });
 
   factory TempPurchase.fromJson(Map<String, dynamic> json) {
@@ -86,6 +94,9 @@ class TempPurchase extends HiveObject {
           json['updated_at'] != null
               ? DateTime.parse(json['updated_at'] as String)
               : null,
+      items: TempItemPurchaseRecord.itemsFromJson(
+        json['items'],
+      ),
     );
   }
 
@@ -106,6 +117,9 @@ class TempPurchase extends HiveObject {
       'payments':
           purchasePayments.map((e) => e.toJson()).toList(),
       'updated_at': updatedAt?.toIso8601String(),
+      // Left out when empty so an upsert never clears stored items.
+      if (items?.isNotEmpty == true)
+        'items': TempItemPurchaseRecord.itemsToJson(items!),
     };
   }
 
@@ -123,6 +137,7 @@ class TempPurchase extends HiveObject {
     bool? isCustomPriceSet,
     List<PurchasePayments>? purchasePayments,
     DateTime? updatedAt,
+    List<TempItemPurchaseRecord>? items,
   }) {
     return TempPurchase(
       createdAt: createdAt ?? this.createdAt,
@@ -140,6 +155,7 @@ class TempPurchase extends HiveObject {
       total: total ?? this.total,
       uuid: uuid ?? this.uuid,
       updatedAt: updatedAt ?? this.updatedAt,
+      items: items ?? this.items,
     );
   }
 }

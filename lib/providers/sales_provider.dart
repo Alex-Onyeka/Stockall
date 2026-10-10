@@ -372,6 +372,8 @@ class SalesProvider extends ChangeNotifier {
       tempItem.unitUuid = cartItem.unitUuid;
       tempItem.remainingBalance = cartItem.remainingBalance;
       tempItem.priceUuid = cartItem.priceUuid;
+      tempItem.widthDimension = cartItem.widthDimension;
+      tempItem.heightDimension = cartItem.heightDimension;
     } else {
       await mainLocalLog('Couldn\'t Find Cart Item');
     }
@@ -782,7 +784,8 @@ class SalesProvider extends ChangeNotifier {
         continue;
       }
 
-      final availableQuantity = product.quantity ?? 0;
+      final availableQuantity =
+          product.getActualQuantity() ?? 0;
 
       if (conflict.quantity > availableQuantity) {
         final existsInCurrentCart = currentCart()
@@ -1177,6 +1180,68 @@ class SalesProvider extends ChangeNotifier {
     }
   }
 
+  // One sale line per cart line. The same list is saved to
+  // product_sales and to the receipt's or invoice's items.
+  List<TempProductSaleRecord> buildSaleRecords({
+    required List<TempCartItem> cartItems,
+    required DateTime createdAt,
+    required int shopId,
+    required String staffId,
+    required String staffName,
+    required String? customerUuid,
+    required String? customerName,
+    required String? departmentName,
+    required String? departmentUuid,
+    int receiptId = 0,
+    String? receiptUuid,
+    String? invoiceUuid,
+  }) {
+    return cartItems.map((cartItem) {
+      final product = cartItem.getItem();
+      return TempProductSaleRecord(
+        heightDimension: cartItem.heightDimension,
+        quantityType: cartItem.quantityType,
+        widthDimension: cartItem.widthDimension,
+        priceUuid: cartItem.priceUuid,
+        pricesList: cartItem.getPriceListFinal(),
+        unitUuid: cartItem.unitUuid,
+        unitsList: cartItem.getUnitListFinal(),
+        isVoid: cartItem.isVoid ?? false,
+        qttyPerGroup: cartItem.qttyPerGroup,
+        useGroupQuantity: cartItem.useGroupQuantity,
+        customPriceSet: cartItem.setCustomPrice,
+        useWholeSalePrice: cartItem.useWholeSalePrice,
+        createdAt: createdAt,
+        productId: product?.id ?? 0,
+        productUuid: product?.uuid,
+        productName: product?.name ?? 'Item Name',
+        shopId: product?.shopId ?? shopId,
+        staffId: staffId,
+        staffName: staffName,
+        customerUuid: customerUuid,
+        customerName: customerName,
+        recepitId: receiptId,
+        receiptUuid: receiptUuid,
+        quantity: cartItem.quantity,
+        revenue: cartItem.revenue(),
+        discountedAmount: cartItem.discountCost(),
+        originalCost: cartItem.totalCost(),
+        discount:
+            cartItem.discount ?? cartItem.getItem()?.discount,
+        fixedDiscount: cartItem.fixedDiscount,
+        costPrice: cartItem.costPrice(),
+        addToStock: cartItem.addToStock,
+        departmentName: departmentName,
+        departmentUuid: departmentUuid,
+        uuid: cartItem.uuid ?? uuidGen(),
+        isProductManaged: cartItem.getItem()?.isManaged,
+        setTotalPrice: cartItem.setTotalPrice,
+        invoiceUuid: invoiceUuid,
+        unit: cartItem.getUnit(),
+      );
+    }).toList();
+  }
+
   Future<CheckoutResponse?> checkoutMain({
     required BuildContext context,
     required TempCart salesCartItem,
@@ -1286,68 +1351,37 @@ class SalesProvider extends ChangeNotifier {
       await mainLocalLog('Checkout Started');
 
       try {
+        // Built before the receipt is saved so the same lines are
+        // stored in receipt.items and in product_sales.
+        final productSaleRecords = buildSaleRecords(
+          cartItems: salesCartItem.getCartItemsAll(),
+          createdAt: createdAt,
+          shopId: shopId,
+          staffId: staffUuid(), // staffId,
+          staffName: staffName(), // staffName,
+          customerUuid: customerUuid(),
+          customerName: customerName(),
+          departmentName: departmentName(),
+          departmentUuid: departmentUuid(),
+          receiptId: receipt.id ?? 0,
+          receiptUuid: receipt.uuid,
+        );
+        receipt.items = productSaleRecords;
+
         final receiptRes =
             await returnReceiptProviderSingle()
                 .createReceipt(receipt);
         await mainLocalLog('Receipt Created');
 
-        final receiptId = receiptRes!.id;
-        final receiptUuid = receiptRes.uuid;
+        final receiptUuid = receiptRes!.uuid;
 
         try {
           // Step 2: Create product sale records
-          final productSaleRecords =
-              salesCartItem.getCartItemsAll().map((
-                cartItem,
-              ) {
-                final product = cartItem.getItem();
-
-                mainLocalLog(
-                  'Sales Record about to be Created: ${cartItem.getItem()?.name}',
-                );
-
-                return TempProductSaleRecord(
-                  priceUuid: cartItem.priceUuid,
-                  pricesList: cartItem.getPriceListFinal(),
-                  unitUuid: cartItem.unitUuid,
-                  unitsList: cartItem.getUnitListFinal(),
-                  isVoid: cartItem.isVoid ?? false,
-                  qttyPerGroup: cartItem.qttyPerGroup,
-                  useGroupQuantity:
-                      cartItem.useGroupQuantity,
-                  customPriceSet: cartItem.setCustomPrice,
-                  useWholeSalePrice:
-                      cartItem.useWholeSalePrice,
-                  createdAt: createdAt,
-                  productId: product?.id ?? 0,
-                  productUuid: product?.uuid,
-                  productName: product?.name ?? 'Item Name',
-                  shopId: product?.shopId ?? shopId,
-                  staffId: staffUuid(), // staffId,
-                  staffName: staffName(), // staffName,
-                  customerUuid: customerUuid(),
-                  customerName: customerName(),
-                  recepitId: receiptId ?? 0,
-                  receiptUuid: receiptUuid,
-                  quantity: cartItem.quantity,
-                  revenue: cartItem.revenue(),
-                  discountedAmount: cartItem.discountCost(),
-                  originalCost: cartItem.totalCost(),
-                  discount:
-                      cartItem.discount ??
-                      cartItem.getItem()?.discount,
-                  fixedDiscount: cartItem.fixedDiscount,
-                  costPrice: cartItem.costPrice(),
-                  addToStock: cartItem.addToStock,
-                  departmentName: departmentName(),
-                  departmentUuid: departmentUuid(),
-                  uuid: cartItem.uuid ?? uuidGen(),
-                  isProductManaged:
-                      cartItem.getItem()?.isManaged,
-                  setTotalPrice: cartItem.setTotalPrice,
-                  unit: cartItem.getUnit(),
-                );
-              }).toList();
+          for (final record in productSaleRecords) {
+            mainLocalLog(
+              'Sales Record about to be Created: ${record.productName}',
+            );
+          }
 
           if (context.mounted) {
             await mainLocalLog(
@@ -1377,12 +1411,16 @@ class SalesProvider extends ChangeNotifier {
               } else {
                 mainItem = cartItem.item.copyWith();
               }
-              if (((mainItem.quantity ?? 0) > 0) &&
+              if (((mainItem.getActualQuantity() ?? 0) >
+                      0) &&
                   (cartItem.getItem()?.isManaged ??
                       false)) {
-                mainItem.quantity =
-                    (mainItem.quantity ?? 0) -
-                    cartItem.getRealQuantity();
+                // Stock math is in area for 2D items; store the
+                // result back as a sheet count.
+                mainItem.quantity = mainItem
+                    .quantityAfterRemoving(
+                      cartItem.getRealQuantity(),
+                    );
                 ItemHistory itemHistory = ItemHistory(
                   event: ItemHistoryEventClass.sold,
                   isManaged: cartItem.item.isManaged,
@@ -1404,7 +1442,9 @@ class SalesProvider extends ChangeNotifier {
                         .getQuantityEquivDivided(
                           index: 1,
                           newQuantity:
-                              mainItem.quantity ?? 0,
+                              mainItem
+                                  .getActualQuantity() ??
+                              0,
                           product: mainItem,
                         ),
                   ),
@@ -1415,7 +1455,9 @@ class SalesProvider extends ChangeNotifier {
                           index: 1,
                           product: mainItem,
                           newQuantity:
-                              (mainItem.quantity ?? 0) +
+                              (mainItem
+                                      .getActualQuantity() ??
+                                  0) +
                               cartItem.getRealQuantity(),
                         )),
                   ),
@@ -1438,7 +1480,8 @@ class SalesProvider extends ChangeNotifier {
                   product: mainItem,
                   isQuantityUpdate: true,
                   quantityChange:
-                      cartItem.getRealQuantity(),
+                      cartItem.getRealQuantity() /
+                      mainItem.dimensionArea(),
                   isMultipleUpdate: true,
                   isIncrement: false,
                 );
@@ -1469,7 +1512,9 @@ class SalesProvider extends ChangeNotifier {
                           .getQuantityEquivDivided(
                             index: 1,
                             newQuantity:
-                                (mainItem.quantity ?? 0),
+                                (mainItem
+                                        .getActualQuantity() ??
+                                    0),
                           ),
                     ),
                     title:
@@ -1481,7 +1526,9 @@ class SalesProvider extends ChangeNotifier {
                           .getQuantityEquivDivided(
                             index: 1,
                             newQuantity:
-                                (mainItem.quantity ?? 0),
+                                (mainItem
+                                        .getActualQuantity() ??
+                                    0),
                           ),
                     ),
                   );
@@ -1532,6 +1579,9 @@ class SalesProvider extends ChangeNotifier {
 
                   TempProductClass
                   product = TempProductClass(
+                    heightDimension: record.heightDimension,
+                    quantityType: record.quantityType,
+                    widthDimension: record.widthDimension,
                     pricesList: [
                       ProductPricesClass(
                         uuid: uuidGen(),
@@ -1731,6 +1781,7 @@ class SalesProvider extends ChangeNotifier {
             'Cart ${currentMainCart().cartQueue.length + 1}',
       );
       TempInvoice? invoiceRes;
+      List<TempProductSaleRecord> invoiceSaleRecords = [];
       try {
         if (currentCart().invoiceUuidEdit != null) {
           await mainLocalLog(
@@ -1777,6 +1828,21 @@ class SalesProvider extends ChangeNotifier {
           );
           await mainLocalLog('Invoice Uuid is null');
         }
+        // Built before the invoice is saved so the same lines are
+        // stored in invoice.items and in product_sales.
+        invoiceSaleRecords = buildSaleRecords(
+          cartItems: salesCartItem.getCartItemsAll(),
+          createdAt: createdAt,
+          shopId: shopId,
+          staffId: staffUuid(), // staffId,
+          staffName: staffName(), // staffName,
+          customerUuid: customerUuid(),
+          customerName: customerName(),
+          departmentName: departmentName(),
+          departmentUuid: departmentUuid(),
+          invoiceUuid: invoice.uuid,
+        );
+        invoice.items = invoiceSaleRecords;
         invoiceRes = await returnInvoicesProvider()
             .createInvoices(invoice);
         await mainLocalLog('Invoice Created Success');
@@ -1797,6 +1863,9 @@ class SalesProvider extends ChangeNotifier {
               ) {
                 final product = cartItem.getItem();
                 return TempProductSaleRecord(
+                  heightDimension: cartItem.heightDimension,
+                  quantityType: cartItem.quantityType,
+                  widthDimension: cartItem.widthDimension,
                   priceUuid: cartItem.priceUuid,
                   pricesList: cartItem.getPriceListFinal(),
                   unitUuid: cartItem.unitUuid,
@@ -1852,59 +1921,12 @@ class SalesProvider extends ChangeNotifier {
 
         try {
           // Step 2: Create product sale records
-          final productSaleRecords =
-              salesCartItem.getCartItemsAll().map((
-                cartItem,
-              ) {
-                final product = cartItem.getItem();
-
-                mainLocalLog(
-                  'Sales Record about to be Created',
-                );
-
-                return TempProductSaleRecord(
-                  priceUuid: cartItem.priceUuid,
-                  pricesList: cartItem.getPriceListFinal(),
-                  unitUuid: cartItem.unitUuid,
-                  unitsList: cartItem.getUnitListFinal(),
-                  isVoid: cartItem.isVoid ?? false,
-                  qttyPerGroup: cartItem.qttyPerGroup,
-                  useGroupQuantity:
-                      cartItem.useGroupQuantity,
-                  customPriceSet: cartItem.setCustomPrice,
-                  useWholeSalePrice:
-                      cartItem.useWholeSalePrice,
-                  createdAt: createdAt,
-                  productId: product?.id ?? 0,
-                  productUuid: product?.uuid,
-                  productName: product?.name ?? 'Item Name',
-                  shopId: product?.shopId ?? shopId,
-                  staffId: staffUuid(), // staffId,
-                  staffName: staffName(), // staffName,
-                  customerUuid: customerUuid(),
-                  customerName: customerName(),
-                  recepitId: 0,
-                  // receiptUuid: receiptUuid,
-                  quantity: cartItem.quantity,
-                  revenue: cartItem.revenue(),
-                  discountedAmount: cartItem.discountCost(),
-                  originalCost: cartItem.totalCost(),
-                  discount:
-                      cartItem.discount ??
-                      cartItem.getItem()?.discount,
-                  fixedDiscount: cartItem.fixedDiscount,
-                  costPrice: cartItem.costPrice(),
-                  addToStock: cartItem.addToStock,
-                  departmentName: departmentName(),
-                  departmentUuid: departmentUuid(),
-                  uuid: cartItem.uuid ?? uuidGen(),
-                  isProductManaged:
-                      cartItem.getItem()?.isManaged,
-                  setTotalPrice: cartItem.setTotalPrice,
-                  invoiceUuid: invoiceRes?.uuid,
-                  unit: cartItem.getUnit(),
-                );
-              }).toList();
+          final productSaleRecords = invoiceSaleRecords;
+          for (final record in productSaleRecords) {
+            mainLocalLog(
+              'Sales Record about to be Created: ${record.productName}',
+            );
+          }
 
           if (context.mounted) {
             await mainLocalLog(
@@ -1935,12 +1957,16 @@ class SalesProvider extends ChangeNotifier {
               } else {
                 mainItem = cartItem.item.copyWith();
               }
-              if (((mainItem.quantity ?? 0) > 0) &&
+              if (((mainItem.getActualQuantity() ?? 0) >
+                      0) &&
                   (cartItem.getItem()?.isManaged ??
                       false)) {
-                mainItem.quantity =
-                    (mainItem.quantity ?? 0) -
-                    cartItem.getRealQuantity();
+                // Stock math is in area for 2D items; store the
+                // result back as a sheet count.
+                mainItem.quantity = mainItem
+                    .quantityAfterRemoving(
+                      cartItem.getRealQuantity(),
+                    );
                 ItemHistory itemHistory = ItemHistory(
                   event: ItemHistoryEventClass.sold,
                   isManaged: cartItem.item.isManaged,
@@ -1962,7 +1988,9 @@ class SalesProvider extends ChangeNotifier {
                         .getQuantityEquivDivided(
                           index: 1,
                           newQuantity:
-                              mainItem.quantity ?? 0,
+                              mainItem
+                                  .getActualQuantity() ??
+                              0,
                           product: mainItem,
                         ),
                   ),
@@ -1973,7 +2001,9 @@ class SalesProvider extends ChangeNotifier {
                           index: 1,
                           product: mainItem,
                           newQuantity:
-                              (mainItem.quantity ?? 0) +
+                              (mainItem
+                                      .getActualQuantity() ??
+                                  0) +
                               cartItem.getRealQuantity(),
                         )),
                   ),
@@ -1996,7 +2026,8 @@ class SalesProvider extends ChangeNotifier {
                   product: mainItem,
                   isQuantityUpdate: true,
                   quantityChange:
-                      cartItem.getRealQuantity(),
+                      cartItem.getRealQuantity() /
+                      mainItem.dimensionArea(),
                   isMultipleUpdate: true,
                   isIncrement: false,
                 );
@@ -2027,7 +2058,9 @@ class SalesProvider extends ChangeNotifier {
                           .getQuantityEquivDivided(
                             index: 1,
                             newQuantity:
-                                (mainItem.quantity ?? 0),
+                                (mainItem
+                                        .getActualQuantity() ??
+                                    0),
                           ),
                     ),
                     title:
@@ -2039,7 +2072,9 @@ class SalesProvider extends ChangeNotifier {
                           .getQuantityEquivDivided(
                             index: 1,
                             newQuantity:
-                                (mainItem.quantity ?? 0),
+                                (mainItem
+                                        .getActualQuantity() ??
+                                    0),
                           ),
                     ),
                   );
@@ -2091,6 +2126,9 @@ class SalesProvider extends ChangeNotifier {
 
                   TempProductClass
                   product = TempProductClass(
+                    heightDimension: record.heightDimension,
+                    quantityType: record.quantityType,
+                    widthDimension: record.widthDimension,
                     pricesList: [
                       ProductPricesClass(
                         uuid: uuidGen(),
@@ -2299,6 +2337,9 @@ class SalesProvider extends ChangeNotifier {
               );
 
               return OrderItems(
+                heightDimension: cartItem.heightDimension,
+                quantityType: cartItem.quantityType,
+                widthDimension: cartItem.widthDimension,
                 priceUuid: cartItem.priceUuid,
                 pricesList: cartItem.getPriceListFinal(),
                 unitUuid: cartItem.unitUuid,
@@ -2398,7 +2439,9 @@ class SalesProvider extends ChangeNotifier {
                       .getQuantityEquivDivided(
                         index: 1,
                         newQuantity:
-                            (cartItem.getItem()!.quantity ??
+                            (cartItem
+                                    .getItem()!
+                                    .getActualQuantity() ??
                                 0),
                         product: mainItem,
                       ),
@@ -2410,7 +2453,9 @@ class SalesProvider extends ChangeNotifier {
                         index: 1,
                         product: mainItem,
                         newQuantity:
-                            (cartItem.getItem()!.quantity ??
+                            (cartItem
+                                    .getItem()!
+                                    .getActualQuantity() ??
                                 0),
                       )),
                 ),
@@ -2451,6 +2496,9 @@ class SalesProvider extends ChangeNotifier {
 
                   TempProductClass
                   product = TempProductClass(
+                    heightDimension: record.heightDimension,
+                    quantityType: record.quantityType,
+                    widthDimension: record.widthDimension,
                     pricesList: [
                       ProductPricesClass(
                         uuid: uuidGen(),
@@ -3035,8 +3083,14 @@ class SalesProvider extends ChangeNotifier {
           final cartItemUuid =
               cartItem.itemUuid ?? cartItem.item.uuid;
 
-          // During edit, ignore the existing version of this item.
-          if (isEdit && cartItemUuid == itemUuid) {
+          // During edit, ignore only the line being edited, so
+          // other lines of the same item (e.g. other 2D sizes)
+          // still count. Lines without a uuid fall back to
+          // skipping by item.
+          if (isEdit &&
+              (newCartItem.uuid != null
+                  ? cartItem.uuid == newCartItem.uuid
+                  : cartItemUuid == itemUuid)) {
             continue;
           }
 
@@ -3070,13 +3124,14 @@ class SalesProvider extends ChangeNotifier {
           (newCartItem.itemUuid ?? newCartItem.item.uuid),
     );
     if (tempList.isNotEmpty) {
-      return (tempList.first.quantity ?? 0) -
+      return (tempList.first.getActualQuantity() ?? 0) -
           totalInAllCarts(
             newCartItem: newCartItem,
             isEdit: isEdit,
           );
     } else {
-      return (newCartItem.getItem()?.quantity ?? 0) -
+      return (newCartItem.getItem()?.getActualQuantity() ??
+              0) -
           totalInAllCarts(
             newCartItem: newCartItem,
             isEdit: isEdit,
@@ -3110,10 +3165,10 @@ class SalesProvider extends ChangeNotifier {
       (item) => item.uuid == (product.uuid ?? item.uuid),
     );
     if (tempList.isNotEmpty) {
-      return (tempList.first.quantity ?? 0) -
+      return (tempList.first.getActualQuantity() ?? 0) -
           totalItemQuantityInAllCarts(product: product);
     } else {
-      return (product.quantity ?? 0) -
+      return (product.getActualQuantity() ?? 0) -
           totalItemQuantityInAllCarts(product: product);
     }
   }
@@ -3220,7 +3275,8 @@ class SalesProvider extends ChangeNotifier {
     // - It is managed.
     // Therefore stock restrictions apply.
 
-    final availableQuantity = product.quantity ?? 0;
+    final availableQuantity =
+        product.getActualQuantity() ?? 0;
 
     final currentQuantity = totalInAllCarts(
       newCartItem: newCartItem,
@@ -3252,12 +3308,45 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // 2D lines added without dimensions (barcode, quick add)
+  // are priced at the item's full width × height.
+  void applyDefaultDimensions(TempCartItem cartItem) {
+    if (cartItem.item.quantityType == 2 &&
+        cartItem.widthDimension == null &&
+        cartItem.heightDimension == null) {
+      cartItem.widthDimension = cartItem.item.widthDimension;
+      cartItem.heightDimension =
+          cartItem.item.heightDimension;
+    }
+  }
+
+  // Same item, and for 2D items the same width × height.
+  bool isSameCartLine(TempCartItem a, TempCartItem b) {
+    final sameProduct =
+        (a.itemUuid ?? a.item.uuid) ==
+        (b.itemUuid ?? b.item.uuid);
+    if (!sameProduct) return false;
+    if (b.item.quantityType == 2) {
+      return a.item.quantityType == 2 &&
+          a.widthDimension == b.widthDimension &&
+          a.heightDimension == b.heightDimension;
+    }
+    return true;
+  }
+
+  // Existing void line for this line's item (and size, for 2D).
+  TempCartItem? findVoidLine(TempCart cart, TempCartItem line) {
+    for (final voidLine in cart.getCartItemsVoid()) {
+      if (isSameCartLine(voidLine, line)) return voidLine;
+    }
+    return null;
+  }
+
   void addItemToTempCart({required TempCartItem item}) {
     var newItem = item.copyWith();
+    applyDefaultDimensions(newItem);
     var items = tempCartItems.where(
-      (cartItem) =>
-          (cartItem.itemUuid ?? cartItem.item.uuid) ==
-          (item.itemUuid ?? item.item.uuid),
+      (cartItem) => isSameCartLine(cartItem, newItem),
     );
     if (items.isNotEmpty) {
       tempCartItems.remove(items.first);
@@ -3292,6 +3381,8 @@ class SalesProvider extends ChangeNotifier {
             .getQuantityEquivMultiplied(
               index: 1,
               newQuantity: newItem.quantity,
+              customWidth: newItem.widthDimension,
+              customHeight: newItem.heightDimension,
             ),
         isEdit: false,
         // isEdit: false,
@@ -3300,9 +3391,7 @@ class SalesProvider extends ChangeNotifier {
         final index = currentCart()
             .getCartItems()
             .indexWhere(
-              (item) =>
-                  (item.itemUuid ?? item.item.uuid) ==
-                  (newItem.itemUuid ?? newItem.item.uuid),
+              (item) => isSameCartLine(item, newItem),
             );
 
         if (index != -1) {
@@ -3353,6 +3442,7 @@ class SalesProvider extends ChangeNotifier {
     required bool isCustomEdit,
     // required bool isEdit,
   }) async {
+    applyDefaultDimensions(newItem);
     if (canAddProductToCart(
       isEdit: false,
       newCartItem: newItem,
@@ -3361,24 +3451,34 @@ class SalesProvider extends ChangeNotifier {
           .getQuantityEquivMultiplied(
             index: 1,
             newQuantity: newItem.quantity,
+            customWidth: newItem.widthDimension,
+            customHeight: newItem.heightDimension,
           ),
-      // isEdit: isEdit,
-      // useGroupUnit: newItem.useGroupQuantity ?? false,
     )) {
       String result = '';
-      var items = currentCart().getCartItems().where(
-        (item) =>
+      var items = currentCart().getCartItems().where((
+        item,
+      ) {
+        final sameProduct =
             (item.itemUuid ?? item.item.uuid) ==
-            (newItem.itemUuid ?? newItem.item.uuid),
-      );
+            (newItem.itemUuid ?? newItem.item.uuid);
 
-      var voidItems = currentCart()
-          .getCartItemsVoid()
-          .where(
-            (voidItem) =>
-                (voidItem.itemUuid ?? voidItem.item.uuid) ==
-                (newItem.itemUuid ?? newItem.item.uuid),
-          );
+        if (!sameProduct) return false;
+
+        final is2DItem = newItem.item.quantityType == 2;
+
+        if (is2DItem) {
+          return item.item.quantityType == 2 &&
+              item.widthDimension ==
+                  newItem.widthDimension &&
+              item.heightDimension ==
+                  newItem.heightDimension;
+        }
+
+        return true;
+      });
+
+      var voidItem = findVoidLine(currentCart(), newItem);
 
       if (items.isNotEmpty) {
         var item = items.first;
@@ -3386,8 +3486,8 @@ class SalesProvider extends ChangeNotifier {
         if (returnShopProvider().userShop()!.trackCart ==
                 true &&
             item.quantity > newItem.quantity) {
-          if (voidItems.isNotEmpty) {
-            var beanItem = voidItems.first;
+          if (voidItem != null) {
+            var beanItem = voidItem;
             beanItem.quantity +=
                 item.quantity - newItem.quantity;
           } else {
@@ -3463,32 +3563,6 @@ class SalesProvider extends ChangeNotifier {
         );
         notifyListeners();
       } else {
-        // if (items.isNotEmpty) {
-        //   items.first.quantity += newItem.quantity;
-        //   await returnMultiDisplayProvider().updateWindow(
-        //     cartClass: AltCartClass(
-        // manageCustomerReward: returnShopProvider()
-        //                     .userShop()!
-        //                     .manageCustomerReward ?? false,
-        //       cartId: currentCart().id!,
-        //       currency:
-        //           returnShopProvider().userShop()!.currency,
-        //       cartItems:
-        //           currentCart()
-        //               .getCartItemsAll()
-        //               .reversed
-        //               .toList(),
-        //       fixedDiscount: currentCart().fixedDiscount,
-        //       percentDiscount: currentCart().discount,
-        //       vat:
-        //           returnShopProvider().userShop()!.applyVAT!
-        //               ? vat
-        //               : 0,
-        //     ),
-        //   );
-        //   notifyListeners();
-        //   result = 'Item Updated Successfully';
-        // } else {
         currentCart().cartItems.add(newItem);
         await returnMultiDisplayProvider().updateWindow(
           cartClass: AltCartClass(
@@ -3533,7 +3607,7 @@ class SalesProvider extends ChangeNotifier {
             (_) => InfoAlert(
               title: "Quantity Limit Reached",
               message:
-                  "Only ${newItem.getItem()?.quantity ?? 0} available in stock.",
+                  "Only ${newItem.getItem()?.getActualQuantity() ?? 0} available in stock.",
               theme: returnTheme(context, listen: false),
             ),
       );
@@ -3556,27 +3630,36 @@ class SalesProvider extends ChangeNotifier {
           .getQuantityEquivMultiplied(
             index: 1,
             newQuantity: number,
+            customWidth: cartItem.widthDimension,
+            customHeight: cartItem.heightDimension,
           ),
     )) {
       if (returnShopProvider().userShop()!.trackCart ==
               true &&
           cartItem.quantity > number) {
-        var affectedItems = currentCart().cartItems.where(
-          (item) =>
-              (item.itemUuid ?? item.item.uuid) ==
-                  (cartItem.itemUuid ??
-                      cartItem.item.uuid) &&
-              item.isVoid == true,
+        // The voided quantity is of the line's current size,
+        // which this edit may be changing.
+        final originalLine =
+            currentCart()
+                .getCartItems()
+                .where((item) => item.uuid == cartItem.uuid)
+                .firstOrNull ??
+            cartItem;
+        var voidItem = findVoidLine(
+          currentCart(),
+          originalLine,
         );
 
-        if (affectedItems.isNotEmpty) {
-          var beanItem = affectedItems.first;
+        if (voidItem != null) {
+          var beanItem = voidItem;
           beanItem.quantity += cartItem.quantity - number;
         } else {
           var deletedItem = cartItem.copyWith(
             quantity: cartItem.quantity - number,
             isVoid: true,
             uuid: uuidGen(),
+            widthDimension: originalLine.widthDimension,
+            heightDimension: originalLine.heightDimension,
           );
           currentCart().cartItems.add(deletedItem);
         }
@@ -3633,15 +3716,10 @@ class SalesProvider extends ChangeNotifier {
         isVoid: true,
         uuid: uuidGen(),
       );
-      var affectedItems = currentCart().cartItems.where(
-        (items) =>
-            (items.itemUuid ?? items.item.uuid) ==
-                (item.itemUuid ?? item.item.uuid) &&
-            items.isVoid == true,
-      );
+      var voidItem = findVoidLine(currentCart(), item);
 
-      if (affectedItems.isNotEmpty) {
-        var beanItem = affectedItems.first;
+      if (voidItem != null) {
+        var beanItem = voidItem;
         beanItem.quantity += item.quantity;
       } else {
         currentCart().cartItems.add(newItem);
@@ -3823,10 +3901,14 @@ class SalesProvider extends ChangeNotifier {
         tempRev = record.originalCost ?? 0;
       } else {
         tempRev =
-            (record.originalCost ?? 0) / record.quantity;
+            (record.originalCost ?? 0) /
+            (record.quantity * record.dimensionArea());
       }
     }
     return TempCartItem(
+      heightDimension: record.heightDimension,
+      quantityType: record.quantityType,
+      widthDimension: record.widthDimension,
       priceUuid: record.priceUuid,
       unitUuid: record.unitUuid,
       uuid: record.uuid,
@@ -3897,6 +3979,9 @@ class SalesProvider extends ChangeNotifier {
                     record.quantity;
 
         TempProductClass productNew = TempProductClass(
+          heightDimension: record.heightDimension,
+          quantityType: record.quantityType,
+          widthDimension: record.widthDimension,
           pricesList: record.getPriceListFinal(),
           unitsList: record.getUnitListFinal(),
           useGroupUnit: false,

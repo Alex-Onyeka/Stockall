@@ -1261,6 +1261,12 @@ class _MakeSalesDesktopState
                                               ).pop();
                                             },
                                             editCartItem: TempCartItem(
+                                              heightDimension:
+                                                  null,
+                                              widthDimension:
+                                                  null,
+                                              quantityType:
+                                                  1,
                                               priceUuid:
                                                   null,
                                               unitUuid:
@@ -1280,6 +1286,12 @@ class _MakeSalesDesktopState
                                                   returnSalesProvider()
                                                       .setTotalPrice,
                                               item: TempProductClass(
+                                                heightDimension:
+                                                    null,
+                                                widthDimension:
+                                                    null,
+                                                quantityType:
+                                                    1,
                                                 pricesList:
                                                     null,
                                                 unitsList:
@@ -1405,6 +1417,12 @@ class _MakeSalesDesktopState
                                                 ).pop();
                                               },
                                               editCartItem: TempCartItem(
+                                                heightDimension:
+                                                    null,
+                                                widthDimension:
+                                                    null,
+                                                quantityType:
+                                                    1,
                                                 priceUuid:
                                                     null,
                                                 unitUuid:
@@ -1425,6 +1443,12 @@ class _MakeSalesDesktopState
                                                     returnSalesProvider()
                                                         .setTotalPrice,
                                                 item: TempProductClass(
+                                                  heightDimension:
+                                                      null,
+                                                  widthDimension:
+                                                      null,
+                                                  quantityType:
+                                                      1,
                                                   pricesList:
                                                       [],
                                                   unitsList:
@@ -1620,6 +1644,12 @@ class _MakeSalesDesktopState
                                                                       ).pop();
                                                                     },
                                                                     editCartItem: TempCartItem(
+                                                                      heightDimension:
+                                                                          null,
+                                                                      widthDimension:
+                                                                          null,
+                                                                      quantityType:
+                                                                          1,
                                                                       priceUuid:
                                                                           null,
                                                                       unitUuid:
@@ -1639,6 +1669,12 @@ class _MakeSalesDesktopState
                                                                       setTotalPrice:
                                                                           returnSalesProvider().setTotalPrice,
                                                                       item: TempProductClass(
+                                                                        heightDimension:
+                                                                            null,
+                                                                        widthDimension:
+                                                                            null,
+                                                                        quantityType:
+                                                                            1,
                                                                         pricesList:
                                                                             [],
                                                                         unitsList:
@@ -2386,6 +2422,12 @@ class _MakeSalesDesktopState
                                                           ).pop();
                                                         },
                                                         editCartItem: TempCartItem(
+                                                          heightDimension:
+                                                              null,
+                                                          widthDimension:
+                                                              null,
+                                                          quantityType:
+                                                              1,
                                                           priceUuid:
                                                               null,
                                                           unitUuid:
@@ -2405,6 +2447,12 @@ class _MakeSalesDesktopState
                                                           setTotalPrice:
                                                               returnSalesProvider().setTotalPrice,
                                                           item: TempProductClass(
+                                                            heightDimension:
+                                                                null,
+                                                            widthDimension:
+                                                                null,
+                                                            quantityType:
+                                                                1,
                                                             pricesList:
                                                                 [],
                                                             unitsList:

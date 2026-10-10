@@ -1829,9 +1829,9 @@ class _GeneralReportDesktopState
                                                     (
                                                       product,
                                                     ) =>
-                                                        product.quantity !=
+                                                        product.getActualQuantity() !=
                                                             null &&
-                                                        product.quantity! >
+                                                        product.getActualQuantity()! >
                                                             0,
                                                   )
                                                   .length;
@@ -1841,7 +1841,7 @@ class _GeneralReportDesktopState
                                                     (
                                                       product,
                                                     ) =>
-                                                        product.quantity ==
+                                                        product.getActualQuantity() ==
                                                         0,
                                                   )
                                                   .length;

@@ -42,7 +42,7 @@ class OrderItemListTileOrderPage extends StatelessWidget {
                     fontSize: theme.mobileTexts.b3.fontSize,
                     fontWeight: FontWeight.bold,
                   ),
-                  record.productName,
+                  '${record.productName}${record.dimensionsLabel()}',
                 ),
                 Column(
                   spacing: 3,

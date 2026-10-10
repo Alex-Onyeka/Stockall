@@ -370,17 +370,17 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                   232,
                                                   231,
                                                 )
-                                                : widget.product.quantity !=
+                                                : widget.product.getActualQuantity() !=
                                                         0 &&
-                                                    (widget.product.quantity ??
+                                                    (widget.product.getActualQuantity() ??
                                                             0) >
                                                         widget.product.lowQtty!
                                                 ? Colors
                                                     .grey
                                                     .shade100
-                                                : widget.product.quantity !=
+                                                : widget.product.getActualQuantity() !=
                                                         0 &&
-                                                    (widget.product.quantity ??
+                                                    (widget.product.getActualQuantity() ??
                                                             0) <=
                                                         widget.product.lowQtty!
                                                 ? const Color.fromARGB(
@@ -414,17 +414,17 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                     142,
                                                     134,
                                                   )
-                                                  : widget.product.quantity !=
+                                                  : widget.product.getActualQuantity() !=
                                                           0 &&
-                                                      (widget.product.quantity ??
+                                                      (widget.product.getActualQuantity() ??
                                                               0) >
                                                           widget.product.lowQtty!
                                                   ? Colors
                                                       .grey
                                                       .shade700
-                                                  : widget.product.quantity !=
+                                                  : widget.product.getActualQuantity() !=
                                                           0 &&
-                                                      (widget.product.quantity ??
+                                                      (widget.product.getActualQuantity() ??
                                                               0) <=
                                                           widget.product.lowQtty!
                                                   ? const Color.fromARGB(
@@ -479,17 +479,17 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                       142,
                                                       134,
                                                     )
-                                                    : widget.product.quantity !=
+                                                    : widget.product.getActualQuantity() !=
                                                             0 &&
-                                                        (widget.product.quantity ??
+                                                        (widget.product.getActualQuantity() ??
                                                                 0) >
                                                             widget.product.lowQtty!
                                                     ? Colors
                                                         .grey
                                                         .shade700
-                                                    : widget.product.quantity !=
+                                                    : widget.product.getActualQuantity() !=
                                                             0 &&
-                                                        (widget.product.quantity ??
+                                                        (widget.product.getActualQuantity() ??
                                                                 0) <=
                                                             widget.product.lowQtty!
                                                     ? const Color.fromARGB(

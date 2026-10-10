@@ -167,7 +167,8 @@ class _TransferItemQuantityWidgetState
                                         .b3
                                         .fontSize,
                               ),
-                              widget.item.quantity == null
+                              widget.item.getActualQuantity() ==
+                                      null
                                   ? 'Quantity Not Set'
                                   : 'Current Quantity in ${widget.item.getProductUnit(unitUuid: unitUuid).name}: ${formatLargeNumberDouble(widget.item.getProductUnit(unitUuid: unitUuid).getQuantityEquivDivided(index: 1, context: context))}',
                             ),
@@ -192,9 +193,8 @@ class _TransferItemQuantityWidgetState
                                             newQuantity:
                                                 eValue,
                                           ) >
-                                      (widget
-                                              .item
-                                              .quantity ??
+                                      (widget.item
+                                              .getActualQuantity() ??
                                           0)) {
                                     setState(() {
                                       quantityController
@@ -239,7 +239,8 @@ class _TransferItemQuantityWidgetState
                                           ) ??
                                           0,
                                     ) >
-                                (widget.item.quantity ??
+                                (widget.item
+                                        .getActualQuantity() ??
                                     0)) {
                               quantityController.text = '0';
                             }
@@ -271,7 +272,8 @@ class _TransferItemQuantityWidgetState
                                               ) ??
                                               0,
                                         ) <=
-                                    (widget.item.quantity ??
+                                    (widget.item
+                                            .getActualQuantity() ??
                                         0) &&
                                 quantityController
                                     .text
@@ -709,7 +711,9 @@ void selectItemInADepartmentProducts({
                             TempProductClass newProduct =
                                 oldProduct.copyWith();
                             newProduct.quantity =
-                                (newProduct.quantity ?? 0) +
+                                (newProduct
+                                        .getActualQuantity() ??
+                                    0) +
                                 mainItem
                                     .getProductUnit(
                                       unitUuid: unitUuid,
@@ -748,7 +752,7 @@ void selectItemInADepartmentProducts({
                                       index: 1,
                                       newQuantity:
                                           (newProduct
-                                                  .quantity ??
+                                                  .getActualQuantity() ??
                                               0),
                                     ),
                               ),
@@ -759,7 +763,7 @@ void selectItemInADepartmentProducts({
                                       index: 1,
                                       newQuantity:
                                           (oldProduct
-                                                  .quantity ??
+                                                  .getActualQuantity() ??
                                               0),
                                     ),
                               ),
@@ -798,7 +802,8 @@ void selectItemInADepartmentProducts({
                             TempProductClass newProduct2 =
                                 mainItem.copyWith();
                             newProduct2.quantity =
-                                ((newProduct2.quantity ??
+                                ((newProduct2
+                                            .getActualQuantity() ??
                                         0) -
                                     newProduct2
                                         .getProductUnit(
@@ -835,7 +840,7 @@ void selectItemInADepartmentProducts({
                                       index: 1,
                                       newQuantity:
                                           (newProduct2
-                                                  .quantity ??
+                                                  .getActualQuantity() ??
                                               0),
                                     ),
                               ),
@@ -846,7 +851,7 @@ void selectItemInADepartmentProducts({
                                       index: 1,
                                       newQuantity:
                                           (mainItem
-                                                  .quantity ??
+                                                  .getActualQuantity() ??
                                               0),
                                     ),
                               ),
@@ -1378,7 +1383,9 @@ void selectItemInAShop({
                         TempProductClass newProduct =
                             oldProduct.copyWith();
                         newProduct.quantity =
-                            (newProduct.quantity ?? 0) +
+                            (newProduct
+                                    .getActualQuantity() ??
+                                0) +
                             mainItem
                                 .getProductUnit(
                                   unitUuid: unitUuid,
@@ -1416,7 +1423,7 @@ void selectItemInAShop({
                                   product: newProduct,
                                   newQuantity:
                                       (newProduct
-                                              .quantity ??
+                                              .getActualQuantity() ??
                                           0),
                                 ),
                           ),
@@ -1428,7 +1435,7 @@ void selectItemInAShop({
                                   product: oldProduct,
                                   newQuantity:
                                       (oldProduct
-                                              .quantity ??
+                                              .getActualQuantity() ??
                                           0),
                                 ),
                           ),
@@ -1455,7 +1462,9 @@ void selectItemInAShop({
                         TempProductClass newProduct2 =
                             mainItem.copyWith();
                         newProduct2.quantity =
-                            ((newProduct2.quantity ?? 0) -
+                            ((newProduct2
+                                        .getActualQuantity() ??
+                                    0) -
                                 newProduct2
                                     .getProductUnit(
                                       unitUuid: unitUuid,
@@ -1489,7 +1498,7 @@ void selectItemInAShop({
                                   index: 1,
                                   newQuantity:
                                       (newProduct2
-                                              .quantity ??
+                                              .getActualQuantity() ??
                                           0),
                                 ),
                           ),
@@ -1499,7 +1508,8 @@ void selectItemInAShop({
                                 .getQuantityEquivDivided(
                                   index: 1,
                                   newQuantity:
-                                      (mainItem.quantity ??
+                                      (mainItem
+                                              .getActualQuantity() ??
                                           0),
                                 ),
                           ),

@@ -32,7 +32,7 @@ class _SummaryTableHeadingBarState
   double getTotalInSales() {
     return returnData(context: context).productListMain
         .where((item) => item.storageUuid != null)
-        .map((item) => item.quantity ?? 0)
+        .map((item) => item.getActualQuantity() ?? 0)
         .fold(0, (a, b) => a + b);
   }
 

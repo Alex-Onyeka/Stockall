@@ -142,7 +142,9 @@ class DraftsProvider extends ChangeNotifier {
         await mainLocalLog('Drafts Gotten ${data.length}');
 
         _drafts =
-            data.map((json) => Drafts.fromJson(json)).toList();
+            data
+                .map((json) => Drafts.fromJson(json))
+                .toList();
         await DraftsFunc().insertAllDrafts(_drafts);
         _drafts = DraftsFunc().getDrafts();
         notifyListeners();
@@ -184,7 +186,9 @@ class DraftsProvider extends ChangeNotifier {
         for (var item in tempDrafts) {
           final payload = item.draft.toJson();
           payload['created_at'] =
-              item.draft.createdAt.toUtc().toIso8601String();
+              item.draft.createdAt
+                  .toUtc()
+                  .toIso8601String();
           payload['updated_at'] =
               item.draft.updatedAt
                   ?.toUtc()
@@ -261,7 +265,9 @@ class DraftsProvider extends ChangeNotifier {
           payload['created_at'] =
               rec.draft.createdAt.toUtc().toIso8601String();
           payload['updated_at'] =
-              rec.draft.updatedAt?.toUtc().toIso8601String();
+              rec.draft.updatedAt
+                  ?.toUtc()
+                  .toIso8601String();
           await supabase
               .from(tableName)
               .update(payload)
@@ -295,6 +301,9 @@ class DraftsProvider extends ChangeNotifier {
     return cartItems.map((cartItem) {
       final product = cartItem.getItem() ?? cartItem.item;
       return DraftItems(
+        heightDimension: cartItem.heightDimension,
+        quantityType: cartItem.quantityType,
+        widthDimension: cartItem.widthDimension,
         uuid: cartItem.uuid ?? uuidGen(),
         draftId: draftId,
         createdAt: DateTime.now(),
@@ -317,7 +326,8 @@ class DraftsProvider extends ChangeNotifier {
         unitsList: cartItem.getUnitListFinal(),
         priceUuid: cartItem.priceUuid,
         pricesList: cartItem.getPriceListFinal(),
-        sellingPrice: cartItem.getSelectedPrice().priceValue,
+        sellingPrice:
+            cartItem.getSelectedPrice().priceValue,
         costPrice: product.costPrice,
         isProductManaged: product.isManaged,
         revenue: cartItem.revenue(),
@@ -330,6 +340,9 @@ class DraftsProvider extends ChangeNotifier {
     required TempProductClass product,
   }) {
     return TempCartItem(
+      heightDimension: record.heightDimension,
+      quantityType: record.quantityType,
+      widthDimension: record.widthDimension,
       item: product,
       itemUuid: product.uuid,
       uuid: record.uuid,
@@ -370,6 +383,9 @@ class DraftsProvider extends ChangeNotifier {
         // Custom item, or the product was deleted since the
         // draft was saved: rebuild it from the snapshot.
         TempProductClass productNew = TempProductClass(
+          heightDimension: record.heightDimension,
+          quantityType: record.quantityType,
+          widthDimension: record.widthDimension,
           pricesList: record.pricesList ?? [],
           unitsList: record.unitsList ?? [],
           useGroupUnit: record.useGroupQuantity ?? false,
@@ -382,8 +398,8 @@ class DraftsProvider extends ChangeNotifier {
           isRefundable: false,
           costPrice: record.costPrice ?? 0,
           shopId: shopId(),
-          setCustomPrice: true,
-          isManaged: false,
+          setCustomPrice: record.setCustomPrice,
+          isManaged: record.isProductManaged ?? false,
           barcode: null,
           brand: null,
           color: null,
@@ -460,7 +476,10 @@ class DraftsProvider extends ChangeNotifier {
       cartName: draft.cartName,
       draftUuid: draft.uuid,
     );
-    await returnSalesProvider().addNewCart(context, tempCart);
+    await returnSalesProvider().addNewCart(
+      context,
+      tempCart,
+    );
     // addNewCart is gated by the cart limit and may not add it.
     if (!returnSalesProvider().checkIfCartExists(
       tempCart.id!,
@@ -479,7 +498,8 @@ class DraftsProvider extends ChangeNotifier {
         fixedDiscount: draft.fixedDiscount,
         percentDiscount: draft.generalDiscount,
         vat:
-            returnShopProvider().userShop()?.applyVAT == true
+            returnShopProvider().userShop()?.applyVAT ==
+                    true
                 ? vat
                 : 0,
         cashBack: null,

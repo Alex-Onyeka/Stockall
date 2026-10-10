@@ -72,6 +72,11 @@ void main() {
       tempUseGroupQuantity: false,
       unitsList: [primaryUnit, caseUnit, dozenUnit],
       unitUuid: unitUuid,
+      pricesList: null,
+      priceUuid: null,
+      widthDimension: null,
+      heightDimension: null,
+      quantityType: null,
     );
   }
 
@@ -195,6 +200,11 @@ void main() {
         tempUseGroupQuantity: true,
         unitsList: [primaryUnit, legacyGroupUnit],
         unitUuid: null,
+        pricesList: null,
+        priceUuid: null,
+        widthDimension: null,
+        heightDimension: null,
+        quantityType: null,
       );
 
       expect(

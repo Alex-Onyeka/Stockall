@@ -45,6 +45,7 @@ void main() {
     isPrimary: false,
     itemUuid: 'product-1',
     isFixed: true,
+    priceType: 2,
   );
 
   TempCartItem buildCartItem({
@@ -70,6 +71,8 @@ void main() {
       unitsList: [bottleUnit, crateUnit],
       pricesList: [dynamicPrice, fixedPrice],
       uuid: 'product-1',
+      widthDimension: null,
+      heightDimension: null,
     );
 
     return TempCartItem(
@@ -86,6 +89,9 @@ void main() {
       uuid: 'cart-item-1',
       unitUuid: crateUnit.uuid,
       priceUuid: price.uuid,
+      widthDimension: null,
+      heightDimension: null,
+      quantityType: null,
     );
   }
 

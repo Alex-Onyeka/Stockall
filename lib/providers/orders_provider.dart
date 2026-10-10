@@ -593,6 +593,9 @@ class OrdersProvider extends ChangeNotifier {
       }
     }
     return TempCartItem(
+      heightDimension: record.heightDimension,
+      quantityType: record.quantityType,
+      widthDimension: record.widthDimension,
       priceUuid: record.priceUuid,
       unitUuid: record.unitUuid,
       uuid: record.uuid,
@@ -661,9 +664,12 @@ class OrdersProvider extends ChangeNotifier {
                     record.quantity;
 
         TempProductClass productNew = TempProductClass(
-          pricesList: [],
-          unitsList: [],
-          useGroupUnit: false,
+          heightDimension: record.heightDimension,
+          quantityType: record.quantityType,
+          widthDimension: record.widthDimension,
+          pricesList: record.pricesList ?? [],
+          unitsList: record.unitsList ?? [],
+          useGroupUnit: record.useGroupQuantity ?? false,
           categories: [],
           groupUnit: 'Group(s)',
           storageUuid: null,
@@ -673,7 +679,7 @@ class OrdersProvider extends ChangeNotifier {
           isRefundable: false,
           costPrice: costPrice,
           shopId: shopId(),
-          setCustomPrice: true,
+          setCustomPrice: record.customPriceSet,
           isManaged: false,
           barcode: null,
           brand: null,
@@ -869,7 +875,8 @@ class OrdersProvider extends ChangeNotifier {
       );
       if (products.length != 1 ||
           entry.value >
-              (products.first.quantity ?? 0) + 1e-9) {
+              (products.first.getActualQuantity() ?? 0) +
+                  1e-9) {
         return false;
       }
     }
@@ -946,69 +953,75 @@ class OrdersProvider extends ChangeNotifier {
         cartName: null,
       );
 
+      // Built before the receipt is saved so the same lines are
+      // stored in receipt.items and in product_sales.
+      List<OrderItems> orderItemsTemp =
+          returnOrdersActionProvider().orderListItems;
+
+      final productSaleRecords =
+          orderItemsTemp.map((record) {
+            mainLocalLog(
+              'Sales Record about to be Created',
+            );
+            return TempProductSaleRecord(
+              heightDimension: record.heightDimension,
+              quantityType: record.quantityType,
+              widthDimension: record.widthDimension,
+              priceUuid: record.priceUuid,
+              pricesList: record.getPriceListFinal(),
+              unitUuid: record.unitUuid,
+              unitsList: record.getUnitListFinal(),
+              isVoid: false,
+              customPriceSet: record.customPriceSet,
+              createdAt: createdAt,
+              productId: 1,
+              productUuid: record.productUuid,
+              productName: record.productName,
+              shopId: order.shopId,
+              staffId: currentUser().userId!,
+              staffName:
+                  "${returnUserProviderSingle().currentUserMain!.name} ${returnUserProviderSingle().currentUserMain!.lastName}",
+              // customerId: customerId,
+              customerUuid: order.customerId,
+              customerName: order.customerName,
+              recepitId: 0,
+              receiptUuid: receipt.uuid,
+              quantity: record.quantity,
+              revenue: record.getTotalRevenue(),
+              costPrice: record.getTotalCostPrice(),
+              discountedAmount: null,
+              originalCost:
+                  record.getTotalOriginalSellingPrice(),
+              discount: record.discount,
+              fixedDiscount: record.fixedDiscount,
+              addToStock: false,
+              departmentName:
+                  record.departmentName ??
+                  returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.name,
+              departmentUuid:
+                  record.departmentUuid ??
+                  returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.uuid,
+              uuid: uuidGen(),
+              isProductManaged: record.isProductManaged,
+              setTotalPrice: record.setTotalPrice,
+              unit: record.getUnit(),
+              useWholeSalePrice: record.useWholeSalePrice,
+              useGroupQuantity: record.useGroupQuantity,
+              qttyPerGroup: record.qttyPerGroup,
+              // orderUuid: order.uuid,
+            );
+          }).toList();
+      receipt.items = productSaleRecords;
+
       await mainLocalLog('Checkout Started');
       var res = await returnReceiptProviderSingle()
           .createReceipt(receipt);
       if (res != null) {
         await mainLocalLog('Receipt Created');
-
-        List<OrderItems> orderItemsTemp =
-            returnOrdersActionProvider().orderListItems;
-
-        final productSaleRecords =
-            orderItemsTemp.map((record) {
-              mainLocalLog(
-                'Sales Record about to be Created',
-              );
-              return TempProductSaleRecord(
-                priceUuid: record.priceUuid,
-                pricesList: record.getPriceListFinal(),
-                unitUuid: record.unitUuid,
-                unitsList: record.getUnitListFinal(),
-                isVoid: false,
-                customPriceSet: record.customPriceSet,
-                createdAt: createdAt,
-                productId: 1,
-                productUuid: record.productUuid,
-                productName: record.productName,
-                shopId: order.shopId,
-                staffId: currentUser().userId!,
-                staffName:
-                    "${returnUserProviderSingle().currentUserMain!.name} ${returnUserProviderSingle().currentUserMain!.lastName}",
-                // customerId: customerId,
-                customerUuid: order.customerId,
-                customerName: order.customerName,
-                recepitId: 0,
-                receiptUuid: res.uuid,
-                quantity: record.quantity,
-                revenue: record.getTotalRevenue(),
-                costPrice: record.getTotalCostPrice(),
-                discountedAmount: null,
-                originalCost:
-                    record.getTotalOriginalSellingPrice(),
-                discount: record.discount,
-                fixedDiscount: record.fixedDiscount,
-                addToStock: false,
-                departmentName:
-                    record.departmentName ??
-                    returnDepartmentProvider()
-                        .currentDepartment()
-                        ?.name,
-                departmentUuid:
-                    record.departmentUuid ??
-                    returnDepartmentProvider()
-                        .currentDepartment()
-                        ?.uuid,
-                uuid: uuidGen(),
-                isProductManaged: record.isProductManaged,
-                setTotalPrice: record.setTotalPrice,
-                unit: record.getUnit(),
-                useWholeSalePrice: record.useWholeSalePrice,
-                useGroupQuantity: record.useGroupQuantity,
-                qttyPerGroup: record.qttyPerGroup,
-                // orderUuid: order.uuid,
-              );
-            }).toList();
 
         await mainLocalLog(
           'Creating Record Sales About to Start',
@@ -1056,12 +1069,17 @@ class OrdersProvider extends ChangeNotifier {
             var productTemp = products.first;
             var product = productTemp.copyWith();
             if (item.isProductManaged ?? false) {
-              final oldQuantity = product.quantity ?? 0;
+              final oldQuantity =
+                  product.getActualQuantity() ?? 0;
               final quantityChange =
                   item.getActualQuantityDuringDeliveryCheckout();
-              product.quantity =
-                  oldQuantity - quantityChange;
-              final newQuantity = product.quantity ?? 0;
+              // Stock math is in area for 2D items; store the
+              // result back as a sheet count.
+              product.quantity = product.quantityAfterRemoving(
+                quantityChange,
+              );
+              final newQuantity =
+                  product.getActualQuantity() ?? 0;
               final primaryUnit = product.getPrimaryUnit();
               final primaryUnitConversion =
                   primaryUnit.conversion;
@@ -1089,7 +1107,8 @@ class OrdersProvider extends ChangeNotifier {
                 includeQuantity: false,
                 product: product,
                 isQuantityUpdate: true,
-                quantityChange: quantityChange,
+                quantityChange:
+                    quantityChange / product.dimensionArea(),
                 isMultipleUpdate: true,
                 isIncrement: false,
               );
@@ -1097,7 +1116,8 @@ class OrdersProvider extends ChangeNotifier {
               final primaryUnit = product.getPrimaryUnit();
               final primaryUnitConversion =
                   primaryUnit.conversion;
-              final stockQuantity = product.quantity ?? 0;
+              final stockQuantity =
+                  product.getActualQuantity() ?? 0;
               ItemHistory itemHistory = ItemHistory(
                 event: ItemHistoryEventClass.delivered,
                 isManaged: item.isProductManaged ?? false,

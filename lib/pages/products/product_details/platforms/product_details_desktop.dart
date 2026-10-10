@@ -673,7 +673,7 @@ class _ProductDetailsDesktopState
                                                   quantityChange:
                                                       0,
                                                   newValue:
-                                                      (product.quantity ??
+                                                      (product.getActualQuantity() ??
                                                               0)
                                                           .toString(),
                                                   desc:
@@ -681,7 +681,7 @@ class _ProductDetailsDesktopState
                                                   isIncreased:
                                                       false,
                                                   oldValue:
-                                                      (product.quantity ??
+                                                      (product.getActualQuantity() ??
                                                               0)
                                                           .toString(),
                                                 );

@@ -133,11 +133,13 @@ class ProductRecordFunc {
           if (products.isNotEmpty) {
             var oldProduct = products.first;
             var product = oldProduct.copyWith();
-            final oldQuantity = oldProduct.quantity ?? 0;
+            final oldQuantity =
+                oldProduct.getActualQuantity() ?? 0;
             final quantityChange =
                 record.getActualQuantity();
             product.quantity = oldQuantity + quantityChange;
-            final newQuantity = product.quantity ?? 0;
+            final newQuantity =
+                product.getActualQuantity() ?? 0;
             final primaryUnit = product.getPrimaryUnit();
             final primaryUnitConversion =
                 primaryUnit.conversion;
@@ -148,8 +150,8 @@ class ProductRecordFunc {
               shopId: shopId(),
               title: 'Item Returned',
               desc:
-                  '${record.quantity} ${record.unit} of This Item was Returned. Receipt Id: #${returnOnlyDigits(receiptUuid)}.',
-              quantityChange: record.quantity,
+                  '${record.getActualQuantity()} ${record.unit} of This Item was Returned. Receipt Id: #${returnOnlyDigits(receiptUuid)}.',
+              quantityChange: record.getActualQuantity(),
               newValue: formatLargeNumberDouble(
                 newQuantity / primaryUnitConversion,
               ),
@@ -188,14 +190,15 @@ class ProductRecordFunc {
               shopId: shopId(),
               title: 'Receipt Deleted (Unmanaged)',
               desc:
-                  '${record.quantity} ${record.unit} of This Item was Returned of This Item was Returned, but this item unmanaged when the sales was made, so the quantity did not increase. Receipt Id: #${returnOnlyDigits(receiptUuid)}.',
+                  '${record.getActualQuantity()} ${record.unit} of This Item was Returned of This Item was Returned, but this item unmanaged when the sales was made, so the quantity did not increase. Receipt Id: #${returnOnlyDigits(receiptUuid)}.',
               quantityChange: 0,
               newValue: formatLargeNumberDouble(
                 product
                     .getProductUnit()
                     .getQuantityEquivDivided(
                       index: 1,
-                      newQuantity: product.quantity,
+                      newQuantity:
+                          product.getActualQuantity(),
                       product: product,
                     ),
               ),
@@ -205,7 +208,8 @@ class ProductRecordFunc {
                     .getProductUnit()
                     .getQuantityEquivDivided(
                       index: 1,
-                      newQuantity: product.quantity,
+                      newQuantity:
+                          product.getActualQuantity(),
                       product: product,
                     ),
               ),
@@ -317,7 +321,7 @@ class ProductRecordFunc {
             var oldProduct = products.first;
             var product = oldProduct.copyWith();
             product.quantity =
-                (product.quantity ?? 0) +
+                (product.getActualQuantity() ?? 0) +
                 record.getSelectedUnitQuantityMultiplied();
             ItemHistory itemHistory = ItemHistory(
               isManaged: true,
@@ -326,14 +330,15 @@ class ProductRecordFunc {
               shopId: shopId(),
               title: 'Item Returned',
               desc:
-                  '${record.quantity} ${record.unit} of This Item was Returned. Invoice Id: #${returnOnlyDigits(invoiceUuid)}.',
-              quantityChange: record.quantity,
+                  '${record.getActualQuantity()} ${record.unit} of This Item was Returned. Invoice Id: #${returnOnlyDigits(invoiceUuid)}.',
+              quantityChange: record.getActualQuantity(),
               newValue: formatLargeNumberDouble(
                 product
                     .getProductUnit()
                     .getQuantityEquivDivided(
                       index: 1,
-                      newQuantity: product.quantity,
+                      newQuantity:
+                          product.getActualQuantity(),
                       product: product,
                     ),
               ),
@@ -343,7 +348,8 @@ class ProductRecordFunc {
                     .getProductUnit()
                     .getQuantityEquivDivided(
                       index: 1,
-                      newQuantity: oldProduct.quantity,
+                      newQuantity:
+                          oldProduct.getActualQuantity(),
                       product: oldProduct,
                     ),
               ),
@@ -381,14 +387,15 @@ class ProductRecordFunc {
               shopId: shopId(),
               title: 'Invoice Deleted (Unmanaged)',
               desc:
-                  '${record.quantity} ${record.unit} of This Item was Returned, but this item was unmanaged when the sales was made, so the quantity did not increase. Invoice Id: #${returnOnlyDigits(invoiceUuid)}.',
+                  '${record.getActualQuantity()} ${record.unit} of This Item was Returned, but this item was unmanaged when the sales was made, so the quantity did not increase. Invoice Id: #${returnOnlyDigits(invoiceUuid)}.',
               quantityChange: 0,
               newValue: formatLargeNumberDouble(
                 product
                     .getProductUnit()
                     .getQuantityEquivDivided(
                       index: 1,
-                      newQuantity: product.quantity,
+                      newQuantity:
+                          product.getActualQuantity(),
                       product: product,
                     ),
               ),
@@ -398,7 +405,8 @@ class ProductRecordFunc {
                     .getProductUnit()
                     .getQuantityEquivDivided(
                       index: 1,
-                      newQuantity: product.quantity,
+                      newQuantity:
+                          product.getActualQuantity(),
                       product: product,
                     ),
               ),

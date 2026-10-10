@@ -304,9 +304,10 @@ class _ProductPageMobileState
                             products
                                 .where(
                                   (product) =>
-                                      product.quantity !=
+                                      product.getActualQuantity() !=
                                           null &&
-                                      product.quantity! > 0,
+                                      product.getActualQuantity()! >
+                                          0,
                                 )
                                 .length
                                 .toDouble(),
@@ -316,7 +317,9 @@ class _ProductPageMobileState
                             products
                                 .where(
                                   (product) =>
-                                      product.quantity == 0,
+                                      product
+                                          .getActualQuantity() ==
+                                      0,
                                 )
                                 .length
                                 .toDouble(),

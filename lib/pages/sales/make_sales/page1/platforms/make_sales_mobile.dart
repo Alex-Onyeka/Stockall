@@ -1116,6 +1116,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                     ).pop();
                                   },
                                   editCartItem: TempCartItem(
+                                    heightDimension: null,
+                                    widthDimension: null,
+                                    quantityType: 1,
                                     priceUuid: null,
                                     unitUuid: null,
                                     itemUuid: null,
@@ -1129,6 +1132,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         returnSalesProvider()
                                             .setTotalPrice,
                                     item: TempProductClass(
+                                      heightDimension: null,
+                                      widthDimension: null,
+                                      quantityType: 1,
                                       pricesList: [],
                                       unitsList: [],
                                       useGroupUnit: false,
@@ -1209,6 +1215,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   ).pop();
                                 },
                                 editCartItem: TempCartItem(
+                                  heightDimension: null,
+                                  widthDimension: null,
+                                  quantityType: 1,
                                   priceUuid: null,
                                   unitUuid: null,
                                   itemUuid: null,
@@ -1221,6 +1230,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       returnSalesProvider()
                                           .setTotalPrice,
                                   item: TempProductClass(
+                                    heightDimension: null,
+                                    widthDimension: null,
+                                    quantityType: 1,
                                     pricesList: [],
                                     unitsList: [],
                                     useGroupUnit: false,
@@ -1327,6 +1339,11 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         ).pop();
                                       },
                                       editCartItem: TempCartItem(
+                                        heightDimension:
+                                            null,
+                                        widthDimension:
+                                            null,
+                                        quantityType: 1,
                                         priceUuid: null,
                                         unitUuid: null,
                                         itemUuid: null,
@@ -1341,6 +1358,11 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                             returnSalesProvider()
                                                 .setTotalPrice,
                                         item: TempProductClass(
+                                          heightDimension:
+                                              null,
+                                          widthDimension:
+                                              null,
+                                          quantityType: 1,
                                           pricesList: [],
                                           unitsList: [],
                                           useGroupUnit:
@@ -1430,6 +1452,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   ).pop();
                                 },
                                 editCartItem: TempCartItem(
+                                  heightDimension: null,
+                                  widthDimension: null,
+                                  quantityType: 1,
                                   priceUuid: null,
                                   unitUuid: null,
                                   itemUuid: null,
@@ -1442,6 +1467,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       returnSalesProvider()
                                           .setTotalPrice,
                                   item: TempProductClass(
+                                    heightDimension: null,
+                                    widthDimension: null,
+                                    quantityType: 1,
                                     pricesList: [],
                                     unitsList: [],
                                     useGroupUnit: false,
@@ -1625,6 +1653,12 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                           ).pop();
                                                         },
                                                         editCartItem: TempCartItem(
+                                                          heightDimension:
+                                                              null,
+                                                          widthDimension:
+                                                              null,
+                                                          quantityType:
+                                                              1,
                                                           priceUuid:
                                                               null,
                                                           unitUuid:
@@ -1644,6 +1678,12 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                           setTotalPrice:
                                                               returnSalesProvider().setTotalPrice,
                                                           item: TempProductClass(
+                                                            heightDimension:
+                                                                null,
+                                                            widthDimension:
+                                                                null,
+                                                            quantityType:
+                                                                1,
                                                             pricesList:
                                                                 [],
                                                             unitsList:
@@ -2061,6 +2101,12 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                 context:
                                                                     context,
                                                                 newItem: TempCartItem(
+                                                                  heightDimension:
+                                                                      null,
+                                                                  widthDimension:
+                                                                      null,
+                                                                  quantityType:
+                                                                      1,
                                                                   priceUuid:
                                                                       null,
                                                                   unitUuid:
@@ -2327,6 +2373,12 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               ).pop();
                                                             },
                                                             editCartItem: TempCartItem(
+                                                              heightDimension:
+                                                                  null,
+                                                              widthDimension:
+                                                                  null,
+                                                              quantityType:
+                                                                  1,
                                                               priceUuid:
                                                                   null,
                                                               unitUuid:
@@ -2346,6 +2398,12 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               setTotalPrice:
                                                                   returnSalesProvider().setTotalPrice,
                                                               item: TempProductClass(
+                                                                heightDimension:
+                                                                    null,
+                                                                widthDimension:
+                                                                    null,
+                                                                quantityType:
+                                                                    1,
                                                                 pricesList:
                                                                     [],
                                                                 unitsList:

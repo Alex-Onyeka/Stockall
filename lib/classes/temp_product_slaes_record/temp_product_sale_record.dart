@@ -120,6 +120,15 @@ class TempProductSaleRecord {
   @HiveField(36)
   String? priceUuid;
 
+  @HiveField(37)
+  double? widthDimension;
+
+  @HiveField(38)
+  double? heightDimension;
+
+  @HiveField(39)
+  int? quantityType;
+
   TempProductSaleRecord({
     this.productRecordId,
     required this.createdAt,
@@ -158,6 +167,9 @@ class TempProductSaleRecord {
     required this.unitUuid,
     required this.pricesList,
     required this.priceUuid,
+    required this.widthDimension,
+    required this.heightDimension,
+    required this.quantityType,
   });
 
   factory TempProductSaleRecord.fromJson(
@@ -220,6 +232,11 @@ class TempProductSaleRecord {
               )
               .toList(),
       priceUuid: json['price_uuid'] as String?,
+      widthDimension:
+          (json['width_dimension'] as num?)?.toDouble(),
+      heightDimension:
+          (json['height_dimension'] as num?)?.toDouble(),
+      quantityType: json['quantity_type'] as int?,
     );
   }
 
@@ -266,7 +283,47 @@ class TempProductSaleRecord {
         itemUuid: uuid,
       ),
       'price_uuid': priceUuid,
+      'width_dimension': widthDimension,
+      'height_dimension': heightDimension,
+      'quantity_type': quantityType,
     };
+  }
+
+  // Lines stored in a receipt's or invoice's `items` column.
+  // created_at is written in UTC so the stored string keeps its offset.
+  static List<Map<String, dynamic>> itemsToJson(
+    List<TempProductSaleRecord> items,
+  ) {
+    return items
+        .map(
+          (item) => {
+            ...item.toJson(),
+            'created_at':
+                item.createdAt.toUtc().toIso8601String(),
+          },
+        )
+        .toList();
+  }
+
+  // Null when missing, empty or unreadable, so the document is treated
+  // like one saved before items existed.
+  static List<TempProductSaleRecord>? itemsFromJson(
+    dynamic json,
+  ) {
+    if (json is! List || json.isEmpty) {
+      return null;
+    }
+    try {
+      return json.map((item) {
+        final record = TempProductSaleRecord.fromJson(
+          Map<String, dynamic>.from(item as Map),
+        );
+        record.createdAt = record.createdAt.toLocal();
+        return record;
+      }).toList();
+    } catch (_) {
+      return null;
+    }
   }
 
   TempProductSaleRecord copy({
@@ -305,6 +362,9 @@ class TempProductSaleRecord {
     String? unitUuid,
     List<ProductPricesClass>? pricesList,
     String? priceUuid,
+    double? widthDimension,
+    double? heightDimension,
+    int? quantityType,
   }) {
     return TempProductSaleRecord(
       productRecordId:
@@ -347,6 +407,10 @@ class TempProductSaleRecord {
       unitUuid: unitUuid ?? this.unitUuid,
       pricesList: pricesList ?? this.pricesList,
       priceUuid: priceUuid ?? this.priceUuid,
+      widthDimension: widthDimension ?? this.widthDimension,
+      heightDimension:
+          heightDimension ?? this.heightDimension,
+      quantityType: quantityType ?? this.quantityType,
     );
   }
 
@@ -610,5 +674,19 @@ class TempProductSaleRecord {
       );
     }
     return quantity * conversion;
+  }
+
+  // Width × height this line was sold at, 1 when not set.
+  double dimensionArea() {
+    if (widthDimension == null ||
+        heightDimension == null ||
+        widthDimension! * heightDimension! <= 0) {
+      return 1;
+    }
+    return widthDimension! * heightDimension!;
+  }
+
+  String dimensionsLabel() {
+    return formatDimensionsLabel(widthDimension, heightDimension);
   }
 }

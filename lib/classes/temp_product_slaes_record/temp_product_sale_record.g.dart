@@ -54,13 +54,16 @@ class TempProductSaleRecordAdapter extends TypeAdapter<TempProductSaleRecord> {
       unitUuid: fields[34] as String?,
       pricesList: (fields[35] as List?)?.cast<ProductPricesClass>(),
       priceUuid: fields[36] as String?,
+      widthDimension: fields[37] as double?,
+      heightDimension: fields[38] as double?,
+      quantityType: fields[39] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempProductSaleRecord obj) {
     writer
-      ..writeByte(37)
+      ..writeByte(40)
       ..writeByte(0)
       ..write(obj.productRecordId)
       ..writeByte(1)
@@ -134,7 +137,13 @@ class TempProductSaleRecordAdapter extends TypeAdapter<TempProductSaleRecord> {
       ..writeByte(35)
       ..write(obj.pricesList)
       ..writeByte(36)
-      ..write(obj.priceUuid);
+      ..write(obj.priceUuid)
+      ..writeByte(37)
+      ..write(obj.widthDimension)
+      ..writeByte(38)
+      ..write(obj.heightDimension)
+      ..writeByte(39)
+      ..write(obj.quantityType);
   }
 
   @override

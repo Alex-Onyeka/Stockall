@@ -161,7 +161,9 @@ class ProductUnitsClass extends HiveObject {
     }
 
     if (product != null) {
-      return (newQuantity ?? product.quantity ?? 0) /
+      return (newQuantity ??
+              product.getActualQuantity() ??
+              0) /
           conversion;
     } else if (material != null) {
       return (newQuantity ?? material.quantity ?? 0) /
@@ -174,8 +176,15 @@ class ProductUnitsClass extends HiveObject {
     } else {
       if (items().isNotEmpty) {
         var item = items().first;
-        return (newQuantity ?? item.quantity ?? 0) /
-            conversion;
+        try {
+          return (newQuantity ??
+                  item.getActualQuantity() ??
+                  0) /
+              conversion;
+        } catch (e) {
+          return (newQuantity ?? item.quantity ?? 0) /
+              conversion;
+        }
       } else {
         return 0;
       }
@@ -189,7 +198,17 @@ class ProductUnitsClass extends HiveObject {
     double? quantityTwo,
     required int index,
     TempProductClass? product,
+    double? customWidth,
+    double? customHeight,
   }) {
+    // 2D lines: a given quantity is scaled by the line's
+    // width × height (area). Null dimensions leave it as-is.
+    if (newQuantity != null &&
+        customWidth != null &&
+        customHeight != null) {
+      newQuantity = newQuantity * customWidth * customHeight;
+    }
+
     List items() {
       if (index == 1) {
         return returnData(context: context).productListMain
@@ -220,7 +239,9 @@ class ProductUnitsClass extends HiveObject {
     }
 
     if (product != null) {
-      return (newQuantity ?? product.quantity ?? 0) *
+      return (newQuantity ??
+              product.getActualQuantity() ??
+              0) *
           conversion;
     } else if (orderItem != null) {
       return (newQuantity ?? orderItem.quantity) *
@@ -230,8 +251,15 @@ class ProductUnitsClass extends HiveObject {
     } else {
       if (items().isNotEmpty) {
         var item = items().first;
-        return (newQuantity ?? item.quantity ?? 0) *
-            conversion;
+        try {
+          return (newQuantity ??
+                  item.getActualQuantity() ??
+                  0) *
+              conversion;
+        } catch (e) {
+          return (newQuantity ?? item.quantity ?? 0) *
+              conversion;
+        }
       } else {
         return 0;
       }

@@ -490,14 +490,14 @@ class _ProductDetailsMobileState
                                             'Item Deleted',
                                         quantityChange: 0,
                                         newValue:
-                                            (product.quantity ??
+                                            (product.getActualQuantity() ??
                                                     0)
                                                 .toString(),
                                         desc:
                                             'Item Deleted Now',
                                         isIncreased: false,
                                         oldValue:
-                                            (product.quantity ??
+                                            (product.getActualQuantity() ??
                                                     0)
                                                 .toString(),
                                       );

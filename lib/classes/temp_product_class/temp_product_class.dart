@@ -121,6 +121,15 @@ class TempProductClass {
   @HiveField(36)
   List<ProductPricesClass>? pricesList;
 
+  @HiveField(37)
+  double? widthDimension;
+
+  @HiveField(38)
+  double? heightDimension;
+
+  @HiveField(39)
+  int? quantityType;
+
   TempProductClass({
     this.id,
     required this.name,
@@ -159,6 +168,9 @@ class TempProductClass {
     required this.useGroupUnit,
     required this.unitsList,
     required this.pricesList,
+    required this.widthDimension,
+    required this.heightDimension,
+    this.quantityType = 1,
   });
 
   factory TempProductClass.fromJson(
@@ -247,6 +259,11 @@ class TempProductClass {
                 ),
               )
               .toList(),
+      widthDimension:
+          (json['width_dimension'] as num?)?.toDouble(),
+      heightDimension:
+          (json['height_dimension'] as num?)?.toDouble(),
+      quantityType: json['quantity_type'] as int? ?? 1,
     );
   }
 
@@ -300,6 +317,9 @@ class TempProductClass {
           tempPricesList: pricesList,
           itemUuid: uuid,
         ),
+        'width_dimension': widthDimension,
+        'height_dimension': heightDimension,
+        'quantity_type': quantityType ?? 1,
       };
     } else {
       return {
@@ -348,6 +368,9 @@ class TempProductClass {
           tempPricesList: pricesList,
           itemUuid: uuid,
         ),
+        'width_dimension': widthDimension,
+        'height_dimension': heightDimension,
+        'quantity_type': quantityType ?? 1,
       };
     }
   }
@@ -390,6 +413,9 @@ class TempProductClass {
     bool? useGroupUnit,
     List<ProductUnitsClass>? unitsList,
     List<ProductPricesClass>? pricesList,
+    double? widthDimension,
+    double? heightDimension,
+    int? quantityType,
   }) {
     return TempProductClass(
       id: id ?? this.id,
@@ -432,7 +458,45 @@ class TempProductClass {
       useGroupUnit: useGroupUnit ?? this.useGroupUnit,
       unitsList: unitsList ?? this.unitsList,
       pricesList: pricesList ?? this.pricesList,
+      widthDimension: widthDimension ?? this.widthDimension,
+      heightDimension:
+          heightDimension ?? this.heightDimension,
+      quantityType: quantityType ?? this.quantityType,
     );
+  }
+
+  double? getActualQuantity({
+    double? tempWidth,
+    double? tempHeight,
+  }) {
+    if (quantityType == 1) {
+      return quantity;
+    } else if (quantityType == 2) {
+      return (quantity ?? 0) *
+          ((tempWidth ?? widthDimension ?? 1) *
+              (tempHeight ?? heightDimension ?? 1));
+    } else {
+      return quantity;
+    }
+  }
+
+  // Area of one stock unit (sheet) for 2D items, 1 otherwise.
+  // Converts area back to the stored sheet count.
+  double dimensionArea() {
+    if (quantityType == 2) {
+      final area =
+          (widthDimension ?? 1) * (heightDimension ?? 1);
+      return area > 0 ? area : 1;
+    } else {
+      return 1;
+    }
+  }
+
+  // Stored quantity left after removing [removedQuantity]
+  // (in getActualQuantity units, i.e. area for 2D items).
+  double quantityAfterRemoving(double removedQuantity) {
+    return ((getActualQuantity() ?? 0) - removedQuantity) /
+        dimensionArea();
   }
 
   //
@@ -639,7 +703,7 @@ class TempProductClass {
                     product: products.first,
                   );
         } else {
-          tempQuantity = (quantity ?? 0);
+          tempQuantity = (getActualQuantity() ?? 0);
         }
         if (tempQuantity <= 0) {
           return 'Stock Out';
@@ -656,13 +720,13 @@ class TempProductClass {
     double? newQuantity,
   }) {
     if (unitsList == null || unitsList?.isEmpty == true) {
-      return (quantity ?? 0);
+      return (getActualQuantity() ?? 0);
     } else {
       var items = unitsList!.where(
         (item) => item.isPrimary,
       );
       if (items.isEmpty) {
-        return (quantity ?? 0);
+        return (getActualQuantity() ?? 0);
       } else {
         var item = items.first;
         return item.getQuantityEquivDivided(
@@ -777,7 +841,8 @@ class TempProductClass {
       )) {
         return true;
       } else {
-        if (quantity == null || (quantity ?? 0) <= 0) {
+        if (getActualQuantity() == null ||
+            (getActualQuantity() ?? 0) <= 0) {
           return false;
         } else {
           return true;
@@ -835,7 +900,8 @@ class TempProductClass {
 
   double getGroupQuantity() {
     if (useGroupUnit == true) {
-      return (quantity ?? 0) / (qttyPerGroup ?? 1);
+      return (getActualQuantity() ?? 0) /
+          (qttyPerGroup ?? 1);
     } else {
       return 0;
     }

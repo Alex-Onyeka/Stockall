@@ -1339,7 +1339,7 @@ class _ReceiptDetailsContainerState
                                                           fontSize:
                                                               widget.theme.mobileTexts.b3.fontSize,
                                                         ),
-                                                        productRecord.productName,
+                                                        '${productRecord.productName}${productRecord.dimensionsLabel()}',
                                                       ),
                                                       Row(
                                                         children: [
@@ -1519,7 +1519,7 @@ class _ReceiptDetailsContainerState
                                                                 fontSize:
                                                                     widget.theme.mobileTexts.b3.fontSize,
                                                               ),
-                                                              productRecord.productName,
+                                                              '${productRecord.productName}${productRecord.dimensionsLabel()}',
                                                             ),
                                                             Text(
                                                               style: TextStyle(

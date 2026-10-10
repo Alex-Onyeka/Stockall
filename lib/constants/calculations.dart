@@ -97,6 +97,20 @@ String formatLargeNumberDouble(num number) {
   return addZeroAfterDecimalPoint(formatter.format(number));
 }
 
+// Width/height values without a trailing ".0" (4, 1.5).
+String formatDimension(num number) {
+  final formatter = NumberFormat('#,###.###');
+  return formatter.format(number);
+}
+
+// " (W x H)" for 2D lines, '' when either value is missing.
+String formatDimensionsLabel(double? width, double? height) {
+  if (width == null || height == null) {
+    return '';
+  }
+  return ' (${formatDimension(width)} x ${formatDimension(height)})';
+}
+
 String formatLargeNumberDoubleWidgetDecimal(num number) {
   final formatter = NumberFormat('#,##0.0');
   return formatter.format(number);

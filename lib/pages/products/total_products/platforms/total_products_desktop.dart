@@ -138,21 +138,22 @@ class _TotalProductsDesktopState
           return products
               .where(
                 (p) =>
-                    p.quantity != 0 && p.quantity != null,
+                    p.getActualQuantity() != 0 &&
+                    p.getActualQuantity() != null,
               )
               .toList();
         case 2:
           return products
               .where(
                 (p) =>
-                    p.quantity != null &&
-                    p.quantity! <= p.lowQtty! &&
-                    p.quantity != 0,
+                    p.getActualQuantity() != null &&
+                    p.getActualQuantity()! <= p.lowQtty! &&
+                    p.getActualQuantity() != 0,
               )
               .toList();
         case 3:
           return products
-              .where((p) => p.quantity == 0)
+              .where((p) => p.getActualQuantity() == 0)
               .toList();
         case 4:
           return products
