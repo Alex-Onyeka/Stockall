@@ -1128,94 +1128,102 @@ class _CustomerAccountDetailsSectionWidgetState
                 SizedBox(height: 5),
                 Row(
                   children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                if (widget.customer
-                                        .getTotalDebt() ==
-                                    0) {
-                                  return;
-                                } else {
-                                  showDialog(
-                                    context: context,
-                                    builder: (
-                                      confirmContext,
-                                    ) {
-                                      return ConfirmationAlert(
-                                        theme: theme,
-                                        message:
-                                            'You are about to Pay up All Invoices Created By This Customer, Are you sure you want to Proceed?',
-                                        title:
-                                            'Pay Up All Debt?',
-                                        action: () {
-                                          payAllInvoiceAction(
-                                            context:
-                                                context,
-                                            setPaymentSelected:
-                                                () {
-                                                  setState(
-                                                    () {},
-                                                  );
-                                                },
-                                            customer:
-                                                widget
-                                                    .customer,
-                                          );
-                                        },
-                                      );
-                                    },
-                                  );
-                                }
-                              },
-                              mouseCursor:
-                                  SystemMouseCursors.click,
-                              child: Container(
-                                padding:
-                                    EdgeInsets.symmetric(
-                                      vertical: 4,
-                                      horizontal: 15,
-                                    ),
-                                decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        2,
+                    Visibility(
+                      visible:
+                          widget.customer.getTotalDebt(
+                            context: context,
+                          ) !=
+                          0,
+                      child: Expanded(
+                        child: Row(
+                          children: [
+                            Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  if (widget.customer
+                                          .getTotalDebt() ==
+                                      0) {
+                                    return;
+                                  } else {
+                                    showDialog(
+                                      context: context,
+                                      builder: (
+                                        confirmContext,
+                                      ) {
+                                        return ConfirmationAlert(
+                                          theme: theme,
+                                          message:
+                                              'You are about to Pay up All Invoices Created By This Customer, Are you sure you want to Proceed?',
+                                          title:
+                                              'Pay Up All Debt?',
+                                          action: () {
+                                            payAllInvoiceAction(
+                                              context:
+                                                  context,
+                                              setPaymentSelected:
+                                                  () {
+                                                    setState(
+                                                      () {},
+                                                    );
+                                                  },
+                                              customer:
+                                                  widget
+                                                      .customer,
+                                            );
+                                          },
+                                        );
+                                      },
+                                    );
+                                  }
+                                },
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
+                                child: Container(
+                                  padding:
+                                      EdgeInsets.symmetric(
+                                        vertical: 4,
+                                        horizontal: 15,
                                       ),
-                                  border: Border.all(
-                                    color:
-                                        const Color.fromARGB(
-                                          61,
-                                          255,
-                                          255,
-                                          255,
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          2,
                                         ),
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b4
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
+                                    border: Border.all(
                                       color:
-                                          Colors
-                                              .grey
-                                              .shade200,
+                                          const Color.fromARGB(
+                                            61,
+                                            255,
+                                            255,
+                                            255,
+                                          ),
                                     ),
-                                    'Pay All',
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b4
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade200,
+                                      ),
+                                      'Pay All',
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     // Expanded(
