@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_departments_class/department_class.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_storage_item_history/storage_item_history.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
@@ -944,6 +945,14 @@ class _StorageQuantityUpdateWidgetState
                                   newPr != null) {
                                 ItemHistory
                                 itemHistory = ItemHistory(
+                                  event:
+                                      ItemHistoryEventClass
+                                          .transferedIn,
+                                  isManaged:
+                                      newPr.isManaged,
+                                  source:
+                                      ItemHistoryEventClass
+                                          .storageSource,
                                   shopId: shopId(),
                                   isIncreased:
                                       salesNewQuantity >

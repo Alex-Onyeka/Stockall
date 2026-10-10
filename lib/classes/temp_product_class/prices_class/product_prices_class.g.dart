@@ -6,8 +6,7 @@ part of 'product_prices_class.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class ProductPricesClassAdapter
-    extends TypeAdapter<ProductPricesClass> {
+class ProductPricesClassAdapter extends TypeAdapter<ProductPricesClass> {
   @override
   final int typeId = 147;
 
@@ -15,8 +14,7 @@ class ProductPricesClassAdapter
   ProductPricesClass read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++)
-        reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ProductPricesClass(
       uuid: fields[0] as String,
@@ -27,7 +25,7 @@ class ProductPricesClassAdapter
       name: fields[5] as String?,
       isPrimary: fields[6] as bool,
       itemUuid: fields[7] as String,
-      isFixed: fields[8] as bool,
+      isFixed: fields[8] as bool?,
       priceType: fields[9] as int?,
     );
   }

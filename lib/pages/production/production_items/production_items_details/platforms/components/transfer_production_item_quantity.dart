@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_departments_class/department_class.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_item_history/production_item_history.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_items/production_item.dart';
@@ -721,6 +722,14 @@ void selectItemInADepartmentsProduction({
                                     );
                             ItemHistory
                             itemHistory = ItemHistory(
+                              event:
+                                  ItemHistoryEventClass
+                                      .transferedIn,
+                              source:
+                                  ItemHistoryEventClass
+                                      .productionSource,
+                              isManaged:
+                                  newProduct.isManaged,
                               shopId: shopId(),
                               isIncreased: true,
                               departmentName:
@@ -1382,6 +1391,13 @@ void selectItemInAShopProduction({
                                 );
                         ItemHistory
                         productionItemHistory = ItemHistory(
+                          event:
+                              ItemHistoryEventClass
+                                  .transferedIn,
+                          source:
+                              ItemHistoryEventClass
+                                  .branchStoreSource,
+                          isManaged: newProduct.isManaged,
                           desc:
                               'Item Quantity Received From Transfer - From Production Item Name: ${mainProductionItem.name}. Shop Name: ${returnShopProvider().userShop()?.name}.',
                           shopId: shop.shopId!,

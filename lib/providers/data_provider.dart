@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stockall/classes/temp_categories/category_class.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/prices_class/product_prices_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
@@ -3764,6 +3765,9 @@ class DataProvider extends ChangeNotifier {
         (prr) => selectedProducts.contains(prr),
       )) {
         ItemHistory itemHistory = ItemHistory(
+          event: ItemHistoryEventClass.itemDeleted,
+          isManaged: pr.isManaged,
+          source: ItemHistoryEventClass.unKnownSource,
           shopId: shopId(),
           title: 'Item Deleted',
           quantityChange: 0,
@@ -3823,6 +3827,9 @@ class DataProvider extends ChangeNotifier {
         newProduct.unitsList = tempItems;
 
         ItemHistory itemHistory = ItemHistory(
+          event: ItemHistoryEventClass.itemDuplicated,
+          isManaged: pr.isManaged,
+          source: ItemHistoryEventClass.unKnownSource,
           shopId: shopId(),
           title: 'Item Created',
           quantityChange: 0,
@@ -3941,6 +3948,9 @@ class DataProvider extends ChangeNotifier {
           newProduct.unitsList = tempItems;
 
           ItemHistory itemHistory = ItemHistory(
+            event: ItemHistoryEventClass.itemDuplicated,
+            isManaged: pr.isManaged,
+            source: ItemHistoryEventClass.departmentSource,
             shopId: shopId(),
             title: 'Item Created',
             quantityChange: 0,

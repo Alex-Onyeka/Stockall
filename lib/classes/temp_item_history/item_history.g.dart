@@ -34,13 +34,16 @@ class ItemHistoryAdapter extends TypeAdapter<ItemHistory> {
       isIncreased: fields[14] as bool?,
       unit: fields[15] as String?,
       primaryUnit: fields[16] as String?,
+      event: fields[17] as String?,
+      isManaged: fields[18] as bool?,
+      source: fields[19] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ItemHistory obj) {
     writer
-      ..writeByte(17)
+      ..writeByte(20)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -74,7 +77,13 @@ class ItemHistoryAdapter extends TypeAdapter<ItemHistory> {
       ..writeByte(15)
       ..write(obj.unit)
       ..writeByte(16)
-      ..write(obj.primaryUnit);
+      ..write(obj.primaryUnit)
+      ..writeByte(17)
+      ..write(obj.event)
+      ..writeByte(18)
+      ..write(obj.isManaged)
+      ..writeByte(19)
+      ..write(obj.source);
   }
 
   @override

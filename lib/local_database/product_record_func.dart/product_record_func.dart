@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -141,6 +142,9 @@ class ProductRecordFunc {
             final primaryUnitConversion =
                 primaryUnit.conversion;
             ItemHistory itemHistory = ItemHistory(
+              isManaged: true,
+              source: 'receipt',
+              event: ItemHistoryEventClass.returnEvent,
               shopId: shopId(),
               title: 'Item Returned',
               desc:
@@ -178,6 +182,9 @@ class ProductRecordFunc {
           if (products.isNotEmpty) {
             var product = products.first;
             ItemHistory itemHistory = ItemHistory(
+              isManaged: false,
+              source: ItemHistoryEventClass.receiptSource,
+              event: ItemHistoryEventClass.returnEvent,
               shopId: shopId(),
               title: 'Receipt Deleted (Unmanaged)',
               desc:
@@ -313,6 +320,9 @@ class ProductRecordFunc {
                 (product.quantity ?? 0) +
                 record.getSelectedUnitQuantityMultiplied();
             ItemHistory itemHistory = ItemHistory(
+              isManaged: true,
+              event: ItemHistoryEventClass.returnEvent,
+              source: ItemHistoryEventClass.invoiceSource,
               shopId: shopId(),
               title: 'Item Returned',
               desc:
@@ -365,6 +375,9 @@ class ProductRecordFunc {
           if (products.isNotEmpty) {
             var product = products.first;
             ItemHistory itemHistory = ItemHistory(
+              event: ItemHistoryEventClass.returnEvent,
+              source: ItemHistoryEventClass.invoiceSource,
+              isManaged: false,
               shopId: shopId(),
               title: 'Invoice Deleted (Unmanaged)',
               desc:
