@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_item_history/production_item_history.dart';
+import 'package:stockall/classes/temp_production_folder/temp_production_item_history/production_item_history_event_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_items/production_item.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
@@ -437,6 +438,19 @@ class _UpdateProductionItemQuantityWidgetState
                                               0);
                                       ProductionItemHistory
                                       productionItemHistory = ProductionItemHistory(
+                                        event:
+                                            isIncrement
+                                                ? ProductionItemHistoryEventClass
+                                                    .quantityUpdatedIncrease
+                                                : ProductionItemHistoryEventClass
+                                                    .quantityUpdatedDecrease,
+                                        source:
+                                            ProductionItemHistoryEventClass
+                                                .unKnownSource,
+                                        isManaged:
+                                            widget
+                                                .productionItem
+                                                .isManaged,
                                         primaryUnit:
                                             widget
                                                 .productionItem

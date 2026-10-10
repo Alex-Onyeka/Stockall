@@ -6,6 +6,7 @@ import 'package:stockall/classes/temp_production_folder/temp_materials_item_hist
 import 'package:stockall/classes/temp_production_folder/temp_production_item_history/production_item_history.dart';
 import 'package:stockall/classes/temp_production_folder/production_unit_snapshot.dart';
 import 'package:stockall/classes/temp_production_folder/temp_materials_item_history/materials_item_history.dart';
+import 'package:stockall/classes/temp_production_folder/temp_production_item_history/production_item_history_event_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions/production_record.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions/production_record_materials.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions/unsynced/created_productions/created_production_record.dart';
@@ -189,6 +190,16 @@ class ProductionRecordsProvider extends ChangeNotifier {
             quantityChange: quantity,
             isIncrement: increment,
             productionItemHistory: ProductionItemHistory(
+              event:
+                  increment
+                      ? ProductionItemHistoryEventClass
+                          .productionCreated
+                      : ProductionItemHistoryEventClass
+                          .productionDeleted,
+              source:
+                  ProductionItemHistoryEventClass
+                      .productionSource,
+              isManaged: oldItem.isManaged,
               shopId: shopId(),
               title: historyTitle,
               oldValue:

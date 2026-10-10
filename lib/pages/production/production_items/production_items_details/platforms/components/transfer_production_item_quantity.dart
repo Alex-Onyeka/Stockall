@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_item_history/production_item_history.dart';
+import 'package:stockall/classes/temp_production_folder/temp_production_item_history/production_item_history_event_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_items/production_item.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -816,6 +817,15 @@ void selectItemInADepartmentsProduction({
                                         ));
                             ProductionItemHistory
                             productionItemHistory2 = ProductionItemHistory(
+                              event:
+                                  ProductionItemHistoryEventClass
+                                      .transferedOut,
+                              source:
+                                  ProductionItemHistoryEventClass
+                                      .departmentSource,
+                              isManaged:
+                                  mainProductionItem
+                                      .isManaged,
                               shopId: shopId(),
                               isIncreased: false,
                               desc:
@@ -1470,6 +1480,14 @@ void selectItemInAShopProduction({
                                     ));
                         ProductionItemHistory
                         productionItemHistory2 = ProductionItemHistory(
+                          event:
+                              ProductionItemHistoryEventClass
+                                  .transferedOut,
+                          source:
+                              ProductionItemHistoryEventClass
+                                  .branchStoreSource,
+                          isManaged:
+                              mainProductionItem.isManaged,
                           shopId: shopId(),
                           isIncreased: false,
                           desc:
