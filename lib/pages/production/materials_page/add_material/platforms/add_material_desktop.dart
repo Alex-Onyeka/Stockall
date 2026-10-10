@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_production_folder/temp_material_class/material_class.dart';
+import 'package:stockall/classes/temp_production_folder/temp_materials_item_history/material_item_history_event_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_materials_item_history/materials_item_history.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
@@ -109,6 +110,13 @@ class _AddMaterialDesktopState
               final dataProvider = returnData();
               MaterialsItemHistory materialsItemHistory =
                   MaterialsItemHistory(
+                    event:
+                        MaterialItemHistoryEventClass
+                            .itemCreated,
+                    isManaged: false,
+                    source:
+                        MaterialItemHistoryEventClass
+                            .unKnownSource,
                     shopId: shopId(),
                     title: 'Item Created',
                     quantityChange: 0,

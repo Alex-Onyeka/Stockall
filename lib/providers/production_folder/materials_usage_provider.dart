@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_production_folder/temp_materials_item_history/material_item_history_event_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_materials_item_history/materials_item_history.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_materials_usage/production_materials_usage.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions/production_record.dart';
@@ -231,13 +232,11 @@ class MaterialsUsageProvider extends ChangeNotifier {
             : material.getUnitsList();
     usage.unitsList =
         units.map((unit) => unit.copyWith()).toList();
-    if (usage.unitUuid == null) {
-      usage.unitUuid = legacyProductionUnitUuid(
-        unitsList: units,
-        useGroupQuantity: usage.isGroup,
-        groupUnit: usage.groupUnit,
-      );
-    }
+    usage.unitUuid ??= legacyProductionUnitUuid(
+      unitsList: units,
+      useGroupQuantity: usage.isGroup,
+      groupUnit: usage.groupUnit,
+    );
   }
 
   Future<void> _applyMaterialUsage(
@@ -272,6 +271,13 @@ class MaterialsUsageProvider extends ChangeNotifier {
           fallback: oldMaterial.getPrimaryUnit().conversion,
         );
     final history = MaterialsItemHistory(
+      event:
+          increment
+              ? MaterialItemHistoryEventClass.usageDeleted
+              : MaterialItemHistoryEventClass.usageCreated,
+      isManaged: newMaterial.isManaged,
+      source:
+          MaterialItemHistoryEventClass.materialUsageSource,
       shopId: oldMaterial.shopId,
       title:
           increment

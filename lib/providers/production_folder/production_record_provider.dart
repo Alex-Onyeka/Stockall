@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
+import 'package:stockall/classes/temp_production_folder/temp_materials_item_history/material_item_history_event_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_item_history/production_item_history.dart';
 import 'package:stockall/classes/temp_production_folder/production_unit_snapshot.dart';
 import 'package:stockall/classes/temp_production_folder/temp_materials_item_history/materials_item_history.dart';
@@ -317,6 +318,16 @@ class ProductionRecordsProvider extends ChangeNotifier {
         quantityChange: quantity,
         isIncrement: increment,
         materialsItemHistory: MaterialsItemHistory(
+          event:
+              increment
+                  ? MaterialItemHistoryEventClass
+                      .productionDeleted
+                  : MaterialItemHistoryEventClass
+                      .productionCreated,
+          source:
+              MaterialItemHistoryEventClass
+                  .productionSource,
+          isManaged: oldMaterial.isManaged,
           shopId: oldMaterial.shopId,
           title:
               increment
