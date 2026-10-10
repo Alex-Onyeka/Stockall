@@ -85,6 +85,12 @@ class StorageItemHistory {
   @HiveField(26)
   String? salesItemName;
 
+  @HiveField(27)
+  String? event;
+
+  @HiveField(28)
+  String? source;
+
   StorageItemHistory({
     this.uuid,
     this.createdAt,
@@ -113,6 +119,8 @@ class StorageItemHistory {
     this.salesItemOldValue,
     this.salesItemUuid,
     this.salesItemName,
+    required this.event,
+    required this.source,
   });
 
   factory StorageItemHistory.fromJson(
@@ -161,6 +169,8 @@ class StorageItemHistory {
       salesPrimaryUnit:
           json['sales_primary_unit'] as String?,
       salesItemName: json['sales_item_name'] as String?,
+      event: json['event'] as String?,
+      source: json['source'] as String?,
     );
   }
 
@@ -202,6 +212,8 @@ class StorageItemHistory {
       'sales_unit': salesUnit,
       'sales_primary_unit': salesPrimaryUnit,
       'sales_item_name': salesItemName,
+      'event': event,
+      'source': source,
     };
   }
 
@@ -233,6 +245,8 @@ class StorageItemHistory {
     String? salesUnit,
     String? salesPrimaryUnit,
     String? salesItemName,
+    String? event,
+    String? source,
   }) {
     return StorageItemHistory(
       uuid: uuid ?? this.uuid,
@@ -286,6 +300,8 @@ class StorageItemHistory {
       salesPrimaryUnit:
           salesPrimaryUnit ?? this.salesPrimaryUnit,
       salesItemName: salesItemName ?? this.salesItemName,
+      event: event ?? this.event,
+      source: source ?? this.source,
     );
   }
 }

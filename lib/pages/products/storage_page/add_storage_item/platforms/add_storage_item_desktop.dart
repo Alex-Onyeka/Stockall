@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_storage_item_history/storage_item_history.dart';
+import 'package:stockall/classes/temp_storage_item_history/storage_item_history_event_class.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
@@ -115,6 +116,12 @@ class _AddStorageItemDesktopState
 
               StorageItemHistory itemHistory =
                   StorageItemHistory(
+                    event:
+                        StorageItemHistoryEventClass
+                            .itemCreated,
+                    source:
+                        StorageItemHistoryEventClass
+                            .unKnownSource,
                     storageUnit: 'Not Set',
                     shopId: shopId(),
                     title: 'Item Created',

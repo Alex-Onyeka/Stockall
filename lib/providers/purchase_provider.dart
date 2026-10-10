@@ -10,6 +10,7 @@ import 'package:stockall/classes/temp_purchase/unsynced/created_purchases/create
 import 'package:stockall/classes/temp_purchase/unsynced/deleted_purchase/deleted_purchases.dart';
 import 'package:stockall/classes/temp_purchase/unsynced/updated/updated_purchases.dart';
 import 'package:stockall/classes/temp_storage_item_history/storage_item_history.dart';
+import 'package:stockall/classes/temp_storage_item_history/storage_item_history_event_class.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
@@ -369,6 +370,12 @@ class PurchaseProvider extends ChangeNotifier {
                 try {
                   if (createUpdate) {
                     var newUpdate = StorageItemHistory(
+                      event:
+                          StorageItemHistoryEventClass
+                              .purchaseDeleted,
+                      source:
+                          StorageItemHistoryEventClass
+                              .purchaseSource,
                       shopId: shopId(),
                       title: 'Purchase Deleted',
                       createdAt: DateTime.now(),
@@ -809,6 +816,10 @@ class PurchaseProvider extends ChangeNotifier {
               );
           try {
             var newUpdate = StorageItemHistory(
+              event: StorageItemHistoryEventClass.purchase,
+              source:
+                  StorageItemHistoryEventClass
+                      .purchaseSource,
               shopId: shopId(),
               title: 'Stock In From Purchase',
               createdAt: DateTime.now(),
