@@ -289,6 +289,43 @@ class TempProductSaleRecord {
     };
   }
 
+  // Lines stored in a receipt's or invoice's `items` column.
+  // created_at is written in UTC so the stored string keeps its offset.
+  static List<Map<String, dynamic>> itemsToJson(
+    List<TempProductSaleRecord> items,
+  ) {
+    return items
+        .map(
+          (item) => {
+            ...item.toJson(),
+            'created_at':
+                item.createdAt.toUtc().toIso8601String(),
+          },
+        )
+        .toList();
+  }
+
+  // Null when missing, empty or unreadable, so the document is treated
+  // like one saved before items existed.
+  static List<TempProductSaleRecord>? itemsFromJson(
+    dynamic json,
+  ) {
+    if (json is! List || json.isEmpty) {
+      return null;
+    }
+    try {
+      return json.map((item) {
+        final record = TempProductSaleRecord.fromJson(
+          Map<String, dynamic>.from(item as Map),
+        );
+        record.createdAt = record.createdAt.toLocal();
+        return record;
+      }).toList();
+    } catch (_) {
+      return null;
+    }
+  }
+
   TempProductSaleRecord copy({
     int? productRecordId,
     DateTime? createdAt,

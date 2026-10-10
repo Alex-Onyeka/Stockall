@@ -952,72 +952,75 @@ class OrdersProvider extends ChangeNotifier {
         cartName: null,
       );
 
+      // Built before the receipt is saved so the same lines are
+      // stored in receipt.items and in product_sales.
+      List<OrderItems> orderItemsTemp =
+          returnOrdersActionProvider().orderListItems;
+
+      final productSaleRecords =
+          orderItemsTemp.map((record) {
+            mainLocalLog(
+              'Sales Record about to be Created',
+            );
+            return TempProductSaleRecord(
+              heightDimension: record.heightDimension,
+              quantityType: record.quantityType,
+              widthDimension: record.widthDimension,
+              priceUuid: record.priceUuid,
+              pricesList: record.getPriceListFinal(),
+              unitUuid: record.unitUuid,
+              unitsList: record.getUnitListFinal(),
+              isVoid: false,
+              customPriceSet: record.customPriceSet,
+              createdAt: createdAt,
+              productId: 1,
+              productUuid: record.productUuid,
+              productName: record.productName,
+              shopId: order.shopId,
+              staffId: currentUser().userId!,
+              staffName:
+                  "${returnUserProviderSingle().currentUserMain!.name} ${returnUserProviderSingle().currentUserMain!.lastName}",
+              // customerId: customerId,
+              customerUuid: order.customerId,
+              customerName: order.customerName,
+              recepitId: 0,
+              receiptUuid: receipt.uuid,
+              quantity: record.quantity,
+              revenue: record.getTotalRevenue(),
+              costPrice: record.getTotalCostPrice(),
+              discountedAmount: null,
+              originalCost:
+                  record.getTotalOriginalSellingPrice(),
+              discount: record.discount,
+              fixedDiscount: record.fixedDiscount,
+              addToStock: false,
+              departmentName:
+                  record.departmentName ??
+                  returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.name,
+              departmentUuid:
+                  record.departmentUuid ??
+                  returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.uuid,
+              uuid: uuidGen(),
+              isProductManaged: record.isProductManaged,
+              setTotalPrice: record.setTotalPrice,
+              unit: record.getUnit(),
+              useWholeSalePrice: record.useWholeSalePrice,
+              useGroupQuantity: record.useGroupQuantity,
+              qttyPerGroup: record.qttyPerGroup,
+              // orderUuid: order.uuid,
+            );
+          }).toList();
+      receipt.items = productSaleRecords;
+
       await mainLocalLog('Checkout Started');
       var res = await returnReceiptProviderSingle()
           .createReceipt(receipt);
       if (res != null) {
         await mainLocalLog('Receipt Created');
-
-        List<OrderItems> orderItemsTemp =
-            returnOrdersActionProvider().orderListItems;
-
-        final productSaleRecords =
-            orderItemsTemp.map((record) {
-              mainLocalLog(
-                'Sales Record about to be Created',
-              );
-              return TempProductSaleRecord(
-                heightDimension: record.heightDimension,
-                quantityType: record.quantityType,
-                widthDimension: record.widthDimension,
-                priceUuid: record.priceUuid,
-                pricesList: record.getPriceListFinal(),
-                unitUuid: record.unitUuid,
-                unitsList: record.getUnitListFinal(),
-                isVoid: false,
-                customPriceSet: record.customPriceSet,
-                createdAt: createdAt,
-                productId: 1,
-                productUuid: record.productUuid,
-                productName: record.productName,
-                shopId: order.shopId,
-                staffId: currentUser().userId!,
-                staffName:
-                    "${returnUserProviderSingle().currentUserMain!.name} ${returnUserProviderSingle().currentUserMain!.lastName}",
-                // customerId: customerId,
-                customerUuid: order.customerId,
-                customerName: order.customerName,
-                recepitId: 0,
-                receiptUuid: res.uuid,
-                quantity: record.quantity,
-                revenue: record.getTotalRevenue(),
-                costPrice: record.getTotalCostPrice(),
-                discountedAmount: null,
-                originalCost:
-                    record.getTotalOriginalSellingPrice(),
-                discount: record.discount,
-                fixedDiscount: record.fixedDiscount,
-                addToStock: false,
-                departmentName:
-                    record.departmentName ??
-                    returnDepartmentProvider()
-                        .currentDepartment()
-                        ?.name,
-                departmentUuid:
-                    record.departmentUuid ??
-                    returnDepartmentProvider()
-                        .currentDepartment()
-                        ?.uuid,
-                uuid: uuidGen(),
-                isProductManaged: record.isProductManaged,
-                setTotalPrice: record.setTotalPrice,
-                unit: record.getUnit(),
-                useWholeSalePrice: record.useWholeSalePrice,
-                useGroupQuantity: record.useGroupQuantity,
-                qttyPerGroup: record.qttyPerGroup,
-                // orderUuid: order.uuid,
-              );
-            }).toList();
 
         await mainLocalLog(
           'Creating Record Sales About to Start',

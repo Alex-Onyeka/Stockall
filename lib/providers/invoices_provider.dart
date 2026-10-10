@@ -449,6 +449,92 @@ class InvoicesProvider extends ChangeNotifier {
         cartName: invoice.cartName,
       );
 
+      // Built before the receipt is saved so the same lines are
+      // stored in receipt.items and in product_sales.
+      final productSaleRecords =
+          salesRecords.map((record) {
+            mainLocalLog(
+              'Sales Record about to be Created',
+            );
+            return TempProductSaleRecord(
+              heightDimension: record.heightDimension,
+              quantityType: record.quantityType,
+              widthDimension: record.widthDimension,
+              priceUuid: record.priceUuid,
+              pricesList: record.getPriceListFinal(),
+              unitUuid: record.unitUuid,
+              unitsList: record.getUnitListFinal(),
+              isVoid: record.isVoid ?? false,
+              customPriceSet: record.customPriceSet,
+              createdAt: createdAt,
+              productId: record.productId,
+              productUuid: record.productUuid,
+              productName: record.productName,
+              shopId: invoice.shopId,
+              staffId: AuthService().currentUser!,
+              staffName:
+                  "${returnUserProviderSingle().currentUserMain!.name} ${returnUserProviderSingle().currentUserMain!.lastName}",
+              // customerId: customerId,
+              customerUuid: invoice.customerUuid,
+              customerName: invoice.customerName,
+              recepitId: 0,
+              receiptUuid: receipt.uuid,
+              quantity: record.quantity,
+              revenue: calcSalesRecordRevenue(
+                invoceTotalAmount:
+                    invoice.getTotalMainRevenueInvoice(),
+                receiptPayment: currentPayment,
+                salesRecodRevenue: record.revenue,
+              ),
+              costPrice: calcSalesRecordCostPrice(
+                invoceTotalAmount:
+                    invoice.getTotalMainRevenueInvoice(),
+                receiptPayment: currentPayment,
+                salesRecodCostPrice:
+                    (record.costPrice ?? 0),
+              ),
+              discountedAmount:
+                  calcSalesRecordDiscountedAmount(
+                    invoceTotalAmount:
+                        invoice
+                            .getTotalMainRevenueInvoice(),
+                    receiptPayment: currentPayment,
+                    salesRecodDiscountedAmount:
+                        (record.discountedAmount ?? 0),
+                  ),
+              originalCost: calcSalesRecordOriginalCost(
+                invoceTotalAmount:
+                    invoice.getTotalMainRevenueInvoice(),
+                receiptPayment: currentPayment,
+                salesRecodOriginalCost:
+                    (record.originalCost ?? 0),
+              ),
+              discount: record.discount,
+              fixedDiscount: record.fixedDiscount,
+
+              addToStock: record.addToStock,
+              departmentName:
+                  record.departmentName ??
+                  returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.name,
+              departmentUuid:
+                  record.departmentUuid ??
+                  returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.uuid,
+              uuid: uuidGen(),
+              isProductManaged: record.isProductManaged,
+              setTotalPrice: record.setTotalPrice,
+              unit: record.unit,
+              useWholeSalePrice: record.useWholeSalePrice,
+              useGroupQuantity: record.useGroupQuantity,
+              qttyPerGroup: record.qttyPerGroup,
+              // invoiceUuid: invoice.uuid,
+            );
+          }).toList();
+      receipt.items = productSaleRecords;
+
       await mainLocalLog('Checkout Started');
       var res = await returnReceiptProviderSingle()
           .createReceipt(receipt);
@@ -464,89 +550,6 @@ class InvoicesProvider extends ChangeNotifier {
             1,
           ),
         );
-
-        final productSaleRecords =
-            salesRecords.map((record) {
-              mainLocalLog(
-                'Sales Record about to be Created',
-              );
-              return TempProductSaleRecord(
-                heightDimension: record.heightDimension,
-                quantityType: record.quantityType,
-                widthDimension: record.widthDimension,
-                priceUuid: record.priceUuid,
-                pricesList: record.getPriceListFinal(),
-                unitUuid: record.unitUuid,
-                unitsList: record.getUnitListFinal(),
-                isVoid: record.isVoid ?? false,
-                customPriceSet: record.customPriceSet,
-                createdAt: createdAt,
-                productId: record.productId,
-                productUuid: record.productUuid,
-                productName: record.productName,
-                shopId: invoice.shopId,
-                staffId: AuthService().currentUser!,
-                staffName:
-                    "${returnUserProviderSingle().currentUserMain!.name} ${returnUserProviderSingle().currentUserMain!.lastName}",
-                // customerId: customerId,
-                customerUuid: invoice.customerUuid,
-                customerName: invoice.customerName,
-                recepitId: 0,
-                receiptUuid: res.uuid,
-                quantity: record.quantity,
-                revenue: calcSalesRecordRevenue(
-                  invoceTotalAmount:
-                      invoice.getTotalMainRevenueInvoice(),
-                  receiptPayment: currentPayment,
-                  salesRecodRevenue: record.revenue,
-                ),
-                costPrice: calcSalesRecordCostPrice(
-                  invoceTotalAmount:
-                      invoice.getTotalMainRevenueInvoice(),
-                  receiptPayment: currentPayment,
-                  salesRecodCostPrice:
-                      (record.costPrice ?? 0),
-                ),
-                discountedAmount:
-                    calcSalesRecordDiscountedAmount(
-                      invoceTotalAmount:
-                          invoice
-                              .getTotalMainRevenueInvoice(),
-                      receiptPayment: currentPayment,
-                      salesRecodDiscountedAmount:
-                          (record.discountedAmount ?? 0),
-                    ),
-                originalCost: calcSalesRecordOriginalCost(
-                  invoceTotalAmount:
-                      invoice.getTotalMainRevenueInvoice(),
-                  receiptPayment: currentPayment,
-                  salesRecodOriginalCost:
-                      (record.originalCost ?? 0),
-                ),
-                discount: record.discount,
-                fixedDiscount: record.fixedDiscount,
-
-                addToStock: record.addToStock,
-                departmentName:
-                    record.departmentName ??
-                    returnDepartmentProvider()
-                        .currentDepartment()
-                        ?.name,
-                departmentUuid:
-                    record.departmentUuid ??
-                    returnDepartmentProvider()
-                        .currentDepartment()
-                        ?.uuid,
-                uuid: uuidGen(),
-                isProductManaged: record.isProductManaged,
-                setTotalPrice: record.setTotalPrice,
-                unit: record.unit,
-                useWholeSalePrice: record.useWholeSalePrice,
-                useGroupQuantity: record.useGroupQuantity,
-                qttyPerGroup: record.qttyPerGroup,
-                // invoiceUuid: invoice.uuid,
-              );
-            }).toList();
 
         await mainLocalLog(
           'Creating Record Sales About to Start',

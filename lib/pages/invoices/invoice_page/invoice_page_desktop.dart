@@ -2338,6 +2338,9 @@ void makePartPaymentAction({
                         vat: invoice.vat,
                         subStaffUuid: invoice.subStaffUuid,
                         cartName: invoice.cartName,
+                        // Kept so updateInvoice doesn't save the
+                        // invoice without its items.
+                        items: invoice.items,
                       );
 
                       var res =

@@ -1179,6 +1179,68 @@ class SalesProvider extends ChangeNotifier {
     }
   }
 
+  // One sale line per cart line. The same list is saved to
+  // product_sales and to the receipt's or invoice's items.
+  List<TempProductSaleRecord> buildSaleRecords({
+    required List<TempCartItem> cartItems,
+    required DateTime createdAt,
+    required int shopId,
+    required String staffId,
+    required String staffName,
+    required String? customerUuid,
+    required String? customerName,
+    required String? departmentName,
+    required String? departmentUuid,
+    int receiptId = 0,
+    String? receiptUuid,
+    String? invoiceUuid,
+  }) {
+    return cartItems.map((cartItem) {
+      final product = cartItem.getItem();
+      return TempProductSaleRecord(
+        heightDimension: cartItem.heightDimension,
+        quantityType: cartItem.quantityType,
+        widthDimension: cartItem.widthDimension,
+        priceUuid: cartItem.priceUuid,
+        pricesList: cartItem.getPriceListFinal(),
+        unitUuid: cartItem.unitUuid,
+        unitsList: cartItem.getUnitListFinal(),
+        isVoid: cartItem.isVoid ?? false,
+        qttyPerGroup: cartItem.qttyPerGroup,
+        useGroupQuantity: cartItem.useGroupQuantity,
+        customPriceSet: cartItem.setCustomPrice,
+        useWholeSalePrice: cartItem.useWholeSalePrice,
+        createdAt: createdAt,
+        productId: product?.id ?? 0,
+        productUuid: product?.uuid,
+        productName: product?.name ?? 'Item Name',
+        shopId: product?.shopId ?? shopId,
+        staffId: staffId,
+        staffName: staffName,
+        customerUuid: customerUuid,
+        customerName: customerName,
+        recepitId: receiptId,
+        receiptUuid: receiptUuid,
+        quantity: cartItem.quantity,
+        revenue: cartItem.revenue(),
+        discountedAmount: cartItem.discountCost(),
+        originalCost: cartItem.totalCost(),
+        discount:
+            cartItem.discount ?? cartItem.getItem()?.discount,
+        fixedDiscount: cartItem.fixedDiscount,
+        costPrice: cartItem.costPrice(),
+        addToStock: cartItem.addToStock,
+        departmentName: departmentName,
+        departmentUuid: departmentUuid,
+        uuid: cartItem.uuid ?? uuidGen(),
+        isProductManaged: cartItem.getItem()?.isManaged,
+        setTotalPrice: cartItem.setTotalPrice,
+        invoiceUuid: invoiceUuid,
+        unit: cartItem.getUnit(),
+      );
+    }).toList();
+  }
+
   Future<CheckoutResponse?> checkoutMain({
     required BuildContext context,
     required TempCart salesCartItem,
@@ -1288,71 +1350,37 @@ class SalesProvider extends ChangeNotifier {
       await mainLocalLog('Checkout Started');
 
       try {
+        // Built before the receipt is saved so the same lines are
+        // stored in receipt.items and in product_sales.
+        final productSaleRecords = buildSaleRecords(
+          cartItems: salesCartItem.getCartItemsAll(),
+          createdAt: createdAt,
+          shopId: shopId,
+          staffId: staffUuid(), // staffId,
+          staffName: staffName(), // staffName,
+          customerUuid: customerUuid(),
+          customerName: customerName(),
+          departmentName: departmentName(),
+          departmentUuid: departmentUuid(),
+          receiptId: receipt.id ?? 0,
+          receiptUuid: receipt.uuid,
+        );
+        receipt.items = productSaleRecords;
+
         final receiptRes =
             await returnReceiptProviderSingle()
                 .createReceipt(receipt);
         await mainLocalLog('Receipt Created');
 
-        final receiptId = receiptRes!.id;
-        final receiptUuid = receiptRes.uuid;
+        final receiptUuid = receiptRes!.uuid;
 
         try {
           // Step 2: Create product sale records
-          final productSaleRecords =
-              salesCartItem.getCartItemsAll().map((
-                cartItem,
-              ) {
-                final product = cartItem.getItem();
-
-                mainLocalLog(
-                  'Sales Record about to be Created: ${cartItem.getItem()?.name}',
-                );
-
-                return TempProductSaleRecord(
-                  heightDimension: cartItem.heightDimension,
-                  quantityType: cartItem.quantityType,
-                  widthDimension: cartItem.widthDimension,
-                  priceUuid: cartItem.priceUuid,
-                  pricesList: cartItem.getPriceListFinal(),
-                  unitUuid: cartItem.unitUuid,
-                  unitsList: cartItem.getUnitListFinal(),
-                  isVoid: cartItem.isVoid ?? false,
-                  qttyPerGroup: cartItem.qttyPerGroup,
-                  useGroupQuantity:
-                      cartItem.useGroupQuantity,
-                  customPriceSet: cartItem.setCustomPrice,
-                  useWholeSalePrice:
-                      cartItem.useWholeSalePrice,
-                  createdAt: createdAt,
-                  productId: product?.id ?? 0,
-                  productUuid: product?.uuid,
-                  productName: product?.name ?? 'Item Name',
-                  shopId: product?.shopId ?? shopId,
-                  staffId: staffUuid(), // staffId,
-                  staffName: staffName(), // staffName,
-                  customerUuid: customerUuid(),
-                  customerName: customerName(),
-                  recepitId: receiptId ?? 0,
-                  receiptUuid: receiptUuid,
-                  quantity: cartItem.quantity,
-                  revenue: cartItem.revenue(),
-                  discountedAmount: cartItem.discountCost(),
-                  originalCost: cartItem.totalCost(),
-                  discount:
-                      cartItem.discount ??
-                      cartItem.getItem()?.discount,
-                  fixedDiscount: cartItem.fixedDiscount,
-                  costPrice: cartItem.costPrice(),
-                  addToStock: cartItem.addToStock,
-                  departmentName: departmentName(),
-                  departmentUuid: departmentUuid(),
-                  uuid: cartItem.uuid ?? uuidGen(),
-                  isProductManaged:
-                      cartItem.getItem()?.isManaged,
-                  setTotalPrice: cartItem.setTotalPrice,
-                  unit: cartItem.getUnit(),
-                );
-              }).toList();
+          for (final record in productSaleRecords) {
+            mainLocalLog(
+              'Sales Record about to be Created: ${record.productName}',
+            );
+          }
 
           if (context.mounted) {
             await mainLocalLog(
@@ -1738,6 +1766,7 @@ class SalesProvider extends ChangeNotifier {
             'Cart ${currentMainCart().cartQueue.length + 1}',
       );
       TempInvoice? invoiceRes;
+      List<TempProductSaleRecord> invoiceSaleRecords = [];
       try {
         if (currentCart().invoiceUuidEdit != null) {
           await mainLocalLog(
@@ -1784,6 +1813,21 @@ class SalesProvider extends ChangeNotifier {
           );
           await mainLocalLog('Invoice Uuid is null');
         }
+        // Built before the invoice is saved so the same lines are
+        // stored in invoice.items and in product_sales.
+        invoiceSaleRecords = buildSaleRecords(
+          cartItems: salesCartItem.getCartItemsAll(),
+          createdAt: createdAt,
+          shopId: shopId,
+          staffId: staffUuid(), // staffId,
+          staffName: staffName(), // staffName,
+          customerUuid: customerUuid(),
+          customerName: customerName(),
+          departmentName: departmentName(),
+          departmentUuid: departmentUuid(),
+          invoiceUuid: invoice.uuid,
+        );
+        invoice.items = invoiceSaleRecords;
         invoiceRes = await returnInvoicesProvider()
             .createInvoices(invoice);
         await mainLocalLog('Invoice Created Success');
@@ -1862,62 +1906,12 @@ class SalesProvider extends ChangeNotifier {
 
         try {
           // Step 2: Create product sale records
-          final productSaleRecords =
-              salesCartItem.getCartItemsAll().map((
-                cartItem,
-              ) {
-                final product = cartItem.getItem();
-
-                mainLocalLog(
-                  'Sales Record about to be Created',
-                );
-
-                return TempProductSaleRecord(
-                  heightDimension: cartItem.heightDimension,
-                  quantityType: cartItem.quantityType,
-                  widthDimension: cartItem.widthDimension,
-                  priceUuid: cartItem.priceUuid,
-                  pricesList: cartItem.getPriceListFinal(),
-                  unitUuid: cartItem.unitUuid,
-                  unitsList: cartItem.getUnitListFinal(),
-                  isVoid: cartItem.isVoid ?? false,
-                  qttyPerGroup: cartItem.qttyPerGroup,
-                  useGroupQuantity:
-                      cartItem.useGroupQuantity,
-                  customPriceSet: cartItem.setCustomPrice,
-                  useWholeSalePrice:
-                      cartItem.useWholeSalePrice,
-                  createdAt: createdAt,
-                  productId: product?.id ?? 0,
-                  productUuid: product?.uuid,
-                  productName: product?.name ?? 'Item Name',
-                  shopId: product?.shopId ?? shopId,
-                  staffId: staffUuid(), // staffId,
-                  staffName: staffName(), // staffName,
-                  customerUuid: customerUuid(),
-                  customerName: customerName(),
-                  recepitId: 0,
-                  // receiptUuid: receiptUuid,
-                  quantity: cartItem.quantity,
-                  revenue: cartItem.revenue(),
-                  discountedAmount: cartItem.discountCost(),
-                  originalCost: cartItem.totalCost(),
-                  discount:
-                      cartItem.discount ??
-                      cartItem.getItem()?.discount,
-                  fixedDiscount: cartItem.fixedDiscount,
-                  costPrice: cartItem.costPrice(),
-                  addToStock: cartItem.addToStock,
-                  departmentName: departmentName(),
-                  departmentUuid: departmentUuid(),
-                  uuid: cartItem.uuid ?? uuidGen(),
-                  isProductManaged:
-                      cartItem.getItem()?.isManaged,
-                  setTotalPrice: cartItem.setTotalPrice,
-                  invoiceUuid: invoiceRes?.uuid,
-                  unit: cartItem.getUnit(),
-                );
-              }).toList();
+          final productSaleRecords = invoiceSaleRecords;
+          for (final record in productSaleRecords) {
+            mainLocalLog(
+              'Sales Record about to be Created: ${record.productName}',
+            );
+          }
 
           if (context.mounted) {
             await mainLocalLog(
