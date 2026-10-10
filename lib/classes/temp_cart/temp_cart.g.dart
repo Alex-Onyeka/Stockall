@@ -110,10 +110,10 @@ class TempCartAdapter extends TypeAdapter<TempCart> {
       ..write(obj.orderUuidEdit)
       ..writeByte(27)
       ..write(obj.orderUuid)
-      ..writeByte(28)
-      ..write(obj.draftUuid)
       ..writeByte(29)
-      ..write(obj.splitPayments);
+      ..write(obj.splitPayments)
+      ..writeByte(28)
+      ..write(obj.draftUuid);
   }
 
   @override

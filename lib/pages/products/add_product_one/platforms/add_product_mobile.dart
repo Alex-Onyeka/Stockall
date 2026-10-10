@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
@@ -119,6 +120,9 @@ class _AddProductMobileState
 
               final dataProvider = returnData();
               ItemHistory itemHistory = ItemHistory(
+                source: 'Not Set',
+                event: ItemHistoryEventClass.itemCreated,
+                isManaged: true,
                 unit: 'Not Set',
                 shopId: shopId(),
                 title: 'Item Created',

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_item_purchase_record/temp_item_purchase_record.dart';
 import 'package:stockall/classes/temp_item_purchase_record/unsynced/created_item_records/created_item_records.dart';
 import 'package:stockall/classes/temp_item_purchase_record/unsynced/deleted_item_records/deleted_item_records.dart';
@@ -452,6 +453,10 @@ class PurchaseProvider extends ChangeNotifier {
                       );
 
               ItemHistory itemHistory = ItemHistory(
+                event: ItemHistoryEventClass.returnEvent,
+                isManaged: true,
+                source:
+                    ItemHistoryEventClass.purchaseSource,
                 desc:
                     '${rec.quantity} ${rec.unit} of this Item Was Returned From Purchase. Purchase Id: #${returnOnlyDigits(rec.purchaseId ?? '')}',
                 shopId: shopId(),
@@ -870,6 +875,9 @@ class PurchaseProvider extends ChangeNotifier {
                   );
           newPr.updatedAt = DateTime.now();
           ItemHistory itemHistory = ItemHistory(
+            event: ItemHistoryEventClass.purchase,
+            isManaged: true,
+            source: ItemHistoryEventClass.purchaseSource,
             desc:
                 '${item.quantity} ${item.unit} of this Item Purchased. Purchase Id: #${returnOnlyDigits(item.purchaseId ?? '')}',
             shopId: shopId(),

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/app_bar.dart';
@@ -656,6 +657,15 @@ class _ProductDetailsDesktopState
                                                 });
                                                 ItemHistory
                                                 itemHistory = ItemHistory(
+                                                  event:
+                                                      ItemHistoryEventClass
+                                                          .itemDeleted,
+                                                  isManaged:
+                                                      product
+                                                          .isManaged,
+                                                  source:
+                                                      ItemHistoryEventClass
+                                                          .unKnownSource,
                                                   shopId:
                                                       shopId(),
                                                   title:
