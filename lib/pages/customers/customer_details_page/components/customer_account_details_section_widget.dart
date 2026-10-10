@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_customer_account_receipts/customer_account
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
@@ -12,6 +13,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/customer_account_balance_print_and_download.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/invoices/invoice_page/components/payment_type_button_invoice.dart';
 import 'package:stockall/pages/invoices/invoice_page/invoice_page_desktop.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -1044,7 +1046,7 @@ class _CustomerAccountDetailsSectionWidgetState
               }
             },
           ),
-          SizedBox(height: 30),
+          SizedBox(height: 20),
           Padding(
             padding: EdgeInsets.symmetric(
               horizontal:
@@ -1097,9 +1099,10 @@ class _CustomerAccountDetailsSectionWidgetState
                           color: Colors.grey.shade200,
                         ),
                         formatMoneyBig(
-                          amount:
-                              widget.customer
-                                  .getTotalDebt(),
+                          amount: widget.customer
+                              .getTotalDebt(
+                                context: context,
+                              ),
                           context: context,
                         ),
                       ),
@@ -1120,6 +1123,117 @@ class _CustomerAccountDetailsSectionWidgetState
                         ),
                       ),
                     ),
+                  ],
+                ),
+                SizedBox(height: 5),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                if (widget.customer
+                                        .getTotalDebt() ==
+                                    0) {
+                                  return;
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    builder: (
+                                      confirmContext,
+                                    ) {
+                                      return ConfirmationAlert(
+                                        theme: theme,
+                                        message:
+                                            'You are about to Pay up All Invoices Created By This Customer, Are you sure you want to Proceed?',
+                                        title:
+                                            'Pay Up All Debt?',
+                                        action: () {
+                                          payAllInvoiceAction(
+                                            context:
+                                                context,
+                                            setPaymentSelected:
+                                                () {
+                                                  setState(
+                                                    () {},
+                                                  );
+                                                },
+                                            customer:
+                                                widget
+                                                    .customer,
+                                          );
+                                        },
+                                      );
+                                    },
+                                  );
+                                }
+                              },
+                              mouseCursor:
+                                  SystemMouseCursors.click,
+                              child: Container(
+                                padding:
+                                    EdgeInsets.symmetric(
+                                      vertical: 4,
+                                      horizontal: 15,
+                                    ),
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        2,
+                                      ),
+                                  border: Border.all(
+                                    color:
+                                        const Color.fromARGB(
+                                          61,
+                                          255,
+                                          255,
+                                          255,
+                                        ),
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b4
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade200,
+                                    ),
+                                    'Pay All',
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Expanded(
+                    //   child: Text(
+                    //     style: TextStyle(
+                    //       fontSize:
+                    //           theme.mobileTexts.b3.fontSize,
+                    //       fontWeight: FontWeight.bold,
+                    //       color: Colors.grey.shade200,
+                    //     ),
+                    //     formatMoneyBig(
+                    //       amount:
+                    //           widget.customer
+                    //               .getTotalUndeliveredOrderAmount(),
+                    //       context: context,
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ],
@@ -1387,4 +1501,189 @@ void redeemRewardAction({
       },
     );
   }
+}
+
+void payAllInvoiceAction({
+  required BuildContext context,
+  required Function() setPaymentSelected,
+  required TempCustomersClass customer,
+}) {
+  returnInvoicesProvider().changePaymentOptions(0);
+  var theme = returnTheme(context, listen: false);
+  final cashController = TextEditingController();
+  final bankController = TextEditingController();
+  showDialog(
+    context: context,
+    builder: (firstContext) {
+      return DialogTemplate(
+        theme: theme,
+        message:
+            'Select The Channel You are receiving this payment.',
+        title: 'Select Payment Method',
+        action: () {
+          if (returnInvoicesProvider().paymentOption == 3 &&
+              !returnInvoicesProvider().isBalanceSufficient(
+                customer.uuid ?? '',
+                customer.getTotalDebt(),
+              )) {
+            showDialog(
+              context: context,
+              builder: (context) {
+                var theme = returnTheme(context);
+                return InfoAlert(
+                  theme: theme,
+                  message:
+                      'Customer Balance is Insufficient. Please Top Up Customer Account, or select Another Payment Method To Proceed.',
+                  title: 'Customer Balance Insufficient',
+                );
+              },
+            );
+          } else if (returnInvoicesProvider()
+                      .paymentOption ==
+                  2 &&
+              (customer.getTotalDebt() !=
+                  ((double.tryParse(
+                            cashController.text.replaceAll(
+                              ',',
+                              '',
+                            ),
+                          ) ??
+                          0) +
+                      (double.tryParse(
+                            bankController.text.replaceAll(
+                              ',',
+                              '',
+                            ),
+                          ) ??
+                          0)))) {
+            showDialog(
+              context: context,
+              builder: (context) {
+                var theme = returnTheme(context);
+                return InfoAlert(
+                  theme: theme,
+                  message:
+                      'The Two Values Entered into the Split Payment Text Fields Does Not Sum Up to be Equal to The Total Amount of the Delivery. Please Update Values, or select Another Payment Method To Proceed.',
+                  title: 'Split Payment Sum Not Set',
+                );
+              },
+            );
+          } else {
+            showDialog(
+              context: context,
+              builder: (confirmDialog) {
+                var invoiceP = returnInvoicesProvider();
+                int index = invoiceP.paymentOption;
+                double totalAmount =
+                    customer.getTotalDebt();
+                double bankAmount() {
+                  if (index == 1) {
+                    return totalAmount;
+                  } else if (index == 2) {
+                    return (double.tryParse(
+                          bankController.text.replaceAll(
+                            ',',
+                            '',
+                          ),
+                        ) ??
+                        0);
+                  } else {
+                    return 0;
+                  }
+                }
+
+                double cashAmount() {
+                  if (index == 0) {
+                    return totalAmount;
+                  } else if (index == 2) {
+                    return (double.tryParse(
+                          cashController.text.replaceAll(
+                            ',',
+                            '',
+                          ),
+                        ) ??
+                        0);
+                  } else {
+                    return 0;
+                  }
+                }
+
+                double customerAmount() {
+                  if (index == 3) {
+                    return totalAmount;
+                  } else {
+                    return 0;
+                  }
+                }
+
+                return ConfirmationAlert(
+                  theme: theme,
+                  message:
+                      'You are about to pay for an invoice. Are you sure you want to proceed?',
+                  title: 'Make Payment',
+                  action: () async {
+                    Navigator.of(firstContext).pop();
+                    Navigator.of(confirmDialog).pop();
+                    Navigator.of(confirmDialog).pop();
+                    var res = await returnInvoicesProvider()
+                        .payAllCustomersBalance(
+                          invoices:
+                              customer.getUnpaidInvoices(),
+                          cashAmount: cashAmount(),
+                          bankAmount: bankAmount(),
+                          customerAmount: customerAmount(),
+                        );
+
+                    if (res == 0) {
+                      showDialog(
+                        // ignore: use_build_context_synchronously
+                        context: context,
+                        builder: (popDialog) {
+                          return InfoAlert(
+                            theme: theme,
+                            message:
+                                'An Error Occoured while making this payment. Please try again.',
+                            title: 'An Error Occoured',
+                          );
+                        },
+                      );
+                    } else {
+                      actionResultDialog(
+                        // ignore: use_build_context_synchronously
+                        context: context,
+                        isSuccess: res == 0 ? false : true,
+                        message:
+                            res == 0
+                                ? 'An error Occoured'
+                                : 'Payment Successful',
+                      );
+                      setPaymentSelected();
+                    }
+                  },
+                );
+              },
+            );
+          }
+        },
+        widget: SizedBox(
+          height: screenHeight(context) - 280,
+          child: SingleChildScrollView(
+            child: Column(
+              spacing: 20,
+              children: [
+                PaymentMethodSectionInvoice(
+                  isCustomerAllPayment: true,
+                  cashController: cashController,
+                  bankController: bankController,
+                  invoice:
+                      customer.getUnpaidInvoices().first,
+                  mainValue: customer.getTotalDebt(),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
 }
