@@ -86,9 +86,10 @@ class ReceiptsProvider extends ChangeNotifier {
       notifyListeners();
       if (receipt.customerUuid != null) {
         if (returnShopProvider()
-                .userShop()
-                ?.manageCustomerReward ==
-            true) {
+                    .userShop()
+                    ?.manageCustomerReward ==
+                true &&
+            !receipt.isInvoice) {
           CustomerAccountReceipts customerAccountReceipt =
               CustomerAccountReceipts(
                 receiptUuid: receipt.uuid,
