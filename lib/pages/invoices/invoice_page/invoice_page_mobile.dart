@@ -73,14 +73,10 @@ class _InvoicePageMobileState
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     List<TempProductSaleRecord> saleRecords =
-        returnReceiptProvider(context, listen: false)
-            .getProductRecordsNoVoid()
-            .where(
-              (record) =>
-                  record.invoiceUuid ==
-                  widget.checkoutResponse.invoice?.uuid,
-            )
-            .toList();
+        widget.checkoutResponse.invoice?.items
+            ?.where((item) => item.isVoid != true)
+            .toList() ??
+        [];
     TempInvoice? invoice = returnInvoicesProvider()
         .invoicesMain
         .firstWhere(
@@ -356,12 +352,11 @@ class _InvoicePageMobileState
                                                   returnReceiptProviderSingle()
                                                       .returnOwnReceiptsByDayOrWeek()
                                                       .where(
-                                                        (rec) =>
+                                                        (
+                                                          rec,
+                                                        ) =>
                                                             rec.invoiceUuid ==
-                                                            widget
-                                                                .checkoutResponse
-                                                                .invoice
-                                                                ?.uuid,
+                                                            widget.checkoutResponse.invoice?.uuid,
                                                       )
                                                       .toList();
                                               if (usesSystemPrintDialog()) {

@@ -1227,7 +1227,8 @@ class SalesProvider extends ChangeNotifier {
         discountedAmount: cartItem.discountCost(),
         originalCost: cartItem.totalCost(),
         discount:
-            cartItem.discount ?? cartItem.getItem()?.discount,
+            cartItem.discount ??
+            cartItem.getItem()?.discount,
         fixedDiscount: cartItem.fixedDiscount,
         costPrice: cartItem.costPrice(),
         addToStock: cartItem.addToStock,
@@ -1368,12 +1369,10 @@ class SalesProvider extends ChangeNotifier {
         );
         receipt.items = productSaleRecords;
 
-        final receiptRes =
-            await returnReceiptProviderSingle()
-                .createReceipt(receipt);
+        await returnReceiptProviderSingle().createReceipt(
+          receipt,
+        );
         await mainLocalLog('Receipt Created');
-
-        final receiptUuid = receiptRes!.uuid;
 
         try {
           // Step 2: Create product sale records
@@ -1383,18 +1382,18 @@ class SalesProvider extends ChangeNotifier {
             );
           }
 
-          if (context.mounted) {
-            await mainLocalLog(
-              'Creating Record Sales About to Start: ${productSaleRecords.length}',
-            );
-            await returnReceiptProvider(
-              context,
-              listen: false,
-            ).createProductSaleRecord(
-              records: productSaleRecords,
-              isPartPayment: false,
-            );
-          }
+          // if (context.mounted) {
+          //   await mainLocalLog(
+          //     'Creating Record Sales About to Start: ${productSaleRecords.length}',
+          //   );
+          //   await returnReceiptProvider(
+          //     context,
+          //     listen: false,
+          //   ).createProductSaleRecord(
+          //     records: productSaleRecords,
+          //     isPartPayment: false,
+          //   );
+          // }
           await mainLocalLog('Sales Record Inserted');
 
           try {
@@ -1724,7 +1723,7 @@ class SalesProvider extends ChangeNotifier {
               context,
               listen: false,
             ).deleteReceiptWithoutUpdatingInventory(
-              receiptUuid!,
+              receipt: receipt,
             );
             return null;
           }
@@ -1928,18 +1927,18 @@ class SalesProvider extends ChangeNotifier {
             );
           }
 
-          if (context.mounted) {
-            await mainLocalLog(
-              'Creating Record Sales About to Start',
-            );
-            await returnReceiptProvider(
-              context,
-              listen: false,
-            ).createProductSaleRecord(
-              records: productSaleRecords,
-              isPartPayment: false,
-            );
-          }
+          // if (context.mounted) {
+          //   await mainLocalLog(
+          //     'Creating Record Sales About to Start',
+          //   );
+          //   // await returnReceiptProvider(
+          //   //   context,
+          //   //   listen: false,
+          //   // ).createProductSaleRecord(
+          //   //   records: productSaleRecords,
+          //   //   isPartPayment: false,
+          //   // );
+          // }
           await mainLocalLog('Sales Record Inserted');
 
           try {
@@ -3314,7 +3313,8 @@ class SalesProvider extends ChangeNotifier {
     if (cartItem.item.quantityType == 2 &&
         cartItem.widthDimension == null &&
         cartItem.heightDimension == null) {
-      cartItem.widthDimension = cartItem.item.widthDimension;
+      cartItem.widthDimension =
+          cartItem.item.widthDimension;
       cartItem.heightDimension =
           cartItem.item.heightDimension;
     }
@@ -3335,7 +3335,10 @@ class SalesProvider extends ChangeNotifier {
   }
 
   // Existing void line for this line's item (and size, for 2D).
-  TempCartItem? findVoidLine(TempCart cart, TempCartItem line) {
+  TempCartItem? findVoidLine(
+    TempCart cart,
+    TempCartItem line,
+  ) {
     for (final voidLine in cart.getCartItemsVoid()) {
       if (isSameCartLine(voidLine, line)) return voidLine;
     }
@@ -4034,16 +4037,16 @@ class SalesProvider extends ChangeNotifier {
     SalesAuthAction().editReceiptAction(
       context: context,
       action: () async {
-        final saleRecords =
-            returnReceiptProvider(context, listen: false)
-                .produtRecordSalesMain
-                .where((r) => r.receiptUuid == receipt.uuid)
-                .toList();
+        // final saleRecords =
+        //     returnReceiptProvider(context, listen: false)
+        //         .produtRecordSalesMain
+        //         .where((r) => r.receiptUuid == receipt.uuid)
+        //         .toList();
 
         // Convert them back to cart items
         final cartItems = convertReceiptToCartItems(
           receipt: receipt,
-          saleRecords: saleRecords,
+          saleRecords: receipt.items ?? [],
           context: context,
         );
 

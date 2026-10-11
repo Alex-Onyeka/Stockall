@@ -193,7 +193,7 @@ class InvoicesProvider extends ChangeNotifier {
 
   Future<int> updateInvoice({
     required TempInvoice invoice,
-    required List<TempProductSaleRecord> records,
+    // required List<TempProductSaleRecord> records,
   }) async {
     invoice.updatedAt = DateTime.now();
     try {
@@ -214,13 +214,13 @@ class InvoicesProvider extends ChangeNotifier {
           CreatedInvoices(invoice: invoice),
         );
       }
-      await returnEventsLogProvider().createLog(
-        returnEventsLogProvider().invoiceAdapter(
-          invoice,
-          records.map((rec) => rec.productName).toList(),
-          2,
-        ),
-      );
+      // await returnEventsLogProvider().createLog(
+      //   returnEventsLogProvider().invoiceAdapter(
+      //     invoice,
+      //     records.map((rec) => rec.productName).toList(),
+      //     2,
+      //   ),
+      // );
       notifyListeners();
       await loadInvoicesOffline(shopId());
       return 1;
@@ -278,7 +278,7 @@ class InvoicesProvider extends ChangeNotifier {
         );
       }
       await ProductRecordFunc().deleteRecordsInInvoice(
-        invoice.uuid!,
+        invoice: invoice,
       );
       if (productNames.isNotEmpty) {
         await returnEventsLogProvider().createLog(
@@ -313,35 +313,44 @@ class InvoicesProvider extends ChangeNotifier {
   }
 
   // DELETE an Invoice Without Updating Inventory
-  Future<int> deleteInvoiceWithoutUpdatingInventory(
-    String uuid,
-  ) async {
+  Future<int> deleteInvoiceWithoutUpdatingInventory({
+    required TempInvoice invoice,
+  }) async {
     try {
       await mainLocalLog('Deleting Invoice Offline');
-      await InvoicesFunc().deleteInvoices(uuid);
+      await InvoicesFunc().deleteInvoices(
+        invoice.uuid ?? '',
+      );
       var containsCreated =
           CreatedInvoicesFunc()
               .getInvoices()
-              .where((inv) => inv.invoice.uuid == uuid)
+              .where(
+                (inv) => inv.invoice.uuid == invoice.uuid,
+              )
               .toList();
       var containsUpdate = UpdatedInvoicesFunc()
           .getInvoiceIds()
-          .where((inv) => inv.updatedInvoice.uuid == uuid);
+          .where(
+            (inv) =>
+                inv.updatedInvoice.uuid == invoice.uuid,
+          );
       if (containsCreated.isNotEmpty) {
-        await CreatedInvoicesFunc().deleteInvoice(uuid);
+        await CreatedInvoicesFunc().deleteInvoice(
+          invoice.uuid ?? '',
+        );
       } else {
         await DeletedInvoicesFunc().createDeletedInvoice(
-          DeletedInvoices(invoiceUuid: uuid),
+          DeletedInvoices(invoiceUuid: invoice.uuid ?? ''),
         );
       }
       if (containsUpdate.isNotEmpty) {
         await UpdatedInvoicesFunc().deleteUpdatedInvoice(
-          uuid,
+          invoice.uuid ?? '',
         );
       }
       await ProductRecordFunc()
           .deleteRecordsInInvoiceWithoutUpdatingInventory(
-            uuid,
+            invoice: invoice,
           );
       // }
 
@@ -414,16 +423,16 @@ class InvoicesProvider extends ChangeNotifier {
   }) async {
     try {
       for (var item in invoices) {
-        List<TempProductSaleRecord> salesRecords =
-            returnReceiptProviderSingle()
-                .produtRecordSalesMain
-                .where(
-                  (item) => item.invoiceUuid == item.uuid,
-                )
-                .toList();
+        // List<TempProductSaleRecord> salesRecords =
+        //     returnReceiptProviderSingle()
+        //         .produtRecordSalesMain
+        //         .where(
+        //           (item) => item.invoiceUuid == item.uuid,
+        //         )
+        //         .toList();
         await makeInvoicePayment(
           invoice: item,
-          salesRecords: salesRecords,
+          salesRecords: item.items ?? [],
           currentPayment: item.getBalance(),
           cashAmount:
               cashAmount != 0 ? item.getBalance() : 0,
@@ -596,18 +605,18 @@ class InvoicesProvider extends ChangeNotifier {
         await mainLocalLog(
           'Creating Record Sales About to Start',
         );
-        await returnReceiptProviderSingle()
-            .createProductSaleRecord(
-              records: productSaleRecords,
-              isPartPayment: true,
-            );
+        // await returnReceiptProviderSingle()
+        //     .createProductSaleRecord(
+        //       records: productSaleRecords,
+        //       isPartPayment: true,
+        //     );
         await mainLocalLog('Sales Record Inserted');
         // invoice.balance =
         //    invoice.getBalance() - currentPayment;
         // invoice.status =
         await updateInvoice(
           invoice: invoice,
-          records: productSaleRecords,
+          // records: productSaleRecords,
         );
         await returnReceiptProviderSingle()
             .loadReceiptsOffline(shopId());
@@ -689,16 +698,16 @@ class InvoicesProvider extends ChangeNotifier {
     SalesAuthAction().editReceiptAction(
       context: context,
       action: () async {
-        final saleRecords =
-            returnReceiptProvider(context, listen: false)
-                .produtRecordSalesMain
-                .where((r) => r.invoiceUuid == invoice.uuid)
-                .toList();
+        // final saleRecords =
+        //     returnReceiptProvider(context, listen: false)
+        //         .produtRecordSalesMain
+        //         .where((r) => r.invoiceUuid == invoice.uuid)
+        //         .toList();
 
         // Convert them back to cart items
         final cartItems = convertInvoiceToCartItems(
           invoice: invoice,
-          saleRecords: saleRecords,
+          saleRecords: invoice.items ?? [],
           context: context,
         );
 

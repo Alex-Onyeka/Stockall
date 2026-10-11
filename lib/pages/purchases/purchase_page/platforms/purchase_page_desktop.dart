@@ -65,14 +65,7 @@ class _PurchasePageDesktopState
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    List<TempItemPurchaseRecord> saleRecords =
-        returnPurchaseProvider(context: context)
-            .itemPurchaseRecords
-            .where(
-              (record) =>
-                  record.purchaseId == widget.purchaseUuid,
-            )
-            .toList();
+
     var purchs =
         returnPurchaseProvider(context: context).purchases
             .where(
@@ -83,6 +76,8 @@ class _PurchasePageDesktopState
 
     TempPurchase? purchase =
         purchs.isNotEmpty ? purchs.first : null;
+    List<TempItemPurchaseRecord> saleRecords =
+        purchase?.items ?? [];
     var supps =
         returnSuppliersProvider(context: context).suppliers
             .where(

@@ -912,17 +912,17 @@ class DataProvider extends ChangeNotifier {
             );
             setSyncProgress(31);
           }
-          if (CreatedRecordsFunc()
-                  .getRecords()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnReceiptProviderSingle()
-                .createRecordsSync();
-            await mainLocalLog(
-              'Finished Syncing Created Records Customers',
-            );
-            setSyncProgress(32);
-          }
+          // if (CreatedRecordsFunc()
+          //         .getRecords()
+          //         .isNotEmpty &&
+          //     isOnline) {
+          //   await returnReceiptProviderSingle()
+          //       .createRecordsSync();
+          //   await mainLocalLog(
+          //     'Finished Syncing Created Records Customers',
+          //   );
+          //   setSyncProgress(32);
+          // }
           if (UpdatedShopFunc()
                   .getUpdatedShop()
                   .isNotEmpty &&
@@ -997,28 +997,28 @@ class DataProvider extends ChangeNotifier {
             );
             setSyncProgress(39);
           }
-          if (CreatedItemPurchaseFunc()
-                  .getRecords()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnPurchaseProvider()
-                .createRecordsSync();
-            await mainLocalLog(
-              'Finished Syncing Created Purchase Item Records',
-            );
-            setSyncProgress(40);
-          }
-          if (DeletedItemPurchaseFunc()
-                  .getItemPurchaseIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnPurchaseProvider()
-                .deleteItemRecordsSync();
-            await mainLocalLog(
-              'Finished Syncing Deleted Purchase Item Records',
-            );
-            setSyncProgress(41);
-          }
+          // if (CreatedItemPurchaseFunc()
+          //         .getRecords()
+          //         .isNotEmpty &&
+          //     isOnline) {
+          //   await returnPurchaseProvider()
+          //       .createRecordsSync();
+          //   await mainLocalLog(
+          //     'Finished Syncing Created Purchase Item Records',
+          //   );
+          //   setSyncProgress(40);
+          // }
+          // if (DeletedItemPurchaseFunc()
+          //         .getItemPurchaseIds()
+          //         .isNotEmpty &&
+          //     isOnline) {
+          //   await returnPurchaseProvider()
+          //       .deleteItemRecordsSync();
+          //   await mainLocalLog(
+          //     'Finished Syncing Deleted Purchase Item Records',
+          //   );
+          //   setSyncProgress(41);
+          // }
           // if (CreatedWaybillsFunc()
           //         .getWaybills()
           //         .isNotEmpty &&

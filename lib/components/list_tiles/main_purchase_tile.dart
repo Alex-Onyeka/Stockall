@@ -67,15 +67,7 @@ class _MainPurchaseTileMobileState
   }
 
   List<TempItemPurchaseRecord> getProductRecord() {
-    var tempRecords =
-        returnPurchaseProvider().itemPurchaseRecords;
-
-    return tempRecords
-        .where(
-          (record) =>
-              record.purchaseId == widget.purchase.uuid!,
-        )
-        .toList();
+    return widget.purchase.items ?? [];
   }
 
   @override
@@ -343,15 +335,7 @@ class _MainPurchaseTileDesktopState
   }
 
   List<TempItemPurchaseRecord> getProductRecord() {
-    var tempRecords =
-        returnPurchaseProvider().itemPurchaseRecords;
-
-    return tempRecords
-        .where(
-          (record) =>
-              record.purchaseId == widget.purchase.uuid!,
-        )
-        .toList();
+    return widget.purchase.items ?? [];
   }
 
   @override

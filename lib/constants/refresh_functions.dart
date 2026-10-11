@@ -4,7 +4,6 @@ import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/classes/temp_notification/temp_notification.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
-import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -301,21 +300,21 @@ class RefreshFunctions {
   //
   //
 
-  Future<List<TempProductSaleRecord>>
-  getProductSalesRecord() async {
-    var tempRecords = await receiptsProvider
-        .loadProductSalesRecord(
-          shopProvider.userShop()!.shopId!,
-        );
+  // Future<List<TempProductSaleRecord>>
+  // getProductSalesRecord() async {
+  //   var tempRecords = await receiptsProvider
+  //       .loadProductSalesRecord(
+  //         shopProvider.userShop()!.shopId!,
+  //       );
 
-    return tempRecords
-        .where(
-          (beans) =>
-              beans.shopId ==
-              shopProvider.userShop()!.shopId!,
-        )
-        .toList();
-  }
+  //   return tempRecords
+  //       .where(
+  //         (beans) =>
+  //             beans.shopId ==
+  //             shopProvider.userShop()!.shopId!,
+  //       )
+  //       .toList();
+  // }
 
   Future<void> refreshProductSalesRecord(context) async {
     var safeContext = context;
@@ -334,13 +333,13 @@ class RefreshFunctions {
               await returnData().syncData(
                 context: safeContext,
               );
-              await getProductSalesRecord();
+              // await getProductSalesRecord();
             },
           );
         },
       );
     } else {
-      await getProductSalesRecord();
+      // await getProductSalesRecord();
     }
   }
 

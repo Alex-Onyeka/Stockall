@@ -193,8 +193,8 @@ class PurchaseActionProvider extends ChangeNotifier {
       if (purchase != null) {
         await returnData().getProducts(shopId());
       }
-      await returnPurchaseProvider()
-          .createItemPurchaseRecord(purchaseRecords);
+      // await returnPurchaseProvider()
+      //     .createItemPurchaseRecord(purchaseRecords);
       clearAll();
       if (returnShopProvider()
               .userShop()
@@ -223,15 +223,16 @@ class PurchaseActionProvider extends ChangeNotifier {
     required BuildContext context,
   }) {
     try {
-      List<TempItemPurchaseRecord> records =
-          returnPurchaseProvider().itemPurchaseRecords
-              .where(
-                (rec) => rec.purchaseId == purchase.uuid,
-              )
-              .toList();
+      // List<TempItemPurchaseRecord> records =
+      //     returnPurchaseProvider()
+      //         .itemPurchaseRecords()
+      //         .where(
+      //           (rec) => rec.purchaseId == purchase.uuid,
+      //         )
+      //         .toList();
 
       List<PurchaseListItem> itemList =
-          records
+          (purchase.items ?? [])
               .map(
                 (item) => PurchaseListItem(
                   unitUuid: item.unitUuid,

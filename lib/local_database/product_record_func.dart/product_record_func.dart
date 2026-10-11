@@ -1,6 +1,8 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
+import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -26,98 +28,93 @@ class ProductRecordFunc {
     await mainLocalLog('Product Record Box Initialized');
   }
 
-  List<TempProductSaleRecord> getProductRecords() {
-    List<TempProductSaleRecord> records =
-        productRecordBox.values.toList();
-    records.sort(
-      (a, b) => a.createdAt.compareTo(b.createdAt),
-    );
-    return records;
-  }
+  // List<TempProductSaleRecord> getProductRecords() {
+  //   List<TempProductSaleRecord> records =
+  //       productRecordBox.values.toList();
+  //   records.sort(
+  //     (a, b) => a.createdAt.compareTo(b.createdAt),
+  //   );
+  //   return records;
+  // }
 
-  Future<int> insertAllProductRecords(
-    List<TempProductSaleRecord> records,
-  ) async {
-    await clearRecords();
-    try {
-      for (var record in records) {
-        await productRecordBox.put(record.uuid, record);
-      }
-      await mainLocalLog(
-        'Offline Record insert Successful',
-      );
-      return 1;
-    } catch (e) {
-      await mainLocalLog(
-        '❌❌ Record Insert Error: ${e.toString()}',
-      );
-      return 0;
-    }
-  }
+  // Future<int> insertAllProductRecords(
+  //   List<TempProductSaleRecord> records,
+  // ) async {
+  //   await clearRecords();
+  //   try {
+  //     for (var record in records) {
+  //       await productRecordBox.put(record.uuid, record);
+  //     }
+  //     await mainLocalLog(
+  //       'Offline Record insert Successful',
+  //     );
+  //     return 1;
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       '❌❌ Record Insert Error: ${e.toString()}',
+  //     );
+  //     return 0;
+  //   }
+  // }
 
-  Future<int> insertSalesProductRecords(
-    List<TempProductSaleRecord> records,
-  ) async {
-    try {
-      for (var record in records) {
-        await productRecordBox.put(record.uuid, record);
-      }
-      await mainLocalLog(
-        'Offline Record insert Successful',
-      );
-      return 1;
-    } catch (e) {
-      await mainLocalLog(
-        '❌❌ Record Insert Error: ${e.toString()}',
-      );
-      return 0;
-    }
-  }
+  // Future<int> insertSalesProductRecords(
+  //   List<TempProductSaleRecord> records,
+  // ) async {
+  //   try {
+  //     for (var record in records) {
+  //       await productRecordBox.put(record.uuid, record);
+  //     }
+  //     await mainLocalLog(
+  //       'Offline Record insert Successful',
+  //     );
+  //     return 1;
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       '❌❌ Record Insert Error: ${e.toString()}',
+  //     );
+  //     return 0;
+  //   }
+  // }
 
-  Future<int> createRecord(
-    TempProductSaleRecord record,
-  ) async {
-    try {
-      await productRecordBox.put(record.uuid, record);
-      await mainLocalLog(
-        'Offline Record insert Successful',
-      );
-      return 1;
-    } catch (e) {
-      await mainLocalLog(
-        '❌❌ Record Insert Error: ${e.toString()}',
-      );
-      return 0;
-    }
-  }
+  // Future<int> createRecord(
+  //   TempProductSaleRecord record,
+  // ) async {
+  //   try {
+  //     await productRecordBox.put(record.uuid, record);
+  //     await mainLocalLog(
+  //       'Offline Record insert Successful',
+  //     );
+  //     return 1;
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       '❌❌ Record Insert Error: ${e.toString()}',
+  //     );
+  //     return 0;
+  //   }
+  // }
 
-  Future<int> deleteRecord(String uuid) async {
-    try {
-      await productRecordBox.delete(uuid);
-      await mainLocalLog(
-        'Offline Record Deleted Successful',
-      );
-      return 1;
-    } catch (e) {
-      await mainLocalLog(
-        '❌❌ Record Delete Error: ${e.toString()}',
-      );
-      return 0;
-    }
-  }
+  // Future<int> deleteRecord(String uuid) async {
+  //   try {
+  //     await productRecordBox.delete(uuid);
+  //     await mainLocalLog(
+  //       'Offline Record Deleted Successful',
+  //     );
+  //     return 1;
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       '❌❌ Record Delete Error: ${e.toString()}',
+  //     );
+  //     return 0;
+  //   }
+  // }
 
-  Future<int> deleteRecordsInReceipt(
-    String receiptUuid,
-  ) async {
+  Future<int> deleteRecordsInReceipt({
+    required TempMainReceipt receipt,
+  }) async {
     await mainLocalLog('Deleting Records in Receipt');
     try {
       List<TempProductSaleRecord> records =
-          getProductRecords()
-              .where(
-                (record) =>
-                    record.receiptUuid == receiptUuid,
-              )
-              .toList();
+          (receipt.items ?? []).toList();
       await mainLocalLog(
         'Records Gotten: ${records.length}',
       );
@@ -150,8 +147,8 @@ class ProductRecordFunc {
               shopId: shopId(),
               title: 'Item Returned',
               desc:
-                  '${record.getActualQuantity()} ${record.unit} of This Item was Returned. Receipt Id: #${returnOnlyDigits(receiptUuid)}.',
-              quantityChange: record.getActualQuantity(),
+                  '${record.quantity} ${record.unit} of This Item was Returned. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}.',
+              quantityChange: record.quantity,
               newValue: formatLargeNumberDouble(
                 newQuantity / primaryUnitConversion,
               ),
@@ -190,7 +187,7 @@ class ProductRecordFunc {
               shopId: shopId(),
               title: 'Receipt Deleted (Unmanaged)',
               desc:
-                  '${record.getActualQuantity()} ${record.unit} of This Item was Returned of This Item was Returned, but this item unmanaged when the sales was made, so the quantity did not increase. Receipt Id: #${returnOnlyDigits(receiptUuid)}.',
+                  '${record.quantity} ${record.unit} of This Item was Returned of This Item was Returned, but this item unmanaged when the sales was made, so the quantity did not increase. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}.',
               quantityChange: 0,
               newValue: formatLargeNumberDouble(
                 product
@@ -250,18 +247,13 @@ class ProductRecordFunc {
   }
 
   Future<int>
-  deleteRecordsInReceiptWithoutUpdatingInventory(
-    String receiptUuid,
-  ) async {
+  deleteRecordsInReceiptWithoutUpdatingInventory({
+    required TempMainReceipt receipt,
+  }) async {
     await mainLocalLog('Deleting Records in Receipt 2');
     try {
       List<TempProductSaleRecord> records =
-          getProductRecords()
-              .where(
-                (record) =>
-                    record.receiptUuid == receiptUuid,
-              )
-              .toList();
+          (receipt.items ?? []).toList();
       await mainLocalLog(
         'Records Gotten: ${records.length}',
       );
@@ -293,18 +285,13 @@ class ProductRecordFunc {
     }
   }
 
-  Future<int> deleteRecordsInInvoice(
-    String invoiceUuid,
-  ) async {
+  Future<int> deleteRecordsInInvoice({
+    required TempInvoice invoice,
+  }) async {
     await mainLocalLog('Deleting Records in Invoice');
     try {
       List<TempProductSaleRecord> records =
-          getProductRecords()
-              .where(
-                (record) =>
-                    record.invoiceUuid == invoiceUuid,
-              )
-              .toList();
+          (invoice.items ?? []).toList();
       await mainLocalLog(
         'Records Gotten: ${records.length}',
       );
@@ -330,8 +317,8 @@ class ProductRecordFunc {
               shopId: shopId(),
               title: 'Item Returned',
               desc:
-                  '${record.getActualQuantity()} ${record.unit} of This Item was Returned. Invoice Id: #${returnOnlyDigits(invoiceUuid)}.',
-              quantityChange: record.getActualQuantity(),
+                  '${record.quantity} ${record.unit} of This Item was Returned. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}.',
+              quantityChange: record.quantity,
               newValue: formatLargeNumberDouble(
                 product
                     .getProductUnit()
@@ -387,7 +374,7 @@ class ProductRecordFunc {
               shopId: shopId(),
               title: 'Invoice Deleted (Unmanaged)',
               desc:
-                  '${record.getActualQuantity()} ${record.unit} of This Item was Returned, but this item was unmanaged when the sales was made, so the quantity did not increase. Invoice Id: #${returnOnlyDigits(invoiceUuid)}.',
+                  '${record.quantity} ${record.unit} of This Item was Returned, but this item was unmanaged when the sales was made, so the quantity did not increase. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}.',
               quantityChange: 0,
               newValue: formatLargeNumberDouble(
                 product
@@ -447,20 +434,15 @@ class ProductRecordFunc {
   }
 
   Future<int>
-  deleteRecordsInInvoiceWithoutUpdatingInventory(
-    String invoiceUuid,
-  ) async {
+  deleteRecordsInInvoiceWithoutUpdatingInventory({
+    required TempInvoice invoice,
+  }) async {
     await mainLocalLog(
       'Deleting Records in Invoice Without Updating Products',
     );
     try {
       List<TempProductSaleRecord> records =
-          getProductRecords()
-              .where(
-                (record) =>
-                    record.invoiceUuid == invoiceUuid,
-              )
-              .toList();
+          (invoice.items ?? []).toList();
       await mainLocalLog(
         'Records Gotten: ${records.length}',
       );

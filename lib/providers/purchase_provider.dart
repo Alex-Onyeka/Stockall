@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_item_purchase_record/temp_item_purchase_record.dart';
-import 'package:stockall/classes/temp_item_purchase_record/unsynced/created_item_records/created_item_records.dart';
 import 'package:stockall/classes/temp_item_purchase_record/unsynced/deleted_item_records/deleted_item_records.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_purchase/temp_purchase.dart';
@@ -185,7 +184,6 @@ class PurchaseProvider extends ChangeNotifier {
   Future<List<TempPurchase>> loadPurchases(
     int shopId,
   ) async {
-    await loadItemPurchaseRecords(shopId);
     bool isOnline = await connectivity.isOnline();
     if (isOnline && PurchaseFunc().isSynced()) {
       await PurchaseFunc().clearPurchases();
@@ -207,7 +205,6 @@ class PurchaseProvider extends ChangeNotifier {
                 .toList();
         await PurchaseFunc().insertAllPurchases(_purchases);
         await mainLocalLog('Loaded');
-        await loadItemPurchaseRecords(shopId);
         notifyListeners();
       } catch (e) {
         await mainLocalLog(
@@ -217,7 +214,6 @@ class PurchaseProvider extends ChangeNotifier {
       }
     } else {
       _purchases = PurchaseFunc().getPurchases();
-      await loadItemPurchaseRecords(shopId);
       await mainLocalLog('Offline Purchases Gotten');
       notifyListeners();
     }
@@ -227,10 +223,7 @@ class PurchaseProvider extends ChangeNotifier {
 
   // READ all Purchases for a shop
   Future<List<TempPurchase>> loadPurchasesOffline() async {
-    await loadItemPurchaseRecordsOffline();
-
     _purchases = PurchaseFunc().getPurchases();
-    await loadItemPurchaseRecordsOffline();
     await mainLocalLog('Offline Purchases Gotten');
     notifyListeners();
     notifyListeners();
@@ -279,12 +272,6 @@ class PurchaseProvider extends ChangeNotifier {
     bool createUpdate,
   ) async {
     await mainLocalLog('Deleting Purchase');
-    List<TempItemPurchaseRecord> records =
-        itemPurchaseRecords
-            .where(
-              (item) => item.purchaseId == purchase.uuid,
-            )
-            .toList();
     try {
       await mainLocalLog('Deleting Purchase Offline');
       await PurchaseFunc().deletePurchase(purchase.uuid!);
@@ -321,7 +308,7 @@ class PurchaseProvider extends ChangeNotifier {
       );
       // }
 
-      for (var rec in records) {
+      for (var rec in purchase.items ?? []) {
         await deleteItemPurchaseRecord(rec.uuid!);
 
         if (updateInventory == true) {
@@ -758,257 +745,264 @@ class PurchaseProvider extends ChangeNotifier {
   //
   //
 
-  List<TempItemPurchaseRecord> _itemPurchaseRecords = [];
-  List<TempItemPurchaseRecord> get itemPurchaseRecords =>
-      _itemPurchaseRecords;
+  // List<TempItemPurchaseRecord> itemPurchaseRecords() {
+  //   return purchases
+  //       .expand(
+  //         (item) =>
+  //             (item.items ?? <TempItemPurchaseRecord>[]),
+  //       )
+  //       .toList();
+  // }
+  // List<TempItemPurchaseRecord> get itemPurchaseRecords =>
+  //     _itemPurchaseRecords;
 
-  // CREATE a new product sale record
-  Future<void> createItemPurchaseRecord(
-    List<TempItemPurchaseRecord> records,
-  ) async {
-    try {
-      var newRecords =
-          records.map((rec) {
-            rec.createdAt = DateTime.now();
+  // // CREATE a new product sale record
+  // Future<void> createItemPurchaseRecord(
+  //   List<TempItemPurchaseRecord> records,
+  // ) async {
+  //   try {
+  //     var newRecords =
+  //         records.map((rec) {
+  //           rec.createdAt = DateTime.now();
 
-            return rec;
-          }).toList();
-      await ItemPurchaseFunc()
-          .insertSalesItemPurchaseRecords(newRecords);
-      List<CreatedItemRecords> cRecords =
-          newRecords.map((r) {
-            return CreatedItemRecords(record: r);
-          }).toList();
-      await CreatedItemPurchaseFunc().insertAllRecords(
-        cRecords,
-      );
-      for (var item in records) {
-        if (returnShopProvider()
-                .userShop()
-                ?.manageInventoryStorage ==
-            true) {
-          var storageProduct =
-              returnStorageProductProvider()
-                  .storageProductListMain
-                  .firstWhere(
-                    (prod) =>
-                        prod.uuid == item.storageItemId,
-                  );
+  //           return rec;
+  //         }).toList();
+  //     await ItemPurchaseFunc()
+  //         .insertSalesItemPurchaseRecords(newRecords);
+  //     List<CreatedItemRecords> cRecords =
+  //         newRecords.map((r) {
+  //           return CreatedItemRecords(record: r);
+  //         }).toList();
+  //     await CreatedItemPurchaseFunc().insertAllRecords(
+  //       cRecords,
+  //     );
+  //     for (var item in records) {
+  //       if (returnShopProvider()
+  //               .userShop()
+  //               ?.manageInventoryStorage ==
+  //           true) {
+  //         var storageProduct =
+  //             returnStorageProductProvider()
+  //                 .storageProductListMain
+  //                 .firstWhere(
+  //                   (prod) =>
+  //                       prod.uuid == item.storageItemId,
+  //                 );
 
-          var newPr = storageProduct.copyWith();
-          newPr.quantity =
-              (newPr.quantity ?? 0) +
-              item
-                  .getSelectedUnit()
-                  .getQuantityEquivMultiplied(
-                    index: 1,
-                    quantityTwo: (item.quantity ?? 0),
-                  );
-          newPr.updatedAt = DateTime.now();
+  //         var newPr = storageProduct.copyWith();
+  //         newPr.quantity =
+  //             (newPr.quantity ?? 0) +
+  //             item
+  //                 .getSelectedUnit()
+  //                 .getQuantityEquivMultiplied(
+  //                   index: 1,
+  //                   quantityTwo: (item.quantity ?? 0),
+  //                 );
+  //         newPr.updatedAt = DateTime.now();
 
-          await returnStorageProductProvider()
-              .updateProduct(
-                product: newPr,
-                isQuantityUpdate: true,
-                quantityChange: item
-                    .getSelectedUnit()
-                    .getQuantityEquivMultiplied(
-                      index: 1,
-                      quantityTwo: (item.quantity ?? 0),
-                    ),
-                isIncrement: true,
-              );
-          try {
-            var newUpdate = StorageItemHistory(
-              event: StorageItemHistoryEventClass.purchase,
-              source:
-                  StorageItemHistoryEventClass
-                      .purchaseSource,
-              shopId: shopId(),
-              title: 'Stock In From Purchase',
-              createdAt: DateTime.now(),
-              storageDepartmentName:
-                  returnDepartmentProvider()
-                      .currentDepartment()
-                      ?.name,
-              storageDepartmentUuid:
-                  returnDepartmentProvider()
-                      .currentDepartment()
-                      ?.uuid,
-              storageItemName: newPr.name,
-              storageItemUuid: newPr.uuid,
-              storageStaffId: currentUser().userId,
-              storageStaffName: currentUser().name,
-              storageItemOldValue: formatLargeNumberDouble(
-                (storageProduct
-                    .getPrimaryUnit()
-                    .getQuantityEquivDivided(
-                      index: 1,
-                      quantityTwo:
-                          (storageProduct.quantity ?? 0),
-                    )),
-              ),
-              storageItemNewValue: formatLargeNumberDouble(
-                storageProduct
-                    .getPrimaryUnit()
-                    .getQuantityEquivDivided(
-                      index: 1,
-                      quantityTwo: (newPr.quantity ?? 0),
-                    ),
-              ),
-              uuid: uuidGen(),
-              desc:
-                  '${item.quantity ?? 0} ${item.unit} of This Item Purchased. Purchase Id: #${returnOnlyDigits(item.purchaseId ?? '')}',
-              isIncreased: true,
-              quantityChange: item.quantity,
-              storagePrimaryUnit:
-                  item.getPrimaryUnit().name,
-              storageUnit: item.unit,
-            );
+  //         await returnStorageProductProvider()
+  //             .updateProduct(
+  //               product: newPr,
+  //               isQuantityUpdate: true,
+  //               quantityChange: item
+  //                   .getSelectedUnit()
+  //                   .getQuantityEquivMultiplied(
+  //                     index: 1,
+  //                     quantityTwo: (item.quantity ?? 0),
+  //                   ),
+  //               isIncrement: true,
+  //             );
+  //         try {
+  //           var newUpdate = StorageItemHistory(
+  //             event: StorageItemHistoryEventClass.purchase,
+  //             source:
+  //                 StorageItemHistoryEventClass
+  //                     .purchaseSource,
+  //             shopId: shopId(),
+  //             title: 'Stock In From Purchase',
+  //             createdAt: DateTime.now(),
+  //             storageDepartmentName:
+  //                 returnDepartmentProvider()
+  //                     .currentDepartment()
+  //                     ?.name,
+  //             storageDepartmentUuid:
+  //                 returnDepartmentProvider()
+  //                     .currentDepartment()
+  //                     ?.uuid,
+  //             storageItemName: newPr.name,
+  //             storageItemUuid: newPr.uuid,
+  //             storageStaffId: currentUser().userId,
+  //             storageStaffName: currentUser().name,
+  //             storageItemOldValue: formatLargeNumberDouble(
+  //               (storageProduct
+  //                   .getPrimaryUnit()
+  //                   .getQuantityEquivDivided(
+  //                     index: 1,
+  //                     quantityTwo:
+  //                         (storageProduct.quantity ?? 0),
+  //                   )),
+  //             ),
+  //             storageItemNewValue: formatLargeNumberDouble(
+  //               storageProduct
+  //                   .getPrimaryUnit()
+  //                   .getQuantityEquivDivided(
+  //                     index: 1,
+  //                     quantityTwo: (newPr.quantity ?? 0),
+  //                   ),
+  //             ),
+  //             uuid: uuidGen(),
+  //             desc:
+  //                 '${item.quantity ?? 0} ${item.unit} of This Item Purchased. Purchase Id: #${returnOnlyDigits(item.purchaseId ?? '')}',
+  //             isIncreased: true,
+  //             quantityChange: item.quantity,
+  //             storagePrimaryUnit:
+  //                 item.getPrimaryUnit().name,
+  //             storageUnit: item.unit,
+  //           );
 
-            await returnStorageItemHistoryProvider()
-                .createStorageItemHistory(newUpdate);
-          } catch (e) {
-            await mainLocalLog(
-              '❌❌Error Creating Inventory Update: ${e.toString()}',
-            );
-          }
-        } else {
-          var product = returnData().productListMain
-              .firstWhere(
-                (prod) => prod.uuid == item.itemId,
-              );
+  //           await returnStorageItemHistoryProvider()
+  //               .createStorageItemHistory(newUpdate);
+  //         } catch (e) {
+  //           await mainLocalLog(
+  //             '❌❌Error Creating Inventory Update: ${e.toString()}',
+  //           );
+  //         }
+  //       } else {
+  //         var product = returnData().productListMain
+  //             .firstWhere(
+  //               (prod) => prod.uuid == item.itemId,
+  //             );
 
-          var newPr = product.copyWith();
-          newPr.quantity =
-              (newPr.quantity ?? 0) +
-              item
-                  .getSelectedUnit()
-                  .getQuantityEquivMultiplied(
-                    index: 1,
-                    quantityTwo: (item.quantity ?? 0),
-                  );
-          newPr.updatedAt = DateTime.now();
-          ItemHistory itemHistory = ItemHistory(
-            event: ItemHistoryEventClass.purchase,
-            isManaged: true,
-            source: ItemHistoryEventClass.purchaseSource,
-            desc:
-                '${item.quantity} ${item.unit} of this Item Purchased. Purchase Id: #${returnOnlyDigits(item.purchaseId ?? '')}',
-            shopId: shopId(),
-            isIncreased: true,
-            oldValue: formatLargeNumberDouble(
-              (product
-                  .getPrimaryUnit()
-                  .getQuantityEquivDivided(
-                    index: 1,
-                    quantityTwo: (product.quantity ?? 0),
-                  )),
-            ),
-            newValue: formatLargeNumberDouble(
-              product
-                  .getPrimaryUnit()
-                  .getQuantityEquivDivided(
-                    index: 1,
-                    quantityTwo: (newPr.quantity ?? 0),
-                  ),
-            ),
-            title: 'Item Purchased',
-            quantityChange: item.quantity,
-            departmentName:
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.name,
-            departmentUuid:
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid,
-            itemName: newPr.name,
-            itemUuid: newPr.uuid,
-            primaryUnit: item.getPrimaryUnit().name,
-            unit: item.getSelectedUnit().name,
-          );
+  //         var newPr = product.copyWith();
+  //         newPr.quantity =
+  //             (newPr.quantity ?? 0) +
+  //             item
+  //                 .getSelectedUnit()
+  //                 .getQuantityEquivMultiplied(
+  //                   index: 1,
+  //                   quantityTwo: (item.quantity ?? 0),
+  //                 );
+  //         newPr.updatedAt = DateTime.now();
+  //         ItemHistory itemHistory = ItemHistory(
+  //           event: ItemHistoryEventClass.purchase,
+  //           isManaged: true,
+  //           source: ItemHistoryEventClass.purchaseSource,
+  //           desc:
+  //               '${item.quantity} ${item.unit} of this Item Purchased. Purchase Id: #${returnOnlyDigits(item.purchaseId ?? '')}',
+  //           shopId: shopId(),
+  //           isIncreased: true,
+  //           oldValue: formatLargeNumberDouble(
+  //             (product
+  //                 .getPrimaryUnit()
+  //                 .getQuantityEquivDivided(
+  //                   index: 1,
+  //                   quantityTwo: (product.quantity ?? 0),
+  //                 )),
+  //           ),
+  //           newValue: formatLargeNumberDouble(
+  //             product
+  //                 .getPrimaryUnit()
+  //                 .getQuantityEquivDivided(
+  //                   index: 1,
+  //                   quantityTwo: (newPr.quantity ?? 0),
+  //                 ),
+  //           ),
+  //           title: 'Item Purchased',
+  //           quantityChange: item.quantity,
+  //           departmentName:
+  //               returnDepartmentProvider()
+  //                   .currentDepartment()
+  //                   ?.name,
+  //           departmentUuid:
+  //               returnDepartmentProvider()
+  //                   .currentDepartment()
+  //                   ?.uuid,
+  //           itemName: newPr.name,
+  //           itemUuid: newPr.uuid,
+  //           primaryUnit: item.getPrimaryUnit().name,
+  //           unit: item.getSelectedUnit().name,
+  //         );
 
-          await returnData().updateProduct(
-            itemHistory: itemHistory,
-            includeQuantity: false,
-            isIncrement: true,
-            isQuantityUpdate: true,
-            quantityChange: item
-                .getSelectedUnit()
-                .getQuantityEquivMultiplied(
-                  index: 1,
-                  quantityTwo: (item.quantity ?? 0),
-                ),
-            product: newPr,
-          );
-        }
-      }
-      // }
-    } catch (e) {
-      await mainLocalLog('Error ${e.toString()}');
-    }
+  //         await returnData().updateProduct(
+  //           itemHistory: itemHistory,
+  //           includeQuantity: false,
+  //           isIncrement: true,
+  //           isQuantityUpdate: true,
+  //           quantityChange: item
+  //               .getSelectedUnit()
+  //               .getQuantityEquivMultiplied(
+  //                 index: 1,
+  //                 quantityTwo: (item.quantity ?? 0),
+  //               ),
+  //           product: newPr,
+  //         );
+  //       }
+  //     }
+  //     // }
+  //   } catch (e) {
+  //     await mainLocalLog('Error ${e.toString()}');
+  //   }
 
-    notifyListeners();
-  }
+  //   notifyListeners();
+  // }
 
-  // READ sales for a shop
-  Future<List<TempItemPurchaseRecord>>
-  loadItemPurchaseRecords(int shopId) async {
-    bool isOnline = await connectivity.isOnline();
-    try {
-      if (isOnline && ItemPurchaseFunc().isSynced()) {
-        final data = await supabase
-            .from(itemPurchaseTableName)
-            .select()
-            .eq('shop_id', shopId)
-            .order('created_at', ascending: false);
+  // // READ sales for a shop
+  // Future<List<TempItemPurchaseRecord>>
+  // loadItemPurchaseRecords(int shopId) async {
+  //   bool isOnline = await connectivity.isOnline();
+  //   try {
+  //     if (isOnline && ItemPurchaseFunc().isSynced()) {
+  //       final data = await supabase
+  //           .from(itemPurchaseTableName)
+  //           .select()
+  //           .eq('shop_id', shopId)
+  //           .order('created_at', ascending: false);
 
-        await mainLocalLog(
-          '✅Items Records gotten: ${data.length}',
-        );
-        _itemPurchaseRecords =
-            (data as List)
-                .map(
-                  (json) =>
-                      TempItemPurchaseRecord.fromJson(json),
-                )
-                .toList();
-        await ItemPurchaseFunc()
-            .insertAllItemPurchaseRecords(
-              _itemPurchaseRecords,
-            );
-      } else {
-        _itemPurchaseRecords =
-            ItemPurchaseFunc().getItemPurchaseRecords();
-      }
+  //       await mainLocalLog(
+  //         '✅Items Records gotten: ${data.length}',
+  //       );
+  //       _itemPurchaseRecords =
+  //           (data as List)
+  //               .map(
+  //                 (json) =>
+  //                     TempItemPurchaseRecord.fromJson(json),
+  //               )
+  //               .toList();
+  //       await ItemPurchaseFunc()
+  //           .insertAllItemPurchaseRecords(
+  //             _itemPurchaseRecords,
+  //           );
+  //     } else {
+  //       _itemPurchaseRecords =
+  //           ItemPurchaseFunc().getItemPurchaseRecords();
+  //     }
 
-      notifyListeners();
-      return _itemPurchaseRecords;
-    } catch (e) {
-      await mainLocalLog(
-        '❌Error Getting Item Purchase Records: ${e.toString()}',
-      );
-      return [];
-    }
-  }
+  //     notifyListeners();
+  //     return _itemPurchaseRecords;
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       '❌Error Getting Item Purchase Records: ${e.toString()}',
+  //     );
+  //     return [];
+  //   }
+  // }
 
-  // READ sales for a shop
-  Future<List<TempItemPurchaseRecord>>
-  loadItemPurchaseRecordsOffline() async {
-    try {
-      _itemPurchaseRecords =
-          ItemPurchaseFunc().getItemPurchaseRecords();
+  // // READ sales for a shop
+  // Future<List<TempItemPurchaseRecord>>
+  // loadItemPurchaseRecordsOffline() async {
+  //   try {
+  //     _itemPurchaseRecords =
+  //         ItemPurchaseFunc().getItemPurchaseRecords();
 
-      notifyListeners();
-      return _itemPurchaseRecords;
-    } catch (e) {
-      await mainLocalLog(
-        '❌Error Getting Item Purchase Records Offline: ${e.toString()}',
-      );
-      return [];
-    }
-  }
+  //     notifyListeners();
+  //     return _itemPurchaseRecords;
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       '❌Error Getting Item Purchase Records Offline: ${e.toString()}',
+  //     );
+  //     return [];
+  //   }
+  // }
 
   // DELETE a sale record
   Future<void> deleteItemPurchaseRecord(
@@ -1039,7 +1033,7 @@ class PurchaseProvider extends ChangeNotifier {
       }
       // }
 
-      loadItemPurchaseRecordsOffline();
+      // loadItemPurchaseRecordsOffline();
     } catch (e) {
       await mainLocalLog(
         'Error Deleting Item Purchase Record: ${e.toString()}',
@@ -1060,98 +1054,98 @@ class PurchaseProvider extends ChangeNotifier {
   //
   //
 
-  Future<void> createRecordsSync() async {
-    try {
-      bool isOnline = await connectivity.isOnline();
-      // Prepare batch payload
-      if (CreatedItemPurchaseFunc()
-              .getRecords()
-              .isNotEmpty &&
-          isOnline) {
-        final tempRecords =
-            CreatedItemPurchaseFunc().getRecords().toList();
-        var newRecords = tempRecords.map((rec) {
-          rec.record.createdAt =
-              rec.record.createdAt.toUtc();
-          return rec;
-        });
-        final payload =
-            newRecords
-                .map((p) => p.record.toJson())
-                .toList();
+  // Future<void> createRecordsSync() async {
+  //   try {
+  //     bool isOnline = await connectivity.isOnline();
+  //     // Prepare batch payload
+  //     if (CreatedItemPurchaseFunc()
+  //             .getRecords()
+  //             .isNotEmpty &&
+  //         isOnline) {
+  //       final tempRecords =
+  //           CreatedItemPurchaseFunc().getRecords().toList();
+  //       var newRecords = tempRecords.map((rec) {
+  //         rec.record.createdAt =
+  //             rec.record.createdAt.toUtc();
+  //         return rec;
+  //       });
+  //       final payload =
+  //           newRecords
+  //               .map((p) => p.record.toJson())
+  //               .toList();
 
-        // Insert all at once
-        final data =
-            await supabase
-                .from(itemPurchaseTableName)
-                .insert(payload)
-                .select();
+  //       // Insert all at once
+  //       final data =
+  //           await supabase
+  //               .from(itemPurchaseTableName)
+  //               .insert(payload)
+  //               .select();
 
-        await mainLocalLog(
-          '${data.length} items added successfully ✅',
-        );
-        await CreatedItemPurchaseFunc().clearRecords();
-        await loadItemPurchaseRecords(shopId());
-        await mainLocalLog(
-          'Unsynced Purchase Item Records Cleared',
-        );
-      }
-    } catch (e) {
-      await mainLocalLog(
-        'Batch Created Purchase Records insert failed ❌: $e',
-      );
-    }
-  }
+  //       await mainLocalLog(
+  //         '${data.length} items added successfully ✅',
+  //       );
+  //       await CreatedItemPurchaseFunc().clearRecords();
+  //       await loadItemPurchaseRecords(shopId());
+  //       await mainLocalLog(
+  //         'Unsynced Purchase Item Records Cleared',
+  //       );
+  //     }
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       'Batch Created Purchase Records insert failed ❌: $e',
+  //     );
+  //   }
+  // }
 
-  //
-  //
-  //
-  //
+  // //
+  // //
+  // //
+  // //
 
-  Future<void> deleteItemRecordsSync() async {
-    try {
-      bool isOnline = await connectivity.isOnline();
-      // Prepare batch payload
-      if (DeletedItemPurchaseFunc()
-              .getItemPurchaseIds()
-              .isNotEmpty &&
-          isOnline) {
-        final tempItemPurchases =
-            DeletedItemPurchaseFunc()
-                .getItemPurchaseIds()
-                .toList();
+  // Future<void> deleteItemRecordsSync() async {
+  //   try {
+  //     bool isOnline = await connectivity.isOnline();
+  //     // Prepare batch payload
+  //     if (DeletedItemPurchaseFunc()
+  //             .getItemPurchaseIds()
+  //             .isNotEmpty &&
+  //         isOnline) {
+  //       final tempItemPurchases =
+  //           DeletedItemPurchaseFunc()
+  //               .getItemPurchaseIds()
+  //               .toList();
 
-        for (var rec in tempItemPurchases) {
-          await supabase
-              .from(itemPurchaseTableName)
-              .delete()
-              .eq('uuid', rec.recordUuid);
-          // await DeletedItemPurchaseFunc()
-          //     .deletedDeletedPurchases(rec.purchaseUuid);
-        }
+  //       for (var rec in tempItemPurchases) {
+  //         await supabase
+  //             .from(itemPurchaseTableName)
+  //             .delete()
+  //             .eq('uuid', rec.recordUuid);
+  //         // await DeletedItemPurchaseFunc()
+  //         //     .deletedDeletedPurchases(rec.purchaseUuid);
+  //       }
 
-        await mainLocalLog(
-          '${tempItemPurchases.length} Purchase Item Records Deleted successfully ✅',
-        );
-        await DeletedItemPurchaseFunc()
-            .clearDeletedItemRecords();
-        await mainLocalLog(
-          'Unsynced Deleted Purchase Item Records Cleared',
-        );
+  //       await mainLocalLog(
+  //         '${tempItemPurchases.length} Purchase Item Records Deleted successfully ✅',
+  //       );
+  //       await DeletedItemPurchaseFunc()
+  //           .clearDeletedItemRecords();
+  //       await mainLocalLog(
+  //         'Unsynced Deleted Purchase Item Records Cleared',
+  //       );
 
-        await mainLocalLog(
-          'Mounted, refreshing Purchase Item Records ✅',
-        );
-        // await loadPurchases(
-        //   returnShopProvider().userShop()!.shopId!,
-        // );
-      }
-    } catch (e) {
-      await mainLocalLog(
-        'Batch Purchase Item Records Deleted failed ❌: $e',
-      );
-    }
-  }
+  //       await mainLocalLog(
+  //         'Mounted, refreshing Purchase Item Records ✅',
+  //       );
+  //       // await loadPurchases(
+  //       //   returnShopProvider().userShop()!.shopId!,
+  //       // );
+  //     }
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       'Batch Purchase Item Records Deleted failed ❌: $e',
+  //     );
+  //   }
+  // }
 
   //
   //
@@ -1327,7 +1321,9 @@ class PurchaseProvider extends ChangeNotifier {
   returnItemPurchaseRecordByDayOrWeek() {
     List<TempItemPurchaseRecord> recordss = [];
 
-    for (var rec in itemPurchaseRecords) {
+    for (var rec in purchases.expand(
+      (item) => item.items ?? [],
+    )) {
       TempPurchase? purchase;
 
       try {

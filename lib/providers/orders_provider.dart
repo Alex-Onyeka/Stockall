@@ -1026,11 +1026,11 @@ class OrdersProvider extends ChangeNotifier {
         await mainLocalLog(
           'Creating Record Sales About to Start',
         );
-        await returnReceiptProviderSingle()
-            .createProductSaleRecord(
-              records: productSaleRecords,
-              isPartPayment: false,
-            );
+        // await returnReceiptProviderSingle()
+        //     .createProductSaleRecord(
+        //       records: productSaleRecords,
+        //       isPartPayment: false,
+        //     );
         await mainLocalLog('Sales Record Inserted');
         var newOrder = order.copyWith(
           orderItems:
@@ -1075,9 +1075,8 @@ class OrdersProvider extends ChangeNotifier {
                   item.getActualQuantityDuringDeliveryCheckout();
               // Stock math is in area for 2D items; store the
               // result back as a sheet count.
-              product.quantity = product.quantityAfterRemoving(
-                quantityChange,
-              );
+              product.quantity = product
+                  .quantityAfterRemoving(quantityChange);
               final newQuantity =
                   product.getActualQuantity() ?? 0;
               final primaryUnit = product.getPrimaryUnit();
@@ -1108,7 +1107,8 @@ class OrdersProvider extends ChangeNotifier {
                 product: product,
                 isQuantityUpdate: true,
                 quantityChange:
-                    quantityChange / product.dimensionArea(),
+                    quantityChange /
+                    product.dimensionArea(),
                 isMultipleUpdate: true,
                 isIncrement: false,
               );
