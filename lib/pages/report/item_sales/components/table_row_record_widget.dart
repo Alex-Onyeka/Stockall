@@ -135,7 +135,8 @@ class _TableRowRecordWidgetState
                                     .fontSize,
                             fontWeight: FontWeight.bold,
                           ),
-                          widget.record.staffName,
+                          widget.record.staffName ??
+                              'Not Set',
                         ),
                       ),
                     ],

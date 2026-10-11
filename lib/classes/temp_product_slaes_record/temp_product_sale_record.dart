@@ -16,7 +16,7 @@ class TempProductSaleRecord {
   DateTime createdAt;
 
   @HiveField(2)
-  final int productId;
+  final int? productId;
 
   @HiveField(3)
   String productName;
@@ -34,10 +34,10 @@ class TempProductSaleRecord {
   String? customerName;
 
   @HiveField(8)
-  String staffName;
+  String? staffName;
 
   @HiveField(9)
-  int recepitId;
+  int? recepitId;
 
   @HiveField(10)
   double? discount;
@@ -180,14 +180,14 @@ class TempProductSaleRecord {
       createdAt: DateTime.parse(
         json['created_at'] as String,
       ),
-      productId: json['product_id'] as int,
+      productId: json['product_id'] as int?,
       productName: json['product_name'] as String,
       shopId: json['shop_id'] as int,
       staffId: json['staff_id'] as String,
       customerId: json['customer_id'] as int?,
       customerName: json['customer_name'] as String?,
-      staffName: json['staff_name'] as String,
-      recepitId: json['recepit_id'] as int,
+      staffName: json['staff_name'] as String?,
+      recepitId: json['recepit_id'] as int?,
       discount: (json['discount'] as num?)?.toDouble(),
       quantity: (json['quantity'] as num).toDouble(),
       revenue: (json['revenue'] as num).toDouble(),
@@ -275,12 +275,12 @@ class TempProductSaleRecord {
       'is_void': isVoid,
       'units_list': ProductUnitsClass.getUnitList(
         tempUnitList: unitsList,
-        productUuid: uuid,
+        productUuid: productUuid,
       ),
       'unit_uuid': unitUuid,
       'prices_list': ProductPricesClass.getPricesList(
         tempPricesList: pricesList,
-        itemUuid: uuid,
+        itemUuid: productUuid,
       ),
       'price_uuid': priceUuid,
       'width_dimension': widthDimension,
@@ -687,6 +687,9 @@ class TempProductSaleRecord {
   }
 
   String dimensionsLabel() {
-    return formatDimensionsLabel(widthDimension, heightDimension);
+    return formatDimensionsLabel(
+      widthDimension,
+      heightDimension,
+    );
   }
 }

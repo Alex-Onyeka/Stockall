@@ -1641,7 +1641,7 @@ class ReceiptsProvider extends ChangeNotifier {
           departmentUuid:
               items.first.departmentUuid ??
               'Department Not Set',
-          staffName: items.first.staffName,
+          staffName: items.first.staffName ?? '',
           staffUuid: items.first.staffId,
         ),
       );
@@ -1787,7 +1787,7 @@ class ReceiptsProvider extends ChangeNotifier {
           departmentUuid:
               items.first.departmentUuid ??
               'Department Not Set',
-          staffName: items.first.staffName,
+          staffName: items.first.staffName ?? 'Not Set',
           staffUuid: items.first.staffId,
         ),
       );
@@ -1924,7 +1924,7 @@ class ReceiptsProvider extends ChangeNotifier {
           departmentUuid:
               items.first.departmentUuid ??
               'Department Not Set',
-          staffName: items.first.staffName,
+          staffName: items.first.staffName ?? 'Not Set',
           staffUuid: items.first.staffId,
         ),
       );
@@ -2040,7 +2040,7 @@ class ReceiptsProvider extends ChangeNotifier {
         GeneralReportSalesSummaryItemStaff(
           itemName: first.productName,
           itemUuid: first.productUuid ?? 'unknown_product',
-          staffName: first.staffName,
+          staffName: first.staffName ?? 'Not Set',
           staffUuid: first.staffId,
           quantity: totalQuantity,
           totalCost: totalCost,

@@ -146,7 +146,7 @@ class TempItemPurchaseRecord {
       'unit': unit,
       'units_list': ProductUnitsClass.getUnitList(
         tempUnitList: unitsList,
-        productUuid: uuid,
+        productUuid: itemId,
       ),
       'unit_uuid': unitUuid,
     };
