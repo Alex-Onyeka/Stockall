@@ -437,7 +437,7 @@ class _TotalSalesDesktopState
                                               width: 20,
                                             ),
                                             SizedBox(
-                                              width: 250,
+                                              width: 330,
                                               child: Row(
                                                 spacing: 6,
                                                 mainAxisAlignment:

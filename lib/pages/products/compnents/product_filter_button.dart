@@ -43,7 +43,7 @@ class ProductsFilterButton extends StatelessWidget {
           onTap: action,
           child: Container(
             padding: EdgeInsets.symmetric(
-              horizontal: title.length > 5 ? 10 : 13,
+              horizontal: title.length > 5 ? 6 : 10,
               vertical: 3,
             ),
 

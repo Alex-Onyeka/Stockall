@@ -402,7 +402,8 @@ class _TotalSalesMobileState
                                                   );
                                             },
                                             number: 4,
-                                            title: 'Account',
+                                            title:
+                                                'Account',
                                             theme: theme,
                                           ),
                                         ],
