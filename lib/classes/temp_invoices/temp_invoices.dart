@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
@@ -196,12 +197,20 @@ class TempInvoice extends HiveObject {
     };
   }
 
-  List<TempProductSaleRecord> getItems() {
+  List<TempProductSaleRecord> getItems({
+    BuildContext? context,
+  }) {
     if (items == null || items!.isEmpty) {
-      return returnReceiptProviderSingle()
-          .sales()
-          .where((item) => item.invoiceUuid == uuid)
-          .toList();
+      if (context == null) {
+        return returnReceiptProviderSingle().mainSales
+            .where((item) => item.invoiceUuid == uuid)
+            .toList();
+      } else {
+        return returnReceiptProvider(context, listen: true)
+            .mainSales
+            .where((item) => item.invoiceUuid == uuid)
+            .toList();
+      }
     } else {
       return items ?? [];
     }

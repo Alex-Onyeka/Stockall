@@ -746,17 +746,18 @@ class PurchaseProvider extends ChangeNotifier {
   //
   //
 
-  List<TempItemPurchaseRecord> itemPurchaseRecords() {
-    return _itemPurchaseRecords.toList();
-    // return purchases
-    //     .expand(
-    //       (item) =>
-    //           (item.items ?? <TempItemPurchaseRecord>[]),
-    //     )
-    //     .toList();
+  List<TempItemPurchaseRecord> itemPurchaseRecords({
+    BuildContext? context,
+  }) {
+    return purchases
+        .expand((item) => (item.getItems(context: context)))
+        .toList();
   }
 
   List<TempItemPurchaseRecord> _itemPurchaseRecords = [];
+
+  List<TempItemPurchaseRecord>
+  get getItemPurchaseReceipts => _itemPurchaseRecords;
 
   // CREATE a new product sale record
   Future<void> createItemPurchaseRecord(

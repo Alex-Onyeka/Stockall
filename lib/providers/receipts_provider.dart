@@ -633,25 +633,37 @@ class ReceiptsProvider extends ChangeNotifier {
   //
   //
 
-  List<TempProductSaleRecord> sales() {
-    // return receipts
-    //     .expand((item) => item.getItems())
-    //     .toList();
-    return _sales;
-  }
-
   List<TempProductSaleRecord> _sales = [];
 
+  List<TempProductSaleRecord> get mainSales => _sales;
+
+  List<TempProductSaleRecord> salesReceipts() {
+    return receipts
+        .expand((item) => item.getItems())
+        .toList();
+    // return _salesReceipts;
+  }
+
   List<TempProductSaleRecord> getProductRecordsNoVoid() {
-    return sales()
+    return salesReceipts()
         .where((item) => item.isVoid != true)
         .toList();
   }
 
   List<TempProductSaleRecord> getProductRecordsVoid() {
-    return sales()
+    return salesReceipts()
         .where((item) => item.isVoid == true)
         .toList();
+  }
+
+  List<TempProductSaleRecord> salesInvoice({
+    BuildContext? context,
+  }) {
+    return returnInvoicesProvider(context: context)
+        .invoicesMain
+        .expand((item) => item.getItems())
+        .toList();
+    // return _sales;
   }
 
   // CREATE a new product sale record
