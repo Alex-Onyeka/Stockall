@@ -432,7 +432,7 @@ class InvoicesProvider extends ChangeNotifier {
         //         .toList();
         await makeInvoicePayment(
           invoice: item,
-          salesRecords: item.items ?? [],
+          salesRecords: item.getItems(),
           currentPayment: item.getBalance(),
           cashAmount:
               cashAmount != 0 ? item.getBalance() : 0,
@@ -707,7 +707,7 @@ class InvoicesProvider extends ChangeNotifier {
         // Convert them back to cart items
         final cartItems = convertInvoiceToCartItems(
           invoice: invoice,
-          saleRecords: invoice.items ?? [],
+          saleRecords: invoice.getItems(),
           context: context,
         );
 

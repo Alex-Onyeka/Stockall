@@ -93,10 +93,7 @@ class _MainInvoiceTileMobileState
   }
 
   List<TempProductSaleRecord> getProductRecord() {
-    return widget.invoice.items
-            ?.where((item) => item.isVoid != true)
-            .toList() ??
-        [];
+    return widget.invoice.getItemsNoVoid() ?? [];
   }
 
   @override
@@ -374,10 +371,7 @@ class _MainInvoiceTileDesktopState
   }
 
   List<TempProductSaleRecord> getProductRecord() {
-    return widget.invoice.items
-            ?.where((item) => item.isVoid != true)
-            .toList() ??
-        [];
+    return widget.invoice.getItemsNoVoid() ?? [];
   }
 
   @override

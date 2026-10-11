@@ -396,16 +396,8 @@ class _ReceiptDetailsContainerState
 
   @override
   Widget build(BuildContext context) {
-    var records =
-        widget.mainReceipt.items
-            ?.where((item) => item.isVoid != true)
-            .toList() ??
-        [];
-    var recordsVoid =
-        widget.mainReceipt.items
-            ?.where((item) => item.isVoid == true)
-            .toList() ??
-        [];
+    var records = widget.mainReceipt.getItemsNoVoid();
+    var recordsVoid = widget.mainReceipt.getItemsVoid();
     String? customer;
 
     try {

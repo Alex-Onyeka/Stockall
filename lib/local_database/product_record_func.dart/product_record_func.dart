@@ -28,85 +28,85 @@ class ProductRecordFunc {
     await mainLocalLog('Product Record Box Initialized');
   }
 
-  // List<TempProductSaleRecord> getProductRecords() {
-  //   List<TempProductSaleRecord> records =
-  //       productRecordBox.values.toList();
-  //   records.sort(
-  //     (a, b) => a.createdAt.compareTo(b.createdAt),
-  //   );
-  //   return records;
-  // }
+  List<TempProductSaleRecord> getProductRecords() {
+    List<TempProductSaleRecord> records =
+        productRecordBox.values.toList();
+    records.sort(
+      (a, b) => a.createdAt.compareTo(b.createdAt),
+    );
+    return records;
+  }
 
-  // Future<int> insertAllProductRecords(
-  //   List<TempProductSaleRecord> records,
-  // ) async {
-  //   await clearRecords();
-  //   try {
-  //     for (var record in records) {
-  //       await productRecordBox.put(record.uuid, record);
-  //     }
-  //     await mainLocalLog(
-  //       'Offline Record insert Successful',
-  //     );
-  //     return 1;
-  //   } catch (e) {
-  //     await mainLocalLog(
-  //       '❌❌ Record Insert Error: ${e.toString()}',
-  //     );
-  //     return 0;
-  //   }
-  // }
+  Future<int> insertAllProductRecords(
+    List<TempProductSaleRecord> records,
+  ) async {
+    await clearRecords();
+    try {
+      for (var record in records) {
+        await productRecordBox.put(record.uuid, record);
+      }
+      await mainLocalLog(
+        'Offline Record insert Successful',
+      );
+      return 1;
+    } catch (e) {
+      await mainLocalLog(
+        '❌❌ Record Insert Error: ${e.toString()}',
+      );
+      return 0;
+    }
+  }
 
-  // Future<int> insertSalesProductRecords(
-  //   List<TempProductSaleRecord> records,
-  // ) async {
-  //   try {
-  //     for (var record in records) {
-  //       await productRecordBox.put(record.uuid, record);
-  //     }
-  //     await mainLocalLog(
-  //       'Offline Record insert Successful',
-  //     );
-  //     return 1;
-  //   } catch (e) {
-  //     await mainLocalLog(
-  //       '❌❌ Record Insert Error: ${e.toString()}',
-  //     );
-  //     return 0;
-  //   }
-  // }
+  Future<int> insertSalesProductRecords(
+    List<TempProductSaleRecord> records,
+  ) async {
+    try {
+      for (var record in records) {
+        await productRecordBox.put(record.uuid, record);
+      }
+      await mainLocalLog(
+        'Offline Record insert Successful',
+      );
+      return 1;
+    } catch (e) {
+      await mainLocalLog(
+        '❌❌ Record Insert Error: ${e.toString()}',
+      );
+      return 0;
+    }
+  }
 
-  // Future<int> createRecord(
-  //   TempProductSaleRecord record,
-  // ) async {
-  //   try {
-  //     await productRecordBox.put(record.uuid, record);
-  //     await mainLocalLog(
-  //       'Offline Record insert Successful',
-  //     );
-  //     return 1;
-  //   } catch (e) {
-  //     await mainLocalLog(
-  //       '❌❌ Record Insert Error: ${e.toString()}',
-  //     );
-  //     return 0;
-  //   }
-  // }
+  Future<int> createRecord(
+    TempProductSaleRecord record,
+  ) async {
+    try {
+      await productRecordBox.put(record.uuid, record);
+      await mainLocalLog(
+        'Offline Record insert Successful',
+      );
+      return 1;
+    } catch (e) {
+      await mainLocalLog(
+        '❌❌ Record Insert Error: ${e.toString()}',
+      );
+      return 0;
+    }
+  }
 
-  // Future<int> deleteRecord(String uuid) async {
-  //   try {
-  //     await productRecordBox.delete(uuid);
-  //     await mainLocalLog(
-  //       'Offline Record Deleted Successful',
-  //     );
-  //     return 1;
-  //   } catch (e) {
-  //     await mainLocalLog(
-  //       '❌❌ Record Delete Error: ${e.toString()}',
-  //     );
-  //     return 0;
-  //   }
-  // }
+  Future<int> deleteRecord(String uuid) async {
+    try {
+      await productRecordBox.delete(uuid);
+      await mainLocalLog(
+        'Offline Record Deleted Successful',
+      );
+      return 1;
+    } catch (e) {
+      await mainLocalLog(
+        '❌❌ Record Delete Error: ${e.toString()}',
+      );
+      return 0;
+    }
+  }
 
   Future<int> deleteRecordsInReceipt({
     required TempMainReceipt receipt,
@@ -114,7 +114,7 @@ class ProductRecordFunc {
     await mainLocalLog('Deleting Records in Receipt');
     try {
       List<TempProductSaleRecord> records =
-          (receipt.items ?? []).toList();
+          (receipt.getItems()).toList();
       await mainLocalLog(
         'Records Gotten: ${records.length}',
       );
@@ -253,7 +253,7 @@ class ProductRecordFunc {
     await mainLocalLog('Deleting Records in Receipt 2');
     try {
       List<TempProductSaleRecord> records =
-          (receipt.items ?? []).toList();
+          (receipt.getItems()).toList();
       await mainLocalLog(
         'Records Gotten: ${records.length}',
       );
@@ -291,7 +291,7 @@ class ProductRecordFunc {
     await mainLocalLog('Deleting Records in Invoice');
     try {
       List<TempProductSaleRecord> records =
-          (invoice.items ?? []).toList();
+          (invoice.getItems()).toList();
       await mainLocalLog(
         'Records Gotten: ${records.length}',
       );
@@ -442,7 +442,7 @@ class ProductRecordFunc {
     );
     try {
       List<TempProductSaleRecord> records =
-          (invoice.items ?? []).toList();
+          (invoice.getItems()).toList();
       await mainLocalLog(
         'Records Gotten: ${records.length}',
       );

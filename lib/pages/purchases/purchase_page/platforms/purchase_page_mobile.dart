@@ -73,7 +73,7 @@ class _PurchasePageMobileState
     TempPurchase? purchase =
         purchs.isNotEmpty ? purchs.first : null;
     List<TempItemPurchaseRecord> saleRecords =
-        purchase?.items ?? [];
+        purchase?.getItems(context: context) ?? [];
     var supps =
         returnSuppliersProvider(context: context).suppliers
             .where(

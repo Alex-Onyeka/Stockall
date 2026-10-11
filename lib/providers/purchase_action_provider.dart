@@ -193,8 +193,8 @@ class PurchaseActionProvider extends ChangeNotifier {
       if (purchase != null) {
         await returnData().getProducts(shopId());
       }
-      // await returnPurchaseProvider()
-      //     .createItemPurchaseRecord(purchaseRecords);
+      await returnPurchaseProvider()
+          .createItemPurchaseRecord(purchaseRecords);
       clearAll();
       if (returnShopProvider()
               .userShop()

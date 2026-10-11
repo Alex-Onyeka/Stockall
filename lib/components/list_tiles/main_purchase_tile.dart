@@ -67,7 +67,7 @@ class _MainPurchaseTileMobileState
   }
 
   List<TempItemPurchaseRecord> getProductRecord() {
-    return widget.purchase.items ?? [];
+    return widget.purchase.getItems(context: context);
   }
 
   @override
@@ -335,7 +335,7 @@ class _MainPurchaseTileDesktopState
   }
 
   List<TempItemPurchaseRecord> getProductRecord() {
-    return widget.purchase.items ?? [];
+    return widget.purchase.getItems(context: context);
   }
 
   @override

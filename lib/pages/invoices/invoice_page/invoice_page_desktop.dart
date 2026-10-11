@@ -86,9 +86,7 @@ class _InvoicePageDesktopState
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     List<TempProductSaleRecord> saleRecords =
-        widget.checkoutResponse.invoice?.items
-            ?.where((item) => item.isVoid != true)
-            .toList() ??
+        widget.checkoutResponse.invoice?.getItemsNoVoid() ??
         [];
     TempInvoice? invoice = returnInvoicesProvider()
         .invoicesMain

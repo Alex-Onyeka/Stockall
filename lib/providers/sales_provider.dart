@@ -4046,7 +4046,7 @@ class SalesProvider extends ChangeNotifier {
         // Convert them back to cart items
         final cartItems = convertReceiptToCartItems(
           receipt: receipt,
-          saleRecords: receipt.items ?? [],
+          saleRecords: receipt.getItems(),
           context: context,
         );
 

@@ -241,9 +241,9 @@ class ReceiptsProvider extends ChangeNotifier {
         await returnData().getProducts(
           returnShopProvider().userShop()!.shopId!,
         );
-        // await loadProductSalesRecord(
-        //   returnShopProvider().userShop()!.shopId!,
-        // );
+        await loadProductSalesRecord(
+          returnShopProvider().userShop()!.shopId!,
+        );
         notifyListeners();
       } catch (e) {
         await mainLocalLog(
@@ -260,9 +260,9 @@ class ReceiptsProvider extends ChangeNotifier {
       await returnData().getProducts(
         returnShopProvider().userShop()!.shopId!,
       );
-      // await loadProductSalesRecord(
-      //   returnShopProvider().userShop()!.shopId!,
-      // );
+      await loadProductSalesRecord(
+        returnShopProvider().userShop()!.shopId!,
+      );
       notifyListeners();
     }
     notifyListeners();
@@ -634,15 +634,13 @@ class ReceiptsProvider extends ChangeNotifier {
   //
 
   List<TempProductSaleRecord> sales() {
-    return receipts
-        .expand(
-          (item) => item.items ?? <TempProductSaleRecord>[],
-        )
-        .toList();
+    // return receipts
+    //     .expand((item) => item.getItems())
+    //     .toList();
+    return _sales;
   }
 
-  // List<TempProductSaleRecord> get produtRecordSalesMain =>
-  //     sales();
+  List<TempProductSaleRecord> _sales = [];
 
   List<TempProductSaleRecord> getProductRecordsNoVoid() {
     return sales()
@@ -695,71 +693,71 @@ class ReceiptsProvider extends ChangeNotifier {
   // }
 
   // READ sales for a shop
-  // Future<List<TempProductSaleRecord>>
-  // loadProductSalesRecord(int shopId) async {
-  //   bool isOnline = await connectivity.isOnline();
-  //   List<Map<String, dynamic>> tempList = [];
-  //   if (isOnline && ProductRecordFunc().isSynced()) {
-  //     final data = await supabase
-  //         .from('product_sales')
-  //         .select()
-  //         .eq('shop_id', shopId)
-  //         .order('created_at', ascending: false)
-  //         .range(0, 1000);
-  //     tempList.addAll(data);
+  Future<List<TempProductSaleRecord>>
+  loadProductSalesRecord(int shopId) async {
+    bool isOnline = await connectivity.isOnline();
+    List<Map<String, dynamic>> tempList = [];
+    if (isOnline && ProductRecordFunc().isSynced()) {
+      final data = await supabase
+          .from('product_sales')
+          .select()
+          .eq('shop_id', shopId)
+          .order('created_at', ascending: false)
+          .range(0, 1000);
+      tempList.addAll(data);
 
-  //     await mainLocalLog(
-  //       'Items Records gotten First: ${tempList.length}',
-  //     );
-  //     if (data.length >= 1000) {
-  //       final data2 = await supabase
-  //           .from('product_sales')
-  //           .select()
-  //           .eq('shop_id', shopId)
-  //           .order('created_at', ascending: false)
-  //           .range(1001, 2000);
-  //       tempList.addAll(data2);
-  //       await mainLocalLog(
-  //         'Items Records gotten Second: ${tempList.length}',
-  //       );
-  //     }
-  //     if (tempList.length >= 2000) {
-  //       final data3 = await supabase
-  //           .from('product_sales')
-  //           .select()
-  //           .eq('shop_id', shopId)
-  //           .order('created_at', ascending: false)
-  //           .range(2001, 3000);
-  //       tempList.addAll(data3);
-  //       await mainLocalLog(
-  //         'Items Records gotten Third: ${tempList.length}',
-  //       );
-  //     }
-  //     _sales =
-  //         (tempList as List)
-  //             .map(
-  //               (json) =>
-  //                   TempProductSaleRecord.fromJson(json),
-  //             )
-  //             .toList();
-  //     await ProductRecordFunc().insertAllProductRecords(
-  //       _sales,
-  //     );
-  //   } else {
-  //     _sales = ProductRecordFunc().getProductRecords();
-  //   }
+      await mainLocalLog(
+        'Items Records gotten First: ${tempList.length}',
+      );
+      if (data.length >= 1000) {
+        final data2 = await supabase
+            .from('product_sales')
+            .select()
+            .eq('shop_id', shopId)
+            .order('created_at', ascending: false)
+            .range(1001, 2000);
+        tempList.addAll(data2);
+        await mainLocalLog(
+          'Items Records gotten Second: ${tempList.length}',
+        );
+      }
+      if (tempList.length >= 2000) {
+        final data3 = await supabase
+            .from('product_sales')
+            .select()
+            .eq('shop_id', shopId)
+            .order('created_at', ascending: false)
+            .range(2001, 3000);
+        tempList.addAll(data3);
+        await mainLocalLog(
+          'Items Records gotten Third: ${tempList.length}',
+        );
+      }
+      _sales =
+          (tempList as List)
+              .map(
+                (json) =>
+                    TempProductSaleRecord.fromJson(json),
+              )
+              .toList();
+      await ProductRecordFunc().insertAllProductRecords(
+        _sales,
+      );
+    } else {
+      _sales = ProductRecordFunc().getProductRecords();
+    }
 
-  //   notifyListeners();
-  //   return _sales;
-  // }
+    notifyListeners();
+    return _sales;
+  }
 
-  // Future<List<TempProductSaleRecord>>
-  // loadProductSalesRecordOffline(int shopId) async {
-  //   _sales = ProductRecordFunc().getProductRecords();
+  Future<List<TempProductSaleRecord>>
+  loadProductSalesRecordOffline(int shopId) async {
+    _sales = ProductRecordFunc().getProductRecords();
 
-  //   notifyListeners();
-  //   return _sales;
-  // }
+    notifyListeners();
+    return _sales;
+  }
 
   // // UPDATE a sale record
   // Future<void> updateProductSaleRecord(

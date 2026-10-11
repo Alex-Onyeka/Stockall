@@ -291,6 +291,29 @@ class TempMainReceipt extends HiveObject {
     );
   }
 
+  List<TempProductSaleRecord> getItems() {
+    if (items == null || items!.isEmpty) {
+      return returnReceiptProviderSingle()
+          .sales()
+          .where((item) => item.receiptUuid == uuid)
+          .toList();
+    } else {
+      return items ?? [];
+    }
+  }
+
+  List<TempProductSaleRecord> getItemsNoVoid() {
+    return getItems()
+        .where((item) => item.isVoid != true)
+        .toList();
+  }
+
+  List<TempProductSaleRecord> getItemsVoid() {
+    return getItems()
+        .where((item) => item.isVoid == true)
+        .toList();
+  }
+
   double getTotalRevenue() {
     return bank + cashAlt + (customerAccount ?? 0);
   }

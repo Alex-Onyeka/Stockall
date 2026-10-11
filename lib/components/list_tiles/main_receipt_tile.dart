@@ -67,10 +67,7 @@ class _MainReceiptTileMobileState
   }
 
   List<TempProductSaleRecord> getProductRecord() {
-    return widget.mainReceipt.items
-            ?.where((item) => item.isVoid != true)
-            .toList() ??
-        [];
+    return widget.mainReceipt.getItemsNoVoid();
   }
 
   @override
@@ -354,10 +351,7 @@ class _MainReceiptTileDesktopState
   }
 
   List<TempProductSaleRecord> getProductRecord() {
-    return widget.mainReceipt.items
-            ?.where((item) => item.isVoid != true)
-            .toList() ??
-        [];
+    return widget.mainReceipt.getItemsNoVoid();
   }
 
   // late Future<List<TempProductSaleRecord>> productFuture;

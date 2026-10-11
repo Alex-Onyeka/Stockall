@@ -1,6 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_item_purchase_record/temp_item_purchase_record.dart';
 import 'package:stockall/classes/temp_purchase/purchase_payments.dart';
+import 'package:stockall/main.dart';
 
 part 'temp_purchase.g.dart';
 
@@ -157,5 +159,18 @@ class TempPurchase extends HiveObject {
       updatedAt: updatedAt ?? this.updatedAt,
       items: items ?? this.items,
     );
+  }
+
+  List<TempItemPurchaseRecord> getItems({
+    BuildContext? context,
+  }) {
+    if (items == null || items!.isEmpty) {
+      return returnPurchaseProvider(context: context)
+          .itemPurchaseRecords()
+          .where((item) => item.purchaseId == uuid)
+          .toList();
+    } else {
+      return items ?? [];
+    }
   }
 }
