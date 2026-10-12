@@ -7,11 +7,13 @@ import 'package:stockall/pages/products/add_product_one/product_units_page/compo
 
 class ProductUnitsPageMobile extends StatefulWidget {
   final String productUuid;
+  final bool isDimensional;
   final TextEditingController quantityController;
   final TextEditingController nameController;
   const ProductUnitsPageMobile({
     super.key,
     required this.productUuid,
+    this.isDimensional = false,
     required this.quantityController,
     required this.nameController,
   });
@@ -39,6 +41,7 @@ class _ProductUnitsPageMobileState
             nameController: widget.nameController,
             quantityController: widget.quantityController,
             productUuid: widget.productUuid,
+            isDimensional: widget.isDimensional,
             setStateAction: () {
               setState(() {});
             },
@@ -74,6 +77,8 @@ class _ProductUnitsPageMobileState
                                   widget.nameController,
                               productUuid:
                                   widget.productUuid,
+                              isDimensional:
+                                  widget.isDimensional,
                               quantityController:
                                   widget.quantityController,
                               setStateAction: () {
@@ -98,6 +103,8 @@ class _ProductUnitsPageMobileState
                                         unitUuid:
                                             productUnit
                                                 .uuid,
+                                        isDimensional:
+                                            widget.isDimensional,
                                       ),
                                 )
                                 .toList(),

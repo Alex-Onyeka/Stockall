@@ -312,6 +312,10 @@ class TempProductClass {
         'units_list': ProductUnitsClass.getUnitList(
           tempUnitList: unitsList,
           productUuid: uuid,
+          dimensionType:
+              quantityType == 2
+                  ? ProductUnitsClass.sheetUnit
+                  : null,
         ),
         'prices_list': ProductPricesClass.getPricesList(
           tempPricesList: pricesList,
@@ -363,6 +367,10 @@ class TempProductClass {
         'units_list': ProductUnitsClass.getUnitList(
           tempUnitList: unitsList,
           productUuid: uuid,
+          dimensionType:
+              quantityType == 2
+                  ? ProductUnitsClass.sheetUnit
+                  : null,
         ),
         'prices_list': ProductPricesClass.getPricesList(
           tempPricesList: pricesList,
@@ -642,10 +650,16 @@ class TempProductClass {
     required BuildContext context,
   }) {
     if (getPrimaryPrice().priceValue != 0) {
+      final primaryUnit = getPrimaryUnit();
+      final areaConversion =
+          quantityType == 2 &&
+                  primaryUnit.dimensionType ==
+                      ProductUnitsClass.sheetUnit
+              ? primaryUnit.conversion * dimensionArea()
+              : primaryUnit.conversion;
       return formatMoneyMid(
         amount:
-            getPrimaryUnit().conversion *
-            getPrimaryPrice().priceValue,
+            areaConversion * getPrimaryPrice().priceValue,
         context: context,
       );
     } else {
@@ -733,6 +747,7 @@ class TempProductClass {
           index: index,
           context: context,
           newQuantity: newQuantity,
+          product: this,
         );
       }
     }
@@ -777,6 +792,10 @@ class TempProductClass {
         name: unit == 'Others' ? 'Unit(s)' : unit,
         isPrimary: true,
         productUuid: uuid!,
+        dimensionType:
+            quantityType == 2
+                ? ProductUnitsClass.sheetUnit
+                : null,
       );
     } else {
       return getUnitsList()
@@ -798,6 +817,10 @@ class TempProductClass {
             name: unit == 'Others' ? 'Unit(s)' : unit,
             isPrimary: true,
             productUuid: uuid!,
+            dimensionType:
+                quantityType == 2
+                    ? ProductUnitsClass.sheetUnit
+                    : null,
           ),
         ];
         if (useGroupUnit == true) {

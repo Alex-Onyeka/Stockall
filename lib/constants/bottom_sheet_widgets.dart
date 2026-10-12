@@ -1281,22 +1281,7 @@ void selectProductSales({
   final bool is2DItem = cartItem.item.quantityType == 2;
   final double? originalWidth = cartItem.item.widthDimension;
   final double? originalHeight = cartItem.item.heightDimension;
-
-  // Editing a line sold at a custom size reopens it in
-  // dimensions mode with the values filled in.
-  if (is2DItem &&
-      cartItem.widthDimension != null &&
-      cartItem.heightDimension != null &&
-      (cartItem.widthDimension != originalWidth ||
-          cartItem.heightDimension != originalHeight)) {
-    quantityTypeTemp = 2;
-    widthController.text = formatDimension(
-      cartItem.widthDimension!,
-    ).replaceAll(',', '');
-    heightController.text = formatDimension(
-      cartItem.heightDimension!,
-    ).replaceAll(',', '');
-  }
+  bool isAreaUnit = false;
 
   double? parseDimension(TextEditingController controller) {
     return double.tryParse(
@@ -1308,7 +1293,7 @@ void selectProductSales({
   // dimensions mode (original when left empty), the original
   // in whole mode, and null for non-2D items.
   double? resolvedWidth() {
-    if (!is2DItem) return null;
+    if (!is2DItem || isAreaUnit) return null;
     if (quantityTypeTemp == 2 &&
         widthController.text.trim().isNotEmpty) {
       return parseDimension(widthController);
@@ -1317,7 +1302,7 @@ void selectProductSales({
   }
 
   double? resolvedHeight() {
-    if (!is2DItem) return null;
+    if (!is2DItem || isAreaUnit) return null;
     if (quantityTypeTemp == 2 &&
         heightController.text.trim().isNotEmpty) {
       return parseDimension(heightController);
@@ -1348,7 +1333,11 @@ void selectProductSales({
   }
 
   String? dimensionsError() {
-    if (!is2DItem || quantityTypeTemp != 2) return null;
+    if (!is2DItem ||
+        isAreaUnit ||
+        quantityTypeTemp != 2) {
+      return null;
+    }
     return checkDimension(
           widthController,
           'Width',
@@ -1399,6 +1388,27 @@ void selectProductSales({
   }
 
   unitUuid = cartItem.unitUuid ?? getPrimaryUnit().uuid;
+  isAreaUnit =
+      is2DItem &&
+      getPrimaryUnit().dimensionType ==
+          ProductUnitsClass.areaUnit;
+
+  // Editing a line sold at a custom size reopens it in
+  // dimensions mode with the values filled in.
+  if (is2DItem &&
+      !isAreaUnit &&
+      cartItem.widthDimension != null &&
+      cartItem.heightDimension != null &&
+      (cartItem.widthDimension != originalWidth ||
+          cartItem.heightDimension != originalHeight)) {
+    quantityTypeTemp = 2;
+    widthController.text = formatDimension(
+      cartItem.widthDimension!,
+    ).replaceAll(',', '');
+    heightController.text = formatDimension(
+      cartItem.heightDimension!,
+    ).replaceAll(',', '');
+  }
 
   double getPrimaryUnitQuantityMultiplied({
     BuildContext? context,
@@ -1633,7 +1643,7 @@ void selectProductSales({
                                             title:
                                                 "Quantity Limit Reached",
                                             message:
-                                                "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit))} ${getPrimaryUnit().name} available in stock.",
+                                                "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
                                             theme: theme,
                                           ),
                                     ).then((_) {
@@ -1752,7 +1762,8 @@ void selectProductSales({
                                   cartItemTemp
                                       .item
                                       .quantityType ==
-                                  2,
+                                  2 &&
+                                  !isAreaUnit,
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment
@@ -1913,6 +1924,17 @@ void selectProductSales({
                               setUnitUuid: (d) {
                                 setState(() {
                                   selectUnit(d ?? '');
+                                  isAreaUnit =
+                                      is2DItem &&
+                                      getPrimaryUnit()
+                                              .dimensionType ==
+                                          ProductUnitsClass
+                                              .areaUnit;
+                                  if (isAreaUnit) {
+                                    quantityTypeTemp = 1;
+                                    widthController.clear();
+                                    heightController.clear();
+                                  }
                                 });
                                 if (getPrimaryUnitQuantityMultiplied(
                                       newQuantity:
@@ -2324,7 +2346,7 @@ void selectProductSales({
                                                     title:
                                                         "Quantity Limit Reached",
                                                     message:
-                                                        "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit))} ${getPrimaryUnit().name} available in stock.",
+                                                        "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
                                                     theme:
                                                         theme,
                                                   ),
@@ -2485,7 +2507,7 @@ void selectProductSales({
                                               title:
                                                   'Quantity Limit Reached',
                                               message:
-                                                  "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit))} ${getPrimaryUnit().name} available in stock.",
+                                                  "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
                                             );
                                           },
                                         );
@@ -2834,7 +2856,7 @@ void selectProductSales({
                                                       title:
                                                           "Quantity Limit Reached",
                                                       message:
-                                                          "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit))} ${getPrimaryUnit().name} available in stock.",
+                                                          "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
                                                       theme:
                                                           theme,
                                                     ),

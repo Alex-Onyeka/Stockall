@@ -14,10 +14,12 @@ class CreateProductUnitWidget extends StatefulWidget {
   final TextEditingController quantityController;
   final TextEditingController nameController;
   final String productUuid;
+  final bool isDimensional;
   final Function() setStateAction;
   const CreateProductUnitWidget({
     super.key,
     required this.productUuid,
+    this.isDimensional = false,
     required this.quantityController,
     required this.nameController,
     required this.setStateAction,
@@ -42,6 +44,7 @@ class _CreateProductUnitWidgetState
             context: context,
             nameController: widget.nameController,
             productUuid: widget.productUuid,
+            isDimensional: widget.isDimensional,
             quantityController: widget.quantityController,
             setStateAction: widget.setStateAction,
           );
@@ -72,6 +75,7 @@ void addProductUnitAction({
   required TextEditingController quantityController,
   required TextEditingController nameController,
   required String productUuid,
+  bool isDimensional = false,
   ProductUnitsClass? unit,
   required Function() setStateAction,
 }) {
@@ -80,6 +84,8 @@ void addProductUnitAction({
     quantityController.text = unit.conversion.toString();
     nameController.text = unit.name;
   }
+  var dimensionType =
+      unit?.dimensionType ?? ProductUnitsClass.sheetUnit;
 
   void addAction() {
     final conversion = double.tryParse(
@@ -112,6 +118,10 @@ void addProductUnitAction({
               Navigator.of(mainDialog).pop();
               unit?.name = nameController.text.trim();
               unit?.conversion = conversion;
+              if (unit != null) {
+                unit.dimensionType =
+                    isDimensional ? dimensionType : null;
+              }
               var unitListSingle = ProductUnitsClass(
                 uuid: uuidGen(),
                 staffUuid: currentUser().userId!,
@@ -124,6 +134,8 @@ void addProductUnitAction({
                         ? true
                         : false,
                 productUuid: productUuid,
+                dimensionType:
+                    isDimensional ? dimensionType : null,
               );
               returnData().createOrUpdateUnitList(
                 unitListSingle: unit ?? unitListSingle,
@@ -183,7 +195,43 @@ void addProductUnitAction({
                           mainAxisSize: MainAxisSize.min,
                           spacing: 10,
                           children: [
-                            Row(
+                              if (isDimensional) ...[
+                                DropdownButtonFormField<int>(
+                                  initialValue: dimensionType,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Unit measures',
+                                  ),
+                                  items: const [
+                                    DropdownMenuItem(
+                                      value:
+                                          ProductUnitsClass.areaUnit,
+                                      child: Text('Area'),
+                                    ),
+                                    DropdownMenuItem(
+                                      value:
+                                          ProductUnitsClass.sheetUnit,
+                                      child: Text(
+                                        'Whole slab / sheet',
+                                      ),
+                                    ),
+                                  ],
+                                  onChanged: (value) {
+                                    if (value != null) {
+                                      setState(() {
+                                        dimensionType = value;
+                                      });
+                                    }
+                                  },
+                                ),
+                                Text(
+                                  dimensionType ==
+                                          ProductUnitsClass.areaUnit
+                                      ? 'Conversion is the area represented by one of this unit.'
+                                      : 'Conversion is the number of original slabs / sheets represented by one of this unit.',
+                                  style: theme.mobileTexts.b4.textStyleNormal,
+                                ),
+                              ],
+                              Row(
                               crossAxisAlignment:
                                   CrossAxisAlignment.end,
                               spacing: 5,
@@ -269,7 +317,14 @@ void addProductUnitAction({
                               ],
                             ),
                             EditCartTextField(
-                              title: 'Conversion',
+                              title:
+                                  isDimensional &&
+                                          dimensionType ==
+                                              ProductUnitsClass.areaUnit
+                                      ? 'Area conversion *'
+                                      : isDimensional
+                                      ? 'Slabs / sheets per unit *'
+                                      : 'Conversion',
                               autoFocus: false,
                               hint: 'Enter Conversion',
                               controller:

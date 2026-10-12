@@ -34,6 +34,9 @@ class ProductUnitsClass extends HiveObject {
   @HiveField(7)
   String productUuid;
 
+  @HiveField(8)
+  int? dimensionType;
+
   ProductUnitsClass({
     required this.uuid,
     required this.staffUuid,
@@ -43,6 +46,7 @@ class ProductUnitsClass extends HiveObject {
     required this.name,
     required this.isPrimary,
     required this.productUuid,
+    this.dimensionType,
   });
 
   factory ProductUnitsClass.fromJson(
@@ -57,6 +61,7 @@ class ProductUnitsClass extends HiveObject {
       name: json['name'] as String,
       isPrimary: json['is_primary'] as bool,
       productUuid: json['product_uuid'] as String,
+      dimensionType: json['dimension_type'] as int?,
     );
   }
 
@@ -71,6 +76,7 @@ class ProductUnitsClass extends HiveObject {
       'name': name,
       'is_primary': isPrimary,
       'product_uuid': productUuid,
+      'dimension_type': dimensionType,
     };
   }
 
@@ -83,6 +89,7 @@ class ProductUnitsClass extends HiveObject {
     String? name,
     bool? isPrimary,
     String? productUuid,
+    int? dimensionType,
   }) {
     return ProductUnitsClass(
       uuid: uuid ?? this.uuid,
@@ -93,12 +100,17 @@ class ProductUnitsClass extends HiveObject {
       name: name ?? this.name,
       isPrimary: isPrimary ?? this.isPrimary,
       productUuid: productUuid ?? this.productUuid,
+      dimensionType: dimensionType ?? this.dimensionType,
     );
   }
+
+  static const int areaUnit = 1;
+  static const int sheetUnit = 2;
 
   static List<ProductUnitsClass> getUnitList({
     required String? productUuid,
     required List<ProductUnitsClass>? tempUnitList,
+    int? dimensionType,
   }) {
     if (tempUnitList == null ||
         tempUnitList.isEmpty == true) {
@@ -111,6 +123,7 @@ class ProductUnitsClass extends HiveObject {
         name: 'Unit(s)',
         isPrimary: true,
         productUuid: productUuid ?? '',
+        dimensionType: dimensionType,
       );
       return [value];
     } else {
@@ -160,6 +173,20 @@ class ProductUnitsClass extends HiveObject {
       }
     }
 
+    if (product?.quantityType == 2 &&
+        dimensionType != null) {
+      final productArea = product!.dimensionArea();
+      final areaPerUnit =
+          dimensionType == areaUnit
+              ? conversion
+              : conversion * productArea;
+      if (!areaPerUnit.isFinite || areaPerUnit <= 0) {
+        return 0;
+      }
+      return (newQuantity ?? product.getActualQuantity() ?? 0) /
+          areaPerUnit;
+    }
+
     if (product != null) {
       return (newQuantity ??
               product.getActualQuantity() ??
@@ -201,6 +228,21 @@ class ProductUnitsClass extends HiveObject {
     double? customWidth,
     double? customHeight,
   }) {
+    if (product?.quantityType == 2 &&
+        dimensionType != null) {
+      if (newQuantity == null) {
+        return product!.getActualQuantity() ?? 0;
+      }
+      if (dimensionType == areaUnit) {
+        return newQuantity * conversion;
+      }
+      final width =
+          customWidth ?? product!.widthDimension ?? 1;
+      final height =
+          customHeight ?? product!.heightDimension ?? 1;
+      return newQuantity * conversion * width * height;
+    }
+
     // 2D lines: a given quantity is scaled by the line's
     // width × height (area). Null dimensions leave it as-is.
     if (newQuantity != null &&

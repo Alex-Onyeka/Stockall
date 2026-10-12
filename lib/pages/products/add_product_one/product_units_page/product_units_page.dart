@@ -5,9 +5,11 @@ import 'package:stockall/pages/products/add_product_one/product_units_page/platf
 
 class ProductUnitsPage extends StatefulWidget {
   final String productUuid;
+  final bool isDimensional;
   const ProductUnitsPage({
     super.key,
     required this.productUuid,
+    this.isDimensional = false,
   });
 
   @override
@@ -26,6 +28,7 @@ class _ProductUnitsPageState
         if (constraints.maxWidth <= mobileScreen) {
           return ProductUnitsPageMobile(
             productUuid: widget.productUuid,
+            isDimensional: widget.isDimensional,
             nameController: nameController,
             quantityController: quantityController,
           );
@@ -34,6 +37,7 @@ class _ProductUnitsPageState
             nameController: nameController,
             quantityController: quantityController,
             productUuid: widget.productUuid,
+            isDimensional: widget.isDimensional,
           );
         }
       },

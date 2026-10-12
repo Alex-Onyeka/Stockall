@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -45,6 +47,44 @@ class _UpdateItemQuantityWidgetState
   bool isAddToQuantity = true;
   int quantityTypeTemp = 1;
   String? unitUuid;
+
+  ProductUnitsClass selectedUnit() =>
+      widget.product.getProductUnit(unitUuid: unitUuid);
+
+  bool isAreaUnit() =>
+      widget.product.quantityType == 2 &&
+      selectedUnit().dimensionType ==
+          ProductUnitsClass.areaUnit;
+
+  double quantityInArea(double quantity) {
+    final isDimensionalSheet =
+        widget.product.quantityType == 2 && !isAreaUnit();
+    return selectedUnit().getQuantityEquivMultiplied(
+      index: 1,
+      product: widget.product,
+      newQuantity: quantity,
+      customWidth:
+          isDimensionalSheet
+              ? quantityTypeTemp == 2
+                  ? double.tryParse(
+                    widthController.text
+                        .replaceAll(',', '')
+                        .trim(),
+                  )
+                  : widget.product.widthDimension
+              : null,
+      customHeight:
+          isDimensionalSheet
+              ? quantityTypeTemp == 2
+                  ? double.tryParse(
+                    heightController.text
+                        .replaceAll(',', '')
+                        .trim(),
+                  )
+                  : widget.product.heightDimension
+              : null,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +212,7 @@ class _UpdateItemQuantityWidgetState
                                             .getActualQuantity() ==
                                         null
                                     ? 'Quantity Not Set'
-                                    : 'Current Quantity in ${widget.product.getProductUnit(unitUuid: unitUuid).name}: ${formatLargeNumberDouble(widget.product.getProductUnit(unitUuid: unitUuid).getQuantityEquivDivided(index: 1, context: context))}',
+                                    : 'Current Quantity in ${widget.product.getProductUnit(unitUuid: unitUuid).name}: ${formatLargeNumberDouble(widget.product.getProductUnit(unitUuid: unitUuid).getQuantityEquivDivided(index: 1, context: context, product: widget.product))}',
                               ),
                               EditCartTextField(
                                 onChanged: (value) {
@@ -288,10 +328,9 @@ class _UpdateItemQuantityWidgetState
                           SizedBox(height: 10),
                           Visibility(
                             visible:
-                                widget
-                                    .product
-                                    .quantityType ==
-                                2,
+                                widget.product.quantityType ==
+                                    2 &&
+                                !isAreaUnit(),
                             child: Row(
                               mainAxisAlignment:
                                   MainAxisAlignment.center,
@@ -451,6 +490,11 @@ class _UpdateItemQuantityWidgetState
                             setUnitUuid: (uuid) {
                               setState(() {
                                 unitUuid = uuid;
+                                if (isAreaUnit()) {
+                                  quantityTypeTemp = 1;
+                                  widthController.clear();
+                                  heightController.clear();
+                                }
                               });
                             },
                             theme: theme,
@@ -616,6 +660,74 @@ class _UpdateItemQuantityWidgetState
 
                               if (isEditQuantityLoading ==
                                   false) {
+                                final quantityText =
+                                    quantityController.text
+                                        .replaceAll(',', '')
+                                        .trim();
+                                final enteredQuantity =
+                                    double.tryParse(quantityText);
+                                if ((quantityText.isNotEmpty &&
+                                        (enteredQuantity == null ||
+                                            !enteredQuantity.isFinite ||
+                                            enteredQuantity < 0)) ||
+                                    (isAddToQuantity &&
+                                        (enteredQuantity == null ||
+                                            enteredQuantity <= 0))) {
+                                  showDialog(
+                                    context: safeContext,
+                                    builder:
+                                        (context) => InfoAlert(
+                                          theme: theme,
+                                          message:
+                                              'Enter a valid quantity greater than zero.',
+                                          title:
+                                              'Invalid Quantity',
+                                        ),
+                                  );
+                                  return;
+                                }
+
+                                if (quantityTypeTemp == 2 &&
+                                    !isAreaUnit()) {
+                                  final width = double.tryParse(
+                                    widthController.text
+                                        .replaceAll(',', '')
+                                        .trim(),
+                                  );
+                                  final height = double.tryParse(
+                                    heightController.text
+                                        .replaceAll(',', '')
+                                        .trim(),
+                                  );
+                                  if (width == null ||
+                                      height == null ||
+                                      width <= 0 ||
+                                      height <= 0 ||
+                                      (widget.product.widthDimension !=
+                                              null &&
+                                          width >
+                                              widget.product
+                                                  .widthDimension!) ||
+                                      (widget.product.heightDimension !=
+                                              null &&
+                                          height >
+                                              widget.product
+                                                  .heightDimension!)) {
+                                    showDialog(
+                                      context: safeContext,
+                                      builder:
+                                          (context) => InfoAlert(
+                                            theme: theme,
+                                            message:
+                                                'Enter positive dimensions no larger than the original slab / sheet.',
+                                            title:
+                                                'Invalid Dimensions',
+                                          ),
+                                    );
+                                    return;
+                                  }
+                                }
+
                                 showDialog(
                                   context: safeContext,
                                   builder: (confirmDialog) {
@@ -646,43 +758,16 @@ class _UpdateItemQuantityWidgetState
                                         double
                                         setQuantity() {
                                           if (isAddToQuantity) {
-                                            return widget
-                                                    .product
-                                                    .getProductUnit(
-                                                      unitUuid:
-                                                          unitUuid,
-                                                    )
-                                                    .getQuantityEquivMultiplied(
-                                                      index:
-                                                          1,
-                                                      newQuantity: double.parse(
-                                                        quantityController.text.replaceAll(
-                                                          ',',
-                                                          '',
-                                                        ),
-                                                      ),
-                                                    ) +
-                                                (widget.product
+                                            return (widget.product
                                                         .getActualQuantity() ??
-                                                    0);
-                                          } else {
-                                            return widget
-                                                .product
-                                                .getProductUnit(
-                                                  unitUuid:
-                                                      unitUuid,
-                                                )
-                                                .getQuantityEquivMultiplied(
-                                                  index: 1,
-                                                  newQuantity: double.parse(
-                                                    quantityController
-                                                        .text
-                                                        .replaceAll(
-                                                          ',',
-                                                          '',
-                                                        ),
-                                                  ),
+                                                    0) +
+                                                quantityInArea(
+                                                  enteredQuantity ?? 0,
                                                 );
+                                          } else {
+                                            return quantityInArea(
+                                              enteredQuantity ?? 0,
+                                            );
                                           }
                                         }
 
@@ -719,6 +804,8 @@ class _UpdateItemQuantityWidgetState
                                                     (setQuantity() -
                                                         (widget.product.getActualQuantity() ??
                                                             0)),
+                                                product:
+                                                    widget.product,
                                               ),
                                           event:
                                               isIncrement
@@ -740,6 +827,8 @@ class _UpdateItemQuantityWidgetState
                                                   index: 1,
                                                   newQuantity:
                                                       setQuantity(),
+                                                  product:
+                                                      widget.product,
                                                 ),
                                           ),
                                           desc:
@@ -759,6 +848,8 @@ class _UpdateItemQuantityWidgetState
                                                   newQuantity:
                                                       (widget.product.getActualQuantity() ??
                                                           0),
+                                                  product:
+                                                      widget.product,
                                                 ),
                                           ),
                                         );
@@ -865,7 +956,13 @@ class _UpdateItemQuantityWidgetState
                                                     .product
                                                     .wholeSalePrice,
                                             quantity:
-                                                setQuantity(),
+                                                widget.product
+                                                            .quantityType ==
+                                                        2
+                                                    ? setQuantity() /
+                                                        widget.product
+                                                            .dimensionArea()
+                                                    : setQuantity(),
                                             shopId:
                                                 widget
                                                     .product

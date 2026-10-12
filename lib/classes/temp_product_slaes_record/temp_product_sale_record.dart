@@ -523,6 +523,10 @@ class TempProductSaleRecord {
         return quantity;
       } else {
         var item = items.first;
+        if (quantityType == 2 &&
+            item.dimensionType != null) {
+          return quantity;
+        }
         return item.getQuantityEquivDivided(
           index: 1,
           context: context,
@@ -545,10 +549,16 @@ class TempProductSaleRecord {
         return quantity;
       } else {
         var item = items.first;
+        if (quantityType == 2 &&
+            item.dimensionType != null) {
+          return getActualQuantity();
+        }
         return item.getQuantityEquivMultiplied(
           index: 1,
           newQuantity: quantity,
           context: context,
+          customWidth: widthDimension,
+          customHeight: heightDimension,
         );
       }
     }
@@ -667,11 +677,22 @@ class TempProductSaleRecord {
   }
 
   double getActualQuantity() {
-    final conversion = getSelectedUnit().conversion;
+    final selectedUnit = getSelectedUnit();
+    final conversion = selectedUnit.conversion;
     if (!conversion.isFinite || conversion <= 0) {
       throw StateError(
         'Unit conversion must be greater than zero to convert quantities.',
       );
+    }
+    if (quantityType == 2 &&
+        selectedUnit.dimensionType ==
+            ProductUnitsClass.areaUnit) {
+      return quantity * conversion;
+    }
+    if (quantityType == 2 &&
+        selectedUnit.dimensionType ==
+            ProductUnitsClass.sheetUnit) {
+      return quantity * conversion * dimensionArea();
     }
     return quantity * conversion;
   }
