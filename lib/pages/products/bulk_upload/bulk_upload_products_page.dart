@@ -34,7 +34,9 @@ class _BulkUploadProductsPageState
 
   static const _previewLimit = 200;
 
-  Future<void> _downloadTemplate({required bool csv}) async {
+  Future<void> _downloadTemplate({
+    required bool csv,
+  }) async {
     final bytes =
         csv
             ? BulkProductTemplate.buildCsv()
@@ -45,8 +47,19 @@ class _BulkUploadProductsPageState
       isCsv: csv,
       addSuffix: false,
     );
-    if (!mounted || saved) return;
-    _showInfo('Error', 'The template could not be saved.');
+    if (!mounted || saved) {
+      _showInfo(
+        title: 'Success',
+        message: 'Template File Downloaded Successfully',
+        isSuccess: true,
+      );
+      return;
+    }
+    _showInfo(
+      title: 'Error',
+      message: 'The template could not be saved.',
+      isSuccess: false,
+    );
   }
 
   Future<void> _pickFile() async {
@@ -59,7 +72,11 @@ class _BulkUploadProductsPageState
     final file = picked.files.first;
     final bytes = file.bytes;
     if (bytes == null) {
-      _showInfo('Error', 'The selected file could not be read.');
+      _showInfo(
+        title: 'Error',
+        message: 'The selected file could not be read.',
+        isSuccess: false,
+      );
       return;
     }
 
@@ -102,11 +119,23 @@ class _BulkUploadProductsPageState
     }
   }
 
-  void _showInfo(String title, String message) {
+  void _showInfo({
+    required String title,
+    required String message,
+    required bool isSuccess,
+  }) {
     showDialog(
       context: context,
       builder:
           (context) => InfoAlert(
+            color:
+                isSuccess
+                    ? returnTheme(
+                      context,
+                      listen: false,
+                    ).lightModeColor.prColor300
+                    : null,
+            icon: isSuccess ? Icons.check : null,
             theme: returnTheme(context, listen: false),
             title: title,
             message: message,
@@ -125,7 +154,8 @@ class _BulkUploadProductsPageState
     final allowed = ItemsAuthAction().itemsAllowedToAdd(
       context,
     );
-    if (allowed == null || validation.rows.length > allowed) {
+    if (allowed == null ||
+        validation.rows.length > allowed) {
       showDialog(
         context: context,
         builder:
@@ -162,7 +192,9 @@ class _BulkUploadProductsPageState
     _import(validation);
   }
 
-  Future<void> _import(BulkValidationResult validation) async {
+  Future<void> _import(
+    BulkValidationResult validation,
+  ) async {
     setState(() => isBusy = true);
     try {
       final products =
@@ -177,8 +209,10 @@ class _BulkUploadProductsPageState
     } catch (e) {
       if (!mounted) return;
       _showInfo(
-        'Upload Failed',
-        'Something went wrong while saving the products. Please check your inventory and try again.',
+        title: 'Upload Failed',
+        message:
+            'Something went wrong while saving the products. Please check your inventory and try again.',
+        isSuccess: false,
       );
     } finally {
       if (mounted) setState(() => isBusy = false);
@@ -310,7 +344,8 @@ class _BulkUploadProductsPageState
                     style: TextStyle(
                       color: Colors.green.shade700,
                       fontWeight: FontWeight.bold,
-                      fontSize: theme.mobileTexts.b1.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b1.fontSize,
                     ),
                   ),
                 ),
@@ -341,7 +376,10 @@ class _BulkUploadProductsPageState
       ),
       const SizedBox(height: 5),
       for (final e in validation.fileErrors)
-        Text(e, style: TextStyle(color: Colors.red.shade700)),
+        Text(
+          e,
+          style: TextStyle(color: Colors.red.shade700),
+        ),
       if (validation.fileErrors.isEmpty) ...[
         Text(
           '${validation.rows.length} products found  •  '
@@ -373,7 +411,9 @@ class _BulkUploadProductsPageState
                 for (final e in row.errors)
                   Text(
                     e,
-                    style: TextStyle(color: Colors.red.shade700),
+                    style: TextStyle(
+                      color: Colors.red.shade700,
+                    ),
                   ),
                 for (final w in row.warnings)
                   Text(
@@ -399,7 +439,8 @@ class _BulkUploadProductsPageState
           MainButtonP(
             themeProvider: theme,
             action: isBusy ? () {} : _startImport,
-            text: 'Upload ${validation.rows.length} Products',
+            text:
+                'Upload ${validation.rows.length} Products',
           ),
       ],
     ];

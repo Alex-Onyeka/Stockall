@@ -50,7 +50,11 @@ class BulkProductTemplate {
     final workbook = Workbook();
     final sheet = workbook.worksheets[0];
     sheet.name = 'Products';
-    for (var i = 0; i < BulkProductValidator.headers.length; i++) {
+    for (
+      var i = 0;
+      i < BulkProductValidator.headers.length;
+      i++
+    ) {
       final cell = sheet.getRangeByIndex(1, i + 1);
       cell.setText(BulkProductValidator.headers[i]);
       cell.cellStyle.bold = true;
@@ -59,7 +63,9 @@ class BulkProductTemplate {
     // Barcode (E) and expiry_date (F) stay as text so digits are kept.
     sheet.getRangeByName('E2:F2000').numberFormat = '@';
 
-    final guide = workbook.worksheets.addWithName('Instructions');
+    final guide = workbook.worksheets.addWithName(
+      'Instructions',
+    );
     for (var r = 0; r < _instructions.length; r++) {
       for (var c = 0; c < _instructions[r].length; c++) {
         final cell = guide.getRangeByIndex(r + 1, c + 1);
@@ -79,7 +85,9 @@ class BulkProductTemplate {
 
   static Uint8List buildCsv() {
     return Uint8List.fromList(
-      utf8.encode('${BulkProductValidator.headers.join(',')}\r\n'),
+      utf8.encode(
+        '${BulkProductValidator.headers.join(',')}\r\n',
+      ),
     );
   }
 }

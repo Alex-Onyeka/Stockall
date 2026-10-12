@@ -9,12 +9,16 @@ class InfoAlert extends StatelessWidget {
   final String message;
   final ThemeProvider theme;
   final Function()? action;
+  final IconData? icon;
+  final Color? color;
   const InfoAlert({
     super.key,
     required this.theme,
     required this.message,
     required this.title,
     this.action,
+    this.icon,
+    this.color,
   });
 
   @override
@@ -63,12 +67,14 @@ class InfoAlert extends StatelessWidget {
                   ),
                 ],
                 child: Container(
-                  color: theme.lightModeColor.errorColor200,
+                  color:
+                      color ??
+                      theme.lightModeColor.errorColor200,
                   child: Center(
                     child: Icon(
                       color: Colors.white,
                       size: 50,
-                      Icons.clear_rounded,
+                      icon ?? Icons.clear_rounded,
                     ),
                   ),
                 ),
