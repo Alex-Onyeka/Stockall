@@ -198,6 +198,55 @@ class DataProvider extends ChangeNotifier {
     clearFields();
   }
 
+  /// Saves all [products] locally, queues them for upload, and
+  /// triggers a single sync at the end.
+  Future<void> bulkCreateProducts(
+    List<TempProductClass> products,
+  ) async {
+    for (final product in products) {
+      final now = DateTime.now();
+      product.updatedAt = now;
+      product.createdAt ??= now;
+
+      await ProductsFunc().createProduct(product);
+      await CreatedProductFunc().createProduct(
+        CreatedProducts(
+          product: product,
+          includeQuantity: true,
+        ),
+      );
+      await returnEventsLogProvider().createLog(
+        returnEventsLogProvider().productAdapter(product, 1),
+      );
+
+      final quantity = product.quantity ?? 0;
+      await returnItemHistoryProvider().createItemHistory(
+        ItemHistory(
+          source: 'Not Set',
+          event: ItemHistoryEventClass.itemCreated,
+          isManaged: true,
+          unit: 'Not Set',
+          shopId: shopId(),
+          title: 'Item Created',
+          quantityChange: quantity,
+          newValue: quantity.toString(),
+          desc: 'Item Created Now',
+          isIncreased: true,
+          oldValue: '0',
+          itemName: product.name,
+          itemUuid: product.uuid,
+        ),
+      );
+    }
+    await mainLocalLog(
+      '${products.length} products created offline (bulk)',
+    );
+    await getProductsOffline(
+      returnShopProvider().userShop()!.shopId!,
+    );
+    syncData();
+  }
+
   Future<void> createProductsSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
