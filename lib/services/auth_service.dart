@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_logged_in_user/logged_in_user.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/local_database/cart_func/cart_func.dart';
 import 'package:stockall/local_database/logged_in_user/logged_in_user_func.dart';
 import 'package:stockall/local_database/shop_current/current_shop_func.dart';
@@ -297,14 +299,37 @@ class AuthService extends ChangeNotifier {
         return 0;
       } else if (!returnSalesProvider().isEmptyCart() &&
           !allowLogout) {
+        final sales = returnSalesProvider();
+        final blocking = sales.firstNonEmptyCart()!;
+        final cartNumber =
+            blocking.mainCart.cartQueue.indexOf(
+              blocking.cart,
+            ) +
+            1;
         showDialog(
           context: context,
           builder: (errorContext) {
-            return InfoAlert(
+            return ConfirmationAlert(
               theme: returnTheme(context),
               message:
-                  'You currently have some Items in your cart that you have not checked out. Please Proceed to complete the sales or clear all the carts, before Logging out.',
+                  'You currently have some Items in "${sales.mainCartLabel(blocking.mainCart)}" (Cart $cartNumber) that you have not checked out. Please complete the sale or clear the cart, before Logging out.',
               title: 'Cart Not Empty',
+              actionButtonText: 'Go to Cart',
+              action: () async {
+                Navigator.of(errorContext).pop();
+                await sales.jumpToCart(
+                  mainCartId: blocking.mainCart.mainCartId!,
+                  cartId: blocking.cart.id!,
+                );
+                if (context.mounted) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MakeSalesPage(),
+                    ),
+                  );
+                }
+              },
             );
           },
         );
