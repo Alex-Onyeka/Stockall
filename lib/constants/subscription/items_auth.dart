@@ -30,6 +30,24 @@ class ItemsAuth {
 }
 
 class ItemsAuthAction {
+  /// Number of products the current plan still allows, or null when
+  /// there is no active plan.
+  int? itemsAllowedToAdd(BuildContext context) {
+    var plan =
+        returnSubcsription(
+          context,
+          listen: false,
+        ).subscription?.plan;
+    if (plan == null) return null;
+    final remaining =
+        subPlans
+            .firstWhere((pl) => pl.plan == plan)
+            .itemsAuth
+            .numberOfItems -
+        returnData().productList().length;
+    return remaining < 0 ? 0 : remaining;
+  }
+
   bool numberOfItemsAction({
     required BuildContext context,
     Function()? action,

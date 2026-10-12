@@ -6,12 +6,14 @@ class FloatingActionButtonMain extends StatelessWidget {
   final String text;
   final Function()? action;
   final Color color;
+  final IconData icon;
   const FloatingActionButtonMain({
     super.key,
     required this.theme,
     required this.action,
     required this.color,
     required this.text,
+    this.icon = Icons.add,
   });
 
   final ThemeProvider theme;
@@ -71,7 +73,7 @@ class FloatingActionButtonMain extends StatelessWidget {
                       text,
                     ),
                   ),
-                  Icon(color: color, size: 22, Icons.add),
+                  Icon(color: color, size: 22, icon),
                 ],
               ),
             ),

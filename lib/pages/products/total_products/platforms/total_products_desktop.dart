@@ -16,6 +16,7 @@ import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
+import 'package:stockall/pages/products/bulk_upload/bulk_upload_products_page.dart';
 import 'package:stockall/pages/products/compnents/product_filter_button.dart';
 import 'package:stockall/pages/products/compnents/product_filter_button_category.dart';
 import 'package:stockall/pages/products/compnents/product_tile_main.dart';
@@ -532,7 +533,38 @@ class _TotalProductsDesktopState
                                         .addProduct,
                               ) &&
                               widget.categoryUuid == null,
-                          child: FloatingActionButtonMain(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment:
+                                CrossAxisAlignment.end,
+                            spacing: 10,
+                            children: [
+                              FloatingActionButtonMain(
+                                action: () {
+                                  ItemsAuthAction().numberOfItemsAction(
+                                    context: context,
+                                    action: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) {
+                                            return BulkUploadProductsPage();
+                                          },
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                                color:
+                                    theme
+                                        .lightModeColor
+                                        .secColor100,
+                                text: 'Bulk Upload',
+                                icon:
+                                    Icons.upload_file_rounded,
+                                theme: theme,
+                              ),
+                              FloatingActionButtonMain(
                             action: () {
                               ItemsAuthAction().numberOfItemsAction(
                                 context: context,
@@ -558,6 +590,8 @@ class _TotalProductsDesktopState
                                     .secColor100,
                             text: 'Add Products',
                             theme: theme,
+                              ),
+                            ],
                           ),
                         ),
                         floatingActionButtonLocation:
