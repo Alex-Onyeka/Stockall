@@ -532,15 +532,32 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool isEmptyCart() {
-    for (var cart in mainCartQueue) {
-      for (var ca in cart.cartQueue) {
-        if (ca.getCartItemsAll().isNotEmpty) {
-          return false;
+  // Void lines are only a record of removed items, so they never block.
+  ({TempMainCart mainCart, TempCart cart})?
+  firstNonEmptyCart() {
+    for (var mainCart in mainCartQueue) {
+      for (var cart in mainCart.cartQueue) {
+        if (cart.getCartItems().isNotEmpty) {
+          return (mainCart: mainCart, cart: cart);
         }
       }
     }
-    return true;
+    return null;
+  }
+
+  bool isEmptyCart() => firstNonEmptyCart() == null;
+
+  String mainCartLabel(TempMainCart mainCart) {
+    return mainCart.cartName() ??
+        'Default ${mainCartQueue.indexOf(mainCart) + 1}';
+  }
+
+  Future<void> jumpToCart({
+    required String mainCartId,
+    required String cartId,
+  }) async {
+    mainCartIdCache = mainCartId;
+    await selectCart(cartId);
   }
 
   Future<void> deleteCart({
