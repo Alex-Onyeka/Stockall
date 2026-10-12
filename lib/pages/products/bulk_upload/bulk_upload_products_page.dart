@@ -401,6 +401,18 @@ class _BulkUploadProductsPageState
           style: TextStyle(color: Colors.red.shade700),
         ),
       if (validation.fileErrors.isEmpty) ...[
+        if (validation.hasErrors)
+          Text(
+            'Fix the errors above in your file and upload it again.',
+            style: TextStyle(color: Colors.red.shade700),
+          )
+        else
+          MainButtonP(
+            themeProvider: theme,
+            action: isBusy ? () {} : _startImport,
+            text:
+                'Upload ${validation.rows.length} Products',
+          ),
         Text(
           '${validation.rows.length} products found  •  '
           '${validation.errorRowCount} with errors  •  '
@@ -450,18 +462,6 @@ class _BulkUploadProductsPageState
             '…and ${problems.length - shown.length} more rows with issues.',
           ),
         const SizedBox(height: 15),
-        if (validation.hasErrors)
-          Text(
-            'Fix the errors above in your file and upload it again.',
-            style: TextStyle(color: Colors.red.shade700),
-          )
-        else
-          MainButtonP(
-            themeProvider: theme,
-            action: isBusy ? () {} : _startImport,
-            text:
-                'Upload ${validation.rows.length} Products',
-          ),
       ],
     ];
   }
