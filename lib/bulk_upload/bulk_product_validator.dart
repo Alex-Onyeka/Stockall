@@ -135,8 +135,7 @@ class BulkProductValidator {
           return fallback;
         }
         if (v < 0) {
-          errors.add('$h cannot be negative.');
-          return fallback;
+          warnings.add('$h is negative.');
         }
         return v;
       }

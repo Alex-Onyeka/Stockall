@@ -148,7 +148,7 @@ class _BulkUploadProductsPageState
               theme: returnTheme(context, listen: false),
               title: 'Duplicates Found',
               message:
-                  '${validation.rows.where((r) => r.hasWarnings).length} row(s) have duplicate names or barcodes. '
+                  '${validation.rows.where((r) => r.hasWarnings).length} row(s) have warnings (duplicate names or barcodes, or negative values). '
                   'Do you want to upload anyway, or cancel and edit your file?',
               actionButtonText: 'Upload Anyway',
               action: () {
@@ -160,6 +160,13 @@ class _BulkUploadProductsPageState
       return;
     }
     _import(validation);
+  }
+
+  void _clearFile() {
+    setState(() {
+      fileName = null;
+      result = null;
+    });
   }
 
   Future<void> _import(BulkValidationResult validation) async {
@@ -335,9 +342,22 @@ class _BulkUploadProductsPageState
 
     return [
       const SizedBox(height: 20),
-      Text(
-        fileName ?? '',
-        style: const TextStyle(fontWeight: FontWeight.bold),
+      Row(
+        children: [
+          Expanded(
+            child: Text(
+              fileName ?? '',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          TextButton.icon(
+            onPressed: isBusy ? null : _clearFile,
+            icon: const Icon(Icons.close),
+            label: const Text('Clear file'),
+          ),
+        ],
       ),
       const SizedBox(height: 5),
       for (final e in validation.fileErrors)
@@ -346,7 +366,7 @@ class _BulkUploadProductsPageState
         Text(
           '${validation.rows.length} products found  •  '
           '${validation.errorRowCount} with errors  •  '
-          '${validation.warningRowCount} with duplicate warnings',
+          '${validation.warningRowCount} with warnings',
         ),
         const SizedBox(height: 10),
         for (final row in shown)

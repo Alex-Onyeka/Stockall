@@ -136,9 +136,16 @@ void main() {
 
     test('reports row errors', () {
       final r = _validateCsv(
-        '$_header\n,abc,-1,,,32/13/2026,\n',
+        '$_header\n,abc,,,,32/13/2026,\n',
       );
-      expect(r.rows.single.errors.length, 4);
+      expect(r.rows.single.errors.length, 3);
+    });
+
+    test('negative numbers are warnings, not errors', () {
+      final r = _validateCsv('$_header\nRice,-5,,,,,\n');
+      expect(r.hasErrors, isFalse);
+      expect(r.hasWarnings, isTrue);
+      expect(r.rows.single.quantity, -5);
     });
 
     test('skips blank rows and keeps row numbers', () {
