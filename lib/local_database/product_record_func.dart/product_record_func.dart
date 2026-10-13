@@ -113,8 +113,12 @@ class ProductRecordFunc {
   }) async {
     await mainLocalLog('Deleting Records in Receipt');
     try {
-      List<TempProductSaleRecord> records =
-          (receipt.getItems()).toList();
+      List<TempProductSaleRecord> records = (receipt.getItems()).toList();
+      if (records.isEmpty && receipt.uuid != null) {
+        records = productRecordBox.values
+            .where((item) => item.receiptUuid == receipt.uuid)
+            .toList();
+      }
       await mainLocalLog(
         'Records Gotten: ${records.length}',
       );
@@ -134,7 +138,10 @@ class ProductRecordFunc {
                 oldProduct.getActualQuantity() ?? 0;
             final quantityChange =
                 record.getActualQuantity();
-            product.quantity = oldQuantity + quantityChange;
+            final restoredArea = oldQuantity + quantityChange;
+            product.quantity = product.quantityType == 2
+                ? restoredArea / product.dimensionArea()
+                : restoredArea;
             final newQuantity =
                 product.getActualQuantity() ?? 0;
             final primaryUnit = product.getPrimaryUnit();
@@ -165,7 +172,9 @@ class ProductRecordFunc {
               isMultipleUpdate: true,
               product: product,
               isQuantityUpdate: true,
-              quantityChange: record.getActualQuantity(),
+              quantityChange: product.quantityType == 2
+                  ? record.getActualQuantity() / product.dimensionArea()
+                  : record.getActualQuantity(),
               isIncrement: true,
             );
           }
@@ -254,6 +263,11 @@ class ProductRecordFunc {
     try {
       List<TempProductSaleRecord> records =
           (receipt.getItems()).toList();
+      if (records.isEmpty && receipt.uuid != null) {
+        records = productRecordBox.values
+            .where((item) => item.receiptUuid == receipt.uuid)
+            .toList();
+      }
       await mainLocalLog(
         'Records Gotten: ${records.length}',
       );

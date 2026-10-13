@@ -561,4 +561,23 @@ void main() {
       );
     });
   });
+
+  group('2D unit price conversion display', () {
+    test('calculates correct effective conversion for sheet unit vs area unit', () {
+      final sheet = buildSheet()..unitsList = [areaUnit, sheetUnit];
+      // sheetUnit has conversion 1, dimensionArea is 12 -> effective conversion is 12
+      final double effectiveConversionSheet =
+          sheetUnit.conversion * sheet.dimensionArea();
+      expect(effectiveConversionSheet, 12.0);
+
+      // Price per m² is 100, so price per sheet is 100 * 12 = 1200
+      expect(price.priceValue * effectiveConversionSheet, 1200.0);
+
+      // areaUnit has conversion 1 -> effective conversion is 1
+      final double effectiveConversionArea = areaUnit.conversion;
+      expect(effectiveConversionArea, 1.0);
+      expect(price.priceValue * effectiveConversionArea, 100.0);
+    });
+  });
 }
+

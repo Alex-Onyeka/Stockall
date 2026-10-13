@@ -1606,6 +1606,7 @@ void selectProductSales({
                               onTap: () {
                                 setState(() {
                                   currentFocus = 1;
+                                  isOnscreenKeyboardClicked = false;
                                 });
                               },
                               focusNode: qttyNode,
@@ -1626,7 +1627,11 @@ void selectProductSales({
                                         .getItem()
                                         ?.isManaged ??
                                     false) {
-                                  if (!returnSalesProvider()
+                                  // In custom dimensions mode, do not prematurely wipe out
+                                  // quantity while custom width/height are still being entered.
+                                  // Final check is performed when adding to cart.
+                                  if (quantityTypeTemp != 2 &&
+                                      !returnSalesProvider()
                                       .canAddProductToCart(
                                         isEdit: isEdit,
                                         newCartItem:
@@ -1710,6 +1715,12 @@ void selectProductSales({
                                       children: [
                                         Expanded(
                                           child: EditCartTextField(
+                                            onTap: () {
+                                              setState(() {
+                                                currentFocus = 3;
+                                                isOnscreenKeyboardClicked = false;
+                                              });
+                                            },
                                             // Empty uses the item's
                                             // original width.
                                             onChanged: (
@@ -1745,6 +1756,12 @@ void selectProductSales({
                                         ),
                                         Expanded(
                                           child: EditCartTextField(
+                                            onTap: () {
+                                              setState(() {
+                                                currentFocus = 4;
+                                                isOnscreenKeyboardClicked = false;
+                                              });
+                                            },
                                             // Empty uses the item's
                                             // original height.
                                             onChanged: (
@@ -2007,9 +2024,10 @@ void selectProductSales({
                               child: PriceSelectionWidget(
                                 priceList: tempPriceList,
                                 // product: cartItem.item,
-                                conversion:
-                                    getPrimaryUnit()
-                                        .conversion,
+                                conversion: is2DItem && !isAreaUnit
+                                    ? getPrimaryUnit().conversion *
+                                        cartItem.item.dimensionArea()
+                                    : getPrimaryUnit().conversion,
                                 theme: theme,
                                 priceUuid:
                                     getPrimaryPrice().uuid,
@@ -2829,13 +2847,27 @@ void selectProductSales({
                                   ),
                                   child: OnScreenKeyboardPin(
                                     action: (value) {
+                                      TextEditingController currentController() {
+                                        switch (currentFocus) {
+                                          case 1:
+                                            return quantityController;
+                                          case 2:
+                                            return priceController;
+                                          case 3:
+                                            return widthController;
+                                          case 4:
+                                            return heightController;
+                                          default:
+                                            return quantityController;
+                                        }
+                                      }
+
                                       void addDigit(
                                         String digit,
                                         TextEditingController
                                         controller,
                                       ) {
-                                        if (currentFocus ==
-                                            1) {
+                                        if (currentFocus == 1) {
                                           if (isOnscreenKeyboardClicked ==
                                               false) {
                                             controller
@@ -2865,16 +2897,17 @@ void selectProductSales({
                                                   .getItem()
                                                   ?.isManaged ??
                                               false) {
-                                            if (!returnSalesProvider().canAddProductToCart(
-                                              isEdit:
-                                                  isEdit,
-                                              newCartItem:
-                                                  cartItem,
-                                              quantityToAdd:
-                                                  entered,
-                                              // useGroupUnit:
-                                              //     useGroupQuantityTemp,
-                                            )) {
+                                            if (quantityTypeTemp != 2 &&
+                                                !returnSalesProvider().canAddProductToCart(
+                                                  isEdit:
+                                                      isEdit,
+                                                  newCartItem:
+                                                      cartItem,
+                                                  quantityToAdd:
+                                                      entered,
+                                                  // useGroupUnit:
+                                                  //     useGroupQuantityTemp,
+                                                )) {
                                               showDialog(
                                                 context:
                                                     context,
@@ -2979,6 +3012,21 @@ void selectProductSales({
                                               ),
                                             );
                                           }
+                                        } else if (currentFocus == 3 || currentFocus == 4) {
+                                          if (isOnscreenKeyboardClicked == false) {
+                                            controller.text = digit;
+                                            isOnscreenKeyboardClicked = true;
+                                          } else {
+                                            controller.text += digit;
+                                          }
+                                          double? maxDim = currentFocus == 3 ? originalWidth : originalHeight;
+                                          double parsedDim = double.tryParse(controller.text.replaceAll(',', '')) ?? 0;
+                                          if (maxDim != null && parsedDim > maxDim) {
+                                            controller.text = '0';
+                                          }
+                                          controller.selection = TextSelection.fromPosition(
+                                            TextPosition(offset: controller.text.length),
+                                          );
                                         } else {
                                           controller.text +=
                                               digit;
@@ -3039,15 +3087,11 @@ void selectProductSales({
                                       if (value != '00') {
                                         addDigit(
                                           value,
-                                          currentFocus == 1
-                                              ? quantityController
-                                              : priceController,
+                                          currentController(),
                                         );
                                       } else {
                                         removeDigit(
-                                          currentFocus == 1
-                                              ? quantityController
-                                              : priceController,
+                                          currentController(),
                                         );
                                       }
                                       setState(() {});
