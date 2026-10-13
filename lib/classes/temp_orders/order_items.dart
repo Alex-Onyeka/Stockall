@@ -694,12 +694,18 @@ class OrderItems extends HiveObject {
     double quantity, {
     String? unitUuid,
   }) {
-    final conversion =
-        getSelectedUnit(unitUuidNew: unitUuid).conversion;
+    final selectedUnit =
+        getSelectedUnit(unitUuidNew: unitUuid);
+    final conversion = selectedUnit.conversion;
     if (!conversion.isFinite || conversion <= 0) {
       throw StateError(
         'Unit conversion must be greater than zero to convert quantities.',
       );
+    }
+    if (quantityType == 2 &&
+        selectedUnit.dimensionType ==
+            ProductUnitsClass.areaUnit) {
+      return quantity * conversion;
     }
     return quantity * conversion * dimensionArea();
   }
@@ -708,14 +714,21 @@ class OrderItems extends HiveObject {
     double quantity, {
     String? unitUuid,
   }) {
-    final conversion =
-        getSelectedUnit(unitUuidNew: unitUuid).conversion;
+    final selectedUnit =
+        getSelectedUnit(unitUuidNew: unitUuid);
+    final conversion = selectedUnit.conversion;
     if (!conversion.isFinite || conversion <= 0) {
       throw StateError(
         'Unit conversion must be greater than zero to convert quantities.',
       );
     }
-    return quantity / (conversion * dimensionArea());
+    final areaPerUnit =
+        quantityType == 2 &&
+                selectedUnit.dimensionType ==
+                    ProductUnitsClass.areaUnit
+            ? conversion
+            : conversion * dimensionArea();
+    return quantity / areaPerUnit;
   }
 
   // Width × height this line was ordered at, 1 when not set.

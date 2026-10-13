@@ -216,7 +216,10 @@ class DataProvider extends ChangeNotifier {
         ),
       );
       await returnEventsLogProvider().createLog(
-        returnEventsLogProvider().productAdapter(product, 1),
+        returnEventsLogProvider().productAdapter(
+          product,
+          1,
+        ),
       );
 
       final quantity = product.quantity ?? 0;
@@ -3158,6 +3161,7 @@ class DataProvider extends ChangeNotifier {
     'Ag(s)',
     'Barrel(s)',
     'Bag(s)',
+    'Block(s)',
     'Bottle(s)',
     'Boxe(s)',
     'Bundle(s)',
@@ -3169,6 +3173,7 @@ class DataProvider extends ChangeNotifier {
     'Cup(s)',
     'Dozen(s)',
     'Foot(s)',
+    'Foot²(s)',
     'Gallon(s)',
     'Inch(es)',
     'Inch²(s)',
@@ -3184,6 +3189,8 @@ class DataProvider extends ChangeNotifier {
     'Mg(s)',
     'Millimeter(s)',
     'Mm²(s)',
+    'Mile(s)',
+    'Mile²(s)',
     'Ml(s)',
     'Pack(s)',
     'Pair(s)',
@@ -3194,6 +3201,7 @@ class DataProvider extends ChangeNotifier {
     'Scoop(s)',
     'Sheet(s)',
     'Set(s)',
+    'Slab(s)',
     'Slate(s)',
     'Stick(s)',
     'Tin(s)',
@@ -3201,6 +3209,15 @@ class DataProvider extends ChangeNotifier {
     'Tube(s)',
     'Truck(s)',
     'Unit(s)',
+    'Panel(s)',
+    'Board(s)',
+    'Tile(s)',
+    'Plate(s)',
+    'Pane(s)',
+    'Coil(s)',
+    'Plank(s)',
+    'Shutter(s)',
+    'Yard²(s)',
     'Other(s)',
   ];
 

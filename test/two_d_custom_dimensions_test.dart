@@ -44,6 +44,30 @@ void main() {
     productUuid: productUuid,
   );
 
+  final areaUnit = ProductUnitsClass(
+    uuid: 'unit-area',
+    staffUuid: null,
+    createdAt: DateTime.utc(2026),
+    staffName: null,
+    conversion: 1,
+    name: 'Square metre',
+    isPrimary: true,
+    productUuid: productUuid,
+    dimensionType: ProductUnitsClass.areaUnit,
+  );
+
+  final sheetUnit = ProductUnitsClass(
+    uuid: 'unit-sheet',
+    staffUuid: null,
+    createdAt: DateTime.utc(2026),
+    staffName: null,
+    conversion: 1,
+    name: 'Sheet',
+    isPrimary: false,
+    productUuid: productUuid,
+    dimensionType: ProductUnitsClass.sheetUnit,
+  );
+
   final price = ProductPricesClass(
     uuid: 'price-1',
     staffUuid: null,
@@ -102,6 +126,34 @@ void main() {
       isVoid: false,
       uuid: uuid,
       unitUuid: unit.uuid,
+      priceUuid: price.uuid,
+      widthDimension: width,
+      heightDimension: height,
+      quantityType: 2,
+    );
+  }
+
+  TempCartItem buildConfiguredLine({
+    required ProductUnitsClass selectedUnit,
+    required double quantity,
+    double? width,
+    double? height,
+  }) {
+    final product = buildSheet()
+      ..unitsList = [areaUnit, sheetUnit];
+    return TempCartItem(
+      item: product,
+      itemUuid: productUuid,
+      quantity: quantity,
+      discount: null,
+      addToStock: false,
+      setTotalPrice: false,
+      useWholeSalePrice: false,
+      useGroupQuantity: false,
+      qttyPerGroup: null,
+      isVoid: false,
+      uuid: 'configured-line',
+      unitUuid: selectedUnit.uuid,
       priceUuid: price.uuid,
       widthDimension: width,
       heightDimension: height,
@@ -244,6 +296,40 @@ void main() {
       final two = buildLine(quantity: 2, width: 2, height: 1.5);
       expect(two.totalCost(), 600);
       expect(two.getRealQuantity(), 6);
+    });
+
+    test('area unit quantity converts directly to area and price', () {
+      final line = buildConfiguredLine(
+        selectedUnit: areaUnit,
+        quantity: 4,
+      );
+
+      expect(line.getRealQuantity(), 4);
+      expect(line.totalCost(), 400);
+      expect(
+        line.item.quantityAfterRemoving(line.getRealQuantity()),
+        closeTo(9.6666667, 0.000001),
+      );
+      expect(line.widthDimension, isNull);
+      expect(line.heightDimension, isNull);
+    });
+
+    test('sheet and custom-size units convert to area for pricing', () {
+      final wholeSheets = buildConfiguredLine(
+        selectedUnit: sheetUnit,
+        quantity: 2,
+      );
+      final customPieces = buildConfiguredLine(
+        selectedUnit: sheetUnit,
+        quantity: 2,
+        width: 2,
+        height: 1.5,
+      );
+
+      expect(wholeSheets.getRealQuantity(), 24);
+      expect(wholeSheets.totalCost(), 2400);
+      expect(customPieces.getRealQuantity(), 6);
+      expect(customPieces.totalCost(), 600);
     });
 
     test('legacy line without dimensions prices as before', () {
@@ -475,4 +561,23 @@ void main() {
       );
     });
   });
+
+  group('2D unit price conversion display', () {
+    test('calculates correct effective conversion for sheet unit vs area unit', () {
+      final sheet = buildSheet()..unitsList = [areaUnit, sheetUnit];
+      // sheetUnit has conversion 1, dimensionArea is 12 -> effective conversion is 12
+      final double effectiveConversionSheet =
+          sheetUnit.conversion * sheet.dimensionArea();
+      expect(effectiveConversionSheet, 12.0);
+
+      // Price per m² is 100, so price per sheet is 100 * 12 = 1200
+      expect(price.priceValue * effectiveConversionSheet, 1200.0);
+
+      // areaUnit has conversion 1 -> effective conversion is 1
+      final double effectiveConversionArea = areaUnit.conversion;
+      expect(effectiveConversionArea, 1.0);
+      expect(price.priceValue * effectiveConversionArea, 100.0);
+    });
+  });
 }
+

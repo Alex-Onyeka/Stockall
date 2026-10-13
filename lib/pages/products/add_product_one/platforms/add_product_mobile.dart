@@ -1765,6 +1765,9 @@ class _AddProductMobileState
                                                           productUuid:
                                                               createdProductUuid ??
                                                               '',
+                                                          isDimensional:
+                                                              quantityType ==
+                                                              2,
                                                         );
                                                       },
                                                     ),

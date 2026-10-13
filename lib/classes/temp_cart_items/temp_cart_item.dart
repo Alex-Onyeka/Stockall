@@ -412,7 +412,8 @@ class TempCartItem extends HiveObject {
       }
     } else {
       final selectedPrice = getSelectedPrice();
-      if ((selectedPrice.priceType ?? 1) == 1) {
+      if ((selectedPrice.priceType ?? 1) == 1 ||
+          item.quantityType == 2) {
         return selectedPrice.priceValue *
             getSelectedUnit().getQuantityEquivMultiplied(
               index: 1,
@@ -440,6 +441,7 @@ class TempCartItem extends HiveObject {
     return revenue() /
         getSelectedUnit().getQuantityEquivMultiplied(
           index: 1,
+          product: item,
           newQuantity: quantity,
           customWidth: widthDimension,
           customHeight: heightDimension,
@@ -452,6 +454,7 @@ class TempCartItem extends HiveObject {
         : (getItem()?.costPrice ?? 0) *
             getSelectedUnit().getQuantityEquivMultiplied(
               index: 1,
+              product: item,
               newQuantity: quantity,
               customWidth: widthDimension,
               customHeight: heightDimension,
@@ -482,6 +485,7 @@ class TempCartItem extends HiveObject {
   double getRealQuantity() {
     return getSelectedUnit().getQuantityEquivMultiplied(
       index: 1,
+      product: item,
       newQuantity: quantity,
       customWidth: widthDimension,
       customHeight: heightDimension,
@@ -491,6 +495,7 @@ class TempCartItem extends HiveObject {
   double getRealQuantityDivided() {
     return getSelectedUnit().getQuantityEquivDivided(
       index: 1,
+      product: item,
       newQuantity: quantity,
     );
   }

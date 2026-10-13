@@ -2029,6 +2029,9 @@ class _AddProductDesktopState
                                                               productUuid:
                                                                   createdProductUuid ??
                                                                   '',
+                                                              isDimensional:
+                                                                  quantityType ==
+                                                                  2,
                                                             );
                                                           },
                                                         ),

@@ -1279,24 +1279,11 @@ void selectProductSales({
   final widthController = TextEditingController();
   final heightController = TextEditingController();
   final bool is2DItem = cartItem.item.quantityType == 2;
-  final double? originalWidth = cartItem.item.widthDimension;
-  final double? originalHeight = cartItem.item.heightDimension;
-
-  // Editing a line sold at a custom size reopens it in
-  // dimensions mode with the values filled in.
-  if (is2DItem &&
-      cartItem.widthDimension != null &&
-      cartItem.heightDimension != null &&
-      (cartItem.widthDimension != originalWidth ||
-          cartItem.heightDimension != originalHeight)) {
-    quantityTypeTemp = 2;
-    widthController.text = formatDimension(
-      cartItem.widthDimension!,
-    ).replaceAll(',', '');
-    heightController.text = formatDimension(
-      cartItem.heightDimension!,
-    ).replaceAll(',', '');
-  }
+  final double? originalWidth =
+      cartItem.item.widthDimension;
+  final double? originalHeight =
+      cartItem.item.heightDimension;
+  bool isAreaUnit = false;
 
   double? parseDimension(TextEditingController controller) {
     return double.tryParse(
@@ -1308,7 +1295,7 @@ void selectProductSales({
   // dimensions mode (original when left empty), the original
   // in whole mode, and null for non-2D items.
   double? resolvedWidth() {
-    if (!is2DItem) return null;
+    if (!is2DItem || isAreaUnit) return null;
     if (quantityTypeTemp == 2 &&
         widthController.text.trim().isNotEmpty) {
       return parseDimension(widthController);
@@ -1317,7 +1304,7 @@ void selectProductSales({
   }
 
   double? resolvedHeight() {
-    if (!is2DItem) return null;
+    if (!is2DItem || isAreaUnit) return null;
     if (quantityTypeTemp == 2 &&
         heightController.text.trim().isNotEmpty) {
       return parseDimension(heightController);
@@ -1348,7 +1335,9 @@ void selectProductSales({
   }
 
   String? dimensionsError() {
-    if (!is2DItem || quantityTypeTemp != 2) return null;
+    if (!is2DItem || isAreaUnit || quantityTypeTemp != 2) {
+      return null;
+    }
     return checkDimension(
           widthController,
           'Width',
@@ -1399,6 +1388,27 @@ void selectProductSales({
   }
 
   unitUuid = cartItem.unitUuid ?? getPrimaryUnit().uuid;
+  isAreaUnit =
+      is2DItem &&
+      getPrimaryUnit().dimensionType ==
+          ProductUnitsClass.areaUnit;
+
+  // Editing a line sold at a custom size reopens it in
+  // dimensions mode with the values filled in.
+  if (is2DItem &&
+      !isAreaUnit &&
+      cartItem.widthDimension != null &&
+      cartItem.heightDimension != null &&
+      (cartItem.widthDimension != originalWidth ||
+          cartItem.heightDimension != originalHeight)) {
+    quantityTypeTemp = 2;
+    widthController.text = formatDimension(
+      cartItem.widthDimension!,
+    ).replaceAll(',', '');
+    heightController.text = formatDimension(
+      cartItem.heightDimension!,
+    ).replaceAll(',', '');
+  }
 
   double getPrimaryUnitQuantityMultiplied({
     BuildContext? context,
@@ -1596,6 +1606,7 @@ void selectProductSales({
                               onTap: () {
                                 setState(() {
                                   currentFocus = 1;
+                                  isOnscreenKeyboardClicked = false;
                                 });
                               },
                               focusNode: qttyNode,
@@ -1616,7 +1627,11 @@ void selectProductSales({
                                         .getItem()
                                         ?.isManaged ??
                                     false) {
-                                  if (!returnSalesProvider()
+                                  // In custom dimensions mode, do not prematurely wipe out
+                                  // quantity while custom width/height are still being entered.
+                                  // Final check is performed when adding to cart.
+                                  if (quantityTypeTemp != 2 &&
+                                      !returnSalesProvider()
                                       .canAddProductToCart(
                                         isEdit: isEdit,
                                         newCartItem:
@@ -1633,7 +1648,7 @@ void selectProductSales({
                                             title:
                                                 "Quantity Limit Reached",
                                             message:
-                                                "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit))} ${getPrimaryUnit().name} available in stock.",
+                                                "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
                                             theme: theme,
                                           ),
                                     ).then((_) {
@@ -1700,12 +1715,32 @@ void selectProductSales({
                                       children: [
                                         Expanded(
                                           child: EditCartTextField(
+                                            onTap: () {
+                                              setState(() {
+                                                currentFocus = 3;
+                                                isOnscreenKeyboardClicked = false;
+                                              });
+                                            },
                                             // Empty uses the item's
                                             // original width.
                                             onChanged: (
                                               value,
                                             ) {
-                                              setState(() {});
+                                              setState(() {
+                                                if ((double.tryParse(
+                                                          widthController.text.replaceAll(
+                                                            ',',
+                                                            '',
+                                                          ),
+                                                        ) ??
+                                                        0) >
+                                                    (originalWidth ??
+                                                        0)) {
+                                                  widthController
+                                                          .text =
+                                                      '0';
+                                                }
+                                              });
                                             },
                                             title:
                                                 '${getPrimaryUnit().name} Width',
@@ -1721,12 +1756,32 @@ void selectProductSales({
                                         ),
                                         Expanded(
                                           child: EditCartTextField(
+                                            onTap: () {
+                                              setState(() {
+                                                currentFocus = 4;
+                                                isOnscreenKeyboardClicked = false;
+                                              });
+                                            },
                                             // Empty uses the item's
                                             // original height.
                                             onChanged: (
                                               value,
                                             ) {
-                                              setState(() {});
+                                              setState(() {
+                                                if ((double.tryParse(
+                                                          heightController.text.replaceAll(
+                                                            ',',
+                                                            '',
+                                                          ),
+                                                        ) ??
+                                                        0) >
+                                                    (originalHeight ??
+                                                        0)) {
+                                                  heightController
+                                                          .text =
+                                                      '0';
+                                                }
+                                              });
                                             },
                                             title:
                                                 '${getPrimaryUnit().name} Height',
@@ -1750,9 +1805,10 @@ void selectProductSales({
                             Visibility(
                               visible:
                                   cartItemTemp
-                                      .item
-                                      .quantityType ==
-                                  2,
+                                          .item
+                                          .quantityType ==
+                                      2 &&
+                                  !isAreaUnit,
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment
@@ -1840,8 +1896,8 @@ void selectProductSales({
                                         setState(() {
                                           quantityTypeTemp =
                                               2;
-                                          quantityController
-                                              .clear();
+                                          // quantityController
+                                          //     .clear();
                                         });
                                       },
                                       child: Container(
@@ -1913,6 +1969,18 @@ void selectProductSales({
                               setUnitUuid: (d) {
                                 setState(() {
                                   selectUnit(d ?? '');
+                                  isAreaUnit =
+                                      is2DItem &&
+                                      getPrimaryUnit()
+                                              .dimensionType ==
+                                          ProductUnitsClass
+                                              .areaUnit;
+                                  if (isAreaUnit) {
+                                    quantityTypeTemp = 1;
+                                    widthController.clear();
+                                    heightController
+                                        .clear();
+                                  }
                                 });
                                 if (getPrimaryUnitQuantityMultiplied(
                                       newQuantity:
@@ -1956,9 +2024,10 @@ void selectProductSales({
                               child: PriceSelectionWidget(
                                 priceList: tempPriceList,
                                 // product: cartItem.item,
-                                conversion:
-                                    getPrimaryUnit()
-                                        .conversion,
+                                conversion: is2DItem && !isAreaUnit
+                                    ? getPrimaryUnit().conversion *
+                                        cartItem.item.dimensionArea()
+                                    : getPrimaryUnit().conversion,
                                 theme: theme,
                                 priceUuid:
                                     getPrimaryPrice().uuid,
@@ -2324,7 +2393,7 @@ void selectProductSales({
                                                     title:
                                                         "Quantity Limit Reached",
                                                     message:
-                                                        "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit))} ${getPrimaryUnit().name} available in stock.",
+                                                        "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
                                                     theme:
                                                         theme,
                                                   ),
@@ -2485,7 +2554,7 @@ void selectProductSales({
                                               title:
                                                   'Quantity Limit Reached',
                                               message:
-                                                  "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit))} ${getPrimaryUnit().name} available in stock.",
+                                                  "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
                                             );
                                           },
                                         );
@@ -2778,13 +2847,27 @@ void selectProductSales({
                                   ),
                                   child: OnScreenKeyboardPin(
                                     action: (value) {
+                                      TextEditingController currentController() {
+                                        switch (currentFocus) {
+                                          case 1:
+                                            return quantityController;
+                                          case 2:
+                                            return priceController;
+                                          case 3:
+                                            return widthController;
+                                          case 4:
+                                            return heightController;
+                                          default:
+                                            return quantityController;
+                                        }
+                                      }
+
                                       void addDigit(
                                         String digit,
                                         TextEditingController
                                         controller,
                                       ) {
-                                        if (currentFocus ==
-                                            1) {
+                                        if (currentFocus == 1) {
                                           if (isOnscreenKeyboardClicked ==
                                               false) {
                                             controller
@@ -2814,16 +2897,17 @@ void selectProductSales({
                                                   .getItem()
                                                   ?.isManaged ??
                                               false) {
-                                            if (!returnSalesProvider().canAddProductToCart(
-                                              isEdit:
-                                                  isEdit,
-                                              newCartItem:
-                                                  cartItem,
-                                              quantityToAdd:
-                                                  entered,
-                                              // useGroupUnit:
-                                              //     useGroupQuantityTemp,
-                                            )) {
+                                            if (quantityTypeTemp != 2 &&
+                                                !returnSalesProvider().canAddProductToCart(
+                                                  isEdit:
+                                                      isEdit,
+                                                  newCartItem:
+                                                      cartItem,
+                                                  quantityToAdd:
+                                                      entered,
+                                                  // useGroupUnit:
+                                                  //     useGroupQuantityTemp,
+                                                )) {
                                               showDialog(
                                                 context:
                                                     context,
@@ -2834,7 +2918,7 @@ void selectProductSales({
                                                       title:
                                                           "Quantity Limit Reached",
                                                       message:
-                                                          "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit))} ${getPrimaryUnit().name} available in stock.",
+                                                          "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
                                                       theme:
                                                           theme,
                                                     ),
@@ -2928,6 +3012,21 @@ void selectProductSales({
                                               ),
                                             );
                                           }
+                                        } else if (currentFocus == 3 || currentFocus == 4) {
+                                          if (isOnscreenKeyboardClicked == false) {
+                                            controller.text = digit;
+                                            isOnscreenKeyboardClicked = true;
+                                          } else {
+                                            controller.text += digit;
+                                          }
+                                          double? maxDim = currentFocus == 3 ? originalWidth : originalHeight;
+                                          double parsedDim = double.tryParse(controller.text.replaceAll(',', '')) ?? 0;
+                                          if (maxDim != null && parsedDim > maxDim) {
+                                            controller.text = '0';
+                                          }
+                                          controller.selection = TextSelection.fromPosition(
+                                            TextPosition(offset: controller.text.length),
+                                          );
                                         } else {
                                           controller.text +=
                                               digit;
@@ -2988,15 +3087,11 @@ void selectProductSales({
                                       if (value != '00') {
                                         addDigit(
                                           value,
-                                          currentFocus == 1
-                                              ? quantityController
-                                              : priceController,
+                                          currentController(),
                                         );
                                       } else {
                                         removeDigit(
-                                          currentFocus == 1
-                                              ? quantityController
-                                              : priceController,
+                                          currentController(),
                                         );
                                       }
                                       setState(() {});

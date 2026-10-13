@@ -312,6 +312,10 @@ class TempProductClass {
         'units_list': ProductUnitsClass.getUnitList(
           tempUnitList: unitsList,
           productUuid: uuid,
+          dimensionType:
+              quantityType == 2
+                  ? ProductUnitsClass.sheetUnit
+                  : null,
         ),
         'prices_list': ProductPricesClass.getPricesList(
           tempPricesList: pricesList,
@@ -363,6 +367,10 @@ class TempProductClass {
         'units_list': ProductUnitsClass.getUnitList(
           tempUnitList: unitsList,
           productUuid: uuid,
+          dimensionType:
+              quantityType == 2
+                  ? ProductUnitsClass.sheetUnit
+                  : null,
         ),
         'prices_list': ProductPricesClass.getPricesList(
           tempPricesList: pricesList,
@@ -616,20 +624,13 @@ class TempProductClass {
     required BuildContext context,
   }) {
     if (discount == null) {
-      if (getPrimaryPrice().priceValue != 0) {
-        return formatMoneyMid(
-          amount:
-              getPrimaryUnit().conversion *
-              (getPrimaryPrice().priceValue),
-          context: context,
-        );
-      } else {
-        return 'Price Not Set';
-      }
+      return getItemTilePriceNoDiscount(context: context);
     } else {
       return formatMoneyMid(
         amount:
-            getPrimaryUnit().conversion *
+            (getPrimaryPrice().priceType == 1
+                ? getPrimaryUnit().conversion
+                : 1) *
             ((getPrimaryPrice().priceValue -
                 (getPrimaryPrice().priceValue *
                     (discount! / 100)))),
@@ -642,15 +643,26 @@ class TempProductClass {
     required BuildContext context,
   }) {
     if (getPrimaryPrice().priceValue != 0) {
-      return formatMoneyMid(
-        amount:
-            getPrimaryUnit().conversion *
-            getPrimaryPrice().priceValue,
+      return formatMoneyBig(
+        amount: getItemPrice(context: context),
         context: context,
       );
     } else {
       return 'Price Not Set';
     }
+  }
+
+  double getItemPrice({BuildContext? context}) {
+    final primaryUnit = getPrimaryUnit();
+    final areaConversion =
+        quantityType == 2 &&
+                primaryUnit.dimensionType ==
+                    ProductUnitsClass.sheetUnit
+            ? primaryUnit.conversion * dimensionArea()
+            : primaryUnit.conversion;
+    return getPrimaryPrice().priceType == 1
+        ? areaConversion * getPrimaryPrice().priceValue
+        : getPrimaryPrice().priceValue;
   }
 
   String getQuantityText({
@@ -733,6 +745,7 @@ class TempProductClass {
           index: index,
           context: context,
           newQuantity: newQuantity,
+          product: this,
         );
       }
     }
@@ -777,6 +790,10 @@ class TempProductClass {
         name: unit == 'Others' ? 'Unit(s)' : unit,
         isPrimary: true,
         productUuid: uuid!,
+        dimensionType:
+            quantityType == 2
+                ? ProductUnitsClass.sheetUnit
+                : null,
       );
     } else {
       return getUnitsList()
@@ -798,6 +815,10 @@ class TempProductClass {
             name: unit == 'Others' ? 'Unit(s)' : unit,
             isPrimary: true,
             productUuid: uuid!,
+            dimensionType:
+                quantityType == 2
+                    ? ProductUnitsClass.sheetUnit
+                    : null,
           ),
         ];
         if (useGroupUnit == true) {

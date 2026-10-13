@@ -9,15 +9,18 @@ import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/add_product_one/product_units_page/components/unit_type_selection_widget.dart';
 
 class CreateProductUnitWidget extends StatefulWidget {
   final TextEditingController quantityController;
   final TextEditingController nameController;
   final String productUuid;
+  final bool isDimensional;
   final Function() setStateAction;
   const CreateProductUnitWidget({
     super.key,
     required this.productUuid,
+    this.isDimensional = false,
     required this.quantityController,
     required this.nameController,
     required this.setStateAction,
@@ -42,6 +45,7 @@ class _CreateProductUnitWidgetState
             context: context,
             nameController: widget.nameController,
             productUuid: widget.productUuid,
+            isDimensional: widget.isDimensional,
             quantityController: widget.quantityController,
             setStateAction: widget.setStateAction,
           );
@@ -72,6 +76,7 @@ void addProductUnitAction({
   required TextEditingController quantityController,
   required TextEditingController nameController,
   required String productUuid,
+  bool isDimensional = false,
   ProductUnitsClass? unit,
   required Function() setStateAction,
 }) {
@@ -80,6 +85,8 @@ void addProductUnitAction({
     quantityController.text = unit.conversion.toString();
     nameController.text = unit.name;
   }
+  var dimensionType =
+      unit?.dimensionType ?? ProductUnitsClass.sheetUnit;
 
   void addAction() {
     final conversion = double.tryParse(
@@ -112,6 +119,10 @@ void addProductUnitAction({
               Navigator.of(mainDialog).pop();
               unit?.name = nameController.text.trim();
               unit?.conversion = conversion;
+              if (unit != null) {
+                unit.dimensionType =
+                    isDimensional ? dimensionType : null;
+              }
               var unitListSingle = ProductUnitsClass(
                 uuid: uuidGen(),
                 staffUuid: currentUser().userId!,
@@ -124,6 +135,8 @@ void addProductUnitAction({
                         ? true
                         : false,
                 productUuid: productUuid,
+                dimensionType:
+                    isDimensional ? dimensionType : null,
               );
               returnData().createOrUpdateUnitList(
                 unitListSingle: unit ?? unitListSingle,
@@ -183,6 +196,21 @@ void addProductUnitAction({
                           mainAxisSize: MainAxisSize.min,
                           spacing: 10,
                           children: [
+                            if (isDimensional) ...[
+                              UnitTypeSelectionWidget(
+                                theme: theme,
+                                currentSelection:
+                                    dimensionType,
+                                setUnitType: (index) {
+                                  {
+                                    setState(() {
+                                      dimensionType =
+                                          (index ?? 1);
+                                    });
+                                  }
+                                },
+                              ),
+                            ],
                             Row(
                               crossAxisAlignment:
                                   CrossAxisAlignment.end,
@@ -269,7 +297,15 @@ void addProductUnitAction({
                               ],
                             ),
                             EditCartTextField(
-                              title: 'Conversion',
+                              title:
+                                  isDimensional &&
+                                          dimensionType ==
+                                              ProductUnitsClass
+                                                  .areaUnit
+                                      ? 'Area conversion *'
+                                      : isDimensional
+                                      ? 'Slabs / sheets per Unit *'
+                                      : 'Conversion',
                               autoFocus: false,
                               hint: 'Enter Conversion',
                               controller:
