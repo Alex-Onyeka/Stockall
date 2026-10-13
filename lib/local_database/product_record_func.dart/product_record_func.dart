@@ -113,11 +113,20 @@ class ProductRecordFunc {
   }) async {
     await mainLocalLog('Deleting Records in Receipt');
     try {
-      List<TempProductSaleRecord> records = (receipt.getItems()).toList();
-      if (records.isEmpty && receipt.uuid != null) {
-        records = productRecordBox.values
-            .where((item) => item.receiptUuid == receipt.uuid)
-            .toList();
+      TempMainReceipt newReceipt = receipt.copyWith();
+      List<TempProductSaleRecord> records =
+          (newReceipt.getItems())
+              .toList()
+              .map((item) => item.copy())
+              .toList();
+      if (records.isEmpty && newReceipt.uuid != null) {
+        records =
+            productRecordBox.values
+                .where(
+                  (item) =>
+                      item.receiptUuid == newReceipt.uuid,
+                )
+                .toList();
       }
       await mainLocalLog(
         'Records Gotten: ${records.length}',
@@ -138,15 +147,13 @@ class ProductRecordFunc {
                 oldProduct.getActualQuantity() ?? 0;
             final quantityChange =
                 record.getActualQuantity();
-            final restoredArea = oldQuantity + quantityChange;
-            product.quantity = product.quantityType == 2
-                ? restoredArea / product.dimensionArea()
-                : restoredArea;
-            final newQuantity =
-                product.getActualQuantity() ?? 0;
+            final restoredArea =
+                oldQuantity + quantityChange;
+            product.quantity =
+                product.quantityType == 2
+                    ? restoredArea / product.dimensionArea()
+                    : restoredArea;
             final primaryUnit = product.getPrimaryUnit();
-            final primaryUnitConversion =
-                primaryUnit.conversion;
             ItemHistory itemHistory = ItemHistory(
               isManaged: true,
               source: 'receipt',
@@ -157,11 +164,25 @@ class ProductRecordFunc {
                   '${record.quantity} ${record.unit} of This Item was Returned. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}.',
               quantityChange: record.quantity,
               newValue: formatLargeNumberDouble(
-                newQuantity / primaryUnitConversion,
+                product
+                    .getProductUnit()
+                    .getQuantityEquivDivided(
+                      index: 1,
+                      newQuantity:
+                          product.getActualQuantity(),
+                      product: product,
+                    ),
               ),
               isIncreased: true,
               oldValue: formatLargeNumberDouble(
-                oldQuantity / primaryUnitConversion,
+                product
+                    .getProductUnit()
+                    .getQuantityEquivDivided(
+                      index: 1,
+                      newQuantity:
+                          oldProduct.getActualQuantity(),
+                      product: product,
+                    ),
               ),
               unit: record.unit,
               primaryUnit: primaryUnit.name,
@@ -172,9 +193,11 @@ class ProductRecordFunc {
               isMultipleUpdate: true,
               product: product,
               isQuantityUpdate: true,
-              quantityChange: product.quantityType == 2
-                  ? record.getActualQuantity() / product.dimensionArea()
-                  : record.getActualQuantity(),
+              quantityChange:
+                  product.quantityType == 2
+                      ? record.getActualQuantity() /
+                          product.dimensionArea()
+                      : record.getActualQuantity(),
               isIncrement: true,
             );
           }
@@ -264,9 +287,13 @@ class ProductRecordFunc {
       List<TempProductSaleRecord> records =
           (receipt.getItems()).toList();
       if (records.isEmpty && receipt.uuid != null) {
-        records = productRecordBox.values
-            .where((item) => item.receiptUuid == receipt.uuid)
-            .toList();
+        records =
+            productRecordBox.values
+                .where(
+                  (item) =>
+                      item.receiptUuid == receipt.uuid,
+                )
+                .toList();
       }
       await mainLocalLog(
         'Records Gotten: ${records.length}',
@@ -321,13 +348,21 @@ class ProductRecordFunc {
           if (products.isNotEmpty) {
             var oldProduct = products.first;
             var product = oldProduct.copyWith();
+            final oldQuantity =
+                oldProduct.getActualQuantity() ?? 0;
+            final quantityChange =
+                record.getActualQuantity();
+            final restoredArea =
+                oldQuantity + quantityChange;
             product.quantity =
-                (product.getActualQuantity() ?? 0) +
-                record.getSelectedUnitQuantityMultiplied();
+                product.quantityType == 2
+                    ? restoredArea / product.dimensionArea()
+                    : restoredArea;
+            final primaryUnit = product.getPrimaryUnit();
             ItemHistory itemHistory = ItemHistory(
               isManaged: true,
+              source: 'invoice',
               event: ItemHistoryEventClass.returnEvent,
-              source: ItemHistoryEventClass.invoiceSource,
               shopId: shopId(),
               title: 'Item Returned',
               desc:
@@ -345,17 +380,17 @@ class ProductRecordFunc {
               ),
               isIncreased: true,
               oldValue: formatLargeNumberDouble(
-                oldProduct
+                product
                     .getProductUnit()
                     .getQuantityEquivDivided(
                       index: 1,
                       newQuantity:
                           oldProduct.getActualQuantity(),
-                      product: oldProduct,
+                      product: product,
                     ),
               ),
               unit: record.unit,
-              primaryUnit: product.getPrimaryUnit().name,
+              primaryUnit: primaryUnit.name,
             );
             await returnData().updateProduct(
               itemHistory: itemHistory,
@@ -364,8 +399,10 @@ class ProductRecordFunc {
               product: product,
               isQuantityUpdate: true,
               quantityChange:
-                  record
-                      .getSelectedUnitQuantityMultiplied(),
+                  product.quantityType == 2
+                      ? record.getActualQuantity() /
+                          product.dimensionArea()
+                      : record.getActualQuantity(),
               isIncrement: true,
             );
           }

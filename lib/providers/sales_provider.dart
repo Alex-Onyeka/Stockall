@@ -1321,6 +1321,22 @@ class SalesProvider extends ChangeNotifier {
         subStaffUuid: currentMainCart().subStaff?.uuid,
         cartName: currentCart().cartName,
       );
+      // Built before the receipt is saved so the same lines are
+      // stored in receipt.items and in product_sales.
+      final productSaleRecords = buildSaleRecords(
+        cartItems: salesCartItem.getCartItemsAll(),
+        createdAt: createdAt,
+        shopId: shopId,
+        staffId: staffUuid(), // staffId,
+        staffName: staffName(), // staffName,
+        customerUuid: customerUuid(),
+        customerName: customerName(),
+        departmentName: departmentName(),
+        departmentUuid: departmentUuid(),
+        receiptId: receipt.id ?? 0,
+        receiptUuid: receipt.uuid,
+      );
+      receipt.items = productSaleRecords;
       if (currentCart().receiptUuidEdit != null) {
         await mainLocalLog(
           'Receipt UUid is not null: ${currentCart().receiptUuidEdit}',
@@ -1369,23 +1385,6 @@ class SalesProvider extends ChangeNotifier {
       await mainLocalLog('Checkout Started');
 
       try {
-        // Built before the receipt is saved so the same lines are
-        // stored in receipt.items and in product_sales.
-        final productSaleRecords = buildSaleRecords(
-          cartItems: salesCartItem.getCartItemsAll(),
-          createdAt: createdAt,
-          shopId: shopId,
-          staffId: staffUuid(), // staffId,
-          staffName: staffName(), // staffName,
-          customerUuid: customerUuid(),
-          customerName: customerName(),
-          departmentName: departmentName(),
-          departmentUuid: departmentUuid(),
-          receiptId: receipt.id ?? 0,
-          receiptUuid: receipt.uuid,
-        );
-        receipt.items = productSaleRecords;
-
         await returnReceiptProviderSingle().createReceipt(
           receipt,
         );
@@ -1799,6 +1798,21 @@ class SalesProvider extends ChangeNotifier {
       TempInvoice? invoiceRes;
       List<TempProductSaleRecord> invoiceSaleRecords = [];
       try {
+        // Built before the invoice is saved so the same lines are
+        // stored in invoice.items and in product_sales.
+        invoiceSaleRecords = buildSaleRecords(
+          cartItems: salesCartItem.getCartItemsAll(),
+          createdAt: createdAt,
+          shopId: shopId,
+          staffId: staffUuid(), // staffId,
+          staffName: staffName(), // staffName,
+          customerUuid: customerUuid(),
+          customerName: customerName(),
+          departmentName: departmentName(),
+          departmentUuid: departmentUuid(),
+          invoiceUuid: invoice.uuid,
+        );
+        invoice.items = invoiceSaleRecords;
         if (currentCart().invoiceUuidEdit != null) {
           await mainLocalLog(
             'Invoice UUid is not null: ${currentCart().invoiceUuidEdit}',
@@ -1844,21 +1858,7 @@ class SalesProvider extends ChangeNotifier {
           );
           await mainLocalLog('Invoice Uuid is null');
         }
-        // Built before the invoice is saved so the same lines are
-        // stored in invoice.items and in product_sales.
-        invoiceSaleRecords = buildSaleRecords(
-          cartItems: salesCartItem.getCartItemsAll(),
-          createdAt: createdAt,
-          shopId: shopId,
-          staffId: staffUuid(), // staffId,
-          staffName: staffName(), // staffName,
-          customerUuid: customerUuid(),
-          customerName: customerName(),
-          departmentName: departmentName(),
-          departmentUuid: departmentUuid(),
-          invoiceUuid: invoice.uuid,
-        );
-        invoice.items = invoiceSaleRecords;
+
         invoiceRes = await returnInvoicesProvider()
             .createInvoices(invoice);
         await mainLocalLog('Invoice Created Success');
@@ -2321,6 +2321,70 @@ class SalesProvider extends ChangeNotifier {
         cartName: currentCart().cartName,
         total: calcFinalTotal(),
       );
+      final orderItems =
+          salesCartItem.getCartItemsAll().map((cartItem) {
+            final product = cartItem.getItem();
+
+            mainLocalLog(
+              'Sales Record about to be Created: ${cartItem.getItem()?.name}',
+            );
+
+            return OrderItems(
+              heightDimension: cartItem.heightDimension,
+              quantityType: cartItem.quantityType,
+              widthDimension: cartItem.widthDimension,
+              priceUuid: cartItem.priceUuid,
+              pricesList: cartItem.getPriceListFinal(),
+              unitUuid: cartItem.unitUuid,
+              unitsList: cartItem.getUnitListFinal(),
+              originalUseGroupQuantity:
+                  cartItem.getItem()?.useGroupUnit ?? false,
+              remainingQuantity: cartItem.quantity,
+              qttyPerGroup: cartItem.qttyPerGroup,
+              useGroupQuantity: cartItem.useGroupQuantity,
+              tempUseGroupQuantity:
+                  cartItem.useGroupQuantity,
+              customPriceSet: cartItem.setCustomPrice,
+              useWholeSalePrice: cartItem.useWholeSalePrice,
+              createdAt: createdAt,
+              productUuid: product?.uuid ?? '',
+              productName: product?.name ?? 'Item Name',
+              staffId: staffUuid(), // staffId,
+              staffName: staffName(), // staffName,
+              customerUuid: customerUuid(),
+              customerName: customerName(),
+              quantity: cartItem.quantity,
+              revenue:
+                  (cartItem.revenue() /
+                      cartItem.getRealQuantity()),
+              discountedAmount: cartItem.discountCost(),
+              originalCost:
+                  (cartItem.totalCost() /
+                      cartItem.getRealQuantity()),
+              discount:
+                  cartItem.discount ??
+                  cartItem.getItem()?.discount,
+              fixedDiscount: cartItem.fixedDiscount,
+              costPrice:
+                  cartItem.costPrice() == null
+                      ? null
+                      : ((cartItem.costPrice() ?? 0) /
+                          cartItem.getRealQuantity()),
+              addToStock: cartItem.addToStock,
+              departmentName: departmentName(),
+              departmentUuid: departmentUuid(),
+              uuid: cartItem.uuid ?? uuidGen(),
+              isProductManaged:
+                  cartItem.getItem()?.isManaged,
+              setTotalPrice: cartItem.setTotalPrice,
+              unit: cartItem.getItem()?.unit ?? 'Unit(s)',
+              groupUnit:
+                  cartItem.getItem()?.groupUnit ??
+                  'Group(s)',
+              orderId: order.uuid!,
+            );
+          }).toList();
+      order.orderItems = orderItems;
       if (currentCart().orderUuidEdit != null) {
         await mainLocalLog(
           'Order UUid is not null: ${currentCart().orderUuidEdit}',
@@ -2344,78 +2408,13 @@ class SalesProvider extends ChangeNotifier {
 
       try {
         // Step 2: Create product sale records
-        final orderItems =
-            salesCartItem.getCartItemsAll().map((cartItem) {
-              final product = cartItem.getItem();
-
-              mainLocalLog(
-                'Sales Record about to be Created: ${cartItem.getItem()?.name}',
-              );
-
-              return OrderItems(
-                heightDimension: cartItem.heightDimension,
-                quantityType: cartItem.quantityType,
-                widthDimension: cartItem.widthDimension,
-                priceUuid: cartItem.priceUuid,
-                pricesList: cartItem.getPriceListFinal(),
-                unitUuid: cartItem.unitUuid,
-                unitsList: cartItem.getUnitListFinal(),
-                originalUseGroupQuantity:
-                    cartItem.getItem()?.useGroupUnit ??
-                    false,
-                remainingQuantity: cartItem.quantity,
-                qttyPerGroup: cartItem.qttyPerGroup,
-                useGroupQuantity: cartItem.useGroupQuantity,
-                tempUseGroupQuantity:
-                    cartItem.useGroupQuantity,
-                customPriceSet: cartItem.setCustomPrice,
-                useWholeSalePrice:
-                    cartItem.useWholeSalePrice,
-                createdAt: createdAt,
-                productUuid: product?.uuid ?? '',
-                productName: product?.name ?? 'Item Name',
-                staffId: staffUuid(), // staffId,
-                staffName: staffName(), // staffName,
-                customerUuid: customerUuid(),
-                customerName: customerName(),
-                quantity: cartItem.quantity,
-                revenue:
-                    (cartItem.revenue() /
-                        cartItem.getRealQuantity()),
-                discountedAmount: cartItem.discountCost(),
-                originalCost:
-                    (cartItem.totalCost() /
-                        cartItem.getRealQuantity()),
-                discount:
-                    cartItem.discount ??
-                    cartItem.getItem()?.discount,
-                fixedDiscount: cartItem.fixedDiscount,
-                costPrice:
-                    cartItem.costPrice() == null
-                        ? null
-                        : ((cartItem.costPrice() ?? 0) /
-                            cartItem.getRealQuantity()),
-                addToStock: cartItem.addToStock,
-                departmentName: departmentName(),
-                departmentUuid: departmentUuid(),
-                uuid: cartItem.uuid ?? uuidGen(),
-                isProductManaged:
-                    cartItem.getItem()?.isManaged,
-                setTotalPrice: cartItem.setTotalPrice,
-                unit: cartItem.getItem()?.unit ?? 'Unit(s)',
-                groupUnit:
-                    cartItem.getItem()?.groupUnit ??
-                    'Group(s)',
-                orderId: order.uuid!,
-              );
-            }).toList();
 
         try {
           //
           //
           //
           //
-          order.orderItems = orderItems;
+
           await returnOrdersProvider().createOrder(order);
           await mainLocalLog('Order Created');
 
@@ -4054,16 +4053,15 @@ class SalesProvider extends ChangeNotifier {
     SalesAuthAction().editReceiptAction(
       context: context,
       action: () async {
-        // final saleRecords =
-        //     returnReceiptProvider(context, listen: false)
-        //         .produtRecordSalesMain
-        //         .where((r) => r.receiptUuid == receipt.uuid)
-        //         .toList();
-
+        TempMainReceipt newReceipt = receipt.copyWith();
         // Convert them back to cart items
         final cartItems = convertReceiptToCartItems(
-          receipt: receipt,
-          saleRecords: receipt.getItems(),
+          receipt: newReceipt,
+          saleRecords:
+              newReceipt
+                  .getItems()
+                  .map((item) => item.copy())
+                  .toList(),
           context: context,
         );
 
@@ -4071,45 +4069,47 @@ class SalesProvider extends ChangeNotifier {
             .where(
               (cart) =>
                   cart.receiptUuidEdit != null &&
-                  cart.receiptUuidEdit == receipt.uuid,
+                  cart.receiptUuidEdit == newReceipt.uuid,
             )
             .isEmpty) {
           var newId = uuidGen();
           var tempCart = TempCart(
             orderUuidEdit: null,
-            comment: receipt.comment,
+            comment: newReceipt.comment,
             timeOfDay: null,
             hasPrintedDocket: false,
-            subStaffName: receipt.subStaffName,
+            subStaffName: newReceipt.subStaffName,
             customDate: null,
-            departmentName: receipt.departmentName,
-            departmentUuid: receipt.departmentUuidNew,
-            subStaffUuid: receipt.subStaffUuid,
-            staffId: receipt.staffId,
-            staffName: receipt.staffName,
+            departmentName: newReceipt.departmentName,
+            departmentUuid: newReceipt.departmentUuidNew,
+            subStaffUuid: newReceipt.subStaffUuid,
+            staffId: newReceipt.staffId,
+            staffName: newReceipt.staffName,
             id: newId,
-            fixedDiscount: receipt.fixedDiscount,
-            createdDate: receipt.createdAt,
+            fixedDiscount: newReceipt.fixedDiscount,
+            createdDate: newReceipt.createdAt,
             cartItems: cartItems,
             cartItemTypeIndex:
-                receipt.invoiceUuid != null
+                newReceipt.invoiceUuid != null
                     ? 2
-                    : receipt.orderUuid != null
+                    : newReceipt.orderUuid != null
                     ? 3
                     : 1,
-            discount: receipt.generalDiscount,
-            receiptUuidEdit: receipt.uuid,
+            discount: newReceipt.generalDiscount,
+            receiptUuidEdit: newReceipt.uuid,
             paymentMethod: paymentMethodIndexForReceipt(
-              receipt,
+              newReceipt,
             ),
             splitPayments:
-                receipt.invoiceUuid == null &&
-                        receipt.orderUuid == null &&
-                        receipt.paymentBreakdown().isSplit
-                    ? receipt.payments()
+                newReceipt.invoiceUuid == null &&
+                        newReceipt.orderUuid == null &&
+                        newReceipt
+                            .paymentBreakdown()
+                            .isSplit
+                    ? newReceipt.payments()
                     : null,
-            selectedCustomer: receipt.customerUuid,
-            selectedCustomerName: receipt.customerName,
+            selectedCustomer: newReceipt.customerUuid,
+            selectedCustomerName: newReceipt.customerName,
             isReceiptEdit: true,
           );
           await addNewCart(context, tempCart);
@@ -4120,7 +4120,7 @@ class SalesProvider extends ChangeNotifier {
                       .userShop()!
                       .manageCustomerReward ??
                   false,
-              cashBack: receipt.getCustomerReward(),
+              cashBack: newReceipt.getCustomerReward(),
               cartId: tempCart.id!,
               cartItems:
                   tempCart
@@ -4129,7 +4129,7 @@ class SalesProvider extends ChangeNotifier {
                       .toList(),
               fixedDiscount: currentCart().fixedDiscount,
               percentDiscount: currentCart().discount,
-              vat: receipt.vat ?? 0,
+              vat: newReceipt.vat ?? 0,
               currency:
                   returnShopProvider().userShop()!.currency,
             ),
@@ -4140,7 +4140,8 @@ class SalesProvider extends ChangeNotifier {
             currentMainCart().cartQueue
                 .where(
                   (cart) =>
-                      cart.receiptUuidEdit == receipt.uuid,
+                      cart.receiptUuidEdit ==
+                      newReceipt.uuid,
                 )
                 .first
                 .id!,
