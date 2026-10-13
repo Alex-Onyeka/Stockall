@@ -802,7 +802,7 @@ Uint8List generateStyledReceipt({
 
   for (final item in records) {
     builder.addRowStyled(
-      item.productName,
+      '${item.productName}${item.dimensionsLabel()}',
       formatLargeNumberDouble(item.quantity),
       formatMoneyMid(
         amount:
@@ -1297,7 +1297,7 @@ Uint8List generateStyledInvoice({
 
   for (final item in records) {
     builder.addRowStyled(
-      item.productName,
+      '${item.productName}${item.dimensionsLabel()}',
       formatLargeNumberDouble(item.quantity),
       formatMoneyMid(
         amount:

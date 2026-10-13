@@ -117,8 +117,10 @@ class MainDatabase extends ChangeNotifier {
       await CurrentDepartmentFunc().init();
       await StorageProductsFunc().init();
       await CartFunc().init();
-      await PurchaseFunc().init();
+      // Before PurchaseFunc: purchases store TempItemPurchaseRecord
+      // items, so its adapter must exist when that box opens.
       await ItemPurchaseFunc().init();
+      await PurchaseFunc().init();
       await SuppliersFunc().init();
       await WaybillsFunc().init();
       await CountriesFunc().init();

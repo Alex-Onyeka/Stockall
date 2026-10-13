@@ -456,6 +456,9 @@ void addItemToCartFromCartItemList({
       searchController: searchController,
       theme: theme,
       cartItemTemp: TempCartItem(
+        heightDimension: null,
+        widthDimension: null,
+        quantityType: product.quantityType,
         priceUuid: null,
         unitUuid: null,
         uuid: cartItemTemp?.uuid ?? uuidGen(),

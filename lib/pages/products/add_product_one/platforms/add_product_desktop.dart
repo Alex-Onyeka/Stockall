@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
@@ -22,6 +23,7 @@ import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/add_product_one/platforms/components/quantity_type_selection_widget.dart';
 import 'package:stockall/pages/products/add_product_one/product_prices_page/product_prices_page.dart';
 import 'package:stockall/pages/products/add_product_one/product_units_page/product_units_page.dart';
 import 'package:stockall/providers/data_provider.dart';
@@ -35,6 +37,8 @@ class AddProductDesktop extends StatefulWidget {
   final TextEditingController lowQttyController;
   final TextEditingController discountController;
   final TextEditingController qttyPerGroupController;
+  final TextEditingController heightController;
+  final TextEditingController widthController;
 
   const AddProductDesktop({
     super.key,
@@ -45,6 +49,8 @@ class AddProductDesktop extends StatefulWidget {
     required this.discountController,
     required this.qttyPerGroupController,
     required this.wholeSaleController,
+    required this.heightController,
+    required this.widthController,
     this.product,
   });
 
@@ -75,6 +81,17 @@ class _AddProductDesktopState
 
   TextEditingController barcodeController =
       TextEditingController();
+
+  int quantityType = 1;
+
+  void switchQuantityType(int index) {
+    setState(() {
+      quantityType = index;
+    });
+    widget.widthController.clear();
+    widget.heightController.clear();
+  }
+
   //
   //
   //
@@ -123,6 +140,8 @@ class _AddProductDesktopState
 
               final dataProvider = returnData();
               ItemHistory itemHistory = ItemHistory(
+                event: ItemHistoryEventClass.itemCreated,
+                source: 'Not Set',
                 unit: 'Not Set',
                 shopId: shopId(),
                 title: 'Item Created',
@@ -131,12 +150,26 @@ class _AddProductDesktopState
                 desc: 'Item Created Now',
                 isIncreased: true,
                 oldValue: '0',
+                isManaged: true,
               );
 
               await dataProvider.createProduct(
                 isMultiple: false,
                 itemHistory: itemHistory,
                 product: TempProductClass(
+                  quantityType: quantityType,
+                  heightDimension: double.tryParse(
+                    widget.heightController.text.replaceAll(
+                      ',',
+                      '',
+                    ),
+                  ),
+                  widthDimension: double.tryParse(
+                    widget.widthController.text.replaceAll(
+                      ',',
+                      '',
+                    ),
+                  ),
                   unitsList: dataProvider.getTempUnitList(),
                   pricesList:
                       dataProvider.getTempPriceList(),
@@ -278,6 +311,19 @@ class _AddProductDesktopState
               isQuantityUpdate: false,
               quantityChange: null,
               product: TempProductClass(
+                quantityType: quantityType,
+                heightDimension: double.tryParse(
+                  widget.heightController.text.replaceAll(
+                    ',',
+                    '',
+                  ),
+                ),
+                widthDimension: double.tryParse(
+                  widget.widthController.text.replaceAll(
+                    ',',
+                    '',
+                  ),
+                ),
                 unitsList: provider.getTempUnitList(),
                 pricesList: provider.getTempPriceList(),
                 useGroupUnit: provider.useGroupUnit,
@@ -489,6 +535,11 @@ class _AddProductDesktopState
       returnData().initCategories(
         categories: widget.product?.categories ?? [],
       );
+      quantityType = widget.product?.quantityType ?? 1;
+      widget.heightController.text =
+          widget.product?.heightDimension?.toString() ?? '';
+      widget.widthController.text =
+          widget.product?.widthDimension?.toString() ?? '';
     }
   }
 
@@ -996,6 +1047,12 @@ class _AddProductDesktopState
                                                       }
 
                                                       var tempProduct = TempProductClass(
+                                                        heightDimension:
+                                                            null,
+                                                        quantityType:
+                                                            1,
+                                                        widthDimension:
+                                                            null,
                                                         pricesList:
                                                             widget.product?.pricesList ??
                                                             [],
@@ -1875,6 +1932,65 @@ class _AddProductDesktopState
                                             ),
                                           ],
                                         ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(
+                                                top: 10.0,
+                                              ),
+                                          child: QuantityTypeSelectionWidget(
+                                            theme: theme,
+                                            selectedIndex:
+                                                quantityType,
+                                            setQuantityIndex: (
+                                              index,
+                                            ) {
+                                              switchQuantityType(
+                                                index ?? 1,
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                        Visibility(
+                                          visible:
+                                              quantityType ==
+                                              2,
+                                          child: Padding(
+                                            padding:
+                                                const EdgeInsets.only(
+                                                  bottom:
+                                                      10.0,
+                                                ),
+                                            child: Row(
+                                              spacing: 10,
+                                              children: [
+                                                Expanded(
+                                                  child: EditCartTextField(
+                                                    theme:
+                                                        theme,
+                                                    hint:
+                                                        'Enter Max-Width',
+                                                    title:
+                                                        'Max-Width',
+                                                    controller:
+                                                        widget.widthController,
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  child: EditCartTextField(
+                                                    theme:
+                                                        theme,
+                                                    hint:
+                                                        'Enter Max-Height',
+                                                    title:
+                                                        'Max-Height',
+                                                    controller:
+                                                        widget.heightController,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
                                         Visibility(
                                           visible: authorization(
                                             authorized:
@@ -1913,6 +2029,9 @@ class _AddProductDesktopState
                                                               productUuid:
                                                                   createdProductUuid ??
                                                                   '',
+                                                              isDimensional:
+                                                                  quantityType ==
+                                                                  2,
                                                             );
                                                           },
                                                         ),

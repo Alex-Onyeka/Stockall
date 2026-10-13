@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
@@ -20,6 +21,7 @@ import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/add_product_one/platforms/components/quantity_type_selection_widget.dart';
 import 'package:stockall/pages/products/add_product_one/product_prices_page/product_prices_page.dart';
 import 'package:stockall/pages/products/add_product_one/product_units_page/product_units_page.dart';
 import 'package:stockall/providers/data_provider.dart';
@@ -35,6 +37,8 @@ class AddProductMobile extends StatefulWidget {
   // final TextEditingController storageQuantityController;
   final TextEditingController qttyPerGroupController;
   final TextEditingController wholeSaleController;
+  final TextEditingController heightController;
+  final TextEditingController widthController;
 
   const AddProductMobile({
     super.key,
@@ -47,6 +51,8 @@ class AddProductMobile extends StatefulWidget {
     // required this.storageQuantityController,
     required this.qttyPerGroupController,
     required this.wholeSaleController,
+    required this.heightController,
+    required this.widthController,
     this.product,
   });
 
@@ -71,6 +77,16 @@ class _AddProductMobileState
 
   TextEditingController expiryDateC =
       TextEditingController();
+  int quantityType = 1;
+
+  void switchQuantityType(int index) {
+    setState(() {
+      quantityType = index;
+    });
+    widget.widthController.clear();
+    widget.heightController.clear();
+  }
+
   //
   //
   //
@@ -119,6 +135,9 @@ class _AddProductMobileState
 
               final dataProvider = returnData();
               ItemHistory itemHistory = ItemHistory(
+                source: 'Not Set',
+                event: ItemHistoryEventClass.itemCreated,
+                isManaged: true,
                 unit: 'Not Set',
                 shopId: shopId(),
                 title: 'Item Created',
@@ -133,6 +152,19 @@ class _AddProductMobileState
                 isMultiple: false,
                 itemHistory: itemHistory,
                 product: TempProductClass(
+                  quantityType: quantityType,
+                  heightDimension: double.tryParse(
+                    widget.heightController.text.replaceAll(
+                      ',',
+                      '',
+                    ),
+                  ),
+                  widthDimension: double.tryParse(
+                    widget.widthController.text.replaceAll(
+                      ',',
+                      '',
+                    ),
+                  ),
                   unitsList: dataProvider.getTempUnitList(),
                   pricesList:
                       dataProvider.getTempPriceList(),
@@ -276,6 +308,19 @@ class _AddProductMobileState
               isQuantityUpdate: false,
               quantityChange: null,
               product: TempProductClass(
+                quantityType: quantityType,
+                heightDimension: double.tryParse(
+                  widget.heightController.text.replaceAll(
+                    ',',
+                    '',
+                  ),
+                ),
+                widthDimension: double.tryParse(
+                  widget.widthController.text.replaceAll(
+                    ',',
+                    '',
+                  ),
+                ),
                 unitsList: provider.getTempUnitList(),
                 pricesList: provider.getTempPriceList(),
                 useGroupUnit: provider.useGroupUnit,
@@ -478,6 +523,11 @@ class _AddProductMobileState
       returnData().initCategories(
         categories: widget.product?.categories ?? [],
       );
+      quantityType = widget.product?.quantityType ?? 1;
+      widget.heightController.text =
+          widget.product?.heightDimension?.toString() ?? '';
+      widget.widthController.text =
+          widget.product?.widthDimension?.toString() ?? '';
     }
   }
 
@@ -973,6 +1023,12 @@ class _AddProductMobileState
                                                     }
 
                                                     var tempProduct = TempProductClass(
+                                                      heightDimension:
+                                                          null,
+                                                      quantityType:
+                                                          1,
+                                                      widthDimension:
+                                                          null,
                                                       unitsList:
                                                           widget.product?.unitsList ??
                                                           [],
@@ -1612,6 +1668,65 @@ class _AddProductMobileState
                                         ),
                                       ],
                                     ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(
+                                            top: 15.0,
+                                          ),
+                                      child: QuantityTypeSelectionWidget(
+                                        theme: theme,
+                                        selectedIndex:
+                                            quantityType,
+                                        setQuantityIndex: (
+                                          index,
+                                        ) {
+                                          switchQuantityType(
+                                            index ?? 1,
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    Visibility(
+                                      visible:
+                                          quantityType == 2,
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(
+                                              bottom: 5.0,
+                                            ),
+                                        child: Row(
+                                          spacing: 10,
+                                          children: [
+                                            Expanded(
+                                              child: EditCartTextField(
+                                                theme:
+                                                    theme,
+                                                hint:
+                                                    'Enter Max-Width',
+                                                title:
+                                                    'Max-Width',
+                                                controller:
+                                                    widget
+                                                        .widthController,
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: EditCartTextField(
+                                                theme:
+                                                    theme,
+                                                hint:
+                                                    'Enter Max-Height',
+                                                title:
+                                                    'Max-Height',
+                                                controller:
+                                                    widget
+                                                        .heightController,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
                                     Visibility(
                                       visible: authorization(
                                         authorized:
@@ -1650,6 +1765,9 @@ class _AddProductMobileState
                                                           productUuid:
                                                               createdProductUuid ??
                                                               '',
+                                                          isDimensional:
+                                                              quantityType ==
+                                                              2,
                                                         );
                                                       },
                                                     ),

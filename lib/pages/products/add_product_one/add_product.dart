@@ -34,6 +34,10 @@ class _AddProductState extends State<AddProduct> {
       TextEditingController();
   TextEditingController wholeSaleController =
       TextEditingController();
+  TextEditingController heightController =
+      TextEditingController();
+  TextEditingController widthController =
+      TextEditingController();
 
   @override
   void dispose() {
@@ -46,6 +50,8 @@ class _AddProductState extends State<AddProduct> {
     lowQttyController.dispose();
     // storageQuantityController.dispose();
     qttyPerGroupController.dispose();
+    widthController.dispose();
+    heightController.dispose();
   }
 
   @override
@@ -83,6 +89,8 @@ class _AddProductState extends State<AddProduct> {
                 qttyPerGroupController:
                     qttyPerGroupController,
                 wholeSaleController: wholeSaleController,
+                heightController: heightController,
+                widthController: widthController,
               );
             } else {
               return AddProductDesktop(
@@ -98,6 +106,8 @@ class _AddProductState extends State<AddProduct> {
                 qttyPerGroupController:
                     qttyPerGroupController,
                 wholeSaleController: wholeSaleController,
+                heightController: heightController,
+                widthController: widthController,
               );
             }
           },

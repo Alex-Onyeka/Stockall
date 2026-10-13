@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_orders/orders.dart';
@@ -182,14 +183,23 @@ class TempCustomersClass extends HiveObject {
     return (balance ?? 0);
   }
 
-  List<TempInvoice> getInvoices() {
-    return returnInvoicesProvider().invoicesMain
+  List<TempInvoice> getInvoices({BuildContext? context}) {
+    return returnInvoicesProvider(context: context)
+        .invoicesMain
         .where((item) => item.customerUuid == uuid)
         .toList();
   }
 
-  double getTotalDebt() {
-    return getInvoices()
+  List<TempInvoice> getUnpaidInvoices({
+    BuildContext? context,
+  }) {
+    return getInvoices(
+      context: context,
+    ).where((item) => item.getBalance() != 0).toList();
+  }
+
+  double getTotalDebt({BuildContext? context}) {
+    return getInvoices(context: context)
         .map((item) => item.getBalance())
         .fold(0, (a, b) => a + b);
   }

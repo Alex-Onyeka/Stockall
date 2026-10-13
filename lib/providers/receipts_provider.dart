@@ -8,7 +8,6 @@ import 'package:stockall/classes/temp_main_receipt/unsynced/created_receipts/cre
 import 'package:stockall/classes/temp_main_receipt/unsynced/deleted_customers/deleted_receipts.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
-import 'package:stockall/classes/temp_product_slaes_record/unsynced/created_records/created_records.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
@@ -17,7 +16,6 @@ import 'package:stockall/local_database/main_receipt/unsync_funcs/created/create
 import 'package:stockall/local_database/main_receipt/unsync_funcs/deleted/deleted_receipts_func.dart';
 import 'package:stockall/local_database/main_receipt/unsync_funcs/updated/updated_receipts_func.dart';
 import 'package:stockall/local_database/product_record_func.dart/product_record_func.dart';
-import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/created/created_records_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/general_report/class/general_report_class.dart';
 import 'package:stockall/pages/report/receipt_sales_report/platforms/receipt_sales_report_desktop.dart';
@@ -58,14 +56,8 @@ class ReceiptsProvider extends ChangeNotifier {
 
   void clearReceipts() {
     _receipts.clear();
-    clearRecords();
     mainLocalLog('Receipts Cleared');
     notifyListeners();
-  }
-
-  void clearRecords() {
-    produtRecordSalesMain.clear();
-    // notifyListeners();
   }
 
   bool isLoaded = false;
@@ -94,9 +86,10 @@ class ReceiptsProvider extends ChangeNotifier {
       notifyListeners();
       if (receipt.customerUuid != null) {
         if (returnShopProvider()
-                .userShop()
-                ?.manageCustomerReward ==
-            true) {
+                    .userShop()
+                    ?.manageCustomerReward ==
+                true &&
+            !receipt.isInvoice) {
           CustomerAccountReceipts customerAccountReceipt =
               CustomerAccountReceipts(
                 receiptUuid: receipt.uuid,
@@ -190,64 +183,6 @@ class ReceiptsProvider extends ChangeNotifier {
           await mainLocalLog(
             '💖💖👏🥰 Single Receipt Loaded',
           );
-          List<TempProductSaleRecord> records =
-              _sales
-                  .where(
-                    (sale) =>
-                        sale.receiptUuid ==
-                        tempMainReceipt.uuid,
-                  )
-                  .toList();
-          if (records.isEmpty) {
-            final data = await supabase
-                .from('product_sales')
-                .select()
-                .eq('receipt_uuid', tempMainReceipt.uuid!)
-                .order('created_at', ascending: false);
-            if (data.isEmpty) {
-              await mainLocalLog(
-                'No Sales Records Found From Single Receipt Fetch',
-              );
-              return;
-            } else {
-              List<TempProductSaleRecord> tempRecords =
-                  data
-                      .map(
-                        (item) =>
-                            TempProductSaleRecord.fromJson(
-                              item,
-                            ),
-                      )
-                      .toList();
-              for (var item in tempRecords) {
-                TempProductSaleRecord? existingSalesRecord =
-                    _sales
-                            .where(
-                              (rec) =>
-                                  rec.uuid == item.uuid,
-                            )
-                            .isNotEmpty
-                        ? _sales
-                            .where(
-                              (rec) =>
-                                  rec.uuid == item.uuid,
-                            )
-                            .first
-                        : null;
-                if (existingSalesRecord != null) {
-                  await mainLocalLog(
-                    '💖💖👏🥰SalesRecord Exists',
-                  );
-                  _sales.remove(existingSalesRecord);
-                }
-                _sales.add(item);
-              }
-              _sales.sort(
-                (a, b) =>
-                    b.createdAt.compareTo(a.createdAt),
-              );
-            }
-          }
         }
         notifyListeners();
       }
@@ -345,9 +280,9 @@ class ReceiptsProvider extends ChangeNotifier {
     await returnData().getProductsOffline(
       returnShopProvider().userShop()!.shopId!,
     );
-    await loadProductSalesRecordOffline(
-      returnShopProvider().userShop()!.shopId!,
-    );
+    // await loadProductSalesRecordOffline(
+    //   returnShopProvider().userShop()!.shopId!,
+    // );
     notifyListeners();
 
     notifyListeners();
@@ -422,7 +357,7 @@ class ReceiptsProvider extends ChangeNotifier {
         );
       }
       await ProductRecordFunc().deleteRecordsInReceipt(
-        receipt.uuid!,
+        receipt: receipt,
       );
       // }
       if (productNames.isNotEmpty) {
@@ -473,36 +408,41 @@ class ReceiptsProvider extends ChangeNotifier {
   }
 
   // DELETE a receipt
-  Future<void> deleteReceiptWithoutUpdatingInventory(
-    String uuid,
-    // BuildContext context,
-  ) async {
+  Future<void> deleteReceiptWithoutUpdatingInventory({
+    required TempMainReceipt receipt,
+  }) async {
     await mainLocalLog('Deleting Receipt 2');
     await mainLocalLog('Deleting Receipt Offline');
-    await MainReceiptFunc().deleteReceipt(uuid);
+    await MainReceiptFunc().deleteReceipt(
+      receipt.uuid ?? '',
+    );
     var containsCreated =
         CreatedReceiptsFunc()
             .getReceipts()
-            .where((rec) => rec.receipt.uuid == uuid)
+            .where(
+              (rec) => rec.receipt.uuid == receipt.uuid,
+            )
             .toList();
     var containsUpdate = UpdatedReceiptsFunc()
         .getReceiptIds()
-        .where((rec) => rec.receiptUuid == uuid);
+        .where((rec) => rec.receiptUuid == receipt.uuid);
     if (containsCreated.isNotEmpty) {
-      await CreatedReceiptsFunc().deleteReceipt(uuid);
+      await CreatedReceiptsFunc().deleteReceipt(
+        receipt.uuid ?? '',
+      );
     } else {
       await DeletedReceiptsFunc().createDeletedReceipt(
-        DeletedReceipts(receiptUuid: uuid),
+        DeletedReceipts(receiptUuid: receipt.uuid ?? ''),
       );
     }
     if (containsUpdate.isNotEmpty) {
       await UpdatedReceiptsFunc().deleteUpdatedReceipt(
-        uuid,
+        receipt.uuid ?? '',
       );
     }
     await ProductRecordFunc()
         .deleteRecordsInReceiptWithoutUpdatingInventory(
-          uuid,
+          receipt: receipt,
         );
     // }
 
@@ -694,58 +634,75 @@ class ReceiptsProvider extends ChangeNotifier {
   //
 
   List<TempProductSaleRecord> _sales = [];
-  List<TempProductSaleRecord> get produtRecordSalesMain =>
-      _sales;
+
+  List<TempProductSaleRecord> get mainSales => _sales;
+
+  List<TempProductSaleRecord> salesReceipts() {
+    return receipts
+        .expand((item) => item.getItems())
+        .toList();
+    // return _salesReceipts;
+  }
 
   List<TempProductSaleRecord> getProductRecordsNoVoid() {
-    return _sales
+    return salesReceipts()
         .where((item) => item.isVoid != true)
         .toList();
   }
 
   List<TempProductSaleRecord> getProductRecordsVoid() {
-    return _sales
+    return salesReceipts()
         .where((item) => item.isVoid == true)
         .toList();
   }
 
-  // CREATE a new product sale record
-  Future<void> createProductSaleRecord({
-    required List<TempProductSaleRecord> records,
-    required bool isPartPayment,
-  }) async {
-    try {
-      await mainLocalLog(
-        'About to Create Product Sales Offline: ${records.length}',
-      );
-      var newRecords =
-          records.map((rec) {
-            mainLocalLog(
-              'Record to Create: ${rec.productName}',
-            );
-
-            return rec;
-          }).toList();
-      if (!isPartPayment) {
-        await ProductRecordFunc().insertSalesProductRecords(
-          newRecords,
-        );
-      }
-      List<CreatedRecords> cRecords =
-          newRecords.map((r) {
-            return CreatedRecords(record: r);
-          }).toList();
-      await CreatedRecordsFunc().insertAllRecords(cRecords);
-      await loadProductSalesRecordOffline(shopId());
-      await mainLocalLog(
-        'Finished Creating Product Sales Offline',
-      );
-    } catch (e) {
-      await mainLocalLog('Error ${e.toString()}');
-    }
-
-    notifyListeners();
+  List<TempProductSaleRecord> salesInvoice({
+    BuildContext? context,
+  }) {
+    return returnInvoicesProvider(context: context)
+        .invoicesMain
+        .expand((item) => item.getItems())
+        .toList();
+    // return _sales;
   }
+
+  // CREATE a new product sale record
+  // Future<void> createProductSaleRecord({
+  //   required List<TempProductSaleRecord> records,
+  //   required bool isPartPayment,
+  // }) async {
+  //   try {
+  //     await mainLocalLog(
+  //       'About to Create Product Sales Offline: ${records.length}',
+  //     );
+  //     var newRecords =
+  //         records.map((rec) {
+  //           mainLocalLog(
+  //             'Record to Create: ${rec.productName}',
+  //           );
+
+  //           return rec;
+  //         }).toList();
+  //     if (!isPartPayment) {
+  //       await ProductRecordFunc().insertSalesProductRecords(
+  //         newRecords,
+  //       );
+  //     }
+  //     List<CreatedRecords> cRecords =
+  //         newRecords.map((r) {
+  //           return CreatedRecords(record: r);
+  //         }).toList();
+  //     await CreatedRecordsFunc().insertAllRecords(cRecords);
+  //     // await loadProductSalesRecordOffline(shopId());
+  //     await mainLocalLog(
+  //       'Finished Creating Product Sales Offline',
+  //     );
+  //   } catch (e) {
+  //     await mainLocalLog('Error ${e.toString()}');
+  //   }
+
+  //   notifyListeners();
+  // }
 
   // READ sales for a shop
   Future<List<TempProductSaleRecord>>
@@ -814,114 +771,114 @@ class ReceiptsProvider extends ChangeNotifier {
     return _sales;
   }
 
-  // UPDATE a sale record
-  Future<void> updateProductSaleRecord(
-    TempProductSaleRecord record,
-    BuildContext context,
-  ) async {
-    // Use toJson but remove the ID because you don't update the primary key
-    final updateData = record.toJson()..remove('uuid');
+  // // UPDATE a sale record
+  // Future<void> updateProductSaleRecord(
+  //   TempProductSaleRecord record,
+  //   BuildContext context,
+  // ) async {
+  //   // Use toJson but remove the ID because you don't update the primary key
+  //   final updateData = record.toJson()..remove('uuid');
 
-    await supabase
-        .from('product_sales')
-        .update(updateData)
-        .eq('uuid', record.uuid!);
+  //   await supabase
+  //       .from('product_sales')
+  //       .update(updateData)
+  //       .eq('uuid', record.uuid!);
 
-    if (context.mounted) {
-      await loadProductSalesRecord(
-        returnShopProvider().userShop()!.shopId!,
-      );
-    }
-    notifyListeners();
-    // }
-  }
+  //   if (context.mounted) {
+  //     await loadProductSalesRecord(
+  //       returnShopProvider().userShop()!.shopId!,
+  //     );
+  //   }
+  //   notifyListeners();
+  //   // }
+  // }
 
-  // DELETE a sale record
-  Future<void> deleteProductSaleRecord(
-    String recordUuid,
-    BuildContext context,
-  ) async {
-    await supabase
-        .from('product_sales')
-        .delete()
-        .eq('uuid', recordUuid);
-    // _sales.removeWhere(
-    //   (r) => r.productRecordId == recordId,
-    // );
-    if (context.mounted) {
-      loadProductSalesRecord(
-        returnShopProvider().userShop()!.shopId!,
-      );
-    }
-    notifyListeners();
-  }
-
-  //
-  //
-  //
-  //
-  //
-  //
+  // // DELETE a sale record
+  // Future<void> deleteProductSaleRecord(
+  //   String recordUuid,
+  //   BuildContext context,
+  // ) async {
+  //   await supabase
+  //       .from('product_sales')
+  //       .delete()
+  //       .eq('uuid', recordUuid);
+  //   // _sales.removeWhere(
+  //   //   (r) => r.productRecordId == recordId,
+  //   // );
+  //   if (context.mounted) {
+  //     loadProductSalesRecord(
+  //       returnShopProvider().userShop()!.shopId!,
+  //     );
+  //   }
+  //   notifyListeners();
+  // }
 
   //
   //
   //
   //
   //
+  //
 
-  Future<void> createRecordsSync() async {
-    try {
-      bool isOnline = await connectivity.isOnline();
-      // Prepare batch payload
-      if (CreatedRecordsFunc().getRecords().isNotEmpty &&
-          isOnline) {
-        final tempRecords =
-            CreatedRecordsFunc().getRecords().toList();
-        var newRecords = tempRecords.map((rec) {
-          rec.record.createdAt =
-              rec.record.createdAt.toUtc();
-          return rec;
-        });
-        // final payload =
-        //     newRecords
-        //         .map((p) => p.record.toJson())
-        //         .toList();
-        int count = 0;
-        for (var item in newRecords) {
-          try {
-            await supabase
-                .from('product_sales')
-                .insert(item.record.toJson())
-                .select();
+  //
+  //
+  //
+  //
+  //
 
-            count++;
-            await CreatedRecordsFunc().deleteRecords(
-              item.record.uuid!,
-            );
-          } on PostgrestException catch (e) {
-            if (e.code == '23505') {
-              await CreatedRecordsFunc().deleteRecords(
-                item.record.uuid!,
-              );
-            }
-            await mainLocalLog(
-              '🎶🎶🤦‍♀️💖💋✅Error Synchronizing Product Sales Record ${item.record.productName}: $e',
-            );
-          }
-        }
+  // Future<void> createRecordsSync() async {
+  //   try {
+  //     bool isOnline = await connectivity.isOnline();
+  //     // Prepare batch payload
+  //     if (CreatedRecordsFunc().getRecords().isNotEmpty &&
+  //         isOnline) {
+  //       final tempRecords =
+  //           CreatedRecordsFunc().getRecords().toList();
+  //       var newRecords = tempRecords.map((rec) {
+  //         rec.record.createdAt =
+  //             rec.record.createdAt.toUtc();
+  //         return rec;
+  //       });
+  //       // final payload =
+  //       //     newRecords
+  //       //         .map((p) => p.record.toJson())
+  //       //         .toList();
+  //       int count = 0;
+  //       for (var item in newRecords) {
+  //         try {
+  //           await supabase
+  //               .from('product_sales')
+  //               .insert(item.record.toJson())
+  //               .select();
 
-        await mainLocalLog(
-          '$count items added successfully ✅',
-        );
-        // await CreatedRecordsFunc().clearRecords();
-        await mainLocalLog('Unsynced Records Cleared');
-      }
-    } catch (e) {
-      await mainLocalLog(
-        'Batch Sales Records insert failed ❌: $e',
-      );
-    }
-  }
+  //           count++;
+  //           await CreatedRecordsFunc().deleteRecords(
+  //             item.record.uuid!,
+  //           );
+  //         } on PostgrestException catch (e) {
+  //           if (e.code == '23505') {
+  //             await CreatedRecordsFunc().deleteRecords(
+  //               item.record.uuid!,
+  //             );
+  //           }
+  //           await mainLocalLog(
+  //             '🎶🎶🤦‍♀️💖💋✅Error Synchronizing Product Sales Record ${item.record.productName}: $e',
+  //           );
+  //         }
+  //       }
+
+  //       await mainLocalLog(
+  //         '$count items added successfully ✅',
+  //       );
+  //       // await CreatedRecordsFunc().clearRecords();
+  //       await mainLocalLog('Unsynced Records Cleared');
+  //     }
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       'Batch Sales Records insert failed ❌: $e',
+  //     );
+  //   }
+  // }
 
   List<TempMainReceipt> departmentReceipts() {
     if (returnShopProvider()
@@ -1104,17 +1061,15 @@ class ReceiptsProvider extends ChangeNotifier {
     } else if (paymentMethod == 1) {
       return returnReceiptsBasedOnPaymentMethod()
           .where(
-            (rec) => rec.showsPaymentMethod(
-              PaymentMethods.cash,
-            ),
+            (rec) =>
+                rec.showsPaymentMethod(PaymentMethods.cash),
           )
           .toList();
     } else if (paymentMethod == 2) {
       return returnReceiptsBasedOnPaymentMethod()
           .where(
-            (rec) => rec.showsPaymentMethod(
-              PaymentMethods.bank,
-            ),
+            (rec) =>
+                rec.showsPaymentMethod(PaymentMethods.bank),
           )
           .toList();
     } else if (paymentMethod == 4) {
@@ -1244,7 +1199,8 @@ class ReceiptsProvider extends ChangeNotifier {
                 : 1 / payments.length;
 
         group.number++;
-        group.totalBalance += (receipt.balance ?? 0) * share;
+        group.totalBalance +=
+            (receipt.balance ?? 0) * share;
         group.totalOriginalCost +=
             (receipt.originalCost ?? 0) * share;
         group.totalRevenue += payment.amount;
@@ -1696,7 +1652,7 @@ class ReceiptsProvider extends ChangeNotifier {
           departmentUuid:
               items.first.departmentUuid ??
               'Department Not Set',
-          staffName: items.first.staffName,
+          staffName: items.first.staffName ?? '',
           staffUuid: items.first.staffId,
         ),
       );
@@ -1842,7 +1798,7 @@ class ReceiptsProvider extends ChangeNotifier {
           departmentUuid:
               items.first.departmentUuid ??
               'Department Not Set',
-          staffName: items.first.staffName,
+          staffName: items.first.staffName ?? 'Not Set',
           staffUuid: items.first.staffId,
         ),
       );
@@ -1979,7 +1935,7 @@ class ReceiptsProvider extends ChangeNotifier {
           departmentUuid:
               items.first.departmentUuid ??
               'Department Not Set',
-          staffName: items.first.staffName,
+          staffName: items.first.staffName ?? 'Not Set',
           staffUuid: items.first.staffId,
         ),
       );
@@ -2095,7 +2051,7 @@ class ReceiptsProvider extends ChangeNotifier {
         GeneralReportSalesSummaryItemStaff(
           itemName: first.productName,
           itemUuid: first.productUuid ?? 'unknown_product',
-          staffName: first.staffName,
+          staffName: first.staffName ?? 'Not Set',
           staffUuid: first.staffId,
           quantity: totalQuantity,
           totalCost: totalCost,

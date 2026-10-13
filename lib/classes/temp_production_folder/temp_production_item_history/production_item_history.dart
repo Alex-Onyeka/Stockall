@@ -55,6 +55,15 @@ class ProductionItemHistory {
   @HiveField(16)
   String? primaryUnit;
 
+  @HiveField(17)
+  String? event;
+
+  @HiveField(18)
+  bool? isManaged;
+
+  @HiveField(19)
+  String? source;
+
   ProductionItemHistory({
     this.uuid,
     this.createdAt,
@@ -73,6 +82,9 @@ class ProductionItemHistory {
     required this.isIncreased,
     this.unit,
     this.primaryUnit,
+    required this.event,
+    required this.isManaged,
+    required this.source,
   });
 
   factory ProductionItemHistory.fromJson(
@@ -100,6 +112,9 @@ class ProductionItemHistory {
       isIncreased: json['is_increased'] as bool,
       unit: json['unit'] as String?,
       primaryUnit: json['primary_unit'] as String?,
+      event: json['event'] as String?,
+      isManaged: json['is_managed'] as bool?,
+      source: json['source'] as String?,
     );
   }
 
@@ -122,6 +137,9 @@ class ProductionItemHistory {
       'is_increased': isIncreased,
       'unit': unit,
       'primary_unit': primaryUnit,
+      'event': event,
+      'is_managed': isManaged,
+      'source': source,
     };
   }
 }

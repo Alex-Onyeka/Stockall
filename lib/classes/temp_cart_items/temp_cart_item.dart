@@ -68,6 +68,15 @@ class TempCartItem extends HiveObject {
   @HiveField(18)
   String? priceUuid;
 
+  @HiveField(19)
+  double? widthDimension;
+
+  @HiveField(20)
+  double? heightDimension;
+
+  @HiveField(21)
+  int? quantityType;
+
   TempCartItem({
     required this.item,
     required this.itemUuid,
@@ -88,29 +97,10 @@ class TempCartItem extends HiveObject {
     this.remainingBalance,
     required this.unitUuid,
     required this.priceUuid,
+    required this.widthDimension,
+    required this.heightDimension,
+    required this.quantityType,
   });
-
-  Map<String, dynamic> toJson() => {
-    'item': item.toJson(isIncludeQuantity: true),
-    'item_uuid': itemUuid,
-    'discount': discount,
-    'fixed_discount': fixedDiscount,
-    'quantity': quantity,
-    'customPrice': customPrice,
-    'setCustomPrice': setCustomPrice,
-    'setTotalPrice': setTotalPrice,
-    'addToStock': addToStock,
-    'salesRecordId': salesRecordId,
-    'use_whole_sale_price': useWholeSalePrice,
-    'sell_group': useGroupQuantity,
-    'qtty_per_group': qttyPerGroup,
-    'is_void': isVoid,
-    'uuid': uuid,
-    'remaining_quantity': remainingQuantity,
-    'remaining_balance': remainingBalance,
-    'unit_uuid': unitUuid,
-    'price_uuid': priceUuid,
-  };
 
   factory TempCartItem.fromJson(Map<String, dynamic> json) {
     return TempCartItem(
@@ -133,8 +123,38 @@ class TempCartItem extends HiveObject {
       remainingQuantity: json['remaining_quantity'],
       unitUuid: json['unit_uuid'],
       priceUuid: json['price_uuid'],
+      widthDimension:
+          (json['width_dimension'] as num?)?.toDouble(),
+      heightDimension:
+          (json['height_dimension'] as num?)?.toDouble(),
+      quantityType: json['quantity_type'] as int?,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'item': item.toJson(isIncludeQuantity: true),
+    'item_uuid': itemUuid,
+    'discount': discount,
+    'fixed_discount': fixedDiscount,
+    'quantity': quantity,
+    'customPrice': customPrice,
+    'setCustomPrice': setCustomPrice,
+    'setTotalPrice': setTotalPrice,
+    'addToStock': addToStock,
+    'salesRecordId': salesRecordId,
+    'use_whole_sale_price': useWholeSalePrice,
+    'sell_group': useGroupQuantity,
+    'qtty_per_group': qttyPerGroup,
+    'is_void': isVoid,
+    'uuid': uuid,
+    'remaining_quantity': remainingQuantity,
+    'remaining_balance': remainingBalance,
+    'unit_uuid': unitUuid,
+    'price_uuid': priceUuid,
+    'width_dimension': widthDimension,
+    'height_dimension': heightDimension,
+    'quantity_type': quantityType,
+  };
 
   TempCartItem copyWith({
     TempProductClass? item,
@@ -156,6 +176,9 @@ class TempCartItem extends HiveObject {
     double? remainingBalance,
     String? unitUuid,
     String? priceUuid,
+    double? widthDimension,
+    double? heightDimension,
+    int? quantityType,
   }) {
     return TempCartItem(
       item: item ?? this.item,
@@ -181,6 +204,10 @@ class TempCartItem extends HiveObject {
           remainingBalance ?? this.remainingBalance,
       unitUuid: unitUuid ?? this.unitUuid,
       priceUuid: priceUuid ?? this.priceUuid,
+      widthDimension: widthDimension ?? this.widthDimension,
+      heightDimension:
+          heightDimension ?? this.heightDimension,
+      quantityType: quantityType ?? this.quantityType,
     );
   }
 
@@ -379,16 +406,21 @@ class TempCartItem extends HiveObject {
               index: 1,
               product: item,
               newQuantity: quantity,
+              customWidth: widthDimension,
+              customHeight: heightDimension,
             );
       }
     } else {
       final selectedPrice = getSelectedPrice();
-      if ((selectedPrice.priceType ?? 1) == 1) {
+      if ((selectedPrice.priceType ?? 1) == 1 ||
+          item.quantityType == 2) {
         return selectedPrice.priceValue *
             getSelectedUnit().getQuantityEquivMultiplied(
               index: 1,
               product: item,
               newQuantity: quantity,
+              customWidth: widthDimension,
+              customHeight: heightDimension,
             );
       } else {
         return selectedPrice.priceValue * quantity;
@@ -409,7 +441,10 @@ class TempCartItem extends HiveObject {
     return revenue() /
         getSelectedUnit().getQuantityEquivMultiplied(
           index: 1,
+          product: item,
           newQuantity: quantity,
+          customWidth: widthDimension,
+          customHeight: heightDimension,
         );
   }
 
@@ -419,7 +454,10 @@ class TempCartItem extends HiveObject {
         : (getItem()?.costPrice ?? 0) *
             getSelectedUnit().getQuantityEquivMultiplied(
               index: 1,
+              product: item,
               newQuantity: quantity,
+              customWidth: widthDimension,
+              customHeight: heightDimension,
             );
   }
 
@@ -435,6 +473,8 @@ class TempCartItem extends HiveObject {
             index: 1,
             product: item,
             newQuantity: quantity,
+            customWidth: widthDimension,
+            customHeight: heightDimension,
           ));
       // }
     } else {
@@ -445,15 +485,23 @@ class TempCartItem extends HiveObject {
   double getRealQuantity() {
     return getSelectedUnit().getQuantityEquivMultiplied(
       index: 1,
+      product: item,
       newQuantity: quantity,
+      customWidth: widthDimension,
+      customHeight: heightDimension,
     );
   }
 
   double getRealQuantityDivided() {
     return getSelectedUnit().getQuantityEquivDivided(
       index: 1,
+      product: item,
       newQuantity: quantity,
     );
+  }
+
+  String dimensionsLabel() {
+    return formatDimensionsLabel(widthDimension, heightDimension);
   }
 
   String getUnit() {

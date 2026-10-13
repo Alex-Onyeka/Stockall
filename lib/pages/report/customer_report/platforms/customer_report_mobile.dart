@@ -19,19 +19,19 @@ class CustomerReportMobile extends StatefulWidget {
 
 class _CustomerReportMobileState
     extends State<CustomerReportMobile> {
-  late Future<List<TempProductSaleRecord>>
-  productRecordFuture;
-  Future<List<TempProductSaleRecord>>
-  getProductRecord() async {
-    var tempEx = await returnReceiptProvider(
-      context,
-      listen: false,
-    ).loadProductSalesRecord(
-      returnShopProvider().userShop()!.shopId!,
-    );
+  // late Future<List<TempProductSaleRecord>>
+  // productRecordFuture;
+  // Future<List<TempProductSaleRecord>>
+  // getProductRecord() async {
+  //   var tempEx = await returnReceiptProvider(
+  //     context,
+  //     listen: false,
+  //   ).loadProductSalesRecord(
+  //     returnShopProvider().userShop()!.shopId!,
+  //   );
 
-    return tempEx;
-  }
+  //   return tempEx;
+  // }
 
   int sortIndex = 1;
 
@@ -53,7 +53,7 @@ class _CustomerReportMobileState
         listen: false,
       ).clearDate();
     });
-    productRecordFuture = getProductRecord();
+    // productRecordFuture = getProductRecord();
   }
 
   @override

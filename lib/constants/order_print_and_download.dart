@@ -369,7 +369,7 @@ Future<Uint8List> _buildPdfRollOrder({
                                 style: pw.TextStyle(
                                   fontSize: parText,
                                 ),
-                                '${record.productName} ',
+                                '${record.productName}${record.dimensionsLabel()} ',
                               ),
                               // Partly delivered, as flagged on the order item tile.
                               if ((record.remainingQuantity ??

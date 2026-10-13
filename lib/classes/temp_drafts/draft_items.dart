@@ -84,6 +84,15 @@ class DraftItems extends HiveObject {
   @HiveField(25)
   double? revenue;
 
+  @HiveField(26)
+  double? widthDimension;
+
+  @HiveField(27)
+  double? heightDimension;
+
+  @HiveField(28)
+  int? quantityType;
+
   DraftItems({
     required this.uuid,
     required this.draftId,
@@ -111,6 +120,9 @@ class DraftItems extends HiveObject {
     required this.costPrice,
     required this.isProductManaged,
     required this.revenue,
+    required this.widthDimension,
+    required this.heightDimension,
+    required this.quantityType,
   });
 
   factory DraftItems.fromJson(Map<String, dynamic> json) {
@@ -162,6 +174,11 @@ class DraftItems extends HiveObject {
       costPrice: (json['cost_price'] as num?)?.toDouble(),
       isProductManaged: json['is_product_managed'] as bool?,
       revenue: (json['revenue'] as num?)?.toDouble(),
+      widthDimension:
+          (json['width_dimension'] as num?)?.toDouble(),
+      heightDimension:
+          (json['height_dimension'] as num?)?.toDouble(),
+      quantityType: json['quantity_type'] as int?,
     );
   }
 
@@ -190,11 +207,16 @@ class DraftItems extends HiveObject {
           (unitsList ?? []).map((e) => e.toJson()).toList(),
       'price_uuid': priceUuid,
       'prices_list':
-          (pricesList ?? []).map((e) => e.toJson()).toList(),
+          (pricesList ?? [])
+              .map((e) => e.toJson())
+              .toList(),
       'selling_price': sellingPrice,
       'cost_price': costPrice,
       'is_product_managed': isProductManaged,
       'revenue': revenue,
+      'width_dimension': widthDimension,
+      'height_dimension': heightDimension,
+      'quantity_type': quantityType,
     };
   }
 }

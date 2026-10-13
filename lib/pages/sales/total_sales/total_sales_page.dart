@@ -37,7 +37,7 @@ class _TotalSalesPageState extends State<TotalSalesPage> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < mobileScreen) {
+        if (constraints.maxWidth < mobileScreen + 100) {
           return TotalSalesMobile(
             id: widget.id,
             customerUuid: widget.customerUuid,

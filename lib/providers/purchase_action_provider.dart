@@ -151,13 +151,8 @@ class PurchaseActionProvider extends ChangeNotifier {
                   ),
                 ],
       );
-      var purchaseRes = await returnPurchaseProvider()
-          .createPurchase(tempPurchase);
-
-      if (purchaseRes == null) {
-        return 0;
-      }
-
+      // Built before the purchase is saved so the same lines are
+      // stored in purchase.items and in item_purchase_records.
       List<TempItemPurchaseRecord> purchaseRecords =
           purchaseListItems
               .map(
@@ -186,6 +181,15 @@ class PurchaseActionProvider extends ChangeNotifier {
                 ),
               )
               .toList();
+      tempPurchase.items = purchaseRecords;
+
+      var purchaseRes = await returnPurchaseProvider()
+          .createPurchase(tempPurchase);
+
+      if (purchaseRes == null) {
+        return 0;
+      }
+
       if (purchase != null) {
         await returnData().getProducts(shopId());
       }
@@ -219,15 +223,16 @@ class PurchaseActionProvider extends ChangeNotifier {
     required BuildContext context,
   }) {
     try {
-      List<TempItemPurchaseRecord> records =
-          returnPurchaseProvider().itemPurchaseRecords
-              .where(
-                (rec) => rec.purchaseId == purchase.uuid,
-              )
-              .toList();
+      // List<TempItemPurchaseRecord> records =
+      //     returnPurchaseProvider()
+      //         .itemPurchaseRecords()
+      //         .where(
+      //           (rec) => rec.purchaseId == purchase.uuid,
+      //         )
+      //         .toList();
 
       List<PurchaseListItem> itemList =
-          records
+          (purchase.items ?? [])
               .map(
                 (item) => PurchaseListItem(
                   unitUuid: item.unitUuid,

@@ -43,6 +43,9 @@ void main() {
       costPrice: 100,
       isProductManaged: true,
       revenue: 2850,
+      widthDimension: null,
+      heightDimension: null,
+      quantityType: null,
     );
   }
 

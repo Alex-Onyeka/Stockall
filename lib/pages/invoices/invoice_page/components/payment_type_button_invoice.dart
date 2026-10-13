@@ -313,6 +313,7 @@ class PaymentMethodSectionInvoice extends StatefulWidget {
   final TextEditingController cashController;
   final TextEditingController bankController;
   final double mainValue;
+  final bool? isCustomerAllPayment;
 
   const PaymentMethodSectionInvoice({
     super.key,
@@ -320,6 +321,7 @@ class PaymentMethodSectionInvoice extends StatefulWidget {
     required this.bankController,
     required this.invoice,
     required this.mainValue,
+    this.isCustomerAllPayment,
   });
 
   @override
@@ -404,17 +406,20 @@ class _PaymentMethodSectionInvoiceState
                 },
               ),
             ),
-            PaymentTypeButtonInvoice(
-              mainValue: widget.mainValue,
-              bankController: widget.bankController,
-              cashController: widget.cashController,
-              invoice: widget.invoice,
-              index: 2,
-              action: () {
-                widget.cashController.text =
-                    widget.mainValue.toString();
-                widget.bankController.text = '0.0';
-              },
+            Visibility(
+              visible: widget.isCustomerAllPayment != true,
+              child: PaymentTypeButtonInvoice(
+                mainValue: widget.mainValue,
+                bankController: widget.bankController,
+                cashController: widget.cashController,
+                invoice: widget.invoice,
+                index: 2,
+                action: () {
+                  widget.cashController.text =
+                      widget.mainValue.toString();
+                  widget.bankController.text = '0.0';
+                },
+              ),
             ),
           ],
         ),

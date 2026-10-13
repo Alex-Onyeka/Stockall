@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_departments_class/department_class.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_item_history/production_item_history.dart';
+import 'package:stockall/classes/temp_production_folder/temp_production_item_history/production_item_history_event_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_items/production_item.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -709,7 +711,9 @@ void selectItemInADepartmentsProduction({
                             TempProductClass newProduct =
                                 oldProduct.copyWith();
                             newProduct.quantity =
-                                (newProduct.quantity ?? 0) +
+                                (newProduct
+                                        .getActualQuantity() ??
+                                    0) +
                                 mainProductionItem
                                     .getProductUnit(
                                       unitUuid: unitUuid,
@@ -721,6 +725,14 @@ void selectItemInADepartmentsProduction({
                                     );
                             ItemHistory
                             itemHistory = ItemHistory(
+                              event:
+                                  ItemHistoryEventClass
+                                      .transferedIn,
+                              source:
+                                  ItemHistoryEventClass
+                                      .productionSource,
+                              isManaged:
+                                  newProduct.isManaged,
                               shopId: shopId(),
                               isIncreased: true,
                               departmentName:
@@ -740,7 +752,7 @@ void selectItemInADepartmentsProduction({
                                       index: 1,
                                       newQuantity:
                                           (newProduct
-                                                  .quantity ??
+                                                  .getActualQuantity() ??
                                               0),
                                     ),
                               ),
@@ -751,7 +763,7 @@ void selectItemInADepartmentsProduction({
                                       index: 1,
                                       newQuantity:
                                           (oldProduct
-                                                  .quantity ??
+                                                  .getActualQuantity() ??
                                               0),
                                     ),
                               ),
@@ -807,6 +819,15 @@ void selectItemInADepartmentsProduction({
                                         ));
                             ProductionItemHistory
                             productionItemHistory2 = ProductionItemHistory(
+                              event:
+                                  ProductionItemHistoryEventClass
+                                      .transferedOut,
+                              source:
+                                  ProductionItemHistoryEventClass
+                                      .departmentSource,
+                              isManaged:
+                                  mainProductionItem
+                                      .isManaged,
                               shopId: shopId(),
                               isIncreased: false,
                               desc:
@@ -1371,7 +1392,9 @@ void selectItemInAShopProduction({
                         TempProductClass newProduct =
                             oldProduct.copyWith();
                         newProduct.quantity =
-                            (newProduct.quantity ?? 0) +
+                            (newProduct
+                                    .getActualQuantity() ??
+                                0) +
                             mainProductionItem
                                 .getProductUnit(
                                   unitUuid: unitUuid,
@@ -1382,6 +1405,13 @@ void selectItemInAShopProduction({
                                 );
                         ItemHistory
                         productionItemHistory = ItemHistory(
+                          event:
+                              ItemHistoryEventClass
+                                  .transferedIn,
+                          source:
+                              ItemHistoryEventClass
+                                  .branchStoreSource,
+                          isManaged: newProduct.isManaged,
                           desc:
                               'Item Quantity Received From Transfer - From Production Item Name: ${mainProductionItem.name}. Shop Name: ${returnShopProvider().userShop()?.name}.',
                           shopId: shop.shopId!,
@@ -1402,7 +1432,7 @@ void selectItemInAShopProduction({
                                   product: newProduct,
                                   newQuantity:
                                       (newProduct
-                                              .quantity ??
+                                              .getActualQuantity() ??
                                           0),
                                 ),
                           ),
@@ -1414,7 +1444,7 @@ void selectItemInAShopProduction({
                                   product: oldProduct,
                                   newQuantity:
                                       (oldProduct
-                                              .quantity ??
+                                              .getActualQuantity() ??
                                           0),
                                 ),
                           ),
@@ -1454,6 +1484,14 @@ void selectItemInAShopProduction({
                                     ));
                         ProductionItemHistory
                         productionItemHistory2 = ProductionItemHistory(
+                          event:
+                              ProductionItemHistoryEventClass
+                                  .transferedOut,
+                          source:
+                              ProductionItemHistoryEventClass
+                                  .branchStoreSource,
+                          isManaged:
+                              mainProductionItem.isManaged,
                           shopId: shopId(),
                           isIncreased: false,
                           desc:
@@ -1716,7 +1754,7 @@ void selectItemInAShopProduction({
                                                                   fontWeight:
                                                                       FontWeight.bold,
                                                                 ),
-                                                                '${item.quantity ?? 0}',
+                                                                '${item.getActualQuantity() ?? 0}',
                                                               ),
                                                               Container(
                                                                 padding: EdgeInsets.all(

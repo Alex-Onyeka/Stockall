@@ -72,6 +72,10 @@ class _BarcodeAndSearchTextFieldState
                           // isEdit: false,
                           context: context,
                           newItem: TempCartItem(
+                            heightDimension: null,
+                            widthDimension: null,
+                            quantityType:
+                                items.first.quantityType,
                             priceUuid: null,
                             unitUuid: null,
                             uuid: uuidGen(),

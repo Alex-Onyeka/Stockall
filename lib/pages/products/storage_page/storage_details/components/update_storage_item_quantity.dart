@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_departments_class/department_class.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_storage_item_history/storage_item_history.dart';
+import 'package:stockall/classes/temp_storage_item_history/storage_item_history_event_class.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -206,7 +208,7 @@ class _StorageQuantityUpdateWidgetState
                                 .replaceAll(',', ''),
                           ),
                         ) >
-                    (pro.quantity ?? 0)) {
+                    (pro.getActualQuantity() ?? 0)) {
                   quantityController.text = '0';
                 }
               }
@@ -462,7 +464,8 @@ class _StorageQuantityUpdateWidgetState
                                     tempProducts.first;
                                 if (!returnStorageProductProvider()
                                     .isGroupUnit) {
-                                  if ((pro.quantity ?? 0) <
+                                  if ((pro.getActualQuantity() ??
+                                          0) <
                                       (double.tryParse(
                                             (quantityController
                                                 .text
@@ -478,7 +481,9 @@ class _StorageQuantityUpdateWidgetState
                                     });
                                   }
                                 } else {
-                                  if ((pro.quantity ?? 0) <
+                                  if ((pro
+                                              .getActualQuantity() ??
+                                          0) <
                                       (((double.tryParse(
                                                 (quantityController
                                                     .text
@@ -877,7 +882,7 @@ class _StorageQuantityUpdateWidgetState
 
                               final salesOldQuantity =
                                   originalProduct
-                                      ?.quantity ??
+                                      ?.getActualQuantity() ??
                                   0;
 
                               final storageOldQty =
@@ -918,7 +923,8 @@ class _StorageQuantityUpdateWidgetState
                                         ) ??
                                     0;
                                 newPr?.quantity =
-                                    (newPr.quantity ?? 0) -
+                                    (newPr.getActualQuantity() ??
+                                        0) -
                                     equivQuantityForProduct;
                               } else if (currentIndex ==
                                   1) {
@@ -933,17 +939,28 @@ class _StorageQuantityUpdateWidgetState
                                           enteredQuantity,
                                     );
                                 newPr?.quantity =
-                                    (newPr.quantity ?? 0) +
+                                    (newPr.getActualQuantity() ??
+                                        0) +
                                     equivQuantityForProduct;
                               }
 
                               final salesNewQuantity =
-                                  newPr?.quantity ?? 0;
+                                  newPr
+                                      ?.getActualQuantity() ??
+                                  0;
 
                               if ((currentIndex != 2) &&
                                   newPr != null) {
                                 ItemHistory
                                 itemHistory = ItemHistory(
+                                  event:
+                                      ItemHistoryEventClass
+                                          .transferedIn,
+                                  isManaged:
+                                      newPr.isManaged,
+                                  source:
+                                      ItemHistoryEventClass
+                                          .storageSource,
                                   shopId: shopId(),
                                   isIncreased:
                                       salesNewQuantity >
@@ -1082,21 +1099,72 @@ class _StorageQuantityUpdateWidgetState
                                 }
                               }
 
+                              String title() {
+                                if (currentIndex == 0 &&
+                                    productUuid != null) {
+                                  return 'Return Item';
+                                } else if (currentIndex ==
+                                        0 &&
+                                    productUuid == null) {
+                                  return 'Stock In';
+                                } else if (currentIndex ==
+                                    1) {
+                                  return 'Stock Out';
+                                } else {
+                                  return 'Stock Updated';
+                                }
+                              }
+
+                              String event() {
+                                if (currentIndex == 0 &&
+                                    productUuid != null) {
+                                  return StorageItemHistoryEventClass
+                                      .returnEvent;
+                                } else if (currentIndex ==
+                                        0 &&
+                                    productUuid == null) {
+                                  return StorageItemHistoryEventClass
+                                      .stockIn;
+                                } else if (currentIndex ==
+                                    1) {
+                                  return StorageItemHistoryEventClass
+                                      .stockOut;
+                                } else {
+                                  return (storageNewQuantity ??
+                                              0) >
+                                          storageOldQty
+                                      ? StorageItemHistoryEventClass
+                                          .quantityUpdatedIncrease
+                                      : StorageItemHistoryEventClass
+                                          .quantityUpdatedDecrease;
+                                }
+                              }
+
+                              String source() {
+                                if (currentIndex == 0 &&
+                                    productUuid != null) {
+                                  return StorageItemHistoryEventClass
+                                      .productSource;
+                                } else if (currentIndex ==
+                                        0 &&
+                                    productUuid == null) {
+                                  return StorageItemHistoryEventClass
+                                      .quantityUpdatedIncrease;
+                                } else if (currentIndex ==
+                                    1) {
+                                  return StorageItemHistoryEventClass
+                                      .productSource;
+                                } else {
+                                  return StorageItemHistoryEventClass
+                                      .unKnownSource;
+                                }
+                              }
+
                               var storageItemHistory = StorageItemHistory(
+                                event: event(),
+                                source: source(),
                                 shopId: shopId(),
-                                title:
-                                    currentIndex == 0 &&
-                                            productUuid !=
-                                                null
-                                        ? 'Return Item'
-                                        : currentIndex ==
-                                                0 &&
-                                            productUuid ==
-                                                null
-                                        ? 'Stock In'
-                                        : currentIndex == 1
-                                        ? 'Stock Out'
-                                        : 'Stock Updated',
+                                title: title(),
                                 createdAt: DateTime.now(),
                                 salesDepartmentName:
                                     department?.name,

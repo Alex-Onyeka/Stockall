@@ -346,24 +346,8 @@ class _ReceiptDetailsContainerState
 
   @override
   Widget build(BuildContext context) {
-    var records =
-        returnReceiptProvider(context)
-            .getProductRecordsNoVoid()
-            .where(
-              (record) =>
-                  record.receiptUuid ==
-                  widget.mainReceipt.uuid!,
-            )
-            .toList();
-    var recordsVoid =
-        returnReceiptProvider(context)
-            .getProductRecordsVoid()
-            .where(
-              (record) =>
-                  record.receiptUuid ==
-                  widget.mainReceipt.uuid!,
-            )
-            .toList();
+    var records = widget.mainReceipt.getItemsNoVoid();
+    var recordsVoid = widget.mainReceipt.getItemsVoid();
     String? customer;
 
     try {
@@ -953,8 +937,9 @@ class _ReceiptDetailsContainerState
                                             Column(
                                               children: [
                                                 Visibility(
-                                                  visible:
-                                                      widget.mainReceipt.showsPaymentMethod(
+                                                  visible: widget
+                                                      .mainReceipt
+                                                      .showsPaymentMethod(
                                                         PaymentMethods.cash,
                                                       ),
                                                   child: Row(
@@ -988,8 +973,9 @@ class _ReceiptDetailsContainerState
                                                   ),
                                                 ),
                                                 Visibility(
-                                                  visible:
-                                                      widget.mainReceipt.showsPaymentMethod(
+                                                  visible: widget
+                                                      .mainReceipt
+                                                      .showsPaymentMethod(
                                                         PaymentMethods.bank,
                                                       ),
                                                   child: Row(
@@ -1023,8 +1009,9 @@ class _ReceiptDetailsContainerState
                                                   ),
                                                 ),
                                                 Visibility(
-                                                  visible:
-                                                      widget.mainReceipt.showsPaymentMethod(
+                                                  visible: widget
+                                                      .mainReceipt
+                                                      .showsPaymentMethod(
                                                         PaymentMethods.account,
                                                       ),
                                                   child: Row(
@@ -1339,7 +1326,7 @@ class _ReceiptDetailsContainerState
                                                           fontSize:
                                                               widget.theme.mobileTexts.b3.fontSize,
                                                         ),
-                                                        productRecord.productName,
+                                                        '${productRecord.productName}${productRecord.dimensionsLabel()}',
                                                       ),
                                                       Row(
                                                         children: [
@@ -1519,7 +1506,7 @@ class _ReceiptDetailsContainerState
                                                                 fontSize:
                                                                     widget.theme.mobileTexts.b3.fontSize,
                                                               ),
-                                                              productRecord.productName,
+                                                              '${productRecord.productName}${productRecord.dimensionsLabel()}',
                                                             ),
                                                             Text(
                                                               style: TextStyle(
@@ -1967,9 +1954,9 @@ class _ReceiptDetailsContainerState
                                     2) {
                                   await receiptP
                                       .deleteReceiptWithoutUpdatingInventory(
-                                        widget
-                                            .mainReceipt
-                                            .uuid!,
+                                        receipt:
+                                            widget
+                                                .mainReceipt,
                                       );
                                 } else if (widget
                                         .mainReceipt

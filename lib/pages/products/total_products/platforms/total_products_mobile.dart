@@ -14,6 +14,7 @@ import 'package:stockall/constants/scan_barcode.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
+import 'package:stockall/pages/products/bulk_upload/bulk_upload_products_page.dart';
 import 'package:stockall/pages/products/compnents/product_filter_button.dart';
 import 'package:stockall/pages/products/compnents/product_filter_button_category.dart';
 import 'package:stockall/pages/products/compnents/product_tile_main.dart';
@@ -136,24 +137,24 @@ class _TotalProductsMobileState
       switch (currentSelect) {
         case 1:
           return products
-              .where((p) => p.quantity != 0)
+              .where((p) => p.getActualQuantity() != 0)
               .toList();
         case 2:
           return products
               .where(
                 (p) =>
-                    p.quantity != null &&
-                    p.quantity! <= p.lowQtty! &&
-                    p.quantity != 0,
+                    p.getActualQuantity() != null &&
+                    p.getActualQuantity()! <= p.lowQtty! &&
+                    p.getActualQuantity() != 0,
               )
               .toList();
         case 3:
           return products
-              .where((p) => p.quantity == 0)
+              .where((p) => p.getActualQuantity() == 0)
               .toList();
         case 4:
           return products
-              .where((p) => p.quantity == null)
+              .where((p) => p.getActualQuantity() == null)
               .toList();
         case 5:
           return products
@@ -433,7 +434,33 @@ class _TotalProductsMobileState
                   authorized: Authorizations().addProduct,
                 ) &&
                 widget.categoryUuid == null,
-            child: FloatingActionButtonMain(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              spacing: 10,
+              children: [
+                FloatingActionButtonMain(
+                  action: () {
+                    ItemsAuthAction().numberOfItemsAction(
+                      context: context,
+                      action: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return BulkUploadProductsPage();
+                            },
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  color: theme.lightModeColor.secColor100,
+                  text: 'Bulk Upload',
+                  icon: Icons.upload_file_rounded,
+                  theme: theme,
+                ),
+                FloatingActionButtonMain(
               action: () {
                 ItemsAuthAction().numberOfItemsAction(
                   context: context,
@@ -456,6 +483,8 @@ class _TotalProductsMobileState
               color: theme.lightModeColor.secColor100,
               text: 'Add Products',
               theme: theme,
+                ),
+              ],
             ),
           ),
           floatingActionButtonLocation:

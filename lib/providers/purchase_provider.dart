@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_item_purchase_record/temp_item_purchase_record.dart';
-import 'package:stockall/classes/temp_item_purchase_record/unsynced/created_item_records/created_item_records.dart';
 import 'package:stockall/classes/temp_item_purchase_record/unsynced/deleted_item_records/deleted_item_records.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_purchase/temp_purchase.dart';
@@ -9,6 +9,7 @@ import 'package:stockall/classes/temp_purchase/unsynced/created_purchases/create
 import 'package:stockall/classes/temp_purchase/unsynced/deleted_purchase/deleted_purchases.dart';
 import 'package:stockall/classes/temp_purchase/unsynced/updated/updated_purchases.dart';
 import 'package:stockall/classes/temp_storage_item_history/storage_item_history.dart';
+import 'package:stockall/classes/temp_storage_item_history/storage_item_history_event_class.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
@@ -183,7 +184,6 @@ class PurchaseProvider extends ChangeNotifier {
   Future<List<TempPurchase>> loadPurchases(
     int shopId,
   ) async {
-    await loadItemPurchaseRecords(shopId);
     bool isOnline = await connectivity.isOnline();
     if (isOnline && PurchaseFunc().isSynced()) {
       await PurchaseFunc().clearPurchases();
@@ -205,7 +205,6 @@ class PurchaseProvider extends ChangeNotifier {
                 .toList();
         await PurchaseFunc().insertAllPurchases(_purchases);
         await mainLocalLog('Loaded');
-        await loadItemPurchaseRecords(shopId);
         notifyListeners();
       } catch (e) {
         await mainLocalLog(
@@ -215,22 +214,19 @@ class PurchaseProvider extends ChangeNotifier {
       }
     } else {
       _purchases = PurchaseFunc().getPurchases();
-      await loadItemPurchaseRecords(shopId);
       await mainLocalLog('Offline Purchases Gotten');
       notifyListeners();
     }
+    await loadItemPurchaseRecords(shopId);
     notifyListeners();
     return _purchases;
   }
 
   // READ all Purchases for a shop
   Future<List<TempPurchase>> loadPurchasesOffline() async {
-    await loadItemPurchaseRecordsOffline();
-
     _purchases = PurchaseFunc().getPurchases();
-    await loadItemPurchaseRecordsOffline();
     await mainLocalLog('Offline Purchases Gotten');
-    notifyListeners();
+    await loadItemPurchaseRecordsOffline();
     notifyListeners();
     return _purchases;
   }
@@ -277,12 +273,6 @@ class PurchaseProvider extends ChangeNotifier {
     bool createUpdate,
   ) async {
     await mainLocalLog('Deleting Purchase');
-    List<TempItemPurchaseRecord> records =
-        itemPurchaseRecords
-            .where(
-              (item) => item.purchaseId == purchase.uuid,
-            )
-            .toList();
     try {
       await mainLocalLog('Deleting Purchase Offline');
       await PurchaseFunc().deletePurchase(purchase.uuid!);
@@ -319,7 +309,7 @@ class PurchaseProvider extends ChangeNotifier {
       );
       // }
 
-      for (var rec in records) {
+      for (var rec in purchase.items ?? []) {
         await deleteItemPurchaseRecord(rec.uuid!);
 
         if (updateInventory == true) {
@@ -368,6 +358,12 @@ class PurchaseProvider extends ChangeNotifier {
                 try {
                   if (createUpdate) {
                     var newUpdate = StorageItemHistory(
+                      event:
+                          StorageItemHistoryEventClass
+                              .purchaseDeleted,
+                      source:
+                          StorageItemHistoryEventClass
+                              .purchaseSource,
                       shopId: shopId(),
                       title: 'Purchase Deleted',
                       createdAt: DateTime.now(),
@@ -443,7 +439,7 @@ class PurchaseProvider extends ChangeNotifier {
               var oldPro = products.first.copyWith();
               var newPro = oldPro.copyWith();
               newPro.quantity =
-                  (newPro.quantity ?? 0) -
+                  (newPro.getActualQuantity() ?? 0) -
                   rec
                       .getSelectedUnit()
                       .getQuantityEquivMultiplied(
@@ -452,6 +448,10 @@ class PurchaseProvider extends ChangeNotifier {
                       );
 
               ItemHistory itemHistory = ItemHistory(
+                event: ItemHistoryEventClass.returnEvent,
+                isManaged: true,
+                source:
+                    ItemHistoryEventClass.purchaseSource,
                 desc:
                     '${rec.quantity} ${rec.unit} of this Item Was Returned From Purchase. Purchase Id: #${returnOnlyDigits(rec.purchaseId ?? '')}',
                 shopId: shopId(),
@@ -461,7 +461,9 @@ class PurchaseProvider extends ChangeNotifier {
                       .getPrimaryUnit()
                       .getQuantityEquivDivided(
                         index: 1,
-                        quantityTwo: (oldPro.quantity ?? 0),
+                        quantityTwo:
+                            (oldPro.getActualQuantity() ??
+                                0),
                       )),
                 ),
                 newValue: formatLargeNumberDouble(
@@ -469,7 +471,9 @@ class PurchaseProvider extends ChangeNotifier {
                       .getPrimaryUnit()
                       .getQuantityEquivDivided(
                         index: 1,
-                        quantityTwo: (newPro.quantity ?? 0),
+                        quantityTwo:
+                            (newPro.getActualQuantity() ??
+                                0),
                       ),
                 ),
                 title: 'Purchased Deleted',
@@ -742,30 +746,39 @@ class PurchaseProvider extends ChangeNotifier {
   //
   //
 
+  List<TempItemPurchaseRecord> itemPurchaseRecords({
+    BuildContext? context,
+  }) {
+    return purchases
+        .expand((item) => (item.getItems(context: context)))
+        .toList();
+  }
+
   List<TempItemPurchaseRecord> _itemPurchaseRecords = [];
-  List<TempItemPurchaseRecord> get itemPurchaseRecords =>
-      _itemPurchaseRecords;
+
+  List<TempItemPurchaseRecord>
+  get getItemPurchaseReceipts => _itemPurchaseRecords;
 
   // CREATE a new product sale record
   Future<void> createItemPurchaseRecord(
     List<TempItemPurchaseRecord> records,
   ) async {
     try {
-      var newRecords =
-          records.map((rec) {
-            rec.createdAt = DateTime.now();
+      // var newRecords =
+      //     records.map((rec) {
+      //       rec.createdAt = DateTime.now();
 
-            return rec;
-          }).toList();
-      await ItemPurchaseFunc()
-          .insertSalesItemPurchaseRecords(newRecords);
-      List<CreatedItemRecords> cRecords =
-          newRecords.map((r) {
-            return CreatedItemRecords(record: r);
-          }).toList();
-      await CreatedItemPurchaseFunc().insertAllRecords(
-        cRecords,
-      );
+      //       return rec;
+      //     }).toList();
+      // await ItemPurchaseFunc()
+      //     .insertSalesItemPurchaseRecords(newRecords);
+      // List<CreatedItemRecords> cRecords =
+      //     newRecords.map((r) {
+      //       return CreatedItemRecords(record: r);
+      //     }).toList();
+      // await CreatedItemPurchaseFunc().insertAllRecords(
+      //   cRecords,
+      // );
       for (var item in records) {
         if (returnShopProvider()
                 .userShop()
@@ -804,6 +817,10 @@ class PurchaseProvider extends ChangeNotifier {
               );
           try {
             var newUpdate = StorageItemHistory(
+              event: StorageItemHistoryEventClass.purchase,
+              source:
+                  StorageItemHistoryEventClass
+                      .purchaseSource,
               shopId: shopId(),
               title: 'Stock In From Purchase',
               createdAt: DateTime.now(),
@@ -870,6 +887,9 @@ class PurchaseProvider extends ChangeNotifier {
                   );
           newPr.updatedAt = DateTime.now();
           ItemHistory itemHistory = ItemHistory(
+            event: ItemHistoryEventClass.purchase,
+            isManaged: true,
+            source: ItemHistoryEventClass.purchaseSource,
             desc:
                 '${item.quantity} ${item.unit} of this Item Purchased. Purchase Id: #${returnOnlyDigits(item.purchaseId ?? '')}',
             shopId: shopId(),
@@ -1037,98 +1057,98 @@ class PurchaseProvider extends ChangeNotifier {
   //
   //
 
-  Future<void> createRecordsSync() async {
-    try {
-      bool isOnline = await connectivity.isOnline();
-      // Prepare batch payload
-      if (CreatedItemPurchaseFunc()
-              .getRecords()
-              .isNotEmpty &&
-          isOnline) {
-        final tempRecords =
-            CreatedItemPurchaseFunc().getRecords().toList();
-        var newRecords = tempRecords.map((rec) {
-          rec.record.createdAt =
-              rec.record.createdAt.toUtc();
-          return rec;
-        });
-        final payload =
-            newRecords
-                .map((p) => p.record.toJson())
-                .toList();
+  // Future<void> createRecordsSync() async {
+  //   try {
+  //     bool isOnline = await connectivity.isOnline();
+  //     // Prepare batch payload
+  //     if (CreatedItemPurchaseFunc()
+  //             .getRecords()
+  //             .isNotEmpty &&
+  //         isOnline) {
+  //       final tempRecords =
+  //           CreatedItemPurchaseFunc().getRecords().toList();
+  //       var newRecords = tempRecords.map((rec) {
+  //         rec.record.createdAt =
+  //             rec.record.createdAt.toUtc();
+  //         return rec;
+  //       });
+  //       final payload =
+  //           newRecords
+  //               .map((p) => p.record.toJson())
+  //               .toList();
 
-        // Insert all at once
-        final data =
-            await supabase
-                .from(itemPurchaseTableName)
-                .insert(payload)
-                .select();
+  //       // Insert all at once
+  //       final data =
+  //           await supabase
+  //               .from(itemPurchaseTableName)
+  //               .insert(payload)
+  //               .select();
 
-        await mainLocalLog(
-          '${data.length} items added successfully ✅',
-        );
-        await CreatedItemPurchaseFunc().clearRecords();
-        await loadItemPurchaseRecords(shopId());
-        await mainLocalLog(
-          'Unsynced Purchase Item Records Cleared',
-        );
-      }
-    } catch (e) {
-      await mainLocalLog(
-        'Batch Created Purchase Records insert failed ❌: $e',
-      );
-    }
-  }
+  //       await mainLocalLog(
+  //         '${data.length} items added successfully ✅',
+  //       );
+  //       await CreatedItemPurchaseFunc().clearRecords();
+  //       await loadItemPurchaseRecords(shopId());
+  //       await mainLocalLog(
+  //         'Unsynced Purchase Item Records Cleared',
+  //       );
+  //     }
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       'Batch Created Purchase Records insert failed ❌: $e',
+  //     );
+  //   }
+  // }
 
-  //
-  //
-  //
-  //
+  // //
+  // //
+  // //
+  // //
 
-  Future<void> deleteItemRecordsSync() async {
-    try {
-      bool isOnline = await connectivity.isOnline();
-      // Prepare batch payload
-      if (DeletedItemPurchaseFunc()
-              .getItemPurchaseIds()
-              .isNotEmpty &&
-          isOnline) {
-        final tempItemPurchases =
-            DeletedItemPurchaseFunc()
-                .getItemPurchaseIds()
-                .toList();
+  // Future<void> deleteItemRecordsSync() async {
+  //   try {
+  //     bool isOnline = await connectivity.isOnline();
+  //     // Prepare batch payload
+  //     if (DeletedItemPurchaseFunc()
+  //             .getItemPurchaseIds()
+  //             .isNotEmpty &&
+  //         isOnline) {
+  //       final tempItemPurchases =
+  //           DeletedItemPurchaseFunc()
+  //               .getItemPurchaseIds()
+  //               .toList();
 
-        for (var rec in tempItemPurchases) {
-          await supabase
-              .from(itemPurchaseTableName)
-              .delete()
-              .eq('uuid', rec.recordUuid);
-          // await DeletedItemPurchaseFunc()
-          //     .deletedDeletedPurchases(rec.purchaseUuid);
-        }
+  //       for (var rec in tempItemPurchases) {
+  //         await supabase
+  //             .from(itemPurchaseTableName)
+  //             .delete()
+  //             .eq('uuid', rec.recordUuid);
+  //         // await DeletedItemPurchaseFunc()
+  //         //     .deletedDeletedPurchases(rec.purchaseUuid);
+  //       }
 
-        await mainLocalLog(
-          '${tempItemPurchases.length} Purchase Item Records Deleted successfully ✅',
-        );
-        await DeletedItemPurchaseFunc()
-            .clearDeletedItemRecords();
-        await mainLocalLog(
-          'Unsynced Deleted Purchase Item Records Cleared',
-        );
+  //       await mainLocalLog(
+  //         '${tempItemPurchases.length} Purchase Item Records Deleted successfully ✅',
+  //       );
+  //       await DeletedItemPurchaseFunc()
+  //           .clearDeletedItemRecords();
+  //       await mainLocalLog(
+  //         'Unsynced Deleted Purchase Item Records Cleared',
+  //       );
 
-        await mainLocalLog(
-          'Mounted, refreshing Purchase Item Records ✅',
-        );
-        // await loadPurchases(
-        //   returnShopProvider().userShop()!.shopId!,
-        // );
-      }
-    } catch (e) {
-      await mainLocalLog(
-        'Batch Purchase Item Records Deleted failed ❌: $e',
-      );
-    }
-  }
+  //       await mainLocalLog(
+  //         'Mounted, refreshing Purchase Item Records ✅',
+  //       );
+  //       // await loadPurchases(
+  //       //   returnShopProvider().userShop()!.shopId!,
+  //       // );
+  //     }
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       'Batch Purchase Item Records Deleted failed ❌: $e',
+  //     );
+  //   }
+  // }
 
   //
   //
@@ -1304,7 +1324,7 @@ class PurchaseProvider extends ChangeNotifier {
   returnItemPurchaseRecordByDayOrWeek() {
     List<TempItemPurchaseRecord> recordss = [];
 
-    for (var rec in itemPurchaseRecords) {
+    for (var rec in itemPurchaseRecords()) {
       TempPurchase? purchase;
 
       try {

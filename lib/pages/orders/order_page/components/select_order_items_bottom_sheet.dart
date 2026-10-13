@@ -119,7 +119,7 @@ void selectOrderItemsBottomSheet({
     );
     if (items.isNotEmpty) {
       var itemTemp = items.first;
-      return itemTemp.quantity;
+      return itemTemp.getActualQuantity();
     } else {
       return null;
     }

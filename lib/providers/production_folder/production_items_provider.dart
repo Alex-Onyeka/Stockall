@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_item_history/production_item_history.dart';
+import 'package:stockall/classes/temp_production_folder/temp_production_item_history/production_item_history_event_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_items/production_item.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_items/unsynced/created/created_production_item.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_items/unsynced/deleted/deleted_production_item.dart';
@@ -902,26 +903,31 @@ class ProductionItemsProvider extends ChangeNotifier {
           .where(
             (prr) => selectedProductionItems.contains(prr),
           )) {
-        ProductionItemHistory productionItemHistory =
-            ProductionItemHistory(
-              shopId: shopId(),
-              title: 'Item Deleted',
-              quantityChange: 0,
-              newValue: formatLargeNumberDouble(
-                pr.getProductUnit().getQuantityEquivDivided(
-                  index: 2,
-                ),
-              ),
-              desc: 'Production Item Deleted Now',
-              isIncreased: false,
-              oldValue: formatLargeNumberDouble(
-                pr.getProductUnit().getQuantityEquivDivided(
-                  index: 2,
-                ),
-              ),
-              unit: pr.getPrimaryUnit().name,
-              primaryUnit: pr.getPrimaryUnit().name,
-            );
+        ProductionItemHistory
+        productionItemHistory = ProductionItemHistory(
+          event:
+              ProductionItemHistoryEventClass.itemDeleted,
+          source:
+              ProductionItemHistoryEventClass.unKnownSource,
+          isManaged: pr.isManaged,
+          shopId: shopId(),
+          title: 'Item Deleted',
+          quantityChange: 0,
+          newValue: formatLargeNumberDouble(
+            pr.getProductUnit().getQuantityEquivDivided(
+              index: 2,
+            ),
+          ),
+          desc: 'Production Item Deleted Now',
+          isIncreased: false,
+          oldValue: formatLargeNumberDouble(
+            pr.getProductUnit().getQuantityEquivDivided(
+              index: 2,
+            ),
+          ),
+          unit: pr.getPrimaryUnit().name,
+          primaryUnit: pr.getPrimaryUnit().name,
+        );
         await deleteProductionItemMain(
           productionItemHistory: productionItemHistory,
           productionItem: pr,
@@ -964,6 +970,11 @@ class ProductionItemsProvider extends ChangeNotifier {
 
         ProductionItemHistory
         productionItemHistory = ProductionItemHistory(
+          event:
+              ProductionItemHistoryEventClass.itemCreated,
+          source:
+              ProductionItemHistoryEventClass.unKnownSource,
+          isManaged: false,
           shopId: shopId(),
           title: 'Item Created',
           quantityChange: 0,
@@ -1085,6 +1096,13 @@ class ProductionItemsProvider extends ChangeNotifier {
 
           ProductionItemHistory
           productionItemHistory = ProductionItemHistory(
+            event:
+                ProductionItemHistoryEventClass
+                    .itemDuplicated,
+            source:
+                ProductionItemHistoryEventClass
+                    .unKnownSource,
+            isManaged: newProductionItem.isManaged,
             shopId: shopId(),
             title: 'Item Created',
             quantityChange: 0,

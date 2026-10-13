@@ -1,5 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/payment_entry/payment_entry.dart';
+import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/main.dart';
 
 part 'temp_main_receipt.g.dart';
@@ -96,6 +98,11 @@ class TempMainReceipt extends HiveObject {
   @HiveField(29)
   int? salesTypeIndex;
 
+  // Lines sold on this receipt, also written to product_sales.
+  // Null or empty on receipts saved before this field existed.
+  @HiveField(30)
+  List<TempProductSaleRecord>? items;
+
   TempMainReceipt({
     this.id,
     this.barcode,
@@ -127,6 +134,7 @@ class TempMainReceipt extends HiveObject {
     required this.customerAccount,
     this.orderUuid,
     required this.salesTypeIndex,
+    this.items,
   });
 
   factory TempMainReceipt.fromJson(
@@ -169,6 +177,9 @@ class TempMainReceipt extends HiveObject {
           (json['customer_account'] as num?)?.toDouble(),
       orderUuid: json['order_uuid'] as String?,
       salesTypeIndex: json['sale_type_index'] as int?,
+      items: TempProductSaleRecord.itemsFromJson(
+        json['items'],
+      ),
     );
   }
 
@@ -204,6 +215,9 @@ class TempMainReceipt extends HiveObject {
       'customer_account': customerAccount,
       'order_uuid': orderUuid,
       'sale_type_index': salesTypeIndex,
+      // Left out when empty so an update never clears stored items.
+      if (items?.isNotEmpty == true)
+        'items': TempProductSaleRecord.itemsToJson(items!),
     };
   }
 
@@ -238,6 +252,7 @@ class TempMainReceipt extends HiveObject {
     double? customerAccount,
     String? orderUuid,
     int? salesTypeIndex,
+    List<TempProductSaleRecord>? items,
   }) {
     return TempMainReceipt(
       id: id ?? this.id,
@@ -273,7 +288,39 @@ class TempMainReceipt extends HiveObject {
           customerAccount ?? this.customerAccount,
       orderUuid: orderUuid ?? this.orderUuid,
       salesTypeIndex: salesTypeIndex ?? this.salesTypeIndex,
+      items: items ?? this.items,
     );
+  }
+
+  List<TempProductSaleRecord> getItems({
+    BuildContext? context,
+  }) {
+    if (items == null || items!.isEmpty) {
+      if (context == null) {
+        return returnReceiptProviderSingle().mainSales
+            .where((item) => item.receiptUuid == uuid)
+            .toList();
+      } else {
+        return returnReceiptProvider(context, listen: true)
+            .mainSales
+            .where((item) => item.receiptUuid == uuid)
+            .toList();
+      }
+    } else {
+      return items ?? [];
+    }
+  }
+
+  List<TempProductSaleRecord> getItemsNoVoid() {
+    return getItems()
+        .where((item) => item.isVoid != true)
+        .toList();
+  }
+
+  List<TempProductSaleRecord> getItemsVoid() {
+    return getItems()
+        .where((item) => item.isVoid == true)
+        .toList();
   }
 
   double getTotalRevenue() {

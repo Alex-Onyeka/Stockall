@@ -193,7 +193,7 @@ class InvoicesProvider extends ChangeNotifier {
 
   Future<int> updateInvoice({
     required TempInvoice invoice,
-    required List<TempProductSaleRecord> records,
+    // required List<TempProductSaleRecord> records,
   }) async {
     invoice.updatedAt = DateTime.now();
     try {
@@ -214,13 +214,13 @@ class InvoicesProvider extends ChangeNotifier {
           CreatedInvoices(invoice: invoice),
         );
       }
-      await returnEventsLogProvider().createLog(
-        returnEventsLogProvider().invoiceAdapter(
-          invoice,
-          records.map((rec) => rec.productName).toList(),
-          2,
-        ),
-      );
+      // await returnEventsLogProvider().createLog(
+      //   returnEventsLogProvider().invoiceAdapter(
+      //     invoice,
+      //     records.map((rec) => rec.productName).toList(),
+      //     2,
+      //   ),
+      // );
       notifyListeners();
       await loadInvoicesOffline(shopId());
       return 1;
@@ -278,7 +278,7 @@ class InvoicesProvider extends ChangeNotifier {
         );
       }
       await ProductRecordFunc().deleteRecordsInInvoice(
-        invoice.uuid!,
+        invoice: invoice,
       );
       if (productNames.isNotEmpty) {
         await returnEventsLogProvider().createLog(
@@ -313,35 +313,44 @@ class InvoicesProvider extends ChangeNotifier {
   }
 
   // DELETE an Invoice Without Updating Inventory
-  Future<int> deleteInvoiceWithoutUpdatingInventory(
-    String uuid,
-  ) async {
+  Future<int> deleteInvoiceWithoutUpdatingInventory({
+    required TempInvoice invoice,
+  }) async {
     try {
       await mainLocalLog('Deleting Invoice Offline');
-      await InvoicesFunc().deleteInvoices(uuid);
+      await InvoicesFunc().deleteInvoices(
+        invoice.uuid ?? '',
+      );
       var containsCreated =
           CreatedInvoicesFunc()
               .getInvoices()
-              .where((inv) => inv.invoice.uuid == uuid)
+              .where(
+                (inv) => inv.invoice.uuid == invoice.uuid,
+              )
               .toList();
       var containsUpdate = UpdatedInvoicesFunc()
           .getInvoiceIds()
-          .where((inv) => inv.updatedInvoice.uuid == uuid);
+          .where(
+            (inv) =>
+                inv.updatedInvoice.uuid == invoice.uuid,
+          );
       if (containsCreated.isNotEmpty) {
-        await CreatedInvoicesFunc().deleteInvoice(uuid);
+        await CreatedInvoicesFunc().deleteInvoice(
+          invoice.uuid ?? '',
+        );
       } else {
         await DeletedInvoicesFunc().createDeletedInvoice(
-          DeletedInvoices(invoiceUuid: uuid),
+          DeletedInvoices(invoiceUuid: invoice.uuid ?? ''),
         );
       }
       if (containsUpdate.isNotEmpty) {
         await UpdatedInvoicesFunc().deleteUpdatedInvoice(
-          uuid,
+          invoice.uuid ?? '',
         );
       }
       await ProductRecordFunc()
           .deleteRecordsInInvoiceWithoutUpdatingInventory(
-            uuid,
+            invoice: invoice,
           );
       // }
 
@@ -406,6 +415,47 @@ class InvoicesProvider extends ChangeNotifier {
     }
   }
 
+  Future<int> payAllCustomersBalance({
+    required List<TempInvoice> invoices,
+    required double cashAmount,
+    required double bankAmount,
+    required double customerAmount,
+  }) async {
+    try {
+      for (var item in invoices) {
+        // List<TempProductSaleRecord> salesRecords =
+        //     returnReceiptProviderSingle()
+        //         .produtRecordSalesMain
+        //         .where(
+        //           (item) => item.invoiceUuid == item.uuid,
+        //         )
+        //         .toList();
+        await makeInvoicePayment(
+          invoice: item,
+          salesRecords: item.getItems(),
+          currentPayment: item.getBalance(),
+          cashAmount:
+              cashAmount != 0 ? item.getBalance() : 0,
+          bankAmount:
+              bankAmount != 0 ? item.getBalance() : 0,
+          customerAmount:
+              customerAmount != 0 ? item.getBalance() : 0,
+          isMultiple: true,
+        );
+      }
+      syncData();
+      await mainLocalLog(
+        'Finished Paying all Customers Invoices Success',
+      );
+      return 1;
+    } catch (e) {
+      await mainLocalLog(
+        'Error Paying all Customers Invoices: ${e.toString()}',
+      );
+      return 0;
+    }
+  }
+
   Future<int> makeInvoicePayment({
     required TempInvoice invoice,
     required List<TempProductSaleRecord> salesRecords,
@@ -414,6 +464,7 @@ class InvoicesProvider extends ChangeNotifier {
     required double bankAmount,
     required double customerAmount,
     String? comment,
+    bool? isMultiple,
   }) async {
     try {
       final createdAt = DateTime.now().toUtc();
@@ -449,6 +500,92 @@ class InvoicesProvider extends ChangeNotifier {
         cartName: invoice.cartName,
       );
 
+      // Built before the receipt is saved so the same lines are
+      // stored in receipt.items and in product_sales.
+      final productSaleRecords =
+          salesRecords.map((record) {
+            mainLocalLog(
+              'Sales Record about to be Created',
+            );
+            return TempProductSaleRecord(
+              heightDimension: record.heightDimension,
+              quantityType: record.quantityType,
+              widthDimension: record.widthDimension,
+              priceUuid: record.priceUuid,
+              pricesList: record.getPriceListFinal(),
+              unitUuid: record.unitUuid,
+              unitsList: record.getUnitListFinal(),
+              isVoid: record.isVoid ?? false,
+              customPriceSet: record.customPriceSet,
+              createdAt: createdAt,
+              productId: record.productId,
+              productUuid: record.productUuid,
+              productName: record.productName,
+              shopId: invoice.shopId,
+              staffId: AuthService().currentUser!,
+              staffName:
+                  "${returnUserProviderSingle().currentUserMain!.name} ${returnUserProviderSingle().currentUserMain!.lastName}",
+              // customerId: customerId,
+              customerUuid: invoice.customerUuid,
+              customerName: invoice.customerName,
+              recepitId: 0,
+              receiptUuid: receipt.uuid,
+              quantity: record.quantity,
+              revenue: calcSalesRecordRevenue(
+                invoceTotalAmount:
+                    invoice.getTotalMainRevenueInvoice(),
+                receiptPayment: currentPayment,
+                salesRecodRevenue: record.revenue,
+              ),
+              costPrice: calcSalesRecordCostPrice(
+                invoceTotalAmount:
+                    invoice.getTotalMainRevenueInvoice(),
+                receiptPayment: currentPayment,
+                salesRecodCostPrice:
+                    (record.costPrice ?? 0),
+              ),
+              discountedAmount:
+                  calcSalesRecordDiscountedAmount(
+                    invoceTotalAmount:
+                        invoice
+                            .getTotalMainRevenueInvoice(),
+                    receiptPayment: currentPayment,
+                    salesRecodDiscountedAmount:
+                        (record.discountedAmount ?? 0),
+                  ),
+              originalCost: calcSalesRecordOriginalCost(
+                invoceTotalAmount:
+                    invoice.getTotalMainRevenueInvoice(),
+                receiptPayment: currentPayment,
+                salesRecodOriginalCost:
+                    (record.originalCost ?? 0),
+              ),
+              discount: record.discount,
+              fixedDiscount: record.fixedDiscount,
+
+              addToStock: record.addToStock,
+              departmentName:
+                  record.departmentName ??
+                  returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.name,
+              departmentUuid:
+                  record.departmentUuid ??
+                  returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.uuid,
+              uuid: uuidGen(),
+              isProductManaged: record.isProductManaged,
+              setTotalPrice: record.setTotalPrice,
+              unit: record.unit,
+              useWholeSalePrice: record.useWholeSalePrice,
+              useGroupQuantity: record.useGroupQuantity,
+              qttyPerGroup: record.qttyPerGroup,
+              // invoiceUuid: invoice.uuid,
+            );
+          }).toList();
+      receipt.items = productSaleRecords;
+
       await mainLocalLog('Checkout Started');
       var res = await returnReceiptProviderSingle()
           .createReceipt(receipt);
@@ -465,105 +602,27 @@ class InvoicesProvider extends ChangeNotifier {
           ),
         );
 
-        final productSaleRecords =
-            salesRecords.map((record) {
-              mainLocalLog(
-                'Sales Record about to be Created',
-              );
-              return TempProductSaleRecord(
-                priceUuid: record.priceUuid,
-                pricesList: record.getPriceListFinal(),
-                unitUuid: record.unitUuid,
-                unitsList: record.getUnitListFinal(),
-                isVoid: record.isVoid ?? false,
-                customPriceSet: record.customPriceSet,
-                createdAt: createdAt,
-                productId: record.productId,
-                productUuid: record.productUuid,
-                productName: record.productName,
-                shopId: invoice.shopId,
-                staffId: AuthService().currentUser!,
-                staffName:
-                    "${returnUserProviderSingle().currentUserMain!.name} ${returnUserProviderSingle().currentUserMain!.lastName}",
-                // customerId: customerId,
-                customerUuid: invoice.customerUuid,
-                customerName: invoice.customerName,
-                recepitId: 0,
-                receiptUuid: res.uuid,
-                quantity: record.quantity,
-                revenue: calcSalesRecordRevenue(
-                  invoceTotalAmount:
-                      invoice.getTotalMainRevenueInvoice(),
-                  receiptPayment: currentPayment,
-                  salesRecodRevenue: record.revenue,
-                ),
-                costPrice: calcSalesRecordCostPrice(
-                  invoceTotalAmount:
-                      invoice.getTotalMainRevenueInvoice(),
-                  receiptPayment: currentPayment,
-                  salesRecodCostPrice:
-                      (record.costPrice ?? 0),
-                ),
-                discountedAmount:
-                    calcSalesRecordDiscountedAmount(
-                      invoceTotalAmount:
-                          invoice
-                              .getTotalMainRevenueInvoice(),
-                      receiptPayment: currentPayment,
-                      salesRecodDiscountedAmount:
-                          (record.discountedAmount ?? 0),
-                    ),
-                originalCost: calcSalesRecordOriginalCost(
-                  invoceTotalAmount:
-                      invoice.getTotalMainRevenueInvoice(),
-                  receiptPayment: currentPayment,
-                  salesRecodOriginalCost:
-                      (record.originalCost ?? 0),
-                ),
-                discount: record.discount,
-                fixedDiscount: record.fixedDiscount,
-
-                addToStock: record.addToStock,
-                departmentName:
-                    record.departmentName ??
-                    returnDepartmentProvider()
-                        .currentDepartment()
-                        ?.name,
-                departmentUuid:
-                    record.departmentUuid ??
-                    returnDepartmentProvider()
-                        .currentDepartment()
-                        ?.uuid,
-                uuid: uuidGen(),
-                isProductManaged: record.isProductManaged,
-                setTotalPrice: record.setTotalPrice,
-                unit: record.unit,
-                useWholeSalePrice: record.useWholeSalePrice,
-                useGroupQuantity: record.useGroupQuantity,
-                qttyPerGroup: record.qttyPerGroup,
-                // invoiceUuid: invoice.uuid,
-              );
-            }).toList();
-
         await mainLocalLog(
           'Creating Record Sales About to Start',
         );
-        await returnReceiptProviderSingle()
-            .createProductSaleRecord(
-              records: productSaleRecords,
-              isPartPayment: true,
-            );
+        // await returnReceiptProviderSingle()
+        //     .createProductSaleRecord(
+        //       records: productSaleRecords,
+        //       isPartPayment: true,
+        //     );
         await mainLocalLog('Sales Record Inserted');
         // invoice.balance =
         //    invoice.getBalance() - currentPayment;
         // invoice.status =
         await updateInvoice(
           invoice: invoice,
-          records: productSaleRecords,
+          // records: productSaleRecords,
         );
         await returnReceiptProviderSingle()
             .loadReceiptsOffline(shopId());
-        returnData().syncData();
+        if (isMultiple != true) {
+          returnData().syncData();
+        }
         await mainLocalLog(
           'Context is Not Mounted So Offline Data Cannot Be Synchronized',
         );
@@ -639,16 +698,16 @@ class InvoicesProvider extends ChangeNotifier {
     SalesAuthAction().editReceiptAction(
       context: context,
       action: () async {
-        final saleRecords =
-            returnReceiptProvider(context, listen: false)
-                .produtRecordSalesMain
-                .where((r) => r.invoiceUuid == invoice.uuid)
-                .toList();
+        // final saleRecords =
+        //     returnReceiptProvider(context, listen: false)
+        //         .produtRecordSalesMain
+        //         .where((r) => r.invoiceUuid == invoice.uuid)
+        //         .toList();
 
         // Convert them back to cart items
         final cartItems = convertInvoiceToCartItems(
           invoice: invoice,
-          saleRecords: saleRecords,
+          saleRecords: invoice.getItems(),
           context: context,
         );
 
@@ -751,10 +810,14 @@ class InvoicesProvider extends ChangeNotifier {
         tempRev = record.originalCost ?? 0;
       } else {
         tempRev =
-            (record.originalCost ?? 0) / record.quantity;
+            (record.originalCost ?? 0) /
+            (record.quantity * record.dimensionArea());
       }
     }
     return TempCartItem(
+      heightDimension: record.heightDimension,
+      quantityType: record.quantityType,
+      widthDimension: record.widthDimension,
       priceUuid: record.priceUuid,
       unitUuid: record.unitUuid,
       uuid: record.uuid,
@@ -821,8 +884,13 @@ class InvoicesProvider extends ChangeNotifier {
                     record.quantity;
 
         TempProductClass productNew = TempProductClass(
-          pricesList: [],
-          unitsList: [],
+          setCustomPrice: record.customPriceSet,
+          isManaged: record.isProductManaged ?? false,
+          heightDimension: record.heightDimension,
+          quantityType: record.quantityType,
+          widthDimension: record.widthDimension,
+          pricesList: record.pricesList ?? [],
+          unitsList: record.unitsList ?? [],
           useGroupUnit: false,
           categories: [],
           groupUnit: 'Group(s)',
@@ -833,8 +901,7 @@ class InvoicesProvider extends ChangeNotifier {
           isRefundable: false,
           costPrice: costPrice,
           shopId: record.shopId,
-          setCustomPrice: true,
-          isManaged: false,
+
           barcode: null,
           brand: null,
           color: null,

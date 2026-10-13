@@ -7,9 +7,11 @@ import 'package:stockall/pages/products/add_product_one/product_units_page/compo
 
 class ProductUnitListTileWidget extends StatefulWidget {
   final String unitUuid;
+  final bool isDimensional;
   const ProductUnitListTileWidget({
     super.key,
     required this.unitUuid,
+    this.isDimensional = false,
   });
 
   @override
@@ -50,6 +52,7 @@ class _ProductUnitListTileWidgetState
               productUuid: '',
               staffName: currentUser().name,
               staffUuid: currentUser().userId!,
+              dimensionType: null,
             );
     return Container(
       margin: EdgeInsets.symmetric(vertical: 6),
@@ -148,6 +151,14 @@ class _ProductUnitListTileWidgetState
                                 ),
                               ],
                             ),
+                            if (widget.isDimensional)
+                              Text(
+                                unit.dimensionType ==
+                                        ProductUnitsClass.areaUnit
+                                    ? 'Area unit'
+                                    : 'Whole slab / sheet unit',
+                                style: theme.mobileTexts.b4.textStyleNormal,
+                              ),
                           ],
                         ),
                       ),
@@ -315,6 +326,8 @@ class _ProductUnitListTileWidgetState
                                     nameController,
                                 productUuid:
                                     unit.productUuid,
+                                isDimensional:
+                                    widget.isDimensional,
                                 unit: unit,
                                 setStateAction: () {
                                   setState(() {});

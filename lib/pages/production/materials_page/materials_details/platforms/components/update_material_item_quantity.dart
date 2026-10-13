@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_production_folder/temp_material_class/material_class.dart';
+import 'package:stockall/classes/temp_production_folder/temp_materials_item_history/material_item_history_event_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_materials_item_history/materials_item_history.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
@@ -434,6 +435,19 @@ class _UpdateMaterialQuantityWidgetState
                                               0);
                                       MaterialsItemHistory
                                       materialsItemHistory = MaterialsItemHistory(
+                                        event:
+                                            isIncrement
+                                                ? MaterialItemHistoryEventClass
+                                                    .quantityUpdatedIncrease
+                                                : MaterialItemHistoryEventClass
+                                                    .quantityUpdatedDecrease,
+                                        isManaged:
+                                            widget
+                                                .materialClass
+                                                .isManaged,
+                                        source:
+                                            MaterialItemHistoryEventClass
+                                                .unKnownSource,
                                         primaryUnit:
                                             widget
                                                 .materialClass

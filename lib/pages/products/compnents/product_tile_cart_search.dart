@@ -41,7 +41,7 @@ class _ProductTileCartSearchState
   void addQuantity() {
     if (widget.product.canSelectForCart() &&
         !widget.product.isExpired() &&
-        (widget.product.quantity ?? 0) >
+        (widget.product.getActualQuantity() ?? 0) >
             (returnSalesProvider()
                     .totalItemQuantityInAllCarts(
                       product: widget.product,
@@ -66,7 +66,7 @@ class _ProductTileCartSearchState
   void addItemToCart() {
     if (widget.product.canSelectForCart() &&
         !widget.product.isExpired() &&
-        (widget.product.quantity ?? 0) >
+        (widget.product.getActualQuantity() ?? 0) >
             (returnSalesProvider()
                     .totalItemQuantityInAllCarts(
                       product: widget.product,
@@ -229,9 +229,11 @@ class _ProductTileCartSearchState
                                                 232,
                                                 231,
                                               )
-                                              : widget.product.quantity !=
+                                              : widget.product
+                                                          .getActualQuantity() !=
                                                       0 &&
-                                                  (widget.product.quantity ??
+                                                  (widget.product
+                                                              .getActualQuantity() ??
                                                           0) >
                                                       widget
                                                           .product
@@ -239,9 +241,11 @@ class _ProductTileCartSearchState
                                               ? Colors
                                                   .grey
                                                   .shade100
-                                              : widget.product.quantity !=
+                                              : widget.product
+                                                          .getActualQuantity() !=
                                                       0 &&
-                                                  (widget.product.quantity ??
+                                                  (widget.product
+                                                              .getActualQuantity() ??
                                                           0) <=
                                                       widget
                                                           .product
@@ -277,17 +281,17 @@ class _ProductTileCartSearchState
                                                   142,
                                                   134,
                                                 )
-                                                : widget.product.quantity !=
+                                                : widget.product.getActualQuantity() !=
                                                         0 &&
-                                                    (widget.product.quantity ??
+                                                    (widget.product.getActualQuantity() ??
                                                             0) >
                                                         widget.product.lowQtty!
                                                 ? Colors
                                                     .grey
                                                     .shade700
-                                                : widget.product.quantity !=
+                                                : widget.product.getActualQuantity() !=
                                                         0 &&
-                                                    (widget.product.quantity ??
+                                                    (widget.product.getActualQuantity() ??
                                                             0) <=
                                                         widget.product.lowQtty!
                                                 ? const Color.fromARGB(
@@ -337,17 +341,17 @@ class _ProductTileCartSearchState
                                                     142,
                                                     134,
                                                   )
-                                                  : widget.product.quantity !=
+                                                  : widget.product.getActualQuantity() !=
                                                           0 &&
-                                                      (widget.product.quantity ??
+                                                      (widget.product.getActualQuantity() ??
                                                               0) >
                                                           widget.product.lowQtty!
                                                   ? Colors
                                                       .grey
                                                       .shade700
-                                                  : widget.product.quantity !=
+                                                  : widget.product.getActualQuantity() !=
                                                           0 &&
-                                                      (widget.product.quantity ??
+                                                      (widget.product.getActualQuantity() ??
                                                               0) <=
                                                           widget.product.lowQtty!
                                                   ? const Color.fromARGB(
@@ -503,7 +507,7 @@ class _ProductTileCartSearchState
                             //                   !widget
                             //                       .product
                             //                       .isExpired() &&
-                            //                   (widget.product.quantity ??
+                            //                   (widget.product.getActualQuantity() ??
                             //                           0) >
                             //                       (returnSalesProvider().totalItemQuantityInAllCarts(
                             //                             product:

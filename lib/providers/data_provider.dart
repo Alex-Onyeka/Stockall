@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stockall/classes/temp_categories/category_class.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/prices_class/product_prices_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
@@ -12,6 +13,7 @@ import 'package:stockall/classes/temp_product_class/unsynced/quantity_update/qua
 import 'package:stockall/classes/temp_product_class/unsynced/updated/updated_products.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/temp_storage_item_history/storage_item_history.dart';
+import 'package:stockall/classes/temp_storage_item_history/storage_item_history_event_class.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -194,6 +196,58 @@ class DataProvider extends ChangeNotifier {
     }
 
     clearFields();
+  }
+
+  /// Saves all [products] locally, queues them for upload, and
+  /// triggers a single sync at the end.
+  Future<void> bulkCreateProducts(
+    List<TempProductClass> products,
+  ) async {
+    for (final product in products) {
+      final now = DateTime.now();
+      product.updatedAt = now;
+      product.createdAt ??= now;
+
+      await ProductsFunc().createProduct(product);
+      await CreatedProductFunc().createProduct(
+        CreatedProducts(
+          product: product,
+          includeQuantity: true,
+        ),
+      );
+      await returnEventsLogProvider().createLog(
+        returnEventsLogProvider().productAdapter(
+          product,
+          1,
+        ),
+      );
+
+      final quantity = product.quantity ?? 0;
+      await returnItemHistoryProvider().createItemHistory(
+        ItemHistory(
+          source: 'Not Set',
+          event: ItemHistoryEventClass.itemCreated,
+          isManaged: true,
+          unit: 'Not Set',
+          shopId: shopId(),
+          title: 'Item Created',
+          quantityChange: quantity,
+          newValue: quantity.toString(),
+          desc: 'Item Created Now',
+          isIncreased: true,
+          oldValue: '0',
+          itemName: product.name,
+          itemUuid: product.uuid,
+        ),
+      );
+    }
+    await mainLocalLog(
+      '${products.length} products created offline (bulk)',
+    );
+    await getProductsOffline(
+      returnShopProvider().userShop()!.shopId!,
+    );
+    syncData();
   }
 
   Future<void> createProductsSync() async {
@@ -910,17 +964,17 @@ class DataProvider extends ChangeNotifier {
             );
             setSyncProgress(31);
           }
-          if (CreatedRecordsFunc()
-                  .getRecords()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnReceiptProviderSingle()
-                .createRecordsSync();
-            await mainLocalLog(
-              'Finished Syncing Created Records Customers',
-            );
-            setSyncProgress(32);
-          }
+          // if (CreatedRecordsFunc()
+          //         .getRecords()
+          //         .isNotEmpty &&
+          //     isOnline) {
+          //   await returnReceiptProviderSingle()
+          //       .createRecordsSync();
+          //   await mainLocalLog(
+          //     'Finished Syncing Created Records Customers',
+          //   );
+          //   setSyncProgress(32);
+          // }
           if (UpdatedShopFunc()
                   .getUpdatedShop()
                   .isNotEmpty &&
@@ -995,28 +1049,28 @@ class DataProvider extends ChangeNotifier {
             );
             setSyncProgress(39);
           }
-          if (CreatedItemPurchaseFunc()
-                  .getRecords()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnPurchaseProvider()
-                .createRecordsSync();
-            await mainLocalLog(
-              'Finished Syncing Created Purchase Item Records',
-            );
-            setSyncProgress(40);
-          }
-          if (DeletedItemPurchaseFunc()
-                  .getItemPurchaseIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnPurchaseProvider()
-                .deleteItemRecordsSync();
-            await mainLocalLog(
-              'Finished Syncing Deleted Purchase Item Records',
-            );
-            setSyncProgress(41);
-          }
+          // if (CreatedItemPurchaseFunc()
+          //         .getRecords()
+          //         .isNotEmpty &&
+          //     isOnline) {
+          //   await returnPurchaseProvider()
+          //       .createRecordsSync();
+          //   await mainLocalLog(
+          //     'Finished Syncing Created Purchase Item Records',
+          //   );
+          //   setSyncProgress(40);
+          // }
+          // if (DeletedItemPurchaseFunc()
+          //         .getItemPurchaseIds()
+          //         .isNotEmpty &&
+          //     isOnline) {
+          //   await returnPurchaseProvider()
+          //       .deleteItemRecordsSync();
+          //   await mainLocalLog(
+          //     'Finished Syncing Deleted Purchase Item Records',
+          //   );
+          //   setSyncProgress(41);
+          // }
           // if (CreatedWaybillsFunc()
           //         .getWaybills()
           //         .isNotEmpty &&
@@ -2939,6 +2993,9 @@ class DataProvider extends ChangeNotifier {
   double? discount;
   String color = '';
   String barcode = '';
+  // double heightDimension = 0;
+  // double widthDimension = 0;
+  // int quantityType = 1;
 
   void clearFields({bool? setIsManaged}) {
     isProductRefundable = false;
@@ -2959,11 +3016,15 @@ class DataProvider extends ChangeNotifier {
     colorValueSet = false;
     sizeValueSet = false;
     groupUnitValueSet = false;
+    // heightDimension = 0;
+    // widthDimension = 0;
+    // quantityType = 1;
     clearGroupUnit();
     clearExpDate();
     clearDepartment();
     clearUnit();
     clearTempUnitsList();
+    clearTempPricesList();
     notifyListeners();
   }
 
@@ -3100,21 +3161,36 @@ class DataProvider extends ChangeNotifier {
     'Ag(s)',
     'Barrel(s)',
     'Bag(s)',
+    'Block(s)',
     'Bottle(s)',
     'Boxe(s)',
     'Bundle(s)',
     'Can(s)',
     'Carton(s)',
+    'Centimeter(s)',
+    'Cm²(s)',
     'Crate(s)',
     'Cup(s)',
     'Dozen(s)',
+    'Foot(s)',
+    'Foot²(s)',
     'Gallon(s)',
+    'Inch(es)',
+    'Inch²(s)',
     'Item(s)',
     'Jar(s)',
     'Kg(s)',
+    'Kilometer(s)',
+    'Km²(s)',
     'Lb(s)',
     'Liter(s)',
+    'Meter(s)',
+    'M²(s)',
     'Mg(s)',
+    'Millimeter(s)',
+    'Mm²(s)',
+    'Mile(s)',
+    'Mile²(s)',
     'Ml(s)',
     'Pack(s)',
     'Pair(s)',
@@ -3125,12 +3201,23 @@ class DataProvider extends ChangeNotifier {
     'Scoop(s)',
     'Sheet(s)',
     'Set(s)',
+    'Slab(s)',
     'Slate(s)',
     'Stick(s)',
     'Tin(s)',
     'Tray(s)',
     'Tube(s)',
+    'Truck(s)',
     'Unit(s)',
+    'Panel(s)',
+    'Board(s)',
+    'Tile(s)',
+    'Plate(s)',
+    'Pane(s)',
+    'Coil(s)',
+    'Plank(s)',
+    'Shutter(s)',
+    'Yard²(s)',
     'Other(s)',
   ];
 
@@ -3181,7 +3268,7 @@ class DataProvider extends ChangeNotifier {
   ) {
     return product.quantity != null &&
             product.qttyPerGroup != null
-        ? (product.quantity ?? 0) /
+        ? (product.getActualQuantity() ?? 0) /
             (product.qttyPerGroup ?? 0)
         : 0;
   }
@@ -3705,7 +3792,8 @@ class DataProvider extends ChangeNotifier {
     //   }
     // } else {
     for (var item in (products ?? productListMain)) {
-      tempTotal += item.costPrice * (item.quantity ?? 0);
+      tempTotal +=
+          item.costPrice * (item.getActualQuantity() ?? 0);
       // }
     }
     return tempTotal;
@@ -3716,7 +3804,7 @@ class DataProvider extends ChangeNotifier {
   }) {
     double tempTotal = 0;
     for (var item in (products ?? productListMain)) {
-      tempTotal += item.quantity ?? 0;
+      tempTotal += item.getActualQuantity() ?? 0;
     }
     return tempTotal;
   }
@@ -3764,6 +3852,9 @@ class DataProvider extends ChangeNotifier {
         (prr) => selectedProducts.contains(prr),
       )) {
         ItemHistory itemHistory = ItemHistory(
+          event: ItemHistoryEventClass.itemDeleted,
+          isManaged: pr.isManaged,
+          source: ItemHistoryEventClass.unKnownSource,
           shopId: shopId(),
           title: 'Item Deleted',
           quantityChange: 0,
@@ -3823,6 +3914,9 @@ class DataProvider extends ChangeNotifier {
         newProduct.unitsList = tempItems;
 
         ItemHistory itemHistory = ItemHistory(
+          event: ItemHistoryEventClass.itemDuplicated,
+          isManaged: pr.isManaged,
+          source: ItemHistoryEventClass.unKnownSource,
           shopId: shopId(),
           title: 'Item Created',
           quantityChange: 0,
@@ -3941,6 +4035,9 @@ class DataProvider extends ChangeNotifier {
           newProduct.unitsList = tempItems;
 
           ItemHistory itemHistory = ItemHistory(
+            event: ItemHistoryEventClass.itemDuplicated,
+            isManaged: pr.isManaged,
+            source: ItemHistoryEventClass.departmentSource,
             shopId: shopId(),
             title: 'Item Created',
             quantityChange: 0,
@@ -4015,6 +4112,10 @@ class DataProvider extends ChangeNotifier {
         newProduct.unitsList = tempItems;
 
         StorageItemHistory itemHistory = StorageItemHistory(
+          event:
+              StorageItemHistoryEventClass.itemDuplicated,
+          source:
+              StorageItemHistoryEventClass.productSource,
           shopId: shopId(),
           title: 'Item Created',
           quantityChange: 0,

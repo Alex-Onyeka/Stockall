@@ -30,13 +30,14 @@ class TempPurchaseAdapter extends TypeAdapter<TempPurchase> {
       isCustomPriceSet: fields[9] as bool,
       purchasePayments: (fields[10] as List).cast<PurchasePayments>(),
       updatedAt: fields[12] as DateTime?,
+      items: (fields[13] as List?)?.cast<TempItemPurchaseRecord>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, TempPurchase obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(14)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -62,7 +63,9 @@ class TempPurchaseAdapter extends TypeAdapter<TempPurchase> {
       ..writeByte(11)
       ..write(obj.supplierName)
       ..writeByte(12)
-      ..write(obj.updatedAt);
+      ..write(obj.updatedAt)
+      ..writeByte(13)
+      ..write(obj.items);
   }
 
   @override

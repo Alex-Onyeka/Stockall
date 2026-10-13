@@ -25,13 +25,14 @@ class ProductUnitsClassAdapter extends TypeAdapter<ProductUnitsClass> {
       name: fields[5] as String,
       isPrimary: fields[6] as bool,
       productUuid: fields[7] as String,
+      dimensionType: fields[8] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ProductUnitsClass obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -47,7 +48,9 @@ class ProductUnitsClassAdapter extends TypeAdapter<ProductUnitsClass> {
       ..writeByte(6)
       ..write(obj.isPrimary)
       ..writeByte(7)
-      ..write(obj.productUuid);
+      ..write(obj.productUuid)
+      ..writeByte(8)
+      ..write(obj.dimensionType);
   }
 
   @override

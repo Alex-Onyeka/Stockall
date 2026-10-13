@@ -43,13 +43,16 @@ class DraftItemsAdapter extends TypeAdapter<DraftItems> {
       costPrice: fields[23] as double?,
       isProductManaged: fields[24] as bool?,
       revenue: fields[25] as double?,
+      widthDimension: fields[26] as double?,
+      heightDimension: fields[27] as double?,
+      quantityType: fields[28] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, DraftItems obj) {
     writer
-      ..writeByte(26)
+      ..writeByte(29)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -101,7 +104,13 @@ class DraftItemsAdapter extends TypeAdapter<DraftItems> {
       ..writeByte(24)
       ..write(obj.isProductManaged)
       ..writeByte(25)
-      ..write(obj.revenue);
+      ..write(obj.revenue)
+      ..writeByte(26)
+      ..write(obj.widthDimension)
+      ..writeByte(27)
+      ..write(obj.heightDimension)
+      ..writeByte(28)
+      ..write(obj.quantityType);
   }
 
   @override

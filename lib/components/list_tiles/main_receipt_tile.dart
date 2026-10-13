@@ -67,19 +67,7 @@ class _MainReceiptTileMobileState
   }
 
   List<TempProductSaleRecord> getProductRecord() {
-    var tempRecords =
-        returnReceiptProvider(
-          context,
-          listen: false,
-        ).getProductRecordsNoVoid();
-
-    return tempRecords
-        .where(
-          (record) =>
-              record.receiptUuid ==
-              widget.mainReceipt.uuid!,
-        )
-        .toList();
+    return widget.mainReceipt.getItemsNoVoid();
   }
 
   @override
@@ -363,19 +351,7 @@ class _MainReceiptTileDesktopState
   }
 
   List<TempProductSaleRecord> getProductRecord() {
-    var tempRecords =
-        returnReceiptProvider(
-          context,
-          listen: false,
-        ).getProductRecordsNoVoid();
-
-    return tempRecords
-        .where(
-          (record) =>
-              record.receiptUuid ==
-              widget.mainReceipt.uuid!,
-        )
-        .toList();
+    return widget.mainReceipt.getItemsNoVoid();
   }
 
   // late Future<List<TempProductSaleRecord>> productFuture;

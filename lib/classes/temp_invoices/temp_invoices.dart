@@ -1,5 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
+import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/main.dart';
 
 part 'temp_invoices.g.dart';
@@ -84,6 +86,11 @@ class TempInvoice extends HiveObject {
   @HiveField(26)
   String? comment;
 
+  // Lines on this invoice, also written to product_sales.
+  // Null or empty on invoices saved before this field existed.
+  @HiveField(27)
+  List<TempProductSaleRecord>? items;
+
   TempInvoice({
     this.id,
     this.barcode,
@@ -111,6 +118,7 @@ class TempInvoice extends HiveObject {
     required this.cartName,
     required this.subStaffName,
     required this.comment,
+    this.items,
   });
 
   factory TempInvoice.fromJson(Map<String, dynamic> json) {
@@ -149,6 +157,9 @@ class TempInvoice extends HiveObject {
       cartName: json['cart_name'] as String?,
       subStaffName: json['sub_staff_name'] as String?,
       comment: json['comment'] as String?,
+      items: TempProductSaleRecord.itemsFromJson(
+        json['items'],
+      ),
     );
   }
 
@@ -180,7 +191,41 @@ class TempInvoice extends HiveObject {
       'cart_name': cartName,
       'sub_staff_name': subStaffName,
       'comment': comment,
+      // Left out when empty so an update never clears stored items.
+      if (items?.isNotEmpty == true)
+        'items': TempProductSaleRecord.itemsToJson(items!),
     };
+  }
+
+  List<TempProductSaleRecord> getItems({
+    BuildContext? context,
+  }) {
+    if (items == null || items!.isEmpty) {
+      if (context == null) {
+        return returnReceiptProviderSingle().mainSales
+            .where((item) => item.invoiceUuid == uuid)
+            .toList();
+      } else {
+        return returnReceiptProvider(context, listen: true)
+            .mainSales
+            .where((item) => item.invoiceUuid == uuid)
+            .toList();
+      }
+    } else {
+      return items ?? [];
+    }
+  }
+
+  List<TempProductSaleRecord>? getItemsNoVoid() {
+    return getItems()
+        .where((item) => item.isVoid != true)
+        .toList();
+  }
+
+  List<TempProductSaleRecord>? getItemsVoid() {
+    return getItems()
+        .where((item) => item.isVoid == true)
+        .toList();
   }
 
   double getCustomerReward() {

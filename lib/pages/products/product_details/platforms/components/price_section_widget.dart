@@ -317,6 +317,12 @@ Widget priceSectionWidget(
                                                                 quantityChange:
                                                                     null,
                                                                 product: TempProductClass(
+                                                                  heightDimension:
+                                                                      product.heightDimension,
+                                                                  widthDimension:
+                                                                      product.widthDimension,
+                                                                  quantityType:
+                                                                      product.quantityType,
                                                                   unitsList:
                                                                       product.unitsList,
                                                                   pricesList:
@@ -360,13 +366,11 @@ Widget priceSectionWidget(
                                                                       ) ??
                                                                       0,
                                                                   sellingPrice:
-                                                                      returnData().tempPricesList.isEmpty
-                                                                          ? null
-                                                                          : product.sellingPrice,
+                                                                      product.sellingPrice,
                                                                   wholeSalePrice:
                                                                       product.wholeSalePrice,
                                                                   quantity:
-                                                                      product.quantity,
+                                                                      product.getActualQuantity(),
                                                                   shopId:
                                                                       product.shopId,
                                                                   barcode:

@@ -93,18 +93,7 @@ class _MainInvoiceTileMobileState
   }
 
   List<TempProductSaleRecord> getProductRecord() {
-    var tempRecords =
-        returnReceiptProvider(
-          context,
-          listen: false,
-        ).getProductRecordsNoVoid();
-
-    return tempRecords
-        .where(
-          (record) =>
-              record.invoiceUuid == widget.invoice.uuid!,
-        )
-        .toList();
+    return widget.invoice.getItemsNoVoid() ?? [];
   }
 
   @override
@@ -382,18 +371,7 @@ class _MainInvoiceTileDesktopState
   }
 
   List<TempProductSaleRecord> getProductRecord() {
-    var tempRecords =
-        returnReceiptProvider(
-          context,
-          listen: false,
-        ).getProductRecordsNoVoid();
-
-    return tempRecords
-        .where(
-          (record) =>
-              record.invoiceUuid == widget.invoice.uuid!,
-        )
-        .toList();
+    return widget.invoice.getItemsNoVoid() ?? [];
   }
 
   @override

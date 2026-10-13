@@ -106,14 +106,19 @@ class ExcelProvider with ChangeNotifier {
   Future<bool> save({
     required List<int> bytes,
     required String name,
+    bool isCsv = false,
+    bool addSuffix = true,
   }) async {
     var fileName =
-        '$name #${uuidGen().substring(0, 5).toUpperCase()}';
+        addSuffix
+            ? '$name #${uuidGen().substring(0, 5).toUpperCase()}'
+            : name;
     try {
       if (kIsWeb) {
         await downloadExcelWeb(
           bytes: bytes,
           fileName: fileName,
+          isCsv: isCsv,
         );
       } else {
         final Uint8List uint8Bytes = Uint8List.fromList(
@@ -124,13 +129,14 @@ class ExcelProvider with ChangeNotifier {
           await shareExcel(
             bytes: bytes,
             fileName: fileName,
+            isCsv: isCsv,
           );
         } else {
           await FileSaver.instance.saveFile(
             name: fileName,
-            fileExtension: "xlsx",
+            fileExtension: isCsv ? "csv" : "xlsx",
             bytes: uint8Bytes,
-            mimeType: MimeType.microsoftExcel,
+            mimeType: isCsv ? MimeType.csv : MimeType.microsoftExcel,
           );
         }
       }
@@ -145,17 +151,20 @@ class ExcelProvider with ChangeNotifier {
   Future<void> downloadExcelWeb({
     required List<int> bytes,
     required String fileName,
+    bool isCsv = false,
   }) async {
     final blob = html.Blob(
       [bytes],
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      isCsv
+          ? 'text/csv'
+          : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     );
 
     final url = html.Url.createObjectUrlFromBlob(blob);
 
     final anchor =
         html.AnchorElement(href: url)
-          ..download = '$fileName.xlsx'
+          ..download = '$fileName.${isCsv ? 'csv' : 'xlsx'}'
           ..style.display = 'none';
 
     html.document.body?.append(anchor);
@@ -170,10 +179,11 @@ class ExcelProvider with ChangeNotifier {
   Future<void> shareExcel({
     required List<int> bytes,
     required String fileName,
+    bool isCsv = false,
   }) async {
     final directory = await getTemporaryDirectory();
 
-    final file = File('${directory.path}/$fileName.xlsx');
+    final file = File('${directory.path}/$fileName.${isCsv ? 'csv' : 'xlsx'}');
 
     await file.writeAsBytes(bytes);
 

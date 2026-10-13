@@ -16,7 +16,7 @@ class TempProductSaleRecord {
   DateTime createdAt;
 
   @HiveField(2)
-  final int productId;
+  final int? productId;
 
   @HiveField(3)
   String productName;
@@ -34,10 +34,10 @@ class TempProductSaleRecord {
   String? customerName;
 
   @HiveField(8)
-  String staffName;
+  String? staffName;
 
   @HiveField(9)
-  int recepitId;
+  int? recepitId;
 
   @HiveField(10)
   double? discount;
@@ -120,6 +120,15 @@ class TempProductSaleRecord {
   @HiveField(36)
   String? priceUuid;
 
+  @HiveField(37)
+  double? widthDimension;
+
+  @HiveField(38)
+  double? heightDimension;
+
+  @HiveField(39)
+  int? quantityType;
+
   TempProductSaleRecord({
     this.productRecordId,
     required this.createdAt,
@@ -158,6 +167,9 @@ class TempProductSaleRecord {
     required this.unitUuid,
     required this.pricesList,
     required this.priceUuid,
+    required this.widthDimension,
+    required this.heightDimension,
+    required this.quantityType,
   });
 
   factory TempProductSaleRecord.fromJson(
@@ -168,14 +180,14 @@ class TempProductSaleRecord {
       createdAt: DateTime.parse(
         json['created_at'] as String,
       ),
-      productId: json['product_id'] as int,
+      productId: json['product_id'] as int?,
       productName: json['product_name'] as String,
       shopId: json['shop_id'] as int,
       staffId: json['staff_id'] as String,
       customerId: json['customer_id'] as int?,
       customerName: json['customer_name'] as String?,
-      staffName: json['staff_name'] as String,
-      recepitId: json['recepit_id'] as int,
+      staffName: json['staff_name'] as String?,
+      recepitId: json['recepit_id'] as int?,
       discount: (json['discount'] as num?)?.toDouble(),
       quantity: (json['quantity'] as num).toDouble(),
       revenue: (json['revenue'] as num).toDouble(),
@@ -220,6 +232,11 @@ class TempProductSaleRecord {
               )
               .toList(),
       priceUuid: json['price_uuid'] as String?,
+      widthDimension:
+          (json['width_dimension'] as num?)?.toDouble(),
+      heightDimension:
+          (json['height_dimension'] as num?)?.toDouble(),
+      quantityType: json['quantity_type'] as int?,
     );
   }
 
@@ -258,15 +275,55 @@ class TempProductSaleRecord {
       'is_void': isVoid,
       'units_list': ProductUnitsClass.getUnitList(
         tempUnitList: unitsList,
-        productUuid: uuid,
+        productUuid: productUuid,
       ),
       'unit_uuid': unitUuid,
       'prices_list': ProductPricesClass.getPricesList(
         tempPricesList: pricesList,
-        itemUuid: uuid,
+        itemUuid: productUuid,
       ),
       'price_uuid': priceUuid,
+      'width_dimension': widthDimension,
+      'height_dimension': heightDimension,
+      'quantity_type': quantityType,
     };
+  }
+
+  // Lines stored in a receipt's or invoice's `items` column.
+  // created_at is written in UTC so the stored string keeps its offset.
+  static List<Map<String, dynamic>> itemsToJson(
+    List<TempProductSaleRecord> items,
+  ) {
+    return items
+        .map(
+          (item) => {
+            ...item.toJson(),
+            'created_at':
+                item.createdAt.toUtc().toIso8601String(),
+          },
+        )
+        .toList();
+  }
+
+  // Null when missing, empty or unreadable, so the document is treated
+  // like one saved before items existed.
+  static List<TempProductSaleRecord>? itemsFromJson(
+    dynamic json,
+  ) {
+    if (json is! List || json.isEmpty) {
+      return null;
+    }
+    try {
+      return json.map((item) {
+        final record = TempProductSaleRecord.fromJson(
+          Map<String, dynamic>.from(item as Map),
+        );
+        record.createdAt = record.createdAt.toLocal();
+        return record;
+      }).toList();
+    } catch (_) {
+      return null;
+    }
   }
 
   TempProductSaleRecord copy({
@@ -305,6 +362,9 @@ class TempProductSaleRecord {
     String? unitUuid,
     List<ProductPricesClass>? pricesList,
     String? priceUuid,
+    double? widthDimension,
+    double? heightDimension,
+    int? quantityType,
   }) {
     return TempProductSaleRecord(
       productRecordId:
@@ -347,6 +407,10 @@ class TempProductSaleRecord {
       unitUuid: unitUuid ?? this.unitUuid,
       pricesList: pricesList ?? this.pricesList,
       priceUuid: priceUuid ?? this.priceUuid,
+      widthDimension: widthDimension ?? this.widthDimension,
+      heightDimension:
+          heightDimension ?? this.heightDimension,
+      quantityType: quantityType ?? this.quantityType,
     );
   }
 
@@ -459,6 +523,10 @@ class TempProductSaleRecord {
         return quantity;
       } else {
         var item = items.first;
+        if (quantityType == 2 &&
+            item.dimensionType != null) {
+          return quantity;
+        }
         return item.getQuantityEquivDivided(
           index: 1,
           context: context,
@@ -481,10 +549,16 @@ class TempProductSaleRecord {
         return quantity;
       } else {
         var item = items.first;
+        if (quantityType == 2 &&
+            item.dimensionType != null) {
+          return getActualQuantity();
+        }
         return item.getQuantityEquivMultiplied(
           index: 1,
           newQuantity: quantity,
           context: context,
+          customWidth: widthDimension,
+          customHeight: heightDimension,
         );
       }
     }
@@ -603,12 +677,40 @@ class TempProductSaleRecord {
   }
 
   double getActualQuantity() {
-    final conversion = getSelectedUnit().conversion;
+    final selectedUnit = getSelectedUnit();
+    final conversion = selectedUnit.conversion;
     if (!conversion.isFinite || conversion <= 0) {
       throw StateError(
         'Unit conversion must be greater than zero to convert quantities.',
       );
     }
+    if (quantityType == 2 &&
+        selectedUnit.dimensionType ==
+            ProductUnitsClass.areaUnit) {
+      return quantity * conversion;
+    }
+    if (quantityType == 2 &&
+        selectedUnit.dimensionType ==
+            ProductUnitsClass.sheetUnit) {
+      return quantity * conversion * dimensionArea();
+    }
     return quantity * conversion;
+  }
+
+  // Width × height this line was sold at, 1 when not set.
+  double dimensionArea() {
+    if (widthDimension == null ||
+        heightDimension == null ||
+        widthDimension! * heightDimension! <= 0) {
+      return 1;
+    }
+    return widthDimension! * heightDimension!;
+  }
+
+  String dimensionsLabel() {
+    return formatDimensionsLabel(
+      widthDimension,
+      heightDimension,
+    );
   }
 }
