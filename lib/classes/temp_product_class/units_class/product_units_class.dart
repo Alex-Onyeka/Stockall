@@ -183,7 +183,9 @@ class ProductUnitsClass extends HiveObject {
       if (!areaPerUnit.isFinite || areaPerUnit <= 0) {
         return 0;
       }
-      return (newQuantity ?? product.getActualQuantity() ?? 0) /
+      return (newQuantity ??
+              product.getActualQuantity() ??
+              0) /
           areaPerUnit;
     }
 
@@ -204,10 +206,28 @@ class ProductUnitsClass extends HiveObject {
       if (items().isNotEmpty) {
         var item = items().first;
         try {
-          return (newQuantity ??
-                  item.getActualQuantity() ??
-                  0) /
-              conversion;
+          // return (newQuantity ??
+          //         item.getActualQuantity() ??
+          //         0) /
+          //     conversion;
+          if (item?.quantityType == 2 &&
+              dimensionType != null) {
+            final productArea = item!.dimensionArea();
+            final areaPerUnit =
+                dimensionType == areaUnit
+                    ? conversion
+                    : conversion * productArea;
+            if (!areaPerUnit.isFinite || areaPerUnit <= 0) {
+              return 0;
+            }
+            return (newQuantity ??
+                    item.getActualQuantity() ??
+                    0) /
+                areaPerUnit;
+          } else {
+            return (newQuantity ?? item.quantity ?? 0) /
+                conversion;
+          }
         } catch (e) {
           return (newQuantity ?? item.quantity ?? 0) /
               conversion;
@@ -248,7 +268,8 @@ class ProductUnitsClass extends HiveObject {
     if (newQuantity != null &&
         customWidth != null &&
         customHeight != null) {
-      newQuantity = newQuantity * customWidth * customHeight;
+      newQuantity =
+          newQuantity * customWidth * customHeight;
     }
 
     List items() {
@@ -294,10 +315,30 @@ class ProductUnitsClass extends HiveObject {
       if (items().isNotEmpty) {
         var item = items().first;
         try {
-          return (newQuantity ??
-                  item.getActualQuantity() ??
-                  0) *
-              conversion;
+          // return (newQuantity ??
+          //         item.getActualQuantity() ??
+          //         0) *
+          //     conversion;
+          if (item?.quantityType == 2 &&
+              dimensionType != null) {
+            if (newQuantity == null) {
+              return item!.getActualQuantity() ?? 0;
+            }
+            if (dimensionType == areaUnit) {
+              return newQuantity * conversion;
+            }
+            final width =
+                customWidth ?? item!.widthDimension ?? 1;
+            final height =
+                customHeight ?? item!.heightDimension ?? 1;
+            return newQuantity *
+                conversion *
+                width *
+                height;
+          } else {
+            return (newQuantity ?? item.quantity ?? 0) *
+                conversion;
+          }
         } catch (e) {
           return (newQuantity ?? item.quantity ?? 0) *
               conversion;

@@ -624,20 +624,13 @@ class TempProductClass {
     required BuildContext context,
   }) {
     if (discount == null) {
-      if (getPrimaryPrice().priceValue != 0) {
-        return formatMoneyMid(
-          amount:
-              getPrimaryUnit().conversion *
-              (getPrimaryPrice().priceValue),
-          context: context,
-        );
-      } else {
-        return 'Price Not Set';
-      }
+      return getItemTilePriceNoDiscount(context: context);
     } else {
       return formatMoneyMid(
         amount:
-            getPrimaryUnit().conversion *
+            (getPrimaryPrice().priceType == 1
+                ? getPrimaryUnit().conversion
+                : 1) *
             ((getPrimaryPrice().priceValue -
                 (getPrimaryPrice().priceValue *
                     (discount! / 100)))),
@@ -650,21 +643,26 @@ class TempProductClass {
     required BuildContext context,
   }) {
     if (getPrimaryPrice().priceValue != 0) {
-      final primaryUnit = getPrimaryUnit();
-      final areaConversion =
-          quantityType == 2 &&
-                  primaryUnit.dimensionType ==
-                      ProductUnitsClass.sheetUnit
-              ? primaryUnit.conversion * dimensionArea()
-              : primaryUnit.conversion;
-      return formatMoneyMid(
-        amount:
-            areaConversion * getPrimaryPrice().priceValue,
+      return formatMoneyBig(
+        amount: getItemPrice(context: context),
         context: context,
       );
     } else {
       return 'Price Not Set';
     }
+  }
+
+  double getItemPrice({BuildContext? context}) {
+    final primaryUnit = getPrimaryUnit();
+    final areaConversion =
+        quantityType == 2 &&
+                primaryUnit.dimensionType ==
+                    ProductUnitsClass.sheetUnit
+            ? primaryUnit.conversion * dimensionArea()
+            : primaryUnit.conversion;
+    return getPrimaryPrice().priceType == 1
+        ? areaConversion * getPrimaryPrice().priceValue
+        : getPrimaryPrice().priceValue;
   }
 
   String getQuantityText({

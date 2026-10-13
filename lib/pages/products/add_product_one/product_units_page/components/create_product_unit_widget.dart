@@ -9,6 +9,7 @@ import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/add_product_one/product_units_page/components/unit_type_selection_widget.dart';
 
 class CreateProductUnitWidget extends StatefulWidget {
   final TextEditingController quantityController;
@@ -195,43 +196,22 @@ void addProductUnitAction({
                           mainAxisSize: MainAxisSize.min,
                           spacing: 10,
                           children: [
-                              if (isDimensional) ...[
-                                DropdownButtonFormField<int>(
-                                  initialValue: dimensionType,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Unit measures',
-                                  ),
-                                  items: const [
-                                    DropdownMenuItem(
-                                      value:
-                                          ProductUnitsClass.areaUnit,
-                                      child: Text('Area'),
-                                    ),
-                                    DropdownMenuItem(
-                                      value:
-                                          ProductUnitsClass.sheetUnit,
-                                      child: Text(
-                                        'Whole slab / sheet',
-                                      ),
-                                    ),
-                                  ],
-                                  onChanged: (value) {
-                                    if (value != null) {
-                                      setState(() {
-                                        dimensionType = value;
-                                      });
-                                    }
-                                  },
-                                ),
-                                Text(
-                                  dimensionType ==
-                                          ProductUnitsClass.areaUnit
-                                      ? 'Conversion is the area represented by one of this unit.'
-                                      : 'Conversion is the number of original slabs / sheets represented by one of this unit.',
-                                  style: theme.mobileTexts.b4.textStyleNormal,
-                                ),
-                              ],
-                              Row(
+                            if (isDimensional) ...[
+                              UnitTypeSelectionWidget(
+                                theme: theme,
+                                currentSelection:
+                                    dimensionType,
+                                setUnitType: (index) {
+                                  {
+                                    setState(() {
+                                      dimensionType =
+                                          (index ?? 1);
+                                    });
+                                  }
+                                },
+                              ),
+                            ],
+                            Row(
                               crossAxisAlignment:
                                   CrossAxisAlignment.end,
                               spacing: 5,
@@ -320,10 +300,11 @@ void addProductUnitAction({
                               title:
                                   isDimensional &&
                                           dimensionType ==
-                                              ProductUnitsClass.areaUnit
+                                              ProductUnitsClass
+                                                  .areaUnit
                                       ? 'Area conversion *'
                                       : isDimensional
-                                      ? 'Slabs / sheets per unit *'
+                                      ? 'Slabs / sheets per Unit *'
                                       : 'Conversion',
                               autoFocus: false,
                               hint: 'Enter Conversion',

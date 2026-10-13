@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class UnitTypeSelectionWidget extends StatefulWidget {
@@ -22,8 +23,8 @@ class UnitTypeSelectionWidget extends StatefulWidget {
 class _UnitTypeSelectionWidgetState
     extends State<UnitTypeSelectionWidget> {
   List<UnitTypeClass> priceList = [
-    UnitTypeClass(index: 1, name: 'Dynamic'),
-    UnitTypeClass(index: 2, name: 'Fixed'),
+    UnitTypeClass(index: 1, name: 'Area (l x b)'),
+    UnitTypeClass(index: 2, name: 'Whole Unit (e.g Sheet)'),
   ];
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,7 @@ class _UnitTypeSelectionWidgetState
                   widget.theme.mobileTexts.b4.fontSize,
               fontWeight: FontWeight.bold,
             ),
-            'Select Conversion Type:',
+            'Select Unit Type:',
           ),
         ),
         ConstrainedBox(
@@ -98,7 +99,25 @@ class _UnitTypeSelectionWidgetState
             ),
           ),
         ),
-        SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                widget.currentSelection ==
+                        ProductUnitsClass.areaUnit
+                    ? 'Conversion is the area represented by one of this unit.'
+                    : 'Conversion is the number of original slabs / sheets represented by one of this unit.',
+                style:
+                    widget
+                        .theme
+                        .mobileTexts
+                        .b4
+                        .textStyleNormal,
+              ),
+            ),
+          ],
+        ),
+        // SizedBox(height: 10),
       ],
     );
   }

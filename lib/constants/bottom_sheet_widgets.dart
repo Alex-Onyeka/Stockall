@@ -1279,8 +1279,10 @@ void selectProductSales({
   final widthController = TextEditingController();
   final heightController = TextEditingController();
   final bool is2DItem = cartItem.item.quantityType == 2;
-  final double? originalWidth = cartItem.item.widthDimension;
-  final double? originalHeight = cartItem.item.heightDimension;
+  final double? originalWidth =
+      cartItem.item.widthDimension;
+  final double? originalHeight =
+      cartItem.item.heightDimension;
   bool isAreaUnit = false;
 
   double? parseDimension(TextEditingController controller) {
@@ -1333,9 +1335,7 @@ void selectProductSales({
   }
 
   String? dimensionsError() {
-    if (!is2DItem ||
-        isAreaUnit ||
-        quantityTypeTemp != 2) {
+    if (!is2DItem || isAreaUnit || quantityTypeTemp != 2) {
       return null;
     }
     return checkDimension(
@@ -1715,7 +1715,21 @@ void selectProductSales({
                                             onChanged: (
                                               value,
                                             ) {
-                                              setState(() {});
+                                              setState(() {
+                                                if ((double.tryParse(
+                                                          widthController.text.replaceAll(
+                                                            ',',
+                                                            '',
+                                                          ),
+                                                        ) ??
+                                                        0) >
+                                                    (originalWidth ??
+                                                        0)) {
+                                                  widthController
+                                                          .text =
+                                                      '0';
+                                                }
+                                              });
                                             },
                                             title:
                                                 '${getPrimaryUnit().name} Width',
@@ -1736,7 +1750,21 @@ void selectProductSales({
                                             onChanged: (
                                               value,
                                             ) {
-                                              setState(() {});
+                                              setState(() {
+                                                if ((double.tryParse(
+                                                          heightController.text.replaceAll(
+                                                            ',',
+                                                            '',
+                                                          ),
+                                                        ) ??
+                                                        0) >
+                                                    (originalHeight ??
+                                                        0)) {
+                                                  heightController
+                                                          .text =
+                                                      '0';
+                                                }
+                                              });
                                             },
                                             title:
                                                 '${getPrimaryUnit().name} Height',
@@ -1760,9 +1788,9 @@ void selectProductSales({
                             Visibility(
                               visible:
                                   cartItemTemp
-                                      .item
-                                      .quantityType ==
-                                  2 &&
+                                          .item
+                                          .quantityType ==
+                                      2 &&
                                   !isAreaUnit,
                               child: Row(
                                 mainAxisAlignment:
@@ -1851,8 +1879,8 @@ void selectProductSales({
                                         setState(() {
                                           quantityTypeTemp =
                                               2;
-                                          quantityController
-                                              .clear();
+                                          // quantityController
+                                          //     .clear();
                                         });
                                       },
                                       child: Container(
@@ -1933,7 +1961,8 @@ void selectProductSales({
                                   if (isAreaUnit) {
                                     quantityTypeTemp = 1;
                                     widthController.clear();
-                                    heightController.clear();
+                                    heightController
+                                        .clear();
                                   }
                                 });
                                 if (getPrimaryUnitQuantityMultiplied(
