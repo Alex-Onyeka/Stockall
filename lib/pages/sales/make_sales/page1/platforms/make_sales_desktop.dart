@@ -2221,6 +2221,8 @@ class _MakeSalesDesktopState
                                                       await returnSalesProvider().addNewCart(
                                                         context,
                                                         TempCart(
+                                                          tempCartItems:
+                                                              null,
                                                           comment:
                                                               null,
                                                           timeOfDay:

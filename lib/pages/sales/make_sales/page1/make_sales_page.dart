@@ -45,6 +45,7 @@ class _MakeSalesPageState extends State<MakeSalesPage> {
           returnSalesProvider().addNewCart(
             context,
             TempCart(
+              tempCartItems: null,
               comment: null,
               timeOfDay: null,
               // createdDate: DateTime.now(),

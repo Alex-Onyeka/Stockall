@@ -115,7 +115,7 @@ class ProductRecordFunc {
     try {
       TempMainReceipt newReceipt = receipt.copyWith();
       List<TempProductSaleRecord> records =
-          (newReceipt.getItems())
+          (newReceipt.tempItems ?? newReceipt.getItems())
               .toList()
               .map((item) => item.copy())
               .toList();
@@ -332,7 +332,8 @@ class ProductRecordFunc {
     await mainLocalLog('Deleting Records in Invoice');
     try {
       List<TempProductSaleRecord> records =
-          (invoice.getItems()).toList();
+          (invoice.tempItems ?? invoice.getItems())
+              .toList();
       await mainLocalLog(
         'Records Gotten: ${records.length}',
       );

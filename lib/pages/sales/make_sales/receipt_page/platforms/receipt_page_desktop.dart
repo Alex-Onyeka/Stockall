@@ -58,6 +58,7 @@ class _ReceiptPageDesktopState
       (rec) => rec.uuid! == widget.response.receipt?.uuid,
       orElse:
           () => TempMainReceipt(
+            tempItems: null,
             salesTypeIndex: 1,
             orderUuid: null,
             customerAccount: 0,

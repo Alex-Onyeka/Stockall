@@ -94,7 +94,9 @@ class _MakeSalesDesktopTwoState
 
   // Only Real Sales pay at checkout; invoices and orders are unchanged.
   String? _paymentError() {
-    if (returnSalesProvider().currentCart().cartItemTypeIndex !=
+    if (returnSalesProvider()
+            .currentCart()
+            .cartItemTypeIndex !=
         1) {
       return null;
     }
@@ -521,6 +523,8 @@ class _MakeSalesDesktopTwoState
                                                   returnSalesProvider().addNewCart(
                                                     context,
                                                     TempCart(
+                                                      tempCartItems:
+                                                          null,
                                                       timeOfDay:
                                                           null,
                                                       comment:
@@ -904,7 +908,8 @@ class _MakeSalesDesktopTwoState
                                             );
                                           },
                                         );
-                                      } else if (_paymentError() != null) {
+                                      } else if (_paymentError() !=
+                                          null) {
                                         showDialog(
                                           context: context,
                                           builder: (
@@ -966,7 +971,8 @@ class _MakeSalesDesktopTwoState
                                                         .currentCart()
                                                         .draftUuid;
                                                 var res = await returnSalesProvider().checkoutMain(
-                                                  payments: _resolvePayments(),
+                                                  payments:
+                                                      _resolvePayments(),
                                                   context:
                                                       context,
                                                   salesCartItem:

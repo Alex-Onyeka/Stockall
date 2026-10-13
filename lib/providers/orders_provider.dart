@@ -495,6 +495,15 @@ class OrdersProvider extends ChangeNotifier {
           context: context,
         );
 
+        final tempCartItems = convertOrderToCartItems(
+          order: order.copyWith(),
+          saleRecords:
+              order.orderItems
+                  .map((item) => item.copyWith())
+                  .toList(),
+          context: context,
+        );
+
         if (returnSalesProvider()
             .currentMainCart()
             .cartQueue
@@ -506,6 +515,7 @@ class OrdersProvider extends ChangeNotifier {
             .isEmpty) {
           var newId = uuidGen();
           var tempCart = TempCart(
+            tempCartItems: tempCartItems,
             comment: order.comment,
             timeOfDay: null,
             hasPrintedDocket: false,
@@ -732,6 +742,7 @@ class OrdersProvider extends ChangeNotifier {
                 await returnSalesProvider().addNewCart(
                   context,
                   TempCart(
+                    tempCartItems: null,
                     comment: null,
                     timeOfDay: null,
                     // createdDate: DateTime.now(),
@@ -911,6 +922,7 @@ class OrdersProvider extends ChangeNotifier {
 
       final createdAt = DateTime.now().toUtc();
       TempMainReceipt receipt = TempMainReceipt(
+        tempItems: null,
         salesTypeIndex: 3,
         orderUuid: order.uuid,
         comment: returnOrdersActionProvider().comment,

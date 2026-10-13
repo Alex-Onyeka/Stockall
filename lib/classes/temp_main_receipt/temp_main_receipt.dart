@@ -103,6 +103,9 @@ class TempMainReceipt extends HiveObject {
   @HiveField(30)
   List<TempProductSaleRecord>? items;
 
+  @HiveField(31)
+  List<TempProductSaleRecord>? tempItems;
+
   TempMainReceipt({
     this.id,
     this.barcode,
@@ -135,6 +138,7 @@ class TempMainReceipt extends HiveObject {
     this.orderUuid,
     required this.salesTypeIndex,
     this.items,
+    this.tempItems,
   });
 
   factory TempMainReceipt.fromJson(
@@ -253,6 +257,7 @@ class TempMainReceipt extends HiveObject {
     String? orderUuid,
     int? salesTypeIndex,
     List<TempProductSaleRecord>? items,
+    List<TempProductSaleRecord>? tempItems,
   }) {
     return TempMainReceipt(
       id: id ?? this.id,
@@ -289,6 +294,7 @@ class TempMainReceipt extends HiveObject {
       orderUuid: orderUuid ?? this.orderUuid,
       salesTypeIndex: salesTypeIndex ?? this.salesTypeIndex,
       items: items ?? this.items,
+      tempItems: tempItems ?? this.tempItems,
     );
   }
 

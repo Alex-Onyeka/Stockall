@@ -135,6 +135,7 @@ class SalesProvider extends ChangeNotifier {
         TempMainCart(
           cartQueue: [
             TempCart(
+              tempCartItems: null,
               comment: null,
               timeOfDay: null,
               hasPrintedDocket: false,
@@ -255,6 +256,7 @@ class SalesProvider extends ChangeNotifier {
               .cartQueue
               .add(
                 TempCart(
+                  tempCartItems: null,
                   comment: null,
                   timeOfDay: null,
                   // createdDate: DateTime.now(),
@@ -592,6 +594,7 @@ class SalesProvider extends ChangeNotifier {
       await addNewCart(
         context,
         TempCart(
+          tempCartItems: null,
           comment: null,
           timeOfDay: null,
           // createdDate: DateTime.now(),
@@ -1289,6 +1292,7 @@ class SalesProvider extends ChangeNotifier {
           uuidGen();
       await mainLocalLog('🌹🌹 Created Date: $createdAt');
       TempMainReceipt receipt = TempMainReceipt(
+        tempItems: null,
         salesTypeIndex: 1,
         orderUuid: salesCartItem.orderUuid,
         comment: currentCart().comment,
@@ -1338,6 +1342,21 @@ class SalesProvider extends ChangeNotifier {
       );
       receipt.items = productSaleRecords;
       if (currentCart().receiptUuidEdit != null) {
+        final tempProductSaleRecords = buildSaleRecords(
+          cartItems:
+              salesCartItem.tempCartItems?.toList() ?? [],
+          createdAt: createdAt,
+          shopId: shopId,
+          staffId: staffUuid(), // staffId,
+          staffName: staffName(), // staffName,
+          customerUuid: customerUuid(),
+          customerName: customerName(),
+          departmentName: departmentName(),
+          departmentUuid: departmentUuid(),
+          receiptId: receipt.id ?? 0,
+          receiptUuid: receipt.uuid,
+        );
+        receipt.tempItems = tempProductSaleRecords;
         await mainLocalLog(
           'Receipt UUid is not null: ${currentCart().receiptUuidEdit}',
         );
@@ -1385,6 +1404,7 @@ class SalesProvider extends ChangeNotifier {
       await mainLocalLog('Checkout Started');
 
       try {
+        receipt.tempItems = null;
         await returnReceiptProviderSingle().createReceipt(
           receipt,
         );
@@ -1761,6 +1781,7 @@ class SalesProvider extends ChangeNotifier {
     } else if (currentCart().cartItemTypeIndex == 2) {
       await mainLocalLog('Current Sale is Invoice');
       TempInvoice invoice = TempInvoice(
+        tempItems: null,
         comment: currentCart().comment,
         subStaffName:
             currentCart().subStaffName ??
@@ -1812,8 +1833,24 @@ class SalesProvider extends ChangeNotifier {
           departmentUuid: departmentUuid(),
           invoiceUuid: invoice.uuid,
         );
+
         invoice.items = invoiceSaleRecords;
+
         if (currentCart().invoiceUuidEdit != null) {
+          final tempProductSaleRecords = buildSaleRecords(
+            cartItems:
+                salesCartItem.tempCartItems?.toList() ?? [],
+            createdAt: createdAt,
+            shopId: shopId,
+            staffId: staffUuid(), // staffId,
+            staffName: staffName(), // staffName,
+            customerUuid: customerUuid(),
+            customerName: customerName(),
+            departmentName: departmentName(),
+            departmentUuid: departmentUuid(),
+            invoiceUuid: invoice.uuid,
+          );
+          invoice.tempItems = tempProductSaleRecords;
           await mainLocalLog(
             'Invoice UUid is not null: ${currentCart().invoiceUuidEdit}',
           );
@@ -1858,6 +1895,7 @@ class SalesProvider extends ChangeNotifier {
           );
           await mainLocalLog('Invoice Uuid is null');
         }
+        invoice.tempItems = null;
 
         invoiceRes = await returnInvoicesProvider()
             .createInvoices(invoice);
@@ -4065,6 +4103,16 @@ class SalesProvider extends ChangeNotifier {
           context: context,
         );
 
+        final tempCartItems = convertReceiptToCartItems(
+          receipt: newReceipt,
+          saleRecords:
+              newReceipt
+                  .getItems()
+                  .map((item) => item.copy())
+                  .toList(),
+          context: context,
+        );
+
         if (currentMainCart().cartQueue
             .where(
               (cart) =>
@@ -4074,6 +4122,7 @@ class SalesProvider extends ChangeNotifier {
             .isEmpty) {
           var newId = uuidGen();
           var tempCart = TempCart(
+            tempCartItems: tempCartItems,
             orderUuidEdit: null,
             comment: newReceipt.comment,
             timeOfDay: null,
@@ -4174,6 +4223,7 @@ class SalesProvider extends ChangeNotifier {
                 await addNewCart(
                   context,
                   TempCart(
+                    tempCartItems: null,
                     comment: null,
                     timeOfDay: null,
                     // createdDate: DateTime.now(),

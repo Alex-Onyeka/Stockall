@@ -452,6 +452,7 @@ class DraftsProvider extends ChangeNotifier {
     final cartItems = convertDraftToCartItems(draft: draft);
 
     var tempCart = TempCart(
+      tempCartItems: null,
       comment: draft.comment,
       timeOfDay: null,
       hasPrintedDocket: false,

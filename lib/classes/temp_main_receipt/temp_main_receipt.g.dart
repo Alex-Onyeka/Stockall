@@ -48,13 +48,14 @@ class TempMainReceiptAdapter extends TypeAdapter<TempMainReceipt> {
       orderUuid: fields[28] as String?,
       salesTypeIndex: fields[29] as int?,
       items: (fields[30] as List?)?.cast<TempProductSaleRecord>(),
+      tempItems: (fields[31] as List?)?.cast<TempProductSaleRecord>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, TempMainReceipt obj) {
     writer
-      ..writeByte(31)
+      ..writeByte(32)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -116,7 +117,9 @@ class TempMainReceiptAdapter extends TypeAdapter<TempMainReceipt> {
       ..writeByte(29)
       ..write(obj.salesTypeIndex)
       ..writeByte(30)
-      ..write(obj.items);
+      ..write(obj.items)
+      ..writeByte(31)
+      ..write(obj.tempItems);
   }
 
   @override
