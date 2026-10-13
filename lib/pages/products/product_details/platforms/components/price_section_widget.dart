@@ -317,6 +317,8 @@ Widget priceSectionWidget(
                                                                 quantityChange:
                                                                     null,
                                                                 product: TempProductClass(
+                                                                  manageSalesWastage:
+                                                                      product.manageSalesWastage,
                                                                   heightDimension:
                                                                       product.heightDimension,
                                                                   widthDimension:

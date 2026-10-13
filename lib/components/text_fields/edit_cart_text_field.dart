@@ -121,13 +121,16 @@ class _EditCartTextFieldState
       children: [
         Visibility(
           visible: widget.showTitle != false,
-          child: Text(
-            widget.title,
-            style:
-                widget.theme.mobileTexts.b3.textStyleBold,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 5.0),
+            child: Text(
+              widget.title,
+              style:
+                  widget.theme.mobileTexts.b3.textStyleBold,
+            ),
           ),
         ),
-        SizedBox(height: 5),
+
         TextFormField(
           autofocus:
               widget.autoFocus ??
@@ -173,7 +176,10 @@ class _EditCartTextFieldState
                 right: 2,
               ),
               child: Text(
-                widget.discount != null ? '%' : '#',
+                (widget.discount != null &&
+                        widget.discount == true)
+                    ? '%'
+                    : '#',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,

@@ -72,6 +72,9 @@ class _BarcodeAndSearchTextFieldState
                           // isEdit: false,
                           context: context,
                           newItem: TempCartItem(
+                            isPercentageWastage: null,
+                            wastageAmount: null,
+                            manageSalesWastage: null,
                             heightDimension: null,
                             widthDimension: null,
                             quantityType:

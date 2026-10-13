@@ -77,6 +77,15 @@ class TempCartItem extends HiveObject {
   @HiveField(21)
   int? quantityType;
 
+  @HiveField(22)
+  bool? manageSalesWastage;
+
+  @HiveField(23)
+  bool? isPercentageWastage;
+
+  @HiveField(24)
+  double? wastageAmount;
+
   TempCartItem({
     required this.item,
     required this.itemUuid,
@@ -100,6 +109,9 @@ class TempCartItem extends HiveObject {
     required this.widthDimension,
     required this.heightDimension,
     required this.quantityType,
+    required this.manageSalesWastage,
+    required this.isPercentageWastage,
+    required this.wastageAmount,
   });
 
   factory TempCartItem.fromJson(Map<String, dynamic> json) {
@@ -128,6 +140,12 @@ class TempCartItem extends HiveObject {
       heightDimension:
           (json['height_dimension'] as num?)?.toDouble(),
       quantityType: json['quantity_type'] as int?,
+      manageSalesWastage:
+          json['manage_sales_wastage'] as bool?,
+      isPercentageWastage:
+          json['is_percentage_wastage'] as bool?,
+      wastageAmount:
+          (json['wastage_amount'] as num?)?.toDouble(),
     );
   }
 
@@ -154,6 +172,9 @@ class TempCartItem extends HiveObject {
     'width_dimension': widthDimension,
     'height_dimension': heightDimension,
     'quantity_type': quantityType,
+    'manage_sales_wastage': manageSalesWastage,
+    'is_percentage_wastage': isPercentageWastage,
+    'wastage_amount': wastageAmount,
   };
 
   TempCartItem copyWith({
@@ -179,6 +200,9 @@ class TempCartItem extends HiveObject {
     double? widthDimension,
     double? heightDimension,
     int? quantityType,
+    bool? manageSalesWastage,
+    bool? isPercentageWastage,
+    double? wastageAmount,
   }) {
     return TempCartItem(
       item: item ?? this.item,
@@ -208,6 +232,11 @@ class TempCartItem extends HiveObject {
       heightDimension:
           heightDimension ?? this.heightDimension,
       quantityType: quantityType ?? this.quantityType,
+      manageSalesWastage:
+          manageSalesWastage ?? this.manageSalesWastage,
+      isPercentageWastage:
+          isPercentageWastage ?? this.isPercentageWastage,
+      wastageAmount: wastageAmount ?? this.wastageAmount,
     );
   }
 
@@ -501,7 +530,10 @@ class TempCartItem extends HiveObject {
   }
 
   String dimensionsLabel() {
-    return formatDimensionsLabel(widthDimension, heightDimension);
+    return formatDimensionsLabel(
+      widthDimension,
+      heightDimension,
+    );
   }
 
   String getUnit() {

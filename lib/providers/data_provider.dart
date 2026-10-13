@@ -2984,6 +2984,7 @@ class DataProvider extends ChangeNotifier {
   bool isRefundable = false;
   bool setCustomPrice = false;
   bool isManaged = true;
+  bool manageWastage = false;
   bool useGroupUnit = false;
   String sizeType = '';
   String size = '';
@@ -3010,6 +3011,7 @@ class DataProvider extends ChangeNotifier {
     if (setIsManaged == null) {
       isManaged = true;
     }
+    manageWastage = false;
     useGroupUnit = false;
     isOpen = false;
     unitValueSet = false;
@@ -3064,6 +3066,11 @@ class DataProvider extends ChangeNotifier {
       isManaged = false;
       notifyListeners();
     }
+  }
+
+  void toggleManageWastage() {
+    manageWastage = !manageWastage;
+    notifyListeners();
   }
 
   void toggleIsManagedTemp(bool value) {

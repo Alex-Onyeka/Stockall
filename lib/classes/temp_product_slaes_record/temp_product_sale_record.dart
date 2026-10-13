@@ -129,6 +129,15 @@ class TempProductSaleRecord {
   @HiveField(39)
   int? quantityType;
 
+  @HiveField(40)
+  bool? manageSalesWastage;
+
+  @HiveField(41)
+  bool? isPercentageWastage;
+
+  @HiveField(42)
+  double? wastageAmount;
+
   TempProductSaleRecord({
     this.productRecordId,
     required this.createdAt,
@@ -170,6 +179,9 @@ class TempProductSaleRecord {
     required this.widthDimension,
     required this.heightDimension,
     required this.quantityType,
+    required this.manageSalesWastage,
+    required this.isPercentageWastage,
+    required this.wastageAmount,
   });
 
   factory TempProductSaleRecord.fromJson(
@@ -237,6 +249,12 @@ class TempProductSaleRecord {
       heightDimension:
           (json['height_dimension'] as num?)?.toDouble(),
       quantityType: json['quantity_type'] as int?,
+      manageSalesWastage:
+          json['manage_sales_wastage'] as bool?,
+      isPercentageWastage:
+          json['is_percentage_wastage'] as bool?,
+      wastageAmount:
+          (json['wastage_amount'] as num?)?.toDouble(),
     );
   }
 
@@ -286,6 +304,9 @@ class TempProductSaleRecord {
       'width_dimension': widthDimension,
       'height_dimension': heightDimension,
       'quantity_type': quantityType,
+      'manage_sales_wastage': manageSalesWastage,
+      'is_percentage_wastage': isPercentageWastage,
+      'wastage_amount': wastageAmount,
     };
   }
 
@@ -365,6 +386,9 @@ class TempProductSaleRecord {
     double? widthDimension,
     double? heightDimension,
     int? quantityType,
+    bool? manageSalesWastage,
+    bool? isPercentageWastage,
+    double? wastageAmount,
   }) {
     return TempProductSaleRecord(
       productRecordId:
@@ -411,6 +435,11 @@ class TempProductSaleRecord {
       heightDimension:
           heightDimension ?? this.heightDimension,
       quantityType: quantityType ?? this.quantityType,
+      manageSalesWastage:
+          manageSalesWastage ?? this.manageSalesWastage,
+      isPercentageWastage:
+          isPercentageWastage ?? this.isPercentageWastage,
+      wastageAmount: wastageAmount ?? this.wastageAmount,
     );
   }
 

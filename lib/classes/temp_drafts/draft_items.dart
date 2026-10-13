@@ -93,6 +93,15 @@ class DraftItems extends HiveObject {
   @HiveField(28)
   int? quantityType;
 
+  @HiveField(29)
+  bool? manageSalesWastage;
+
+  @HiveField(30)
+  bool? isPercentageWastage;
+
+  @HiveField(31)
+  double? wastageAmount;
+
   DraftItems({
     required this.uuid,
     required this.draftId,
@@ -123,6 +132,9 @@ class DraftItems extends HiveObject {
     required this.widthDimension,
     required this.heightDimension,
     required this.quantityType,
+    required this.manageSalesWastage,
+    required this.isPercentageWastage,
+    required this.wastageAmount,
   });
 
   factory DraftItems.fromJson(Map<String, dynamic> json) {
@@ -179,6 +191,12 @@ class DraftItems extends HiveObject {
       heightDimension:
           (json['height_dimension'] as num?)?.toDouble(),
       quantityType: json['quantity_type'] as int?,
+      manageSalesWastage:
+          json['manage_sales_wastage'] as bool?,
+      isPercentageWastage:
+          json['is_percentage_wastage'] as bool?,
+      wastageAmount:
+          (json['wastage_amount'] as num?)?.toDouble(),
     );
   }
 
@@ -217,6 +235,9 @@ class DraftItems extends HiveObject {
       'width_dimension': widthDimension,
       'height_dimension': heightDimension,
       'quantity_type': quantityType,
+      'manage_sales_wastage': manageSalesWastage,
+      'is_percentage_wastage': isPercentageWastage,
+      'wastage_amount': wastageAmount,
     };
   }
 }

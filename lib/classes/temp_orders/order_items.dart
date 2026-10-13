@@ -126,6 +126,15 @@ class OrderItems extends HiveObject {
   @HiveField(38)
   int? quantityType;
 
+  @HiveField(39)
+  bool? manageSalesWastage;
+
+  @HiveField(40)
+  bool? isPercentageWastage;
+
+  @HiveField(41)
+  double? wastageAmount;
+
   OrderItems({
     required this.uuid,
     required this.orderId,
@@ -166,6 +175,9 @@ class OrderItems extends HiveObject {
     required this.widthDimension,
     required this.heightDimension,
     required this.quantityType,
+    required this.manageSalesWastage,
+    required this.isPercentageWastage,
+    required this.wastageAmount,
   });
 
   factory OrderItems.fromJson(Map<String, dynamic> json) {
@@ -233,6 +245,12 @@ class OrderItems extends HiveObject {
       heightDimension:
           (json['height_dimension'] as num?)?.toDouble(),
       quantityType: json['quantity_type'] as int?,
+      manageSalesWastage:
+          json['manage_sales_wastage'] as bool?,
+      isPercentageWastage:
+          json['is_percentage_wastage'] as bool?,
+      wastageAmount:
+          (json['wastage_amount'] as num?)?.toDouble(),
     );
   }
 
@@ -283,6 +301,9 @@ class OrderItems extends HiveObject {
       'width_dimension': widthDimension,
       'height_dimension': heightDimension,
       'quantity_type': quantityType,
+      'manage_sales_wastage': manageSalesWastage,
+      'is_percentage_wastage': isPercentageWastage,
+      'wastage_amount': wastageAmount,
     };
   }
 
@@ -325,6 +346,9 @@ class OrderItems extends HiveObject {
     double? widthDimension,
     double? heightDimension,
     int? quantityType,
+    bool? manageSalesWastage,
+    bool? isPercentageWastage,
+    double? wastageAmount,
   }) {
     return OrderItems(
       uuid: uuid ?? this.uuid,
@@ -375,6 +399,11 @@ class OrderItems extends HiveObject {
       heightDimension:
           heightDimension ?? this.heightDimension,
       quantityType: quantityType ?? this.quantityType,
+      manageSalesWastage:
+          manageSalesWastage ?? this.manageSalesWastage,
+      isPercentageWastage:
+          isPercentageWastage ?? this.isPercentageWastage,
+      wastageAmount: wastageAmount ?? this.wastageAmount,
     );
   }
 
@@ -694,8 +723,9 @@ class OrderItems extends HiveObject {
     double quantity, {
     String? unitUuid,
   }) {
-    final selectedUnit =
-        getSelectedUnit(unitUuidNew: unitUuid);
+    final selectedUnit = getSelectedUnit(
+      unitUuidNew: unitUuid,
+    );
     final conversion = selectedUnit.conversion;
     if (!conversion.isFinite || conversion <= 0) {
       throw StateError(
@@ -714,8 +744,9 @@ class OrderItems extends HiveObject {
     double quantity, {
     String? unitUuid,
   }) {
-    final selectedUnit =
-        getSelectedUnit(unitUuidNew: unitUuid);
+    final selectedUnit = getSelectedUnit(
+      unitUuidNew: unitUuid,
+    );
     final conversion = selectedUnit.conversion;
     if (!conversion.isFinite || conversion <= 0) {
       throw StateError(
@@ -742,7 +773,10 @@ class OrderItems extends HiveObject {
   }
 
   String dimensionsLabel() {
-    return formatDimensionsLabel(widthDimension, heightDimension);
+    return formatDimensionsLabel(
+      widthDimension,
+      heightDimension,
+    );
   }
 
   String getUnit() {

@@ -376,6 +376,11 @@ class SalesProvider extends ChangeNotifier {
       tempItem.priceUuid = cartItem.priceUuid;
       tempItem.widthDimension = cartItem.widthDimension;
       tempItem.heightDimension = cartItem.heightDimension;
+      tempItem.wastageAmount = cartItem.wastageAmount;
+      tempItem.isPercentageWastage =
+          cartItem.isPercentageWastage;
+      tempItem.manageSalesWastage =
+          cartItem.manageSalesWastage;
     } else {
       await mainLocalLog('Couldn\'t Find Cart Item');
     }
@@ -1219,6 +1224,9 @@ class SalesProvider extends ChangeNotifier {
     return cartItems.map((cartItem) {
       final product = cartItem.getItem();
       return TempProductSaleRecord(
+        isPercentageWastage: cartItem.isPercentageWastage,
+        wastageAmount: cartItem.wastageAmount,
+        manageSalesWastage: cartItem.manageSalesWastage,
         heightDimension: cartItem.heightDimension,
         quantityType: cartItem.quantityType,
         widthDimension: cartItem.widthDimension,
@@ -1614,6 +1622,8 @@ class SalesProvider extends ChangeNotifier {
 
                   TempProductClass
                   product = TempProductClass(
+                    manageSalesWastage:
+                        record.manageSalesWastage,
                     heightDimension: record.heightDimension,
                     quantityType: record.quantityType,
                     widthDimension: record.widthDimension,
@@ -1917,6 +1927,11 @@ class SalesProvider extends ChangeNotifier {
               ) {
                 final product = cartItem.getItem();
                 return TempProductSaleRecord(
+                  isPercentageWastage:
+                      cartItem.isPercentageWastage,
+                  wastageAmount: cartItem.wastageAmount,
+                  manageSalesWastage:
+                      cartItem.manageSalesWastage,
                   heightDimension: cartItem.heightDimension,
                   quantityType: cartItem.quantityType,
                   widthDimension: cartItem.widthDimension,
@@ -2180,6 +2195,8 @@ class SalesProvider extends ChangeNotifier {
 
                   TempProductClass
                   product = TempProductClass(
+                    manageSalesWastage:
+                        record.manageSalesWastage,
                     heightDimension: record.heightDimension,
                     quantityType: record.quantityType,
                     widthDimension: record.widthDimension,
@@ -2368,6 +2385,11 @@ class SalesProvider extends ChangeNotifier {
             );
 
             return OrderItems(
+              isPercentageWastage:
+                  cartItem.isPercentageWastage,
+              wastageAmount: cartItem.wastageAmount,
+              manageSalesWastage:
+                  cartItem.manageSalesWastage,
               heightDimension: cartItem.heightDimension,
               quantityType: cartItem.quantityType,
               widthDimension: cartItem.widthDimension,
@@ -2549,6 +2571,8 @@ class SalesProvider extends ChangeNotifier {
 
                   TempProductClass
                   product = TempProductClass(
+                    manageSalesWastage:
+                        record.manageSalesWastage,
                     heightDimension: record.heightDimension,
                     quantityType: record.quantityType,
                     widthDimension: record.widthDimension,
@@ -3963,6 +3987,9 @@ class SalesProvider extends ChangeNotifier {
       }
     }
     return TempCartItem(
+      isPercentageWastage: record.isPercentageWastage,
+      wastageAmount: record.wastageAmount,
+      manageSalesWastage: record.manageSalesWastage,
       heightDimension: record.heightDimension,
       quantityType: record.quantityType,
       widthDimension: record.widthDimension,
@@ -4036,6 +4063,7 @@ class SalesProvider extends ChangeNotifier {
                     record.quantity;
 
         TempProductClass productNew = TempProductClass(
+          manageSalesWastage: record.manageSalesWastage,
           heightDimension: record.heightDimension,
           quantityType: record.quantityType,
           widthDimension: record.widthDimension,

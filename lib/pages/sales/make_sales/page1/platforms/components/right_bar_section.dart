@@ -456,6 +456,9 @@ void addItemToCartFromCartItemList({
       searchController: searchController,
       theme: theme,
       cartItemTemp: TempCartItem(
+        isPercentageWastage: null,
+        wastageAmount: null,
+        manageSalesWastage: null,
         heightDimension: null,
         widthDimension: null,
         quantityType: product.quantityType,

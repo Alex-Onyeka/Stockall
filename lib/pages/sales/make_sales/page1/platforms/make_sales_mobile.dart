@@ -1116,6 +1116,11 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                     ).pop();
                                   },
                                   editCartItem: TempCartItem(
+                                    isPercentageWastage:
+                                        null,
+                                    wastageAmount: null,
+                                    manageSalesWastage:
+                                        null,
                                     heightDimension: null,
                                     widthDimension: null,
                                     quantityType: 1,
@@ -1132,6 +1137,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         returnSalesProvider()
                                             .setTotalPrice,
                                     item: TempProductClass(
+                                      manageSalesWastage:
+                                          null,
                                       heightDimension: null,
                                       widthDimension: null,
                                       quantityType: 1,
@@ -1215,6 +1222,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   ).pop();
                                 },
                                 editCartItem: TempCartItem(
+                                  isPercentageWastage: null,
+                                  wastageAmount: null,
+                                  manageSalesWastage: null,
                                   heightDimension: null,
                                   widthDimension: null,
                                   quantityType: 1,
@@ -1230,6 +1240,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       returnSalesProvider()
                                           .setTotalPrice,
                                   item: TempProductClass(
+                                    manageSalesWastage:
+                                        null,
                                     heightDimension: null,
                                     widthDimension: null,
                                     quantityType: 1,
@@ -1339,6 +1351,11 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         ).pop();
                                       },
                                       editCartItem: TempCartItem(
+                                        isPercentageWastage:
+                                            null,
+                                        wastageAmount: null,
+                                        manageSalesWastage:
+                                            null,
                                         heightDimension:
                                             null,
                                         widthDimension:
@@ -1358,6 +1375,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                             returnSalesProvider()
                                                 .setTotalPrice,
                                         item: TempProductClass(
+                                          manageSalesWastage:
+                                              null,
                                           heightDimension:
                                               null,
                                           widthDimension:
@@ -1452,6 +1471,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   ).pop();
                                 },
                                 editCartItem: TempCartItem(
+                                  isPercentageWastage: null,
+                                  wastageAmount: null,
+                                  manageSalesWastage: null,
                                   heightDimension: null,
                                   widthDimension: null,
                                   quantityType: 1,
@@ -1467,6 +1489,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       returnSalesProvider()
                                           .setTotalPrice,
                                   item: TempProductClass(
+                                    manageSalesWastage:
+                                        null,
                                     heightDimension: null,
                                     widthDimension: null,
                                     quantityType: 1,
@@ -1653,6 +1677,12 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                           ).pop();
                                                         },
                                                         editCartItem: TempCartItem(
+                                                          isPercentageWastage:
+                                                              null,
+                                                          wastageAmount:
+                                                              null,
+                                                          manageSalesWastage:
+                                                              null,
                                                           heightDimension:
                                                               null,
                                                           widthDimension:
@@ -1678,6 +1708,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                           setTotalPrice:
                                                               returnSalesProvider().setTotalPrice,
                                                           item: TempProductClass(
+                                                            manageSalesWastage:
+                                                                null,
                                                             heightDimension:
                                                                 null,
                                                             widthDimension:
@@ -2101,6 +2133,12 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                 context:
                                                                     context,
                                                                 newItem: TempCartItem(
+                                                                  isPercentageWastage:
+                                                                      null,
+                                                                  wastageAmount:
+                                                                      null,
+                                                                  manageSalesWastage:
+                                                                      null,
                                                                   heightDimension:
                                                                       null,
                                                                   widthDimension:
@@ -2373,6 +2411,12 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               ).pop();
                                                             },
                                                             editCartItem: TempCartItem(
+                                                              isPercentageWastage:
+                                                                  null,
+                                                              wastageAmount:
+                                                                  null,
+                                                              manageSalesWastage:
+                                                                  null,
                                                               heightDimension:
                                                                   null,
                                                               widthDimension:
@@ -2398,6 +2442,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               setTotalPrice:
                                                                   returnSalesProvider().setTotalPrice,
                                                               item: TempProductClass(
+                                                                manageSalesWastage:
+                                                                    null,
                                                                 heightDimension:
                                                                     null,
                                                                 widthDimension:
