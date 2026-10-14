@@ -91,6 +91,9 @@ class TempInvoice extends HiveObject {
   @HiveField(27)
   List<TempProductSaleRecord>? items;
 
+  @HiveField(28)
+  List<TempProductSaleRecord>? tempItems;
+
   TempInvoice({
     this.id,
     this.barcode,
@@ -119,6 +122,7 @@ class TempInvoice extends HiveObject {
     required this.subStaffName,
     required this.comment,
     this.items,
+    this.tempItems,
   });
 
   factory TempInvoice.fromJson(Map<String, dynamic> json) {

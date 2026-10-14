@@ -39,13 +39,16 @@ class TempCartItemAdapter extends TypeAdapter<TempCartItem> {
       widthDimension: fields[19] as double?,
       heightDimension: fields[20] as double?,
       quantityType: fields[21] as int?,
+      manageSalesWastage: fields[22] as bool?,
+      isPercentageWastage: fields[23] as bool?,
+      wastageAmount: fields[24] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempCartItem obj) {
     writer
-      ..writeByte(22)
+      ..writeByte(25)
       ..writeByte(0)
       ..write(obj.item)
       ..writeByte(1)
@@ -89,7 +92,13 @@ class TempCartItemAdapter extends TypeAdapter<TempCartItem> {
       ..writeByte(20)
       ..write(obj.heightDimension)
       ..writeByte(21)
-      ..write(obj.quantityType);
+      ..write(obj.quantityType)
+      ..writeByte(22)
+      ..write(obj.manageSalesWastage)
+      ..writeByte(23)
+      ..write(obj.isPercentageWastage)
+      ..writeByte(24)
+      ..write(obj.wastageAmount);
   }
 
   @override

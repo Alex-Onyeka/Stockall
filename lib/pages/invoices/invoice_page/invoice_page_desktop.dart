@@ -96,6 +96,7 @@ class _InvoicePageDesktopState
               widget.checkoutResponse.invoice?.uuid,
           orElse: () {
             return TempInvoice(
+              tempItems: null,
               comment: null,
               subStaffName: null,
               departmentName:
@@ -2305,6 +2306,7 @@ void makePartPaymentAction({
                       Navigator.of(confirmDialog).pop();
                       toggleLoading(true);
                       var tempInvoice = TempInvoice(
+                        tempItems: invoice.tempItems,
                         comment: invoice.comment,
                         subStaffName: invoice.subStaffName,
                         departmentUuidNew:

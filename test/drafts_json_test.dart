@@ -46,6 +46,9 @@ void main() {
       widthDimension: null,
       heightDimension: null,
       quantityType: null,
+      manageSalesWastage: null,
+      isPercentageWastage: null,
+      wastageAmount: null,
     );
   }
 

@@ -71,25 +71,8 @@ class _BarcodeAndSearchTextFieldState
                         .addItemToCart(
                           // isEdit: false,
                           context: context,
-                          newItem: TempCartItem(
-                            heightDimension: null,
-                            widthDimension: null,
-                            quantityType:
-                                items.first.quantityType,
-                            priceUuid: null,
-                            unitUuid: null,
-                            uuid: uuidGen(),
-                            itemUuid: items.first.uuid,
-                            isVoid: false,
-                            qttyPerGroup: null,
-                            useGroupQuantity: false,
-                            useWholeSalePrice: false,
-                            setCustomPrice: false,
-                            item: items.first,
-                            quantity: 1,
-                            discount: null,
-                            addToStock: false,
-                            setTotalPrice: false,
+                          newItem: TempCartItem.forProduct(
+                            items.first,
                           ),
                           isCustomEdit: false,
                         );

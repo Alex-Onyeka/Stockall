@@ -328,7 +328,9 @@ class _UpdateItemQuantityWidgetState
                           SizedBox(height: 10),
                           Visibility(
                             visible:
-                                widget.product.quantityType ==
+                                widget
+                                        .product
+                                        .quantityType ==
                                     2 &&
                                 !isAreaUnit(),
                             child: Row(
@@ -665,18 +667,28 @@ class _UpdateItemQuantityWidgetState
                                         .replaceAll(',', '')
                                         .trim();
                                 final enteredQuantity =
-                                    double.tryParse(quantityText);
-                                if ((quantityText.isNotEmpty &&
-                                        (enteredQuantity == null ||
-                                            !enteredQuantity.isFinite ||
-                                            enteredQuantity < 0)) ||
+                                    double.tryParse(
+                                      quantityText,
+                                    );
+                                if ((quantityText
+                                            .isNotEmpty &&
+                                        (enteredQuantity ==
+                                                null ||
+                                            !enteredQuantity
+                                                .isFinite ||
+                                            enteredQuantity <
+                                                0)) ||
                                     (isAddToQuantity &&
-                                        (enteredQuantity == null ||
-                                            enteredQuantity <= 0))) {
+                                        (enteredQuantity ==
+                                                null ||
+                                            enteredQuantity <=
+                                                0))) {
                                   showDialog(
                                     context: safeContext,
                                     builder:
-                                        (context) => InfoAlert(
+                                        (
+                                          context,
+                                        ) => InfoAlert(
                                           theme: theme,
                                           message:
                                               'Enter a valid quantity greater than zero.',
@@ -689,34 +701,51 @@ class _UpdateItemQuantityWidgetState
 
                                 if (quantityTypeTemp == 2 &&
                                     !isAreaUnit()) {
-                                  final width = double.tryParse(
-                                    widthController.text
-                                        .replaceAll(',', '')
-                                        .trim(),
-                                  );
-                                  final height = double.tryParse(
-                                    heightController.text
-                                        .replaceAll(',', '')
-                                        .trim(),
-                                  );
+                                  final width =
+                                      double.tryParse(
+                                        widthController.text
+                                            .replaceAll(
+                                              ',',
+                                              '',
+                                            )
+                                            .trim(),
+                                      );
+                                  final height =
+                                      double.tryParse(
+                                        heightController
+                                            .text
+                                            .replaceAll(
+                                              ',',
+                                              '',
+                                            )
+                                            .trim(),
+                                      );
                                   if (width == null ||
                                       height == null ||
                                       width <= 0 ||
                                       height <= 0 ||
-                                      (widget.product.widthDimension !=
+                                      (widget
+                                                  .product
+                                                  .widthDimension !=
                                               null &&
                                           width >
-                                              widget.product
+                                              widget
+                                                  .product
                                                   .widthDimension!) ||
-                                      (widget.product.heightDimension !=
+                                      (widget
+                                                  .product
+                                                  .heightDimension !=
                                               null &&
                                           height >
-                                              widget.product
+                                              widget
+                                                  .product
                                                   .heightDimension!)) {
                                     showDialog(
                                       context: safeContext,
                                       builder:
-                                          (context) => InfoAlert(
+                                          (
+                                            context,
+                                          ) => InfoAlert(
                                             theme: theme,
                                             message:
                                                 'Enter positive dimensions no larger than the original slab / sheet.',
@@ -758,15 +787,18 @@ class _UpdateItemQuantityWidgetState
                                         double
                                         setQuantity() {
                                           if (isAddToQuantity) {
-                                            return (widget.product
+                                            return (widget
+                                                        .product
                                                         .getActualQuantity() ??
                                                     0) +
                                                 quantityInArea(
-                                                  enteredQuantity ?? 0,
+                                                  enteredQuantity ??
+                                                      0,
                                                 );
                                           } else {
                                             return quantityInArea(
-                                              enteredQuantity ?? 0,
+                                              enteredQuantity ??
+                                                  0,
                                             );
                                           }
                                         }
@@ -805,7 +837,8 @@ class _UpdateItemQuantityWidgetState
                                                         (widget.product.getActualQuantity() ??
                                                             0)),
                                                 product:
-                                                    widget.product,
+                                                    widget
+                                                        .product,
                                               ),
                                           event:
                                               isIncrement
@@ -828,7 +861,8 @@ class _UpdateItemQuantityWidgetState
                                                   newQuantity:
                                                       setQuantity(),
                                                   product:
-                                                      widget.product,
+                                                      widget
+                                                          .product,
                                                 ),
                                           ),
                                           desc:
@@ -849,7 +883,8 @@ class _UpdateItemQuantityWidgetState
                                                       (widget.product.getActualQuantity() ??
                                                           0),
                                                   product:
-                                                      widget.product,
+                                                      widget
+                                                          .product,
                                                 ),
                                           ),
                                         );
@@ -869,6 +904,10 @@ class _UpdateItemQuantityWidgetState
                                                           0))
                                                   .abs(),
                                           product: TempProductClass(
+                                            manageSalesWastage:
+                                                widget
+                                                    .product
+                                                    .manageSalesWastage,
                                             heightDimension:
                                                 widget
                                                     .product
@@ -956,12 +995,10 @@ class _UpdateItemQuantityWidgetState
                                                     .product
                                                     .wholeSalePrice,
                                             quantity:
-                                                widget.product
-                                                            .quantityType ==
+                                                widget.product.quantityType ==
                                                         2
                                                     ? setQuantity() /
-                                                        widget.product
-                                                            .dimensionArea()
+                                                        widget.product.dimensionArea()
                                                     : setQuantity(),
                                             shopId:
                                                 widget

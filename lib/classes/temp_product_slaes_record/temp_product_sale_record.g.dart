@@ -19,14 +19,14 @@ class TempProductSaleRecordAdapter extends TypeAdapter<TempProductSaleRecord> {
     return TempProductSaleRecord(
       productRecordId: fields[0] as int?,
       createdAt: fields[1] as DateTime,
-      productId: fields[2] as int,
+      productId: fields[2] as int?,
       productName: fields[3] as String,
       shopId: fields[4] as int,
       staffId: fields[5] as String,
       customerId: fields[6] as int?,
       customerName: fields[7] as String?,
-      staffName: fields[8] as String,
-      recepitId: fields[9] as int,
+      staffName: fields[8] as String?,
+      recepitId: fields[9] as int?,
       quantity: fields[11] as double,
       revenue: fields[12] as double,
       discountedAmount: fields[13] as double?,
@@ -57,13 +57,16 @@ class TempProductSaleRecordAdapter extends TypeAdapter<TempProductSaleRecord> {
       widthDimension: fields[37] as double?,
       heightDimension: fields[38] as double?,
       quantityType: fields[39] as int?,
+      manageSalesWastage: fields[40] as bool?,
+      isPercentageWastage: fields[41] as bool?,
+      wastageAmount: fields[42] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempProductSaleRecord obj) {
     writer
-      ..writeByte(40)
+      ..writeByte(43)
       ..writeByte(0)
       ..write(obj.productRecordId)
       ..writeByte(1)
@@ -143,7 +146,13 @@ class TempProductSaleRecordAdapter extends TypeAdapter<TempProductSaleRecord> {
       ..writeByte(38)
       ..write(obj.heightDimension)
       ..writeByte(39)
-      ..write(obj.quantityType);
+      ..write(obj.quantityType)
+      ..writeByte(40)
+      ..write(obj.manageSalesWastage)
+      ..writeByte(41)
+      ..write(obj.isPercentageWastage)
+      ..writeByte(42)
+      ..write(obj.wastageAmount);
   }
 
   @override

@@ -470,6 +470,7 @@ class InvoicesProvider extends ChangeNotifier {
       final createdAt = DateTime.now().toUtc();
 
       TempMainReceipt receipt = TempMainReceipt(
+        tempItems: null,
         orderUuid: null,
         salesTypeIndex: 2,
         comment: comment,
@@ -508,6 +509,10 @@ class InvoicesProvider extends ChangeNotifier {
               'Sales Record about to be Created',
             );
             return TempProductSaleRecord(
+              isPercentageWastage:
+                  record.isPercentageWastage,
+              wastageAmount: record.wastageAmount,
+              manageSalesWastage: record.manageSalesWastage,
               heightDimension: record.heightDimension,
               quantityType: record.quantityType,
               widthDimension: record.widthDimension,
@@ -711,6 +716,12 @@ class InvoicesProvider extends ChangeNotifier {
           context: context,
         );
 
+        final tempCartItems = convertInvoiceToCartItems(
+          invoice: invoice,
+          saleRecords: invoice.getItems(),
+          context: context,
+        );
+
         if (returnSalesProvider()
             .currentMainCart()
             .cartQueue
@@ -722,6 +733,7 @@ class InvoicesProvider extends ChangeNotifier {
             .isEmpty) {
           var newId = uuidGen();
           var tempCart = TempCart(
+            tempCartItems: tempCartItems,
             comment: invoice.comment,
             timeOfDay: null,
             hasPrintedDocket: false,
@@ -809,12 +821,22 @@ class InvoicesProvider extends ChangeNotifier {
           record.setTotalPrice == true) {
         tempRev = record.originalCost ?? 0;
       } else {
+        // originalCost was billed on the line's base quantity
+        // (area for 2D, after unit conversion) + wastage.
         tempRev =
             (record.originalCost ?? 0) /
-            (record.quantity * record.dimensionArea());
+            (record.getActualQuantity() + record.wastageArea());
       }
     }
     return TempCartItem(
+      isPercentageWastage: record.isPercentageWastage,
+      // Lines saved before wastage was applied keep none, so
+      // they aren't re-priced or re-deducted.
+      wastageAmount:
+          record.manageSalesWastage == true
+              ? record.wastageAmount
+              : null,
+      manageSalesWastage: record.manageSalesWastage,
       heightDimension: record.heightDimension,
       quantityType: record.quantityType,
       widthDimension: record.widthDimension,
@@ -884,6 +906,7 @@ class InvoicesProvider extends ChangeNotifier {
                     record.quantity;
 
         TempProductClass productNew = TempProductClass(
+          manageSalesWastage: record.manageSalesWastage,
           setCustomPrice: record.customPriceSet,
           isManaged: record.isProductManaged ?? false,
           heightDimension: record.heightDimension,
@@ -953,6 +976,7 @@ class InvoicesProvider extends ChangeNotifier {
                 await returnSalesProvider().addNewCart(
                   context,
                   TempCart(
+                    tempCartItems: null,
                     comment: null,
                     timeOfDay: null,
                     // createdDate: DateTime.now(),

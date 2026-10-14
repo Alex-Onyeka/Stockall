@@ -1273,11 +1273,14 @@ void selectProductSales({
   // bool useWholeSalePriceTemp = false;
   TempCartItem cartItem = cartItemTemp.copyWith();
 
+  bool isPercentageWastage = false;
+
   String? unitUuid;
   String? priceUuid;
   int quantityTypeTemp = 1;
   final widthController = TextEditingController();
   final heightController = TextEditingController();
+  final wastageController = TextEditingController();
   final bool is2DItem = cartItem.item.quantityType == 2;
   final double? originalWidth =
       cartItem.item.widthDimension;
@@ -1348,6 +1351,56 @@ void selectProductSales({
           'Height',
           originalHeight,
         );
+  }
+
+  // Wastage is entered for 2D items that manage it, except in
+  // order carts (orders don't apply wastage).
+  bool showWastage() {
+    return is2DItem &&
+        cartItem.item.manageSalesWastage == true &&
+        returnSalesProvider().currentCart().cartItemTypeIndex !=
+            3;
+  }
+
+  // Wastage area the entered value adds to [area].
+  double dialogWastage(double area) {
+    if (!showWastage()) return 0;
+    return computeWastageArea(
+      baseArea: area,
+      amount: double.tryParse(
+        wastageController.text.replaceAll(',', '').trim(),
+      ),
+      isPercentage: isPercentageWastage,
+    );
+  }
+
+  // Name of the item's base area unit, for stock messages.
+  String areaUnitLabel() {
+    final areaUnits = cartItem.getUnitsList().where(
+      (item) =>
+          item.dimensionType == ProductUnitsClass.areaUnit &&
+          item.conversion == 1,
+    );
+    return areaUnits.isNotEmpty
+        ? areaUnits.first.name
+        : 'sq. units';
+  }
+
+  String? wastageError() {
+    if (!showWastage() ||
+        wastageController.text.trim().isEmpty) {
+      return null;
+    }
+    final value = double.tryParse(
+      wastageController.text.replaceAll(',', '').trim(),
+    );
+    if (value == null || value < 0) {
+      return 'Wastage must be a number of 0 or more.';
+    }
+    if (isPercentageWastage && value > 100) {
+      return 'Wastage percent cannot be more than 100.';
+    }
+    return null;
   }
 
   void selectUnit(String unit) {
@@ -1439,6 +1492,13 @@ void selectProductSales({
     );
     // print(cartItem.getSelectedUnit().name);
     cartItem.unitUuid = unitUuid;
+    if (showWastage()) {
+      cartItem.wastageAmount = double.tryParse(
+        wastageController.text.replaceAll(',', ''),
+      );
+      cartItem.isPercentageWastage = isPercentageWastage;
+      cartItem.manageSalesWastage = true;
+    }
     // print(cartItem.getSelectedUnit().name);
   }
 
@@ -1503,6 +1563,10 @@ void selectProductSales({
 
   if (isEdit) {
     // useWholeSalePriceTemp = cartItem.useWholeSalePrice;
+    isPercentageWastage =
+        cartItemTemp.isPercentageWastage ?? false;
+    wastageController.text =
+        cartItem.wastageAmount?.toString() ?? '';
     qttyNode.requestFocus();
     quantityController.text = cartItem.quantity.toString();
     qqty = cartItem.quantity.toDouble();
@@ -1520,38 +1584,49 @@ void selectProductSales({
   }
   qttyNode.requestFocus();
 
+  // Quantity the line is billed for: area + wastage.
+  double billedQuantity() {
+    final area = getPrimaryUnitQuantityMultiplied(
+      context: context,
+      newQuantity: qqty,
+    );
+    return area + dialogWastage(area);
+  }
+
+  // Priced by the same totalCost() the cart line will use, on a
+  // copy holding the values entered so far.
   String formatSellingPrice(TempCartItem cartItem) {
-    if (priceController.text.isNotEmpty) {
-      if (returnSalesProvider().setTotalPrice) {
-        return priceController.text.replaceAll(',', '');
-      } else {
-        return (double.parse(
-                  priceController.text.isNotEmpty
-                      ? priceController.text.replaceAll(
-                        ',',
-                        '',
-                      )
-                      : '0',
-                ) *
-                getPrimaryUnitQuantityMultiplied(
-                  context: context,
-                  newQuantity: qqty,
-                ))
-            .toString();
-      }
-    } else {
-      if ((getPrimaryPrice().priceType ?? 1) == 1) {
-        return (getPrimaryUnitQuantityMultiplied(
-                  context: context,
-                  newQuantity: qqty,
-                ) *
-                (getPrimaryPrice().priceValue))
-            .toString();
-      } else {
-        return (qqty * (getPrimaryPrice().priceValue))
-            .toString();
-      }
-    }
+    return cartItem
+        .previewWith(
+          quantity: qqty,
+          unitUuid: unitUuid,
+          priceUuid: priceUuid,
+          units: tempUnitList,
+          prices: tempPriceList,
+          width: resolvedWidth(),
+          height: resolvedHeight(),
+          customPrice:
+              priceController.text.isNotEmpty
+                  ? double.tryParse(
+                    priceController.text.replaceAll(',', ''),
+                  )
+                  : null,
+          setTotalPrice: returnSalesProvider().setTotalPrice,
+          wastageAmount:
+              showWastage()
+                  ? double.tryParse(
+                    wastageController.text
+                        .replaceAll(',', '')
+                        .trim(),
+                  )
+                  : cartItem.wastageAmount,
+          isPercentageWastage:
+              showWastage()
+                  ? isPercentageWastage
+                  : cartItem.isPercentageWastage,
+        )
+        .totalCost()
+        .toString();
   }
 
   showDialog(
@@ -1606,7 +1681,8 @@ void selectProductSales({
                               onTap: () {
                                 setState(() {
                                   currentFocus = 1;
-                                  isOnscreenKeyboardClicked = false;
+                                  isOnscreenKeyboardClicked =
+                                      false;
                                 });
                               },
                               focusNode: qttyNode,
@@ -1630,17 +1706,18 @@ void selectProductSales({
                                   // In custom dimensions mode, do not prematurely wipe out
                                   // quantity while custom width/height are still being entered.
                                   // Final check is performed when adding to cart.
-                                  if (quantityTypeTemp != 2 &&
+                                  if (quantityTypeTemp !=
+                                          2 &&
                                       !returnSalesProvider()
-                                      .canAddProductToCart(
-                                        isEdit: isEdit,
-                                        newCartItem:
-                                            cartItem,
-                                        quantityToAdd:
-                                            entered,
-                                        // useGroupUnit:
-                                        //     useGroupQuantityTemp,
-                                      )) {
+                                          .canAddProductToCart(
+                                            isEdit: isEdit,
+                                            newCartItem:
+                                                cartItem,
+                                            quantityToAdd:
+                                                entered,
+                                            // useGroupUnit:
+                                            //     useGroupQuantityTemp,
+                                          )) {
                                     showDialog(
                                       context: context,
                                       builder:
@@ -1717,8 +1794,10 @@ void selectProductSales({
                                           child: EditCartTextField(
                                             onTap: () {
                                               setState(() {
-                                                currentFocus = 3;
-                                                isOnscreenKeyboardClicked = false;
+                                                currentFocus =
+                                                    3;
+                                                isOnscreenKeyboardClicked =
+                                                    false;
                                               });
                                             },
                                             // Empty uses the item's
@@ -1758,8 +1837,10 @@ void selectProductSales({
                                           child: EditCartTextField(
                                             onTap: () {
                                               setState(() {
-                                                currentFocus = 4;
-                                                isOnscreenKeyboardClicked = false;
+                                                currentFocus =
+                                                    4;
+                                                isOnscreenKeyboardClicked =
+                                                    false;
                                               });
                                             },
                                             // Empty uses the item's
@@ -2024,10 +2105,14 @@ void selectProductSales({
                               child: PriceSelectionWidget(
                                 priceList: tempPriceList,
                                 // product: cartItem.item,
-                                conversion: is2DItem && !isAreaUnit
-                                    ? getPrimaryUnit().conversion *
-                                        cartItem.item.dimensionArea()
-                                    : getPrimaryUnit().conversion,
+                                conversion:
+                                    is2DItem && !isAreaUnit
+                                        ? getPrimaryUnit()
+                                                .conversion *
+                                            cartItem.item
+                                                .dimensionArea()
+                                        : getPrimaryUnit()
+                                            .conversion,
                                 theme: theme,
                                 priceUuid:
                                     getPrimaryPrice().uuid,
@@ -2207,6 +2292,88 @@ void selectProductSales({
                                   ),
                                   SizedBox(height: 20),
                                 ],
+                              ),
+                            ),
+
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 10,
+                                horizontal: 10,
+                              ),
+                              margin: EdgeInsets.only(
+                                bottom: 10,
+                              ),
+                              child: Visibility(
+                                visible: showWastage(),
+                                child: Row(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment
+                                          .start,
+                                  spacing: 10,
+                                  children: [
+                                    Expanded(
+                                      child: EditCartTextField(
+                                        discount:
+                                            isPercentageWastage,
+                                        showTitle: false,
+                                        onTap: () {
+                                          setState(() {
+                                            isOnscreenKeyboardClicked =
+                                                false;
+                                          });
+                                        },
+                                        // focusNode: qttyNode,
+                                        onChanged: (value) {
+                                          setState(() {});
+                                        },
+
+                                        title: '',
+                                        hint:
+                                            'Enter Wastage ${isPercentageWastage ? 'Percent' : 'Amount'}',
+                                        controller:
+                                            wastageController,
+                                        theme: theme,
+                                      ),
+                                    ),
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment
+                                              .center,
+                                      spacing: 5,
+                                      children: [
+                                        WastageTypeButton(
+                                          myBoolValue: true,
+                                          isPercentageWastage:
+                                              isPercentageWastage,
+                                          symbol: '%',
+                                          toggleIsPercentageWastage: () {
+                                            setState(() {
+                                              isPercentageWastage =
+                                                  true;
+                                              wastageController
+                                                  .clear();
+                                            });
+                                          },
+                                        ),
+                                        WastageTypeButton(
+                                          myBoolValue:
+                                              false,
+                                          isPercentageWastage:
+                                              isPercentageWastage,
+                                          symbol: '#',
+                                          toggleIsPercentageWastage: () {
+                                            setState(() {
+                                              isPercentageWastage =
+                                                  false;
+                                              wastageController
+                                                  .clear();
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
 
@@ -2527,6 +2694,22 @@ void selectProductSales({
                                             );
                                           },
                                         );
+                                      } else if (wastageError() !=
+                                          null) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return InfoAlert(
+                                              theme: theme,
+                                              message:
+                                                  wastageError()!,
+                                              title:
+                                                  'Invalid Wastage',
+                                            );
+                                          },
+                                        );
                                       } else if (is2DItem &&
                                           (cartItem
                                                   .getItem()
@@ -2537,13 +2720,20 @@ void selectProductSales({
                                             newCartItem:
                                                 cartItem,
                                             quantityToAdd:
-                                                getPrimaryUnitQuantityMultiplied(
-                                                  newQuantity:
-                                                      qqty,
-                                                ),
+                                                billedQuantity(),
                                           )) {
-                                        // Dimensions can change after
-                                        // the quantity was checked.
+                                        // Dimensions and wastage can
+                                        // change after the quantity
+                                        // was checked.
+                                        final cutArea =
+                                            getPrimaryUnitQuantityMultiplied(
+                                              newQuantity:
+                                                  qqty,
+                                            );
+                                        final wastage =
+                                            dialogWastage(
+                                              cutArea,
+                                            );
                                         showDialog(
                                           context: context,
                                           builder: (
@@ -2554,7 +2744,22 @@ void selectProductSales({
                                               title:
                                                   'Quantity Limit Reached',
                                               message:
-                                                  "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
+                                                  wastage > 0
+                                                      ? wastageStockMessage(
+                                                        cutArea:
+                                                            cutArea,
+                                                        wastageArea:
+                                                            wastage,
+                                                        availableArea: returnSalesProvider().remainingQttyInAllCarts(
+                                                          newCartItem:
+                                                              cartItem,
+                                                          isEdit:
+                                                              isEdit,
+                                                        ),
+                                                        unit:
+                                                            areaUnitLabel(),
+                                                      )
+                                                      : "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
                                             );
                                           },
                                         );
@@ -2847,7 +3052,8 @@ void selectProductSales({
                                   ),
                                   child: OnScreenKeyboardPin(
                                     action: (value) {
-                                      TextEditingController currentController() {
+                                      TextEditingController
+                                      currentController() {
                                         switch (currentFocus) {
                                           case 1:
                                             return quantityController;
@@ -2867,7 +3073,8 @@ void selectProductSales({
                                         TextEditingController
                                         controller,
                                       ) {
-                                        if (currentFocus == 1) {
+                                        if (currentFocus ==
+                                            1) {
                                           if (isOnscreenKeyboardClicked ==
                                               false) {
                                             controller
@@ -2897,7 +3104,8 @@ void selectProductSales({
                                                   .getItem()
                                                   ?.isManaged ??
                                               false) {
-                                            if (quantityTypeTemp != 2 &&
+                                            if (quantityTypeTemp !=
+                                                    2 &&
                                                 !returnSalesProvider().canAddProductToCart(
                                                   isEdit:
                                                       isEdit,
@@ -3012,20 +3220,52 @@ void selectProductSales({
                                               ),
                                             );
                                           }
-                                        } else if (currentFocus == 3 || currentFocus == 4) {
-                                          if (isOnscreenKeyboardClicked == false) {
-                                            controller.text = digit;
-                                            isOnscreenKeyboardClicked = true;
+                                        } else if (currentFocus ==
+                                                3 ||
+                                            currentFocus ==
+                                                4) {
+                                          if (isOnscreenKeyboardClicked ==
+                                              false) {
+                                            controller
+                                                    .text =
+                                                digit;
+                                            isOnscreenKeyboardClicked =
+                                                true;
                                           } else {
-                                            controller.text += digit;
+                                            controller
+                                                    .text +=
+                                                digit;
                                           }
-                                          double? maxDim = currentFocus == 3 ? originalWidth : originalHeight;
-                                          double parsedDim = double.tryParse(controller.text.replaceAll(',', '')) ?? 0;
-                                          if (maxDim != null && parsedDim > maxDim) {
-                                            controller.text = '0';
+                                          double? maxDim =
+                                              currentFocus ==
+                                                      3
+                                                  ? originalWidth
+                                                  : originalHeight;
+                                          double parsedDim =
+                                              double.tryParse(
+                                                controller
+                                                    .text
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
+                                              ) ??
+                                              0;
+                                          if (maxDim !=
+                                                  null &&
+                                              parsedDim >
+                                                  maxDim) {
+                                            controller
+                                                .text = '0';
                                           }
-                                          controller.selection = TextSelection.fromPosition(
-                                            TextPosition(offset: controller.text.length),
+                                          controller
+                                              .selection = TextSelection.fromPosition(
+                                            TextPosition(
+                                              offset:
+                                                  controller
+                                                      .text
+                                                      .length,
+                                            ),
                                           );
                                         } else {
                                           controller.text +=
@@ -3122,6 +3362,73 @@ void selectProductSales({
       returnSalesProvider().toggleSetTotalPrice(false);
     }
   });
+}
+
+class WastageTypeButton extends StatelessWidget {
+  final bool isPercentageWastage;
+  final Function() toggleIsPercentageWastage;
+  final String symbol;
+  final bool myBoolValue;
+  const WastageTypeButton({
+    super.key,
+    required this.isPercentageWastage,
+    required this.toggleIsPercentageWastage,
+    required this.symbol,
+    required this.myBoolValue,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context, listen: false);
+    return Material(
+      color: Colors.transparent,
+      child: Ink(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(3),
+          color: Colors.grey.shade100,
+        ),
+        child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
+          onTap: toggleIsPercentageWastage,
+          borderRadius: BorderRadius.circular(3),
+          child: Container(
+            padding: EdgeInsets.fromLTRB(7, 7, 7, 7),
+
+            child: Center(
+              child: Row(
+                spacing: 2,
+                children: [
+                  Text(
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b3.fontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    symbol,
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color:
+                          isPercentageWastage == myBoolValue
+                              ? theme
+                                  .lightModeColor
+                                  .prColor250
+                              : null,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.grey.shade400,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 //

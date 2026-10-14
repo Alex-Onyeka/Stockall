@@ -21,7 +21,9 @@ import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/products/add_product_one/platforms/components/quantity_type_selection_widget.dart';
+import 'package:stockall/pages/products/add_product_one/platforms/components/allow_to_manage_item_quantity_add_item_page.dart';
+import 'package:stockall/pages/products/add_product_one/platforms/components/allow_to_set_custom_price_add_item_page.dart';
+import 'package:stockall/pages/products/add_product_one/platforms/components/select_product_quantity_type_section.dart';
 import 'package:stockall/pages/products/add_product_one/product_prices_page/product_prices_page.dart';
 import 'package:stockall/pages/products/add_product_one/product_units_page/product_units_page.dart';
 import 'package:stockall/providers/data_provider.dart';
@@ -106,6 +108,21 @@ class _AddProductMobileState
           );
         },
       );
+    } else if (quantityType == 2 &&
+        (widget.heightController.text.isEmpty ||
+            widget.widthController.text.isEmpty)) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          var theme = returnTheme(context);
+          return InfoAlert(
+            theme: theme,
+            message:
+                'Max-Width and Max-Height Cannot be Empty For 2 Dimensional Items.',
+            title: 'Max-Width and Max-Height Not Set',
+          );
+        },
+      );
     } else {
       final safeContext = context;
       var samePro = returnData().productList().where(
@@ -152,6 +169,8 @@ class _AddProductMobileState
                 isMultiple: false,
                 itemHistory: itemHistory,
                 product: TempProductClass(
+                  manageSalesWastage:
+                      dataProvider.manageWastage,
                   quantityType: quantityType,
                   heightDimension: double.tryParse(
                     widget.heightController.text.replaceAll(
@@ -282,155 +301,179 @@ class _AddProductMobileState
 
   void updateProduct() {
     final safeContext = context;
-    showDialog(
-      context: safeContext,
-      builder: (context) {
-        var theme = returnTheme(context);
-        return ConfirmationAlert(
-          theme: theme,
-          message:
-              'Are you sure you want to proceed with update?',
-          title: 'Proceed?',
-          action: () async {
-            final provider = returnData();
-            if (safeContext.mounted) {
-              Navigator.of(safeContext).pop();
-            }
-
-            setState(() {
-              isLoading = true;
-            });
-
-            var res = await provider.updateProduct(
-              itemHistory: null,
-              includeQuantity: false,
-              isIncrement: null,
-              isQuantityUpdate: false,
-              quantityChange: null,
-              product: TempProductClass(
-                quantityType: quantityType,
-                heightDimension: double.tryParse(
-                  widget.heightController.text.replaceAll(
-                    ',',
-                    '',
-                  ),
-                ),
-                widthDimension: double.tryParse(
-                  widget.widthController.text.replaceAll(
-                    ',',
-                    '',
-                  ),
-                ),
-                unitsList: provider.getTempUnitList(),
-                pricesList: provider.getTempPriceList(),
-                useGroupUnit: provider.useGroupUnit,
-                categories:
-                    provider.selectedCategories.toList(),
-                storageUuid: widget.product?.storageUuid,
-                departmentName:
-                    returnData().departmentUuid != null
-                        ? returnDepartmentProvider()
-                            .departments
-                            .firstWhere(
-                              (dept) =>
-                                  dept.uuid ==
-                                  returnData()
-                                      .departmentUuid,
-                            )
-                            .name
-                        : null,
-                departmentUuid: returnData().departmentUuid,
-                setCustomPrice: provider.setCustomPrice,
-                isManaged:
-                    // widget.quantityController.text.isEmpty
-                    //     ? false
-                    //     :
-                    provider.isManaged,
-                // id: widget.product!.id,
-                totalQttyInStorageDouble: null,
-                uuid: widget.product!.uuid,
-                name: widget.nameController.text,
-                unit: provider.selectedUnit ?? 'Unit(s)',
-                groupUnit: provider.selectedGroupUnit,
-                qttyPerGroup:
-                    widget
-                            .qttyPerGroupController
-                            .text
-                            .isNotEmpty
-                        ? double.parse(
-                          widget.qttyPerGroupController.text
-                              .replaceAll(',', ''),
-                        )
-                        : null,
-                isRefundable: provider.isProductRefundable,
-                costPrice:
-                    widget.costController.text.isNotEmpty
-                        ? double.parse(
-                          widget.costController.text
-                              .replaceAll(',', ''),
-                        )
-                        : 0,
-                sellingPrice:
-                    widget.sellingController.text.isNotEmpty
-                        ? double.parse(
-                          widget.sellingController.text
-                              .replaceAll(',', ''),
-                        )
-                        : null,
-                wholeSalePrice:
-                    widget
-                            .wholeSaleController
-                            .text
-                            .isNotEmpty
-                        ? double.parse(
-                          widget.wholeSaleController.text
-                              .replaceAll(',', ''),
-                        )
-                        : null,
-                quantity: widget.product?.quantity,
-                shopId: shopId(),
-                barcode: barcode,
-                // categoryUuid:
-                //     provider.selectedCategory?.uuid,
-                createdAt: widget.product!.createdAt,
-                discount: double.tryParse(
-                  widget.discountController.text.replaceAll(
-                    ',',
-                    '',
-                  ),
-                ),
-                // endDate: provider.endDate,
-                expiryDate: provider.expiryDate,
-                lowQtty:
-                    widget.lowQttyController.text.isEmpty
-                        ? 10
-                        : double.tryParse(
-                          widget.lowQttyController.text
-                              .replaceAll(',', ''),
-                        ),
-                sizeType: provider.selectedSize,
-                // startDate: provider.startDate,
-              ),
-              oldProduct: widget.product!,
-            );
-            if (res == null) {
-              setState(() {
-                isLoading = false;
-              });
-            } else {
-              setState(() {
-                isLoading = false;
-                showSuccess = true;
-              });
-
+    if (quantityType == 2 &&
+        (widget.heightController.text.isEmpty ||
+            widget.widthController.text.isEmpty)) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          var theme = returnTheme(context);
+          return InfoAlert(
+            theme: theme,
+            message:
+                'Max-Width and Max-Height Cannot be Empty For 2 Dimensional Items.',
+            title: 'Max-Width and Max-Height Not Set',
+          );
+        },
+      );
+    } else {
+      showDialog(
+        context: safeContext,
+        builder: (context) {
+          var theme = returnTheme(context);
+          return ConfirmationAlert(
+            theme: theme,
+            message:
+                'Are you sure you want to proceed with update?',
+            title: 'Proceed?',
+            action: () async {
+              final provider = returnData();
               if (safeContext.mounted) {
                 Navigator.of(safeContext).pop();
               }
-            }
-          },
-        );
-      },
-    );
+
+              setState(() {
+                isLoading = true;
+              });
+
+              var res = await provider.updateProduct(
+                itemHistory: null,
+                includeQuantity: false,
+                isIncrement: null,
+                isQuantityUpdate: false,
+                quantityChange: null,
+                product: TempProductClass(
+                  manageSalesWastage:
+                      provider.manageWastage,
+                  quantityType: quantityType,
+                  heightDimension: double.tryParse(
+                    widget.heightController.text.replaceAll(
+                      ',',
+                      '',
+                    ),
+                  ),
+                  widthDimension: double.tryParse(
+                    widget.widthController.text.replaceAll(
+                      ',',
+                      '',
+                    ),
+                  ),
+                  unitsList: provider.getTempUnitList(),
+                  pricesList: provider.getTempPriceList(),
+                  useGroupUnit: provider.useGroupUnit,
+                  categories:
+                      provider.selectedCategories.toList(),
+                  storageUuid: widget.product?.storageUuid,
+                  departmentName:
+                      returnData().departmentUuid != null
+                          ? returnDepartmentProvider()
+                              .departments
+                              .firstWhere(
+                                (dept) =>
+                                    dept.uuid ==
+                                    returnData()
+                                        .departmentUuid,
+                              )
+                              .name
+                          : null,
+                  departmentUuid:
+                      returnData().departmentUuid,
+                  setCustomPrice: provider.setCustomPrice,
+                  isManaged:
+                      // widget.quantityController.text.isEmpty
+                      //     ? false
+                      //     :
+                      provider.isManaged,
+                  // id: widget.product!.id,
+                  totalQttyInStorageDouble: null,
+                  uuid: widget.product!.uuid,
+                  name: widget.nameController.text,
+                  unit: provider.selectedUnit ?? 'Unit(s)',
+                  groupUnit: provider.selectedGroupUnit,
+                  qttyPerGroup:
+                      widget
+                              .qttyPerGroupController
+                              .text
+                              .isNotEmpty
+                          ? double.parse(
+                            widget
+                                .qttyPerGroupController
+                                .text
+                                .replaceAll(',', ''),
+                          )
+                          : null,
+                  isRefundable:
+                      provider.isProductRefundable,
+                  costPrice:
+                      widget.costController.text.isNotEmpty
+                          ? double.parse(
+                            widget.costController.text
+                                .replaceAll(',', ''),
+                          )
+                          : 0,
+                  sellingPrice:
+                      widget
+                              .sellingController
+                              .text
+                              .isNotEmpty
+                          ? double.parse(
+                            widget.sellingController.text
+                                .replaceAll(',', ''),
+                          )
+                          : null,
+                  wholeSalePrice:
+                      widget
+                              .wholeSaleController
+                              .text
+                              .isNotEmpty
+                          ? double.parse(
+                            widget.wholeSaleController.text
+                                .replaceAll(',', ''),
+                          )
+                          : null,
+                  quantity: widget.product?.quantity,
+                  shopId: shopId(),
+                  barcode: barcode,
+                  // categoryUuid:
+                  //     provider.selectedCategory?.uuid,
+                  createdAt: widget.product!.createdAt,
+                  discount: double.tryParse(
+                    widget.discountController.text
+                        .replaceAll(',', ''),
+                  ),
+                  // endDate: provider.endDate,
+                  expiryDate: provider.expiryDate,
+                  lowQtty:
+                      widget.lowQttyController.text.isEmpty
+                          ? 10
+                          : double.tryParse(
+                            widget.lowQttyController.text
+                                .replaceAll(',', ''),
+                          ),
+                  sizeType: provider.selectedSize,
+                  // startDate: provider.startDate,
+                ),
+                oldProduct: widget.product!,
+              );
+              if (res == null) {
+                setState(() {
+                  isLoading = false;
+                });
+              } else {
+                setState(() {
+                  isLoading = false;
+                  showSuccess = true;
+                });
+
+                if (safeContext.mounted) {
+                  Navigator.of(safeContext).pop();
+                }
+              }
+            },
+          );
+        },
+      );
+    }
   }
 
   String? createdProductUuid;
@@ -467,6 +510,8 @@ class _AddProductMobileState
       }
     });
     if (widget.product != null && context.mounted) {
+      returnData().manageWastage =
+          widget.product?.manageSalesWastage ?? false;
       barcode = widget.product!.barcode;
       barCodeSet =
           widget.product!.barcode != null ? true : false;
@@ -667,175 +712,12 @@ class _AddProductMobileState
                               Column(
                                 children: [
                                   SizedBox(height: 20),
-                                  InkWell(
-                                    mouseCursor:
-                                        SystemMouseCursors
-                                            .click,
-                                    onTap: () {
-                                      returnData()
-                                          .toggleIsManaged(
-                                            context:
-                                                context,
-                                          );
-                                      FocusManager
-                                          .instance
-                                          .primaryFocus
-                                          ?.unfocus();
-                                    },
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .spaceBetween,
-                                      children: [
-                                        Flexible(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment
-                                                    .start,
-                                            children: [
-                                              Text(
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      theme
-                                                          .mobileTexts
-                                                          .b1
-                                                          .fontSize,
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
-                                                ),
-                                                'Allow Stockall to Manage Item Quantity?',
-                                              ),
-                                              Column(
-                                                spacing: 5,
-                                                children: [
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          10,
-                                                    ),
-                                                    'This controls whether Item quantity is automatically deducted after sales, and notifications are sent when item quantity is low or out of stock.',
-                                                  ),
-                                                  // Text(
-                                                  //   'NOTE: if "YES", then cashier can set a custom price during sale, instead of the selling price.',
-                                                  // ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Checkbox(
-                                          activeColor:
-                                              theme
-                                                  .lightModeColor
-                                                  .secColor100,
-                                          value:
-                                              returnData(
-                                                context:
-                                                    context,
-                                              ).isManaged,
-                                          onChanged: (
-                                            value,
-                                          ) {
-                                            returnData()
-                                                .toggleIsManaged(
-                                                  context:
-                                                      context,
-                                                );
-                                            FocusManager
-                                                .instance
-                                                .primaryFocus
-                                                ?.unfocus();
-                                          },
-                                        ),
-                                      ],
-                                    ),
+                                  AllowToManageItemQuantityAddItemPage(
+                                    theme: theme,
                                   ),
                                   SizedBox(height: 20),
-                                  InkWell(
-                                    mouseCursor:
-                                        SystemMouseCursors
-                                            .click,
-                                    onTap: () {
-                                      returnData()
-                                          .toggleSetCustomPrice();
-                                      FocusManager
-                                          .instance
-                                          .primaryFocus
-                                          ?.unfocus();
-                                    },
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .spaceBetween,
-                                      children: [
-                                        Flexible(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment
-                                                    .start,
-                                            children: [
-                                              Text(
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      theme
-                                                          .mobileTexts
-                                                          .b1
-                                                          .fontSize,
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
-                                                ),
-                                                'Allow To Set Custom Price?',
-                                              ),
-                                              Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment
-                                                        .start,
-                                                spacing: 5,
-                                                children: [
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          10,
-                                                    ),
-                                                    'Allow Cashier to Set custom price during sale? ',
-                                                  ),
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          10,
-                                                    ),
-                                                    'NOTE: if "YES", then cashier can set a custom price during sale, instead of the selling price.',
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Checkbox(
-                                          activeColor:
-                                              theme
-                                                  .lightModeColor
-                                                  .secColor100,
-                                          value:
-                                              returnData(
-                                                context:
-                                                    context,
-                                              ).setCustomPrice,
-                                          onChanged: (
-                                            value,
-                                          ) {
-                                            returnData()
-                                                .toggleSetCustomPrice();
-                                            FocusManager
-                                                .instance
-                                                .primaryFocus
-                                                ?.unfocus();
-                                          },
-                                        ),
-                                      ],
-                                    ),
+                                  AllowToSetCustomPriceAddItemPage(
+                                    theme: theme,
                                   ),
                                 ],
                               ),
@@ -1023,6 +905,8 @@ class _AddProductMobileState
                                                     }
 
                                                     var tempProduct = TempProductClass(
+                                                      manageSalesWastage:
+                                                          null,
                                                       heightDimension:
                                                           null,
                                                       quantityType:
@@ -1668,64 +1552,22 @@ class _AddProductMobileState
                                         ),
                                       ],
                                     ),
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(
-                                            top: 15.0,
-                                          ),
-                                      child: QuantityTypeSelectionWidget(
-                                        theme: theme,
-                                        selectedIndex:
-                                            quantityType,
-                                        setQuantityIndex: (
+                                    SelectProductQuantityTypeSection(
+                                      heightController:
+                                          widget
+                                              .heightController,
+                                      quantityType:
+                                          quantityType,
+                                      switchQuantityType: (
+                                        index,
+                                      ) {
+                                        switchQuantityType(
                                           index,
-                                        ) {
-                                          switchQuantityType(
-                                            index ?? 1,
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                    Visibility(
-                                      visible:
-                                          quantityType == 2,
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(
-                                              bottom: 5.0,
-                                            ),
-                                        child: Row(
-                                          spacing: 10,
-                                          children: [
-                                            Expanded(
-                                              child: EditCartTextField(
-                                                theme:
-                                                    theme,
-                                                hint:
-                                                    'Enter Max-Width',
-                                                title:
-                                                    'Max-Width',
-                                                controller:
-                                                    widget
-                                                        .widthController,
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: EditCartTextField(
-                                                theme:
-                                                    theme,
-                                                hint:
-                                                    'Enter Max-Height',
-                                                title:
-                                                    'Max-Height',
-                                                controller:
-                                                    widget
-                                                        .heightController,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                        );
+                                      },
+                                      widthController:
+                                          widget
+                                              .widthController,
                                     ),
                                     Visibility(
                                       visible: authorization(

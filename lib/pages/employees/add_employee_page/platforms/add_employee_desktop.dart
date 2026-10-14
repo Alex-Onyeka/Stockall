@@ -332,284 +332,134 @@ class _AddEmployeeDesktopState
                           themeProvider: theme,
                           action: () {
                             if (widget.employee == null) {
-                              if (widget.idC.text.isEmpty) {
+                              if (widget.idC.text ==
+                                  currentUser()
+                                      .authUserId) {
                                 showDialog(
+                                  // ignore: use_build_context_synchronously
                                   context: context,
-                                  builder: (context) {
-                                    return InfoAlert(
-                                      theme: theme,
-                                      message:
-                                          'Staff Id field cannot be empty.',
-                                      title: 'Empty Field',
-                                    );
-                                  },
-                                );
-                              } else if (currentSelected ==
-                                  null) {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return InfoAlert(
-                                      theme: theme,
-                                      message:
-                                          'Staff Role cannot be empty.',
-                                      title: 'Empty Field',
-                                    );
-                                  },
+                                  builder:
+                                      (_) => InfoAlert(
+                                        theme: theme,
+                                        message:
+                                            'Staff Id is invalid.',
+                                        title:
+                                            'Invalid Staff Id.',
+                                        action: () {
+                                          Navigator.of(
+                                            context,
+                                          ).pop();
+                                        },
+                                      ),
                                 );
                               } else {
-                                var userProvider =
-                                    returnUserProvider(
-                                      context,
-                                      listen: false,
-                                    );
-                                // var safeContext = context;
-                                var shopProvider =
-                                    returnShopProvider();
-                                showDialog(
-                                  context: context,
-                                  builder: (dialogContext) {
-                                    return ConfirmationAlert(
-                                      theme: theme,
-                                      message:
-                                          'You are about to add a new Staff, are you sure you want to proceed?',
-                                      title:
-                                          'Are you Sure?',
-                                      action: () async {
-                                        var isOnline =
-                                            returnConnectivityProvider()
-                                                .isConnected;
-                                        if (!isOnline) {
-                                          showDialog(
-                                            // ignore: use_build_context_synchronously
-                                            context:
-                                                context,
-                                            builder: (
-                                              context,
-                                            ) {
-                                              return InfoAlert(
-                                                theme: returnTheme(
+                                if (widget
+                                    .idC
+                                    .text
+                                    .isEmpty) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return InfoAlert(
+                                        theme: theme,
+                                        message:
+                                            'Staff Id field cannot be empty.',
+                                        title:
+                                            'Empty Field',
+                                      );
+                                    },
+                                  );
+                                } else if (currentSelected ==
+                                    null) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return InfoAlert(
+                                        theme: theme,
+                                        message:
+                                            'Staff Role cannot be empty.',
+                                        title:
+                                            'Empty Field',
+                                      );
+                                    },
+                                  );
+                                } else {
+                                  var userProvider =
+                                      returnUserProvider(
+                                        context,
+                                        listen: false,
+                                      );
+                                  // var safeContext = context;
+                                  var shopProvider =
+                                      returnShopProvider();
+                                  showDialog(
+                                    context: context,
+                                    builder: (
+                                      dialogContext,
+                                    ) {
+                                      return ConfirmationAlert(
+                                        theme: theme,
+                                        message:
+                                            'You are about to add a new Staff, are you sure you want to proceed?',
+                                        title:
+                                            'Are you Sure?',
+                                        action: () async {
+                                          var isOnline =
+                                              returnConnectivityProvider()
+                                                  .isConnected;
+                                          if (!isOnline) {
+                                            showDialog(
+                                              // ignore: use_build_context_synchronously
+                                              context:
                                                   context,
-                                                  listen:
-                                                      false,
-                                                ),
-                                                message:
-                                                    'Internet connection is not detected, therefore, You cannot delete a Staff.',
-                                                title:
-                                                    'No Internet Connection',
-                                                action: () {
-                                                  Navigator.of(
-                                                    context,
-                                                  ).pop();
-                                                },
-                                              );
-                                            },
-                                          );
-                                          return;
-                                        }
-                                        setState(() {
-                                          isLoading = true;
-                                        });
-
-                                        try {
-                                          // Validate UUID
-                                          final uuid =
-                                              Uuid.parse(
-                                                widget
-                                                    .idC
-                                                    .text
-                                                    .trim(),
-                                              );
-                                          if (uuid
-                                              .toString()
-                                              .isEmpty) {
-                                            throw Exception();
-                                          }
-                                        } catch (_) {
-                                          setState(
-                                            () =>
-                                                isLoading =
-                                                    false,
-                                          );
-                                          showDialog(
-                                            // ignore: use_build_context_synchronously
-                                            context:
+                                              builder: (
                                                 context,
-                                            builder:
-                                                (
-                                                  _,
-                                                ) => InfoAlert(
-                                                  theme:
-                                                      theme,
+                                              ) {
+                                                return InfoAlert(
+                                                  theme: returnTheme(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ),
                                                   message:
-                                                      'Staff Id is invalid.',
+                                                      'Internet connection is not detected, therefore, You cannot delete a Staff.',
                                                   title:
-                                                      'Invalid Staff Id.',
+                                                      'No Internet Connection',
                                                   action: () {
                                                     Navigator.of(
                                                       context,
                                                     ).pop();
                                                   },
-                                                ),
-                                          );
-                                          return;
-                                        }
-
-                                        if (shopProvider
-                                            .userShop()!
-                                            .employees!
-                                            .contains(
-                                              widget
-                                                  .idC
-                                                  .text
-                                                  .trim(),
-                                            )) {
-                                          setState(
-                                            () =>
-                                                isLoading =
-                                                    false,
-                                          );
-                                          showDialog(
-                                            // ignore: use_build_context_synchronously
-                                            context:
-                                                context,
-                                            builder: (
-                                              context,
-                                            ) {
-                                              return InfoAlert(
-                                                theme: returnTheme(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ),
-                                                message:
-                                                    'This staff already Exists in your Store, You cannot Add this Staff Twice.',
-                                                title:
-                                                    'Staff Already Exists',
-                                                action: () {
-                                                  Navigator.of(
-                                                    context,
-                                                  ).pop();
-                                                },
-                                              );
-                                            },
-                                          );
-                                          return;
-                                        }
-
-                                        EmployeesAuthAction().numberOfEmployeesAction(
-                                          context: context,
-                                          action: () async {
-                                            final res = await userProvider.updateEmployeeRole(
-                                              userId:
-                                                  widget
-                                                      .idC
-                                                      .text
-                                                      .trim(),
-                                              newRole:
-                                                  returnShopProvider().shopOwnerUser!.role ==
-                                                          'Owner'
-                                                      ? returnPermissionProvider()
-                                                          .permissions()
-                                                          .where(
-                                                            (
-                                                              emp,
-                                                            ) =>
-                                                                emp.role !=
-                                                                'Owner',
-                                                          )
-                                                          .toList()[currentSelected!]
-                                                          .role
-                                                      : returnPermissionProvider()
-                                                          .permissions()[currentSelected!]
-                                                          .role,
-                                              authUserId:
-                                                  AuthService()
-                                                      .currentUser!,
-                                            );
-
-                                            if (res !=
-                                                    null &&
-                                                context
-                                                    .mounted) {
-                                              setState(
-                                                () =>
-                                                    isLoading =
-                                                        false,
-                                              );
-
-                                              if (res ==
-                                                      '121' ||
-                                                  res ==
-                                                      '131') {
-                                                showDialog(
-                                                  context:
-                                                      context,
-                                                  builder:
-                                                      (
-                                                        _,
-                                                      ) => InfoAlert(
-                                                        theme:
-                                                            theme,
-                                                        message:
-                                                            res ==
-                                                                    '121'
-                                                                ? 'Staff Id is invalid.'
-                                                                : 'User is not found in the database.',
-                                                        title:
-                                                            res ==
-                                                                    '121'
-                                                                ? 'Invalid Staff Id.'
-                                                                : 'User not Found.',
-                                                        action: () {
-                                                          Navigator.of(
-                                                            context,
-                                                          ).pop();
-                                                        },
-                                                      ),
                                                 );
-                                                return;
-                                              }
-                                            }
+                                              },
+                                            );
+                                            return;
+                                          }
+                                          setState(() {
+                                            isLoading =
+                                                true;
+                                          });
 
-                                            await shopProvider.addEmployeeToShop(
-                                              newEmployeeId:
+                                          try {
+                                            // Validate UUID
+                                            final uuid =
+                                                Uuid.parse(
                                                   widget
                                                       .idC
                                                       .text
                                                       .trim(),
-                                              // ignore: use_build_context_synchronously
-                                              context:
-                                                  context,
-                                              role:
-                                                  returnShopProvider().shopOwnerUser!.role ==
-                                                          'Owner'
-                                                      ? returnPermissionProvider()
-                                                          .permissions()
-                                                          .where(
-                                                            (
-                                                              emp,
-                                                            ) =>
-                                                                emp.role !=
-                                                                'Owner',
-                                                          )
-                                                          .toList()[currentSelected!]
-                                                          .role
-                                                      : returnPermissionProvider()
-                                                          .permissions()[currentSelected!]
-                                                          .role,
+                                                );
+                                            if (uuid
+                                                .toString()
+                                                .isEmpty) {
+                                              throw Exception();
+                                            }
+                                          } catch (_) {
+                                            setState(
+                                              () =>
+                                                  isLoading =
+                                                      false,
                                             );
-                                            setState(() {
-                                              isLoading =
-                                                  false;
-                                              showSuccess =
-                                                  true;
-                                            });
-
-                                            Navigator.of(
-                                              context,
-                                            ).pop(); // close confirmation dialog immediately
-
                                             showDialog(
                                               // ignore: use_build_context_synchronously
                                               context:
@@ -621,9 +471,9 @@ class _AddEmployeeDesktopState
                                                     theme:
                                                         theme,
                                                     message:
-                                                        'Staff added successfully.',
+                                                        'Staff Id is invalid.',
                                                     title:
-                                                        'Success',
+                                                        'Invalid Staff Id.',
                                                     action: () {
                                                       Navigator.of(
                                                         context,
@@ -631,12 +481,189 @@ class _AddEmployeeDesktopState
                                                     },
                                                   ),
                                             );
-                                          },
-                                        );
-                                      },
-                                    );
-                                  },
-                                );
+                                            return;
+                                          }
+
+                                          if (shopProvider
+                                              .userShop()!
+                                              .employees!
+                                              .contains(
+                                                widget
+                                                    .idC
+                                                    .text
+                                                    .trim(),
+                                              )) {
+                                            setState(
+                                              () =>
+                                                  isLoading =
+                                                      false,
+                                            );
+                                            showDialog(
+                                              // ignore: use_build_context_synchronously
+                                              context:
+                                                  context,
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return InfoAlert(
+                                                  theme: returnTheme(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ),
+                                                  message:
+                                                      'This staff already Exists in your Store, You cannot Add this Staff Twice.',
+                                                  title:
+                                                      'Staff Already Exists',
+                                                  action: () {
+                                                    Navigator.of(
+                                                      context,
+                                                    ).pop();
+                                                  },
+                                                );
+                                              },
+                                            );
+                                            return;
+                                          }
+
+                                          EmployeesAuthAction().numberOfEmployeesAction(
+                                            context:
+                                                context,
+                                            action: () async {
+                                              final res = await userProvider.updateEmployeeRole(
+                                                userId:
+                                                    widget
+                                                        .idC
+                                                        .text
+                                                        .trim(),
+                                                newRole:
+                                                    returnShopProvider().shopOwnerUser!.role ==
+                                                            'Owner'
+                                                        ? returnPermissionProvider()
+                                                            .permissions()
+                                                            .where(
+                                                              (
+                                                                emp,
+                                                              ) =>
+                                                                  emp.role !=
+                                                                  'Owner',
+                                                            )
+                                                            .toList()[currentSelected!]
+                                                            .role
+                                                        : returnPermissionProvider().permissions()[currentSelected!].role,
+                                                authUserId:
+                                                    AuthService()
+                                                        .currentUser!,
+                                              );
+
+                                              if (res !=
+                                                      null &&
+                                                  context
+                                                      .mounted) {
+                                                setState(
+                                                  () =>
+                                                      isLoading =
+                                                          false,
+                                                );
+
+                                                if (res ==
+                                                        '121' ||
+                                                    res ==
+                                                        '131') {
+                                                  showDialog(
+                                                    context:
+                                                        context,
+                                                    builder:
+                                                        (
+                                                          _,
+                                                        ) => InfoAlert(
+                                                          theme:
+                                                              theme,
+                                                          message:
+                                                              res ==
+                                                                      '121'
+                                                                  ? 'Staff Id is invalid.'
+                                                                  : 'User is not found in the database.',
+                                                          title:
+                                                              res ==
+                                                                      '121'
+                                                                  ? 'Invalid Staff Id.'
+                                                                  : 'User not Found.',
+                                                          action: () {
+                                                            Navigator.of(
+                                                              context,
+                                                            ).pop();
+                                                          },
+                                                        ),
+                                                  );
+                                                  return;
+                                                }
+                                              }
+
+                                              await shopProvider.addEmployeeToShop(
+                                                newEmployeeId:
+                                                    widget
+                                                        .idC
+                                                        .text
+                                                        .trim(),
+                                                // ignore: use_build_context_synchronously
+                                                context:
+                                                    context,
+                                                role:
+                                                    returnShopProvider().shopOwnerUser!.role ==
+                                                            'Owner'
+                                                        ? returnPermissionProvider()
+                                                            .permissions()
+                                                            .where(
+                                                              (
+                                                                emp,
+                                                              ) =>
+                                                                  emp.role !=
+                                                                  'Owner',
+                                                            )
+                                                            .toList()[currentSelected!]
+                                                            .role
+                                                        : returnPermissionProvider().permissions()[currentSelected!].role,
+                                              );
+                                              setState(() {
+                                                isLoading =
+                                                    false;
+                                                showSuccess =
+                                                    true;
+                                              });
+
+                                              Navigator.of(
+                                                context,
+                                              ).pop(); // close confirmation dialog immediately
+
+                                              showDialog(
+                                                // ignore: use_build_context_synchronously
+                                                context:
+                                                    context,
+                                                builder:
+                                                    (
+                                                      _,
+                                                    ) => InfoAlert(
+                                                      theme:
+                                                          theme,
+                                                      message:
+                                                          'Staff added successfully.',
+                                                      title:
+                                                          'Success',
+                                                      action: () {
+                                                        Navigator.of(
+                                                          context,
+                                                        ).pop();
+                                                      },
+                                                    ),
+                                              );
+                                            },
+                                          );
+                                        },
+                                      );
+                                    },
+                                  );
+                                }
                               }
                             } else {
                               final safeContext = context;

@@ -96,8 +96,12 @@ class TempCart extends HiveObject {
 
   @HiveField(29)
   List<PaymentEntry>? splitPayments;
+
   @HiveField(28)
   String? draftUuid;
+
+  @HiveField(30)
+  List<TempCartItem>? tempCartItems;
 
   TempCart({
     required this.cartItems,
@@ -130,6 +134,7 @@ class TempCart extends HiveObject {
     this.orderUuid,
     this.splitPayments,
     this.draftUuid,
+    required this.tempCartItems,
   });
 
   List<TempCartItem> getCartItemsAll() {

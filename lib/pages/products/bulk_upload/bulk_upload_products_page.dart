@@ -230,6 +230,7 @@ class _BulkUploadProductsPageState
     final uuid = uuidGen();
     final now = DateTime.now();
     return TempProductClass(
+      manageSalesWastage: null,
       name: row.name,
       barcode: row.barcode,
       unit: 'Unit(s)',

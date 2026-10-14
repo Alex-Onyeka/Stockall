@@ -83,6 +83,7 @@ class _InvoicePageMobileState
               widget.checkoutResponse.invoice?.uuid,
           orElse: () {
             return TempInvoice(
+              tempItems: null,
               comment: null,
               subStaffName: null,
               departmentName:

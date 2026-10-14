@@ -1261,6 +1261,12 @@ class _MakeSalesDesktopState
                                               ).pop();
                                             },
                                             editCartItem: TempCartItem(
+                                              isPercentageWastage:
+                                                  null,
+                                              wastageAmount:
+                                                  null,
+                                              manageSalesWastage:
+                                                  null,
                                               heightDimension:
                                                   null,
                                               widthDimension:
@@ -1286,6 +1292,8 @@ class _MakeSalesDesktopState
                                                   returnSalesProvider()
                                                       .setTotalPrice,
                                               item: TempProductClass(
+                                                manageSalesWastage:
+                                                    null,
                                                 heightDimension:
                                                     null,
                                                 widthDimension:
@@ -1417,6 +1425,12 @@ class _MakeSalesDesktopState
                                                 ).pop();
                                               },
                                               editCartItem: TempCartItem(
+                                                isPercentageWastage:
+                                                    null,
+                                                wastageAmount:
+                                                    null,
+                                                manageSalesWastage:
+                                                    null,
                                                 heightDimension:
                                                     null,
                                                 widthDimension:
@@ -1443,6 +1457,8 @@ class _MakeSalesDesktopState
                                                     returnSalesProvider()
                                                         .setTotalPrice,
                                                 item: TempProductClass(
+                                                  manageSalesWastage:
+                                                      null,
                                                   heightDimension:
                                                       null,
                                                   widthDimension:
@@ -1644,6 +1660,12 @@ class _MakeSalesDesktopState
                                                                       ).pop();
                                                                     },
                                                                     editCartItem: TempCartItem(
+                                                                      isPercentageWastage:
+                                                                          null,
+                                                                      wastageAmount:
+                                                                          null,
+                                                                      manageSalesWastage:
+                                                                          null,
                                                                       heightDimension:
                                                                           null,
                                                                       widthDimension:
@@ -1669,6 +1691,8 @@ class _MakeSalesDesktopState
                                                                       setTotalPrice:
                                                                           returnSalesProvider().setTotalPrice,
                                                                       item: TempProductClass(
+                                                                        manageSalesWastage:
+                                                                            null,
                                                                         heightDimension:
                                                                             null,
                                                                         widthDimension:
@@ -2221,6 +2245,8 @@ class _MakeSalesDesktopState
                                                       await returnSalesProvider().addNewCart(
                                                         context,
                                                         TempCart(
+                                                          tempCartItems:
+                                                              null,
                                                           comment:
                                                               null,
                                                           timeOfDay:
@@ -2422,6 +2448,12 @@ class _MakeSalesDesktopState
                                                           ).pop();
                                                         },
                                                         editCartItem: TempCartItem(
+                                                          isPercentageWastage:
+                                                              null,
+                                                          wastageAmount:
+                                                              null,
+                                                          manageSalesWastage:
+                                                              null,
                                                           heightDimension:
                                                               null,
                                                           widthDimension:
@@ -2447,6 +2479,8 @@ class _MakeSalesDesktopState
                                                           setTotalPrice:
                                                               returnSalesProvider().setTotalPrice,
                                                           item: TempProductClass(
+                                                            manageSalesWastage:
+                                                                null,
                                                             heightDimension:
                                                                 null,
                                                             widthDimension:

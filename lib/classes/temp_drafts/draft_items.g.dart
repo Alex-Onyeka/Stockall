@@ -46,13 +46,16 @@ class DraftItemsAdapter extends TypeAdapter<DraftItems> {
       widthDimension: fields[26] as double?,
       heightDimension: fields[27] as double?,
       quantityType: fields[28] as int?,
+      manageSalesWastage: fields[29] as bool?,
+      isPercentageWastage: fields[30] as bool?,
+      wastageAmount: fields[31] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, DraftItems obj) {
     writer
-      ..writeByte(29)
+      ..writeByte(32)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -110,7 +113,13 @@ class DraftItemsAdapter extends TypeAdapter<DraftItems> {
       ..writeByte(27)
       ..write(obj.heightDimension)
       ..writeByte(28)
-      ..write(obj.quantityType);
+      ..write(obj.quantityType)
+      ..writeByte(29)
+      ..write(obj.manageSalesWastage)
+      ..writeByte(30)
+      ..write(obj.isPercentageWastage)
+      ..writeByte(31)
+      ..write(obj.wastageAmount);
   }
 
   @override
