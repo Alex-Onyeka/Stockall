@@ -406,18 +406,11 @@ void addItemToCartFromCartItemList({
   required TextEditingController priceController,
 }) {
   var theme = returnTheme(context, listen: false);
-  TempCartItem? cartItemTemp;
-  var items = returnSalesProvider()
-      .currentCart()
-      .cartItems
-      .where(
-        (item) =>
-            (item.itemUuid ?? item.item.uuid) ==
-            product.uuid,
+  TempCartItem? cartItemTemp = returnSalesProvider()
+      .existingLineForAdd(
+        returnSalesProvider().currentCart(),
+        product,
       );
-  if (items.isNotEmpty) {
-    cartItemTemp = items.first;
-  }
 
   if (!product.canSelectForCart()) {
     showDialog(
