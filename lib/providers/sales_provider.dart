@@ -3526,22 +3526,87 @@ class SalesProvider extends ChangeNotifier {
     }
   }
 
-  // Same item, and for 2D items the same width × height and
-  // wastage.
+  // Width/height equal within float noise; both null is equal.
+  bool _sameDimension(double? a, double? b) {
+    if (a == null || b == null) return a == b;
+    return (a - b).abs() < 1e-6;
+  }
+
+  // Unit a line is sold in. Lines without a unit use the primary
+  // one. Items without stored units get a new default unit (new
+  // uuid) on every read, so they have only one unit: ''.
+  String _lineUnitKey(TempCartItem line) {
+    if (line.item.unitsList?.isNotEmpty != true) return '';
+    return line.unitUuid ??
+        line.item.unitsList!
+            .where((unit) => unit.isPrimary)
+            .firstOrNull
+            ?.uuid ??
+        '';
+  }
+
+  // Same item, and for 2D items the same unit, width × height and
+  // wastage. Area-unit lines (m²) ignore width × height: their
+  // quantity is already area.
   bool isSameCartLine(TempCartItem a, TempCartItem b) {
     final sameProduct =
         (a.itemUuid ?? a.item.uuid) ==
         (b.itemUuid ?? b.item.uuid);
     if (!sameProduct) return false;
     if (b.item.quantityType == 2) {
-      return a.item.quantityType == 2 &&
-          a.widthDimension == b.widthDimension &&
-          a.heightDimension == b.heightDimension &&
+      if (a.item.quantityType != 2 ||
+          _lineUnitKey(a) != _lineUnitKey(b)) {
+        return false;
+      }
+      final unitKey = _lineUnitKey(b);
+      final isAreaUnit =
+          b.item.unitsList
+              ?.where((unit) => unit.uuid == unitKey)
+              .firstOrNull
+              ?.dimensionType ==
+          ProductUnitsClass.areaUnit;
+      return (isAreaUnit ||
+              (_sameDimension(
+                    a.widthDimension,
+                    b.widthDimension,
+                  ) &&
+                  _sameDimension(
+                    a.heightDimension,
+                    b.heightDimension,
+                  ))) &&
           a.wastageAmount == b.wastageAmount &&
           a.wastageUnitUuid == b.wastageUnitUuid &&
           a.isPercentageWastage == b.isPercentageWastage;
     }
     return true;
+  }
+
+  // Existing line the sale dialog starts from when adding
+  // [product]: the first live line for 1D items (adding replaces
+  // it), none for 2D items (each size and unit is its own line,
+  // picked in the dialog). Void lines are never reused.
+  TempCartItem? existingLineForAdd(
+    TempCart cart,
+    TempProductClass product,
+  ) {
+    if (product.quantityType == 2) return null;
+    return cart
+        .getCartItems()
+        .where(
+          (item) =>
+              (item.itemUuid ?? item.item.uuid) ==
+              product.uuid,
+        )
+        .firstOrNull;
+  }
+
+  // Live line an added [line] merges into, or null to add it as
+  // a new line.
+  TempCartItem? findCartLine(TempCart cart, TempCartItem line) {
+    return cart
+        .getCartItems()
+        .where((item) => isSameCartLine(item, line))
+        .firstOrNull;
   }
 
   // Existing void line for this line's item (and size, for 2D).
@@ -3594,16 +3659,13 @@ class SalesProvider extends ChangeNotifier {
         // isEdit: false,
         // useGroupUnit: newItem.useGroupQuantity ?? false,
       )) {
-        final index = currentCart()
-            .getCartItems()
-            .indexWhere(
-              (item) => isSameCartLine(item, newItem),
-            );
+        final existing = findCartLine(
+          currentCart(),
+          newItem,
+        );
 
-        if (index != -1) {
-          currentCart().getCartItemsAll()[index].discount;
-          currentCart().getCartItemsAll()[index].quantity +=
-              newItem.quantity;
+        if (existing != null) {
+          existing.quantity += newItem.quantity;
         } else {
           currentCart().cartItems.add(newItem);
         }
@@ -3655,32 +3717,12 @@ class SalesProvider extends ChangeNotifier {
       quantityToAdd: newItem.getStockQuantity(),
     )) {
       String result = '';
-      var items = currentCart().getCartItems().where((
-        item,
-      ) {
-        final sameProduct =
-            (item.itemUuid ?? item.item.uuid) ==
-            (newItem.itemUuid ?? newItem.item.uuid);
-
-        if (!sameProduct) return false;
-
-        final is2DItem = newItem.item.quantityType == 2;
-
-        if (is2DItem) {
-          return item.item.quantityType == 2 &&
-              item.widthDimension ==
-                  newItem.widthDimension &&
-              item.heightDimension ==
-                  newItem.heightDimension;
-        }
-
-        return true;
-      });
+      var existingLine = findCartLine(currentCart(), newItem);
 
       var voidItem = findVoidLine(currentCart(), newItem);
 
-      if (items.isNotEmpty) {
-        var item = items.first;
+      if (existingLine != null) {
+        var item = existingLine;
 
         if (returnShopProvider().userShop()!.trackCart ==
                 true &&
@@ -3868,6 +3910,7 @@ class SalesProvider extends ChangeNotifier {
             widthDimension: originalLine.widthDimension,
             heightDimension: originalLine.heightDimension,
           );
+          deletedItem.unitUuid = originalLine.unitUuid;
           deletedItem.wastageAmount =
               originalLine.wastageAmount;
           deletedItem.wastageUnitUuid =

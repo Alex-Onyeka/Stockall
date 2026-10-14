@@ -2109,5 +2109,537 @@ void main() {
       expect(restored.quantity, 1);
     });
   });
+
+  group('cart line identity', () {
+    // 1 sheet of 4 × 3 in stock (12 area). Sold by the sheet
+    // (priced at the line's size) or by the m² (area unit).
+    TempProductClass sheetProduct() =>
+        buildSheet(quantity: 1)..unitsList = [areaUnit, sheetUnit];
+
+    TempCartItem line2D({
+      required String uuid,
+      required ProductUnitsClass lineUnit,
+      double quantity = 1,
+      double? width,
+      double? height,
+      bool isVoid = false,
+    }) {
+      return TempCartItem(
+        item: sheetProduct(),
+        itemUuid: productUuid,
+        quantity: quantity,
+        discount: null,
+        addToStock: false,
+        setTotalPrice: false,
+        useWholeSalePrice: false,
+        useGroupQuantity: false,
+        qttyPerGroup: null,
+        isVoid: isVoid,
+        uuid: uuid,
+        unitUuid: lineUnit.uuid,
+        priceUuid: price.uuid,
+        widthDimension: width,
+        heightDimension: height,
+        quantityType: 2,
+        manageSalesWastage: null,
+        isPercentageWastage: null,
+        wastageAmount: null,
+      );
+    }
+
+    TempProductClass plainProduct() => buildSheet()
+      ..quantityType = 1
+      ..unitsList = [unit, sheetUnit];
+
+    TempCartItem line1D({
+      required String uuid,
+      String? unitUuid,
+      double quantity = 1,
+      bool isVoid = false,
+    }) {
+      return TempCartItem(
+        item: plainProduct(),
+        itemUuid: productUuid,
+        quantity: quantity,
+        discount: null,
+        addToStock: false,
+        setTotalPrice: false,
+        useWholeSalePrice: false,
+        useGroupQuantity: false,
+        qttyPerGroup: null,
+        isVoid: isVoid,
+        uuid: uuid,
+        unitUuid: unitUuid ?? unit.uuid,
+        priceUuid: price.uuid,
+        widthDimension: null,
+        heightDimension: null,
+        quantityType: 1,
+        manageSalesWastage: null,
+        isPercentageWastage: null,
+        wastageAmount: null,
+      );
+    }
+
+    void useCart(List<TempCartItem> lines) {
+      SalesProvider().mainCartQueue = [
+        TempMainCart(
+          cartQueue: [buildCart(lines)],
+          mainCartId: 'main-1',
+        ),
+      ];
+      SalesProvider().mainCartIdCache = 'main-1';
+      SalesProvider().cartIdCache = 'cart-1';
+    }
+
+    // canAddProductToCart logs a rejection to mainLog.log, which
+    // asks path_provider for the app support directory.
+    const pathProvider = MethodChannel(
+      'plugins.flutter.io/path_provider',
+    );
+    late Directory logDir;
+
+    setUpAll(() {
+      logDir = Directory.systemTemp.createTempSync('stockall_test_');
+      TestDefaultBinaryMessengerBinding
+          .instance
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(
+            pathProvider,
+            (call) async => logDir.path,
+          );
+    });
+
+    tearDownAll(() {
+      TestDefaultBinaryMessengerBinding
+          .instance
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(pathProvider, null);
+      logDir.deleteSync(recursive: true);
+    });
+
+    setUp(() {
+      DataProvider().productListMain = [sheetProduct()];
+      SalesProvider().tempCartItems = [];
+    });
+
+    test('2D lines with different sizes are separate lines', () {
+      final small = line2D(
+        uuid: 'a',
+        lineUnit: sheetUnit,
+        width: 1,
+        height: 2,
+      );
+      final big = line2D(
+        uuid: 'b',
+        lineUnit: sheetUnit,
+        width: 2,
+        height: 2,
+      );
+      expect(SalesProvider().isSameCartLine(small, big), isFalse);
+
+      SalesProvider().addItemToTempCart(item: small);
+      SalesProvider().addItemToTempCart(item: big);
+      expect(SalesProvider().tempCartItems.length, 2);
+
+      useCart([small]);
+      expect(
+        SalesProvider().findCartLine(
+          SalesProvider().currentCart(),
+          big,
+        ),
+        isNull,
+      );
+    });
+
+    test('sizes equal within float noise are the same line', () {
+      final a = line2D(
+        uuid: 'a',
+        lineUnit: sheetUnit,
+        width: 0.1 + 0.2,
+        height: 2,
+      );
+      final b = line2D(
+        uuid: 'b',
+        lineUnit: sheetUnit,
+        width: 0.3,
+        height: 2,
+      );
+      expect(a.widthDimension == b.widthDimension, isFalse);
+      expect(SalesProvider().isSameCartLine(a, b), isTrue);
+    });
+
+    test('a default-size line and an m² line are separate lines', () {
+      final whole = line2D(
+        uuid: 'whole',
+        lineUnit: sheetUnit,
+        width: 4,
+        height: 3,
+      );
+      // addItemToCart gives m² lines the item's size too
+      // (applyDefaultDimensions); only the unit tells them apart.
+      final area = line2D(
+        uuid: 'area',
+        lineUnit: areaUnit,
+        quantity: 3,
+        width: 4,
+        height: 3,
+      );
+      expect(SalesProvider().isSameCartLine(whole, area), isFalse);
+      expect(SalesProvider().isSameCartLine(area, whole), isFalse);
+
+      useCart([whole]);
+      expect(
+        SalesProvider().findCartLine(
+          SalesProvider().currentCart(),
+          area,
+        ),
+        isNull,
+      );
+    });
+
+    test('m² lines match whatever size they carry', () {
+      final added = line2D(
+        uuid: 'added',
+        lineUnit: areaUnit,
+        width: 4,
+        height: 3,
+      );
+      // Edited into m² in the dialog: no size.
+      final edited = line2D(
+        uuid: 'edited',
+        lineUnit: areaUnit,
+        width: null,
+        height: null,
+      );
+      expect(SalesProvider().isSameCartLine(added, edited), isTrue);
+      expect(SalesProvider().isSameCartLine(edited, added), isTrue);
+    });
+
+    test('a line without a unit counts as the primary unit', () {
+      final noUnit = line2D(
+        uuid: 'a',
+        lineUnit: areaUnit,
+        width: 4,
+        height: 3,
+      )..unitUuid = null;
+      final primary = line2D(
+        uuid: 'b',
+        lineUnit: areaUnit,
+        width: 4,
+        height: 3,
+      );
+      final sheet = line2D(
+        uuid: 'c',
+        lineUnit: sheetUnit,
+        width: 4,
+        height: 3,
+      );
+      expect(SalesProvider().isSameCartLine(noUnit, primary), isTrue);
+      expect(SalesProvider().isSameCartLine(noUnit, sheet), isFalse);
+    });
+
+    test('editing one line leaves the other lines of the item alone', () async {
+      final a = line2D(
+        uuid: 'a',
+        lineUnit: sheetUnit,
+        width: 1,
+        height: 2,
+      );
+      final b = line2D(
+        uuid: 'b',
+        lineUnit: sheetUnit,
+        width: 2,
+        height: 2,
+      );
+      final c = line2D(uuid: 'c', lineUnit: areaUnit, quantity: 2);
+      useCart([a, b, c]);
+
+      await SalesProvider().updateCurrentCartItem(
+        a.copyWith(quantity: 3),
+      );
+      expect([a.quantity, b.quantity, c.quantity], [3, 1, 2]);
+
+      await SalesProvider().updateCurrentCartItem(
+        b.copyWith(quantity: 2, widthDimension: 1.5),
+      );
+      expect([a.quantity, b.quantity, c.quantity], [3, 2, 2]);
+      expect(b.widthDimension, 1.5);
+      expect(a.widthDimension, 1);
+
+      await SalesProvider().updateCurrentCartItem(
+        c.copyWith(quantity: 4),
+      );
+      expect([a.quantity, b.quantity, c.quantity], [3, 2, 4]);
+    });
+
+    test('a line edited to match another stays a separate line', () async {
+      final a = line2D(
+        uuid: 'a',
+        lineUnit: sheetUnit,
+        width: 1,
+        height: 2,
+      );
+      final b = line2D(
+        uuid: 'b',
+        lineUnit: sheetUnit,
+        width: 2,
+        height: 2,
+      );
+      useCart([a, b]);
+
+      await SalesProvider().updateCurrentCartItem(
+        a.copyWith(widthDimension: 2),
+      );
+      final cart = SalesProvider().currentCart();
+      expect(cart.getCartItems().length, 2);
+      expect(SalesProvider().isSameCartLine(a, b), isTrue);
+      // Both still count towards stock: 4 + 4 area.
+      expect(
+        SalesProvider().totalInAllCarts(
+          newCartItem: line2D(uuid: 'new', lineUnit: areaUnit),
+          isEdit: false,
+        ),
+        8,
+      );
+    });
+
+    test('stock totals add up every line of the item', () {
+      final a = line2D(
+        uuid: 'a',
+        lineUnit: sheetUnit,
+        width: 1,
+        height: 2,
+      ); // 2 area
+      final b = line2D(
+        uuid: 'b',
+        lineUnit: sheetUnit,
+        width: 2,
+        height: 2,
+      ); // 4 area
+      final c = line2D(
+        uuid: 'c',
+        lineUnit: areaUnit,
+        quantity: 3,
+      ); // 3 area
+      useCart([a, b, c]);
+
+      final sp = SalesProvider();
+      final newLine = line2D(uuid: 'new', lineUnit: areaUnit);
+      expect(
+        sp.totalInAllCarts(newCartItem: newLine, isEdit: false),
+        9,
+      );
+      // Editing excludes only the line being edited.
+      expect(
+        sp.totalInAllCarts(newCartItem: a.copyWith(), isEdit: true),
+        7,
+      );
+      expect(
+        sp.totalInAllCarts(newCartItem: b.copyWith(), isEdit: true),
+        5,
+      );
+      expect(
+        sp.totalInAllCarts(newCartItem: c.copyWith(), isEdit: true),
+        6,
+      );
+
+      // 12 area in stock, 9 in the cart.
+      expect(
+        sp.canAddProductToCart(
+          newCartItem: newLine,
+          quantityToAdd: 3,
+          isEdit: false,
+        ),
+        isTrue,
+      );
+      expect(
+        sp.canAddProductToCart(
+          newCartItem: newLine,
+          quantityToAdd: 3.5,
+          isEdit: false,
+        ),
+        isFalse,
+      );
+      // Editing b (4 area) to 2 × 3 (6 area): 2 + 3 + 6 = 11.
+      expect(
+        sp.canAddProductToCart(
+          newCartItem: b.copyWith(),
+          quantityToAdd: 6,
+          isEdit: true,
+        ),
+        isTrue,
+      );
+      expect(
+        sp.canAddProductToCart(
+          newCartItem: b.copyWith(),
+          quantityToAdd: 8,
+          isEdit: true,
+        ),
+        isFalse,
+      );
+    });
+
+    test('removing one line leaves the others and their stock', () {
+      final a = line2D(
+        uuid: 'a',
+        lineUnit: sheetUnit,
+        width: 1,
+        height: 2,
+      );
+      final b = line2D(
+        uuid: 'b',
+        lineUnit: sheetUnit,
+        width: 2,
+        height: 2,
+      );
+      useCart([a, b]);
+      final cart = SalesProvider().currentCart();
+
+      // removeItemFromCart removes the line object itself.
+      cart.cartItems.remove(a);
+      expect(cart.getCartItems(), [b]);
+      expect(
+        SalesProvider().totalInAllCarts(
+          newCartItem: line2D(uuid: 'new', lineUnit: areaUnit),
+          isEdit: false,
+        ),
+        4,
+      );
+    });
+
+    test('void lines stay with their own size and unit', () {
+      final small = line2D(
+        uuid: 'small',
+        lineUnit: sheetUnit,
+        width: 1,
+        height: 2,
+      );
+      final whole = line2D(
+        uuid: 'whole',
+        lineUnit: sheetUnit,
+        width: 4,
+        height: 3,
+      );
+      final area = line2D(
+        uuid: 'area',
+        lineUnit: areaUnit,
+        width: 4,
+        height: 3,
+      );
+      final wholeVoid = whole.copyWith(isVoid: true, uuid: 'wv');
+      final areaVoid = area.copyWith(isVoid: true, uuid: 'av');
+      final sp = SalesProvider();
+
+      // Only the sheet void exists: the m² line must not reuse it.
+      var cart = buildCart([small, whole, area, wholeVoid]);
+      expect(sp.findVoidLine(cart, area), isNull);
+      expect(sp.findVoidLine(cart, small), isNull);
+      expect(sp.findVoidLine(cart, whole), same(wholeVoid));
+
+      // And the other way round.
+      cart = buildCart([small, whole, area, areaVoid]);
+      expect(sp.findVoidLine(cart, whole), isNull);
+      expect(sp.findVoidLine(cart, area), same(areaVoid));
+    });
+
+    test('adding merges into the live line, not one behind a void', () {
+      final voidX = line2D(
+        uuid: 'x-void',
+        lineUnit: sheetUnit,
+        width: 1,
+        height: 2,
+        isVoid: true,
+      );
+      final y = line2D(
+        uuid: 'y',
+        lineUnit: sheetUnit,
+        width: 2,
+        height: 2,
+      );
+      final x = line2D(
+        uuid: 'x',
+        lineUnit: sheetUnit,
+        width: 1,
+        height: 2,
+      );
+      useCart([voidX, y, x]);
+
+      final added = line2D(
+        uuid: 'new',
+        lineUnit: sheetUnit,
+        width: 1,
+        height: 2,
+      );
+      expect(
+        SalesProvider().findCartLine(
+          SalesProvider().currentCart(),
+          added,
+        ),
+        same(x),
+      );
+    });
+
+    group('1D lines are unchanged', () {
+      test('same item is one line whatever the unit', () {
+        final a = line1D(uuid: 'a');
+        final b = line1D(uuid: 'b', unitUuid: sheetUnit.uuid);
+        expect(SalesProvider().isSameCartLine(a, b), isTrue);
+
+        SalesProvider().addItemToTempCart(item: a);
+        SalesProvider().addItemToTempCart(item: b);
+        expect(SalesProvider().tempCartItems.length, 1);
+        expect(SalesProvider().tempCartItems.single.uuid, 'b');
+
+        useCart([a]);
+        expect(
+          SalesProvider().findCartLine(
+            SalesProvider().currentCart(),
+            b,
+          ),
+          same(a),
+        );
+      });
+
+      test('the dialog starts from the live line', () {
+        final live = line1D(uuid: 'live', quantity: 4);
+        final voided = line1D(
+          uuid: 'void',
+          quantity: 1,
+          isVoid: true,
+        );
+        // Void line first, as after remove-then-add.
+        final cart = buildCart([voided, live]);
+        expect(
+          SalesProvider().existingLineForAdd(
+            cart,
+            plainProduct(),
+          ),
+          same(live),
+        );
+      });
+
+      test('only a void line: the new line gets its own uuid', () {
+        final voided = line1D(uuid: 'void', isVoid: true);
+        final cart = buildCart([voided]);
+        expect(
+          SalesProvider().existingLineForAdd(
+            cart,
+            plainProduct(),
+          ),
+          isNull,
+        );
+      });
+    });
+
+    test('2D: the dialog never starts from an existing line', () {
+      final cart = buildCart([
+        line2D(uuid: 'a', lineUnit: sheetUnit, width: 4, height: 3),
+      ]);
+      expect(
+        SalesProvider().existingLineForAdd(cart, sheetProduct()),
+        isNull,
+      );
+    });
+  });
 }
 
