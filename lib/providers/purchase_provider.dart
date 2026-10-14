@@ -537,11 +537,9 @@ class PurchaseProvider extends ChangeNotifier {
           isOnline) {
         final tempPurchases =
             CreatedPurchasesFunc().getPurchases().toList();
-        var newPurchases = tempPurchases.map((rec) {
-          rec.purchase.createdAt =
-              rec.purchase.createdAt.toUtc();
-          return rec;
-        });
+        // createdAt is serialized to UTC in toJson(); don't mutate the
+        // shared in-memory purchase.
+        var newPurchases = tempPurchases;
         final payload =
             newPurchases
                 .map((p) => p.purchase.toJson())

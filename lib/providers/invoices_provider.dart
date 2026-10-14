@@ -1236,11 +1236,9 @@ class InvoicesProvider extends ChangeNotifier {
           isOnline) {
         final tempInvoice =
             CreatedInvoicesFunc().getInvoices().toList();
-        var newInvoices = tempInvoice.map((inv) {
-          inv.invoice.createdAt =
-              inv.invoice.createdAt.toUtc();
-          return inv;
-        });
+        // createdAt is serialized to UTC in toJson(); don't mutate the
+        // shared in-memory invoice.
+        var newInvoices = tempInvoice;
         int count = 0;
         for (var item in newInvoices) {
           try {
