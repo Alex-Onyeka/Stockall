@@ -145,8 +145,12 @@ class ProductRecordFunc {
             var product = oldProduct.copyWith();
             final oldQuantity =
                 oldProduct.getActualQuantity() ?? 0;
+            // Delivery receipts never deducted wastage.
             final quantityChange =
-                record.getActualQuantity();
+                record.getActualQuantity() +
+                (receipt.orderUuid == null
+                    ? record.wastageArea()
+                    : 0);
             final restoredArea =
                 oldQuantity + quantityChange;
             product.quantity =
@@ -195,9 +199,9 @@ class ProductRecordFunc {
               isQuantityUpdate: true,
               quantityChange:
                   product.quantityType == 2
-                      ? record.getActualQuantity() /
+                      ? quantityChange /
                           product.dimensionArea()
-                      : record.getActualQuantity(),
+                      : quantityChange,
               isIncrement: true,
             );
           }
@@ -352,7 +356,8 @@ class ProductRecordFunc {
             final oldQuantity =
                 oldProduct.getActualQuantity() ?? 0;
             final quantityChange =
-                record.getActualQuantity();
+                record.getActualQuantity() +
+                record.wastageArea();
             final restoredArea =
                 oldQuantity + quantityChange;
             product.quantity =
@@ -401,9 +406,9 @@ class ProductRecordFunc {
               isQuantityUpdate: true,
               quantityChange:
                   product.quantityType == 2
-                      ? record.getActualQuantity() /
+                      ? quantityChange /
                           product.dimensionArea()
-                      : record.getActualQuantity(),
+                      : quantityChange,
               isIncrement: true,
             );
           }

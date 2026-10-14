@@ -444,10 +444,20 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Orders don't apply wastage. Clears it from lines of an order
+  // cart, e.g. order lines saved before wastage was hidden there.
+  void clearOrderWastage(TempCart cart) {
+    if (cart.cartItemTypeIndex != 3) return;
+    for (final cartItem in cart.cartItems) {
+      cartItem.wastageAmount = null;
+    }
+  }
+
   Future<void> addNewCart(
     BuildContext context,
     TempCart tempCart,
   ) async {
+    clearOrderWastage(tempCart);
     SalesAuthAction().numberOfCartsAction(
       context: context,
       action: () async {
@@ -778,7 +788,7 @@ class SalesProvider extends ChangeNotifier {
             continue;
           }
 
-          final quantity = cartItem.getRealQuantity();
+          final quantity = cartItem.getStockQuantity();
 
           final existing = cartItems[itemUuid];
 
@@ -898,6 +908,7 @@ class SalesProvider extends ChangeNotifier {
 
     void performAction() {
       currentCart().cartItemTypeIndex = value;
+      clearOrderWastage(currentCart());
       CartFunc().updateMainCart(currentMainCart());
       notifyListeners();
     }
@@ -1283,6 +1294,16 @@ class SalesProvider extends ChangeNotifier {
       return null;
     }
 
+    // Backstop: the checkout buttons check this first. Nothing has
+    // been written yet, so blocking here leaves no partial sale.
+    final stockConflict = checkoutStockConflict();
+    if (stockConflict != null) {
+      await mainLocalLog(
+        'Checkout Blocked, Stock Conflict: $stockConflict',
+      );
+      return null;
+    }
+
     final createdAt = currentCart().returnDate();
     final breakdown = PaymentBreakdown(payments);
 
@@ -1454,15 +1475,17 @@ class SalesProvider extends ChangeNotifier {
               } else {
                 mainItem = cartItem.item.copyWith();
               }
-              if (((mainItem.getActualQuantity() ?? 0) >
-                      0) &&
-                  (cartItem.getItem()?.isManaged ??
-                      false)) {
+              if (shouldDeductStock(
+                isManaged:
+                    cartItem.getItem()?.isManaged ?? false,
+                inProductList: products.isNotEmpty,
+                stock: mainItem.getActualQuantity() ?? 0,
+              )) {
                 // Stock math is in area for 2D items; store the
                 // result back as a sheet count.
                 mainItem.quantity = mainItem
                     .quantityAfterRemoving(
-                      cartItem.getRealQuantity(),
+                      cartItem.getStockQuantity(),
                     );
                 ItemHistory itemHistory = ItemHistory(
                   event: ItemHistoryEventClass.sold,
@@ -1502,7 +1525,7 @@ class SalesProvider extends ChangeNotifier {
                               (mainItem
                                       .getActualQuantity() ??
                                   0) +
-                              cartItem.getRealQuantity(),
+                              cartItem.getStockQuantity(),
                         )),
                   ),
                 );
@@ -1524,7 +1547,7 @@ class SalesProvider extends ChangeNotifier {
                   product: mainItem,
                   isQuantityUpdate: true,
                   quantityChange:
-                      cartItem.getRealQuantity() /
+                      cartItem.getStockQuantity() /
                       mainItem.dimensionArea(),
                   isMultipleUpdate: true,
                   isIncrement: false,
@@ -2028,15 +2051,17 @@ class SalesProvider extends ChangeNotifier {
               } else {
                 mainItem = cartItem.item.copyWith();
               }
-              if (((mainItem.getActualQuantity() ?? 0) >
-                      0) &&
-                  (cartItem.getItem()?.isManaged ??
-                      false)) {
+              if (shouldDeductStock(
+                isManaged:
+                    cartItem.getItem()?.isManaged ?? false,
+                inProductList: products.isNotEmpty,
+                stock: mainItem.getActualQuantity() ?? 0,
+              )) {
                 // Stock math is in area for 2D items; store the
                 // result back as a sheet count.
                 mainItem.quantity = mainItem
                     .quantityAfterRemoving(
-                      cartItem.getRealQuantity(),
+                      cartItem.getStockQuantity(),
                     );
                 ItemHistory itemHistory = ItemHistory(
                   event: ItemHistoryEventClass.sold,
@@ -2076,7 +2101,7 @@ class SalesProvider extends ChangeNotifier {
                               (mainItem
                                       .getActualQuantity() ??
                                   0) +
-                              cartItem.getRealQuantity(),
+                              cartItem.getStockQuantity(),
                         )),
                   ),
                 );
@@ -2098,7 +2123,7 @@ class SalesProvider extends ChangeNotifier {
                   product: mainItem,
                   isQuantityUpdate: true,
                   quantityChange:
-                      cartItem.getRealQuantity() /
+                      cartItem.getStockQuantity() /
                       mainItem.dimensionArea(),
                   isMultipleUpdate: true,
                   isIncrement: false,
@@ -2862,6 +2887,13 @@ class SalesProvider extends ChangeNotifier {
       double tempTotalDiscount = 0;
       for (var item in currentCart().getCartItems()) {
         if (item.getItem()?.discount != null &&
+            item.customPrice == null &&
+            item.item.quantityType == 2) {
+          // 2D lines are priced per area, as discountCost uses.
+          tempTotalDiscount +=
+              item.totalCost() *
+              ((item.getItem()?.discount ?? 0) / 100);
+        } else if (item.getItem()?.discount != null &&
             item.customPrice == null) {
           double discountPerUnit =
               (item
@@ -3184,7 +3216,7 @@ class SalesProvider extends ChangeNotifier {
 
           if (cartItemUuid == itemUuid) {
             // if (newCartItem.useGroupQuantity == true) {
-            totalInAllCarts += cartItem.getRealQuantity();
+            totalInAllCarts += cartItem.getStockQuantity();
             // } else {
             //   totalInAllCarts += cartItem.quantity;
             // }
@@ -3233,7 +3265,7 @@ class SalesProvider extends ChangeNotifier {
         for (final cartItem in cart.getCartItems().where(
           (item) => item.getItem()?.uuid == product.uuid,
         )) {
-          totalInAllCarts += cartItem.getRealQuantity();
+          totalInAllCarts += cartItem.getStockQuantity();
         }
       }
     }
@@ -3310,6 +3342,93 @@ class SalesProvider extends ChangeNotifier {
   //     return true;
   //   }
   // }
+
+  // Checked right before checkout: stock can change after lines
+  // were added (sync, manual edits). Returns a message naming the
+  // first managed item whose lines (with wastage) need more than
+  // is in stock, or null when the cart can be checked out.
+  String? checkoutStockConflict() {
+    final cart = currentCart();
+    if (isStockFreeCartType(cart.cartItemTypeIndex)) {
+      return null;
+    }
+
+    // Stock each managed item needs, in base units (area for 2D).
+    double quantityByItem(
+      Iterable<TempCartItem> lines,
+      String itemUuid,
+    ) {
+      double total = 0;
+      for (final line in lines) {
+        if (line.isVoid == true) continue;
+        if ((line.itemUuid ?? line.item.uuid) != itemUuid) continue;
+        total += line.getStockQuantity();
+      }
+      return total;
+    }
+
+    final isEdit =
+        cart.receiptUuidEdit != null ||
+        cart.invoiceUuidEdit != null;
+    final checked = <String>{};
+
+    for (final line in cart.getCartItems()) {
+      final itemUuid = line.itemUuid ?? line.item.uuid;
+      if (itemUuid == null || !checked.add(itemUuid)) continue;
+
+      final product = returnData().productListMain
+          .cast<TempProductClass?>()
+          .firstWhere(
+            (item) => item?.uuid == itemUuid,
+            orElse: () => null,
+          );
+      if (product == null || !product.isManaged) continue;
+
+      final required = quantityByItem(
+        cart.getCartItems(),
+        itemUuid,
+      );
+      // Editing restores the old lines before deducting the new.
+      final available =
+          (product.getActualQuantity() ?? 0) +
+          (isEdit
+              ? quantityByItem(
+                cart.tempCartItems ?? [],
+                itemUuid,
+              )
+              : 0);
+
+      // Tolerance for float noise when summing several lines.
+      if (required > available + 1e-9) {
+        final unit = product.getPrimaryUnit();
+        String inUnit(double quantity) {
+          final value = unit.getQuantityEquivDivided(
+            index: 1,
+            newQuantity: quantity < 0 ? 0 : quantity,
+            product: product,
+          );
+          return '${formatDimension(value)} ${unit.name}';
+        }
+
+        return 'Not enough stock for ${product.name}. This sale '
+            'needs ${inUnit(required)} but only '
+            '${inUnit(available)} is available. Reduce the '
+            'quantity or remove the item before checking out.';
+      }
+    }
+    return null;
+  }
+
+  // Checkout deducts managed stock items even when their stock is
+  // 0. Items not in the stock list (custom items) keep the old
+  // rule of deducting only when they carry stock.
+  bool shouldDeductStock({
+    required bool isManaged,
+    required bool inProductList,
+    required double stock,
+  }) {
+    return isManaged && (inProductList || stock > 0);
+  }
 
   bool canAddProductToCart({
     required TempCartItem newCartItem,
@@ -3403,7 +3522,8 @@ class SalesProvider extends ChangeNotifier {
     }
   }
 
-  // Same item, and for 2D items the same width × height.
+  // Same item, and for 2D items the same width × height and
+  // wastage.
   bool isSameCartLine(TempCartItem a, TempCartItem b) {
     final sameProduct =
         (a.itemUuid ?? a.item.uuid) ==
@@ -3412,7 +3532,9 @@ class SalesProvider extends ChangeNotifier {
     if (b.item.quantityType == 2) {
       return a.item.quantityType == 2 &&
           a.widthDimension == b.widthDimension &&
-          a.heightDimension == b.heightDimension;
+          a.heightDimension == b.heightDimension &&
+          a.wastageAmount == b.wastageAmount &&
+          a.isPercentageWastage == b.isPercentageWastage;
     }
     return true;
   }
@@ -3462,14 +3584,7 @@ class SalesProvider extends ChangeNotifier {
     for (var newItem in tempCartItems) {
       if (canAddProductToCart(
         newCartItem: newItem,
-        quantityToAdd: newItem
-            .getSelectedUnit()
-            .getQuantityEquivMultiplied(
-              index: 1,
-              newQuantity: newItem.quantity,
-              customWidth: newItem.widthDimension,
-              customHeight: newItem.heightDimension,
-            ),
+        quantityToAdd: newItem.getStockQuantity(),
         isEdit: false,
         // isEdit: false,
         // useGroupUnit: newItem.useGroupQuantity ?? false,
@@ -3532,14 +3647,7 @@ class SalesProvider extends ChangeNotifier {
     if (canAddProductToCart(
       isEdit: false,
       newCartItem: newItem,
-      quantityToAdd: newItem
-          .getSelectedUnit()
-          .getQuantityEquivMultiplied(
-            index: 1,
-            newQuantity: newItem.quantity,
-            customWidth: newItem.widthDimension,
-            customHeight: newItem.heightDimension,
-          ),
+      quantityToAdd: newItem.getStockQuantity(),
     )) {
       String result = '';
       var items = currentCart().getCartItems().where((
@@ -3619,6 +3727,11 @@ class SalesProvider extends ChangeNotifier {
               newItem.useWholeSalePrice;
           item.useGroupQuantity = newItem.useGroupQuantity;
           item.uuid = newItem.uuid;
+          item.wastageAmount = newItem.wastageAmount;
+          item.isPercentageWastage =
+              newItem.isPercentageWastage;
+          item.manageSalesWastage =
+              newItem.manageSalesWastage;
         }
         await returnMultiDisplayProvider().updateWindow(
           cartClass: AltCartClass(
@@ -3708,17 +3821,19 @@ class SalesProvider extends ChangeNotifier {
     required bool setTotalPrice,
     required bool setCustomPrice,
   }) async {
+    final newArea = cartItem
+        .getSelectedUnit()
+        .getQuantityEquivMultiplied(
+          index: 1,
+          newQuantity: number,
+          customWidth: cartItem.widthDimension,
+          customHeight: cartItem.heightDimension,
+        );
     if (canAddProductToCart(
       isEdit: true,
       newCartItem: cartItem,
-      quantityToAdd: cartItem
-          .getSelectedUnit()
-          .getQuantityEquivMultiplied(
-            index: 1,
-            newQuantity: number,
-            customWidth: cartItem.widthDimension,
-            customHeight: cartItem.heightDimension,
-          ),
+      quantityToAdd:
+          newArea + cartItem.wastageArea(baseArea: newArea),
     )) {
       if (returnShopProvider().userShop()!.trackCart ==
               true &&
@@ -3747,6 +3862,10 @@ class SalesProvider extends ChangeNotifier {
             widthDimension: originalLine.widthDimension,
             heightDimension: originalLine.heightDimension,
           );
+          deletedItem.wastageAmount =
+              originalLine.wastageAmount;
+          deletedItem.isPercentageWastage =
+              originalLine.isPercentageWastage;
           currentCart().cartItems.add(deletedItem);
         }
       }
@@ -3986,14 +4105,21 @@ class SalesProvider extends ChangeNotifier {
           record.setTotalPrice == true) {
         tempRev = record.originalCost ?? 0;
       } else {
+        // originalCost was billed on the line's base quantity
+        // (area for 2D, after unit conversion) + wastage.
         tempRev =
             (record.originalCost ?? 0) /
-            (record.quantity * record.dimensionArea());
+            (record.getActualQuantity() + record.wastageArea());
       }
     }
     return TempCartItem(
       isPercentageWastage: record.isPercentageWastage,
-      wastageAmount: record.wastageAmount,
+      // Lines saved before wastage was applied keep none, so
+      // they aren't re-priced or re-deducted.
+      wastageAmount:
+          record.manageSalesWastage == true
+              ? record.wastageAmount
+              : null,
       manageSalesWastage: record.manageSalesWastage,
       heightDimension: record.heightDimension,
       quantityType: record.quantityType,

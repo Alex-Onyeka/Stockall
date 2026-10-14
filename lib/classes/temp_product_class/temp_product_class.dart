@@ -269,7 +269,7 @@ class TempProductClass {
           (json['height_dimension'] as num?)?.toDouble(),
       quantityType: json['quantity_type'] as int? ?? 1,
       manageSalesWastage:
-          json['manage_sales_watage'] as bool? ?? true,
+          json['manage_sales_wastage'] as bool? ?? false,
     );
   }
 

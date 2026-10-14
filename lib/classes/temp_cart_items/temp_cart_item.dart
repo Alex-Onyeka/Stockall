@@ -114,6 +114,49 @@ class TempCartItem extends HiveObject {
     required this.wastageAmount,
   });
 
+  // A line for [product] added without the sale dialog (barcode
+  // scans), with the fields the dialog path sets. 2D lines take
+  // the item's full size; no wastage is entered.
+  factory TempCartItem.forProduct(
+    TempProductClass product, {
+    double quantity = 1,
+  }) {
+    final is2D = product.quantityType == 2;
+    return TempCartItem(
+      item: product,
+      itemUuid: product.uuid,
+      quantity: quantity,
+      discount: product.discount,
+      setCustomPrice: false,
+      addToStock: false,
+      setTotalPrice: false,
+      useWholeSalePrice: false,
+      useGroupQuantity: false,
+      qttyPerGroup: product.qttyPerGroup,
+      isVoid: false,
+      uuid: uuidGen(),
+      unitUuid:
+          product.unitsList
+              ?.where((unit) => unit.isPrimary)
+              .firstOrNull
+              ?.uuid,
+      priceUuid:
+          product.pricesList
+              ?.where((price) => price.isPrimary)
+              .firstOrNull
+              ?.uuid,
+      widthDimension: is2D ? product.widthDimension : null,
+      heightDimension: is2D ? product.heightDimension : null,
+      quantityType: product.quantityType,
+      manageSalesWastage:
+          is2D && product.manageSalesWastage == true
+              ? true
+              : null,
+      isPercentageWastage: null,
+      wastageAmount: null,
+    );
+  }
+
   factory TempCartItem.fromJson(Map<String, dynamic> json) {
     return TempCartItem(
       item: TempProductClass.fromJson(json['item']),
@@ -430,27 +473,14 @@ class TempCartItem extends HiveObject {
       if (setTotalPrice) {
         return customPrice!;
       } else {
-        return customPrice! *
-            getSelectedUnit().getQuantityEquivMultiplied(
-              index: 1,
-              product: item,
-              newQuantity: quantity,
-              customWidth: widthDimension,
-              customHeight: heightDimension,
-            );
+        return customPrice! * getStockQuantity();
       }
     } else {
       final selectedPrice = getSelectedPrice();
       if ((selectedPrice.priceType ?? 1) == 1 ||
           item.quantityType == 2) {
         return selectedPrice.priceValue *
-            getSelectedUnit().getQuantityEquivMultiplied(
-              index: 1,
-              product: item,
-              newQuantity: quantity,
-              customWidth: widthDimension,
-              customHeight: heightDimension,
-            );
+            getStockQuantity();
       } else {
         return selectedPrice.priceValue * quantity;
       }
@@ -480,14 +510,7 @@ class TempCartItem extends HiveObject {
   double? costPrice() {
     return (getItem()?.costPrice ?? 0) == 0
         ? null
-        : (getItem()?.costPrice ?? 0) *
-            getSelectedUnit().getQuantityEquivMultiplied(
-              index: 1,
-              product: item,
-              newQuantity: quantity,
-              customWidth: widthDimension,
-              customHeight: heightDimension,
-            );
+        : (getItem()?.costPrice ?? 0) * getStockQuantity();
   }
 
   double getItemDiscountedRemainingCost() {
@@ -498,13 +521,7 @@ class TempCartItem extends HiveObject {
                       0) *
                   (getItem()?.discount ?? 0) /
                   100)) *
-          getSelectedUnit().getQuantityEquivMultiplied(
-            index: 1,
-            product: item,
-            newQuantity: quantity,
-            customWidth: widthDimension,
-            customHeight: heightDimension,
-          ));
+          getStockQuantity());
       // }
     } else {
       return totalCost();
@@ -518,6 +535,72 @@ class TempCartItem extends HiveObject {
       newQuantity: quantity,
       customWidth: widthDimension,
       customHeight: heightDimension,
+    );
+  }
+
+  // Wastage area on a 2D line, from [baseArea] (the line's
+  // area by default). 0 for other items.
+  double wastageArea({double? baseArea}) {
+    if (item.quantityType != 2) return 0;
+    return computeWastageArea(
+      baseArea: baseArea ?? getRealQuantity(),
+      amount: wastageAmount,
+      isPercentage: isPercentageWastage,
+    );
+  }
+
+  // Area taken from stock and billed: line area + wastage.
+  double getStockQuantity() {
+    return getRealQuantity() + wastageArea();
+  }
+
+  // A separate copy of this line with the sale dialog's pending
+  // values, so its totalCost() is what the line will cost once
+  // added. This line and its item are left untouched.
+  TempCartItem previewWith({
+    required double quantity,
+    required String? unitUuid,
+    required String? priceUuid,
+    required List<ProductUnitsClass> units,
+    required List<ProductPricesClass> prices,
+    required double? width,
+    required double? height,
+    required double? customPrice,
+    required bool setTotalPrice,
+    required double? wastageAmount,
+    required bool? isPercentageWastage,
+  }) {
+    // Same default as SalesProvider.applyDefaultDimensions.
+    final useItemSize =
+        item.quantityType == 2 && width == null && height == null;
+    return TempCartItem(
+      item: item.copyWith(
+        unitsList: units.map((unit) => unit.copyWith()).toList(),
+        pricesList:
+            prices.map((price) => price.copyWith()).toList(),
+      ),
+      itemUuid: itemUuid,
+      quantity: quantity,
+      discount: discount,
+      fixedDiscount: fixedDiscount,
+      customPrice: customPrice,
+      setCustomPrice: customPrice != null,
+      addToStock: addToStock,
+      setTotalPrice: setTotalPrice,
+      useWholeSalePrice: useWholeSalePrice,
+      useGroupQuantity: useGroupQuantity,
+      qttyPerGroup: qttyPerGroup,
+      isVoid: isVoid,
+      uuid: uuid,
+      unitUuid: unitUuid,
+      priceUuid: priceUuid,
+      widthDimension: useItemSize ? item.widthDimension : width,
+      heightDimension:
+          useItemSize ? item.heightDimension : height,
+      quantityType: quantityType,
+      manageSalesWastage: manageSalesWastage,
+      isPercentageWastage: isPercentageWastage,
+      wastageAmount: wastageAmount,
     );
   }
 

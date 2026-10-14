@@ -821,14 +821,21 @@ class InvoicesProvider extends ChangeNotifier {
           record.setTotalPrice == true) {
         tempRev = record.originalCost ?? 0;
       } else {
+        // originalCost was billed on the line's base quantity
+        // (area for 2D, after unit conversion) + wastage.
         tempRev =
             (record.originalCost ?? 0) /
-            (record.quantity * record.dimensionArea());
+            (record.getActualQuantity() + record.wastageArea());
       }
     }
     return TempCartItem(
       isPercentageWastage: record.isPercentageWastage,
-      wastageAmount: record.wastageAmount,
+      // Lines saved before wastage was applied keep none, so
+      // they aren't re-priced or re-deducted.
+      wastageAmount:
+          record.manageSalesWastage == true
+              ? record.wastageAmount
+              : null,
       manageSalesWastage: record.manageSalesWastage,
       heightDimension: record.heightDimension,
       quantityType: record.quantityType,

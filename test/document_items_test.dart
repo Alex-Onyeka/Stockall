@@ -141,6 +141,9 @@ void main() {
       widthDimension: 2,
       heightDimension: 1.5,
       quantityType: 2,
+      manageSalesWastage: null,
+      isPercentageWastage: null,
+      wastageAmount: null,
     );
   }
 
@@ -564,6 +567,7 @@ void main() {
       pricesList: [sodaPrice],
       widthDimension: null,
       heightDimension: null,
+      manageSalesWastage: false,
     );
 
     // 4 × 3 sheet, ₦100 per square unit.
@@ -591,6 +595,7 @@ void main() {
       widthDimension: 4,
       heightDimension: 3,
       quantityType: 2,
+      manageSalesWastage: false,
     );
 
     late TempCartItem sodaLine;
@@ -671,6 +676,9 @@ void main() {
         widthDimension: null,
         heightDimension: null,
         quantityType: 1,
+        manageSalesWastage: null,
+        isPercentageWastage: null,
+        wastageAmount: null,
       );
       sheetLine = TempCartItem(
         item: sheet(),
@@ -689,6 +697,9 @@ void main() {
         widthDimension: 2,
         heightDimension: 1.5,
         quantityType: 2,
+        manageSalesWastage: null,
+        isPercentageWastage: null,
+        wastageAmount: null,
       );
     });
 
