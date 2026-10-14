@@ -1591,7 +1591,7 @@ class ReceiptsProvider extends ChangeNotifier {
     grouped.forEach((uuid, items) {
       double totalQtty = items.fold(
         0,
-        (sum, e) => sum + e.quantity,
+        (sum, e) => sum + e.displayQuantity(),
       );
 
       double totalCost = items.fold(
@@ -1737,7 +1737,7 @@ class ReceiptsProvider extends ChangeNotifier {
     grouped.forEach((uuid, items) {
       double totalQtty = items.fold(
         0,
-        (sum, e) => sum + e.quantity,
+        (sum, e) => sum + e.displayQuantity(),
       );
 
       double totalCost = items.fold(
@@ -1874,7 +1874,7 @@ class ReceiptsProvider extends ChangeNotifier {
     grouped.forEach((uuid, items) {
       double totalQtty = items.fold(
         0,
-        (sum, e) => sum + e.quantity,
+        (sum, e) => sum + e.displayQuantity(),
       );
 
       double totalCost = items.fold(

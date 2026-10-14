@@ -129,6 +129,20 @@ class TempProductSaleRecord {
   @HiveField(39)
   int? quantityType;
 
+  @HiveField(40)
+  bool? manageSalesWastage;
+
+  @HiveField(41)
+  bool? isPercentageWastage;
+
+  @HiveField(42)
+  double? wastageAmount;
+
+  // Unit the fixed wastage amount was entered in. Null on lines
+  // from before wastage units: their fixed amount is area.
+  @HiveField(43)
+  String? wastageUnitUuid;
+
   TempProductSaleRecord({
     this.productRecordId,
     required this.createdAt,
@@ -170,6 +184,10 @@ class TempProductSaleRecord {
     required this.widthDimension,
     required this.heightDimension,
     required this.quantityType,
+    required this.manageSalesWastage,
+    required this.isPercentageWastage,
+    required this.wastageAmount,
+    this.wastageUnitUuid,
   });
 
   factory TempProductSaleRecord.fromJson(
@@ -237,6 +255,13 @@ class TempProductSaleRecord {
       heightDimension:
           (json['height_dimension'] as num?)?.toDouble(),
       quantityType: json['quantity_type'] as int?,
+      manageSalesWastage:
+          json['manage_sales_wastage'] as bool?,
+      isPercentageWastage:
+          json['is_percentage_wastage'] as bool?,
+      wastageAmount:
+          (json['wastage_amount'] as num?)?.toDouble(),
+      wastageUnitUuid: json['wastage_unit_uuid'] as String?,
     );
   }
 
@@ -286,6 +311,10 @@ class TempProductSaleRecord {
       'width_dimension': widthDimension,
       'height_dimension': heightDimension,
       'quantity_type': quantityType,
+      'manage_sales_wastage': manageSalesWastage,
+      'is_percentage_wastage': isPercentageWastage,
+      'wastage_amount': wastageAmount,
+      'wastage_unit_uuid': wastageUnitUuid,
     };
   }
 
@@ -365,6 +394,10 @@ class TempProductSaleRecord {
     double? widthDimension,
     double? heightDimension,
     int? quantityType,
+    bool? manageSalesWastage,
+    bool? isPercentageWastage,
+    double? wastageAmount,
+    String? wastageUnitUuid,
   }) {
     return TempProductSaleRecord(
       productRecordId:
@@ -411,6 +444,13 @@ class TempProductSaleRecord {
       heightDimension:
           heightDimension ?? this.heightDimension,
       quantityType: quantityType ?? this.quantityType,
+      manageSalesWastage:
+          manageSalesWastage ?? this.manageSalesWastage,
+      isPercentageWastage:
+          isPercentageWastage ?? this.isPercentageWastage,
+      wastageAmount: wastageAmount ?? this.wastageAmount,
+      wastageUnitUuid:
+          wastageUnitUuid ?? this.wastageUnitUuid,
     );
   }
 
@@ -689,12 +729,110 @@ class TempProductSaleRecord {
             ProductUnitsClass.areaUnit) {
       return quantity * conversion;
     }
-    if (quantityType == 2 &&
-        selectedUnit.dimensionType ==
-            ProductUnitsClass.sheetUnit) {
+    // Sheet units, and units without a dimension type, count
+    // pieces of the line's size, as the cart does.
+    if (quantityType == 2) {
       return quantity * conversion * dimensionArea();
     }
     return quantity * conversion;
+  }
+
+  // Wastage area this line took from stock. Only lines saved
+  // with manageSalesWastage == true applied it; older lines
+  // (null) never did, so they count as 0.
+  double wastageArea() {
+    if (quantityType != 2 || manageSalesWastage != true) {
+      return 0;
+    }
+    return computeWastageArea(
+      baseArea: getActualQuantity(),
+      amount:
+          isPercentageWastage == true ||
+                  wastageAmount == null
+              ? wastageAmount
+              : wastageAmount! * wastageAreaPerUnit(),
+      isPercentage: isPercentageWastage,
+    );
+  }
+
+  // Area one unit of fixed wastage stands for, as the cart line
+  // converts it (piece units at the line's size). 1 without a
+  // stored unit: older lines kept the amount in area.
+  double wastageAreaPerUnit() {
+    if (wastageUnitUuid == null) return 1;
+    final unit =
+        getUnitsList()
+            .where((unit) => unit.uuid == wastageUnitUuid)
+            .firstOrNull;
+    if (unit == null) return 1;
+    if (quantityType == 2 &&
+        unit.dimensionType == ProductUnitsClass.areaUnit) {
+      return unit.conversion;
+    }
+    if (quantityType == 2) {
+      return unit.conversion * dimensionArea();
+    }
+    return unit.conversion;
+  }
+
+  // Quantity this line took from stock, in base units (area for
+  // 2D): the sale quantity + wastage. Delete restores this.
+  double getStockQuantity() {
+    return getActualQuantity() + wastageArea();
+  }
+
+  // getStockQuantity() in the sale unit, e.g. 1.1 slab. Equal to
+  // quantity without wastage (and for 1D lines).
+  double displayQuantity() {
+    final wastage = wastageArea();
+    if (wastage <= 0) return quantity;
+    final base = getActualQuantity();
+    if (base <= 0) return quantity;
+    return quantity + quantity * wastage / base;
+  }
+
+  double wastageInSaleUnit() =>
+      displayQuantity() - quantity;
+
+  // "incl. 0.1 Slab wastage", or '' without wastage.
+  String wastageNote() {
+    final wastage = wastageInSaleUnit();
+    if (wastage <= 1e-9) return '';
+    final unitName = getSelectedUnit().name;
+    return 'incl. ${formatDimension(wastage)} '
+        '${unitName == 'Others' ? 'Unit(s)' : unitName} wastage';
+  }
+
+  // Quantity and wastage for item-history text: unchanged
+  // ("2.0", "") without wastage, "1.1" and " (incl. 0.1 wastage)"
+  // with it.
+  String quantityText() {
+    return wastageInSaleUnit() <= 1e-9
+        ? '$quantity'
+        : formatDimension(displayQuantity());
+  }
+
+  String historyWastageText() {
+    final wastage = wastageInSaleUnit();
+    return wastage <= 1e-9
+        ? ''
+        : ' (incl. ${formatDimension(wastage)} wastage)';
+  }
+
+  // Custom totals don't change with wastage, so a "per 1" price
+  // divides by the sale quantity; other lines by the quantity
+  // with wastage. Sale unit and base unit versions.
+  bool get _isCustomTotal =>
+      customPriceSet && setTotalPrice == true;
+
+  double priceQuantity() {
+    return _isCustomTotal ? quantity : displayQuantity();
+  }
+
+  double priceBaseQuantity() {
+    return _isCustomTotal
+        ? getActualQuantity()
+        : getStockQuantity();
   }
 
   // Width × height this line was sold at, 1 when not set.
@@ -708,9 +846,10 @@ class TempProductSaleRecord {
   }
 
   String dimensionsLabel() {
-    return formatDimensionsLabel(
-      widthDimension,
-      heightDimension,
-    );
+    // return formatDimensionsLabel(
+    //   widthDimension,
+    //   heightDimension,
+    // );
+    return '';
   }
 }

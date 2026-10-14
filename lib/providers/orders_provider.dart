@@ -603,6 +603,9 @@ class OrdersProvider extends ChangeNotifier {
       }
     }
     return TempCartItem(
+      isPercentageWastage: record.isPercentageWastage,
+      wastageAmount: record.wastageAmount,
+      manageSalesWastage: record.manageSalesWastage,
       heightDimension: record.heightDimension,
       quantityType: record.quantityType,
       widthDimension: record.widthDimension,
@@ -674,6 +677,7 @@ class OrdersProvider extends ChangeNotifier {
                     record.quantity;
 
         TempProductClass productNew = TempProductClass(
+          manageSalesWastage: record.manageSalesWastage,
           heightDimension: record.heightDimension,
           quantityType: record.quantityType,
           widthDimension: record.widthDimension,
@@ -976,6 +980,10 @@ class OrdersProvider extends ChangeNotifier {
               'Sales Record about to be Created',
             );
             return TempProductSaleRecord(
+              isPercentageWastage:
+                  record.isPercentageWastage,
+              wastageAmount: record.wastageAmount,
+              manageSalesWastage: record.manageSalesWastage,
               heightDimension: record.heightDimension,
               quantityType: record.quantityType,
               widthDimension: record.widthDimension,

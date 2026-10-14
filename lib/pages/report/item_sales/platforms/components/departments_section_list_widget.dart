@@ -147,7 +147,7 @@ class DepartmentsSectionListWidget extends StatelessWidget {
                                                                   fontSize:
                                                                       theme.mobileTexts.b3.fontSize,
                                                                 ),
-                                                                "${[formatLargeNumber(record.quantity.toString())]} - ",
+                                                                "${[formatLargeNumber(record.displayQuantity().toString())]} - ",
                                                               ),
                                                             ),
                                                           ],
@@ -584,7 +584,7 @@ class DepartmentsSectionListWidget extends StatelessWidget {
                                                                 fontSize:
                                                                     theme.mobileTexts.b3.fontSize,
                                                               ),
-                                                              "${[formatLargeNumber(record.quantity.toString())]} - ",
+                                                              "${[formatLargeNumber(record.displayQuantity().toString())]} - ",
                                                             ),
                                                           ),
                                                         ],

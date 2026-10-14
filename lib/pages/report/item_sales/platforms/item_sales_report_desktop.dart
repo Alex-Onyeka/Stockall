@@ -78,7 +78,7 @@ class _ItemSalesReportDesktopState
           b.productName.toLowerCase(),
         );
       } else if (sortIndex == 2) {
-        return b.quantity.compareTo(a.quantity);
+        return b.displayQuantity().compareTo(a.displayQuantity());
       } else if (sortIndex == 3) {
         return b.revenue.compareTo(a.revenue);
       } else if (sortIndex == 4) {

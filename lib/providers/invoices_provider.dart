@@ -509,6 +509,11 @@ class InvoicesProvider extends ChangeNotifier {
               'Sales Record about to be Created',
             );
             return TempProductSaleRecord(
+              isPercentageWastage:
+                  record.isPercentageWastage,
+              wastageAmount: record.wastageAmount,
+              wastageUnitUuid: record.wastageUnitUuid,
+              manageSalesWastage: record.manageSalesWastage,
               heightDimension: record.heightDimension,
               quantityType: record.quantityType,
               widthDimension: record.widthDimension,
@@ -817,12 +822,26 @@ class InvoicesProvider extends ChangeNotifier {
           record.setTotalPrice == true) {
         tempRev = record.originalCost ?? 0;
       } else {
+        // originalCost was billed on the line's base quantity
+        // (area for 2D, after unit conversion) + wastage.
         tempRev =
             (record.originalCost ?? 0) /
-            (record.quantity * record.dimensionArea());
+            record.getStockQuantity();
       }
     }
     return TempCartItem(
+      isPercentageWastage: record.isPercentageWastage,
+      // Lines saved before wastage was applied keep none, so
+      // they aren't re-priced or re-deducted.
+      wastageAmount:
+          record.manageSalesWastage == true
+              ? record.wastageAmount
+              : null,
+      wastageUnitUuid:
+          record.manageSalesWastage == true
+              ? record.wastageUnitUuid
+              : null,
+      manageSalesWastage: record.manageSalesWastage,
       heightDimension: record.heightDimension,
       quantityType: record.quantityType,
       widthDimension: record.widthDimension,
@@ -892,6 +911,7 @@ class InvoicesProvider extends ChangeNotifier {
                     record.quantity;
 
         TempProductClass productNew = TempProductClass(
+          manageSalesWastage: record.manageSalesWastage,
           setCustomPrice: record.customPriceSet,
           isManaged: record.isProductManaged ?? false,
           heightDimension: record.heightDimension,

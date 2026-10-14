@@ -406,18 +406,11 @@ void addItemToCartFromCartItemList({
   required TextEditingController priceController,
 }) {
   var theme = returnTheme(context, listen: false);
-  TempCartItem? cartItemTemp;
-  var items = returnSalesProvider()
-      .currentCart()
-      .cartItems
-      .where(
-        (item) =>
-            (item.itemUuid ?? item.item.uuid) ==
-            product.uuid,
+  TempCartItem? cartItemTemp = returnSalesProvider()
+      .existingLineForAdd(
+        returnSalesProvider().currentCart(),
+        product,
       );
-  if (items.isNotEmpty) {
-    cartItemTemp = items.first;
-  }
 
   if (!product.canSelectForCart()) {
     showDialog(
@@ -456,6 +449,9 @@ void addItemToCartFromCartItemList({
       searchController: searchController,
       theme: theme,
       cartItemTemp: TempCartItem(
+        isPercentageWastage: null,
+        wastageAmount: null,
+        manageSalesWastage: null,
         heightDimension: null,
         widthDimension: null,
         quantityType: product.quantityType,

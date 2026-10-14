@@ -301,6 +301,10 @@ class DraftsProvider extends ChangeNotifier {
     return cartItems.map((cartItem) {
       final product = cartItem.getItem() ?? cartItem.item;
       return DraftItems(
+        isPercentageWastage: cartItem.isPercentageWastage,
+        wastageAmount: cartItem.wastageAmount,
+        wastageUnitUuid: cartItem.wastageUnitUuid,
+        manageSalesWastage: cartItem.manageSalesWastage,
         heightDimension: cartItem.heightDimension,
         quantityType: cartItem.quantityType,
         widthDimension: cartItem.widthDimension,
@@ -340,6 +344,10 @@ class DraftsProvider extends ChangeNotifier {
     required TempProductClass product,
   }) {
     return TempCartItem(
+      isPercentageWastage: record.isPercentageWastage,
+      wastageAmount: record.wastageAmount,
+      wastageUnitUuid: record.wastageUnitUuid,
+      manageSalesWastage: record.manageSalesWastage,
       heightDimension: record.heightDimension,
       quantityType: record.quantityType,
       widthDimension: record.widthDimension,
@@ -383,6 +391,7 @@ class DraftsProvider extends ChangeNotifier {
         // Custom item, or the product was deleted since the
         // draft was saved: rebuild it from the snapshot.
         TempProductClass productNew = TempProductClass(
+          manageSalesWastage: record.manageSalesWastage,
           heightDimension: record.heightDimension,
           quantityType: record.quantityType,
           widthDimension: record.widthDimension,

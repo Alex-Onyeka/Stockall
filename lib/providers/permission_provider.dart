@@ -20,6 +20,11 @@ class PermissionProvider extends ChangeNotifier {
     for (var perm in permissionsCache) {
       perm.access.sort();
     }
+    permissionsCache.sort(
+      (a, b) => (a.permitNumber ?? 0).compareTo(
+        b.permitNumber ?? 0,
+      ),
+    );
     return permissionsCache;
   }
 

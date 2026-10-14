@@ -145,8 +145,12 @@ class ProductRecordFunc {
             var product = oldProduct.copyWith();
             final oldQuantity =
                 oldProduct.getActualQuantity() ?? 0;
+            // Delivery receipts never deducted wastage.
+            final withWastage = receipt.orderUuid == null;
             final quantityChange =
-                record.getActualQuantity();
+                withWastage
+                    ? record.getStockQuantity()
+                    : record.getActualQuantity();
             final restoredArea =
                 oldQuantity + quantityChange;
             product.quantity =
@@ -161,8 +165,13 @@ class ProductRecordFunc {
               shopId: shopId(),
               title: 'Item Returned',
               desc:
-                  '${record.quantity} ${record.unit} of This Item was Returned. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}.',
-              quantityChange: record.quantity,
+                  withWastage
+                      ? '${record.quantityText()} ${record.unit}${record.historyWastageText()} of This Item was Returned. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}.'
+                      : '${record.quantity} ${record.unit} of This Item was Returned. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}.',
+              quantityChange:
+                  withWastage
+                      ? record.displayQuantity()
+                      : record.quantity,
               newValue: formatLargeNumberDouble(
                 product
                     .getProductUnit()
@@ -195,9 +204,9 @@ class ProductRecordFunc {
               isQuantityUpdate: true,
               quantityChange:
                   product.quantityType == 2
-                      ? record.getActualQuantity() /
+                      ? quantityChange /
                           product.dimensionArea()
-                      : record.getActualQuantity(),
+                      : quantityChange,
               isIncrement: true,
             );
           }
@@ -351,8 +360,7 @@ class ProductRecordFunc {
             var product = oldProduct.copyWith();
             final oldQuantity =
                 oldProduct.getActualQuantity() ?? 0;
-            final quantityChange =
-                record.getActualQuantity();
+            final quantityChange = record.getStockQuantity();
             final restoredArea =
                 oldQuantity + quantityChange;
             product.quantity =
@@ -367,8 +375,8 @@ class ProductRecordFunc {
               shopId: shopId(),
               title: 'Item Returned',
               desc:
-                  '${record.quantity} ${record.unit} of This Item was Returned. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}.',
-              quantityChange: record.quantity,
+                  '${record.quantityText()} ${record.unit}${record.historyWastageText()} of This Item was Returned. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}.',
+              quantityChange: record.displayQuantity(),
               newValue: formatLargeNumberDouble(
                 product
                     .getProductUnit()
@@ -401,9 +409,9 @@ class ProductRecordFunc {
               isQuantityUpdate: true,
               quantityChange:
                   product.quantityType == 2
-                      ? record.getActualQuantity() /
+                      ? quantityChange /
                           product.dimensionArea()
-                      : record.getActualQuantity(),
+                      : quantityChange,
               isIncrement: true,
             );
           }

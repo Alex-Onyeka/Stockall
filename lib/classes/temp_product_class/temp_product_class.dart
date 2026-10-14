@@ -130,6 +130,9 @@ class TempProductClass {
   @HiveField(39)
   int? quantityType;
 
+  @HiveField(40)
+  bool? manageSalesWastage;
+
   TempProductClass({
     this.id,
     required this.name,
@@ -171,6 +174,7 @@ class TempProductClass {
     required this.widthDimension,
     required this.heightDimension,
     this.quantityType = 1,
+    required this.manageSalesWastage,
   });
 
   factory TempProductClass.fromJson(
@@ -264,6 +268,8 @@ class TempProductClass {
       heightDimension:
           (json['height_dimension'] as num?)?.toDouble(),
       quantityType: json['quantity_type'] as int? ?? 1,
+      manageSalesWastage:
+          json['manage_sales_wastage'] as bool? ?? false,
     );
   }
 
@@ -324,6 +330,7 @@ class TempProductClass {
         'width_dimension': widthDimension,
         'height_dimension': heightDimension,
         'quantity_type': quantityType ?? 1,
+        'manage_sales_wastage': manageSalesWastage,
       };
     } else {
       return {
@@ -379,6 +386,7 @@ class TempProductClass {
         'width_dimension': widthDimension,
         'height_dimension': heightDimension,
         'quantity_type': quantityType ?? 1,
+        'manage_sales_wastage': manageSalesWastage,
       };
     }
   }
@@ -424,6 +432,7 @@ class TempProductClass {
     double? widthDimension,
     double? heightDimension,
     int? quantityType,
+    bool? manageSalesWastage,
   }) {
     return TempProductClass(
       id: id ?? this.id,
@@ -470,6 +479,8 @@ class TempProductClass {
       heightDimension:
           heightDimension ?? this.heightDimension,
       quantityType: quantityType ?? this.quantityType,
+      manageSalesWastage:
+          manageSalesWastage ?? this.manageSalesWastage,
     );
   }
 

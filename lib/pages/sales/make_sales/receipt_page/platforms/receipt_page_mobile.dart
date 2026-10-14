@@ -62,38 +62,35 @@ class _ReceiptPageMobileState
   Widget build(BuildContext context) {
     var shop = returnShopProvider().userShop();
     var theme = returnTheme(context);
-    TempMainReceipt mainReceipt = returnReceiptProvider(
-      context,
-    ).receipts.firstWhere(
-      (rec) => rec.uuid! == widget.response.receipt?.uuid,
-      orElse:
-          () => TempMainReceipt(
-            tempItems: null,
-            salesTypeIndex: 1,
-            orderUuid: null,
-            customerAccount: 0,
-            comment: null,
-            subStaffName: null,
-            departmentName:
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.name,
-            departmentUuidNew:
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid,
-            createdAt: DateTime.now(),
-            uuid: '1',
-            shopId: shopId(),
-            staffId: AuthService().currentUser!,
-            staffName: 'Staff Name',
-            paymentMethod: 'Cash',
-            bank: 0,
-            cashAlt: 0,
-            isInvoice: false,
-            cartName: 'Cart 1',
-          ),
+    TempMainReceipt defaultReceipt = TempMainReceipt(
+      tempItems: null,
+      salesTypeIndex: 1,
+      orderUuid: null,
+      customerAccount: 0,
+      comment: null,
+      subStaffName: null,
+      departmentName:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.name,
+      departmentUuidNew:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.uuid,
+      createdAt: DateTime.now(),
+      uuid: '1',
+      shopId: shopId(),
+      staffId: AuthService().currentUser!,
+      staffName: 'Staff Name',
+      paymentMethod: 'Cash',
+      bank: 0,
+      cashAlt: 0,
+      isInvoice: false,
+      cartName: 'Cart 1',
     );
+
+    TempMainReceipt mainReceipt =
+        widget.response.receipt ?? defaultReceipt;
 
     return SafeArea(
       child: PopScope(
@@ -1329,6 +1326,19 @@ class _ReceiptDetailsContainerState
                                                         ),
                                                         '${productRecord.productName}${productRecord.dimensionsLabel()}',
                                                       ),
+                                                      Visibility(
+                                                        visible:
+                                                            productRecord.wastageNote().isNotEmpty,
+                                                        child: Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                widget.theme.mobileTexts.b4.fontSize,
+                                                            color:
+                                                                Colors.grey.shade700,
+                                                          ),
+                                                          productRecord.wastageNote(),
+                                                        ),
+                                                      ),
                                                       Row(
                                                         children: [
                                                           Flexible(
@@ -1339,7 +1349,7 @@ class _ReceiptDetailsContainerState
                                                                 fontWeight:
                                                                     FontWeight.bold,
                                                               ),
-                                                              'Qty: ${productRecord.quantity.toString()} ${productRecord.unit == 'Others' || productRecord.unit == null ? 'Unit(s)' : productRecord.unit}',
+                                                              'Qty: ${productRecord.quantityText()} ${productRecord.unit == 'Others' || productRecord.unit == null ? 'Unit(s)' : productRecord.unit}',
                                                             ),
                                                           ),
                                                         ],
@@ -1390,7 +1400,7 @@ class _ReceiptDetailsContainerState
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                           ),
-                                                          "${formatMoneyMid(amount: ((widget.mainReceipt.fixedDiscount == null && widget.mainReceipt.generalDiscount == null) && productRecord.discount != null ? ((productRecord.originalCost ?? 0) - (productRecord.discountedAmount ?? 0)) : (productRecord.originalCost ?? 0) / productRecord.quantity), context: context)} per 1",
+                                                          "${formatMoneyMid(amount: ((widget.mainReceipt.fixedDiscount == null && widget.mainReceipt.generalDiscount == null) && productRecord.discount != null ? ((productRecord.originalCost ?? 0) - (productRecord.discountedAmount ?? 0)) : (productRecord.originalCost ?? 0) / productRecord.priceQuantity()), context: context)} per 1",
                                                         ),
                                                       ),
                                                       // Visibility(
@@ -1509,12 +1519,25 @@ class _ReceiptDetailsContainerState
                                                               ),
                                                               '${productRecord.productName}${productRecord.dimensionsLabel()}',
                                                             ),
+                                                            Visibility(
+                                                              visible:
+                                                                  productRecord.wastageNote().isNotEmpty,
+                                                              child: Text(
+                                                                style: TextStyle(
+                                                                  fontSize:
+                                                                      widget.theme.mobileTexts.b4.fontSize,
+                                                                  color:
+                                                                      Colors.grey.shade700,
+                                                                ),
+                                                                productRecord.wastageNote(),
+                                                              ),
+                                                            ),
                                                             Text(
                                                               style: TextStyle(
                                                                 fontSize:
                                                                     widget.theme.mobileTexts.b4.fontSize,
                                                               ),
-                                                              'Qty: ${productRecord.quantity.toString()} ${productRecord.unit == 'Others' || productRecord.unit == null ? 'Unit(s)' : productRecord.unit}',
+                                                              'Qty: ${productRecord.quantityText()} ${productRecord.unit == 'Others' || productRecord.unit == null ? 'Unit(s)' : productRecord.unit}',
                                                             ),
                                                           ],
                                                         ),

@@ -142,7 +142,7 @@ class TotalSalesListWidget extends StatelessWidget {
                                                         .b3
                                                         .fontSize,
                                               ),
-                                              "${[formatLargeNumber(record.quantity.toString())]} - ",
+                                              "${[formatLargeNumber(record.displayQuantity().toString())]} - ",
                                             ),
                                           ),
                                         ],
@@ -300,7 +300,7 @@ class TotalSalesListWidget extends StatelessWidget {
                                                   .b3
                                                   .fontSize,
                                         ),
-                                        "${[formatLargeNumber(record.quantity.toString())]} - ",
+                                        "${[formatLargeNumber(record.displayQuantity().toString())]} - ",
                                       ),
                                     ),
                                   ],

@@ -876,6 +876,16 @@ class _InvoicePageMobileState
                                                                   ),
                                                                   '${record.productName}${record.dimensionsLabel()}',
                                                                 ),
+                                                                Visibility(
+                                                                  visible: record.wastageNote().isNotEmpty,
+                                                                  child: Text(
+                                                                    style: TextStyle(
+                                                                      fontSize: theme.mobileTexts.b4.fontSize,
+                                                                      color: Colors.grey.shade700,
+                                                                    ),
+                                                                    record.wastageNote(),
+                                                                  ),
+                                                                ),
                                                                 Row(
                                                                   spacing:
                                                                       3,
@@ -897,7 +907,7 @@ class _InvoicePageMobileState
                                                                             FontWeight.bold,
                                                                       ),
                                                                       formatLargeNumberDouble(
-                                                                        record.quantity,
+                                                                        record.displayQuantity(),
                                                                       ),
                                                                     ),
                                                                     Text(

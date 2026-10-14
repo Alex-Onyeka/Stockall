@@ -111,6 +111,41 @@ String formatDimensionsLabel(double? width, double? height) {
   return ' (${formatDimension(width)} x ${formatDimension(height)})';
 }
 
+// Extra area used up as wastage on a 2D line: a percent of
+// [baseArea], or a fixed area for the whole line. 0 when unset.
+double computeWastageArea({
+  required double baseArea,
+  required double? amount,
+  required bool? isPercentage,
+}) {
+  if (amount == null ||
+      !amount.isFinite ||
+      amount <= 0 ||
+      baseArea <= 0) {
+    return 0;
+  }
+  if (isPercentage == true) {
+    return baseArea * (amount / 100);
+  }
+  return amount;
+}
+
+// Shown when a 2D line fits in stock without its wastage but
+// not with it.
+String wastageStockMessage({
+  required double cutArea,
+  required double wastageArea,
+  required double availableArea,
+  required String unit,
+}) {
+  final available = availableArea < 0 ? 0 : availableArea;
+  return 'Not enough stock after wastage. This sale needs '
+      '${formatDimension(cutArea + wastageArea)} $unit '
+      '(${formatDimension(cutArea)} $unit + '
+      '${formatDimension(wastageArea)} $unit wastage), '
+      'but only ${formatDimension(available)} $unit is available.';
+}
+
 String formatLargeNumberDoubleWidgetDecimal(num number) {
   final formatter = NumberFormat('#,##0.0');
   return formatter.format(number);
