@@ -2340,8 +2340,11 @@ void selectProductSales({
                                             });
                                           },
                                           // focusNode: qttyNode,
-                                          onChanged:
-                                              (value) {},
+                                          onChanged: (
+                                            value,
+                                          ) {
+                                            setState(() {});
+                                          },
 
                                           title: '',
                                           hint:
