@@ -430,27 +430,14 @@ class TempCartItem extends HiveObject {
       if (setTotalPrice) {
         return customPrice!;
       } else {
-        return customPrice! *
-            getSelectedUnit().getQuantityEquivMultiplied(
-              index: 1,
-              product: item,
-              newQuantity: quantity,
-              customWidth: widthDimension,
-              customHeight: heightDimension,
-            );
+        return customPrice! * getStockQuantity();
       }
     } else {
       final selectedPrice = getSelectedPrice();
       if ((selectedPrice.priceType ?? 1) == 1 ||
           item.quantityType == 2) {
         return selectedPrice.priceValue *
-            getSelectedUnit().getQuantityEquivMultiplied(
-              index: 1,
-              product: item,
-              newQuantity: quantity,
-              customWidth: widthDimension,
-              customHeight: heightDimension,
-            );
+            getStockQuantity();
       } else {
         return selectedPrice.priceValue * quantity;
       }
@@ -480,14 +467,7 @@ class TempCartItem extends HiveObject {
   double? costPrice() {
     return (getItem()?.costPrice ?? 0) == 0
         ? null
-        : (getItem()?.costPrice ?? 0) *
-            getSelectedUnit().getQuantityEquivMultiplied(
-              index: 1,
-              product: item,
-              newQuantity: quantity,
-              customWidth: widthDimension,
-              customHeight: heightDimension,
-            );
+        : (getItem()?.costPrice ?? 0) * getStockQuantity();
   }
 
   double getItemDiscountedRemainingCost() {
@@ -498,13 +478,7 @@ class TempCartItem extends HiveObject {
                       0) *
                   (getItem()?.discount ?? 0) /
                   100)) *
-          getSelectedUnit().getQuantityEquivMultiplied(
-            index: 1,
-            product: item,
-            newQuantity: quantity,
-            customWidth: widthDimension,
-            customHeight: heightDimension,
-          ));
+          getStockQuantity());
       // }
     } else {
       return totalCost();
@@ -519,6 +493,22 @@ class TempCartItem extends HiveObject {
       customWidth: widthDimension,
       customHeight: heightDimension,
     );
+  }
+
+  // Wastage area on a 2D line, from [baseArea] (the line's
+  // area by default). 0 for other items.
+  double wastageArea({double? baseArea}) {
+    if (item.quantityType != 2) return 0;
+    return computeWastageArea(
+      baseArea: baseArea ?? getRealQuantity(),
+      amount: wastageAmount,
+      isPercentage: isPercentageWastage,
+    );
+  }
+
+  // Area taken from stock and billed: line area + wastage.
+  double getStockQuantity() {
+    return getRealQuantity() + wastageArea();
   }
 
   double getRealQuantityDivided() {

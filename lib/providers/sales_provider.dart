@@ -444,10 +444,20 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Orders don't apply wastage. Clears it from lines of an order
+  // cart, e.g. order lines saved before wastage was hidden there.
+  void clearOrderWastage(TempCart cart) {
+    if (cart.cartItemTypeIndex != 3) return;
+    for (final cartItem in cart.cartItems) {
+      cartItem.wastageAmount = null;
+    }
+  }
+
   Future<void> addNewCart(
     BuildContext context,
     TempCart tempCart,
   ) async {
+    clearOrderWastage(tempCart);
     SalesAuthAction().numberOfCartsAction(
       context: context,
       action: () async {
@@ -778,7 +788,7 @@ class SalesProvider extends ChangeNotifier {
             continue;
           }
 
-          final quantity = cartItem.getRealQuantity();
+          final quantity = cartItem.getStockQuantity();
 
           final existing = cartItems[itemUuid];
 
@@ -898,6 +908,7 @@ class SalesProvider extends ChangeNotifier {
 
     void performAction() {
       currentCart().cartItemTypeIndex = value;
+      clearOrderWastage(currentCart());
       CartFunc().updateMainCart(currentMainCart());
       notifyListeners();
     }
@@ -1462,7 +1473,7 @@ class SalesProvider extends ChangeNotifier {
                 // result back as a sheet count.
                 mainItem.quantity = mainItem
                     .quantityAfterRemoving(
-                      cartItem.getRealQuantity(),
+                      cartItem.getStockQuantity(),
                     );
                 ItemHistory itemHistory = ItemHistory(
                   event: ItemHistoryEventClass.sold,
@@ -1501,7 +1512,7 @@ class SalesProvider extends ChangeNotifier {
                               (mainItem
                                       .getActualQuantity() ??
                                   0) +
-                              cartItem.getRealQuantity(),
+                              cartItem.getStockQuantity(),
                         )),
                   ),
                 );
@@ -1523,7 +1534,7 @@ class SalesProvider extends ChangeNotifier {
                   product: mainItem,
                   isQuantityUpdate: true,
                   quantityChange:
-                      cartItem.getRealQuantity() /
+                      cartItem.getStockQuantity() /
                       mainItem.dimensionArea(),
                   isMultipleUpdate: true,
                   isIncrement: false,
@@ -2034,7 +2045,7 @@ class SalesProvider extends ChangeNotifier {
                 // result back as a sheet count.
                 mainItem.quantity = mainItem
                     .quantityAfterRemoving(
-                      cartItem.getRealQuantity(),
+                      cartItem.getStockQuantity(),
                     );
                 ItemHistory itemHistory = ItemHistory(
                   event: ItemHistoryEventClass.sold,
@@ -2073,7 +2084,7 @@ class SalesProvider extends ChangeNotifier {
                               (mainItem
                                       .getActualQuantity() ??
                                   0) +
-                              cartItem.getRealQuantity(),
+                              cartItem.getStockQuantity(),
                         )),
                   ),
                 );
@@ -2095,7 +2106,7 @@ class SalesProvider extends ChangeNotifier {
                   product: mainItem,
                   isQuantityUpdate: true,
                   quantityChange:
-                      cartItem.getRealQuantity() /
+                      cartItem.getStockQuantity() /
                       mainItem.dimensionArea(),
                   isMultipleUpdate: true,
                   isIncrement: false,
@@ -3179,7 +3190,7 @@ class SalesProvider extends ChangeNotifier {
 
           if (cartItemUuid == itemUuid) {
             // if (newCartItem.useGroupQuantity == true) {
-            totalInAllCarts += cartItem.getRealQuantity();
+            totalInAllCarts += cartItem.getStockQuantity();
             // } else {
             //   totalInAllCarts += cartItem.quantity;
             // }
@@ -3228,7 +3239,7 @@ class SalesProvider extends ChangeNotifier {
         for (final cartItem in cart.getCartItems().where(
           (item) => item.getItem()?.uuid == product.uuid,
         )) {
-          totalInAllCarts += cartItem.getRealQuantity();
+          totalInAllCarts += cartItem.getStockQuantity();
         }
       }
     }
@@ -3398,7 +3409,8 @@ class SalesProvider extends ChangeNotifier {
     }
   }
 
-  // Same item, and for 2D items the same width × height.
+  // Same item, and for 2D items the same width × height and
+  // wastage.
   bool isSameCartLine(TempCartItem a, TempCartItem b) {
     final sameProduct =
         (a.itemUuid ?? a.item.uuid) ==
@@ -3407,7 +3419,9 @@ class SalesProvider extends ChangeNotifier {
     if (b.item.quantityType == 2) {
       return a.item.quantityType == 2 &&
           a.widthDimension == b.widthDimension &&
-          a.heightDimension == b.heightDimension;
+          a.heightDimension == b.heightDimension &&
+          a.wastageAmount == b.wastageAmount &&
+          a.isPercentageWastage == b.isPercentageWastage;
     }
     return true;
   }
@@ -3457,14 +3471,7 @@ class SalesProvider extends ChangeNotifier {
     for (var newItem in tempCartItems) {
       if (canAddProductToCart(
         newCartItem: newItem,
-        quantityToAdd: newItem
-            .getSelectedUnit()
-            .getQuantityEquivMultiplied(
-              index: 1,
-              newQuantity: newItem.quantity,
-              customWidth: newItem.widthDimension,
-              customHeight: newItem.heightDimension,
-            ),
+        quantityToAdd: newItem.getStockQuantity(),
         isEdit: false,
         // isEdit: false,
         // useGroupUnit: newItem.useGroupQuantity ?? false,
@@ -3527,14 +3534,7 @@ class SalesProvider extends ChangeNotifier {
     if (canAddProductToCart(
       isEdit: false,
       newCartItem: newItem,
-      quantityToAdd: newItem
-          .getSelectedUnit()
-          .getQuantityEquivMultiplied(
-            index: 1,
-            newQuantity: newItem.quantity,
-            customWidth: newItem.widthDimension,
-            customHeight: newItem.heightDimension,
-          ),
+      quantityToAdd: newItem.getStockQuantity(),
     )) {
       String result = '';
       var items = currentCart().getCartItems().where((
@@ -3614,6 +3614,11 @@ class SalesProvider extends ChangeNotifier {
               newItem.useWholeSalePrice;
           item.useGroupQuantity = newItem.useGroupQuantity;
           item.uuid = newItem.uuid;
+          item.wastageAmount = newItem.wastageAmount;
+          item.isPercentageWastage =
+              newItem.isPercentageWastage;
+          item.manageSalesWastage =
+              newItem.manageSalesWastage;
         }
         await returnMultiDisplayProvider().updateWindow(
           cartClass: AltCartClass(
@@ -3703,17 +3708,19 @@ class SalesProvider extends ChangeNotifier {
     required bool setTotalPrice,
     required bool setCustomPrice,
   }) async {
+    final newArea = cartItem
+        .getSelectedUnit()
+        .getQuantityEquivMultiplied(
+          index: 1,
+          newQuantity: number,
+          customWidth: cartItem.widthDimension,
+          customHeight: cartItem.heightDimension,
+        );
     if (canAddProductToCart(
       isEdit: true,
       newCartItem: cartItem,
-      quantityToAdd: cartItem
-          .getSelectedUnit()
-          .getQuantityEquivMultiplied(
-            index: 1,
-            newQuantity: number,
-            customWidth: cartItem.widthDimension,
-            customHeight: cartItem.heightDimension,
-          ),
+      quantityToAdd:
+          newArea + cartItem.wastageArea(baseArea: newArea),
     )) {
       if (returnShopProvider().userShop()!.trackCart ==
               true &&
@@ -3742,6 +3749,10 @@ class SalesProvider extends ChangeNotifier {
             widthDimension: originalLine.widthDimension,
             heightDimension: originalLine.heightDimension,
           );
+          deletedItem.wastageAmount =
+              originalLine.wastageAmount;
+          deletedItem.isPercentageWastage =
+              originalLine.isPercentageWastage;
           currentCart().cartItems.add(deletedItem);
         }
       }
@@ -3981,14 +3992,21 @@ class SalesProvider extends ChangeNotifier {
           record.setTotalPrice == true) {
         tempRev = record.originalCost ?? 0;
       } else {
+        // originalCost was billed on area + wastage.
         tempRev =
             (record.originalCost ?? 0) /
-            (record.quantity * record.dimensionArea());
+            (record.quantity * record.dimensionArea() +
+                record.wastageArea());
       }
     }
     return TempCartItem(
       isPercentageWastage: record.isPercentageWastage,
-      wastageAmount: record.wastageAmount,
+      // Lines saved before wastage was applied keep none, so
+      // they aren't re-priced or re-deducted.
+      wastageAmount:
+          record.manageSalesWastage == true
+              ? record.wastageAmount
+              : null,
       manageSalesWastage: record.manageSalesWastage,
       heightDimension: record.heightDimension,
       quantityType: record.quantityType,

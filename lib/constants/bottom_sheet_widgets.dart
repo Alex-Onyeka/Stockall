@@ -1353,6 +1353,56 @@ void selectProductSales({
         );
   }
 
+  // Wastage is entered for 2D items that manage it, except in
+  // order carts (orders don't apply wastage).
+  bool showWastage() {
+    return is2DItem &&
+        cartItem.item.manageSalesWastage == true &&
+        returnSalesProvider().currentCart().cartItemTypeIndex !=
+            3;
+  }
+
+  // Wastage area the entered value adds to [area].
+  double dialogWastage(double area) {
+    if (!showWastage()) return 0;
+    return computeWastageArea(
+      baseArea: area,
+      amount: double.tryParse(
+        wastageController.text.replaceAll(',', '').trim(),
+      ),
+      isPercentage: isPercentageWastage,
+    );
+  }
+
+  // Name of the item's base area unit, for stock messages.
+  String areaUnitLabel() {
+    final areaUnits = cartItem.getUnitsList().where(
+      (item) =>
+          item.dimensionType == ProductUnitsClass.areaUnit &&
+          item.conversion == 1,
+    );
+    return areaUnits.isNotEmpty
+        ? areaUnits.first.name
+        : 'sq. units';
+  }
+
+  String? wastageError() {
+    if (!showWastage() ||
+        wastageController.text.trim().isEmpty) {
+      return null;
+    }
+    final value = double.tryParse(
+      wastageController.text.replaceAll(',', '').trim(),
+    );
+    if (value == null || value < 0) {
+      return 'Wastage must be a number of 0 or more.';
+    }
+    if (isPercentageWastage && value > 100) {
+      return 'Wastage percent cannot be more than 100.';
+    }
+    return null;
+  }
+
   void selectUnit(String unit) {
     unitUuid = unit;
   }
@@ -1442,12 +1492,12 @@ void selectProductSales({
     );
     // print(cartItem.getSelectedUnit().name);
     cartItem.unitUuid = unitUuid;
-    if (cartItem.item.quantityType == 2 &&
-        cartItem.item.manageSalesWastage == true) {
+    if (showWastage()) {
       cartItem.wastageAmount = double.tryParse(
         wastageController.text.replaceAll(',', ''),
       );
       cartItem.isPercentageWastage = isPercentageWastage;
+      cartItem.manageSalesWastage = true;
     }
     // print(cartItem.getSelectedUnit().name);
   }
@@ -1534,6 +1584,15 @@ void selectProductSales({
   }
   qttyNode.requestFocus();
 
+  // Quantity the line is billed for: area + wastage.
+  double billedQuantity() {
+    final area = getPrimaryUnitQuantityMultiplied(
+      context: context,
+      newQuantity: qqty,
+    );
+    return area + dialogWastage(area);
+  }
+
   String formatSellingPrice(TempCartItem cartItem) {
     if (priceController.text.isNotEmpty) {
       if (returnSalesProvider().setTotalPrice) {
@@ -1547,18 +1606,12 @@ void selectProductSales({
                       )
                       : '0',
                 ) *
-                getPrimaryUnitQuantityMultiplied(
-                  context: context,
-                  newQuantity: qqty,
-                ))
+                billedQuantity())
             .toString();
       }
     } else {
       if ((getPrimaryPrice().priceType ?? 1) == 1) {
-        return (getPrimaryUnitQuantityMultiplied(
-                  context: context,
-                  newQuantity: qqty,
-                ) *
+        return (billedQuantity() *
                 (getPrimaryPrice().priceValue))
             .toString();
       } else {
@@ -2243,15 +2296,7 @@ void selectProductSales({
                                 bottom: 10,
                               ),
                               child: Visibility(
-                                visible:
-                                    (cartItemTemp
-                                            .item
-                                            .manageSalesWastage ??
-                                        false) &&
-                                    cartItemTemp
-                                            .item
-                                            .quantityType ==
-                                        2,
+                                visible: showWastage(),
                                 child: Row(
                                   crossAxisAlignment:
                                       CrossAxisAlignment
@@ -2270,8 +2315,9 @@ void selectProductSales({
                                           });
                                         },
                                         // focusNode: qttyNode,
-                                        onChanged:
-                                            (value) {},
+                                        onChanged: (value) {
+                                          setState(() {});
+                                        },
 
                                         title: '',
                                         hint:
@@ -2640,6 +2686,22 @@ void selectProductSales({
                                             );
                                           },
                                         );
+                                      } else if (wastageError() !=
+                                          null) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return InfoAlert(
+                                              theme: theme,
+                                              message:
+                                                  wastageError()!,
+                                              title:
+                                                  'Invalid Wastage',
+                                            );
+                                          },
+                                        );
                                       } else if (is2DItem &&
                                           (cartItem
                                                   .getItem()
@@ -2650,13 +2712,20 @@ void selectProductSales({
                                             newCartItem:
                                                 cartItem,
                                             quantityToAdd:
-                                                getPrimaryUnitQuantityMultiplied(
-                                                  newQuantity:
-                                                      qqty,
-                                                ),
+                                                billedQuantity(),
                                           )) {
-                                        // Dimensions can change after
-                                        // the quantity was checked.
+                                        // Dimensions and wastage can
+                                        // change after the quantity
+                                        // was checked.
+                                        final cutArea =
+                                            getPrimaryUnitQuantityMultiplied(
+                                              newQuantity:
+                                                  qqty,
+                                            );
+                                        final wastage =
+                                            dialogWastage(
+                                              cutArea,
+                                            );
                                         showDialog(
                                           context: context,
                                           builder: (
@@ -2667,7 +2736,22 @@ void selectProductSales({
                                               title:
                                                   'Quantity Limit Reached',
                                               message:
-                                                  "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
+                                                  wastage > 0
+                                                      ? wastageStockMessage(
+                                                        cutArea:
+                                                            cutArea,
+                                                        wastageArea:
+                                                            wastage,
+                                                        availableArea: returnSalesProvider().remainingQttyInAllCarts(
+                                                          newCartItem:
+                                                              cartItem,
+                                                          isEdit:
+                                                              isEdit,
+                                                        ),
+                                                        unit:
+                                                            areaUnitLabel(),
+                                                      )
+                                                      : "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
                                             );
                                           },
                                         );

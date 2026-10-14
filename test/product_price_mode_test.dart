@@ -73,6 +73,7 @@ void main() {
       uuid: 'product-1',
       widthDimension: null,
       heightDimension: null,
+      manageSalesWastage: false,
     );
 
     return TempCartItem(
@@ -92,6 +93,9 @@ void main() {
       widthDimension: null,
       heightDimension: null,
       quantityType: null,
+      manageSalesWastage: null,
+      isPercentageWastage: null,
+      wastageAmount: null,
     );
   }
 

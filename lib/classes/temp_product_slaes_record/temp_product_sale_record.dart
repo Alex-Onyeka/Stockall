@@ -726,6 +726,20 @@ class TempProductSaleRecord {
     return quantity * conversion;
   }
 
+  // Wastage area this line took from stock. Only lines saved
+  // with manageSalesWastage == true applied it; older lines
+  // (null) never did, so they count as 0.
+  double wastageArea() {
+    if (quantityType != 2 || manageSalesWastage != true) {
+      return 0;
+    }
+    return computeWastageArea(
+      baseArea: getActualQuantity(),
+      amount: wastageAmount,
+      isPercentage: isPercentageWastage,
+    );
+  }
+
   // Width × height this line was sold at, 1 when not set.
   double dimensionArea() {
     if (widthDimension == null ||

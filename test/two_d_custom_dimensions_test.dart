@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
@@ -6,7 +9,10 @@ import 'package:stockall/classes/temp_orders/order_items.dart';
 import 'package:stockall/classes/temp_product_class/prices_class/product_prices_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
+import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
+import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/providers/data_provider.dart';
+import 'package:stockall/providers/invoices_provider.dart';
 import 'package:stockall/providers/sales_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -104,6 +110,7 @@ void main() {
       widthDimension: 4,
       heightDimension: 3,
       quantityType: 2,
+      manageSalesWastage: true,
     );
   }
 
@@ -130,6 +137,9 @@ void main() {
       widthDimension: width,
       heightDimension: height,
       quantityType: 2,
+      manageSalesWastage: null,
+      isPercentageWastage: null,
+      wastageAmount: null,
     );
   }
 
@@ -158,6 +168,9 @@ void main() {
       widthDimension: width,
       heightDimension: height,
       quantityType: 2,
+      manageSalesWastage: null,
+      isPercentageWastage: null,
+      wastageAmount: null,
     );
   }
 
@@ -204,12 +217,16 @@ void main() {
       widthDimension: width,
       heightDimension: height,
       quantityType: 2,
+      manageSalesWastage: null,
+      isPercentageWastage: null,
+      wastageAmount: null,
     );
   }
 
   TempCart buildCart(List<TempCartItem> items) {
     return TempCart(
       cartItems: items,
+      tempCartItems: null,
       id: 'cart-1',
       staffName: 'Staff',
       staffId: 'staff-1',
@@ -577,6 +594,462 @@ void main() {
       final double effectiveConversionArea = areaUnit.conversion;
       expect(effectiveConversionArea, 1.0);
       expect(price.priceValue * effectiveConversionArea, 100.0);
+    });
+  });
+
+  // 2 custom pieces of 2 × 1.5 (6 area) in a sheet unit, so
+  // cart lines and sale records convert the same way.
+  group('wastage', () {
+    TempCartItem wastageLine({
+      double? amount,
+      bool? isPercentage,
+      bool? manageSalesWastage = true,
+    }) {
+      return buildConfiguredLine(
+          selectedUnit: sheetUnit,
+          quantity: 2,
+          width: 2,
+          height: 1.5,
+        )
+        ..wastageAmount = amount
+        ..isPercentageWastage = isPercentage
+        ..manageSalesWastage = manageSalesWastage;
+    }
+
+    // The record checkout saves for [line].
+    TempProductSaleRecord recordOf(
+      TempCartItem line, {
+      bool? manageSalesWastage = true,
+      double? originalCost,
+    }) {
+      return TempProductSaleRecord(
+        createdAt: DateTime.utc(2026),
+        productId: 0,
+        productUuid: productUuid,
+        productName: 'Glass',
+        shopId: 1,
+        staffId: 'staff-1',
+        staffName: 'Staff',
+        recepitId: 0,
+        quantity: line.quantity,
+        revenue: originalCost ?? line.totalCost(),
+        discountedAmount: 0,
+        originalCost: originalCost ?? line.totalCost(),
+        discount: null,
+        customPriceSet: line.setCustomPrice,
+        setTotalPrice: line.setTotalPrice,
+        departmentName: null,
+        departmentUuid: null,
+        uuid: 'record-1',
+        isProductManaged: true,
+        useGroupQuantity: false,
+        qttyPerGroup: null,
+        isVoid: false,
+        unitsList: line.getUnitListFinal(),
+        unitUuid: line.unitUuid,
+        pricesList: line.getPriceListFinal(),
+        priceUuid: line.priceUuid,
+        widthDimension: line.widthDimension,
+        heightDimension: line.heightDimension,
+        quantityType: 2,
+        manageSalesWastage: manageSalesWastage,
+        isPercentageWastage: line.isPercentageWastage,
+        wastageAmount: line.wastageAmount,
+      );
+    }
+
+    test('computeWastageArea: percent, fixed and unset', () {
+      expect(
+        computeWastageArea(
+          baseArea: 6,
+          amount: 10,
+          isPercentage: true,
+        ),
+        closeTo(0.6, 1e-9),
+      );
+      expect(
+        computeWastageArea(
+          baseArea: 6,
+          amount: 1,
+          isPercentage: false,
+        ),
+        1,
+      );
+      for (final amount in [null, 0.0, -2.0]) {
+        expect(
+          computeWastageArea(
+            baseArea: 6,
+            amount: amount,
+            isPercentage: false,
+          ),
+          0,
+        );
+      }
+    });
+
+    test('percent: billed and taken from stock on area + 10%', () {
+      final line = wastageLine(amount: 10, isPercentage: true);
+      expect(line.getRealQuantity(), 6);
+      expect(line.wastageArea(), closeTo(0.6, 1e-9));
+      expect(line.getStockQuantity(), closeTo(6.6, 1e-9));
+      expect(line.totalCost(), closeTo(660, 1e-9));
+    });
+
+    test('fixed: the amount is added once for the line', () {
+      final line = wastageLine(amount: 1, isPercentage: false);
+      expect(line.getStockQuantity(), 7);
+      expect(line.totalCost(), 700);
+    });
+
+    test('no wastage leaves price and stock as before', () {
+      final line = wastageLine(amount: null);
+      expect(line.getStockQuantity(), 6);
+      expect(line.totalCost(), 600);
+    });
+
+    test('line discount applies to the price with wastage', () {
+      final line = wastageLine(amount: 10, isPercentage: true)
+        ..discount = 10;
+      expect(line.discountCost(), closeTo(66, 1e-9));
+    });
+
+    test('cost price counts the wastage used', () {
+      final line = wastageLine(amount: 1, isPercentage: false)
+        ..item.costPrice = 40;
+      expect(line.costPrice(), 280);
+    });
+
+    test('custom unit price is billed on area + wastage', () {
+      final line = wastageLine(amount: 10, isPercentage: true)
+        ..customPrice = 50
+        ..setCustomPrice = true;
+      expect(line.totalCost(), closeTo(330, 1e-9));
+    });
+
+    test('custom total price: wastage only affects stock', () {
+      final line = wastageLine(amount: 10, isPercentage: true)
+        ..customPrice = 500
+        ..setCustomPrice = true
+        ..setTotalPrice = true;
+      expect(line.totalCost(), 500);
+      expect(line.getStockQuantity(), closeTo(6.6, 1e-9));
+    });
+
+    test('non-2D lines ignore wastage', () {
+      final line = wastageLine(amount: 10, isPercentage: true)
+        ..item.quantityType = 1;
+      expect(line.wastageArea(), 0);
+      expect(line.getStockQuantity(), line.getRealQuantity());
+    });
+
+    test('checkout write-back takes area + wastage (sheets)', () {
+      final product = buildSheet();
+      final line = wastageLine(amount: 10, isPercentage: true);
+      // Same expressions as checkoutMain's deduction block.
+      expect(
+        product.quantityAfterRemoving(line.getStockQuantity()),
+        closeTo(9.45, 1e-9),
+      );
+      expect(
+        line.getStockQuantity() / product.dimensionArea(),
+        closeTo(0.55, 1e-9),
+      );
+    });
+
+    test('delete restores exactly what checkout took', () {
+      for (final line in [
+        wastageLine(amount: 10, isPercentage: true),
+        wastageLine(amount: 1, isPercentage: false),
+      ]) {
+        final record = recordOf(line);
+        // Same expression as deleteRecordsInReceipt/Invoice.
+        expect(
+          record.getActualQuantity() + record.wastageArea(),
+          closeTo(line.getStockQuantity(), 1e-9),
+        );
+      }
+    });
+
+    test('legacy record (flag not set) restores area only', () {
+      final line = wastageLine(amount: 10, isPercentage: true);
+      final record = recordOf(line, manageSalesWastage: null);
+      expect(record.wastageArea(), 0);
+      expect(
+        record.getActualQuantity() + record.wastageArea(),
+        6,
+      );
+    });
+
+    test('cart stock totals count wastage', () {
+      final line = wastageLine(amount: 1, isPercentage: false);
+      SalesProvider().mainCartQueue = [
+        TempMainCart(
+          cartQueue: [
+            buildCart([line]),
+          ],
+          mainCartId: 'main-1',
+        ),
+      ];
+      expect(
+        SalesProvider().totalItemQuantityInAllCarts(
+          product: buildSheet(),
+        ),
+        7,
+      );
+      expect(
+        SalesProvider().totalInAllCarts(
+          newCartItem: wastageLine()..uuid = 'other-line',
+          isEdit: false,
+        ),
+        7,
+      );
+    });
+
+    test('lines with different wastage are different lines', () {
+      final a = wastageLine(amount: 10, isPercentage: true);
+      final b = wastageLine(amount: 10, isPercentage: true);
+      final c = wastageLine(amount: 1, isPercentage: false);
+      expect(SalesProvider().isSameCartLine(a, b), isTrue);
+      expect(SalesProvider().isSameCartLine(a, c), isFalse);
+    });
+
+    test('re-edit: custom unit price round-trips with wastage', () {
+      final line = wastageLine(amount: 10, isPercentage: true)
+        ..customPrice = 50
+        ..setCustomPrice = true;
+      final record = recordOf(line);
+
+      for (final rebuilt in [
+        SalesProvider().saleRecordToCartItem(
+          record: record,
+          product: buildSheet(),
+        ),
+        InvoicesProvider().saleRecordToCartItem(
+          record: record,
+          product: buildSheet(),
+        ),
+      ]) {
+        expect(rebuilt.customPrice, closeTo(50, 1e-9));
+        expect(rebuilt.wastageAmount, 10);
+        expect(rebuilt.totalCost(), closeTo(330, 1e-9));
+        expect(rebuilt.getStockQuantity(), closeTo(6.6, 1e-9));
+      }
+    });
+
+    test('re-edit: legacy record keeps price, drops wastage', () {
+      // Saved before wastage was applied: billed on 6 area.
+      final line = wastageLine(amount: 10, isPercentage: true)
+        ..customPrice = 50
+        ..setCustomPrice = true;
+      final record = recordOf(
+        line,
+        manageSalesWastage: null,
+        originalCost: 300,
+      );
+
+      for (final rebuilt in [
+        SalesProvider().saleRecordToCartItem(
+          record: record,
+          product: buildSheet(),
+        ),
+        InvoicesProvider().saleRecordToCartItem(
+          record: record,
+          product: buildSheet(),
+        ),
+      ]) {
+        expect(rebuilt.customPrice, closeTo(50, 1e-9));
+        expect(rebuilt.wastageAmount, isNull);
+        expect(rebuilt.totalCost(), closeTo(300, 1e-9));
+        expect(rebuilt.getStockQuantity(), 6);
+      }
+    });
+  });
+
+  // A 4 × 2 board (8 m²), 1 in stock, ₦5,000 per m², sold in
+  // m² (area unit).
+  group('wastage reference numbers', () {
+    final m2 = ProductUnitsClass(
+      uuid: 'unit-m2',
+      staffUuid: null,
+      createdAt: DateTime.utc(2026),
+      staffName: null,
+      conversion: 1,
+      name: 'm²',
+      isPrimary: true,
+      productUuid: productUuid,
+      dimensionType: ProductUnitsClass.areaUnit,
+    );
+
+    final m2Price = ProductPricesClass(
+      uuid: 'price-m2',
+      staffUuid: null,
+      createdAt: DateTime.utc(2026),
+      staffName: null,
+      priceValue: 5000,
+      name: 'Price',
+      isPrimary: true,
+      itemUuid: productUuid,
+    );
+
+    TempProductClass board() {
+      return buildSheet(quantity: 1)
+        ..widthDimension = 4
+        ..heightDimension = 2
+        ..unitsList = [m2]
+        ..pricesList = [m2Price];
+    }
+
+    TempCartItem sale8({double? amount, bool? isPercentage}) {
+      return TempCartItem(
+        item: board(),
+        itemUuid: productUuid,
+        quantity: 8,
+        discount: null,
+        addToStock: false,
+        setTotalPrice: false,
+        useWholeSalePrice: false,
+        useGroupQuantity: false,
+        qttyPerGroup: null,
+        isVoid: false,
+        uuid: 'sale-8',
+        unitUuid: m2.uuid,
+        priceUuid: m2Price.uuid,
+        widthDimension: null,
+        heightDimension: null,
+        quantityType: 2,
+        manageSalesWastage: true,
+        isPercentageWastage: isPercentage,
+        wastageAmount: amount,
+      );
+    }
+
+    // canAddProductToCart logs a rejection to mainLog.log, which
+    // asks path_provider for the app support directory.
+    const pathProvider = MethodChannel(
+      'plugins.flutter.io/path_provider',
+    );
+    late Directory logDir;
+
+    setUpAll(() {
+      logDir = Directory.systemTemp.createTempSync('stockall_test_');
+      TestDefaultBinaryMessengerBinding
+          .instance
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(
+            pathProvider,
+            (call) async => logDir.path,
+          );
+    });
+
+    tearDownAll(() {
+      TestDefaultBinaryMessengerBinding
+          .instance
+          .defaultBinaryMessenger
+          .setMockMethodCallHandler(pathProvider, null);
+      logDir.deleteSync(recursive: true);
+    });
+
+    setUp(() {
+      DataProvider().productListMain = [board()];
+      SalesProvider().mainCartQueue = [
+        TempMainCart(
+          cartQueue: [buildCart([])],
+          mainCartId: 'main-1',
+        ),
+      ];
+      SalesProvider().mainCartIdCache = 'main-1';
+      SalesProvider().cartIdCache = 'cart-1';
+    });
+
+    test('8 m² + 0.5 m² fixed = 8.5 m², ₦42,500', () {
+      final line = sale8(amount: 0.5, isPercentage: false);
+      expect(line.getRealQuantity(), 8);
+      expect(line.getStockQuantity(), 8.5);
+      expect(line.totalCost(), 42500);
+    });
+
+    test('8 m² + 10% = 8.8 m², ₦44,000', () {
+      final line = sale8(amount: 10, isPercentage: true);
+      expect(line.getStockQuantity(), closeTo(8.8, 1e-9));
+      expect(line.totalCost(), closeTo(44000, 1e-6));
+    });
+
+    test('8 m² stock: 8 m² + 0.5 m² wastage is rejected', () {
+      final line = sale8(amount: 0.5, isPercentage: false);
+      // Same call as the dialog's final check and addItemToCart.
+      expect(
+        SalesProvider().canAddProductToCart(
+          newCartItem: line,
+          quantityToAdd: line.getStockQuantity(),
+          isEdit: false,
+        ),
+        isFalse,
+      );
+    });
+
+    test('8 m² stock: 8 m² with no wastage is accepted', () {
+      for (final line in [
+        sale8(amount: null),
+        sale8(amount: 0, isPercentage: false),
+      ]) {
+        expect(
+          SalesProvider().canAddProductToCart(
+            newCartItem: line,
+            quantityToAdd: line.getStockQuantity(),
+            isEdit: false,
+          ),
+          isTrue,
+        );
+      }
+    });
+
+    test('rejection message names the wastage shortfall', () {
+      final line = sale8(amount: 0.5, isPercentage: false);
+      expect(
+        wastageStockMessage(
+          cutArea: line.getRealQuantity(),
+          wastageArea: line.wastageArea(),
+          availableArea: SalesProvider().remainingQttyInAllCarts(
+            newCartItem: line,
+            isEdit: false,
+          ),
+          unit: 'm²',
+        ),
+        'Not enough stock after wastage. This sale needs '
+        '8.5 m² (8 m² + 0.5 m² wastage), but only 8 m² is '
+        'available.',
+      );
+    });
+  });
+
+  group('order carts drop wastage', () {
+    test('order cart lines lose wastage, other carts keep it', () {
+      TempCartItem lineWithWastage() =>
+          buildConfiguredLine(
+              selectedUnit: sheetUnit,
+              quantity: 2,
+              width: 2,
+              height: 1.5,
+            )
+            ..wastageAmount = 10
+            ..isPercentageWastage = true
+            ..manageSalesWastage = true;
+
+      // e.g. onEditOrder rebuilding an order saved with wastage.
+      final orderLine = lineWithWastage();
+      final orderCart = buildCart([orderLine])
+        ..cartItemTypeIndex = 3;
+      SalesProvider().clearOrderWastage(orderCart);
+      expect(orderLine.wastageAmount, isNull);
+      expect(orderLine.getStockQuantity(), 6);
+      expect(orderLine.totalCost(), 600);
+
+      final receiptLine = lineWithWastage();
+      SalesProvider().clearOrderWastage(
+        buildCart([receiptLine]),
+      );
+      expect(receiptLine.wastageAmount, 10);
+      expect(receiptLine.totalCost(), closeTo(660, 1e-9));
     });
   });
 }
