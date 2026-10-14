@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:js_interop';
-import 'dart:typed_data';
+// import 'dart:typed_data';
 
 import 'package:stockall/bulk_upload/spreadsheet_picker.dart';
 import 'package:web/web.dart' as web;
@@ -70,4 +70,3 @@ Future<PickedSpreadsheet?> pickSpreadsheetFile() {
 
   return completer.future;
 }
-

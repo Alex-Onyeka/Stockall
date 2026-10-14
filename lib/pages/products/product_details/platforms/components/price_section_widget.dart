@@ -316,49 +316,15 @@ Widget priceSectionWidget(
                                                                     false,
                                                                 quantityChange:
                                                                     null,
-                                                                product: TempProductClass(
-                                                                  manageSalesWastage:
-                                                                      product.manageSalesWastage,
-                                                                  heightDimension:
-                                                                      product.heightDimension,
-                                                                  widthDimension:
-                                                                      product.widthDimension,
-                                                                  quantityType:
-                                                                      product.quantityType,
-                                                                  unitsList:
-                                                                      product.unitsList,
-                                                                  pricesList:
-                                                                      returnData().tempPricesList,
-                                                                  useGroupUnit:
-                                                                      product.useGroupUnit,
-                                                                  categories:
-                                                                      product.categories,
-                                                                  storageUuid:
-                                                                      product.storageUuid,
-                                                                  departmentName:
-                                                                      product.departmentName,
-                                                                  departmentUuid:
-                                                                      product.departmentUuid,
-                                                                  groupUnit:
-                                                                      product.groupUnit,
-                                                                  qttyPerGroup:
-                                                                      product.qttyPerGroup,
+                                                                product: product.copyWith(
                                                                   updatedAt:
                                                                       DateTime.now(),
-                                                                  totalQttyInStorageDouble:
-                                                                      product.totalQttyInStorageDouble,
-                                                                  setCustomPrice:
-                                                                      product.setCustomPrice,
-                                                                  isManaged:
-                                                                      product.isManaged,
-                                                                  // id:
-                                                                  //     product.id,
-                                                                  name:
-                                                                      product.name,
-                                                                  unit:
-                                                                      product.unit,
-                                                                  isRefundable:
-                                                                      product.isRefundable,
+                                                                  // Copy the temp list: the provider's
+                                                                  // tempPricesList is cleared/reused
+                                                                  // elsewhere, which would otherwise
+                                                                  // empty this product's prices.
+                                                                  pricesList:
+                                                                      returnData().getTempPriceList(),
                                                                   costPrice:
                                                                       double.tryParse(
                                                                         costController.text.replaceAll(
@@ -367,34 +333,12 @@ Widget priceSectionWidget(
                                                                         ),
                                                                       ) ??
                                                                       0,
-                                                                  sellingPrice:
-                                                                      product.sellingPrice,
-                                                                  wholeSalePrice:
-                                                                      product.wholeSalePrice,
+                                                                  // Keep the raw stored quantity.
+                                                                  // getActualQuantity() multiplies by
+                                                                  // the sheet area for quantityType 2,
+                                                                  // inflating stock on every update.
                                                                   quantity:
-                                                                      product.getActualQuantity(),
-                                                                  shopId:
-                                                                      product.shopId,
-                                                                  barcode:
-                                                                      product.barcode,
-                                                                  // categoryUuid:
-                                                                  //     product.categoryUuid,
-                                                                  createdAt:
-                                                                      product.createdAt,
-                                                                  discount:
-                                                                      product.discount,
-                                                                  endDate:
-                                                                      product.endDate,
-                                                                  expiryDate:
-                                                                      product.expiryDate,
-                                                                  lowQtty:
-                                                                      product.lowQtty,
-                                                                  sizeType:
-                                                                      product.sizeType,
-                                                                  startDate:
-                                                                      product.startDate,
-                                                                  uuid:
-                                                                      product.uuid,
+                                                                      product.quantity,
                                                                 ),
                                                                 oldProduct:
                                                                     product,

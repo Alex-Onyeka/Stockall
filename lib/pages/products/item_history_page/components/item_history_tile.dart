@@ -755,8 +755,8 @@ String returnHistoryQuantity({
   }
 
   if (isIncreased == false) {
-    return '-${quantity.abs()} $unit';
+    return '-${formatLargeNumberDouble(quantity.abs())} $unit';
   }
 
-  return '+${quantity.abs()} $unit';
+  return '+${formatLargeNumberDouble(quantity.abs())} $unit';
 }

@@ -420,8 +420,8 @@ class _UpdateItemQuantityWidgetState
                                       setState(() {
                                         quantityTypeTemp =
                                             2;
-                                        quantityController
-                                            .clear();
+                                        // quantityController
+                                        //     .clear();
                                       });
                                     },
                                     child: Container(
