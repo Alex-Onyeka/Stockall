@@ -86,6 +86,11 @@ class TempCartItem extends HiveObject {
   @HiveField(24)
   double? wastageAmount;
 
+  // Unit the fixed wastage amount was entered in. Null on lines
+  // from before wastage units: their fixed amount is area.
+  @HiveField(25)
+  String? wastageUnitUuid;
+
   TempCartItem({
     required this.item,
     required this.itemUuid,
@@ -112,6 +117,7 @@ class TempCartItem extends HiveObject {
     required this.manageSalesWastage,
     required this.isPercentageWastage,
     required this.wastageAmount,
+    this.wastageUnitUuid,
   });
 
   // A line for [product] added without the sale dialog (barcode
@@ -189,6 +195,7 @@ class TempCartItem extends HiveObject {
           json['is_percentage_wastage'] as bool?,
       wastageAmount:
           (json['wastage_amount'] as num?)?.toDouble(),
+      wastageUnitUuid: json['wastage_unit_uuid'] as String?,
     );
   }
 
@@ -218,6 +225,7 @@ class TempCartItem extends HiveObject {
     'manage_sales_wastage': manageSalesWastage,
     'is_percentage_wastage': isPercentageWastage,
     'wastage_amount': wastageAmount,
+    'wastage_unit_uuid': wastageUnitUuid,
   };
 
   TempCartItem copyWith({
@@ -246,6 +254,7 @@ class TempCartItem extends HiveObject {
     bool? manageSalesWastage,
     bool? isPercentageWastage,
     double? wastageAmount,
+    String? wastageUnitUuid,
   }) {
     return TempCartItem(
       item: item ?? this.item,
@@ -280,6 +289,7 @@ class TempCartItem extends HiveObject {
       isPercentageWastage:
           isPercentageWastage ?? this.isPercentageWastage,
       wastageAmount: wastageAmount ?? this.wastageAmount,
+      wastageUnitUuid: wastageUnitUuid ?? this.wastageUnitUuid,
     );
   }
 
@@ -538,13 +548,36 @@ class TempCartItem extends HiveObject {
     );
   }
 
+  // Area one unit of fixed wastage stands for: its unit converted
+  // like the sale quantity (piece units at the line's cut size).
+  // 1 without a stored unit (older lines kept the amount in area)
+  // or when the unit is no longer in the line's list.
+  double wastageAreaPerUnit() {
+    if (wastageUnitUuid == null) return 1;
+    final unit =
+        getUnitsList()
+            .where((unit) => unit.uuid == wastageUnitUuid)
+            .firstOrNull;
+    if (unit == null) return 1;
+    return unit.getQuantityEquivMultiplied(
+      index: 1,
+      product: item,
+      newQuantity: 1,
+      customWidth: widthDimension,
+      customHeight: heightDimension,
+    );
+  }
+
   // Wastage area on a 2D line, from [baseArea] (the line's
   // area by default). 0 for other items.
   double wastageArea({double? baseArea}) {
     if (item.quantityType != 2) return 0;
     return computeWastageArea(
       baseArea: baseArea ?? getRealQuantity(),
-      amount: wastageAmount,
+      amount:
+          isPercentageWastage == true || wastageAmount == null
+              ? wastageAmount
+              : wastageAmount! * wastageAreaPerUnit(),
       isPercentage: isPercentageWastage,
     );
   }
@@ -552,6 +585,44 @@ class TempCartItem extends HiveObject {
   // Area taken from stock and billed: line area + wastage.
   double getStockQuantity() {
     return getRealQuantity() + wastageArea();
+  }
+
+  // getStockQuantity() in the sale unit: 1 slab + 0.3 m² of
+  // wastage on a 3 m² slab is 1.1. Equal to quantity without
+  // wastage (and for 1D lines).
+  double displayQuantity() {
+    final wastage = wastageArea();
+    if (wastage <= 0) return quantity;
+    final base = getRealQuantity();
+    if (base <= 0) return quantity;
+    return quantity + quantity * wastage / base;
+  }
+
+  double wastageInSaleUnit() => displayQuantity() - quantity;
+
+  // Quantity and wastage for item-history text: unchanged
+  // ("2.0", "") without wastage, "1.1" and " (incl. 0.1 wastage)"
+  // with it.
+  String quantityText() {
+    return wastageInSaleUnit() <= 1e-9
+        ? '$quantity'
+        : formatDimension(displayQuantity());
+  }
+
+  String historyWastageText() {
+    final wastage = wastageInSaleUnit();
+    return wastage <= 1e-9
+        ? ''
+        : ' (incl. ${formatDimension(wastage)} wastage)';
+  }
+
+  // "incl. 0.1 Slab wastage", or '' without wastage.
+  String wastageNote() {
+    final wastage = wastageInSaleUnit();
+    if (wastage <= 1e-9) return '';
+    final unitName = getSelectedUnit().name;
+    return 'incl. ${formatDimension(wastage)} '
+        '${unitName == 'Others' ? 'Unit(s)' : unitName} wastage';
   }
 
   // A separate copy of this line with the sale dialog's pending
@@ -569,6 +640,7 @@ class TempCartItem extends HiveObject {
     required bool setTotalPrice,
     required double? wastageAmount,
     required bool? isPercentageWastage,
+    required String? wastageUnitUuid,
   }) {
     // Same default as SalesProvider.applyDefaultDimensions.
     final useItemSize =
@@ -601,6 +673,7 @@ class TempCartItem extends HiveObject {
       manageSalesWastage: manageSalesWastage,
       isPercentageWastage: isPercentageWastage,
       wastageAmount: wastageAmount,
+      wastageUnitUuid: wastageUnitUuid,
     );
   }
 

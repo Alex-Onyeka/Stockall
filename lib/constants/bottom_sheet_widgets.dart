@@ -1274,6 +1274,9 @@ void selectProductSales({
   TempCartItem cartItem = cartItemTemp.copyWith();
 
   bool isPercentageWastage = false;
+  // Unit fixed (#) wastage is entered in; null follows the sale
+  // unit until one is picked.
+  String? wastageUnitUuid;
 
   String? unitUuid;
   String? priceUuid;
@@ -1364,16 +1367,12 @@ void selectProductSales({
             3;
   }
 
-  // Wastage area the entered value adds to [area].
-  double dialogWastage(double area) {
-    if (!showWastage()) return 0;
-    return computeWastageArea(
-      baseArea: area,
-      amount: double.tryParse(
-        wastageController.text.replaceAll(',', '').trim(),
-      ),
-      isPercentage: isPercentageWastage,
-    );
+  // Unit the wastage is saved with: the picked unit, else the
+  // sale unit. % wastage is a share of the sale quantity, so it
+  // always takes the sale unit.
+  String? selectedWastageUnit() {
+    if (isPercentageWastage) return unitUuid;
+    return wastageUnitUuid ?? unitUuid;
   }
 
   // Name of the item's base area unit, for stock messages.
@@ -1500,6 +1499,7 @@ void selectProductSales({
         wastageController.text.replaceAll(',', ''),
       );
       cartItem.isPercentageWastage = isPercentageWastage;
+      cartItem.wastageUnitUuid = selectedWastageUnit();
       cartItem.manageSalesWastage = true;
     }
     // print(cartItem.getSelectedUnit().name);
@@ -1570,6 +1570,37 @@ void selectProductSales({
         cartItemTemp.isPercentageWastage ?? false;
     wastageController.text =
         cartItem.wastageAmount?.toString() ?? '';
+    // Reopen in the unit the wastage was entered in. Older lines
+    // kept a fixed amount in area: show it in the item's area
+    // unit, or converted to the sale unit if there is none.
+    if (cartItem.wastageUnitUuid != null) {
+      wastageUnitUuid = cartItem.wastageUnitUuid;
+    } else if (!isPercentageWastage &&
+        cartItem.wastageAmount != null) {
+      final areaUnit =
+          tempUnitList
+              .where(
+                (unit) =>
+                    unit.dimensionType ==
+                        ProductUnitsClass.areaUnit &&
+                    unit.conversion == 1,
+              )
+              .firstOrNull;
+      if (areaUnit != null) {
+        wastageUnitUuid = areaUnit.uuid;
+      } else {
+        final areaPerSaleUnit =
+            cartItem
+                .copyWith(wastageUnitUuid: unitUuid)
+                .wastageAreaPerUnit();
+        if (areaPerSaleUnit > 0) {
+          wastageController.text = formatDimension(
+            cartItem.wastageAmount! / areaPerSaleUnit,
+          ).replaceAll(',', '');
+        }
+        wastageUnitUuid = unitUuid;
+      }
+    }
     qttyNode.requestFocus();
     quantityController.text = cartItem.quantity.toString();
     qqty = cartItem.quantity.toDouble();
@@ -1587,20 +1618,11 @@ void selectProductSales({
   }
   qttyNode.requestFocus();
 
-  // Quantity the line is billed for: area + wastage.
-  double billedQuantity() {
-    final area = getPrimaryUnitQuantityMultiplied(
-      context: context,
-      newQuantity: qqty,
-    );
-    return area + dialogWastage(area);
-  }
-
-  // Priced by the same totalCost() the cart line will use, on a
-  // copy holding the values entered so far.
-  String formatSellingPrice(TempCartItem cartItem) {
-    return cartItem
-        .previewWith(
+  // The line as it will be added, from the values entered so
+  // far. The price preview, stock check and wastage message all
+  // read it, so they match the cart line.
+  TempCartItem previewLine() {
+    return cartItem.previewWith(
           quantity: qqty,
           unitUuid: unitUuid,
           priceUuid: priceUuid,
@@ -1631,9 +1653,19 @@ void selectProductSales({
               showWastage()
                   ? isPercentageWastage
                   : cartItem.isPercentageWastage,
-        )
-        .totalCost()
-        .toString();
+          wastageUnitUuid:
+              showWastage()
+                  ? selectedWastageUnit()
+                  : cartItem.wastageUnitUuid,
+        );
+  }
+
+  // Quantity taken from stock and billed: area + wastage.
+  double billedQuantity() => previewLine().getStockQuantity();
+
+  // Priced by the same totalCost() the cart line will use.
+  String formatSellingPrice(TempCartItem cartItem) {
+    return previewLine().totalCost().toString();
   }
 
   showDialog(
@@ -2390,6 +2422,52 @@ void selectProductSales({
                               ),
                             ),
 
+                            // A fixed amount can be entered in any
+                            // of the item's units.
+                            Visibility(
+                              visible:
+                                  showWastage() &&
+                                  !isPercentageWastage,
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                  bottom: 10,
+                                ),
+                                child: Column(
+                                  spacing: 5,
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b4
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      'Wastage Unit:',
+                                    ),
+                                    UnitSelectionWidget(
+                                      unitList: tempUnitList,
+                                      product: null,
+                                      storageProduct: null,
+                                      productionItem: null,
+                                      material: null,
+                                      theme: theme,
+                                      showSelectUnitText: false,
+                                      unitUuid:
+                                          selectedWastageUnit(),
+                                      setUnitUuid: (d) {
+                                        setState(() {
+                                          wastageUnitUuid = d;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+
                             Container(
                               decoration: BoxDecoration(
                                 borderRadius:
@@ -2740,15 +2818,14 @@ void selectProductSales({
                                         // Dimensions and wastage can
                                         // change after the quantity
                                         // was checked.
+                                        final preview =
+                                            previewLine();
                                         final cutArea =
-                                            getPrimaryUnitQuantityMultiplied(
-                                              newQuantity:
-                                                  qqty,
-                                            );
+                                            preview
+                                                .getRealQuantity();
                                         final wastage =
-                                            dialogWastage(
-                                              cutArea,
-                                            );
+                                            preview
+                                                .wastageArea();
                                         showDialog(
                                           context: context,
                                           builder: (

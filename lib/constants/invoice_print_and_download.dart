@@ -1028,7 +1028,7 @@ Future<Uint8List> _buildPdfInvoice({
                               style: pw.TextStyle(
                                 fontSize: 10,
                               ),
-                              '${record.productName}${record.dimensionsLabel()} ',
+                              '${record.productName}${record.dimensionsLabel()} ${record.wastageNote().isEmpty ? '' : '\n${record.wastageNote()}'}',
                             ),
                           ),
                           pw.Expanded(
@@ -1037,7 +1037,7 @@ Future<Uint8List> _buildPdfInvoice({
                               style: pw.TextStyle(
                                 fontSize: 8,
                               ),
-                              '[ ${formatLargeNumberDouble(record.quantity)} ] ',
+                              '[ ${formatLargeNumberDouble(record.displayQuantity())} ] ',
                             ),
                           ),
                           pw.Expanded(
@@ -1076,7 +1076,7 @@ Future<Uint8List> _buildPdfInvoice({
                                     font: fontRegular,
                                     fontSize: 7,
                                   ),
-                                  "${formatMoneyMid(amount: ((invoice.fixedDiscount == null && invoice.generalDiscount == null) && record.discount != null ? ((record.originalCost ?? 0) - (record.discountedAmount ?? 0)) : (record.originalCost ?? 0) / record.quantity), context: context)} per 1",
+                                  "${formatMoneyMid(amount: ((invoice.fixedDiscount == null && invoice.generalDiscount == null) && record.discount != null ? ((record.originalCost ?? 0) - (record.discountedAmount ?? 0)) : (record.originalCost ?? 0) / record.priceQuantity()), context: context)} per 1",
                                 ),
                               ],
                             ),
@@ -2268,7 +2268,7 @@ Future<Uint8List> _buildPdfRollInvoice({
                             style: pw.TextStyle(
                               fontSize: parText,
                             ),
-                            '${record.productName}${record.dimensionsLabel()} ',
+                            '${record.productName}${record.dimensionsLabel()} ${record.wastageNote().isEmpty ? '' : '\n${record.wastageNote()}'}',
                           ),
                         ),
                         pw.Expanded(
@@ -2277,7 +2277,7 @@ Future<Uint8List> _buildPdfRollInvoice({
                             style: pw.TextStyle(
                               fontSize: parTextAlt,
                             ),
-                            '( ${formatLargeNumberDouble(record.quantity)} ) ',
+                            '( ${formatLargeNumberDouble(record.displayQuantity())} ) ',
                           ),
                         ),
                         pw.Expanded(

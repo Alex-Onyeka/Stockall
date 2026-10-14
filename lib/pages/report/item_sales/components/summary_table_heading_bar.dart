@@ -43,7 +43,7 @@ class _SummaryTableHeadingBarState
   double getTotalQuantity() {
     double tempTotal = 0;
     for (var item in widget.salesRecords) {
-      tempTotal += item.quantity;
+      tempTotal += item.displayQuantity();
     }
     return tempTotal;
   }

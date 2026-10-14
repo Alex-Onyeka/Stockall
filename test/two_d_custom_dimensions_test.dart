@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
+import 'package:stockall/classes/temp_drafts/draft_items.dart';
 import 'package:stockall/classes/temp_main_cart/temp_main_cart.dart';
 import 'package:stockall/classes/temp_orders/order_items.dart';
 import 'package:stockall/classes/temp_product_class/prices_class/product_prices_class.dart';
@@ -1134,6 +1136,49 @@ void main() {
       expect(deducts(true, false, 0), isFalse);
       expect(deducts(false, true, 5), isFalse);
     });
+
+    // The same reference numbers with the wastage unit stored
+    // (m²), and as older lines without one (amount in area).
+    for (final wastageUnit in [m2.uuid, null]) {
+      final label = wastageUnit == null ? 'no unit' : 'm² unit';
+
+      test('$label: 8 m² + 0.5 m² = 8.5 m², ₦42,500', () {
+        final line = sale8(amount: 0.5, isPercentage: false)
+          ..wastageUnitUuid = wastageUnit;
+        expect(line.getStockQuantity(), 8.5);
+        expect(line.totalCost(), 42500);
+      });
+
+      test('$label: 8 m² + 10% = 8.8 m², ₦44,000', () {
+        final line = sale8(amount: 10, isPercentage: true)
+          ..wastageUnitUuid = wastageUnit;
+        expect(line.getStockQuantity(), closeTo(8.8, 1e-9));
+        expect(line.totalCost(), closeTo(44000, 1e-6));
+      });
+
+      test('$label: 8 m² stock rejects +0.5, accepts +0', () {
+        final over = sale8(amount: 0.5, isPercentage: false)
+          ..wastageUnitUuid = wastageUnit;
+        final exact = sale8(amount: 0, isPercentage: false)
+          ..wastageUnitUuid = wastageUnit;
+        expect(
+          SalesProvider().canAddProductToCart(
+            newCartItem: over,
+            quantityToAdd: over.getStockQuantity(),
+            isEdit: false,
+          ),
+          isFalse,
+        );
+        expect(
+          SalesProvider().canAddProductToCart(
+            newCartItem: exact,
+            quantityToAdd: exact.getStockQuantity(),
+            isEdit: false,
+          ),
+          isTrue,
+        );
+      });
+    }
   });
 
   group('order carts drop wastage', () {
@@ -1482,6 +1527,7 @@ void main() {
           setTotalPrice: setTotalPrice,
           wastageAmount: wastageAmount,
           isPercentageWastage: isPercentageWastage,
+          wastageUnitUuid: null,
         );
 
         final added = base.copyWith()
@@ -1607,6 +1653,7 @@ void main() {
           setTotalPrice: true,
           wastageAmount: 3,
           isPercentageWastage: false,
+          wastageUnitUuid: null,
         );
         // Change everything reachable from the preview.
         preview.quantity = 99;
@@ -1719,6 +1766,347 @@ void main() {
           expect(rebuilt.totalCost(), 300);
         }
       });
+    });
+  });
+
+  // A 3 × 1 slab (3 m²) sold per Slab, ₦5,000 per m².
+  group('wastage units and combined quantity', () {
+    final slab = ProductUnitsClass(
+      uuid: 'unit-slab',
+      staffUuid: null,
+      createdAt: DateTime.utc(2026),
+      staffName: null,
+      conversion: 1,
+      name: 'Slab',
+      isPrimary: true,
+      productUuid: 'marble',
+      dimensionType: ProductUnitsClass.sheetUnit,
+    );
+    final sqm = ProductUnitsClass(
+      uuid: 'unit-sqm',
+      staffUuid: null,
+      createdAt: DateTime.utc(2026),
+      staffName: null,
+      conversion: 1,
+      name: 'm²',
+      isPrimary: false,
+      productUuid: 'marble',
+      dimensionType: ProductUnitsClass.areaUnit,
+    );
+    final sqmPrice = ProductPricesClass(
+      uuid: 'price-sqm',
+      staffUuid: null,
+      createdAt: DateTime.utc(2026),
+      staffName: null,
+      priceValue: 5000,
+      name: 'Price',
+      isPrimary: true,
+      itemUuid: 'marble',
+    );
+
+    TempProductClass marble() {
+      return buildSheet()
+        ..uuid = 'marble'
+        ..name = 'Marble'
+        ..widthDimension = 3
+        ..heightDimension = 1
+        ..unitsList = [slab, sqm]
+        ..pricesList = [sqmPrice];
+    }
+
+    TempCartItem slabLine({
+      double quantity = 1,
+      double width = 3,
+      double height = 1,
+      double? amount,
+      bool? isPercentage = false,
+      String? wastageUnit,
+    }) {
+      return TempCartItem(
+        item: marble(),
+        itemUuid: 'marble',
+        quantity: quantity,
+        discount: null,
+        addToStock: false,
+        setTotalPrice: false,
+        useWholeSalePrice: false,
+        useGroupQuantity: false,
+        qttyPerGroup: null,
+        isVoid: false,
+        uuid: 'slab-line',
+        unitUuid: slab.uuid,
+        priceUuid: sqmPrice.uuid,
+        widthDimension: width,
+        heightDimension: height,
+        quantityType: 2,
+        manageSalesWastage: amount == null ? null : true,
+        isPercentageWastage: isPercentage,
+        wastageAmount: amount,
+        wastageUnitUuid: wastageUnit,
+      );
+    }
+
+    // The record checkout saves for [line] (buildSaleRecords).
+    TempProductSaleRecord recordOf(TempCartItem line) {
+      return TempProductSaleRecord(
+        createdAt: DateTime.utc(2026),
+        productId: 0,
+        productUuid: line.item.uuid,
+        productName: line.item.name,
+        shopId: 1,
+        staffId: 'staff-1',
+        staffName: 'Staff',
+        recepitId: 0,
+        quantity: line.quantity,
+        revenue: line.totalCost(),
+        discountedAmount: 0,
+        originalCost: line.totalCost(),
+        discount: null,
+        customPriceSet: line.customPrice != null,
+        setTotalPrice: line.setTotalPrice,
+        departmentName: null,
+        departmentUuid: null,
+        uuid: 'slab-record',
+        isProductManaged: true,
+        useGroupQuantity: false,
+        qttyPerGroup: null,
+        isVoid: false,
+        unitsList: line.getUnitListFinal(),
+        unitUuid: line.unitUuid,
+        pricesList: line.getPriceListFinal(),
+        priceUuid: line.priceUuid,
+        widthDimension: line.widthDimension,
+        heightDimension: line.heightDimension,
+        quantityType: line.item.quantityType,
+        manageSalesWastage: line.manageSalesWastage,
+        isPercentageWastage: line.isPercentageWastage,
+        wastageAmount: line.wastageAmount,
+        wastageUnitUuid: line.wastageUnitUuid,
+      );
+    }
+
+    test('1 Slab + 0.3 m² = 3.3 m², shown as 1.1 Slab', () {
+      final line = slabLine(amount: 0.3, wastageUnit: sqm.uuid);
+      expect(line.getRealQuantity(), 3);
+      expect(line.getStockQuantity(), closeTo(3.3, 1e-9));
+      expect(line.displayQuantity(), closeTo(1.1, 1e-9));
+      expect(line.wastageInSaleUnit(), closeTo(0.1, 1e-9));
+      expect(line.wastageNote(), 'incl. 0.1 Slab wastage');
+      expect(line.totalCost(), closeTo(16500, 1e-6));
+      // Storage keeps them apart.
+      expect(line.quantity, 1);
+      expect(line.wastageAmount, 0.3);
+    });
+
+    test('1 Slab + 0.1 Slab is the same 3.3 m²', () {
+      final line = slabLine(amount: 0.1, wastageUnit: slab.uuid);
+      expect(line.getStockQuantity(), closeTo(3.3, 1e-9));
+      expect(line.displayQuantity(), closeTo(1.1, 1e-9));
+      expect(line.totalCost(), closeTo(16500, 1e-6));
+    });
+
+    test('a Slab of wastage is the line\'s cut size', () {
+      // 1 piece cut at 1 × 1.5: 0.1 Slab is 0.15 m².
+      final line = slabLine(
+        width: 1,
+        height: 1.5,
+        amount: 0.1,
+        wastageUnit: slab.uuid,
+      );
+      expect(line.getRealQuantity(), 1.5);
+      expect(line.wastageArea(), closeTo(0.15, 1e-9));
+      expect(line.displayQuantity(), closeTo(1.1, 1e-9));
+    });
+
+    test('no wastage unit (older lines): the amount is area', () {
+      final line = slabLine(amount: 0.3, wastageUnit: null);
+      expect(line.getStockQuantity(), closeTo(3.3, 1e-9));
+      expect(line.displayQuantity(), closeTo(1.1, 1e-9));
+    });
+
+    test('percent ignores the unit: 10% of the sale quantity', () {
+      for (final unit in [null, slab.uuid, sqm.uuid]) {
+        final line = slabLine(
+          amount: 10,
+          isPercentage: true,
+          wastageUnit: unit,
+        );
+        expect(line.getStockQuantity(), closeTo(3.3, 1e-9));
+        expect(line.displayQuantity(), closeTo(1.1, 1e-9));
+      }
+    });
+
+    test('edit → save → edit keeps 1 + 0.1, never 1.2', () {
+      TempCartItem line =
+          slabLine(amount: 0.1, wastageUnit: slab.uuid)
+            ..customPrice = 5000
+            ..setCustomPrice = true;
+      for (var round = 0; round < 3; round++) {
+        for (final rebuilt in [
+          SalesProvider().saleRecordToCartItem(
+            record: recordOf(line),
+            product: marble(),
+          ),
+          InvoicesProvider().saleRecordToCartItem(
+            record: recordOf(line),
+            product: marble(),
+          ),
+        ]) {
+          expect(rebuilt.quantity, 1);
+          expect(rebuilt.wastageAmount, 0.1);
+          expect(rebuilt.wastageUnitUuid, slab.uuid);
+          expect(rebuilt.displayQuantity(), closeTo(1.1, 1e-9));
+          expect(rebuilt.customPrice, closeTo(5000, 1e-9));
+          expect(rebuilt.totalCost(), closeTo(16500, 1e-6));
+        }
+        line = SalesProvider().saleRecordToCartItem(
+          record: recordOf(line),
+          product: marble(),
+        );
+      }
+    });
+
+    test('delete restores 1 + 0.1 = 1.1 Slab (3.3 m²)', () {
+      final line = slabLine(amount: 0.1, wastageUnit: slab.uuid);
+      final record = recordOf(line);
+      // Same expression as deleteRecordsInReceipt/Invoice.
+      expect(
+        record.getStockQuantity(),
+        closeTo(line.getStockQuantity(), 1e-9),
+      );
+      expect(record.getStockQuantity(), closeTo(3.3, 1e-9));
+      expect(
+        record.getStockQuantity() / marble().dimensionArea(),
+        closeTo(1.1, 1e-9),
+      );
+      expect(record.displayQuantity(), closeTo(1.1, 1e-9));
+      // Item history: same unit as before (Slab), with wastage.
+      expect(record.quantityText(), '1.1');
+      expect(
+        record.historyWastageText(),
+        ' (incl. 0.1 wastage)',
+      );
+    });
+
+    test('older record without a wastage unit stays in area', () {
+      final record = recordOf(
+        slabLine(amount: 0.3, wastageUnit: null),
+      );
+      expect(record.wastageUnitUuid, isNull);
+      expect(record.getStockQuantity(), closeTo(3.3, 1e-9));
+      final rebuilt = SalesProvider().saleRecordToCartItem(
+        record: record,
+        product: marble(),
+      );
+      expect(rebuilt.wastageUnitUuid, isNull);
+      expect(rebuilt.getStockQuantity(), closeTo(3.3, 1e-9));
+    });
+
+    test('per-1 price: custom totals divide by the sale quantity', () {
+      final customTotal = recordOf(
+        slabLine(amount: 0.1, wastageUnit: slab.uuid)
+          ..customPrice = 500
+          ..setCustomPrice = true
+          ..setTotalPrice = true,
+      );
+      expect(customTotal.originalCost, 500);
+      expect(customTotal.priceQuantity(), 1);
+      expect(customTotal.priceBaseQuantity(), 3);
+
+      final priced = recordOf(
+        slabLine(amount: 0.1, wastageUnit: slab.uuid),
+      );
+      expect(priced.priceQuantity(), closeTo(1.1, 1e-9));
+      expect(priced.priceBaseQuantity(), closeTo(3.3, 1e-9));
+      // ₦5,000 per m², not inflated by the wastage.
+      expect(
+        priced.originalCost! / priced.priceBaseQuantity(),
+        closeTo(5000, 1e-6),
+      );
+    });
+
+    test('1D lines are unchanged', () {
+      final line = buildLine(quantity: 2, width: null, height: null)
+        ..item.quantityType = 1
+        ..wastageAmount = 0.5
+        ..isPercentageWastage = false
+        ..wastageUnitUuid = unit.uuid;
+      expect(line.displayQuantity(), 2);
+      expect(line.wastageNote(), '');
+      expect(line.quantityText(), '2.0');
+      expect(line.historyWastageText(), '');
+      final record = recordOf(line)..quantityType = 1;
+      expect(record.displayQuantity(), 2);
+      expect(record.priceQuantity(), 2);
+      expect(record.wastageNote(), '');
+    });
+
+    test('order carts clear the wastage unit too', () {
+      final line = slabLine(amount: 0.1, wastageUnit: slab.uuid);
+      SalesProvider().clearOrderWastage(
+        buildCart([line])..cartItemTypeIndex = 3,
+      );
+      expect(line.wastageAmount, isNull);
+      expect(line.wastageUnitUuid, isNull);
+      expect(line.displayQuantity(), 1);
+    });
+
+    test('JSON keeps the wastage unit (cart, record, draft)', () {
+      final line = slabLine(amount: 0.1, wastageUnit: slab.uuid);
+      expect(
+        TempCartItem.fromJson(
+          jsonDecode(jsonEncode(line.toJson())),
+        ).wastageUnitUuid,
+        slab.uuid,
+      );
+      expect(
+        TempProductSaleRecord.fromJson(
+          jsonDecode(jsonEncode(recordOf(line).toJson())),
+        ).wastageUnitUuid,
+        slab.uuid,
+      );
+
+      final draft = DraftItems(
+        uuid: 'draft-line',
+        draftId: 'draft-1',
+        createdAt: DateTime.utc(2026),
+        productUuid: 'marble',
+        productName: 'Marble',
+        quantity: 1,
+        customPrice: null,
+        setCustomPrice: false,
+        setTotalPrice: false,
+        useWholeSalePrice: false,
+        addToStock: false,
+        discount: null,
+        fixedDiscount: null,
+        useGroupQuantity: false,
+        qttyPerGroup: null,
+        isVoid: false,
+        unit: 'Slab',
+        groupUnit: null,
+        unitUuid: slab.uuid,
+        unitsList: [slab, sqm],
+        priceUuid: sqmPrice.uuid,
+        pricesList: [sqmPrice],
+        sellingPrice: 5000,
+        costPrice: 0,
+        isProductManaged: true,
+        revenue: 16500,
+        widthDimension: 3,
+        heightDimension: 1,
+        quantityType: 2,
+        manageSalesWastage: true,
+        isPercentageWastage: false,
+        wastageAmount: 0.1,
+        wastageUnitUuid: slab.uuid,
+      );
+      final restored = DraftItems.fromJson(
+        jsonDecode(jsonEncode(draft.toJson())),
+      );
+      expect(restored.wastageUnitUuid, slab.uuid);
+      expect(restored.wastageAmount, 0.1);
+      expect(restored.quantity, 1);
     });
   });
 }

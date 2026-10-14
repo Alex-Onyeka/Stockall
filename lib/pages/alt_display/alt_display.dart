@@ -997,6 +997,19 @@ class _CartItemAltState extends State<CartItemAlt> {
                           ),
                         ],
                       ),
+                      Visibility(
+                        visible:
+                            widget.cartItem
+                                .wastageNote()
+                                .isNotEmpty,
+                        child: Text(
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.grey.shade700,
+                          ),
+                          widget.cartItem.wastageNote(),
+                        ),
+                      ),
                       Row(
                         mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
@@ -1071,7 +1084,7 @@ class _CartItemAltState extends State<CartItemAlt> {
                                               formatLargeNumberDouble(
                                                 widget
                                                     .cartItem
-                                                    .quantity,
+                                                    .displayQuantity(),
                                               ),
                                             ),
                                             Text(

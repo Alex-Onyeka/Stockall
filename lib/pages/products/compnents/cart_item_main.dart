@@ -123,6 +123,23 @@ class _CartItemMainState extends State<CartItemMain> {
                                       Visibility(
                                         visible:
                                             widget.cartItem
+                                                .wastageNote()
+                                                .isNotEmpty,
+                                        child: Text(
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color:
+                                                Colors
+                                                    .grey
+                                                    .shade700,
+                                          ),
+                                          widget.cartItem
+                                              .wastageNote(),
+                                        ),
+                                      ),
+                                      Visibility(
+                                        visible:
+                                            widget.cartItem
                                                     .getItem()
                                                     ?.color !=
                                                 null ||
@@ -411,7 +428,7 @@ class _CartItemMainState extends State<CartItemMain> {
                                                 formatLargeNumberDouble(
                                                   widget
                                                       .cartItem
-                                                      .quantity,
+                                                      .displayQuantity(),
                                                 ),
                                               ),
                                               Text(
