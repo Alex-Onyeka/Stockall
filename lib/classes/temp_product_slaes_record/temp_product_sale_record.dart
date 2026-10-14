@@ -718,9 +718,9 @@ class TempProductSaleRecord {
             ProductUnitsClass.areaUnit) {
       return quantity * conversion;
     }
-    if (quantityType == 2 &&
-        selectedUnit.dimensionType ==
-            ProductUnitsClass.sheetUnit) {
+    // Sheet units, and units without a dimension type, count
+    // pieces of the line's size, as the cart does.
+    if (quantityType == 2) {
       return quantity * conversion * dimensionArea();
     }
     return quantity * conversion;

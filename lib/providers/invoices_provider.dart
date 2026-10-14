@@ -821,11 +821,11 @@ class InvoicesProvider extends ChangeNotifier {
           record.setTotalPrice == true) {
         tempRev = record.originalCost ?? 0;
       } else {
-        // originalCost was billed on area + wastage.
+        // originalCost was billed on the line's base quantity
+        // (area for 2D, after unit conversion) + wastage.
         tempRev =
             (record.originalCost ?? 0) /
-            (record.quantity * record.dimensionArea() +
-                record.wastageArea());
+            (record.getActualQuantity() + record.wastageArea());
       }
     }
     return TempCartItem(

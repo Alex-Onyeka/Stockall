@@ -1020,6 +1020,120 @@ void main() {
         'available.',
       );
     });
+
+    // Item 2: checkout re-check.
+    void useCart(
+      List<TempCartItem> lines, {
+      int type = 1,
+      List<TempCartItem>? snapshot,
+    }) {
+      final cart = buildCart(lines)..cartItemTypeIndex = type;
+      if (snapshot != null) {
+        cart
+          ..receiptUuidEdit = 'receipt-1'
+          ..tempCartItems = snapshot;
+      }
+      SalesProvider().mainCartQueue = [
+        TempMainCart(cartQueue: [cart], mainCartId: 'main-1'),
+      ];
+    }
+
+    test('checkout: 8.5 m² needed, 8 m² in stock is blocked', () {
+      useCart([sale8(amount: 0.5, isPercentage: false)]);
+      expect(
+        SalesProvider().checkoutStockConflict(),
+        'Not enough stock for Glass. This sale needs 8.5 m² '
+        'but only 8 m² is available. Reduce the quantity or '
+        'remove the item before checking out.',
+      );
+    });
+
+    test('checkout: exactly 8 m² goes through', () {
+      useCart([sale8(amount: null)]);
+      expect(SalesProvider().checkoutStockConflict(), isNull);
+    });
+
+    test('checkout: lines of the same item are added up', () {
+      useCart([
+        sale8(amount: null)..quantity = 4,
+        sale8(amount: null)
+          ..uuid = 'sale-8b'
+          ..quantity = 4.5,
+      ]);
+      expect(
+        SalesProvider().checkoutStockConflict(),
+        contains('needs 8.5 m²'),
+      );
+    });
+
+    test('checkout: 1D managed item with 0 stock is blocked', () {
+      final soda = buildSheet(quantity: 0)
+        ..uuid = 'soda'
+        ..name = 'Soda'
+        ..quantityType = 1
+        ..widthDimension = null
+        ..heightDimension = null;
+      DataProvider().productListMain = [soda];
+      useCart([
+        TempCartItem.forProduct(soda),
+      ]);
+      expect(
+        SalesProvider().checkoutStockConflict(),
+        'Not enough stock for Soda. This sale needs 1 Sq Unit '
+        'but only 0 Sq Unit is available. Reduce the quantity '
+        'or remove the item before checking out.',
+      );
+    });
+
+    test('checkout edit: the old lines count as available', () {
+      // The original sale took all 8 m²; stock is now 0.
+      DataProvider().productListMain = [
+        board()..quantity = 0,
+      ];
+      final snapshot = [sale8(amount: null)];
+
+      useCart([sale8(amount: null)], snapshot: snapshot);
+      expect(SalesProvider().checkoutStockConflict(), isNull);
+
+      useCart(
+        [sale8(amount: 0.5, isPercentage: false)],
+        snapshot: snapshot,
+      );
+      expect(
+        SalesProvider().checkoutStockConflict(),
+        contains('needs 8.5 m² but only 8 m²'),
+      );
+    });
+
+    test('checkout: unmanaged items and stock-free carts pass', () {
+      final over = sale8(amount: 5, isPercentage: false);
+
+      for (final type in [3, 4]) {
+        useCart([over], type: type);
+        expect(SalesProvider().checkoutStockConflict(), isNull);
+      }
+
+      DataProvider().productListMain = [
+        board()..isManaged = false,
+      ];
+      useCart([over]);
+      expect(SalesProvider().checkoutStockConflict(), isNull);
+    });
+
+    test('shouldDeductStock: managed stock items deduct at 0', () {
+      bool deducts(bool managed, bool listed, double stock) =>
+          SalesProvider().shouldDeductStock(
+            isManaged: managed,
+            inProductList: listed,
+            stock: stock,
+          );
+      expect(deducts(true, true, 0), isTrue);
+      expect(deducts(true, true, 5), isTrue);
+      // Not in the stock list (custom item): old rule.
+      expect(deducts(true, false, 5), isTrue);
+      expect(deducts(true, false, 0), isFalse);
+      expect(deducts(false, true, 5), isFalse);
+    });
   });
 
   group('order carts drop wastage', () {
@@ -1050,6 +1164,561 @@ void main() {
       );
       expect(receiptLine.wastageAmount, 10);
       expect(receiptLine.totalCost(), closeTo(660, 1e-9));
+    });
+  });
+
+  group('follow-ups', () {
+    // A 1D item sold per "Each" (primary) or per "Group" of 12,
+    // ₦100 each.
+    final each = ProductUnitsClass(
+      uuid: 'unit-each',
+      staffUuid: null,
+      createdAt: DateTime.utc(2026),
+      staffName: null,
+      conversion: 1,
+      name: 'Each',
+      isPrimary: true,
+      productUuid: 'soda',
+    );
+    final group12 = ProductUnitsClass(
+      uuid: 'unit-group',
+      staffUuid: null,
+      createdAt: DateTime.utc(2026),
+      staffName: null,
+      conversion: 12,
+      name: 'Group',
+      isPrimary: false,
+      productUuid: 'soda',
+    );
+
+    TempProductClass soda() {
+      return buildSheet()
+        ..uuid = 'soda'
+        ..name = 'Soda'
+        ..quantityType = 1
+        ..widthDimension = null
+        ..heightDimension = null
+        ..manageSalesWastage = false
+        ..unitsList = [each, group12];
+    }
+
+    TempCartItem lineOf(
+      TempProductClass product, {
+      required String unitUuid,
+      required double quantity,
+      double? width,
+      double? height,
+    }) {
+      return TempCartItem(
+        item: product,
+        itemUuid: product.uuid,
+        quantity: quantity,
+        discount: null,
+        addToStock: false,
+        setTotalPrice: false,
+        useWholeSalePrice: false,
+        useGroupQuantity: false,
+        qttyPerGroup: null,
+        isVoid: false,
+        uuid: 'line-x',
+        unitUuid: unitUuid,
+        priceUuid: price.uuid,
+        widthDimension: width,
+        heightDimension: height,
+        quantityType: product.quantityType,
+        manageSalesWastage: null,
+        isPercentageWastage: null,
+        wastageAmount: null,
+      );
+    }
+
+    // The record checkout saves for [line].
+    TempProductSaleRecord recordFor(
+      TempCartItem line, {
+      double? originalCost,
+    }) {
+      return TempProductSaleRecord(
+        createdAt: DateTime.utc(2026),
+        productId: 0,
+        productUuid: line.item.uuid,
+        productName: line.item.name,
+        shopId: 1,
+        staffId: 'staff-1',
+        staffName: 'Staff',
+        recepitId: 0,
+        quantity: line.quantity,
+        revenue: originalCost ?? line.totalCost(),
+        discountedAmount: 0,
+        originalCost: originalCost ?? line.totalCost(),
+        discount: null,
+        customPriceSet: line.customPrice != null,
+        setTotalPrice: line.setTotalPrice,
+        departmentName: null,
+        departmentUuid: null,
+        uuid: 'record-x',
+        isProductManaged: true,
+        useGroupQuantity: false,
+        qttyPerGroup: null,
+        isVoid: false,
+        unitsList: line.getUnitListFinal(),
+        unitUuid: line.unitUuid,
+        pricesList: line.getPriceListFinal(),
+        priceUuid: line.priceUuid,
+        widthDimension: line.widthDimension,
+        heightDimension: line.heightDimension,
+        quantityType: line.item.quantityType,
+        manageSalesWastage: line.manageSalesWastage,
+        isPercentageWastage: line.isPercentageWastage,
+        wastageAmount: line.wastageAmount,
+      );
+    }
+
+    void useCart(List<TempCartItem> lines) {
+      SalesProvider().mainCartQueue = [
+        TempMainCart(
+          cartQueue: [buildCart(lines)],
+          mainCartId: 'main-1',
+        ),
+      ];
+      SalesProvider().mainCartIdCache = 'main-1';
+      SalesProvider().cartIdCache = 'cart-1';
+    }
+
+    // Item 3.
+    group('barcode lines (forProduct)', () {
+      test('2D: takes the product\'s type, size and fields', () {
+        final product = buildSheet()
+          ..discount = 10
+          ..qttyPerGroup = 5;
+        final line = TempCartItem.forProduct(product);
+        expect(line.quantityType, 2);
+        expect(line.quantity, 1);
+        expect(line.widthDimension, 4);
+        expect(line.heightDimension, 3);
+        expect(line.manageSalesWastage, isTrue);
+        expect(line.wastageAmount, isNull);
+        expect(line.unitUuid, unit.uuid);
+        expect(line.priceUuid, price.uuid);
+        expect(line.discount, 10);
+        expect(line.qttyPerGroup, 5);
+        expect(line.setCustomPrice, isFalse);
+        // Same as a whole sheet added through the dialog.
+        final dialogLine = buildLine(
+          quantity: 1,
+          width: 4,
+          height: 3,
+        );
+        expect(line.totalCost(), dialogLine.totalCost());
+        expect(
+          line.getStockQuantity(),
+          dialogLine.getStockQuantity(),
+        );
+      });
+
+      test('2D without wastage management sets no flag', () {
+        final line = TempCartItem.forProduct(
+          buildSheet()..manageSalesWastage = false,
+        );
+        expect(line.manageSalesWastage, isNull);
+      });
+
+      test('1D: no size, no wastage flag', () {
+        final line = TempCartItem.forProduct(soda());
+        expect(line.quantityType, 1);
+        expect(line.widthDimension, isNull);
+        expect(line.heightDimension, isNull);
+        expect(line.manageSalesWastage, isNull);
+        expect(line.unitUuid, each.uuid);
+        expect(line.getStockQuantity(), 1);
+        expect(line.totalCost(), 100);
+      });
+
+      test('1D discountCost is the same as the old barcode line', () {
+        final product = soda()..discount = 10;
+        // How the barcode paths built the line before.
+        final before = TempCartItem(
+          isPercentageWastage: null,
+          wastageAmount: null,
+          manageSalesWastage: null,
+          heightDimension: null,
+          widthDimension: null,
+          quantityType: product.quantityType,
+          priceUuid: null,
+          unitUuid: null,
+          uuid: 'old-line',
+          itemUuid: product.uuid,
+          isVoid: false,
+          qttyPerGroup: null,
+          useGroupQuantity: false,
+          useWholeSalePrice: false,
+          setCustomPrice: false,
+          item: product,
+          quantity: 1,
+          discount: null,
+          addToStock: false,
+          setTotalPrice: false,
+        );
+        final after = TempCartItem.forProduct(product);
+        expect(before.discountCost(), 10);
+        expect(after.discountCost(), before.discountCost());
+        expect(after.totalCost(), before.totalCost());
+      });
+    });
+
+    // Item 4.
+    group('2D unit without a dimension type', () {
+      test('record restores what the cart deducted', () {
+        // `unit` has no dimensionType.
+        expect(unit.dimensionType, isNull);
+        final line = buildLine(
+          quantity: 2,
+          width: 2,
+          height: 1.5,
+        );
+        final record = recordFor(line);
+        expect(line.getRealQuantity(), 6);
+        expect(record.getActualQuantity(), 6);
+        expect(
+          record.getActualQuantity() + record.wastageArea(),
+          line.getStockQuantity(),
+        );
+      });
+
+      test('legacy 2D record without a size stays per piece', () {
+        final line = buildLine(
+          quantity: 2,
+          width: null,
+          height: null,
+        );
+        expect(line.getRealQuantity(), 2);
+        expect(recordFor(line).getActualQuantity(), 2);
+      });
+
+      test('1D records are unchanged', () {
+        final line = lineOf(
+          soda(),
+          unitUuid: group12.uuid,
+          quantity: 2,
+        );
+        expect(recordFor(line).getActualQuantity(), 24);
+        expect(line.getRealQuantity(), 24);
+      });
+    });
+
+    // Item 5.
+    group('product discount in calcDiscountMain', () {
+      test('2D is per area, like discountCost', () {
+        final line = buildLine(
+          quantity: 2,
+          width: 2,
+          height: 1.5,
+        )..item.discount = 10;
+        useCart([line]);
+        // ₦600 for 6 area; was 100 × 10% × 2 pieces = 20.
+        expect(SalesProvider().calcDiscountMain(), 60);
+        expect(line.discountCost(), 60);
+      });
+
+      test('1D keeps its per-piece result', () {
+        final line = lineOf(
+          soda()..discount = 10,
+          unitUuid: group12.uuid,
+          quantity: 2,
+        );
+        useCart([line]);
+        expect(SalesProvider().calcDiscountMain(), 20);
+      });
+
+      test('custom-priced lines are skipped for 2D and 1D', () {
+        useCart([
+          buildLine(quantity: 2, width: 2, height: 1.5)
+            ..item.discount = 10
+            ..customPrice = 50,
+          lineOf(soda()..discount = 10, unitUuid: each.uuid, quantity: 3)
+            ..customPrice = 50,
+        ]);
+        expect(SalesProvider().calcDiscountMain(), 0);
+      });
+    });
+
+    // Item 6.
+    group('price preview', () {
+      final fixedPrice = ProductPricesClass(
+        uuid: 'price-fixed',
+        staffUuid: null,
+        createdAt: DateTime.utc(2026),
+        staffName: null,
+        priceValue: 100,
+        name: 'Fixed',
+        isPrimary: true,
+        itemUuid: productUuid,
+        priceType: 2,
+      );
+
+      // Preview from a fresh dialog copy, then the line as added
+      // (dialog values set, then applyDefaultDimensions).
+      void expectPreviewMatchesAdded(
+        TempCartItem base, {
+        required double quantity,
+        required String unitUuid,
+        required ProductPricesClass usedPrice,
+        double? width,
+        double? height,
+        double? customPrice,
+        bool setTotalPrice = false,
+        double? wastageAmount,
+        bool? isPercentageWastage,
+        required double expected,
+      }) {
+        final preview = base.previewWith(
+          quantity: quantity,
+          unitUuid: unitUuid,
+          priceUuid: usedPrice.uuid,
+          units: base.item.getUnitsList(),
+          prices: [usedPrice],
+          width: width,
+          height: height,
+          customPrice: customPrice,
+          setTotalPrice: setTotalPrice,
+          wastageAmount: wastageAmount,
+          isPercentageWastage: isPercentageWastage,
+        );
+
+        final added = base.copyWith()
+          ..item = base.item.copyWith(pricesList: [usedPrice])
+          ..quantity = quantity
+          ..unitUuid = unitUuid
+          ..priceUuid = usedPrice.uuid
+          ..widthDimension = width
+          ..heightDimension = height
+          ..customPrice = customPrice
+          ..setTotalPrice = setTotalPrice
+          ..wastageAmount = wastageAmount
+          ..isPercentageWastage = isPercentageWastage;
+        SalesProvider().applyDefaultDimensions(added);
+
+        expect(preview.totalCost(), expected);
+        expect(added.totalCost(), expected);
+      }
+
+      test('2D priceType 2 is priced per area, like the cart', () {
+        expectPreviewMatchesAdded(
+          buildLine(quantity: 1, width: null, height: null),
+          quantity: 2,
+          unitUuid: unit.uuid,
+          usedPrice: fixedPrice,
+          width: 2,
+          height: 1.5,
+          expected: 600, // the old preview showed 2 × 100
+        );
+      });
+
+      test('2D priceType 1, custom unit, custom total, wastage', () {
+        final base = buildLine(quantity: 1, width: null, height: null);
+        expectPreviewMatchesAdded(
+          base,
+          quantity: 2,
+          unitUuid: unit.uuid,
+          usedPrice: price,
+          width: 2,
+          height: 1.5,
+          expected: 600,
+        );
+        expectPreviewMatchesAdded(
+          base,
+          quantity: 2,
+          unitUuid: unit.uuid,
+          usedPrice: price,
+          width: 2,
+          height: 1.5,
+          customPrice: 50,
+          expected: 300,
+        );
+        expectPreviewMatchesAdded(
+          base,
+          quantity: 2,
+          unitUuid: unit.uuid,
+          usedPrice: price,
+          width: 2,
+          height: 1.5,
+          customPrice: 500,
+          setTotalPrice: true,
+          expected: 500,
+        );
+        expectPreviewMatchesAdded(
+          base,
+          quantity: 2,
+          unitUuid: unit.uuid,
+          usedPrice: price,
+          width: 2,
+          height: 1.5,
+          wastageAmount: 2,
+          isPercentageWastage: false,
+          expected: 800,
+        );
+      });
+
+      test('2D area unit without a size uses the item size', () {
+        expectPreviewMatchesAdded(
+          buildConfiguredLine(selectedUnit: areaUnit, quantity: 1),
+          quantity: 4,
+          unitUuid: areaUnit.uuid,
+          usedPrice: price,
+          expected: 400,
+        );
+      });
+
+      test('1D priceType 1 and 2', () {
+        final base = lineOf(soda(), unitUuid: each.uuid, quantity: 1);
+        expectPreviewMatchesAdded(
+          base,
+          quantity: 2,
+          unitUuid: group12.uuid,
+          usedPrice: price,
+          expected: 2400,
+        );
+        expectPreviewMatchesAdded(
+          base,
+          quantity: 3,
+          unitUuid: each.uuid,
+          usedPrice: fixedPrice,
+          expected: 300,
+        );
+      });
+
+      test('previewing does not touch the cart line', () {
+        final base = buildLine(quantity: 1, width: 4, height: 3)
+          ..customPrice = 70;
+        final dialogUnits = base.getUnitListFinal();
+        final dialogPrices = base.getPriceListFinal();
+        final itemBefore = base.item;
+        final unitsBefore = base.item.unitsList;
+        final pricesBefore = base.item.pricesList;
+
+        final preview = base.previewWith(
+          quantity: 5,
+          unitUuid: unit.uuid,
+          priceUuid: price.uuid,
+          units: dialogUnits,
+          prices: dialogPrices,
+          width: 2,
+          height: 1.5,
+          customPrice: null,
+          setTotalPrice: true,
+          wastageAmount: 3,
+          isPercentageWastage: false,
+        );
+        // Change everything reachable from the preview.
+        preview.quantity = 99;
+        preview.item.name = 'Changed';
+        preview.item.unitsList!.first.conversion = 7;
+        preview.item.pricesList!.first.priceValue = 1;
+
+        expect(identical(preview.item, base.item), isFalse);
+        expect(identical(base.item, itemBefore), isTrue);
+        expect(identical(base.item.unitsList, unitsBefore), isTrue);
+        expect(identical(base.item.pricesList, pricesBefore), isTrue);
+        expect(base.item.name, 'Glass');
+        expect(base.item.unitsList!.first.conversion, 1);
+        expect(base.item.pricesList!.first.priceValue, 100);
+        expect(dialogUnits.first.conversion, 1);
+        expect(dialogPrices.first.priceValue, 100);
+        expect(base.quantity, 1);
+        expect(base.customPrice, 70);
+        expect(base.widthDimension, 4);
+        expect(base.wastageAmount, isNull);
+        expect(base.setTotalPrice, isFalse);
+      });
+    });
+
+    // Item 7a. Exact equality: the numbers are exact in binary.
+    group('re-edit custom unit price (unit conversion)', () {
+      void expectRoundTrip(
+        TempCartItem line,
+        TempProductClass product, {
+        required double expectedTotal,
+      }) {
+        final record = recordFor(line);
+        for (final rebuilt in [
+          SalesProvider().saleRecordToCartItem(
+            record: record,
+            product: product,
+          ),
+          InvoicesProvider().saleRecordToCartItem(
+            record: record,
+            product: product,
+          ),
+        ]) {
+          expect(rebuilt.customPrice, 50);
+          expect(rebuilt.totalCost(), expectedTotal);
+          expect(rebuilt.totalCost(), record.originalCost);
+        }
+      }
+
+      test('1D group unit (×12): ₦50 each stays ₦50', () {
+        final product = soda();
+        final line = lineOf(
+          product,
+          unitUuid: group12.uuid,
+          quantity: 2,
+        )..customPrice = 50;
+        expect(line.totalCost(), 1200);
+        // The old divisor (2 pieces) gave back ₦600 each.
+        expectRoundTrip(line, product, expectedTotal: 1200);
+      });
+
+      TempCartItem sheetLine({
+        double? amount,
+        bool? isPercentage,
+      }) {
+        return buildConfiguredLine(
+            selectedUnit: sheetUnit,
+            quantity: 2,
+            width: 2,
+            height: 1.5,
+          )
+          ..customPrice = 50
+          ..wastageAmount = amount
+          ..isPercentageWastage = isPercentage
+          ..manageSalesWastage = amount == null ? null : true;
+      }
+
+      TempProductClass sheetProduct() =>
+          buildSheet()..unitsList = [areaUnit, sheetUnit];
+
+      test('2D sheet unit with fixed wastage', () {
+        final line = sheetLine(amount: 2, isPercentage: false);
+        expect(line.totalCost(), 400);
+        expectRoundTrip(line, sheetProduct(), expectedTotal: 400);
+      });
+
+      test('2D sheet unit with percent wastage', () {
+        final line = sheetLine(amount: 50, isPercentage: true);
+        expect(line.totalCost(), 450);
+        expectRoundTrip(line, sheetProduct(), expectedTotal: 450);
+      });
+
+      test('2D legacy record: wastage not applied, price kept', () {
+        // Saved before wastage applied: billed on 6 area only.
+        final line = sheetLine(amount: 2, isPercentage: false);
+        final record = recordFor(line, originalCost: 300)
+          ..manageSalesWastage = null;
+        expect(record.wastageArea(), 0);
+        for (final rebuilt in [
+          SalesProvider().saleRecordToCartItem(
+            record: record,
+            product: sheetProduct(),
+          ),
+          InvoicesProvider().saleRecordToCartItem(
+            record: record,
+            product: sheetProduct(),
+          ),
+        ]) {
+          expect(rebuilt.customPrice, 50);
+          expect(rebuilt.wastageAmount, isNull);
+          expect(rebuilt.totalCost(), 300);
+        }
+      });
     });
   });
 }

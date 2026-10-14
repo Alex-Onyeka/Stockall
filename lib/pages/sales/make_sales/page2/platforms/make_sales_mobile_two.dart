@@ -970,6 +970,21 @@ class _MakeSalesMobileTwoState
                                   );
                                 },
                               );
+                            } else if (returnSalesProvider()
+                                    .checkoutStockConflict() !=
+                                null) {
+                              showDialog(
+                                context: context,
+                                builder: (errorContext) {
+                                  return InfoAlert(
+                                    theme: theme,
+                                    message:
+                                        returnSalesProvider()
+                                            .checkoutStockConflict()!,
+                                    title: 'Not Enough Stock',
+                                  );
+                                },
+                              );
                             } else {
                               showDialog(
                                 context: safeContext,

@@ -1593,32 +1593,40 @@ void selectProductSales({
     return area + dialogWastage(area);
   }
 
+  // Priced by the same totalCost() the cart line will use, on a
+  // copy holding the values entered so far.
   String formatSellingPrice(TempCartItem cartItem) {
-    if (priceController.text.isNotEmpty) {
-      if (returnSalesProvider().setTotalPrice) {
-        return priceController.text.replaceAll(',', '');
-      } else {
-        return (double.parse(
-                  priceController.text.isNotEmpty
-                      ? priceController.text.replaceAll(
-                        ',',
-                        '',
-                      )
-                      : '0',
-                ) *
-                billedQuantity())
-            .toString();
-      }
-    } else {
-      if ((getPrimaryPrice().priceType ?? 1) == 1) {
-        return (billedQuantity() *
-                (getPrimaryPrice().priceValue))
-            .toString();
-      } else {
-        return (qqty * (getPrimaryPrice().priceValue))
-            .toString();
-      }
-    }
+    return cartItem
+        .previewWith(
+          quantity: qqty,
+          unitUuid: unitUuid,
+          priceUuid: priceUuid,
+          units: tempUnitList,
+          prices: tempPriceList,
+          width: resolvedWidth(),
+          height: resolvedHeight(),
+          customPrice:
+              priceController.text.isNotEmpty
+                  ? double.tryParse(
+                    priceController.text.replaceAll(',', ''),
+                  )
+                  : null,
+          setTotalPrice: returnSalesProvider().setTotalPrice,
+          wastageAmount:
+              showWastage()
+                  ? double.tryParse(
+                    wastageController.text
+                        .replaceAll(',', '')
+                        .trim(),
+                  )
+                  : cartItem.wastageAmount,
+          isPercentageWastage:
+              showWastage()
+                  ? isPercentageWastage
+                  : cartItem.isPercentageWastage,
+        )
+        .totalCost()
+        .toString();
   }
 
   showDialog(
