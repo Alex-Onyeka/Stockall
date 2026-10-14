@@ -1492,12 +1492,13 @@ class SalesProvider extends ChangeNotifier {
                   isManaged: cartItem.item.isManaged,
                   source:
                       ItemHistoryEventClass.receiptSource,
-                  unit: cartItem.getSelectedUnit().name,
+                  unit:
+                      "${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}",
                   primaryUnit:
                       cartItem.getPrimaryUnit().name,
                   shopId: shopId,
                   desc:
-                      '${cartItem.quantity} ${cartItem.getSelectedUnit().name} of This Item was Sold. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
+                      '${cartItem.quantity} ${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()} of This Item was Sold. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
                   isIncreased: false,
 
                   title: 'Item Sold In Receipt',
@@ -1565,11 +1566,12 @@ class SalesProvider extends ChangeNotifier {
                     isManaged: cartItem.item.isManaged,
                     source:
                         ItemHistoryEventClass.receiptSource,
-                    unit: cartItem.getSelectedUnit().name,
+                    unit:
+                        "${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}",
                     primaryUnit:
                         cartItem.getPrimaryUnit().name,
                     desc:
-                        '${cartItem.quantity} ${cartItem.getSelectedUnit().name} of This Item was Sold, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
+                        '${cartItem.quantity} ${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()} of This Item was Sold, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
                     shopId: shopId,
                     isIncreased: false,
                     oldValue: formatLargeNumberDouble(
@@ -2066,12 +2068,13 @@ class SalesProvider extends ChangeNotifier {
                   isManaged: cartItem.item.isManaged,
                   source:
                       ItemHistoryEventClass.invoiceSource,
-                  unit: cartItem.getSelectedUnit().name,
+                  unit:
+                      "${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}",
                   primaryUnit:
                       cartItem.getPrimaryUnit().name,
                   shopId: shopId,
                   desc:
-                      '${cartItem.quantity} ${cartItem.getSelectedUnit().name} of This Item was Sold on Credit. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
+                      '${cartItem.quantity} "${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}" of This Item was Sold on Credit. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
                   isIncreased: false,
 
                   title: 'Item Sold On Credit',
@@ -2139,11 +2142,12 @@ class SalesProvider extends ChangeNotifier {
                     isManaged: cartItem.item.isManaged,
                     source:
                         ItemHistoryEventClass.invoiceSource,
-                    unit: cartItem.getSelectedUnit().name,
+                    unit:
+                        "${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}",
                     primaryUnit:
                         cartItem.getPrimaryUnit().name,
                     desc:
-                        '${cartItem.quantity} ${cartItem.getSelectedUnit().name} of This Item was Sold On Credit, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
+                        '${cartItem.quantity} "${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}" of This Item was Sold On Credit, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
                     shopId: shopId,
                     isIncreased: false,
                     oldValue: formatLargeNumberDouble(
@@ -2462,7 +2466,7 @@ class SalesProvider extends ChangeNotifier {
               isProductManaged:
                   cartItem.getItem()?.isManaged,
               setTotalPrice: cartItem.setTotalPrice,
-              unit: cartItem.getItem()?.unit ?? 'Unit(s)',
+              unit: cartItem.getUnit(),
               groupUnit:
                   cartItem.getItem()?.groupUnit ??
                   'Group(s)',
@@ -2525,10 +2529,11 @@ class SalesProvider extends ChangeNotifier {
                 event: ItemHistoryEventClass.sold,
                 isManaged: cartItem.item.isManaged,
                 source: ItemHistoryEventClass.orderSource,
-                unit: cartItem.getSelectedUnit().name,
+                unit:
+                    "${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}",
                 primaryUnit: cartItem.getPrimaryUnit().name,
                 desc:
-                    '${cartItem.quantity} ${cartItem.getSelectedUnit().name} of This Item was Ordered for, but Not Deducted. Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
+                    '${cartItem.quantity} "${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}" of This Item was Ordered for, but Not Deducted. Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
                 shopId: shopId,
                 isIncreased: false,
                 title: 'Order Created',

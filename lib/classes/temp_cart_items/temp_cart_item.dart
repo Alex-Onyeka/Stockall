@@ -624,7 +624,7 @@ class TempCartItem extends HiveObject {
     if (priUnit.name == 'Others') {
       return 'Unit(s)';
     } else {
-      return priUnit.name;
+      return "${priUnit.name}${dimensionsLabel()} ";
     }
   }
 }
