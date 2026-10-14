@@ -62,38 +62,35 @@ class _ReceiptPageMobileState
   Widget build(BuildContext context) {
     var shop = returnShopProvider().userShop();
     var theme = returnTheme(context);
-    TempMainReceipt mainReceipt = returnReceiptProvider(
-      context,
-    ).receipts.firstWhere(
-      (rec) => rec.uuid! == widget.response.receipt?.uuid,
-      orElse:
-          () => TempMainReceipt(
-            tempItems: null,
-            salesTypeIndex: 1,
-            orderUuid: null,
-            customerAccount: 0,
-            comment: null,
-            subStaffName: null,
-            departmentName:
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.name,
-            departmentUuidNew:
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid,
-            createdAt: DateTime.now(),
-            uuid: '1',
-            shopId: shopId(),
-            staffId: AuthService().currentUser!,
-            staffName: 'Staff Name',
-            paymentMethod: 'Cash',
-            bank: 0,
-            cashAlt: 0,
-            isInvoice: false,
-            cartName: 'Cart 1',
-          ),
+    TempMainReceipt defaultReceipt = TempMainReceipt(
+      tempItems: null,
+      salesTypeIndex: 1,
+      orderUuid: null,
+      customerAccount: 0,
+      comment: null,
+      subStaffName: null,
+      departmentName:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.name,
+      departmentUuidNew:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.uuid,
+      createdAt: DateTime.now(),
+      uuid: '1',
+      shopId: shopId(),
+      staffId: AuthService().currentUser!,
+      staffName: 'Staff Name',
+      paymentMethod: 'Cash',
+      bank: 0,
+      cashAlt: 0,
+      isInvoice: false,
+      cartName: 'Cart 1',
     );
+
+    TempMainReceipt mainReceipt =
+        widget.response.receipt ?? defaultReceipt;
 
     return SafeArea(
       child: PopScope(
@@ -1336,7 +1333,8 @@ class _ReceiptDetailsContainerState
                                                           style: TextStyle(
                                                             fontSize:
                                                                 widget.theme.mobileTexts.b4.fontSize,
-                                                            color: Colors.grey.shade700,
+                                                            color:
+                                                                Colors.grey.shade700,
                                                           ),
                                                           productRecord.wastageNote(),
                                                         ),
@@ -1528,7 +1526,8 @@ class _ReceiptDetailsContainerState
                                                                 style: TextStyle(
                                                                   fontSize:
                                                                       widget.theme.mobileTexts.b4.fontSize,
-                                                                  color: Colors.grey.shade700,
+                                                                  color:
+                                                                      Colors.grey.shade700,
                                                                 ),
                                                                 productRecord.wastageNote(),
                                                               ),

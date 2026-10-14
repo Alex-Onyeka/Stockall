@@ -449,7 +449,8 @@ class TempProductSaleRecord {
       isPercentageWastage:
           isPercentageWastage ?? this.isPercentageWastage,
       wastageAmount: wastageAmount ?? this.wastageAmount,
-      wastageUnitUuid: wastageUnitUuid ?? this.wastageUnitUuid,
+      wastageUnitUuid:
+          wastageUnitUuid ?? this.wastageUnitUuid,
     );
   }
 
@@ -746,7 +747,8 @@ class TempProductSaleRecord {
     return computeWastageArea(
       baseArea: getActualQuantity(),
       amount:
-          isPercentageWastage == true || wastageAmount == null
+          isPercentageWastage == true ||
+                  wastageAmount == null
               ? wastageAmount
               : wastageAmount! * wastageAreaPerUnit(),
       isPercentage: isPercentageWastage,
@@ -789,7 +791,8 @@ class TempProductSaleRecord {
     return quantity + quantity * wastage / base;
   }
 
-  double wastageInSaleUnit() => displayQuantity() - quantity;
+  double wastageInSaleUnit() =>
+      displayQuantity() - quantity;
 
   // "incl. 0.1 Slab wastage", or '' without wastage.
   String wastageNote() {
@@ -843,9 +846,10 @@ class TempProductSaleRecord {
   }
 
   String dimensionsLabel() {
-    return formatDimensionsLabel(
-      widthDimension,
-      heightDimension,
-    );
+    // return formatDimensionsLabel(
+    //   widthDimension,
+    //   heightDimension,
+    // );
+    return '';
   }
 }

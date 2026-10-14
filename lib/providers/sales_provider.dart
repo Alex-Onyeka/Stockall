@@ -1505,7 +1505,8 @@ class SalesProvider extends ChangeNotifier {
                   isIncreased: false,
 
                   title: 'Item Sold In Receipt',
-                  quantityChange: -cartItem.displayQuantity(),
+                  quantityChange:
+                      -cartItem.displayQuantity(),
                   newValue: formatLargeNumberDouble(
                     cartItem
                         .getPrimaryUnit()
@@ -2082,7 +2083,8 @@ class SalesProvider extends ChangeNotifier {
                   isIncreased: false,
 
                   title: 'Item Sold On Credit',
-                  quantityChange: -cartItem.displayQuantity(),
+                  quantityChange:
+                      -cartItem.displayQuantity(),
                   newValue: formatLargeNumberDouble(
                     cartItem
                         .getPrimaryUnit()
@@ -3365,7 +3367,8 @@ class SalesProvider extends ChangeNotifier {
       double total = 0;
       for (final line in lines) {
         if (line.isVoid == true) continue;
-        if ((line.itemUuid ?? line.item.uuid) != itemUuid) continue;
+        if ((line.itemUuid ?? line.item.uuid) != itemUuid)
+          continue;
         total += line.getStockQuantity();
       }
       return total;
@@ -3378,7 +3381,8 @@ class SalesProvider extends ChangeNotifier {
 
     for (final line in cart.getCartItems()) {
       final itemUuid = line.itemUuid ?? line.item.uuid;
-      if (itemUuid == null || !checked.add(itemUuid)) continue;
+      if (itemUuid == null || !checked.add(itemUuid))
+        continue;
 
       final product = returnData().productListMain
           .cast<TempProductClass?>()
@@ -3602,7 +3606,10 @@ class SalesProvider extends ChangeNotifier {
 
   // Live line an added [line] merges into, or null to add it as
   // a new line.
-  TempCartItem? findCartLine(TempCart cart, TempCartItem line) {
+  TempCartItem? findCartLine(
+    TempCart cart,
+    TempCartItem line,
+  ) {
     return cart
         .getCartItems()
         .where((item) => isSameCartLine(item, line))
@@ -3717,7 +3724,10 @@ class SalesProvider extends ChangeNotifier {
       quantityToAdd: newItem.getStockQuantity(),
     )) {
       String result = '';
-      var existingLine = findCartLine(currentCart(), newItem);
+      var existingLine = findCartLine(
+        currentCart(),
+        newItem,
+      );
 
       var voidItem = findVoidLine(currentCart(), newItem);
 

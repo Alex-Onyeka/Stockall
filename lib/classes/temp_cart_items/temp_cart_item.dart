@@ -152,7 +152,8 @@ class TempCartItem extends HiveObject {
               .firstOrNull
               ?.uuid,
       widthDimension: is2D ? product.widthDimension : null,
-      heightDimension: is2D ? product.heightDimension : null,
+      heightDimension:
+          is2D ? product.heightDimension : null,
       quantityType: product.quantityType,
       manageSalesWastage:
           is2D && product.manageSalesWastage == true
@@ -289,7 +290,8 @@ class TempCartItem extends HiveObject {
       isPercentageWastage:
           isPercentageWastage ?? this.isPercentageWastage,
       wastageAmount: wastageAmount ?? this.wastageAmount,
-      wastageUnitUuid: wastageUnitUuid ?? this.wastageUnitUuid,
+      wastageUnitUuid:
+          wastageUnitUuid ?? this.wastageUnitUuid,
     );
   }
 
@@ -575,7 +577,8 @@ class TempCartItem extends HiveObject {
     return computeWastageArea(
       baseArea: baseArea ?? getRealQuantity(),
       amount:
-          isPercentageWastage == true || wastageAmount == null
+          isPercentageWastage == true ||
+                  wastageAmount == null
               ? wastageAmount
               : wastageAmount! * wastageAreaPerUnit(),
       isPercentage: isPercentageWastage,
@@ -598,7 +601,8 @@ class TempCartItem extends HiveObject {
     return quantity + quantity * wastage / base;
   }
 
-  double wastageInSaleUnit() => displayQuantity() - quantity;
+  double wastageInSaleUnit() =>
+      displayQuantity() - quantity;
 
   // Quantity and wastage for item-history text: unchanged
   // ("2.0", "") without wastage, "1.1" and " (incl. 0.1 wastage)"
@@ -644,12 +648,17 @@ class TempCartItem extends HiveObject {
   }) {
     // Same default as SalesProvider.applyDefaultDimensions.
     final useItemSize =
-        item.quantityType == 2 && width == null && height == null;
+        item.quantityType == 2 &&
+        width == null &&
+        height == null;
     return TempCartItem(
       item: item.copyWith(
-        unitsList: units.map((unit) => unit.copyWith()).toList(),
+        unitsList:
+            units.map((unit) => unit.copyWith()).toList(),
         pricesList:
-            prices.map((price) => price.copyWith()).toList(),
+            prices
+                .map((price) => price.copyWith())
+                .toList(),
       ),
       itemUuid: itemUuid,
       quantity: quantity,
@@ -666,7 +675,8 @@ class TempCartItem extends HiveObject {
       uuid: uuid,
       unitUuid: unitUuid,
       priceUuid: priceUuid,
-      widthDimension: useItemSize ? item.widthDimension : width,
+      widthDimension:
+          useItemSize ? item.widthDimension : width,
       heightDimension:
           useItemSize ? item.heightDimension : height,
       quantityType: quantityType,
@@ -686,10 +696,16 @@ class TempCartItem extends HiveObject {
   }
 
   String dimensionsLabel() {
-    return formatDimensionsLabel(
-      widthDimension,
-      heightDimension,
-    );
+    if (quantityType == 1) {
+      return '';
+    } else if (getSelectedUnit().dimensionType == 1) {
+      return '';
+    } else {
+      return formatDimensionsLabel(
+        widthDimension,
+        heightDimension,
+      );
+    }
   }
 
   String getUnit() {
