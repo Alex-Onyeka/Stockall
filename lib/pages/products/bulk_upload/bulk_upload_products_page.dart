@@ -1,7 +1,7 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/bulk_upload/bulk_product_template.dart';
 import 'package:stockall/bulk_upload/bulk_product_validator.dart';
+import 'package:stockall/bulk_upload/spreadsheet_picker.dart';
 import 'package:stockall/bulk_upload/spreadsheet_reader.dart';
 import 'package:stockall/classes/temp_product_class/prices_class/product_prices_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
@@ -63,13 +63,22 @@ class _BulkUploadProductsPageState
   }
 
   Future<void> _pickFile() async {
-    final picked = await FilePicker.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: const ['xlsx', 'csv'],
-      withData: true,
-    );
-    if (picked == null || picked.files.isEmpty) return;
-    final file = picked.files.first;
+    // Must be called synchronously from the tap (no awaits before it),
+    // otherwise browsers block the file chooser on web.
+    final PickedSpreadsheet? file;
+    try {
+      file = await pickSpreadsheetFile();
+    } catch (_) {
+      if (!mounted) return;
+      _showInfo(
+        title: 'Error',
+        message:
+            'Could not open the file chooser on this device.',
+        isSuccess: false,
+      );
+      return;
+    }
+    if (file == null) return;
     final bytes = file.bytes;
     if (bytes == null) {
       _showInfo(
@@ -102,13 +111,13 @@ class _BulkUploadProductsPageState
       );
       if (!mounted) return;
       setState(() {
-        fileName = file.name;
+        fileName = file?.name ?? 'Not Set';
         result = validation;
       });
     } on SpreadsheetFormatException catch (e) {
       if (!mounted) return;
       setState(() {
-        fileName = file.name;
+        fileName = file?.name ?? 'Not Set';
         result = BulkValidationResult(
           fileErrors: [e.message],
           rows: [],
