@@ -171,7 +171,7 @@ class TempInvoice extends HiveObject {
     return {
       // 'id': id,
       'barcode': barcode,
-      'created_at': createdAt.toIso8601String(),
+      'created_at': createdAt.toUtc().toIso8601String(),
       'shop_id': shopId,
       'staff_id': staffId,
       'staff_name': staffName,

@@ -336,12 +336,9 @@ class OrdersProvider extends ChangeNotifier {
           isOnline) {
         List<CreatedOrders> tempOrders =
             CreatedOrdersFunc().getOrders().toList();
-        List<CreatedOrders> newOrders =
-            tempOrders.map((rec) {
-              rec.order.createdAt =
-                  rec.order.createdAt.toUtc();
-              return rec;
-            }).toList();
+        // createdAt is serialized to UTC in toJson(); don't mutate the
+        // shared in-memory order.
+        List<CreatedOrders> newOrders = tempOrders;
         int count = 0;
         for (var item in newOrders) {
           try {

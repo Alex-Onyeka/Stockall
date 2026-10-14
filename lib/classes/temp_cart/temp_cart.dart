@@ -154,24 +154,36 @@ class TempCart extends HiveObject {
   }
 
   DateTime returnDate() {
-    var newDate = DateTime(
-      (customDate?.year ??
-          createdDate?.year ??
-          DateTime.now().year),
-      (customDate?.month ??
-          createdDate?.month ??
-          DateTime.now().month),
-      (customDate?.day ??
-          createdDate?.day ??
-          DateTime.now().day),
-      (timeOfDay?.hour ??
-          createdDate?.hour ??
-          DateTime.now().hour),
-      (timeOfDay?.minute ??
-          createdDate?.minute ??
-          DateTime.now().minute),
+    final now = DateTime.now();
+
+    // The stored createdDate is only the original date of a record
+    // that is being edited. If an invoice/order was loaded into the
+    // cart and then converted to a receipt (or any other type
+    // change), that old date must NOT be reused: the new record is
+    // created now.
+    final isEditingSameType =
+        (cartItemTypeIndex == 1 &&
+            receiptUuidEdit != null) ||
+        (cartItemTypeIndex == 2 &&
+            invoiceUuidEdit != null) ||
+        (cartItemTypeIndex == 3 && orderUuidEdit != null);
+    final base = isEditingSameType ? createdDate : null;
+
+    // Nothing custom set: exactly the moment of creation.
+    if (customDate == null &&
+        timeOfDay == null &&
+        base == null) {
+      return now;
+    }
+
+    return DateTime(
+      customDate?.year ?? base?.year ?? now.year,
+      customDate?.month ?? base?.month ?? now.month,
+      customDate?.day ?? base?.day ?? now.day,
+      timeOfDay?.hour ?? base?.hour ?? now.hour,
+      timeOfDay?.minute ?? base?.minute ?? now.minute,
+      base != null || timeOfDay != null ? 0 : now.second,
     );
-    return newDate;
   }
 
   TempCustomersClass? getCustomer() {
