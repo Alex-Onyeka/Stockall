@@ -42,13 +42,14 @@ class TempCartItemAdapter extends TypeAdapter<TempCartItem> {
       manageSalesWastage: fields[22] as bool?,
       isPercentageWastage: fields[23] as bool?,
       wastageAmount: fields[24] as double?,
+      wastageUnitUuid: fields[25] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempCartItem obj) {
     writer
-      ..writeByte(25)
+      ..writeByte(26)
       ..writeByte(0)
       ..write(obj.item)
       ..writeByte(1)
@@ -98,7 +99,9 @@ class TempCartItemAdapter extends TypeAdapter<TempCartItem> {
       ..writeByte(23)
       ..write(obj.isPercentageWastage)
       ..writeByte(24)
-      ..write(obj.wastageAmount);
+      ..write(obj.wastageAmount)
+      ..writeByte(25)
+      ..write(obj.wastageUnitUuid);
   }
 
   @override

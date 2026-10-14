@@ -512,6 +512,7 @@ class InvoicesProvider extends ChangeNotifier {
               isPercentageWastage:
                   record.isPercentageWastage,
               wastageAmount: record.wastageAmount,
+              wastageUnitUuid: record.wastageUnitUuid,
               manageSalesWastage: record.manageSalesWastage,
               heightDimension: record.heightDimension,
               quantityType: record.quantityType,
@@ -825,7 +826,7 @@ class InvoicesProvider extends ChangeNotifier {
         // (area for 2D, after unit conversion) + wastage.
         tempRev =
             (record.originalCost ?? 0) /
-            (record.getActualQuantity() + record.wastageArea());
+            record.getStockQuantity();
       }
     }
     return TempCartItem(
@@ -835,6 +836,10 @@ class InvoicesProvider extends ChangeNotifier {
       wastageAmount:
           record.manageSalesWastage == true
               ? record.wastageAmount
+              : null,
+      wastageUnitUuid:
+          record.manageSalesWastage == true
+              ? record.wastageUnitUuid
               : null,
       manageSalesWastage: record.manageSalesWastage,
       heightDimension: record.heightDimension,

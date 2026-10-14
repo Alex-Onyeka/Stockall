@@ -377,6 +377,7 @@ class SalesProvider extends ChangeNotifier {
       tempItem.widthDimension = cartItem.widthDimension;
       tempItem.heightDimension = cartItem.heightDimension;
       tempItem.wastageAmount = cartItem.wastageAmount;
+      tempItem.wastageUnitUuid = cartItem.wastageUnitUuid;
       tempItem.isPercentageWastage =
           cartItem.isPercentageWastage;
       tempItem.manageSalesWastage =
@@ -450,6 +451,7 @@ class SalesProvider extends ChangeNotifier {
     if (cart.cartItemTypeIndex != 3) return;
     for (final cartItem in cart.cartItems) {
       cartItem.wastageAmount = null;
+      cartItem.wastageUnitUuid = null;
     }
   }
 
@@ -1237,6 +1239,7 @@ class SalesProvider extends ChangeNotifier {
       return TempProductSaleRecord(
         isPercentageWastage: cartItem.isPercentageWastage,
         wastageAmount: cartItem.wastageAmount,
+        wastageUnitUuid: cartItem.wastageUnitUuid,
         manageSalesWastage: cartItem.manageSalesWastage,
         heightDimension: cartItem.heightDimension,
         quantityType: cartItem.quantityType,
@@ -1498,11 +1501,11 @@ class SalesProvider extends ChangeNotifier {
                       cartItem.getPrimaryUnit().name,
                   shopId: shopId,
                   desc:
-                      '${cartItem.quantity} ${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()} of This Item was Sold. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
+                      '${cartItem.quantityText()} ${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}${cartItem.historyWastageText()} of This Item was Sold. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
                   isIncreased: false,
 
                   title: 'Item Sold In Receipt',
-                  quantityChange: -cartItem.quantity,
+                  quantityChange: -cartItem.displayQuantity(),
                   newValue: formatLargeNumberDouble(
                     cartItem
                         .getPrimaryUnit()
@@ -1571,7 +1574,7 @@ class SalesProvider extends ChangeNotifier {
                     primaryUnit:
                         cartItem.getPrimaryUnit().name,
                     desc:
-                        '${cartItem.quantity} ${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()} of This Item was Sold, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
+                        '${cartItem.quantityText()} ${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}${cartItem.historyWastageText()} of This Item was Sold, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
                     shopId: shopId,
                     isIncreased: false,
                     oldValue: formatLargeNumberDouble(
@@ -1955,6 +1958,7 @@ class SalesProvider extends ChangeNotifier {
                   isPercentageWastage:
                       cartItem.isPercentageWastage,
                   wastageAmount: cartItem.wastageAmount,
+                  wastageUnitUuid: cartItem.wastageUnitUuid,
                   manageSalesWastage:
                       cartItem.manageSalesWastage,
                   heightDimension: cartItem.heightDimension,
@@ -2074,11 +2078,11 @@ class SalesProvider extends ChangeNotifier {
                       cartItem.getPrimaryUnit().name,
                   shopId: shopId,
                   desc:
-                      '${cartItem.quantity} "${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}" of This Item was Sold on Credit. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
+                      '${cartItem.quantityText()} "${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}"${cartItem.historyWastageText()} of This Item was Sold on Credit. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
                   isIncreased: false,
 
                   title: 'Item Sold On Credit',
-                  quantityChange: -cartItem.quantity,
+                  quantityChange: -cartItem.displayQuantity(),
                   newValue: formatLargeNumberDouble(
                     cartItem
                         .getPrimaryUnit()
@@ -2147,7 +2151,7 @@ class SalesProvider extends ChangeNotifier {
                     primaryUnit:
                         cartItem.getPrimaryUnit().name,
                     desc:
-                        '${cartItem.quantity} "${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}" of This Item was Sold On Credit, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
+                        '${cartItem.quantityText()} "${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}"${cartItem.historyWastageText()} of This Item was Sold On Credit, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
                     shopId: shopId,
                     isIncreased: false,
                     oldValue: formatLargeNumberDouble(
@@ -3534,6 +3538,7 @@ class SalesProvider extends ChangeNotifier {
           a.widthDimension == b.widthDimension &&
           a.heightDimension == b.heightDimension &&
           a.wastageAmount == b.wastageAmount &&
+          a.wastageUnitUuid == b.wastageUnitUuid &&
           a.isPercentageWastage == b.isPercentageWastage;
     }
     return true;
@@ -3728,6 +3733,7 @@ class SalesProvider extends ChangeNotifier {
           item.useGroupQuantity = newItem.useGroupQuantity;
           item.uuid = newItem.uuid;
           item.wastageAmount = newItem.wastageAmount;
+          item.wastageUnitUuid = newItem.wastageUnitUuid;
           item.isPercentageWastage =
               newItem.isPercentageWastage;
           item.manageSalesWastage =
@@ -3864,6 +3870,8 @@ class SalesProvider extends ChangeNotifier {
           );
           deletedItem.wastageAmount =
               originalLine.wastageAmount;
+          deletedItem.wastageUnitUuid =
+              originalLine.wastageUnitUuid;
           deletedItem.isPercentageWastage =
               originalLine.isPercentageWastage;
           currentCart().cartItems.add(deletedItem);
@@ -4109,7 +4117,7 @@ class SalesProvider extends ChangeNotifier {
         // (area for 2D, after unit conversion) + wastage.
         tempRev =
             (record.originalCost ?? 0) /
-            (record.getActualQuantity() + record.wastageArea());
+            record.getStockQuantity();
       }
     }
     return TempCartItem(
@@ -4119,6 +4127,10 @@ class SalesProvider extends ChangeNotifier {
       wastageAmount:
           record.manageSalesWastage == true
               ? record.wastageAmount
+              : null,
+      wastageUnitUuid:
+          record.manageSalesWastage == true
+              ? record.wastageUnitUuid
               : null,
       manageSalesWastage: record.manageSalesWastage,
       heightDimension: record.heightDimension,

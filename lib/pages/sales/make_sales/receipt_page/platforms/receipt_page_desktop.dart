@@ -1388,6 +1388,18 @@ class _ReceiptDetailsContainerState
                                                         ),
                                                         '${productRecord.productName}${productRecord.dimensionsLabel()}',
                                                       ),
+                                                      Visibility(
+                                                        visible:
+                                                            productRecord.wastageNote().isNotEmpty,
+                                                        child: Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                widget.theme.mobileTexts.b4.fontSize,
+                                                            color: Colors.grey.shade700,
+                                                          ),
+                                                          productRecord.wastageNote(),
+                                                        ),
+                                                      ),
                                                       Text(
                                                         style: TextStyle(
                                                           fontSize:
@@ -1395,7 +1407,7 @@ class _ReceiptDetailsContainerState
                                                           fontWeight:
                                                               FontWeight.bold,
                                                         ),
-                                                        'Qty: ${productRecord.quantity.toString()} ${productRecord.unit == 'Others' || productRecord.unit == null ? 'Unit(s)' : productRecord.unit}',
+                                                        'Qty: ${productRecord.quantityText()} ${productRecord.unit == 'Others' || productRecord.unit == null ? 'Unit(s)' : productRecord.unit}',
                                                       ),
                                                     ],
                                                   ),
@@ -1443,7 +1455,7 @@ class _ReceiptDetailsContainerState
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                           ),
-                                                          "${formatMoneyMid(amount: ((widget.mainReceipt.fixedDiscount == null && widget.mainReceipt.generalDiscount == null) && productRecord.discount != null ? ((productRecord.originalCost ?? 0) - (productRecord.discountedAmount ?? 0)) : (productRecord.originalCost ?? 0) / productRecord.quantity), context: context)} per 1",
+                                                          "${formatMoneyMid(amount: ((widget.mainReceipt.fixedDiscount == null && widget.mainReceipt.generalDiscount == null) && productRecord.discount != null ? ((productRecord.originalCost ?? 0) - (productRecord.discountedAmount ?? 0)) : (productRecord.originalCost ?? 0) / productRecord.priceQuantity()), context: context)} per 1",
                                                         ),
                                                       ),
                                                       // Visibility(
@@ -1562,12 +1574,24 @@ class _ReceiptDetailsContainerState
                                                               ),
                                                               '${productRecord.productName}${productRecord.dimensionsLabel()}',
                                                             ),
+                                                            Visibility(
+                                                              visible:
+                                                                  productRecord.wastageNote().isNotEmpty,
+                                                              child: Text(
+                                                                style: TextStyle(
+                                                                  fontSize:
+                                                                      widget.theme.mobileTexts.b4.fontSize,
+                                                                  color: Colors.grey.shade700,
+                                                                ),
+                                                                productRecord.wastageNote(),
+                                                              ),
+                                                            ),
                                                             Text(
                                                               style: TextStyle(
                                                                 fontSize:
                                                                     widget.theme.mobileTexts.b4.fontSize,
                                                               ),
-                                                              'Qty: ${productRecord.quantity.toString()} ${productRecord.unit == 'Others' || productRecord.unit == null ? 'Unit(s)' : productRecord.unit}',
+                                                              'Qty: ${productRecord.quantityText()} ${productRecord.unit == 'Others' || productRecord.unit == null ? 'Unit(s)' : productRecord.unit}',
                                                             ),
                                                           ],
                                                         ),

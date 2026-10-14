@@ -303,6 +303,7 @@ class DraftsProvider extends ChangeNotifier {
       return DraftItems(
         isPercentageWastage: cartItem.isPercentageWastage,
         wastageAmount: cartItem.wastageAmount,
+        wastageUnitUuid: cartItem.wastageUnitUuid,
         manageSalesWastage: cartItem.manageSalesWastage,
         heightDimension: cartItem.heightDimension,
         quantityType: cartItem.quantityType,
@@ -345,6 +346,7 @@ class DraftsProvider extends ChangeNotifier {
     return TempCartItem(
       isPercentageWastage: record.isPercentageWastage,
       wastageAmount: record.wastageAmount,
+      wastageUnitUuid: record.wastageUnitUuid,
       manageSalesWastage: record.manageSalesWastage,
       heightDimension: record.heightDimension,
       quantityType: record.quantityType,

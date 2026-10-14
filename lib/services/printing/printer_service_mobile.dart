@@ -803,7 +803,7 @@ Uint8List generateStyledReceipt({
   for (final item in records) {
     builder.addRowStyled(
       '${item.productName}${item.dimensionsLabel()}',
-      formatLargeNumberDouble(item.quantity),
+      formatLargeNumberDouble(item.displayQuantity()),
       formatMoneyMid(
         amount:
             (receipt.fixedDiscount == null &&
@@ -817,6 +817,9 @@ Uint8List generateStyledReceipt({
       ).split('.').first,
       rightBold: false,
     );
+    if (item.wastageNote().isNotEmpty) {
+      builder.addText('  ${item.wastageNote()}');
+    }
     if (!DeviceService.isPos) {
       builder.addSmallSpace(5);
     }
@@ -1298,7 +1301,7 @@ Uint8List generateStyledInvoice({
   for (final item in records) {
     builder.addRowStyled(
       '${item.productName}${item.dimensionsLabel()}',
-      formatLargeNumberDouble(item.quantity),
+      formatLargeNumberDouble(item.displayQuantity()),
       formatMoneyMid(
         amount:
             (invoice.fixedDiscount == null &&
@@ -1312,6 +1315,9 @@ Uint8List generateStyledInvoice({
       ).split('.').first,
       rightBold: false,
     );
+    if (item.wastageNote().isNotEmpty) {
+      builder.addText('  ${item.wastageNote()}');
+    }
 
     if (!DeviceService.isPos) {
       builder.addSmallSpace(5);

@@ -169,7 +169,7 @@ class _TableRowRecordWidgetState
                                   .fontSize,
                           fontWeight: FontWeight.bold,
                         ),
-                        widget.record.quantity.toString(),
+                        '${widget.record.quantityText()}${widget.record.wastageNote().isEmpty ? '' : '\n${widget.record.wastageNote()}'}',
                       ),
                     ),
                   ],

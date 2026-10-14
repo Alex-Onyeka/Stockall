@@ -1430,7 +1430,7 @@ Future<Uint8List> _buildPdf(
                               style: pw.TextStyle(
                                 fontSize: 10,
                               ),
-                              '${record.productName}${record.dimensionsLabel()} ',
+                              '${record.productName}${record.dimensionsLabel()} ${record.wastageNote().isEmpty ? '' : '\n${record.wastageNote()}'}',
                             ),
                           ),
                           pw.Expanded(
@@ -1439,7 +1439,7 @@ Future<Uint8List> _buildPdf(
                               style: pw.TextStyle(
                                 fontSize: 8,
                               ),
-                              '[ ${formatLargeNumberDouble(record.getActualQuantity())} ] ',
+                              '[ ${formatLargeNumberDouble(record.quantityType == 2 ? record.displayQuantity() : record.getActualQuantity())} ] ',
                             ),
                           ),
                           pw.Expanded(
@@ -1478,7 +1478,7 @@ Future<Uint8List> _buildPdf(
                                     font: fontRegular,
                                     fontSize: 7,
                                   ),
-                                  "${formatMoneyMid(amount: ((receipt.fixedDiscount == null && receipt.generalDiscount == null) && record.discount != null ? ((record.originalCost ?? 0) - (record.discountedAmount ?? 0)) : (record.originalCost ?? 0) / record.getActualQuantity()), context: context)} per 1",
+                                  "${formatMoneyMid(amount: ((receipt.fixedDiscount == null && receipt.generalDiscount == null) && record.discount != null ? ((record.originalCost ?? 0) - (record.discountedAmount ?? 0)) : (record.originalCost ?? 0) / record.priceBaseQuantity()), context: context)} per 1",
                                 ),
                                 // pw.Builder(
                                 //   builder: (pdfContext) {
@@ -2555,7 +2555,7 @@ Future<Uint8List> _buildPdfRoll(
                             style: pw.TextStyle(
                               fontSize: parText,
                             ),
-                            '${record.productName}${record.dimensionsLabel()} ',
+                            '${record.productName}${record.dimensionsLabel()} ${record.wastageNote().isEmpty ? '' : '\n${record.wastageNote()}'}',
                           ),
                         ),
                         pw.Expanded(
@@ -2564,7 +2564,7 @@ Future<Uint8List> _buildPdfRoll(
                             style: pw.TextStyle(
                               fontSize: parText,
                             ),
-                            '[ ${formatLargeNumberDouble(record.getActualQuantity())} ] ',
+                            '[ ${formatLargeNumberDouble(record.quantityType == 2 ? record.displayQuantity() : record.getActualQuantity())} ] ',
                           ),
                         ),
                         pw.Expanded(
@@ -4082,7 +4082,10 @@ Future<Uint8List> _buildPdfSales(
   double totalQuantity() {
     double tempQtty = 0;
     for (var element in records) {
-      tempQtty += element.getActualQuantity();
+      tempQtty +=
+          element.quantityType == 2
+              ? element.displayQuantity()
+              : element.getActualQuantity();
     }
     return tempQtty;
   }
@@ -4422,7 +4425,7 @@ Future<Uint8List> _buildPdfSales(
                                       vertical: 5,
                                     ),
                                     child: pw.Text(
-                                      record.productName,
+                                      '${record.productName}${record.wastageNote().isEmpty ? '' : '\n${record.wastageNote()}'}',
                                     ),
                                   ),
                                   pw.Padding(
@@ -4435,11 +4438,18 @@ Future<Uint8List> _buildPdfSales(
                                       style: pw.TextStyle(
                                         fontSize: 8,
                                       ),
-                                      (record
-                                              .getActualQuantity())
-                                          .toStringAsFixed(
-                                            0,
-                                          ),
+                                      // 2D: sale units with wastage
+                                      // (1.1), so not rounded.
+                                      record.quantityType == 2
+                                          ? formatLargeNumberDouble(
+                                            record
+                                                .displayQuantity(),
+                                          )
+                                          : (record
+                                                  .getActualQuantity())
+                                              .toStringAsFixed(
+                                                0,
+                                              ),
                                     ),
                                   ),
                                   pw.Padding(

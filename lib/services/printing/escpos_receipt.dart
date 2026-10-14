@@ -107,7 +107,7 @@ EscPosBuilder buildReceiptEscPos({
     _itemRow(
       b,
       '${record.productName}${record.dimensionsLabel()}',
-      '[${formatLargeNumberDouble(record.quantity)}]',
+      '[${formatLargeNumberDouble(record.displayQuantity())}]',
       money(
         noReceiptDiscount && record.discount != null
             ? ((record.originalCost ?? 0) -
@@ -115,6 +115,9 @@ EscPosBuilder buildReceiptEscPos({
             : (record.originalCost ?? 0),
       ),
     );
+    if (record.wastageNote().isNotEmpty) {
+      b.smallUnderColumn(record.wastageNote(), _itemFlex, 0);
+    }
   }
 
   b.divider();
@@ -217,7 +220,7 @@ EscPosBuilder buildInvoiceEscPos({
     _itemRow(
       b,
       '${record.productName}${record.dimensionsLabel()}',
-      '(${formatLargeNumberDouble(record.quantity)})',
+      '(${formatLargeNumberDouble(record.displayQuantity())})',
       money(
         noInvoiceDiscount && record.discount != null
             ? ((record.originalCost ?? 0) -
@@ -225,6 +228,9 @@ EscPosBuilder buildInvoiceEscPos({
             : (record.originalCost ?? 0),
       ),
     );
+    if (record.wastageNote().isNotEmpty) {
+      b.smallUnderColumn(record.wastageNote(), _itemFlex, 0);
+    }
     // The PDF strikes through the original price; ESC/POS can't.
     if (record.discount != null &&
         !record.customPriceSet &&

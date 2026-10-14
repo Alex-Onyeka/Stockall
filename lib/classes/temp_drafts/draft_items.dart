@@ -102,6 +102,11 @@ class DraftItems extends HiveObject {
   @HiveField(31)
   double? wastageAmount;
 
+  // Unit the fixed wastage amount was entered in. Null on lines
+  // from before wastage units: their fixed amount is area.
+  @HiveField(32)
+  String? wastageUnitUuid;
+
   DraftItems({
     required this.uuid,
     required this.draftId,
@@ -135,6 +140,7 @@ class DraftItems extends HiveObject {
     required this.manageSalesWastage,
     required this.isPercentageWastage,
     required this.wastageAmount,
+    this.wastageUnitUuid,
   });
 
   factory DraftItems.fromJson(Map<String, dynamic> json) {
@@ -197,6 +203,7 @@ class DraftItems extends HiveObject {
           json['is_percentage_wastage'] as bool?,
       wastageAmount:
           (json['wastage_amount'] as num?)?.toDouble(),
+      wastageUnitUuid: json['wastage_unit_uuid'] as String?,
     );
   }
 
@@ -238,6 +245,7 @@ class DraftItems extends HiveObject {
       'manage_sales_wastage': manageSalesWastage,
       'is_percentage_wastage': isPercentageWastage,
       'wastage_amount': wastageAmount,
+      'wastage_unit_uuid': wastageUnitUuid,
     };
   }
 }
