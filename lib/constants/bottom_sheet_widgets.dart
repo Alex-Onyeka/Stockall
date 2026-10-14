@@ -2359,6 +2359,8 @@ void selectProductSales({
                                           showTitle: false,
                                           onTap: () {
                                             setState(() {
+                                              currentFocus =
+                                                  5;
                                               isOnscreenKeyboardClicked =
                                                   false;
                                             });
@@ -3145,6 +3147,13 @@ void selectProductSales({
                                   ),
                                   child: OnScreenKeyboardPin(
                                     action: (value) {
+                                      // Wastage is only a target
+                                      // while its field is shown.
+                                      if (currentFocus == 5 &&
+                                          !showWastage()) {
+                                        currentFocus = 1;
+                                      }
+
                                       TextEditingController
                                       currentController() {
                                         switch (currentFocus) {
@@ -3156,6 +3165,8 @@ void selectProductSales({
                                             return widthController;
                                           case 4:
                                             return heightController;
+                                          case 5:
+                                            return wastageController;
                                           default:
                                             return quantityController;
                                         }
@@ -3350,6 +3361,31 @@ void selectProductSales({
                                                   maxDim) {
                                             controller
                                                 .text = '0';
+                                          }
+                                          controller
+                                              .selection = TextSelection.fromPosition(
+                                            TextPosition(
+                                              offset:
+                                                  controller
+                                                      .text
+                                                      .length,
+                                            ),
+                                          );
+                                        } else if (currentFocus ==
+                                            5) {
+                                          // Validated on Add to Cart,
+                                          // same as typed input.
+                                          if (isOnscreenKeyboardClicked ==
+                                              false) {
+                                            controller
+                                                    .text =
+                                                digit;
+                                            isOnscreenKeyboardClicked =
+                                                true;
+                                          } else {
+                                            controller
+                                                    .text +=
+                                                digit;
                                           }
                                           controller
                                               .selection = TextSelection.fromPosition(
