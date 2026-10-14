@@ -2252,73 +2252,77 @@ void selectProductSales({
                                             .item
                                             .quantityType ==
                                         2,
-                                child: Row(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment
-                                          .start,
-                                  spacing: 10,
-                                  children: [
-                                    Expanded(
-                                      child: EditCartTextField(
-                                        discount:
-                                            isPercentageWastage,
-                                        showTitle: false,
-                                        onTap: () {
-                                          setState(() {
-                                            isOnscreenKeyboardClicked =
-                                                false;
-                                          });
-                                        },
-                                        // focusNode: qttyNode,
-                                        onChanged:
-                                            (value) {},
-
-                                        title: '',
-                                        hint:
-                                            'Enter Wastage ${isPercentageWastage ? 'Percent' : 'Amount'}',
-                                        controller:
-                                            wastageController,
-                                        theme: theme,
-                                      ),
-                                    ),
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment
-                                              .center,
-                                      spacing: 5,
-                                      children: [
-                                        WastageTypeButton(
-                                          myBoolValue: true,
-                                          isPercentageWastage:
+                                child: SizedBox(
+                                  height: 38,
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment
+                                            .start,
+                                    spacing: 10,
+                                    children: [
+                                      Expanded(
+                                        child: EditCartTextField(
+                                          discount:
                                               isPercentageWastage,
-                                          symbol: '%',
-                                          toggleIsPercentageWastage: () {
+                                          showTitle: false,
+                                          onTap: () {
                                             setState(() {
-                                              isPercentageWastage =
-                                                  true;
-                                              wastageController
-                                                  .clear();
-                                            });
-                                          },
-                                        ),
-                                        WastageTypeButton(
-                                          myBoolValue:
-                                              false,
-                                          isPercentageWastage:
-                                              isPercentageWastage,
-                                          symbol: '#',
-                                          toggleIsPercentageWastage: () {
-                                            setState(() {
-                                              isPercentageWastage =
+                                              isOnscreenKeyboardClicked =
                                                   false;
-                                              wastageController
-                                                  .clear();
                                             });
                                           },
+                                          // focusNode: qttyNode,
+                                          onChanged:
+                                              (value) {},
+
+                                          title: '',
+                                          hint:
+                                              'Enter Wastage ${isPercentageWastage ? 'Percent' : 'Amount'}',
+                                          controller:
+                                              wastageController,
+                                          theme: theme,
                                         ),
-                                      ],
-                                    ),
-                                  ],
+                                      ),
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment
+                                                .center,
+                                        spacing: 5,
+                                        children: [
+                                          WastageTypeButton(
+                                            myBoolValue:
+                                                true,
+                                            isPercentageWastage:
+                                                isPercentageWastage,
+                                            symbol: '%',
+                                            toggleIsPercentageWastage: () {
+                                              setState(() {
+                                                isPercentageWastage =
+                                                    true;
+                                                wastageController
+                                                    .clear();
+                                              });
+                                            },
+                                          ),
+                                          WastageTypeButton(
+                                            myBoolValue:
+                                                false,
+                                            isPercentageWastage:
+                                                isPercentageWastage,
+                                            symbol: '#',
+                                            toggleIsPercentageWastage: () {
+                                              setState(() {
+                                                isPercentageWastage =
+                                                    false;
+                                                wastageController
+                                                    .clear();
+                                              });
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
