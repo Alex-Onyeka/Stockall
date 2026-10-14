@@ -2311,15 +2311,7 @@ void selectProductSales({
                                 bottom: 10,
                               ),
                               child: Visibility(
-                                visible:
-                                    (cartItemTemp
-                                            .item
-                                            .manageSalesWastage ??
-                                        false) &&
-                                    cartItemTemp
-                                            .item
-                                            .quantityType ==
-                                        2,
+                                visible: showWastage(),
                                 child: SizedBox(
                                   height: 38,
                                   child: Row(
