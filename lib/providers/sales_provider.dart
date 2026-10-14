@@ -2008,9 +2008,27 @@ class SalesProvider extends ChangeNotifier {
                 );
               }).toList();
 
+          // `breakdown` holds the cash/bank split for the full invoice
+          // total (the payment method fields always sum to it), but only
+          // `partPayment` was actually received. Scale the split down so
+          // the receipt's recorded payment (and its Total) match the part
+          // payment instead of the whole invoice.
+          final paymentRatio =
+              breakdown.total > 0
+                  ? partPayment / breakdown.total
+                  : 0.0;
+          final scaledBank =
+              breakdown.total > 0
+                  ? breakdown.bank * paymentRatio
+                  : 0.0;
+          final scaledCash =
+              breakdown.total > 0
+                  ? breakdown.cash * paymentRatio
+                  : partPayment;
+
           await returnInvoicesProvider().makeInvoicePayment(
-            bankAmount: breakdown.bank,
-            cashAmount: breakdown.cash,
+            bankAmount: scaledBank,
+            cashAmount: scaledCash,
             customerAmount: 0,
             invoice: invoice,
             salesRecords: productSaleRecords,
