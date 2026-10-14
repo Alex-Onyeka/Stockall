@@ -1358,7 +1358,9 @@ void selectProductSales({
   bool showWastage() {
     return is2DItem &&
         cartItem.item.manageSalesWastage == true &&
-        returnSalesProvider().currentCart().cartItemTypeIndex !=
+        returnSalesProvider()
+                .currentCart()
+                .cartItemTypeIndex !=
             3;
   }
 
@@ -1378,7 +1380,8 @@ void selectProductSales({
   String areaUnitLabel() {
     final areaUnits = cartItem.getUnitsList().where(
       (item) =>
-          item.dimensionType == ProductUnitsClass.areaUnit &&
+          item.dimensionType ==
+              ProductUnitsClass.areaUnit &&
           item.conversion == 1,
     );
     return areaUnits.isNotEmpty
@@ -1545,6 +1548,16 @@ void selectProductSales({
 
   priceUuid = cartItem.priceUuid ?? getPrimaryPrice().uuid;
 
+  double getCurrentSellingPrice() {
+    var tempPrice = getPrimaryPrice().priceValue;
+    var tempQty =
+        is2DItem && !isAreaUnit
+            ? getPrimaryUnit().conversion *
+                cartItem.item.dimensionArea()
+            : getPrimaryUnit().conversion;
+    return tempPrice * tempQty;
+  }
+
   void setPriceListFinal() {
     cartItem.getItem()?.pricesList?.clear();
     cartItem.getItem()?.pricesList?.addAll(
@@ -1552,6 +1565,11 @@ void selectProductSales({
     );
     // print(cartItem.getSelectedUnit().name);
     cartItem.priceUuid = priceUuid;
+    if (priceController.text.isNotEmpty) {
+      cartItem.setCustomPrice = true;
+    } else {
+      cartItem.setCustomPrice = false;
+    }
     // print(cartItem.getSelectedUnit().name);
   }
 
@@ -1608,10 +1626,14 @@ void selectProductSales({
           customPrice:
               priceController.text.isNotEmpty
                   ? double.tryParse(
-                    priceController.text.replaceAll(',', ''),
+                    priceController.text.replaceAll(
+                      ',',
+                      '',
+                    ),
                   )
                   : null,
-          setTotalPrice: returnSalesProvider().setTotalPrice,
+          setTotalPrice:
+              returnSalesProvider().setTotalPrice,
           wastageAmount:
               showWastage()
                   ? double.tryParse(
@@ -2177,14 +2199,14 @@ void selectProductSales({
                                           onChanged: (
                                             value,
                                           ) {
-                                            if (value
-                                                .isNotEmpty) {
-                                              cartItem.setCustomPrice =
-                                                  true;
-                                            } else {
-                                              cartItem.setCustomPrice =
-                                                  false;
-                                            }
+                                            // if (value
+                                            //     .isNotEmpty) {
+                                            //   cartItem.setCustomPrice =
+                                            //       true;
+                                            // } else {
+                                            //   cartItem.setCustomPrice =
+                                            //       false;
+                                            // }
                                             setState(() {});
                                           },
                                         ),
@@ -2659,6 +2681,36 @@ void selectProductSales({
                                           );
                                         },
                                       );
+                                    } else if (priceController
+                                            .text
+                                            .isNotEmpty &&
+                                        !authorization(
+                                              authorized:
+                                                  Authorizations()
+                                                      .sellBelowLowestSellingPrice,
+                                            ) &
+                                            (getCurrentSellingPrice() >
+                                                (double.tryParse(
+                                                      priceController.text.replaceAll(
+                                                        ',',
+                                                        '',
+                                                      ),
+                                                    ) ??
+                                                    0))) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (
+                                          errorContext,
+                                        ) {
+                                          return InfoAlert(
+                                            theme: theme,
+                                            message:
+                                                'You are not allowed to Sell This Item below the Currently Selected Selling Price (${getCurrentSellingPrice()}). Please Adjust Custom Price.',
+                                            title:
+                                                'Custom Price Not Allowed',
+                                          );
+                                        },
+                                      );
                                     } else {
                                       if (quantityController
                                               .text
@@ -2715,13 +2767,15 @@ void selectProductSales({
                                                   .getItem()
                                                   ?.isManaged ??
                                               false) &&
-                                          !returnSalesProvider().canAddProductToCart(
-                                            isEdit: isEdit,
-                                            newCartItem:
-                                                cartItem,
-                                            quantityToAdd:
-                                                billedQuantity(),
-                                          )) {
+                                          !returnSalesProvider()
+                                              .canAddProductToCart(
+                                                isEdit:
+                                                    isEdit,
+                                                newCartItem:
+                                                    cartItem,
+                                                quantityToAdd:
+                                                    billedQuantity(),
+                                              )) {
                                         // Dimensions and wastage can
                                         // change after the quantity
                                         // was checked.
@@ -2744,7 +2798,8 @@ void selectProductSales({
                                               title:
                                                   'Quantity Limit Reached',
                                               message:
-                                                  wastage > 0
+                                                  wastage >
+                                                          0
                                                       ? wastageStockMessage(
                                                         cutArea:
                                                             cutArea,
@@ -2782,11 +2837,11 @@ void selectProductSales({
                                                       '',
                                                     ),
                                               );
-                                          cartItem.setCustomPrice =
-                                              true;
+                                          // cartItem.setCustomPrice =
+                                          //     true;
                                         } else {
-                                          cartItem.setCustomPrice =
-                                              false;
+                                          // cartItem.setCustomPrice =
+                                          //     false;
                                         }
                                         double getQtty() {
                                           return getPrimaryUnitQuantityMultiplied(

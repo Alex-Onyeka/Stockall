@@ -132,6 +132,8 @@ class Authorizations {
       'Select Multiple Price During Sales';
   String setCustomPriceDuringSales =
       'Set Custom Price During Sales';
+  String sellBelowLowestSellingPrice =
+      'Sell Below Lowest Selling Price';
   String addCustomer = 'Add Customers';
   String updateCustomer = 'Update Customers';
   String deleteCustomer = 'Delete Customers';
