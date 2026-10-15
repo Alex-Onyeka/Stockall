@@ -37,8 +37,7 @@ class AddProductionItemMobile extends StatefulWidget {
       _AddProductionItemMobileState();
 }
 
-class _AddProductionItemMobileState
-    extends State<AddProductionItemMobile> {
+class _AddProductionItemMobileState extends State<AddProductionItemMobile> {
   bool isLoading = false;
   bool showSuccess = false;
   bool expand = false;
@@ -49,8 +48,7 @@ class _AddProductionItemMobileState
 
   bool isSizedTypeOpen = false;
 
-  TextEditingController expiryDateC =
-      TextEditingController();
+  TextEditingController expiryDateC = TextEditingController();
   //
   //
   //
@@ -64,21 +62,17 @@ class _AddProductionItemMobileState
           var theme = returnTheme(context);
           return InfoAlert(
             theme: theme,
-            message:
-                'Item Name Must be set before item can be created',
+            message: 'Item Name Must be set before item can be created',
             title: 'Empty Input',
           );
         },
       );
     } else {
       final safeContext = context;
-      var samePro = returnProductionItemsProvider()
-          .productionItemList()
-          .where(
-            (pr) =>
-                pr.name.toLowerCase() ==
-                widget.nameController.text.toLowerCase(),
-          );
+      var samePro = returnProductionItemsProvider().productionItemList().where(
+        (pr) =>
+            pr.name.toLowerCase() == widget.nameController.text.toLowerCase(),
+      );
       showDialog(
         context: safeContext,
         builder: (confirmDialog) {
@@ -88,10 +82,7 @@ class _AddProductionItemMobileState
                 samePro.isNotEmpty
                     ? 'Item with the name  ${widget.nameController.text.toUpperCase()}  already Exists in your Inventory. Are you sure you want to proceed to create a duplicate Item?'
                     : 'You are about to add a new item to your stock, are you sure you want to proceed?',
-            title:
-                samePro.isNotEmpty
-                    ? 'Item Already Exists'
-                    : 'Are you sure?',
+            title: samePro.isNotEmpty ? 'Item Already Exists' : 'Are you sure?',
             action: () async {
               Navigator.of(confirmDialog).pop();
 
@@ -99,18 +90,13 @@ class _AddProductionItemMobileState
                 isLoading = true;
               });
 
-              final productionItemProvider =
-                  returnProductionItemsProvider();
+              final productionItemProvider = returnProductionItemsProvider();
               final dataProvider = returnData();
 
               ProductionItemHistory productionItemHistory =
                   ProductionItemHistory(
-                    event:
-                        ProductionItemHistoryEventClass
-                            .itemCreated,
-                    source:
-                        ProductionItemHistoryEventClass
-                            .unKnownSource,
+                    event: ProductionItemHistoryEventClass.itemCreated,
+                    source: ProductionItemHistoryEventClass.unKnownSource,
                     isManaged: false,
                     shopId: shopId(),
                     title: 'Item Created',
@@ -121,76 +107,53 @@ class _AddProductionItemMobileState
                     oldValue: '0',
                   );
 
-              await productionItemProvider
-                  .createProductionItem(
-                    isMultiple: false,
-                    productionItemHistory:
-                        productionItemHistory,
-                    productionItem: ProductionItem(
-                      unitsList:
-                          dataProvider.getTempUnitList(),
-                      useGroupUnit:
-                          dataProvider.useGroupUnit,
-                      categories:
-                          dataProvider.selectedCategories
-                              .toList(),
-                      isManaged: dataProvider.isManaged,
-                      name:
-                          widget.nameController.text.trim(),
-                      unit:
-                          dataProvider.selectedUnit ??
-                          'Unit(s)',
-                      groupUnit:
-                          dataProvider.selectedGroupUnit ??
-                          'Group(s)',
-                      qttyPerGroup:
-                          widget
-                                  .qttyPerGroupController
-                                  .text
-                                  .isNotEmpty
-                              ? double.parse(
-                                widget
-                                    .qttyPerGroupController
-                                    .text
-                                    .replaceAll(',', ''),
+              await productionItemProvider.createProductionItem(
+                isMultiple: false,
+                productionItemHistory: productionItemHistory,
+                productionItem: ProductionItem(
+                  unitsList: dataProvider.getTempUnitList(),
+                  useGroupUnit: dataProvider.useGroupUnit,
+                  categories: dataProvider.selectedCategories.toList(),
+                  isManaged: dataProvider.isManaged,
+                  name: widget.nameController.text.trim(),
+                  unit: dataProvider.selectedUnit ?? 'Unit(s)',
+                  groupUnit: dataProvider.selectedGroupUnit ?? 'Group(s)',
+                  qttyPerGroup:
+                      widget.qttyPerGroupController.text.isNotEmpty
+                          ? double.parse(
+                            widget.qttyPerGroupController.text.replaceAll(
+                              ',',
+                              '',
+                            ),
+                          )
+                          : null,
+                  sizeType: dataProvider.selectedSize,
+                  costPrice:
+                      widget.costController.text.isNotEmpty
+                          ? double.parse(
+                            widget.costController.text.replaceAll(',', ''),
+                          )
+                          : 0,
+                  shopId: shopId(),
+                  quantity: 0,
+                  expiryDate: dataProvider.expiryDate,
+                  // categoryUuid:
+                  //     dataProvider
+                  //         .selectedCategory
+                  //         ?.uuid,
+                  uuid: createdProductionItemUuid,
+                  departmentName:
+                      dataProvider.departmentUuid != null
+                          ? returnDepartmentProvider().departments
+                              .firstWhere(
+                                (dept) =>
+                                    dept.uuid == dataProvider.departmentUuid,
                               )
-                              : null,
-                      sizeType: dataProvider.selectedSize,
-                      costPrice:
-                          widget
-                                  .costController
-                                  .text
-                                  .isNotEmpty
-                              ? double.parse(
-                                widget.costController.text
-                                    .replaceAll(',', ''),
-                              )
-                              : 0,
-                      shopId: shopId(),
-                      quantity: 0,
-                      expiryDate: dataProvider.expiryDate,
-                      // categoryUuid:
-                      //     dataProvider
-                      //         .selectedCategory
-                      //         ?.uuid,
-                      uuid: createdProductionItemUuid,
-                      departmentName:
-                          dataProvider.departmentUuid !=
-                                  null
-                              ? returnDepartmentProvider()
-                                  .departments
-                                  .firstWhere(
-                                    (dept) =>
-                                        dept.uuid ==
-                                        dataProvider
-                                            .departmentUuid,
-                                  )
-                                  .name
-                              : null,
-                      departmentUuid:
-                          dataProvider.departmentUuid,
-                    ),
-                  );
+                              .name
+                          : null,
+                  departmentUuid: dataProvider.departmentUuid,
+                ),
+              );
 
               setState(() {
                 isLoading = false;
@@ -200,9 +163,7 @@ class _AddProductionItemMobileState
               Future.delayed(Duration(seconds: 2), () {
                 // Pop current screen
                 if (safeContext.mounted) {
-                  Navigator.of(
-                    safeContext,
-                  ).pop(); // pop current page
+                  Navigator.of(safeContext).pop(); // pop current page
                 }
               });
             },
@@ -220,12 +181,10 @@ class _AddProductionItemMobileState
         var theme = returnTheme(context);
         return ConfirmationAlert(
           theme: theme,
-          message:
-              'Are you sure you want to proceed with update?',
+          message: 'Are you sure you want to proceed with update?',
           title: 'Proceed?',
           action: () async {
-            final provider =
-                returnProductionItemsProvider();
+            final provider = returnProductionItemsProvider();
             final dataProvider = returnData();
             Navigator.of(confirmDialog).pop();
 
@@ -242,18 +201,13 @@ class _AddProductionItemMobileState
               productionItem: ProductionItem(
                 unitsList: dataProvider.getTempUnitList(),
                 useGroupUnit: dataProvider.useGroupUnit,
-                categories:
-                    dataProvider.selectedCategories
-                        .toList(),
+                categories: dataProvider.selectedCategories.toList(),
                 departmentName:
                     dataProvider.departmentUuid != null
-                        ? returnDepartmentProvider()
-                            .departments
+                        ? returnDepartmentProvider().departments
                             .firstWhere(
                               (dept) =>
-                                  dept.uuid ==
-                                  dataProvider
-                                      .departmentUuid,
+                                  dept.uuid == dataProvider.departmentUuid,
                             )
                             .name
                         : null,
@@ -261,24 +215,21 @@ class _AddProductionItemMobileState
                 isManaged: dataProvider.isManaged,
                 uuid: widget.productionItem?.uuid,
                 name: widget.nameController.text,
-                unit:
-                    dataProvider.selectedUnit ?? 'Unit(s)',
+                unit: dataProvider.selectedUnit ?? 'Unit(s)',
                 groupUnit: dataProvider.selectedGroupUnit,
                 qttyPerGroup:
-                    widget
-                            .qttyPerGroupController
-                            .text
-                            .isNotEmpty
+                    widget.qttyPerGroupController.text.isNotEmpty
                         ? double.parse(
-                          widget.qttyPerGroupController.text
-                              .replaceAll(',', ''),
+                          widget.qttyPerGroupController.text.replaceAll(
+                            ',',
+                            '',
+                          ),
                         )
                         : null,
                 costPrice:
                     widget.costController.text.isNotEmpty
                         ? double.parse(
-                          widget.costController.text
-                              .replaceAll(',', ''),
+                          widget.costController.text.replaceAll(',', ''),
                         )
                         : 0,
                 quantity: widget.productionItem?.quantity,
@@ -328,8 +279,7 @@ class _AddProductionItemMobileState
       });
     } else {
       setState(() {
-        createdProductionItemUuid =
-            widget.productionItem?.uuid;
+        createdProductionItemUuid = widget.productionItem?.uuid;
       });
     }
     // setShop();
@@ -340,10 +290,9 @@ class _AddProductionItemMobileState
       if (context.mounted) {
         returnData().clearFields(setIsManaged: false);
       }
-      var res = ItemsAuthAction()
-          .allowStockallToManageItemAction(
-            context: context,
-          );
+      var res = ItemsAuthAction().allowStockallToManageItemAction(
+        context: context,
+      );
       if (res) {
         returnData().toggleIsManagedTemp(true);
       } else {
@@ -351,36 +300,25 @@ class _AddProductionItemMobileState
       }
     });
     if (widget.productionItem != null && context.mounted) {
-      returnData().departmentUuid =
-          widget.productionItem?.departmentUuid;
-      returnData().expiryDate =
-          widget.productionItem?.expiryDate;
-      widget.nameController.text =
-          widget.productionItem!.name;
-      widget.costController.text =
-          widget.productionItem!.costPrice.toString();
+      returnData().departmentUuid = widget.productionItem?.departmentUuid;
+      returnData().expiryDate = widget.productionItem?.expiryDate;
+      widget.nameController.text = widget.productionItem!.name;
+      widget.costController.text = widget.productionItem!.costPrice.toString();
 
-      returnData().isManaged =
-          widget.productionItem!.isManaged;
-      returnData().useGroupUnit =
-          widget.productionItem!.useGroupUnit ?? false;
+      returnData().isManaged = widget.productionItem!.isManaged;
+      returnData().useGroupUnit = widget.productionItem!.useGroupUnit ?? false;
       returnData().selectUnit(widget.productionItem!.unit);
-      returnData().selectGroupUnit(
-        unit: widget.productionItem!.groupUnit,
-      );
+      returnData().selectGroupUnit(unit: widget.productionItem!.groupUnit);
       returnData().initUnitsList(
         productUuid: createdProductionItemUuid,
         unitsListNew: widget.productionItem!.getUnitsList(),
       );
       widget.qttyPerGroupController.text =
           widget.productionItem!.qttyPerGroup != null
-              ? widget.productionItem!.qttyPerGroup!
-                  .toString()
+              ? widget.productionItem!.qttyPerGroup!.toString()
               : '';
       widget.productionItem!.sizeType != null
-          ? returnData().selectSize(
-            widget.productionItem!.sizeType!,
-          )
+          ? returnData().selectSize(widget.productionItem!.sizeType!)
           : null;
       returnData().initCategories(
         categories: widget.productionItem?.categories ?? [],
@@ -423,15 +361,11 @@ class _AddProductionItemMobileState
                     fontSize: theme.mobileTexts.h4.fontSize,
                     fontWeight: FontWeight.bold,
                   ),
-                  widget.productionItem != null
-                      ? 'Edit Item'
-                      : 'New Item',
+                  widget.productionItem != null ? 'Edit Item' : 'New Item',
                 ),
                 SizedBox(height: 5),
                 Text(
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.b2.fontSize,
-                  ),
+                  style: TextStyle(fontSize: theme.mobileTexts.b2.fontSize),
                   widget.productionItem != null
                       ? 'Edit productionItem details'
                       : 'Add a new productionItem to your store.',
@@ -445,14 +379,10 @@ class _AddProductionItemMobileState
                 children: [
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: SingleChildScrollView(
                         child: Padding(
-                          padding: const EdgeInsets.only(
-                            top: 10.0,
-                          ),
+                          padding: const EdgeInsets.only(top: 10.0),
                           child: Column(
                             children: [
                               GeneralTextField(
@@ -460,15 +390,12 @@ class _AddProductionItemMobileState
                                 hint: 'Enter Item Name',
                                 lines: 1,
                                 title: 'Item Name',
-                                controller:
-                                    widget.nameController,
+                                controller: widget.nameController,
                               ),
 
                               Visibility(
                                 visible: authorization(
-                                  authorized:
-                                      Authorizations()
-                                          .manageCostPrice,
+                                  authorized: Authorizations().manageCostPrice,
                                 ),
                                 child: Column(
                                   children: [
@@ -478,13 +405,9 @@ class _AddProductionItemMobileState
                                         Expanded(
                                           child: MoneyTextfield(
                                             theme: theme,
-                                            hint:
-                                                'Enter Real Cost',
-                                            title:
-                                                'Cost - Price (Optional)',
-                                            controller:
-                                                widget
-                                                    .costController,
+                                            hint: 'Enter Real Cost',
+                                            title: 'Cost - Price (Optional)',
+                                            controller: widget.costController,
                                           ),
                                         ),
                                       ],
@@ -497,30 +420,22 @@ class _AddProductionItemMobileState
                                 children: [
                                   SizedBox(height: 20),
                                   InkWell(
-                                    mouseCursor:
-                                        SystemMouseCursors
-                                            .click,
+                                    mouseCursor: SystemMouseCursors.click,
                                     onTap: () {
-                                      returnData()
-                                          .toggleIsManaged(
-                                            context:
-                                                context,
-                                          );
-                                      FocusManager
-                                          .instance
-                                          .primaryFocus
+                                      returnData().toggleIsManaged(
+                                        context: context,
+                                      );
+                                      FocusManager.instance.primaryFocus
                                           ?.unfocus();
                                     },
                                     child: Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .spaceBetween,
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         Flexible(
                                           child: Column(
                                             crossAxisAlignment:
-                                                CrossAxisAlignment
-                                                    .start,
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Text(
                                                 style: TextStyle(
@@ -529,9 +444,7 @@ class _AddProductionItemMobileState
                                                           .mobileTexts
                                                           .b1
                                                           .fontSize,
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
                                                 'Allow Stockall to Manage Item Quantity?',
                                               ),
@@ -540,8 +453,7 @@ class _AddProductionItemMobileState
                                                 children: [
                                                   Text(
                                                     style: TextStyle(
-                                                      fontSize:
-                                                          10,
+                                                      fontSize: 10,
                                                     ),
                                                     'This controls whether Item quantity is automatically deducted after sales, and notifications are sent when productionItem quantity is low or out of stock.',
                                                   ),
@@ -552,25 +464,16 @@ class _AddProductionItemMobileState
                                         ),
                                         Checkbox(
                                           activeColor:
-                                              theme
-                                                  .lightModeColor
-                                                  .secColor100,
+                                              theme.lightModeColor.secColor100,
                                           value:
                                               returnData(
-                                                context:
-                                                    context,
+                                                context: context,
                                               ).isManaged,
-                                          onChanged: (
-                                            value,
-                                          ) {
-                                            returnData()
-                                                .toggleIsManaged(
-                                                  context:
-                                                      context,
-                                                );
-                                            FocusManager
-                                                .instance
-                                                .primaryFocus
+                                          onChanged: (value) {
+                                            returnData().toggleIsManaged(
+                                              context: context,
+                                            );
+                                            FocusManager.instance.primaryFocus
                                                 ?.unfocus();
                                           },
                                         ),
@@ -583,64 +486,49 @@ class _AddProductionItemMobileState
                               Divider(),
                               // SizedBox(height: 5),
                               InkWell(
-                                mouseCursor:
-                                    SystemMouseCursors
-                                        .click,
+                                mouseCursor: SystemMouseCursors.click,
                                 onTap: () {
                                   setState(() {
                                     expand = !expand;
                                   });
                                 },
                                 child: Container(
-                                  padding:
-                                      EdgeInsets.symmetric(
-                                        vertical: 5,
-                                      ),
+                                  padding: EdgeInsets.symmetric(vertical: 5),
                                   child: Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         style: TextStyle(
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                         expand
                                             ? 'Hide Details'
                                             : 'More Details',
                                       ),
                                       InkWell(
-                                        mouseCursor:
-                                            SystemMouseCursors
-                                                .click,
+                                        mouseCursor: SystemMouseCursors.click,
                                         onTap: () {
                                           setState(() {
-                                            expand =
-                                                !expand;
+                                            expand = !expand;
                                           });
                                         },
                                         child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(
-                                                left: 35.0,
-                                                top: 5,
-                                                bottom: 5,
-                                              ),
+                                          padding: const EdgeInsets.only(
+                                            left: 35.0,
+                                            top: 5,
+                                            bottom: 5,
+                                          ),
                                           child: Row(
                                             children: [
                                               Text(
-                                                expand
-                                                    ? 'Colapse'
-                                                    : 'Expand',
+                                                expand ? 'Colapse' : 'Expand',
                                               ),
                                               Icon(
                                                 expand
                                                     ? Icons
                                                         .keyboard_arrow_up_outlined
-                                                    : Icons
-                                                        .keyboard_arrow_down,
+                                                    : Icons.keyboard_arrow_down,
                                               ),
                                             ],
                                           ),
@@ -659,9 +547,7 @@ class _AddProductionItemMobileState
                                   children: [
                                     Column(
                                       children: [
-                                        SizedBox(
-                                          height: 10,
-                                        ),
+                                        SizedBox(height: 10),
                                         Visibility(
                                           visible:
                                               returnShopProvider()
@@ -675,41 +561,36 @@ class _AddProductionItemMobileState
                                               ),
                                           child: InkWell(
                                             mouseCursor:
-                                                SystemMouseCursors
-                                                    .click,
+                                                SystemMouseCursors.click,
                                             onTap: () {
                                               GeneralSettingsAuthAction().manageDeparmtmentsAction(
-                                                context:
-                                                    context,
+                                                context: context,
                                                 action: () {
-                                                  String?
-                                                  selectedDept;
+                                                  String? selectedDept;
                                                   setState(() {
                                                     selectedDept =
-                                                        returnData().departmentUuid;
+                                                        returnData()
+                                                            .departmentUuid;
                                                   });
                                                   showDialog(
-                                                    context:
-                                                        context,
-                                                    builder: (
-                                                      firstContext,
-                                                    ) {
+                                                    context: context,
+                                                    builder: (firstContext) {
                                                       return StatefulBuilder(
                                                         builder: (
                                                           secondContext,
                                                           setState,
                                                         ) {
                                                           return DialogTemplate(
-                                                            theme:
-                                                                theme,
+                                                            theme: theme,
                                                             message:
                                                                 'Select Department for this Staff',
                                                             title:
                                                                 'Select Department(s)',
                                                             action: () {
-                                                              returnData().setDepartment(
-                                                                selectedDept,
-                                                              );
+                                                              returnData()
+                                                                  .setDepartment(
+                                                                    selectedDept,
+                                                                  );
                                                               Navigator.of(
                                                                 context,
                                                               ).pop();
@@ -729,10 +610,10 @@ class _AddProductionItemMobileState
                                                                         15,
                                                                   ),
                                                                   child: Column(
-                                                                    spacing:
-                                                                        5,
+                                                                    spacing: 5,
                                                                     children:
-                                                                        returnDepartmentProvider().departments
+                                                                        returnDepartmentProvider()
+                                                                            .departments
                                                                             .map(
                                                                               (
                                                                                 dept,
@@ -823,12 +704,9 @@ class _AddProductionItemMobileState
                                               );
                                             },
                                             child: Column(
-                                              mainAxisSize:
-                                                  MainAxisSize
-                                                      .min,
+                                              mainAxisSize: MainAxisSize.min,
                                               mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .start,
+                                                  MainAxisAlignment.start,
                                               spacing: 5,
                                               children: [
                                                 Row(
@@ -837,30 +715,34 @@ class _AddProductionItemMobileState
                                                       textAlign:
                                                           TextAlign.start,
                                                       style:
-                                                          theme.mobileTexts.b3.textStyleBold,
+                                                          theme
+                                                              .mobileTexts
+                                                              .b3
+                                                              .textStyleBold,
                                                       'Set Department',
                                                     ),
                                                   ],
                                                 ),
                                                 SubWrapper(
                                                   isVisible:
-                                                      !GeneralSettingsAuthAction().manageDeparmtmentsAction(
-                                                        context:
-                                                            context,
-                                                      ),
+                                                      !GeneralSettingsAuthAction()
+                                                          .manageDeparmtmentsAction(
+                                                            context: context,
+                                                          ),
                                                   mainWidget: Container(
-                                                    padding: EdgeInsets.symmetric(
-                                                      vertical:
-                                                          0,
-                                                      horizontal:
-                                                          5,
-                                                    ),
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                          vertical: 0,
+                                                          horizontal: 5,
+                                                        ),
                                                     decoration: BoxDecoration(
                                                       border: Border.all(
                                                         color:
                                                             returnData().departmentUuid !=
                                                                     null
-                                                                ? theme.lightModeColor.prColor300
+                                                                ? theme
+                                                                    .lightModeColor
+                                                                    .prColor300
                                                                 : Colors.grey,
                                                         width:
                                                             returnData().departmentUuid !=
@@ -875,36 +757,44 @@ class _AddProductionItemMobileState
                                                     ),
                                                     child: Row(
                                                       mainAxisAlignment:
-                                                          MainAxisAlignment.spaceBetween,
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
                                                       children: [
                                                         Row(
                                                           children: [
-                                                            SizedBox(
-                                                              width:
-                                                                  10,
-                                                            ),
+                                                            SizedBox(width: 10),
                                                             Text(
                                                               style: TextStyle(
                                                                 fontSize:
                                                                     returnData().departmentUuid !=
                                                                             null
-                                                                        ? theme.mobileTexts.b2.fontSize
-                                                                        : theme.mobileTexts.b2.fontSize,
+                                                                        ? theme
+                                                                            .mobileTexts
+                                                                            .b2
+                                                                            .fontSize
+                                                                        : theme
+                                                                            .mobileTexts
+                                                                            .b2
+                                                                            .fontSize,
                                                                 fontWeight:
                                                                     returnData().departmentUuid !=
                                                                             null
-                                                                        ? FontWeight.bold
+                                                                        ? FontWeight
+                                                                            .bold
                                                                         : null,
                                                                 color:
                                                                     returnData().departmentUuid !=
                                                                             null
                                                                         ? null
-                                                                        : Colors.grey.shade500,
+                                                                        : Colors
+                                                                            .grey
+                                                                            .shade500,
                                                               ),
                                                               returnData().departmentUuid ==
                                                                       null
                                                                   ? 'Select Department'
-                                                                  : returnDepartmentProvider().departments
+                                                                  : returnDepartmentProvider()
+                                                                      .departments
                                                                       .firstWhere(
                                                                         (
                                                                           dept,
@@ -919,21 +809,27 @@ class _AddProductionItemMobileState
                                                         Ink(
                                                           child: InkWell(
                                                             mouseCursor:
-                                                                SystemMouseCursors.click,
-                                                            borderRadius: BorderRadius.circular(
-                                                              20,
-                                                            ),
+                                                                SystemMouseCursors
+                                                                    .click,
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  20,
+                                                                ),
                                                             onTap: () {
-                                                              returnData().clearDepartment();
+                                                              returnData()
+                                                                  .clearDepartment();
                                                             },
                                                             child: Container(
-                                                              padding: EdgeInsets.all(
-                                                                7,
-                                                              ),
-                                                              decoration: BoxDecoration(
-                                                                shape:
-                                                                    BoxShape.circle,
-                                                              ),
+                                                              padding:
+                                                                  EdgeInsets.all(
+                                                                    7,
+                                                                  ),
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                    shape:
+                                                                        BoxShape
+                                                                            .circle,
+                                                                  ),
                                                               child: Icon(
                                                                 Icons.clear,
                                                               ),
@@ -948,73 +844,64 @@ class _AddProductionItemMobileState
                                             ),
                                           ),
                                         ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
+                                        SizedBox(height: 10),
                                         InkWell(
-                                          mouseCursor:
-                                              SystemMouseCursors
-                                                  .click,
+                                          mouseCursor: SystemMouseCursors.click,
                                           onTap: () {
-                                            ItemsAuthAction().setExpiryDateAction(
-                                              context:
-                                                  context,
-                                              action: () {
-                                                myDatePickerAction(
-                                                  theme,
-                                                  context,
-                                                ).then((
-                                                  value,
-                                                ) {
-                                                  value !=
-                                                          null
-                                                      ? returnData().setExpDate(
-                                                        value,
-                                                      )
-                                                      : {};
-                                                });
-                                              },
-                                            );
+                                            ItemsAuthAction()
+                                                .setExpiryDateAction(
+                                                  context: context,
+                                                  action: () {
+                                                    myDatePickerAction(
+                                                      theme,
+                                                      context,
+                                                    ).then((value) {
+                                                      value != null
+                                                          ? returnData()
+                                                              .setExpDate(value)
+                                                          : {};
+                                                    });
+                                                  },
+                                                );
                                           },
                                           child: Column(
-                                            mainAxisSize:
-                                                MainAxisSize
-                                                    .min,
+                                            mainAxisSize: MainAxisSize.min,
                                             mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .start,
+                                                MainAxisAlignment.start,
                                             spacing: 5,
                                             children: [
                                               Row(
                                                 children: [
                                                   Text(
-                                                    textAlign:
-                                                        TextAlign.start,
+                                                    textAlign: TextAlign.start,
                                                     style:
-                                                        theme.mobileTexts.b3.textStyleBold,
+                                                        theme
+                                                            .mobileTexts
+                                                            .b3
+                                                            .textStyleBold,
                                                     'Expiry Date (Optional)',
                                                   ),
                                                 ],
                                               ),
                                               SubWrapper(
                                                 isVisible:
-                                                    !ItemsAuthAction().setExpiryDateAction(
-                                                      context:
-                                                          context,
-                                                    ),
+                                                    !ItemsAuthAction()
+                                                        .setExpiryDateAction(
+                                                          context: context,
+                                                        ),
                                                 mainWidget: Container(
                                                   padding: EdgeInsets.symmetric(
-                                                    vertical:
-                                                        0,
-                                                    horizontal:
-                                                        5,
+                                                    vertical: 0,
+                                                    horizontal: 5,
                                                   ),
                                                   decoration: BoxDecoration(
                                                     border: Border.all(
                                                       color:
                                                           returnData().expiryDate !=
                                                                   null
-                                                              ? theme.lightModeColor.prColor300
+                                                              ? theme
+                                                                  .lightModeColor
+                                                                  .prColor300
                                                               : Colors.grey,
                                                       width:
                                                           returnData().expiryDate !=
@@ -1029,37 +916,45 @@ class _AddProductionItemMobileState
                                                   ),
                                                   child: Row(
                                                     mainAxisAlignment:
-                                                        MainAxisAlignment.spaceBetween,
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
                                                     children: [
                                                       Row(
                                                         children: [
-                                                          SizedBox(
-                                                            width:
-                                                                10,
-                                                          ),
+                                                          SizedBox(width: 10),
                                                           Text(
                                                             style: TextStyle(
                                                               fontSize:
                                                                   returnData().expiryDate !=
                                                                           null
-                                                                      ? theme.mobileTexts.b2.fontSize
-                                                                      : theme.mobileTexts.b2.fontSize,
+                                                                      ? theme
+                                                                          .mobileTexts
+                                                                          .b2
+                                                                          .fontSize
+                                                                      : theme
+                                                                          .mobileTexts
+                                                                          .b2
+                                                                          .fontSize,
                                                               fontWeight:
                                                                   returnData().expiryDate !=
                                                                           null
-                                                                      ? FontWeight.bold
+                                                                      ? FontWeight
+                                                                          .bold
                                                                       : null,
                                                               color:
                                                                   returnData().expiryDate !=
                                                                           null
                                                                       ? null
-                                                                      : Colors.grey.shade500,
+                                                                      : Colors
+                                                                          .grey
+                                                                          .shade500,
                                                             ),
                                                             returnData().expiryDate ==
                                                                     null
                                                                 ? 'Set Expiry Date'
                                                                 : formatDateWithDay(
-                                                                  returnData().expiryDate ??
+                                                                  returnData()
+                                                                          .expiryDate ??
                                                                       DateTime.now(),
                                                                 ),
                                                           ),
@@ -1068,21 +963,27 @@ class _AddProductionItemMobileState
                                                       Ink(
                                                         child: InkWell(
                                                           mouseCursor:
-                                                              SystemMouseCursors.click,
-                                                          borderRadius: BorderRadius.circular(
-                                                            20,
-                                                          ),
+                                                              SystemMouseCursors
+                                                                  .click,
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                20,
+                                                              ),
                                                           onTap: () {
-                                                            returnData().clearExpDate();
+                                                            returnData()
+                                                                .clearExpDate();
                                                           },
                                                           child: Container(
-                                                            padding: EdgeInsets.all(
-                                                              7,
-                                                            ),
-                                                            decoration: BoxDecoration(
-                                                              shape:
-                                                                  BoxShape.circle,
-                                                            ),
+                                                            padding:
+                                                                EdgeInsets.all(
+                                                                  7,
+                                                                ),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                                  shape:
+                                                                      BoxShape
+                                                                          .circle,
+                                                                ),
                                                             child: Icon(
                                                               Icons.clear,
                                                             ),
@@ -1106,16 +1007,14 @@ class _AddProductionItemMobileState
                                                 .manageMultipleUnits,
                                       ),
                                       child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(
-                                              top: 10.0,
-                                            ),
+                                        padding: const EdgeInsets.only(
+                                          top: 10.0,
+                                        ),
                                         child: SubWrapper(
                                           isVisible:
                                               !ItemsAuthAction()
                                                   .applyVariationsAction(
-                                                    context:
-                                                        context,
+                                                    context: context,
                                                   ),
                                           mainWidget: MainDropdown(
                                             valueSet:
@@ -1124,15 +1023,12 @@ class _AddProductionItemMobileState
                                                     .isNotEmpty,
                                             onTap: () {
                                               ItemsAuthAction().applyVariationsAction(
-                                                context:
-                                                    context,
+                                                context: context,
                                                 action: () {
                                                   Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
-                                                      builder: (
-                                                        context,
-                                                      ) {
+                                                      builder: (context) {
                                                         return ProductUnitsPage(
                                                           productUuid:
                                                               createdProductionItemUuid ??
@@ -1145,12 +1041,10 @@ class _AddProductionItemMobileState
                                               );
                                             },
                                             isOpen: false,
-                                            title:
-                                                'Item Unit (Optional)',
+                                            title: 'Item Unit (Optional)',
                                             hint:
                                                 returnData(
-                                                      context:
-                                                          context,
+                                                      context: context,
                                                     ).tempUnitsList.isEmpty
                                                     ? 'Unit Not Set'
                                                     : "${returnData(context: context).tempUnitsList.firstWhere((item) => item.isPrimary).name} and (${returnData(context: context).tempUnitsList.length - 1}) More",
@@ -1161,110 +1055,93 @@ class _AddProductionItemMobileState
                                     ),
                                     Column(
                                       children: [
-                                        SizedBox(
-                                          height: 10,
-                                        ),
+                                        SizedBox(height: 10),
                                         SubWrapper(
                                           isVisible:
                                               !ItemsAuthAction()
                                                   .applyVariationsAction(
-                                                    context:
-                                                        context,
+                                                    context: context,
                                                   ),
                                           mainWidget: MainDropdown(
                                             valueSet:
                                                 returnData(
-                                                  context:
-                                                      context,
+                                                  context: context,
                                                 ).sizeValueSet,
                                             onTap: () {
-                                              ItemsAuthAction().applyVariationsAction(
-                                                context:
-                                                    context,
-                                                action: () {
-                                                  sizeTypeBottomSheet(
-                                                    context,
-                                                    () {
+                                              ItemsAuthAction()
+                                                  .applyVariationsAction(
+                                                    context: context,
+                                                    action: () {
+                                                      sizeTypeBottomSheet(
+                                                        context,
+                                                        () {
+                                                          setState(() {
+                                                            isSizedTypeOpen =
+                                                                !isSizedTypeOpen;
+                                                          });
+                                                        },
+                                                      );
                                                       setState(() {
                                                         isSizedTypeOpen =
                                                             !isSizedTypeOpen;
                                                       });
                                                     },
                                                   );
-                                                  setState(() {
-                                                    isSizedTypeOpen =
-                                                        !isSizedTypeOpen;
-                                                  });
-                                                },
-                                              );
                                             },
-                                            isOpen:
-                                                isSizedTypeOpen,
-                                            title:
-                                                'Size Type (Optional)',
+                                            isOpen: isSizedTypeOpen,
+                                            title: 'Size Type (Optional)',
                                             hint:
                                                 returnData(
-                                                  context:
-                                                      context,
+                                                  context: context,
                                                 ).selectedSize ??
                                                 'Select Item Size Type',
                                             theme: theme,
                                           ),
                                         ),
 
-                                        SizedBox(
-                                          height: 10,
-                                        ),
+                                        SizedBox(height: 10),
                                         SubWrapper(
                                           isVisible:
                                               !ItemsAuthAction()
                                                   .applyVariationsAction(
-                                                    context:
-                                                        context,
+                                                    context: context,
                                                   ),
                                           mainWidget: MainDropdown(
                                             valueSet:
                                                 returnData(
-                                                  context:
-                                                      context,
+                                                  context: context,
                                                 ).catValueSet,
                                             onTap: () {
-                                              ItemsAuthAction().applyVariationsAction(
-                                                context:
-                                                    context,
-                                                action: () {
-                                                  categoriesBottomSheet(
-                                                    context,
-                                                    () {
+                                              ItemsAuthAction()
+                                                  .applyVariationsAction(
+                                                    context: context,
+                                                    action: () {
+                                                      categoriesBottomSheet(
+                                                        context,
+                                                        () {
+                                                          setState(() {
+                                                            isOpen = false;
+                                                          });
+                                                        },
+                                                      );
                                                       setState(() {
-                                                        isOpen =
-                                                            false;
+                                                        isOpen = !isOpen;
                                                       });
                                                     },
                                                   );
-                                                  setState(() {
-                                                    isOpen =
-                                                        !isOpen;
-                                                  });
-                                                },
-                                              );
                                             },
                                             isOpen: isOpen,
-                                            title:
-                                                'Categories (Optional)',
+                                            title: 'Categories (Optional)',
                                             hint:
-                                                returnData(
-                                                      context:
-                                                          context,
-                                                    ).selectedCategories.isNotEmpty
+                                                returnData(context: context)
+                                                        .selectedCategories
+                                                        .isNotEmpty
                                                     ? "(${returnData(context: context).selectedCategories.length}) Categories Selected"
                                                     : 'Select Item Categories',
                                             theme: theme,
                                           ),
                                         ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
+                                        SizedBox(height: 10),
                                       ],
                                     ),
                                   ],
@@ -1307,10 +1184,7 @@ class _AddProductionItemMobileState
 
         Visibility(
           visible: isLoading,
-          child: returnCompProvider(
-            context,
-            listen: false,
-          ).showLoader(
+          child: returnCompProvider(context, listen: false).showLoader(
             message:
                 widget.productionItem != null
                     ? 'Updating Item'
@@ -1319,10 +1193,7 @@ class _AddProductionItemMobileState
         ),
         Visibility(
           visible: showSuccess,
-          child: returnCompProvider(
-            context,
-            listen: false,
-          ).showSuccess(
+          child: returnCompProvider(context, listen: false).showSuccess(
             widget.productionItem != null
                 ? 'Item Updated Successfully'
                 : 'Item Created Successfully',

@@ -13,12 +13,10 @@ class ProductUnitsPage extends StatefulWidget {
   });
 
   @override
-  State<ProductUnitsPage> createState() =>
-      _ProductUnitsPageState();
+  State<ProductUnitsPage> createState() => _ProductUnitsPageState();
 }
 
-class _ProductUnitsPageState
-    extends State<ProductUnitsPage> {
+class _ProductUnitsPageState extends State<ProductUnitsPage> {
   final nameController = TextEditingController();
   final quantityController = TextEditingController();
   @override

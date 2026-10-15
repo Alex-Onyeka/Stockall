@@ -7,7 +7,5 @@ part 'created_storage_item_history.g.dart';
 class CreatedStorageItemHistory {
   @HiveField(0)
   final StorageItemHistory storageItemHistory;
-  CreatedStorageItemHistory({
-    required this.storageItemHistory,
-  });
+  CreatedStorageItemHistory({required this.storageItemHistory});
 }

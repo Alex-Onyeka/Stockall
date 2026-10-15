@@ -28,23 +28,18 @@ class MaterialsDetailsMobile extends StatefulWidget {
   });
 
   @override
-  State<MaterialsDetailsMobile> createState() =>
-      _MaterialsDetailsMobileState();
+  State<MaterialsDetailsMobile> createState() => _MaterialsDetailsMobileState();
 }
 
-class _MaterialsDetailsMobileState
-    extends State<MaterialsDetailsMobile> {
+class _MaterialsDetailsMobileState extends State<MaterialsDetailsMobile> {
   late Future<MaterialClass> materialFuture;
 
   bool isLoading = false;
   bool showSuccess = false;
   bool setDate = false;
-  TextEditingController costController =
-      TextEditingController();
-  TextEditingController quantityController =
-      TextEditingController();
-  TextEditingController qttyPerUnitController =
-      TextEditingController();
+  TextEditingController costController = TextEditingController();
+  TextEditingController quantityController = TextEditingController();
+  TextEditingController qttyPerUnitController = TextEditingController();
 
   @override
   void dispose() {
@@ -62,12 +57,8 @@ class _MaterialsDetailsMobileState
   @override
   Widget build(BuildContext context) {
     List<MaterialClass>? materialList =
-        returnMaterialsProvider(context: context)
-            .materialListMain
-            .where(
-              (material) =>
-                  material.uuid == widget.materialUuid,
-            )
+        returnMaterialsProvider(context: context).materialListMain
+            .where((material) => material.uuid == widget.materialUuid)
             .toList();
     if (materialList.isEmpty) {
       return Scaffold(
@@ -86,13 +77,10 @@ class _MaterialsDetailsMobileState
               title: 'Details',
               widget: Visibility(
                 visible: authorization(
-                  authorized:
-                      Authorizations().viewItemsHistory,
+                  authorized: Authorizations().viewItemsHistory,
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.only(
-                    right: 15.0,
-                  ),
+                  padding: const EdgeInsets.only(right: 15.0),
                   child: InkWell(
                     mouseCursor: SystemMouseCursors.click,
                     onTap: () {
@@ -101,10 +89,8 @@ class _MaterialsDetailsMobileState
                         MaterialPageRoute(
                           builder: (context) {
                             return MaterialsItemHistoryPage(
-                              materialsItemUuid:
-                                  widget.materialUuid,
-                              fromMaterialsItemDetails:
-                                  true,
+                              materialsItemUuid: widget.materialUuid,
+                              fromMaterialsItemDetails: true,
                             );
                           },
                         ),
@@ -124,19 +110,11 @@ class _MaterialsDetailsMobileState
                           Text(
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize:
-                                  widget
-                                      .theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
+                              fontSize: widget.theme.mobileTexts.b3.fontSize,
                             ),
                             'History',
                           ),
-                          Icon(
-                            size: 15,
-                            Icons.receipt_long_rounded,
-                          ),
+                          Icon(size: 15, Icons.receipt_long_rounded),
                         ],
                       ),
                     ),
@@ -145,51 +123,34 @@ class _MaterialsDetailsMobileState
               ),
             ),
             body: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15.0,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15.0),
               child: Column(
                 children: [
                   Expanded(
                     child: SingleChildScrollView(
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           SizedBox(height: 10),
                           Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize:
-                                      widget
-                                          .theme
-                                          .mobileTexts
-                                          .h4
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
+                                      widget.theme.mobileTexts.h4.fontSize,
+                                  fontWeight: FontWeight.bold,
                                 ),
                                 material.name,
                               ),
                               Text(
                                 style: TextStyle(
                                   fontSize:
-                                      widget
-                                          .theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
+                                      widget.theme.mobileTexts.b3.fontSize,
                                   color:
-                                      widget
-                                          .theme
-                                          .lightModeColor
-                                          .secColor200,
-                                  fontWeight:
-                                      FontWeight.normal,
+                                      widget.theme.lightModeColor.secColor200,
+                                  fontWeight: FontWeight.normal,
                                 ),
                                 'Date Created: ${formatDateTime(material.createdAt ?? DateTime.now())}',
                               ),
@@ -198,9 +159,7 @@ class _MaterialsDetailsMobileState
                           SizedBox(height: 20),
                           Visibility(
                             visible: authorization(
-                              authorized:
-                                  Authorizations()
-                                      .manageCostPrice,
+                              authorized: Authorizations().manageCostPrice,
                             ),
                             child: Row(
                               children: [
@@ -210,34 +169,26 @@ class _MaterialsDetailsMobileState
                                     children: [
                                       Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .center,
+                                            MainAxisAlignment.center,
                                         children: [
                                           Expanded(
                                             child: TabContainer(
                                               isMoney: true,
-                                              text:
-                                                  'Cost Price',
-                                              price:
-                                                  material
-                                                      .costPrice,
-                                              theme:
-                                                  widget
-                                                      .theme,
-                                              backGround:
-                                                  const Color.fromARGB(
-                                                    11,
-                                                    15,
-                                                    4,
-                                                    114,
-                                                  ),
-                                              border:
-                                                  const Color.fromARGB(
-                                                    32,
-                                                    45,
-                                                    3,
-                                                    255,
-                                                  ),
+                                              text: 'Cost Price',
+                                              price: material.costPrice,
+                                              theme: widget.theme,
+                                              backGround: const Color.fromARGB(
+                                                11,
+                                                15,
+                                                4,
+                                                114,
+                                              ),
+                                              border: const Color.fromARGB(
+                                                32,
+                                                45,
+                                                3,
+                                                255,
+                                              ),
                                             ),
                                           ),
                                         ],
@@ -245,27 +196,19 @@ class _MaterialsDetailsMobileState
                                       Visibility(
                                         visible: authorization(
                                           authorized:
-                                              Authorizations()
-                                                  .updateMaterials,
+                                              Authorizations().updateMaterials,
                                         ),
                                         child: EditButton(
-                                          theme:
-                                              widget.theme,
+                                          theme: widget.theme,
                                           action: () {
                                             updateCostPriceActionMaterialItem(
-                                              costController:
-                                                  costController,
-                                              context:
-                                                  context,
-                                              theme:
-                                                  widget
-                                                      .theme,
-                                              material:
-                                                  material,
+                                              costController: costController,
+                                              context: context,
+                                              theme: widget.theme,
+                                              material: material,
                                             );
                                           },
-                                          text:
-                                              'Edit Price',
+                                          text: 'Edit Price',
                                         ),
                                       ),
                                     ],
@@ -283,10 +226,9 @@ class _MaterialsDetailsMobileState
 
                           SizedBox(height: 10),
                           Padding(
-                            padding:
-                                const EdgeInsets.symmetric(
-                                  horizontal: 10.0,
-                                ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10.0,
+                            ),
                             child: Column(
                               spacing: 0,
                               children: [
@@ -298,14 +240,11 @@ class _MaterialsDetailsMobileState
                                   theme: widget.theme,
                                 ),
                                 Visibility(
-                                  visible:
-                                      material.expiryDate !=
-                                      null,
+                                  visible: material.expiryDate != null,
                                   child: BottomInfoSection(
                                     theme: widget.theme,
                                     mainText:
-                                        material.expiryDate !=
-                                                null
+                                        material.expiryDate != null
                                             ? getDayDifference(
                                                       material.expiryDate ??
                                                           DateTime.now(),
@@ -321,14 +260,10 @@ class _MaterialsDetailsMobileState
                                   ),
                                 ),
                                 Visibility(
-                                  visible:
-                                      material.sizeType !=
-                                      null,
+                                  visible: material.sizeType != null,
                                   child: BottomInfoSection(
                                     theme: widget.theme,
-                                    mainText:
-                                        material.sizeType ??
-                                        'Not Set',
+                                    mainText: material.sizeType ?? 'Not Set',
                                     text: 'Size Type',
                                   ),
                                 ),
@@ -340,12 +275,8 @@ class _MaterialsDetailsMobileState
                                 ),
                                 BottomInfoSection(
                                   theme: widget.theme,
-                                  mainText:
-                                      (material.lowQtty ??
-                                              10)
-                                          .toString(),
-                                  text:
-                                      'Low Quantity Limit',
+                                  mainText: (material.lowQtty ?? 10).toString(),
+                                  text: 'Low Quantity Limit',
                                 ),
                               ],
                             ),
@@ -356,24 +287,18 @@ class _MaterialsDetailsMobileState
                   ),
                   SizedBox(height: 10),
                   Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     spacing: 5,
                     children: [
                       Visibility(
                         visible: authorization(
-                          authorized:
-                              Authorizations()
-                                  .transferMaterials,
+                          authorized: Authorizations().transferMaterials,
                         ),
                         child: Expanded(
                           child: EditButton(
                             text: 'Transfer',
                             action: () {
-                              transferMaterialsQuantity(
-                                context,
-                                material,
-                              );
+                              transferMaterialsQuantity(context, material);
                             },
                             theme: returnTheme(context),
                             icon: Icons.rotate_left_rounded,
@@ -383,9 +308,7 @@ class _MaterialsDetailsMobileState
                       ),
                       Visibility(
                         visible: authorization(
-                          authorized:
-                              Authorizations()
-                                  .deleteMaterials,
+                          authorized: Authorizations().deleteMaterials,
                         ),
                         child: Expanded(
                           child: EditButton(
@@ -395,94 +318,69 @@ class _MaterialsDetailsMobileState
                               showDialog(
                                 context: safeContext,
                                 builder: (confirmDialog) {
-                                  var provider =
-                                      returnMaterialsProvider();
+                                  var provider = returnMaterialsProvider();
                                   return ConfirmationAlert(
-                                    theme: returnTheme(
-                                      context,
-                                    ),
+                                    theme: returnTheme(context),
                                     message:
                                         'Are you sure you want to proceed with action?',
                                     title: 'Are you sure?',
                                     action: () async {
-                                      Navigator.of(
-                                        confirmDialog,
-                                      ).pop();
+                                      Navigator.of(confirmDialog).pop();
 
                                       setState(() {
                                         isLoading = true;
                                       });
                                       MaterialsItemHistory
-                                      materialsItemHistory = MaterialsItemHistory(
-                                        event:
-                                            MaterialItemHistoryEventClass
-                                                .itemDeleted,
-                                        isManaged:
-                                            material
-                                                .isManaged,
-                                        source:
-                                            MaterialItemHistoryEventClass
-                                                .unKnownSource,
-                                        shopId: shopId(),
-                                        title:
-                                            'Item Deleted',
-                                        quantityChange: 0,
-                                        newValue:
-                                            (material.quantity ??
-                                                    0)
-                                                .toString(),
-                                        desc:
-                                            'Materials Item Deleted Now',
-                                        isIncreased: false,
-                                        oldValue:
-                                            (material.quantity ??
-                                                    0)
-                                                .toString(),
-                                      );
-                                      await provider
-                                          .deleteMaterialMain(
-                                            isMultipleDelete:
-                                                false,
-                                            materialsItemHistory:
-                                                materialsItemHistory,
-                                            material:
-                                                material,
+                                      materialsItemHistory =
+                                          MaterialsItemHistory(
+                                            event:
+                                                MaterialItemHistoryEventClass
+                                                    .itemDeleted,
+                                            isManaged: material.isManaged,
+                                            source:
+                                                MaterialItemHistoryEventClass
+                                                    .unKnownSource,
+                                            shopId: shopId(),
+                                            title: 'Item Deleted',
+                                            quantityChange: 0,
+                                            newValue:
+                                                (material.quantity ?? 0)
+                                                    .toString(),
+                                            desc: 'Materials Item Deleted Now',
+                                            isIncreased: false,
+                                            oldValue:
+                                                (material.quantity ?? 0)
+                                                    .toString(),
                                           );
+                                      await provider.deleteMaterialMain(
+                                        isMultipleDelete: false,
+                                        materialsItemHistory:
+                                            materialsItemHistory,
+                                        material: material,
+                                      );
                                       setState(() {
                                         isLoading = false;
                                         showSuccess = true;
                                       });
-                                      Future.delayed(
-                                        Duration(
-                                          seconds: 1,
-                                        ),
-                                        () {
-                                          if (safeContext
-                                              .mounted) {
-                                            Navigator.of(
-                                              safeContext,
-                                            ).pop();
-                                          }
-                                        },
-                                      );
+                                      Future.delayed(Duration(seconds: 1), () {
+                                        if (safeContext.mounted) {
+                                          Navigator.of(safeContext).pop();
+                                        }
+                                      });
                                     },
                                   );
                                 },
                               );
                             },
                             theme: returnTheme(context),
-                            icon:
-                                Icons
-                                    .delete_forever_outlined,
+                            icon: Icons.delete_forever_outlined,
                             color: Colors.redAccent,
                           ),
                         ),
                       ),
                       Visibility(
                         visible: authorization(
-                          authorized:
-                              Authorizations()
-                                  .updateMaterials,
+                          authorized: Authorizations().updateMaterials,
                         ),
                         child: Expanded(
                           child: EditButton(
@@ -492,17 +390,13 @@ class _MaterialsDetailsMobileState
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) {
-                                    return AddMaterial(
-                                      material: material,
-                                    );
+                                    return AddMaterial(material: material);
                                   },
                                 ),
                               ).then((context) {
                                 returnMaterialsProvider()
                                     .getSingleMaterialItemOnline(
-                                      itemUuid:
-                                          widget
-                                              .materialUuid,
+                                      itemUuid: widget.materialUuid,
                                     );
                                 setState(() {});
                               });

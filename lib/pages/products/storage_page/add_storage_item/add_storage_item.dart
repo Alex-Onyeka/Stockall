@@ -11,21 +11,15 @@ class AddStorageItem extends StatefulWidget {
   const AddStorageItem({super.key, this.productStorage});
 
   @override
-  State<AddStorageItem> createState() =>
-      _AddStorageItemState();
+  State<AddStorageItem> createState() => _AddStorageItemState();
 }
 
 class _AddStorageItemState extends State<AddStorageItem> {
-  TextEditingController nameController =
-      TextEditingController();
-  TextEditingController quantityController =
-      TextEditingController();
-  TextEditingController qttyPerGroupController =
-      TextEditingController();
-  TextEditingController costPriceController =
-      TextEditingController();
-  TextEditingController sellingPriceController =
-      TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController quantityController = TextEditingController();
+  TextEditingController qttyPerGroupController = TextEditingController();
+  TextEditingController costPriceController = TextEditingController();
+  TextEditingController sellingPriceController = TextEditingController();
 
   @override
   void dispose() {
@@ -38,9 +32,7 @@ class _AddStorageItemState extends State<AddStorageItem> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap:
-          () =>
-              FocusManager.instance.primaryFocus?.unfocus(),
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: PopScope(
         canPop: false,
         onPopInvokedWithResult: (didPop, result) {
@@ -57,22 +49,18 @@ class _AddStorageItemState extends State<AddStorageItem> {
             if (constraints.maxWidth < mobileScreen) {
               return AddStorageItemMobile(
                 nameController: nameController,
-                qttyPerGroupController:
-                    qttyPerGroupController,
+                qttyPerGroupController: qttyPerGroupController,
                 storageProduct: widget.productStorage,
                 costPriceController: costPriceController,
-                sellingPriceController:
-                    sellingPriceController,
+                sellingPriceController: sellingPriceController,
               );
             } else {
               return AddStorageItemDesktop(
                 nameController: nameController,
-                qttyPerGroupController:
-                    qttyPerGroupController,
+                qttyPerGroupController: qttyPerGroupController,
                 storageProduct: widget.productStorage,
                 costPriceController: costPriceController,
-                sellingPriceController:
-                    sellingPriceController,
+                sellingPriceController: sellingPriceController,
               );
             }
           },
@@ -82,16 +70,11 @@ class _AddStorageItemState extends State<AddStorageItem> {
   }
 }
 
-void checkPop({
-  required BuildContext context,
-  bool? conditionX,
-  bool? didPop,
-}) {
+void checkPop({required BuildContext context, bool? conditionX, bool? didPop}) {
   if (didPop != null && didPop) {
     return;
   }
-  if ((conditionX != null && conditionX == true) ||
-      conditionX == null) {
+  if ((conditionX != null && conditionX == true) || conditionX == null) {
     showDialog(
       context: context,
       builder: (confirmDialog) {

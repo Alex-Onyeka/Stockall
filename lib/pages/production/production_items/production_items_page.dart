@@ -5,17 +5,12 @@ import 'package:stockall/pages/production/production_items/platforms/production_
 
 class ProductionItemsPage extends StatelessWidget {
   final bool? seeRemainingItems;
-  const ProductionItemsPage({
-    super.key,
-    this.seeRemainingItems,
-  });
+  const ProductionItemsPage({super.key, this.seeRemainingItems});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap:
-          () =>
-              FocusManager.instance.primaryFocus?.unfocus(),
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth < mobileScreen) {

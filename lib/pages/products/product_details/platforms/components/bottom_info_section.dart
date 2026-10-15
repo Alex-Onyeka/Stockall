@@ -21,12 +21,10 @@ class BottomInfoSection extends StatefulWidget {
   final Function()? onClick;
 
   @override
-  State<BottomInfoSection> createState() =>
-      _BottomInfoSectionState();
+  State<BottomInfoSection> createState() => _BottomInfoSectionState();
 }
 
-class _BottomInfoSectionState
-    extends State<BottomInfoSection> {
+class _BottomInfoSectionState extends State<BottomInfoSection> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -36,8 +34,7 @@ class _BottomInfoSectionState
         children: [
           Text(
             style: TextStyle(
-              fontSize:
-                  widget.theme.mobileTexts.b3.fontSize,
+              fontSize: widget.theme.mobileTexts.b3.fontSize,
               fontWeight: FontWeight.normal,
             ),
             '${widget.text}:',
@@ -50,20 +47,12 @@ class _BottomInfoSectionState
                   color: Colors.transparent,
                   child: Ink(
                     decoration: BoxDecoration(
-                      color:
-                          widget
-                              .theme
-                              .lightModeColor
-                              .prColor300,
-                      borderRadius: BorderRadius.circular(
-                        3,
-                      ),
+                      color: widget.theme.lightModeColor.prColor300,
+                      borderRadius: BorderRadius.circular(3),
                     ),
                     child: InkWell(
                       mouseCursor: SystemMouseCursors.click,
-                      borderRadius: BorderRadius.circular(
-                        3,
-                      ),
+                      borderRadius: BorderRadius.circular(3),
                       onTap: widget.setBarcodeAction,
                       child: Container(
                         padding: EdgeInsets.symmetric(
@@ -73,12 +62,7 @@ class _BottomInfoSectionState
                         child: Center(
                           child: Text(
                             style: TextStyle(
-                              fontSize:
-                                  widget
-                                      .theme
-                                      .mobileTexts
-                                      .b4
-                                      .fontSize,
+                              fontSize: widget.theme.mobileTexts.b4.fontSize,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
@@ -95,9 +79,7 @@ class _BottomInfoSectionState
                 child: InkWell(
                   mouseCursor: SystemMouseCursors.click,
                   onTap: () {
-                    widget.onClick != null
-                        ? widget.onClick!()
-                        : {};
+                    widget.onClick != null ? widget.onClick!() : {};
                     mainLocalLog('Clicked');
                   },
                   child: Row(
@@ -108,22 +90,14 @@ class _BottomInfoSectionState
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              color: Colors.grey.shade600,
-                              Icons.arrow_left,
-                            ),
+                            Icon(color: Colors.grey.shade600, Icons.arrow_left),
                             // SizedBox(width: 2),
                           ],
                         ),
                       ),
                       Text(
                         style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
+                          fontSize: widget.theme.mobileTexts.b3.fontSize,
                           fontWeight: FontWeight.bold,
                         ),
                         widget.mainText,

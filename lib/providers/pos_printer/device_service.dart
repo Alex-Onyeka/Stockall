@@ -26,11 +26,7 @@ class DeviceService {
       androidVersion = androidInfo.version.release;
 
       isPos = _isPosDevice(brand, model, manufacturer);
-      hasInternalPrinter = _hasInternalPrinter(
-        brand,
-        model,
-        manufacturer,
-      );
+      hasInternalPrinter = _hasInternalPrinter(brand, model, manufacturer);
 
       // Print info to console
       await mainLocalLog("=== ANDROID DEVICE INFO ===");
@@ -38,13 +34,9 @@ class DeviceService {
       await mainLocalLog("Model: $model");
       await mainLocalLog("Manufacturer: $manufacturer");
       await mainLocalLog("Device: ${androidInfo.device}");
+      await mainLocalLog("Android Version: $androidVersion");
       await mainLocalLog(
-        "Android Version: $androidVersion",
-      );
-      await mainLocalLog(
-        isPos
-            ? "This is a POS device ✅"
-            : "This is a normal Android device 📱",
+        isPos ? "This is a POS device ✅" : "This is a normal Android device 📱",
       );
       await mainLocalLog(
         hasInternalPrinter
@@ -64,11 +56,7 @@ class DeviceService {
     }
   }
 
-  static bool _isPosDevice(
-    String brand,
-    String model,
-    String manufacturer,
-  ) {
+  static bool _isPosDevice(String brand, String model, String manufacturer) {
     final b = brand.toLowerCase();
     final m = model.toLowerCase();
     final mf = manufacturer.toLowerCase();

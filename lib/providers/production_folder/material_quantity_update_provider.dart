@@ -13,8 +13,7 @@ class MaterialQuantityUpdateProvider with ChangeNotifier {
   factory MaterialQuantityUpdateProvider() => _instance;
   MaterialQuantityUpdateProvider._internal();
 
-  List<MaterialQuantityUpdate> materialsQuantityUpdates =
-      [];
+  List<MaterialQuantityUpdate> materialsQuantityUpdates = [];
 
   final String tableName = 'production_materials';
 
@@ -25,9 +24,7 @@ class MaterialQuantityUpdateProvider with ChangeNotifier {
       materialsQuantityUpdate.createdAt = DateTime.now();
       materialsQuantityUpdate.uuid = uuidGen();
       var res = await MaterialsQuantityUpdateFunc()
-          .createMaterialsQuantityUpdate(
-            materialsQuantityUpdate,
-          );
+          .createMaterialsQuantityUpdate(materialsQuantityUpdate);
       notifyListeners();
       return res;
     } catch (e) {
@@ -41,8 +38,7 @@ class MaterialQuantityUpdateProvider with ChangeNotifier {
 
   Future<void> clearMaterialQuantityUpdates() async {
     try {
-      await MaterialsQuantityUpdateFunc()
-          .clearMaterialsQuantitiesUpdate();
+      await MaterialsQuantityUpdateFunc().clearMaterialsQuantitiesUpdate();
       notifyListeners();
     } catch (e) {
       await mainLocalLog('Error Clearing: ${e.toString()}');
@@ -51,8 +47,7 @@ class MaterialQuantityUpdateProvider with ChangeNotifier {
 
   Future<void> materialsQuantityUpdateSync() async {
     try {
-      bool isOnline =
-          await ConnectivityProvider().isOnline();
+      bool isOnline = await ConnectivityProvider().isOnline();
       if (MaterialsQuantityUpdateFunc()
               .getMaterialsQuantitiesUpdate()
               .isNotEmpty &&
@@ -75,11 +70,8 @@ class MaterialQuantityUpdateProvider with ChangeNotifier {
           params: {'updates': tempMaterialQuantityUpdates},
         );
 
-        await MaterialsQuantityUpdateFunc()
-            .clearMaterialsQuantitiesUpdate();
-        await mainLocalLog(
-          'Unsynced Materials Quantity Updates Cleared',
-        );
+        await MaterialsQuantityUpdateFunc().clearMaterialsQuantitiesUpdate();
+        await mainLocalLog('Unsynced Materials Quantity Updates Cleared');
       }
     } catch (e) {
       await mainLocalLog(

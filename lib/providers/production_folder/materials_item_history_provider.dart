@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:stockall/classes/temp_production_folder/temp_materials_item_history/material_item_history_event_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_materials_item_history/materials_item_history.dart';
 import 'package:stockall/classes/temp_production_folder/temp_materials_item_history/unsynced/created_materials_item_history.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -228,6 +229,10 @@ class MaterialsItemHistoryProvider with ChangeNotifier {
       materialsItemHistory.createdAt ??= DateTime.now();
       materialsItemHistory.staffId = currentUser().userId;
       materialsItemHistory.staffName = currentUser().name;
+      materialsItemHistory.destination ??=
+          MaterialItemHistoryEventClass.unKnownDestination;
+      materialsItemHistory.source ??=
+          MaterialItemHistoryEventClass.unKnownSource;
       materialsItemHistory.departmentName ??=
           returnDepartmentProvider()
               .currentDepartment()

@@ -6,8 +6,7 @@ import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 
-class ManageThisItemToggleButtonProductionItem
-    extends StatelessWidget {
+class ManageThisItemToggleButtonProductionItem extends StatelessWidget {
   final ProductionItem productionItem;
   final Function() setStateAction;
   const ManageThisItemToggleButtonProductionItem({
@@ -26,11 +25,9 @@ class ManageThisItemToggleButtonProductionItem
           context: context,
           action: () async {
             if (authorization(
-              authorized:
-                  Authorizations().updateProductionItems,
+              authorized: Authorizations().updateProductionItems,
             )) {
-              var productionItemProvider =
-                  returnProductionItemsProvider();
+              var productionItemProvider = returnProductionItemsProvider();
               showDialog(
                 context: context,
                 builder: (confirmDialog) {
@@ -46,66 +43,41 @@ class ManageThisItemToggleButtonProductionItem
                       // setState(() {
                       //   isLoading = true;
                       // });
-                      await productionItemProvider
-                          .updateProductionItem(
-                            productionItemHistory: null,
-                            includeQuantity: false,
-                            isIncrement: null,
-                            isQuantityUpdate: false,
-                            quantityChange: null,
-                            productionItem: ProductionItem(
-                              unitsList:
-                                  productionItem.unitsList,
-                              useGroupUnit:
-                                  productionItem
-                                      .useGroupUnit,
-                              categories:
-                                  productionItem.categories,
-                              departmentName:
-                                  productionItem
-                                      .departmentName,
-                              departmentUuid:
-                                  productionItem
-                                      .departmentUuid,
-                              groupUnit:
-                                  productionItem.groupUnit,
-                              qttyPerGroup:
-                                  productionItem
-                                      .qttyPerGroup,
-                              updatedAt: DateTime.now(),
-                              isManaged:
-                                  productionItem.isManaged
-                                      ? false
-                                      : true,
-                              name: productionItem.name,
-                              unit: productionItem.unit,
-                              costPrice:
-                                  productionItem.costPrice,
-                              quantity:
-                                  !productionItem
-                                              .isManaged &&
-                                          productionItem
-                                                  .quantity ==
-                                              null
-                                      ? 0
-                                      : productionItem
-                                          .quantity,
-                              shopId: productionItem.shopId,
-                              barcode:
-                                  productionItem.barcode,
-                              // categoryUuid:
-                              //     productionItem.categoryUuid,
-                              createdAt:
-                                  productionItem.createdAt,
-                              expiryDate:
-                                  productionItem.expiryDate,
-                              sizeType:
-                                  productionItem.sizeType,
-                              uuid: productionItem.uuid,
-                            ),
-                            oldProductionItem:
-                                productionItem,
-                          );
+                      await productionItemProvider.updateProductionItem(
+                        productionItemHistory: null,
+                        includeQuantity: false,
+                        isIncrement: null,
+                        isQuantityUpdate: false,
+                        quantityChange: null,
+                        productionItem: ProductionItem(
+                          unitsList: productionItem.unitsList,
+                          useGroupUnit: productionItem.useGroupUnit,
+                          categories: productionItem.categories,
+                          departmentName: productionItem.departmentName,
+                          departmentUuid: productionItem.departmentUuid,
+                          groupUnit: productionItem.groupUnit,
+                          qttyPerGroup: productionItem.qttyPerGroup,
+                          updatedAt: DateTime.now(),
+                          isManaged: productionItem.isManaged ? false : true,
+                          name: productionItem.name,
+                          unit: productionItem.unit,
+                          costPrice: productionItem.costPrice,
+                          quantity:
+                              !productionItem.isManaged &&
+                                      productionItem.quantity == null
+                                  ? 0
+                                  : productionItem.quantity,
+                          shopId: productionItem.shopId,
+                          barcode: productionItem.barcode,
+                          // categoryUuid:
+                          //     productionItem.categoryUuid,
+                          createdAt: productionItem.createdAt,
+                          expiryDate: productionItem.expiryDate,
+                          sizeType: productionItem.sizeType,
+                          uuid: productionItem.uuid,
+                        ),
+                        oldProductionItem: productionItem,
+                      );
                       setStateAction();
                     },
                   );
@@ -117,16 +89,12 @@ class ManageThisItemToggleButtonProductionItem
       },
       child: SubWrapper(
         isVisible:
-            !ItemsAuthAction()
-                .allowStockallToManageItemAction(
-                  context: context,
-                ),
+            !ItemsAuthAction().allowStockallToManageItemAction(
+              context: context,
+            ),
         mainWidget: Container(
           width: 50,
-          padding: EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 5,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             border: Border.all(

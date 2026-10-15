@@ -7,28 +7,17 @@ import 'package:stockall/pages/products/item_history_page/item_history_page.dart
 class ProductDetailsMoreWidget extends StatelessWidget {
   final String productUuid;
 
-  const ProductDetailsMoreWidget({
-    super.key,
-    required this.productUuid,
-  });
+  const ProductDetailsMoreWidget({super.key, required this.productUuid});
 
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return Visibility(
-      visible: authorization(
-        authorized: Authorizations().viewItemsHistory,
-      ),
+      visible: authorization(authorized: Authorizations().viewItemsHistory),
       child: Builder(
         builder: (context) {
-          if (returnShopProvider()
-                      .userShop()
-                      ?.manageProductionItems !=
-                  true &&
-              returnShopProvider()
-                      .userShop()
-                      ?.manageProductions ==
-                  true) {
+          if (returnShopProvider().userShop()?.manageProductionItems != true &&
+              returnShopProvider().userShop()?.manageProductions == true) {
             return PopupMenuButton(
               offset: Offset(-20, 30),
               color: Colors.white,
@@ -48,25 +37,15 @@ class ProductDetailsMoreWidget extends StatelessWidget {
                       );
                     },
                     child: Padding(
-                      padding: const EdgeInsets.only(
-                        left: 5.0,
-                        right: 15,
-                      ),
+                      padding: const EdgeInsets.only(left: 5.0, right: 15),
                       child: Row(
                         spacing: 10,
                         children: [
-                          Icon(
-                            size: 16,
-                            Icons.view_in_ar_rounded,
-                          ),
+                          Icon(size: 16, Icons.view_in_ar_rounded),
                           Text(
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
+                              fontSize: theme.mobileTexts.b3.fontSize,
                             ),
                             'View Productions',
                           ),
@@ -89,25 +68,15 @@ class ProductDetailsMoreWidget extends StatelessWidget {
                       );
                     },
                     child: Padding(
-                      padding: const EdgeInsets.only(
-                        left: 5.0,
-                        right: 15,
-                      ),
+                      padding: const EdgeInsets.only(left: 5.0, right: 15),
                       child: Row(
                         spacing: 10,
                         children: [
-                          Icon(
-                            size: 16,
-                            Icons.receipt_long_rounded,
-                          ),
+                          Icon(size: 16, Icons.receipt_long_rounded),
                           Text(
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
+                              fontSize: theme.mobileTexts.b3.fontSize,
                             ),
                             'View History',
                           ),
@@ -153,15 +122,11 @@ class ProductDetailsMoreWidget extends StatelessWidget {
                     Text(
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
+                        fontSize: theme.mobileTexts.b3.fontSize,
                       ),
                       'View History',
                     ),
-                    Icon(
-                      size: 16,
-                      Icons.receipt_long_rounded,
-                    ),
+                    Icon(size: 16, Icons.receipt_long_rounded),
                   ],
                 ),
               ),

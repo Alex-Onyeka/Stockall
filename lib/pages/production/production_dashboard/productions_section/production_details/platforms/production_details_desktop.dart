@@ -23,8 +23,7 @@ class ProductionDetailsDesktop extends StatefulWidget {
       _ProductionDetailsDesktopState();
 }
 
-class _ProductionDetailsDesktopState
-    extends State<ProductionDetailsDesktop> {
+class _ProductionDetailsDesktopState extends State<ProductionDetailsDesktop> {
   bool isLoading = false;
   bool isDeleteLoading = false;
   bool isPrintLoading = false;
@@ -34,12 +33,10 @@ class _ProductionDetailsDesktopState
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     var productions =
-        returnProductionRecordsProvider(context: context)
-            .productionRecords
+        returnProductionRecordsProvider(context: context).productionRecords
             .where(
               (productionRecord) =>
-                  productionRecord.uuid ==
-                  widget.productionRecordUuid,
+                  productionRecord.uuid == widget.productionRecordUuid,
             )
             .toList();
 
@@ -53,33 +50,24 @@ class _ProductionDetailsDesktopState
               spacing: 15,
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 30,
-                    vertical: 20,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
                   decoration: BoxDecoration(
                     border: Border(
-                      bottom: BorderSide(
-                        color: Colors.grey.shade200,
-                      ),
+                      bottom: BorderSide(color: Colors.grey.shade200),
                     ),
                     color: Colors.white,
                   ),
                   child: Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     spacing: 10,
                     children: [
                       Row(
                         spacing: 10,
                         children: [
                           InkWell(
-                            mouseCursor:
-                                SystemMouseCursors.click,
+                            mouseCursor: SystemMouseCursors.click,
                             onTap: () {
-                              if (Navigator.canPop(
-                                context,
-                              )) {
+                              if (Navigator.canPop(context)) {
                                 Navigator.pop(context);
                               } else {
                                 Navigator.pushReplacement(
@@ -92,50 +80,37 @@ class _ProductionDetailsDesktopState
                                 );
                               }
                             },
-                            borderRadius:
-                                BorderRadius.circular(30),
+                            borderRadius: BorderRadius.circular(30),
                             child: Container(
                               padding: EdgeInsets.all(15),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color:
-                                      Colors.grey.shade200,
+                                  color: Colors.grey.shade200,
                                   width: 1,
                                 ),
                               ),
                               child: Icon(
                                 size: 18,
                                 color: Colors.grey.shade700,
-                                Icons
-                                    .arrow_back_ios_new_outlined,
+                                Icons.arrow_back_ios_new_outlined,
                               ),
                             ),
                           ),
                           Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             spacing: 5,
                             children: [
                               Text(
                                 style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
+                                  fontSize: theme.mobileTexts.b3.fontSize,
                                 ),
                                 'Production',
                               ),
                               Text(
                                 style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
+                                  fontSize: theme.mobileTexts.b2.fontSize,
+                                  fontWeight: FontWeight.bold,
                                 ),
                                 'Produced Item Name',
                               ),
@@ -146,10 +121,7 @@ class _ProductionDetailsDesktopState
                       Row(
                         spacing: 5,
                         children: [
-                          ActionButtonSmall(
-                            action: () {},
-                            text: 'Refresh',
-                          ),
+                          ActionButtonSmall(action: () {}, text: 'Refresh'),
 
                           // ActionButtonSmall(
                           //   action: () {},
@@ -159,10 +131,7 @@ class _ProductionDetailsDesktopState
                           //   action: () {},
                           //   text: 'Dowmload',
                           // ),
-                          ActionButtonSmall(
-                            action: () {},
-                            text: 'Edit',
-                          ),
+                          ActionButtonSmall(action: () {}, text: 'Edit'),
                           ActionButtonSmall(
                             action: () {},
                             text: 'Delete',
@@ -185,43 +154,29 @@ class _ProductionDetailsDesktopState
           );
         } else {
           return Scaffold(
-            backgroundColor: const Color.fromARGB(
-              255,
-              253,
-              254,
-              255,
-            ),
+            backgroundColor: const Color.fromARGB(255, 253, 254, 255),
             body: Column(
               spacing: 15,
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 30,
-                    vertical: 20,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
                   decoration: BoxDecoration(
                     border: Border(
-                      bottom: BorderSide(
-                        color: Colors.grey.shade200,
-                      ),
+                      bottom: BorderSide(color: Colors.grey.shade200),
                     ),
                     color: Colors.white,
                   ),
                   child: Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     spacing: 10,
                     children: [
                       Row(
                         spacing: 10,
                         children: [
                           InkWell(
-                            mouseCursor:
-                                SystemMouseCursors.click,
+                            mouseCursor: SystemMouseCursors.click,
                             onTap: () {
-                              if (Navigator.canPop(
-                                context,
-                              )) {
+                              if (Navigator.canPop(context)) {
                                 Navigator.pop(context);
                               } else {
                                 Navigator.pushReplacement(
@@ -234,50 +189,37 @@ class _ProductionDetailsDesktopState
                                 );
                               }
                             },
-                            borderRadius:
-                                BorderRadius.circular(30),
+                            borderRadius: BorderRadius.circular(30),
                             child: Container(
                               padding: EdgeInsets.all(15),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color:
-                                      Colors.grey.shade200,
+                                  color: Colors.grey.shade200,
                                   width: 1,
                                 ),
                               ),
                               child: Icon(
                                 size: 18,
                                 color: Colors.grey.shade700,
-                                Icons
-                                    .arrow_back_ios_new_outlined,
+                                Icons.arrow_back_ios_new_outlined,
                               ),
                             ),
                           ),
                           Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             spacing: 5,
                             children: [
                               Text(
                                 style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
+                                  fontSize: theme.mobileTexts.b3.fontSize,
                                 ),
                                 'Production',
                               ),
                               Text(
                                 style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
+                                  fontSize: theme.mobileTexts.b2.fontSize,
+                                  fontWeight: FontWeight.bold,
                                 ),
                                 productionRecord.itemName ??
                                     'Produced Item Name',
@@ -293,9 +235,7 @@ class _ProductionDetailsDesktopState
                             isLoading: isLoading,
                             action: () async {
                               await returnProductionRecordsProvider()
-                                  .getProductionRecords(
-                                    shopId(),
-                                  );
+                                  .getProductionRecords(shopId());
                               setState(() {});
                             },
                             text: 'Refresh',
@@ -455,25 +395,19 @@ class _ProductionDetailsDesktopState
                                       theme: theme,
                                       message:
                                           'You are about to edit this Production Record. Are you sure you want to proceed?',
-                                      title:
-                                          'Edit Production',
+                                      title: 'Edit Production',
                                       action: () async {
-                                        Navigator.of(
-                                          confirmDialog,
-                                        ).pop();
+                                        Navigator.of(confirmDialog).pop();
                                         await returnProductionsActionProvider()
                                             .createProductionsCart(
                                               cartItem:
-                                                  productionRecord
-                                                      .toCart(),
+                                                  productionRecord.toCart(),
                                             );
                                         Navigator.push(
                                           // ignore: use_build_context_synchronously
                                           context,
                                           MaterialPageRoute(
-                                            builder: (
-                                              context,
-                                            ) {
+                                            builder: (context) {
                                               return CreateProduction();
                                             },
                                           ),
@@ -485,8 +419,7 @@ class _ProductionDetailsDesktopState
                                       theme: theme,
                                       message:
                                           'A Production Creating Process is Currently On. Please Finish Creating the current Production in the Cart before proceeding to edit.',
-                                      title:
-                                          'Production Cart Not Empty',
+                                      title: 'Production Cart Not Empty',
                                     );
                                   }
                                 },
@@ -500,8 +433,7 @@ class _ProductionDetailsDesktopState
                               showDialog(
                                 context: context,
                                 builder: (confirmDialog) {
-                                  bool updateInventory =
-                                      false;
+                                  bool updateInventory = false;
                                   return StatefulBuilder(
                                     builder:
                                         (
@@ -511,22 +443,19 @@ class _ProductionDetailsDesktopState
                                           theme: theme,
                                           message:
                                               'You are about to delete this Production Receipt, are you sure you want to proceed?',
-                                          title:
-                                              'Delete Production Receipt?',
+                                          title: 'Delete Production Receipt?',
                                           action: () async {
-                                            Navigator.of(
-                                              confirmDialog,
-                                            ).pop();
+                                            Navigator.of(confirmDialog).pop();
                                             setState(() {
-                                              isDeleteLoading =
-                                                  true;
+                                              isDeleteLoading = true;
                                             });
-                                            var res = await returnProductionRecordsProvider()
-                                                .deleteProductionRecords(
-                                                  productionRecord,
-                                                  updateInventory,
-                                                  true,
-                                                );
+                                            var res =
+                                                await returnProductionRecordsProvider()
+                                                    .deleteProductionRecords(
+                                                      productionRecord,
+                                                      updateInventory,
+                                                      true,
+                                                    );
                                             if (res == 1) {
                                               await returnProductionRecordsProvider()
                                                   .getProductionRecords(
@@ -535,37 +464,27 @@ class _ProductionDetailsDesktopState
                                             }
                                             await actionResultDialog(
                                               // ignore: use_build_context_synchronously
-                                              context:
-                                                  context,
+                                              context: context,
                                               message:
                                                   res == 1
                                                       ? 'Deleted Successfully'
                                                       : 'Failed',
                                               isSuccess:
-                                                  res == 1
-                                                      ? true
-                                                      : false,
+                                                  res == 1 ? true : false,
                                             );
                                             setState(() {
-                                              isDeleteLoading =
-                                                  false;
+                                              isDeleteLoading = false;
                                             });
-                                            if (res == 1 &&
-                                                context
-                                                    .mounted) {
+                                            if (res == 1 && context.mounted) {
                                               if (Navigator.of(
                                                 context,
                                               ).canPop()) {
-                                                Navigator.of(
-                                                  context,
-                                                ).pop();
+                                                Navigator.of(context).pop();
                                               } else {
                                                 Navigator.pushReplacement(
                                                   context,
                                                   MaterialPageRoute(
-                                                    builder: (
-                                                      context,
-                                                    ) {
+                                                    builder: (context) {
                                                       return ProductionRecordsList();
                                                     },
                                                   ),
@@ -574,11 +493,9 @@ class _ProductionDetailsDesktopState
                                             }
                                           },
                                           widget: Padding(
-                                            padding:
-                                                const EdgeInsets.symmetric(
-                                                  horizontal:
-                                                      20.0,
-                                                ),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 20.0,
+                                            ),
                                             child: Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment
@@ -586,22 +503,19 @@ class _ProductionDetailsDesktopState
                                               children: [
                                                 Text(
                                                   style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold,
+                                                    fontWeight: FontWeight.bold,
                                                   ),
                                                   'Update Item Quantity?',
                                                 ),
                                                 MyToggleButton(
-                                                  boolValue:
-                                                      updateInventory,
+                                                  boolValue: updateInventory,
                                                   toggle: () {
                                                     setStatee(() {
                                                       updateInventory =
                                                           !updateInventory;
                                                     });
                                                   },
-                                                  theme:
-                                                      theme,
+                                                  theme: theme,
                                                 ),
                                               ],
                                             ),
@@ -623,40 +537,23 @@ class _ProductionDetailsDesktopState
                   child: ListView(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30.0,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 30.0),
                         child: Row(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           spacing: 20,
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Expanded(
                               child: Container(
                                 padding: EdgeInsets.all(30),
                                 decoration: BoxDecoration(
                                   border: Border.all(
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade100,
+                                    color: Colors.grey.shade100,
                                   ),
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        3,
-                                      ),
+                                  borderRadius: BorderRadius.circular(3),
                                   boxShadow: [
                                     BoxShadow(
-                                      color:
-                                          const Color.fromARGB(
-                                            10,
-                                            0,
-                                            0,
-                                            0,
-                                          ),
+                                      color: const Color.fromARGB(10, 0, 0, 0),
                                       blurRadius: 20,
                                       spreadRadius: 5,
                                     ),
@@ -668,18 +565,15 @@ class _ProductionDetailsDesktopState
                                   children: [
                                     Row(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment
-                                              .start,
+                                          CrossAxisAlignment.start,
                                       mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .spaceBetween,
+                                          MainAxisAlignment.spaceBetween,
                                       spacing: 5,
                                       children: [
                                         Expanded(
                                           child: Column(
                                             crossAxisAlignment:
-                                                CrossAxisAlignment
-                                                    .start,
+                                                CrossAxisAlignment.start,
                                             spacing: 5,
                                             children: [
                                               Text(
@@ -689,9 +583,7 @@ class _ProductionDetailsDesktopState
                                                           .mobileTexts
                                                           .b3
                                                           .fontSize,
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
                                                 'Staff:',
                                               ),
@@ -702,12 +594,9 @@ class _ProductionDetailsDesktopState
                                                           .mobileTexts
                                                           .b3
                                                           .fontSize,
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .normal,
+                                                  fontWeight: FontWeight.normal,
                                                 ),
-                                                productionRecord
-                                                        .staffName ??
+                                                productionRecord.staffName ??
                                                     'Staff Name',
                                               ),
                                             ],
@@ -716,8 +605,7 @@ class _ProductionDetailsDesktopState
                                         Expanded(
                                           child: Column(
                                             crossAxisAlignment:
-                                                CrossAxisAlignment
-                                                    .start,
+                                                CrossAxisAlignment.start,
                                             spacing: 5,
                                             children: [
                                               Text(
@@ -727,9 +615,7 @@ class _ProductionDetailsDesktopState
                                                           .mobileTexts
                                                           .b3
                                                           .fontSize,
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
                                                 'Date:',
                                               ),
@@ -740,7 +626,10 @@ class _ProductionDetailsDesktopState
                                                     child: Text(
                                                       style: TextStyle(
                                                         fontSize:
-                                                            theme.mobileTexts.b3.fontSize,
+                                                            theme
+                                                                .mobileTexts
+                                                                .b3
+                                                                .fontSize,
                                                         fontWeight:
                                                             FontWeight.normal,
                                                       ),
@@ -755,16 +644,12 @@ class _ProductionDetailsDesktopState
                                       ],
                                     ),
                                     Divider(
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade200,
+                                      color: Colors.grey.shade200,
                                       height: 50,
                                     ),
                                     Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .spaceBetween,
+                                          MainAxisAlignment.spaceBetween,
                                       spacing: 10,
                                       children: [
                                         Expanded(
@@ -772,13 +657,8 @@ class _ProductionDetailsDesktopState
                                           child: Text(
                                             style: TextStyle(
                                               fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b3
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
+                                                  theme.mobileTexts.b3.fontSize,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                             'Item',
                                           ),
@@ -788,13 +668,8 @@ class _ProductionDetailsDesktopState
                                           child: Text(
                                             style: TextStyle(
                                               fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b3
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
+                                                  theme.mobileTexts.b3.fontSize,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                             'Quantity',
                                           ),
@@ -802,24 +677,16 @@ class _ProductionDetailsDesktopState
                                       ],
                                     ),
                                     Divider(
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade400,
+                                      color: Colors.grey.shade400,
                                       height: 5,
                                     ),
                                     Padding(
-                                      padding:
-                                          const EdgeInsets.only(
-                                            top: 15.0,
-                                          ),
+                                      padding: const EdgeInsets.only(top: 15.0),
                                       child: Row(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment
-                                                .start,
+                                            CrossAxisAlignment.start,
                                         mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .spaceBetween,
+                                            MainAxisAlignment.spaceBetween,
                                         spacing: 10,
                                         children: [
                                           Expanded(
@@ -831,12 +698,9 @@ class _ProductionDetailsDesktopState
                                                         .mobileTexts
                                                         .b3
                                                         .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
+                                                fontWeight: FontWeight.bold,
                                               ),
-                                              productionRecord
-                                                      .itemName ??
+                                              productionRecord.itemName ??
                                                   'Item Name',
                                             ),
                                           ),
@@ -844,15 +708,16 @@ class _ProductionDetailsDesktopState
                                             flex: 5,
                                             child: Column(
                                               crossAxisAlignment:
-                                                  CrossAxisAlignment
-                                                      .start,
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Text(
                                                   style: TextStyle(
                                                     fontSize:
-                                                        theme.mobileTexts.b3.fontSize,
-                                                    fontWeight:
-                                                        FontWeight.bold,
+                                                        theme
+                                                            .mobileTexts
+                                                            .b3
+                                                            .fontSize,
+                                                    fontWeight: FontWeight.bold,
                                                   ),
                                                   '${formatLargeNumberDouble(productionRecord.quantity ?? 0)} ${productionRecord.getUnit()}',
                                                 ),
@@ -864,30 +729,23 @@ class _ProductionDetailsDesktopState
                                     ),
                                     SizedBox(height: 15),
                                     Divider(
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade400,
+                                      color: Colors.grey.shade400,
                                       height: 5,
                                     ),
                                     SizedBox(height: 15),
                                     Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .end,
+                                      mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         SizedBox(
                                           width: 240,
                                           child: Column(
                                             crossAxisAlignment:
-                                                CrossAxisAlignment
-                                                    .start,
+                                                CrossAxisAlignment.start,
                                             spacing: 3,
                                             children: [
                                               Row(
                                                 mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .end,
+                                                    MainAxisAlignment.end,
                                                 spacing: 20,
                                                 children: [
                                                   Expanded(
@@ -895,7 +753,10 @@ class _ProductionDetailsDesktopState
                                                     child: Text(
                                                       style: TextStyle(
                                                         fontSize:
-                                                            theme.mobileTexts.b3.fontSize,
+                                                            theme
+                                                                .mobileTexts
+                                                                .b3
+                                                                .fontSize,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
@@ -907,18 +768,21 @@ class _ProductionDetailsDesktopState
                                                     child: Text(
                                                       style: TextStyle(
                                                         fontSize:
-                                                            theme.mobileTexts.b2.fontSize,
+                                                            theme
+                                                                .mobileTexts
+                                                                .b2
+                                                                .fontSize,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
                                                       formatMoneyBig(
-                                                        amount: returnProductionRecordsProvider().getTotalCostForProduction(
-                                                          productionRecords: [
-                                                            productionRecord,
-                                                          ],
-                                                        ),
-                                                        context:
-                                                            context,
+                                                        amount: returnProductionRecordsProvider()
+                                                            .getTotalCostForProduction(
+                                                              productionRecords: [
+                                                                productionRecord,
+                                                              ],
+                                                            ),
+                                                        context: context,
                                                       ),
                                                     ),
                                                   ),
@@ -945,46 +809,36 @@ class _ProductionDetailsDesktopState
                                 children: [
                                   Container(
                                     width: double.infinity,
-                                    padding: EdgeInsets.all(
-                                      15,
-                                    ),
+                                    padding: EdgeInsets.all(15),
                                     decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            5,
-                                          ),
+                                      borderRadius: BorderRadius.circular(5),
                                       border: Border.all(
-                                        color:
-                                            const Color.fromARGB(
-                                              118,
-                                              134,
-                                              155,
-                                              173,
-                                            ),
+                                        color: const Color.fromARGB(
+                                          118,
+                                          134,
+                                          155,
+                                          173,
+                                        ),
                                       ),
-                                      color:
-                                          const Color.fromARGB(
-                                            31,
-                                            173,
-                                            182,
-                                            209,
-                                          ),
+                                      color: const Color.fromARGB(
+                                        31,
+                                        173,
+                                        182,
+                                        209,
+                                      ),
                                     ),
                                     child: Column(
                                       spacing: 5,
                                       crossAxisAlignment:
-                                          CrossAxisAlignment
-                                              .start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Visibility(
                                           visible:
-                                              productionRecord
-                                                  .departmentId !=
+                                              productionRecord.departmentId !=
                                               null,
                                           child: Row(
                                             crossAxisAlignment:
-                                                CrossAxisAlignment
-                                                    .start,
+                                                CrossAxisAlignment.start,
                                             spacing: 5,
                                             children: [
                                               Text(
@@ -994,9 +848,7 @@ class _ProductionDetailsDesktopState
                                                           .mobileTexts
                                                           .b4
                                                           .fontSize,
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .normal,
+                                                  fontWeight: FontWeight.normal,
                                                 ),
                                                 'Department:',
                                               ),
@@ -1004,9 +856,11 @@ class _ProductionDetailsDesktopState
                                                 child: Text(
                                                   style: TextStyle(
                                                     fontSize:
-                                                        theme.mobileTexts.b4.fontSize,
-                                                    fontWeight:
-                                                        FontWeight.bold,
+                                                        theme
+                                                            .mobileTexts
+                                                            .b4
+                                                            .fontSize,
+                                                    fontWeight: FontWeight.bold,
                                                   ),
                                                   productionRecord
                                                           .departmentName ??
@@ -1018,8 +872,7 @@ class _ProductionDetailsDesktopState
                                         ),
                                         Row(
                                           crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .start,
+                                              CrossAxisAlignment.start,
                                           spacing: 5,
                                           children: [
                                             Text(
@@ -1029,9 +882,7 @@ class _ProductionDetailsDesktopState
                                                         .mobileTexts
                                                         .b4
                                                         .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .normal,
+                                                fontWeight: FontWeight.normal,
                                                 // color:
                                                 //     Colors
                                                 //         .green,
@@ -1046,23 +897,19 @@ class _ProductionDetailsDesktopState
                                                           .mobileTexts
                                                           .b4
                                                           .fontSize,
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
+                                                  fontWeight: FontWeight.bold,
                                                   // color:
                                                   //     Colors
                                                   //         .green,
                                                 ),
-                                                productionRecord
-                                                    .getUnit(),
+                                                productionRecord.getUnit(),
                                               ),
                                             ),
                                           ],
                                         ),
                                         Row(
                                           crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .start,
+                                              CrossAxisAlignment.start,
                                           spacing: 5,
                                           children: [
                                             Text(
@@ -1072,9 +919,7 @@ class _ProductionDetailsDesktopState
                                                         .mobileTexts
                                                         .b4
                                                         .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .normal,
+                                                fontWeight: FontWeight.normal,
                                                 // color:
                                                 //     Colors
                                                 //         .green,
@@ -1089,9 +934,7 @@ class _ProductionDetailsDesktopState
                                                           .mobileTexts
                                                           .b4
                                                           .fontSize,
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
+                                                  fontWeight: FontWeight.bold,
                                                   // color:
                                                   //     Colors
                                                   //         .green,
@@ -1107,8 +950,7 @@ class _ProductionDetailsDesktopState
                                         ),
                                         Row(
                                           crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .start,
+                                              CrossAxisAlignment.start,
                                           spacing: 5,
                                           children: [
                                             Text(
@@ -1118,9 +960,7 @@ class _ProductionDetailsDesktopState
                                                         .mobileTexts
                                                         .b4
                                                         .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .normal,
+                                                fontWeight: FontWeight.normal,
                                                 // color:
                                                 //     Colors
                                                 //         .green,
@@ -1135,15 +975,12 @@ class _ProductionDetailsDesktopState
                                                           .mobileTexts
                                                           .b4
                                                           .fontSize,
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
+                                                  fontWeight: FontWeight.bold,
                                                   // color:
                                                   //     Colors
                                                   //         .green,
                                                 ),
-                                                productionRecord
-                                                        .comment ??
+                                                productionRecord.comment ??
                                                     'Not Set',
                                               ),
                                             ),
@@ -1155,10 +992,7 @@ class _ProductionDetailsDesktopState
                                   SizedBox(height: 15),
 
                                   Divider(
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade200,
+                                    color: Colors.grey.shade200,
                                     height: 10,
                                   ),
                                   SizedBox(height: 5),
@@ -1167,41 +1001,26 @@ class _ProductionDetailsDesktopState
                                       Text(
                                         style: TextStyle(
                                           fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                              theme.mobileTexts.b3.fontSize,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                         'Materials Used',
                                       ),
                                     ],
                                   ),
                                   Divider(
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade200,
+                                    color: Colors.grey.shade200,
                                     height: 10,
                                   ),
                                   Container(
-                                    padding:
-                                        EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 10,
-                                        ),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 10,
+                                    ),
                                     decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            5,
-                                          ),
+                                      borderRadius: BorderRadius.circular(5),
                                       border: Border.all(
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade200,
+                                        color: Colors.grey.shade200,
                                       ),
                                     ),
                                     child: Builder(
@@ -1215,31 +1034,23 @@ class _ProductionDetailsDesktopState
                                               child: Column(
                                                 spacing: 5,
                                                 mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .center,
+                                                    MainAxisAlignment.center,
                                                 children: [
                                                   Container(
-                                                    padding:
-                                                        EdgeInsets.all(
-                                                          15,
-                                                        ),
+                                                    padding: EdgeInsets.all(15),
                                                     decoration: BoxDecoration(
-                                                      shape:
-                                                          BoxShape.circle,
+                                                      shape: BoxShape.circle,
                                                       color:
                                                           Colors.grey.shade100,
                                                     ),
                                                     child: Icon(
-                                                      Icons
-                                                          .clear,
-                                                      color:
-                                                          Colors.grey,
+                                                      Icons.clear,
+                                                      color: Colors.grey,
                                                     ),
                                                   ),
                                                   Text(
                                                     style: TextStyle(
-                                                      fontSize:
-                                                          10,
+                                                      fontSize: 10,
                                                       fontWeight:
                                                           FontWeight.bold,
                                                       color:
@@ -1255,15 +1066,13 @@ class _ProductionDetailsDesktopState
                                         return Column(
                                           spacing: 8,
                                           children:
-                                              productionRecord
-                                                  .materials
+                                              productionRecord.materials
                                                   .map(
-                                                    (
-                                                      productionMaterial,
-                                                    ) => ProductionMaterialTileWidget(
-                                                      productionMaterial:
-                                                          productionMaterial,
-                                                    ),
+                                                    (productionMaterial) =>
+                                                        ProductionMaterialTileWidget(
+                                                          productionMaterial:
+                                                              productionMaterial,
+                                                        ),
                                                   )
                                                   .toList(),
                                         );
@@ -1357,29 +1166,21 @@ class ActionButtonSmall extends StatelessWidget {
         onTap: action,
         borderRadius: BorderRadius.circular(3),
         child: Container(
-          padding: EdgeInsets.symmetric(
-            vertical: 5,
-            horizontal: 20,
-          ),
+          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(3),
-            border: Border.all(
-              color: textColor ?? Colors.grey.shade200,
-            ),
+            border: Border.all(color: textColor ?? Colors.grey.shade200),
           ),
           child: Builder(
             builder: (context) {
               if (isLoading != null && isLoading == true) {
                 return Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10.0,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: SizedBox(
                     width: 15,
                     height: 15,
                     child: CircularProgressIndicator(
-                      color:
-                          theme.lightModeColor.secColor200,
+                      color: theme.lightModeColor.secColor200,
                       strokeWidth: 2.5,
                     ),
                   ),

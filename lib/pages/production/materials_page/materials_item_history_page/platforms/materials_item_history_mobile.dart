@@ -30,8 +30,7 @@ class MaterialsItemHistoryMobileState
   bool isLoading = false;
   bool showSuccess = false;
   bool setDate = false;
-  TextEditingController searchController =
-      TextEditingController();
+  TextEditingController searchController = TextEditingController();
 
   @override
   void dispose() {
@@ -52,46 +51,31 @@ class MaterialsItemHistoryMobileState
           context: context,
         ).returnMaterialsItemHistories().where((history) {
           if (widget.materialsItemUuid != null) {
-            return history.itemUuid ==
-                    widget.materialsItemUuid &&
+            return history.itemUuid == widget.materialsItemUuid &&
                 (history.itemName?.toLowerCase().contains(
-                          searchController.text
-                              .toLowerCase(),
+                          searchController.text.toLowerCase(),
                         ) ==
                         true ||
-                    history.departmentName
-                            ?.toLowerCase()
-                            .contains(
-                              searchController.text
-                                  .toLowerCase(),
-                            ) ==
+                    history.departmentName?.toLowerCase().contains(
+                          searchController.text.toLowerCase(),
+                        ) ==
                         true ||
-                    history.staffName
-                            ?.toLowerCase()
-                            .contains(
-                              searchController.text
-                                  .toLowerCase(),
-                            ) ==
+                    history.staffName?.toLowerCase().contains(
+                          searchController.text.toLowerCase(),
+                        ) ==
                         true ||
                     history.title.toLowerCase().contains(
-                          searchController.text
-                              .toLowerCase(),
+                          searchController.text.toLowerCase(),
                         ) ==
                         true);
           } else {
-            return (history.itemName
-                        ?.toLowerCase()
-                        .contains(
-                          searchController.text
-                              .toLowerCase(),
-                        ) ==
+            return (history.itemName?.toLowerCase().contains(
+                      searchController.text.toLowerCase(),
+                    ) ==
                     true ||
-                history.departmentName
-                        ?.toLowerCase()
-                        .contains(
-                          searchController.text
-                              .toLowerCase(),
-                        ) ==
+                history.departmentName?.toLowerCase().contains(
+                      searchController.text.toLowerCase(),
+                    ) ==
                     true ||
                 history.staffName?.toLowerCase().contains(
                       searchController.text.toLowerCase(),
@@ -108,36 +92,28 @@ class MaterialsItemHistoryMobileState
         context: context,
         title: 'Item History',
         widget: Visibility(
-          visible: authorization(
-            authorized: Authorizations().viewDate,
-          ),
+          visible: authorization(authorized: Authorizations().viewDate),
           child: Padding(
             padding: const EdgeInsets.only(right: 15.0),
             child: InkWell(
               mouseCursor: SystemMouseCursors.click,
               onTap: () {
-                if (returnMaterialsItemHistoryProvider()
-                            .dateSet !=
-                        null ||
-                    returnMaterialsItemHistoryProvider()
-                            .rangeStartDate !=
+                if (returnMaterialsItemHistoryProvider().dateSet != null ||
+                    returnMaterialsItemHistoryProvider().rangeStartDate !=
                         null) {
-                  returnMaterialsItemHistoryProvider()
-                      .clearDate();
+                  returnMaterialsItemHistoryProvider().clearDate();
                 } else {
                   mainDatePicker(
                     context: context,
                     theme: theme,
                     singleDate: (date) {
-                      returnMaterialsItemHistoryProvider()
-                          .setDate(date!);
+                      returnMaterialsItemHistoryProvider().setDate(date!);
                     },
                     rangeDate: (firstDate, lastDate) {
-                      returnMaterialsItemHistoryProvider()
-                          .setRange(
-                            firstDate!,
-                            lastDate ?? DateTime.now(),
-                          );
+                      returnMaterialsItemHistoryProvider().setRange(
+                        firstDate!,
+                        lastDate ?? DateTime.now(),
+                      );
                     },
                   );
                 }
@@ -157,8 +133,7 @@ class MaterialsItemHistoryMobileState
                     Text(
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
+                        fontSize: theme.mobileTexts.b3.fontSize,
                       ),
                       returnMaterialsItemHistoryProvider(
                                     context: context,
@@ -202,8 +177,7 @@ class MaterialsItemHistoryMobileState
                     return Center(
                       child: EmptyWidgetDisplayOnly(
                         title: 'No Events Found',
-                        subText:
-                            'No event has been created for this date.',
+                        subText: 'No event has been created for this date.',
                         theme: theme,
                         height: 30,
                         altAction: () {
@@ -229,15 +203,11 @@ class MaterialsItemHistoryMobileState
                             materialsItemHistories
                                 .map(
                                   (item) => Material(
-                                    type:
-                                        MaterialType
-                                            .transparency,
+                                    type: MaterialType.transparency,
                                     child: ItemHistoryTile(
-                                      materialsItemHistory:
-                                          item,
+                                      materialsItemHistory: item,
                                       fromDetails:
-                                          widget
-                                              .fromMaterialsItemDetails,
+                                          widget.fromMaterialsItemDetails,
                                     ),
                                   ),
                                 )

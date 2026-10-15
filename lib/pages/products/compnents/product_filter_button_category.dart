@@ -40,10 +40,7 @@ class ProductFilterButtonCategory extends StatelessWidget {
           borderRadius: BorderRadius.circular(5),
           onTap: action,
           child: Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: 10,
-              vertical: 5,
-            ),
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
 
             child: Center(
               child: Text(

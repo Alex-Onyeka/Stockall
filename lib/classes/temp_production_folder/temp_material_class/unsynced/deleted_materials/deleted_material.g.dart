@@ -16,9 +16,7 @@ class DeletedMaterialAdapter extends TypeAdapter<DeletedMaterial> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return DeletedMaterial(
-      materialUuid: fields[0] as String,
-    );
+    return DeletedMaterial(materialUuid: fields[0] as String);
   }
 
   @override

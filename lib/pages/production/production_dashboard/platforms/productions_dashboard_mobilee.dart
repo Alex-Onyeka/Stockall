@@ -26,15 +26,9 @@ class _ProductionsDashboardMobileState
     extends State<ProductionsDashboardMobile> {
   @override
   Widget build(BuildContext context) {
-    var recordsProv = returnProductionRecordsProvider(
-      context: context,
-    );
-    var itemsProv = returnProductionItemHistoryProvider(
-      context: context,
-    );
-    var productionItemsProv = returnProductionItemsProvider(
-      context: context,
-    );
+    var recordsProv = returnProductionRecordsProvider(context: context);
+    var itemsProv = returnProductionItemHistoryProvider(context: context);
+    var productionItemsProv = returnProductionItemsProvider(context: context);
     var theme = returnTheme(context);
     return Scaffold(
       appBar: appBar(
@@ -46,9 +40,7 @@ class _ProductionsDashboardMobileState
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 5.0,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 5.0),
           child: RefreshIndicator(
             backgroundColor: Colors.white,
             color: Colors.amber,
@@ -60,19 +52,13 @@ class _ProductionsDashboardMobileState
             child: ListView(
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    10,
-                    10,
-                    10,
-                    0,
-                  ),
+                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                   child: Column(
                     spacing: 10,
                     children: [
                       Row(
                         spacing: 10,
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Expanded(
                             child: ProductionTotalTab(
@@ -91,16 +77,11 @@ class _ProductionsDashboardMobileState
                                   ),
                                 );
                               },
-                              number: recordsProv
-                                  .getTotalProducedInProduction(
-                                    records: null,
-                                  ),
-                              icon:
-                                  Icons.view_in_ar_rounded,
-                              color:
-                                  theme
-                                      .lightModeColor
-                                      .prColor250,
+                              number: recordsProv.getTotalProducedInProduction(
+                                records: null,
+                              ),
+                              icon: Icons.view_in_ar_rounded,
+                              color: theme.lightModeColor.prColor250,
                               theme: theme,
                             ),
                           ),
@@ -111,22 +92,18 @@ class _ProductionsDashboardMobileState
                                       .returnTransferedTodayHistories()
                                       .length,
                               title: 'Transfered Out',
-                              number: itemsProv
-                                  .getTotalTransferedOut(
-                                    itemHistories: null,
-                                  ),
-                              icon:
-                                  Icons.rotate_left_rounded,
+                              number: itemsProv.getTotalTransferedOut(
+                                itemHistories: null,
+                              ),
+                              icon: Icons.rotate_left_rounded,
                               action: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) {
                                       return ProductionItemHistoryPage(
-                                        fromProductionItemDetails:
-                                            false,
-                                        viewTransferedOut:
-                                            true,
+                                        fromProductionItemDetails: false,
+                                        viewTransferedOut: true,
                                       );
                                     },
                                   ),
@@ -139,33 +116,26 @@ class _ProductionsDashboardMobileState
                       ),
                       Row(
                         spacing: 10,
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Expanded(
                             child: Builder(
                               builder: (context) {
-                                if (shop(
-                                      context,
-                                    )?.manageProductionItems ==
+                                if (shop(context)?.manageProductionItems ==
                                     true) {
                                   return ProductionTotalTab(
                                     entries:
                                         productionItemsProv
                                             .returnRemainingProductionItems()
                                             .length,
-                                    title:
-                                        'Remaining Items',
+                                    title: 'Remaining Items',
                                     action: () {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (
-                                            context,
-                                          ) {
+                                          builder: (context) {
                                             return ProductionItemsPage(
-                                              seeRemainingItems:
-                                                  true,
+                                              seeRemainingItems: true,
                                             );
                                           },
                                         ),
@@ -175,10 +145,7 @@ class _ProductionsDashboardMobileState
                                         productionItemsProv
                                             .getTotalRemainingItems(),
                                     icon: Icons.api_rounded,
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .prColor250,
+                                    color: theme.lightModeColor.prColor250,
                                     theme: theme,
                                   );
                                 } else {
@@ -187,15 +154,12 @@ class _ProductionsDashboardMobileState
                                         returnMaterialsProvider()
                                             .materialList()
                                             .length,
-                                    title:
-                                        'Production Materials',
+                                    title: 'Production Materials',
                                     action: () {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (
-                                            context,
-                                          ) {
+                                          builder: (context) {
                                             return MaterialsPage();
                                           },
                                         ),
@@ -203,22 +167,10 @@ class _ProductionsDashboardMobileState
                                     },
                                     number: returnMaterialsProvider()
                                         .materialList()
-                                        .map(
-                                          (item) =>
-                                              (item.quantity ??
-                                                  0),
-                                        )
-                                        .fold(
-                                          0,
-                                          (a, b) => a + b,
-                                        ),
-                                    icon:
-                                        Icons
-                                            .app_registration_rounded,
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .tertColor200,
+                                        .map((item) => (item.quantity ?? 0))
+                                        .fold(0, (a, b) => a + b),
+                                    icon: Icons.app_registration_rounded,
+                                    color: theme.lightModeColor.tertColor200,
 
                                     theme: theme,
                                   );
@@ -228,14 +180,9 @@ class _ProductionsDashboardMobileState
                           ),
                           Expanded(
                             child: ProductionTotalTab(
-                              color:
-                                  theme
-                                      .lightModeColor
-                                      .prColor250,
+                              color: theme.lightModeColor.prColor250,
                               entries:
-                                  returnMaterialsUsageProvider(
-                                        context: context,
-                                      )
+                                  returnMaterialsUsageProvider(context: context)
                                       .returnOwnProductionMaterialsUsageByDayOrWeek()
                                       .length,
                               title: 'Materials Usage',
@@ -243,9 +190,7 @@ class _ProductionsDashboardMobileState
                                   returnMaterialsUsageProvider(
                                     context: context,
                                   ).getTotalMaterialsUsed(),
-                              icon:
-                                  Icons
-                                      .border_horizontal_rounded,
+                              icon: Icons.border_horizontal_rounded,
                               action: () {
                                 Navigator.push(
                                   context,
@@ -267,21 +212,15 @@ class _ProductionsDashboardMobileState
                 SizedBox(height: 25),
                 Visibility(
                   visible: authorization(
-                    authorized:
-                        Authorizations()
-                            .addProductionRecords,
+                    authorized: Authorizations().addProductionRecords,
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 15.0,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: 500,
-                          ),
+                          constraints: BoxConstraints(maxWidth: 500),
                           child: MainButtonP(
                             themeProvider: theme,
                             action: () {
@@ -303,43 +242,25 @@ class _ProductionsDashboardMobileState
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10.0,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Column(
                     children: [
-                      Divider(
-                        color: Colors.grey.shade400,
-                        thickness: 0.3,
-                      ),
+                      Divider(color: Colors.grey.shade400, thickness: 0.3),
                       Padding(
-                        padding:
-                            EdgeInsetsGeometry.fromLTRB(
-                              10,
-                              5,
-                              10,
-                              10,
-                            ),
+                        padding: EdgeInsetsGeometry.fromLTRB(10, 5, 10, 10),
                         child: Row(
                           spacing: 10,
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b2
-                                        .fontSize,
+                                fontSize: theme.mobileTexts.b2.fontSize,
                                 fontWeight: FontWeight.bold,
                               ),
                               'Recent Productions',
                             ),
                             Material(
-                              type:
-                                  MaterialType.transparency,
+                              type: MaterialType.transparency,
                               child: InkWell(
                                 onTap: () {
                                   Navigator.push(
@@ -351,45 +272,30 @@ class _ProductionsDashboardMobileState
                                     ),
                                   );
                                 },
-                                mouseCursor:
-                                    SystemMouseCursors
-                                        .click,
+                                mouseCursor: SystemMouseCursors.click,
                                 child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(
-                                        vertical: 10.0,
-                                        horizontal: 12,
-                                      ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 10.0,
+                                    horizontal: 12,
+                                  ),
                                   child: Row(
-                                    mainAxisSize:
-                                        MainAxisSize.min,
+                                    mainAxisSize: MainAxisSize.min,
                                     spacing: 5,
                                     children: [
                                       Text(
                                         style: TextStyle(
                                           fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .normal,
+                                              theme.mobileTexts.b3.fontSize,
+                                          fontWeight: FontWeight.normal,
                                           color:
-                                              theme
-                                                  .lightModeColor
-                                                  .secColor200,
+                                              theme.lightModeColor.secColor200,
                                         ),
                                         'View All',
                                       ),
                                       Icon(
                                         size: 16,
-                                        color:
-                                            theme
-                                                .lightModeColor
-                                                .secColor200,
-                                        Icons
-                                            .arrow_forward_ios_rounded,
+                                        color: theme.lightModeColor.secColor200,
+                                        Icons.arrow_forward_ios_rounded,
                                       ),
                                     ],
                                   ),
@@ -408,12 +314,9 @@ class _ProductionsDashboardMobileState
                               height: 200,
                               child: Center(
                                 child: Material(
-                                  type:
-                                      MaterialType
-                                          .transparency,
+                                  type: MaterialType.transparency,
                                   child: EmptyWidgetDisplayOnly(
-                                    title:
-                                        'No Production Recorded',
+                                    title: 'No Production Recorded',
                                     subText:
                                         'No Production has been recorded for today.',
                                     theme: theme,
@@ -422,8 +325,7 @@ class _ProductionsDashboardMobileState
                                     altAction: () {
                                       refreshProductionDashboard();
                                     },
-                                    altActionText:
-                                        'Refresh',
+                                    altActionText: 'Refresh',
                                   ),
                                 ),
                               ),
@@ -442,11 +344,8 @@ class _ProductionsDashboardMobileState
                                           : recordsProv
                                               .returnProductionRecordsByDayOrWeek())
                                       .map(
-                                        (
-                                          item,
-                                        ) => ProductionsRecordTile(
-                                          productionRecord:
-                                              item,
+                                        (item) => ProductionsRecordTile(
+                                          productionRecord: item,
                                         ),
                                       )
                                       .toList(),

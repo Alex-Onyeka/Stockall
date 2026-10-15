@@ -6,18 +6,13 @@ import 'package:stockall/pages/products/storage_page/storage_details/platforms/s
 
 class StorageDetailsPage extends StatefulWidget {
   final String productUuid;
-  const StorageDetailsPage({
-    super.key,
-    required this.productUuid,
-  });
+  const StorageDetailsPage({super.key, required this.productUuid});
 
   @override
-  State<StorageDetailsPage> createState() =>
-      _StorageDetailsPageState();
+  State<StorageDetailsPage> createState() => _StorageDetailsPageState();
 }
 
-class _StorageDetailsPageState
-    extends State<StorageDetailsPage> {
+class _StorageDetailsPageState extends State<StorageDetailsPage> {
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);

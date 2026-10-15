@@ -23,10 +23,7 @@ class ProductionPageListTileWidget extends StatelessWidget {
     return Material(
       type: MaterialType.transparency,
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          vertical: 5,
-          horizontal: 20,
-        ),
+        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
         child: Ink(
           decoration: BoxDecoration(
             boxShadow: [
@@ -39,23 +36,16 @@ class ProductionPageListTileWidget extends StatelessWidget {
               ),
             ],
             borderRadius: BorderRadius.circular(5),
-            color:
-                isActive
-                    ? Colors.white
-                    : Colors.grey.shade100,
+            color: isActive ? Colors.white : Colors.grey.shade100,
           ),
           child: InkWell(
             mouseCursor: SystemMouseCursors.click,
             borderRadius: BorderRadius.circular(5),
             onTap: action,
             child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 20,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Flexible(
                     child: Row(
@@ -65,43 +55,29 @@ class ProductionPageListTileWidget extends StatelessWidget {
                           padding: EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color: Colors.grey.shade200,
-                            borderRadius:
-                                BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                           child: Icon(
                             size: 20,
-                            color:
-                                theme
-                                    .lightModeColor
-                                    .prColor250,
+                            color: theme.lightModeColor.prColor250,
                             icon,
                           ),
                         ),
                         Flexible(
                           child: Column(
                             spacing: 5,
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
+                                  fontSize: theme.mobileTexts.b2.fontSize,
+                                  fontWeight: FontWeight.bold,
                                 ),
                                 title,
                               ),
                               Text(
                                 style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
+                                  fontSize: theme.mobileTexts.b3.fontSize,
                                   color: Colors.grey,
                                 ),
                                 subText,

@@ -29,8 +29,7 @@ class ProductionItemHistoryMobileState
   bool isLoading = false;
   bool showSuccess = false;
   bool setDate = false;
-  TextEditingController searchController =
-      TextEditingController();
+  TextEditingController searchController = TextEditingController();
 
   @override
   void dispose() {
@@ -47,67 +46,42 @@ class ProductionItemHistoryMobileState
   Widget build(BuildContext context) {
     var theme = returnTheme(context, listen: false);
     List<ProductionItemHistory>? itemHistory =
-        returnProductionItemHistoryProvider(
-              context: context,
-            )
+        returnProductionItemHistoryProvider(context: context)
             .returnProductionItemHistories()
             .where((history) {
               if (widget.productionItemUuid != null) {
-                return history.itemUuid ==
-                        widget.productionItemUuid &&
-                    (history.itemName
-                                ?.toLowerCase()
-                                .contains(
-                                  searchController.text
-                                      .toLowerCase(),
-                                ) ==
+                return history.itemUuid == widget.productionItemUuid &&
+                    (history.itemName?.toLowerCase().contains(
+                              searchController.text.toLowerCase(),
+                            ) ==
                             true ||
-                        history.departmentName
-                                ?.toLowerCase()
-                                .contains(
-                                  searchController.text
-                                      .toLowerCase(),
-                                ) ==
+                        history.departmentName?.toLowerCase().contains(
+                              searchController.text.toLowerCase(),
+                            ) ==
                             true ||
-                        history.staffName
-                                ?.toLowerCase()
-                                .contains(
-                                  searchController.text
-                                      .toLowerCase(),
-                                ) ==
+                        history.staffName?.toLowerCase().contains(
+                              searchController.text.toLowerCase(),
+                            ) ==
                             true ||
-                        history.title
-                                .toLowerCase()
-                                .contains(
-                                  searchController.text
-                                      .toLowerCase(),
-                                ) ==
+                        history.title.toLowerCase().contains(
+                              searchController.text.toLowerCase(),
+                            ) ==
                             true);
               } else {
-                return (history.itemName
-                            ?.toLowerCase()
-                            .contains(
-                              searchController.text
-                                  .toLowerCase(),
-                            ) ==
+                return (history.itemName?.toLowerCase().contains(
+                          searchController.text.toLowerCase(),
+                        ) ==
                         true ||
-                    history.departmentName
-                            ?.toLowerCase()
-                            .contains(
-                              searchController.text
-                                  .toLowerCase(),
-                            ) ==
+                    history.departmentName?.toLowerCase().contains(
+                          searchController.text.toLowerCase(),
+                        ) ==
                         true ||
-                    history.staffName
-                            ?.toLowerCase()
-                            .contains(
-                              searchController.text
-                                  .toLowerCase(),
-                            ) ==
+                    history.staffName?.toLowerCase().contains(
+                          searchController.text.toLowerCase(),
+                        ) ==
                         true ||
                     history.title.toLowerCase().contains(
-                          searchController.text
-                              .toLowerCase(),
+                          searchController.text.toLowerCase(),
                         ) ==
                         true);
               }
@@ -124,36 +98,28 @@ class ProductionItemHistoryMobileState
         context: context,
         title: 'Item History',
         widget: Visibility(
-          visible: authorization(
-            authorized: Authorizations().viewDate,
-          ),
+          visible: authorization(authorized: Authorizations().viewDate),
           child: Padding(
             padding: const EdgeInsets.only(right: 15.0),
             child: InkWell(
               mouseCursor: SystemMouseCursors.click,
               onTap: () {
-                if (returnProductionItemHistoryProvider()
-                            .dateSet !=
-                        null ||
-                    returnProductionItemHistoryProvider()
-                            .rangeStartDate !=
+                if (returnProductionItemHistoryProvider().dateSet != null ||
+                    returnProductionItemHistoryProvider().rangeStartDate !=
                         null) {
-                  returnProductionItemHistoryProvider()
-                      .clearDate();
+                  returnProductionItemHistoryProvider().clearDate();
                 } else {
                   mainDatePicker(
                     context: context,
                     theme: theme,
                     singleDate: (date) {
-                      returnProductionItemHistoryProvider()
-                          .setDate(date!);
+                      returnProductionItemHistoryProvider().setDate(date!);
                     },
                     rangeDate: (firstDate, lastDate) {
-                      returnProductionItemHistoryProvider()
-                          .setRange(
-                            firstDate!,
-                            lastDate ?? DateTime.now(),
-                          );
+                      returnProductionItemHistoryProvider().setRange(
+                        firstDate!,
+                        lastDate ?? DateTime.now(),
+                      );
                     },
                   );
                 }
@@ -173,8 +139,7 @@ class ProductionItemHistoryMobileState
                     Text(
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
+                        fontSize: theme.mobileTexts.b3.fontSize,
                       ),
                       returnProductionItemHistoryProvider(
                                     context: context,
@@ -218,8 +183,7 @@ class ProductionItemHistoryMobileState
                     return Center(
                       child: EmptyWidgetDisplayOnly(
                         title: 'No Events Found',
-                        subText:
-                            'No event has been created for this date.',
+                        subText: 'No event has been created for this date.',
                         theme: theme,
                         height: 30,
                         altAction: () {
@@ -245,15 +209,11 @@ class ProductionItemHistoryMobileState
                             itemHistory
                                 .map(
                                   (item) => Material(
-                                    type:
-                                        MaterialType
-                                            .transparency,
+                                    type: MaterialType.transparency,
                                     child: ItemHistoryTile(
-                                      productionItemHistory:
-                                          item,
+                                      productionItemHistory: item,
                                       fromDetails:
-                                          widget
-                                              .fromProductionItemDetails,
+                                          widget.fromProductionItemDetails,
                                     ),
                                   ),
                                 )

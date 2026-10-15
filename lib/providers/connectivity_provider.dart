@@ -12,8 +12,7 @@ class ConnectivityProvider extends ChangeNotifier {
     init();
   }
   final Connectivity _connectivity = Connectivity();
-  late StreamSubscription<List<ConnectivityResult>>
-  subscription;
+  late StreamSubscription<List<ConnectivityResult>> subscription;
 
   // ConnectivityProvider() {
   //   init();
@@ -60,8 +59,7 @@ class ConnectivityProvider extends ChangeNotifier {
     // }
   }
 
-  Stream<List<ConnectivityResult>>
-  get connectivityStream => _connectivity
+  Stream<List<ConnectivityResult>> get connectivityStream => _connectivity
       .onConnectivityChanged
       .map(
         (results) =>
@@ -69,8 +67,7 @@ class ConnectivityProvider extends ChangeNotifier {
                 .where(
                   (result) =>
                       result != ConnectivityResult.none &&
-                      result !=
-                          ConnectivityResult.bluetooth &&
+                      result != ConnectivityResult.bluetooth &&
                       result != ConnectivityResult.other &&
                       result != ConnectivityResult.vpn,
                 )

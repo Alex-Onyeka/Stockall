@@ -18,12 +18,10 @@ class ProductTileCartSearch extends StatefulWidget {
   final ThemeProvider theme;
 
   @override
-  State<ProductTileCartSearch> createState() =>
-      _ProductTileCartSearchState();
+  State<ProductTileCartSearch> createState() => _ProductTileCartSearchState();
 }
 
-class _ProductTileCartSearchState
-    extends State<ProductTileCartSearch> {
+class _ProductTileCartSearchState extends State<ProductTileCartSearch> {
   bool isManaged() {
     return widget.product.isManaged;
   }
@@ -42,10 +40,9 @@ class _ProductTileCartSearchState
     if (widget.product.canSelectForCart() &&
         !widget.product.isExpired() &&
         (widget.product.getActualQuantity() ?? 0) >
-            (returnSalesProvider()
-                    .totalItemQuantityInAllCarts(
-                      product: widget.product,
-                    ) +
+            (returnSalesProvider().totalItemQuantityInAllCarts(
+                  product: widget.product,
+                ) +
                 quantity)) {
       setState(() {
         quantity++;
@@ -67,10 +64,9 @@ class _ProductTileCartSearchState
     if (widget.product.canSelectForCart() &&
         !widget.product.isExpired() &&
         (widget.product.getActualQuantity() ?? 0) >
-            (returnSalesProvider()
-                    .totalItemQuantityInAllCarts(
-                      product: widget.product,
-                    ) +
+            (returnSalesProvider().totalItemQuantityInAllCarts(
+                  product: widget.product,
+                ) +
                 quantity)) {}
   }
 
@@ -84,12 +80,7 @@ class _ProductTileCartSearchState
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: const Color.fromARGB(
-                41,
-                158,
-                158,
-                158,
-              ),
+              color: const Color.fromARGB(41, 158, 158, 158),
               blurRadius: 5,
             ),
           ],
@@ -103,10 +94,7 @@ class _ProductTileCartSearchState
             borderRadius: BorderRadius.circular(5),
             onTap: widget.action,
             child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 5,
-                vertical: 5,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
 
               child: Row(
                 // mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -115,25 +103,18 @@ class _ProductTileCartSearchState
                     height: 50,
                     width: 30,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        5,
-                      ),
+                      borderRadius: BorderRadius.circular(5),
                       color: Colors.grey.shade200,
                     ),
-                    child: Icon(
-                      Icons.shopping_bag_outlined,
-                    ),
+                    child: Icon(Icons.shopping_bag_outlined),
                   ),
                   SizedBox(width: 10),
                   Expanded(
                     child: Column(
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Flexible(
                               child: Row(
@@ -141,8 +122,7 @@ class _ProductTileCartSearchState
                                   Flexible(
                                     child: Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment
-                                              .start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           style: TextStyle(
@@ -152,37 +132,18 @@ class _ProductTileCartSearchState
                                                     .mobileTexts
                                                     .b3
                                                     .fontSize,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
+                                            fontWeight: FontWeight.bold,
                                           ),
-                                          widget
-                                              .product
-                                              .name,
+                                          widget.product.name,
                                         ),
                                         Text(
                                           [
-                                            if (widget
-                                                    .product
-                                                    .color !=
-                                                null)
-                                              widget
-                                                  .product
-                                                  .color,
-                                            if (widget
-                                                    .product
-                                                    .sizeType !=
-                                                null)
-                                              widget
-                                                  .product
-                                                  .sizeType,
-                                            if (widget
-                                                    .product
-                                                    .size !=
-                                                null)
-                                              widget
-                                                  .product
-                                                  .size,
+                                            if (widget.product.color != null)
+                                              widget.product.color,
+                                            if (widget.product.sizeType != null)
+                                              widget.product.sizeType,
+                                            if (widget.product.size != null)
+                                              widget.product.size,
                                           ].join('  |  '),
                                           style: TextStyle(
                                             fontSize:
@@ -191,9 +152,7 @@ class _ProductTileCartSearchState
                                                     .mobileTexts
                                                     .b5
                                                     .fontSize,
-                                            fontWeight:
-                                                FontWeight
-                                                    .normal,
+                                            fontWeight: FontWeight.normal,
                                             color:
                                                 widget
                                                     .theme
@@ -208,16 +167,15 @@ class _ProductTileCartSearchState
                               ),
                             ),
                             Padding(
-                              padding:
-                                  const EdgeInsets.only(
-                                    right: 0.0,
-                                  ),
+                              padding: const EdgeInsets.only(right: 0.0),
                               child: Container(
                                 decoration: BoxDecoration(
                                   color:
                                       isManaged()
                                           ? getDayDifference(
-                                                        widget.product.expiryDate ??
+                                                        widget
+                                                                .product
+                                                                .expiryDate ??
                                                             DateTime.now(),
                                                       ) <
                                                       1 &&
@@ -235,21 +193,15 @@ class _ProductTileCartSearchState
                                                   (widget.product
                                                               .getActualQuantity() ??
                                                           0) >
-                                                      widget
-                                                          .product
-                                                          .lowQtty!
-                                              ? Colors
-                                                  .grey
-                                                  .shade100
+                                                      widget.product.lowQtty!
+                                              ? Colors.grey.shade100
                                               : widget.product
                                                           .getActualQuantity() !=
                                                       0 &&
                                                   (widget.product
                                                               .getActualQuantity() ??
                                                           0) <=
-                                                      widget
-                                                          .product
-                                                          .lowQtty!
+                                                      widget.product.lowQtty!
                                               ? const Color.fromARGB(
                                                 255,
                                                 255,
@@ -262,14 +214,14 @@ class _ProductTileCartSearchState
                                                 232,
                                                 231,
                                               )
-                                          : Colors
-                                              .grey
-                                              .shade100,
+                                          : Colors.grey.shade100,
                                   border: Border.all(
                                     color:
                                         isManaged()
                                             ? getDayDifference(
-                                                          widget.product.expiryDate ??
+                                                          widget
+                                                                  .product
+                                                                  .expiryDate ??
                                                               DateTime.now(),
                                                         ) <
                                                         1 &&
@@ -281,17 +233,19 @@ class _ProductTileCartSearchState
                                                   142,
                                                   134,
                                                 )
-                                                : widget.product.getActualQuantity() !=
+                                                : widget.product
+                                                            .getActualQuantity() !=
                                                         0 &&
-                                                    (widget.product.getActualQuantity() ??
+                                                    (widget.product
+                                                                .getActualQuantity() ??
                                                             0) >
                                                         widget.product.lowQtty!
-                                                ? Colors
-                                                    .grey
-                                                    .shade700
-                                                : widget.product.getActualQuantity() !=
+                                                ? Colors.grey.shade700
+                                                : widget.product
+                                                            .getActualQuantity() !=
                                                         0 &&
-                                                    (widget.product.getActualQuantity() ??
+                                                    (widget.product
+                                                                .getActualQuantity() ??
                                                             0) <=
                                                         widget.product.lowQtty!
                                                 ? const Color.fromARGB(
@@ -306,34 +260,31 @@ class _ProductTileCartSearchState
                                                   142,
                                                   134,
                                                 )
-                                            : Colors
-                                                .grey
-                                                .shade700,
+                                            : Colors.grey.shade700,
                                   ),
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        20,
-                                      ),
+                                  borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(
-                                        horizontal: 8.0,
-                                        vertical: 3,
-                                      ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8.0,
+                                    vertical: 3,
+                                  ),
                                   child: Text(
                                     style: TextStyle(
                                       fontSize: 9,
-                                      fontWeight:
-                                          FontWeight.bold,
+                                      fontWeight: FontWeight.bold,
                                       color:
                                           isManaged()
                                               ? getDayDifference(
-                                                            widget.product.expiryDate ??
+                                                            widget
+                                                                    .product
+                                                                    .expiryDate ??
                                                                 DateTime.now(),
                                                           ) <
                                                           1 &&
-                                                      widget.product.expiryDate !=
+                                                      widget
+                                                              .product
+                                                              .expiryDate !=
                                                           null
                                                   ? const Color.fromARGB(
                                                     255,
@@ -341,19 +292,25 @@ class _ProductTileCartSearchState
                                                     142,
                                                     134,
                                                   )
-                                                  : widget.product.getActualQuantity() !=
+                                                  : widget.product
+                                                              .getActualQuantity() !=
                                                           0 &&
-                                                      (widget.product.getActualQuantity() ??
+                                                      (widget.product
+                                                                  .getActualQuantity() ??
                                                               0) >
-                                                          widget.product.lowQtty!
-                                                  ? Colors
-                                                      .grey
-                                                      .shade700
-                                                  : widget.product.getActualQuantity() !=
+                                                          widget
+                                                              .product
+                                                              .lowQtty!
+                                                  ? Colors.grey.shade700
+                                                  : widget.product
+                                                              .getActualQuantity() !=
                                                           0 &&
-                                                      (widget.product.getActualQuantity() ??
+                                                      (widget.product
+                                                                  .getActualQuantity() ??
                                                               0) <=
-                                                          widget.product.lowQtty!
+                                                          widget
+                                                              .product
+                                                              .lowQtty!
                                                   ? const Color.fromARGB(
                                                     255,
                                                     132,
@@ -366,9 +323,7 @@ class _ProductTileCartSearchState
                                                     142,
                                                     134,
                                                   )
-                                              : Colors
-                                                  .grey
-                                                  .shade700,
+                                              : Colors.grey.shade700,
                                     ),
 
                                     widget.product
@@ -383,9 +338,7 @@ class _ProductTileCartSearchState
                           ],
                         ),
                         Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Expanded(
                               child: Row(
@@ -400,8 +353,7 @@ class _ProductTileCartSearchState
                                                 .mobileTexts
                                                 .b4
                                                 .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
+                                        fontWeight: FontWeight.bold,
                                         color:
                                             widget
                                                 .theme
@@ -410,45 +362,31 @@ class _ProductTileCartSearchState
                                       ),
                                       widget.product
                                           .getItemTilePriceWithDiscount(
-                                            context:
-                                                context,
+                                            context: context,
                                           ),
                                     ),
                                   ),
                                   Visibility(
-                                    visible:
-                                        widget
-                                            .product
-                                            .discount !=
-                                        null,
+                                    visible: widget.product.discount != null,
                                     child: Text('/'),
                                   ),
                                   Visibility(
-                                    visible:
-                                        widget
-                                            .product
-                                            .discount !=
-                                        null,
+                                    visible: widget.product.discount != null,
                                     child: Text(
                                       style: TextStyle(
-                                        decoration:
-                                            TextDecoration
-                                                .lineThrough,
+                                        decoration: TextDecoration.lineThrough,
                                         fontSize:
                                             widget
                                                 .theme
                                                 .mobileTexts
                                                 .b4
                                                 .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
+                                        fontWeight: FontWeight.bold,
                                         color: Colors.grey,
                                       ),
-                                      widget.product
-                                          .getItemTilePriceNoDiscount(
-                                            context:
-                                                context,
-                                          ),
+                                      widget.product.getItemTilePriceNoDiscount(
+                                        context: context,
+                                      ),
                                     ),
                                   ),
                                 ],

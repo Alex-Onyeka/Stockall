@@ -20,20 +20,17 @@ class ItemHistoryDesktop extends StatefulWidget {
   });
 
   @override
-  State<ItemHistoryDesktop> createState() =>
-      _ItemHistoryDesktopState();
+  State<ItemHistoryDesktop> createState() => _ItemHistoryDesktopState();
 }
 
-class _ItemHistoryDesktopState
-    extends State<ItemHistoryDesktop> {
+class _ItemHistoryDesktopState extends State<ItemHistoryDesktop> {
   late Future<TempProductClass> productFuture;
 
   bool isLoading = false;
   bool showSuccess = false;
   bool setDate = false;
 
-  TextEditingController searchController =
-      TextEditingController();
+  TextEditingController searchController = TextEditingController();
 
   @override
   void dispose() {
@@ -41,67 +38,52 @@ class _ItemHistoryDesktopState
     searchController.dispose();
   }
 
-  final GlobalKey<ScaffoldState> _scaffoldKey =
-      GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context, listen: false);
     List<ItemHistory>? itemHistories =
-        returnItemHistoryProvider(
-          context: context,
-        ).returnItemHistories().where((history) {
-          if (widget.productUuid != null) {
-            return history.itemUuid == widget.productUuid &&
-                (history.itemName?.toLowerCase().contains(
-                          searchController.text
-                              .toLowerCase(),
-                        ) ==
-                        true ||
-                    history.departmentName
-                            ?.toLowerCase()
-                            .contains(
-                              searchController.text
-                                  .toLowerCase(),
-                            ) ==
-                        true ||
-                    history.staffName
-                            ?.toLowerCase()
-                            .contains(
-                              searchController.text
-                                  .toLowerCase(),
-                            ) ==
-                        true ||
-                    history.title.toLowerCase().contains(
-                          searchController.text
-                              .toLowerCase(),
-                        ) ==
-                        true);
-          } else {
-            return (history.itemName
-                        ?.toLowerCase()
-                        .contains(
-                          searchController.text
-                              .toLowerCase(),
-                        ) ==
-                    true ||
-                history.departmentName
-                        ?.toLowerCase()
-                        .contains(
-                          searchController.text
-                              .toLowerCase(),
-                        ) ==
-                    true ||
-                history.staffName?.toLowerCase().contains(
-                      searchController.text.toLowerCase(),
-                    ) ==
-                    true ||
-                history.title.toLowerCase().contains(
-                      searchController.text.toLowerCase(),
-                    ) ==
-                    true);
-          }
-        }).toList();
+        returnItemHistoryProvider(context: context).returnItemHistories().where(
+          (history) {
+            if (widget.productUuid != null) {
+              return history.itemUuid == widget.productUuid &&
+                  (history.itemName?.toLowerCase().contains(
+                            searchController.text.toLowerCase(),
+                          ) ==
+                          true ||
+                      history.departmentName?.toLowerCase().contains(
+                            searchController.text.toLowerCase(),
+                          ) ==
+                          true ||
+                      history.staffName?.toLowerCase().contains(
+                            searchController.text.toLowerCase(),
+                          ) ==
+                          true ||
+                      history.title.toLowerCase().contains(
+                            searchController.text.toLowerCase(),
+                          ) ==
+                          true);
+            } else {
+              return (history.itemName?.toLowerCase().contains(
+                        searchController.text.toLowerCase(),
+                      ) ==
+                      true ||
+                  history.departmentName?.toLowerCase().contains(
+                        searchController.text.toLowerCase(),
+                      ) ==
+                      true ||
+                  history.staffName?.toLowerCase().contains(
+                        searchController.text.toLowerCase(),
+                      ) ==
+                      true ||
+                  history.title.toLowerCase().contains(
+                        searchController.text.toLowerCase(),
+                      ) ==
+                      true);
+            }
+          },
+        ).toList();
     return Scaffold(
       key: _scaffoldKey,
       body: Row(
@@ -111,10 +93,8 @@ class _ItemHistoryDesktopState
             width:
                 screenWidth(context) < tabletScreenSmall
                     ? 50
-                    : (screenWidth(context) >
-                            tabletScreenSmall &&
-                        screenWidth(context) <
-                            tabletScreen + 100)
+                    : (screenWidth(context) > tabletScreenSmall &&
+                        screenWidth(context) < tabletScreen + 100)
                     ? 100
                     : 230,
           ),
@@ -127,12 +107,7 @@ class _ItemHistoryDesktopState
                 borderRadius: BorderRadius.circular(15),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color.fromARGB(
-                      39,
-                      4,
-                      1,
-                      41,
-                    ),
+                    color: const Color.fromARGB(39, 4, 1, 41),
                     blurRadius: 10,
                   ),
                 ],
@@ -145,11 +120,9 @@ class _ItemHistoryDesktopState
                     spacing: 3,
                     children: [
                       InkWell(
-                        mouseCursor:
-                            SystemMouseCursors.click,
+                        mouseCursor: SystemMouseCursors.click,
                         onTap: () {
-                          returnItemHistoryProvider()
-                              .getItemHistories();
+                          returnItemHistoryProvider().getItemHistories();
                         },
                         child: Container(
                           padding: EdgeInsets.only(
@@ -164,13 +137,8 @@ class _ItemHistoryDesktopState
                             children: [
                               Text(
                                 style: TextStyle(
-                                  fontWeight:
-                                      FontWeight.bold,
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: theme.mobileTexts.b3.fontSize,
                                 ),
                                 'Refresh',
                               ),
@@ -181,47 +149,33 @@ class _ItemHistoryDesktopState
                       ),
                       Visibility(
                         visible: authorization(
-                          authorized:
-                              Authorizations().viewDate,
+                          authorized: Authorizations().viewDate,
                         ),
                         child: InkWell(
-                          mouseCursor:
-                              SystemMouseCursors.click,
+                          mouseCursor: SystemMouseCursors.click,
                           onTap: () {
-                            if (returnItemHistoryProvider()
-                                        .dateSet !=
-                                    null ||
-                                returnItemHistoryProvider()
-                                        .rangeStartDate !=
+                            if (returnItemHistoryProvider().dateSet != null ||
+                                returnItemHistoryProvider().rangeStartDate !=
                                     null) {
-                              returnItemHistoryProvider()
-                                  .clearDate();
+                              returnItemHistoryProvider().clearDate();
                             } else {
                               mainDatePicker(
                                 context: context,
                                 theme: theme,
                                 singleDate: (date) {
-                                  returnItemHistoryProvider()
-                                      .setDate(date!);
+                                  returnItemHistoryProvider().setDate(date!);
                                 },
-                                rangeDate: (
-                                  firstDate,
-                                  lastDate,
-                                ) {
-                                  returnItemHistoryProvider()
-                                      .setRange(
-                                        firstDate!,
-                                        lastDate ??
-                                            DateTime.now(),
-                                      );
+                                rangeDate: (firstDate, lastDate) {
+                                  returnItemHistoryProvider().setRange(
+                                    firstDate!,
+                                    lastDate ?? DateTime.now(),
+                                  );
                                 },
                               );
                             }
                           },
                           child: Container(
-                            margin: EdgeInsets.only(
-                              right: 5,
-                            ),
+                            margin: EdgeInsets.only(right: 5),
                             padding: EdgeInsets.only(
                               right: 10,
                               left: 10,
@@ -234,22 +188,15 @@ class _ItemHistoryDesktopState
                               children: [
                                 Text(
                                   style: TextStyle(
-                                    fontWeight:
-                                        FontWeight.bold,
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: theme.mobileTexts.b3.fontSize,
                                   ),
                                   returnItemHistoryProvider(
-                                                context:
-                                                    context,
+                                                context: context,
                                               ).dateSet !=
                                               null ||
                                           returnItemHistoryProvider(
-                                                context:
-                                                    context,
+                                                context: context,
                                               ).rangeStartDate !=
                                               null
                                       ? 'Clear'
@@ -258,18 +205,15 @@ class _ItemHistoryDesktopState
                                 Icon(
                                   size: 16,
                                   returnItemHistoryProvider(
-                                                context:
-                                                    context,
+                                                context: context,
                                               ).dateSet !=
                                               null ||
                                           returnItemHistoryProvider(
-                                                context:
-                                                    context,
+                                                context: context,
                                               ).rangeStartDate !=
                                               null
                                       ? Icons.clear
-                                      : Icons
-                                          .date_range_outlined,
+                                      : Icons.date_range_outlined,
                                 ),
                               ],
                             ),
@@ -280,9 +224,7 @@ class _ItemHistoryDesktopState
                   ),
                 ),
                 body: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15.0,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
                   child: Column(
                     children: [
                       Expanded(
@@ -309,14 +251,9 @@ class _ItemHistoryDesktopState
                                 children:
                                     itemHistories
                                         .map(
-                                          (
-                                            item,
-                                          ) => ItemHistoryTile(
-                                            itemHistory:
-                                                item,
-                                            fromDetails:
-                                                widget
-                                                    .fromItemDetails,
+                                          (item) => ItemHistoryTile(
+                                            itemHistory: item,
+                                            fromDetails: widget.fromItemDetails,
                                           ),
                                         )
                                         .toList(),
@@ -341,10 +278,8 @@ class _ItemHistoryDesktopState
             width:
                 screenWidth(context) < tabletScreenSmall
                     ? 50
-                    : (screenWidth(context) >
-                            tabletScreenSmall &&
-                        screenWidth(context) <
-                            tabletScreen + 100)
+                    : (screenWidth(context) > tabletScreenSmall &&
+                        screenWidth(context) < tabletScreen + 100)
                     ? 100
                     : 230,
           ),
@@ -372,8 +307,7 @@ class SearchFilterWidgetHistory extends StatefulWidget {
       _SearchFilterWidgetHistoryState();
 }
 
-class _SearchFilterWidgetHistoryState
-    extends State<SearchFilterWidgetHistory> {
+class _SearchFilterWidgetHistoryState extends State<SearchFilterWidgetHistory> {
   bool isSearchFilterOn = false;
   @override
   Widget build(BuildContext context) {
@@ -382,10 +316,7 @@ class _SearchFilterWidgetHistoryState
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Padding(
-          padding: const EdgeInsets.only(
-            bottom: 10.0,
-            right: 10,
-          ),
+          padding: const EdgeInsets.only(bottom: 10.0, right: 10),
           child: Builder(
             builder: (context) {
               if (isSearchFilterOn) {
@@ -394,28 +325,17 @@ class _SearchFilterWidgetHistoryState
                   child: Container(
                     constraints: BoxConstraints(
                       maxWidth:
-                          screenWidth(context) >
-                                  mobileScreenSmall
+                          screenWidth(context) > mobileScreenSmall
                               ? 430
                               : screenWidth(context) - 40,
                     ),
-                    padding: EdgeInsets.symmetric(
-                      vertical: 15,
-                      horizontal: 20,
-                    ),
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        5,
-                      ),
+                      borderRadius: BorderRadius.circular(5),
                       color: Colors.white,
                       boxShadow: [
                         BoxShadow(
-                          color: const Color.fromARGB(
-                            34,
-                            0,
-                            0,
-                            0,
-                          ),
+                          color: const Color.fromARGB(34, 0, 0, 0),
                           blurRadius: 10,
                         ),
                       ],
@@ -423,8 +343,7 @@ class _SearchFilterWidgetHistoryState
                     child: Column(
                       spacing: 5,
                       mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment:
-                          CrossAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Row(
                           spacing: 5,
@@ -432,8 +351,7 @@ class _SearchFilterWidgetHistoryState
                             Expanded(
                               child: GeneralTextfieldOnly(
                                 hint: 'Enter Search Text',
-                                controller:
-                                    widget.searchController,
+                                controller: widget.searchController,
                                 lines: 1,
                                 theme: theme,
                                 onChanged: widget.onChanged,
@@ -442,35 +360,20 @@ class _SearchFilterWidgetHistoryState
                             Material(
                               color: Colors.white,
                               child: InkWell(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      20,
-                                    ),
+                                borderRadius: BorderRadius.circular(20),
                                 onTap: () {
                                   setState(() {
-                                    isSearchFilterOn =
-                                        false;
+                                    isSearchFilterOn = false;
                                   });
-                                  widget.searchController
-                                      .clear();
-                                  widget.onChanged!(
-                                    'value',
-                                  );
+                                  widget.searchController.clear();
+                                  widget.onChanged!('value');
                                 },
-                                mouseCursor:
-                                    SystemMouseCursors
-                                        .click,
+                                mouseCursor: SystemMouseCursors.click,
                                 child: Padding(
-                                  padding:
-                                      const EdgeInsets.all(
-                                        8.0,
-                                      ),
+                                  padding: const EdgeInsets.all(8.0),
                                   child: Icon(
                                     size: 20,
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade600,
+                                    color: Colors.grey.shade600,
                                     Icons.clear,
                                   ),
                                 ),
@@ -480,11 +383,7 @@ class _SearchFilterWidgetHistoryState
                         ),
                         Text(
                           style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
+                            fontSize: theme.mobileTexts.b3.fontSize,
                           ),
                           'NB: You Can Search ${widget.text ?? 'Title, Item name, Staff Name, Department Name.'}',
                         ),
@@ -497,12 +396,7 @@ class _SearchFilterWidgetHistoryState
                   decoration: BoxDecoration(
                     boxShadow: [
                       BoxShadow(
-                        color: const Color.fromARGB(
-                          50,
-                          0,
-                          0,
-                          0,
-                        ),
+                        color: const Color.fromARGB(50, 0, 0, 0),
                         blurRadius: 10,
                       ),
                     ],
@@ -513,21 +407,16 @@ class _SearchFilterWidgetHistoryState
                     child: Ink(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(
-                          3,
-                        ),
+                        borderRadius: BorderRadius.circular(3),
                       ),
                       child: InkWell(
-                        mouseCursor:
-                            SystemMouseCursors.click,
+                        mouseCursor: SystemMouseCursors.click,
                         onTap: () {
                           setState(() {
                             isSearchFilterOn = true;
                           });
                         },
-                        borderRadius: BorderRadius.circular(
-                          3,
-                        ),
+                        borderRadius: BorderRadius.circular(3),
                         child: Container(
                           padding: EdgeInsets.symmetric(
                             vertical: 5,
@@ -540,22 +429,14 @@ class _SearchFilterWidgetHistoryState
                             children: [
                               Text(
                                 style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
+                                  fontSize: theme.mobileTexts.b3.fontSize,
+                                  fontWeight: FontWeight.bold,
                                 ),
                                 'Search Filter',
                               ),
                               Icon(
                                 size: 20,
-                                color:
-                                    theme
-                                        .lightModeColor
-                                        .secColor200,
+                                color: theme.lightModeColor.secColor200,
                                 Icons.search,
                               ),
                             ],

@@ -2,12 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
-class AllowToSetCustomPriceAddItemPage
-    extends StatelessWidget {
-  const AllowToSetCustomPriceAddItemPage({
-    super.key,
-    required this.theme,
-  });
+class AllowToSetCustomPriceAddItemPage extends StatelessWidget {
+  const AllowToSetCustomPriceAddItemPage({super.key, required this.theme});
 
   final ThemeProvider theme;
 
@@ -34,8 +30,7 @@ class AllowToSetCustomPriceAddItemPage
                   'Allow To Set Custom Price?',
                 ),
                 Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: 5,
                   children: [
                     Text(
@@ -53,8 +48,7 @@ class AllowToSetCustomPriceAddItemPage
           ),
           Checkbox(
             activeColor: theme.lightModeColor.secColor100,
-            value:
-                returnData(context: context).setCustomPrice,
+            value: returnData(context: context).setCustomPrice,
             onChanged: (value) {
               returnData().toggleSetCustomPrice();
               FocusManager.instance.primaryFocus?.unfocus();

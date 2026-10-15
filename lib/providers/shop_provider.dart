@@ -48,10 +48,8 @@ import 'package:http/http.dart' as http;
 
 class ShopProvider extends ChangeNotifier {
   final supabase = Supabase.instance.client;
-  final ConnectivityProvider connectivity =
-      ConnectivityProvider();
-  static final ShopProvider _instance =
-      ShopProvider._internal();
+  final ConnectivityProvider connectivity = ConnectivityProvider();
+  static final ShopProvider _instance = ShopProvider._internal();
   factory ShopProvider() => _instance;
   ShopProvider._internal();
 
@@ -71,10 +69,7 @@ class ShopProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> createShop(
-    TempShopClass shop,
-    BuildContext context,
-  ) async {
+  Future<void> createShop(TempShopClass shop, BuildContext context) async {
     shop.manageInventoryStorage = false;
     shop.bulkSale = false;
     shop.updatedAt = DateTime.now();
@@ -112,9 +107,7 @@ class ShopProvider extends ChangeNotifier {
             .eq(
               'user_id',
               AuthService().currentUser ??
-                  returnUserProviderSingle()
-                      .currentUserMain
-                      ?.userId ??
+                  returnUserProviderSingle().currentUserMain?.userId ??
                   '',
             );
 
@@ -134,9 +127,7 @@ class ShopProvider extends ChangeNotifier {
         if (currentUser().role != 'Owner') {
           shop.employees!.add(
             AuthService().currentUser ??
-                returnUserProviderSingle()
-                    .currentUserMain
-                    ?.userId ??
+                returnUserProviderSingle().currentUserMain?.userId ??
                 '',
           );
           shop.userId = userShops.first.userId;
@@ -149,15 +140,11 @@ class ShopProvider extends ChangeNotifier {
             .maybeSingle();
       }
     } catch (e) {
-      await mainLocalLog(
-        'Error Creating Shop: ${e.toString()}',
-      );
+      await mainLocalLog('Error Creating Shop: ${e.toString()}');
     }
   }
 
-  Future<int> deleteShop({
-    required BuildContext context,
-  }) async {
+  Future<int> deleteShop({required BuildContext context}) async {
     if (userShops.length < 2) {
       showDialog(
         // ignore: use_build_context_synchronously
@@ -201,10 +188,7 @@ class ShopProvider extends ChangeNotifier {
         if (res != null) {
           // ignore: use_build_context_synchronously
           clearAll(context);
-          returnNavProvider(
-            context,
-            listen: false,
-          ).navigate(0);
+          returnNavProvider(context, listen: false).navigate(0);
           // var shops = await getUserShops(
           //   AuthService().currentUser!,
           // );
@@ -224,9 +208,7 @@ class ShopProvider extends ChangeNotifier {
           return 0;
         }
       } catch (e) {
-        await mainLocalLog(
-          "Error Deleting Shop: ${e.toString()}",
-        );
+        await mainLocalLog("Error Deleting Shop: ${e.toString()}");
         return 0;
       }
     } else {
@@ -255,9 +237,7 @@ class ShopProvider extends ChangeNotifier {
       if (isOnline) {
         List<dynamic> response = [];
 
-        if (authorization(
-          authorized: Authorizations().viewAllShops,
-        )) {
+        if (authorization(authorized: Authorizations().viewAllShops)) {
           if (currentUser().role == 'Owner') {
             response = await supabase
                 .from('shops')
@@ -265,19 +245,14 @@ class ShopProvider extends ChangeNotifier {
                 .eq('user_id', currentUser().userId ?? '')
                 .eq('is_allowed_by_subscription', true);
           } else {
-            List<Map<String, dynamic>> tempBeans =
-                await supabase
-                    .from('shops')
-                    .select()
-                    .contains('employees', [
-                      AuthService().currentUser ?? '',
-                    ])
-                    .eq('is_allowed_by_subscription', true)
-                    .limit(1);
+            List<Map<String, dynamic>> tempBeans = await supabase
+                .from('shops')
+                .select()
+                .contains('employees', [AuthService().currentUser ?? ''])
+                .eq('is_allowed_by_subscription', true)
+                .limit(1);
             if (tempBeans.isNotEmpty) {
-              var newTemp = TempShopClass.fromJson(
-                tempBeans.first,
-              );
+              var newTemp = TempShopClass.fromJson(tempBeans.first);
               response = await supabase
                   .from('shops')
                   .select()
@@ -291,9 +266,7 @@ class ShopProvider extends ChangeNotifier {
           response = await supabase
               .from('shops')
               .select()
-              .contains('employees', [
-                AuthService().currentUser ?? '',
-              ])
+              .contains('employees', [AuthService().currentUser ?? ''])
               .eq('is_allowed_by_subscription', true);
         }
 
@@ -302,9 +275,7 @@ class ShopProvider extends ChangeNotifier {
         }
 
         final shops =
-            response
-                .map((res) => TempShopClass.fromJson(res))
-                .toList();
+            response.map((res) => TempShopClass.fromJson(res)).toList();
 
         shops.sort((a, b) {
           final aHQ = a.isHeadQuarters ?? false;
@@ -345,18 +316,13 @@ class ShopProvider extends ChangeNotifier {
         });
 
         setShops(shops);
-        shopOwnerUser =
-            ShopOwnerFunc().getShopOwnerUser()?.shopOwner;
+        shopOwnerUser = ShopOwnerFunc().getShopOwnerUser()?.shopOwner;
       }
-      await returnCategoriesProvider().getCategories(
-        userShop()!.shopId!,
-      );
+      await returnCategoriesProvider().getCategories(userShop()!.shopId!);
       notifyListeners();
       return userShops;
     } catch (e) {
-      await mainLocalLog(
-        'Error Getting Stores: ${e.toString()}',
-      );
+      await mainLocalLog('Error Getting Stores: ${e.toString()}');
       return [];
     }
   }
@@ -391,9 +357,7 @@ class ShopProvider extends ChangeNotifier {
         shop.updatedAt = DateTime.now();
 
         ShopFunc().setHeadQuarters(shop);
-        UpdatedShopFunc().createUpdatedShop(
-          UpdatedShop(shop: shop),
-        );
+        UpdatedShopFunc().createUpdatedShop(UpdatedShop(shop: shop));
         await getUserShops();
         // setShops(shop);
         notifyListeners();
@@ -428,16 +392,12 @@ class ShopProvider extends ChangeNotifier {
         userShop()!.printType = type;
         userShop()!.updatedAt = DateTime.now();
         ShopFunc().updateShop(userShop()!);
-        UpdatedShopFunc().createUpdatedShop(
-          UpdatedShop(shop: userShop()!),
-        );
+        UpdatedShopFunc().createUpdatedShop(UpdatedShop(shop: userShop()!));
         // setShops(shop);
         notifyListeners();
       }
     } catch (e) {
-      await mainLocalLog(
-        "❌ Failed to update print type: $e",
-      );
+      await mainLocalLog("❌ Failed to update print type: $e");
     }
   }
 
@@ -457,8 +417,7 @@ class ShopProvider extends ChangeNotifier {
               'name': name,
               'email': email,
               'phone_number': phoneNumber,
-              'updated_at':
-                  DateTime.now().toIso8601String(),
+              'updated_at': DateTime.now().toIso8601String(),
             })
             .eq('shop_id', shopId)
             .maybeSingle();
@@ -470,9 +429,7 @@ class ShopProvider extends ChangeNotifier {
           notifyListeners();
         }
       } catch (e) {
-        await mainLocalLog(
-          "❌ Failed to update contact details: $e",
-        );
+        await mainLocalLog("❌ Failed to update contact details: $e");
       }
     } else {
       // TempShopClass? shop = ShopFunc().getShop();
@@ -500,8 +457,7 @@ class ShopProvider extends ChangeNotifier {
             .from('shops')
             .update({
               'currency': currency,
-              'updated_at':
-                  DateTime.now().toIso8601String(),
+              'updated_at': DateTime.now().toIso8601String(),
             })
             .eq('shop_id', shopId)
             .maybeSingle();
@@ -513,9 +469,7 @@ class ShopProvider extends ChangeNotifier {
           notifyListeners();
         }
       } catch (e) {
-        await mainLocalLog(
-          "❌ Failed to update contact details: $e",
-        );
+        await mainLocalLog("❌ Failed to update contact details: $e");
       }
     } else {
       // TempShopClass? shop = ShopFunc().getShop();
@@ -553,8 +507,7 @@ class ShopProvider extends ChangeNotifier {
                   'state': state,
                   'city': city,
                   'shop_address': address,
-                  'updated_at':
-                      DateTime.now().toIso8601String(),
+                  'updated_at': DateTime.now().toIso8601String(),
                 })
                 .eq('shop_id', userShop()!.shopId!)
                 .select()
@@ -570,9 +523,7 @@ class ShopProvider extends ChangeNotifier {
           await mainLocalLog('No Shop Found');
         }
       } catch (e, stack) {
-        await mainLocalLog(
-          "❌ Failed to update location: $e",
-        );
+        await mainLocalLog("❌ Failed to update location: $e");
         await mainLocalLog(stack.toString());
       }
     } else {
@@ -615,9 +566,7 @@ class ShopProvider extends ChangeNotifier {
         List<String> currentEmployees = [];
 
         if (response['employees'] != null) {
-          currentEmployees = List<String>.from(
-            response['employees'],
-          );
+          currentEmployees = List<String>.from(response['employees']);
         }
 
         // Step 2: Add the new employee only if it's not already in the list
@@ -634,9 +583,7 @@ class ShopProvider extends ChangeNotifier {
             .eq('shop_id', userShop()!.shopId!);
 
         if (updateResponse != null) {
-          await mainLocalLog(
-            'Failed to update shop: $updateResponse',
-          );
+          await mainLocalLog('Failed to update shop: $updateResponse');
         } else {
           await mainLocalLog('Staff added successfully.');
         }
@@ -672,8 +619,7 @@ class ShopProvider extends ChangeNotifier {
                 .from('subscription')
                 .update({
                   'user_id': newEmployeeId,
-                  'user_name':
-                      '${currUser.name} ${currUser.lastName ?? ''}',
+                  'user_name': '${currUser.name} ${currUser.lastName ?? ''}',
                 })
                 .eq(
                   'subscription_id',
@@ -716,9 +662,7 @@ class ShopProvider extends ChangeNotifier {
       List<String> currentEmployees = [];
 
       if (response['employees'] != null) {
-        currentEmployees = List<String>.from(
-          response['employees'],
-        );
+        currentEmployees = List<String>.from(response['employees']);
       }
 
       // Step 2: Remove the employee if they exist in the list
@@ -736,9 +680,7 @@ class ShopProvider extends ChangeNotifier {
           .eq('shop_id', userShop()!.shopId!);
 
       if (updateResponse != null) {
-        await mainLocalLog(
-          'Failed to update shop: $updateResponse',
-        );
+        await mainLocalLog('Failed to update shop: $updateResponse');
       } else {
         await mainLocalLog('Staff removed successfully.');
         try {
@@ -751,12 +693,8 @@ class ShopProvider extends ChangeNotifier {
                   .maybeSingle();
           if (res != null) {
             var newRes = TempUserClass.fromJson(res);
-            await mainLocalLog(
-              'Staff Department updated Successfully',
-            );
-            await mainLocalLog(
-              newRes.departmentUuids?.length.toString(),
-            );
+            await mainLocalLog('Staff Department updated Successfully');
+            await mainLocalLog(newRes.departmentUuids?.length.toString());
           }
         } catch (e) {
           await mainLocalLog(
@@ -771,10 +709,7 @@ class ShopProvider extends ChangeNotifier {
 
   List<TempShopClass> userShops = [];
 
-  Future<void> selectShop(
-    BuildContext context,
-    TempShopClass shopC,
-  ) async {
+  Future<void> selectShop(BuildContext context, TempShopClass shopC) async {
     var isOnline = await connectivity.isOnline();
     // ignore: use_build_context_synchronously
     if (returnData().isSynced() == 0 && isOnline) {
@@ -784,8 +719,7 @@ class ShopProvider extends ChangeNotifier {
         builder: (context) {
           return InfoAlert(
             theme: returnTheme(context, listen: false),
-            message:
-                'You have unsynced data. Synchronize data to proceed.',
+            message: 'You have unsynced data. Synchronize data to proceed.',
             title: 'Unsynced Records Detected.',
           );
         },
@@ -821,48 +755,25 @@ class ShopProvider extends ChangeNotifier {
           notifyListeners();
         }
       } catch (e) {
-        await mainLocalLog(
-          '❌❌ Select Shop Error: ${e.toString()}',
-        );
+        await mainLocalLog('❌❌ Select Shop Error: ${e.toString()}');
       }
     }
   }
 
   void clearAll(BuildContext context) {
-    returnCustomers(
-      context,
-      listen: false,
-    ).clearCustomers();
+    returnCustomers(context, listen: false).clearCustomers();
     returnMaterialsProvider().clearMaterials();
-    returnMaterialsItemHistoryProvider()
-        .clearMaterialsItemHistories();
-    returnMaterialsQuantityUpdateProvider()
-        .clearMaterialQuantityUpdates();
-    returnMaterialsUsageActionProvider()
-        .clearMaterialsUsageMainCart();
-    returnMaterialsUsageProvider()
-        .clearProductionMaterialsUsage();
-    returnProductionItemHistoryProvider()
-        .clearProductionItemHistories();
-    returnProductionsActionProvider()
-        .clearProductionMainCart();
+    returnMaterialsItemHistoryProvider().clearMaterialsItemHistories();
+    returnMaterialsQuantityUpdateProvider().clearMaterialQuantityUpdates();
+    returnMaterialsUsageActionProvider().clearMaterialsUsageMainCart();
+    returnMaterialsUsageProvider().clearProductionMaterialsUsage();
+    returnProductionItemHistoryProvider().clearProductionItemHistories();
+    returnProductionsActionProvider().clearProductionMainCart();
     returnData().clearProducts();
-    returnExpensesProvider(
-      context,
-      listen: false,
-    ).clearExpenses();
-    returnNotificationProvider(
-      context,
-      listen: false,
-    ).clearNotifications();
-    returnReceiptProvider(
-      context,
-      listen: false,
-    ).clearReceipts();
-    returnReceiptProvider(
-      context,
-      listen: false,
-    ).load(false);
+    returnExpensesProvider(context, listen: false).clearExpenses();
+    returnNotificationProvider(context, listen: false).clearNotifications();
+    returnReceiptProvider(context, listen: false).clearReceipts();
+    returnReceiptProvider(context, listen: false).load(false);
     returnSalesProvider().clearCart();
     returnShopProvider().clearShop();
     returnUserProvider(context, listen: false).clearUsers();
@@ -873,14 +784,11 @@ class ShopProvider extends ChangeNotifier {
     if (offlineShop != null) {
       try {
         var shops = userShops.where(
-          (shop) =>
-              shop.shopId == offlineShop.currentShopId,
+          (shop) => shop.shopId == offlineShop.currentShopId,
         );
         return shops.isEmpty ? null : shops.first;
       } catch (e) {
-        mainLocalLog(
-          'Error With Shop First: ${e.toString()}',
-        );
+        mainLocalLog('Error With Shop First: ${e.toString()}');
         return null;
       }
     } else {
@@ -890,22 +798,15 @@ class ShopProvider extends ChangeNotifier {
             TempCurrentShop(
               currentShopId:
                   userShops
-                      .where(
-                        (shop) =>
-                            shop.isHeadQuarters == true,
-                      )
+                      .where((shop) => shop.isHeadQuarters == true)
                       .first
                       .shopId!,
             ),
           );
-          var shops = userShops.where(
-            (shop) => shop.isHeadQuarters == true,
-          );
+          var shops = userShops.where((shop) => shop.isHeadQuarters == true);
           return shops.isEmpty ? null : shops.first;
         } catch (e) {
-          mainLocalLog(
-            'Error With Shop Second: ${e.toString()}',
-          );
+          mainLocalLog('Error With Shop Second: ${e.toString()}');
           return null;
         }
       } else {
@@ -935,9 +836,7 @@ class ShopProvider extends ChangeNotifier {
     userShops = shops;
     var localShop = CurrentShopFunc().getCurrentShop();
     if (shops
-        .where(
-          (sh) => sh.shopId == localShop?.currentShopId,
-        )
+        .where((sh) => sh.shopId == localShop?.currentShopId)
         .toList()
         .isEmpty) {
       CurrentShopFunc().createCurrentShop(
@@ -958,9 +857,7 @@ class ShopProvider extends ChangeNotifier {
         Map<String, dynamic>? res =
             await supabase
                 .from('shops')
-                .update({
-                  'apply_vat': !userShop()!.applyVAT!,
-                })
+                .update({'apply_vat': !userShop()!.applyVAT!})
                 .eq('shop_id', userShop()!.shopId!)
                 .select()
                 .maybeSingle();
@@ -992,18 +889,14 @@ class ShopProvider extends ChangeNotifier {
           notifyListeners();
           return 1;
         } catch (e) {
-          await mainLocalLog(
-            "❌ Failed to Apply VAT Offline: ${e.toString()}",
-          );
+          await mainLocalLog("❌ Failed to Apply VAT Offline: ${e.toString()}");
           isVatLoading = false;
           notifyListeners();
           return 0;
         }
       }
     } catch (e) {
-      await mainLocalLog(
-        "❌ Failed to Apply VAT: ${e.toString()}",
-      );
+      await mainLocalLog("❌ Failed to Apply VAT: ${e.toString()}");
       isVatLoading = false;
       notifyListeners();
       return 0;
@@ -1021,9 +914,7 @@ class ShopProvider extends ChangeNotifier {
         Map<String, dynamic>? res =
             await supabase
                 .from('shops')
-                .update({
-                  'whole_sale': !userShop()!.wholeSale!,
-                })
+                .update({'whole_sale': !userShop()!.wholeSale!})
                 .eq('shop_id', userShop()!.shopId!)
                 .select()
                 .maybeSingle();
@@ -1063,9 +954,7 @@ class ShopProvider extends ChangeNotifier {
         }
       }
     } catch (e) {
-      await mainLocalLog(
-        "❌ Failed to Toggle Whole Sale: ${e.toString()}",
-      );
+      await mainLocalLog("❌ Failed to Toggle Whole Sale: ${e.toString()}");
       isWholeSaleLoading = false;
       notifyListeners();
       return 0;
@@ -1091,9 +980,7 @@ class ShopProvider extends ChangeNotifier {
                 .select()
                 .maybeSingle();
         if (res == null) {
-          await mainLocalLog(
-            'Manage Inventory Storage Update Failed',
-          );
+          await mainLocalLog('Manage Inventory Storage Update Failed');
           ismanageInventoryStorageLoading = false;
           notifyListeners();
           return 0;
@@ -1141,9 +1028,7 @@ class ShopProvider extends ChangeNotifier {
 
   bool isUpdatePin = false;
 
-  Future<int> updateShopPin({
-    required String newPin,
-  }) async {
+  Future<int> updateShopPin({required String newPin}) async {
     bool isOnline = await connectivity.isOnline();
     isUpdatePin = true;
     notifyListeners();
@@ -1193,9 +1078,7 @@ class ShopProvider extends ChangeNotifier {
         }
       }
     } catch (e) {
-      await mainLocalLog(
-        "❌ Failed to Update Access Pin: ${e.toString()}",
-      );
+      await mainLocalLog("❌ Failed to Update Access Pin: ${e.toString()}");
       isUpdatePin = false;
       notifyListeners();
       return 0;
@@ -1280,9 +1163,7 @@ class ShopProvider extends ChangeNotifier {
         Map<String, dynamic>? res =
             await supabase
                 .from('shops')
-                .update({
-                  'track_cart': !userShop()!.trackCart!,
-                })
+                .update({'track_cart': !userShop()!.trackCart!})
                 .eq('shop_id', userShop()!.shopId!)
                 .select()
                 .maybeSingle();
@@ -1323,9 +1204,7 @@ class ShopProvider extends ChangeNotifier {
         }
       }
     } catch (e) {
-      await mainLocalLog(
-        "❌ Failed to Update Track Cart: ${e.toString()}",
-      );
+      await mainLocalLog("❌ Failed to Update Track Cart: ${e.toString()}");
       isTrackCartLoading = false;
       notifyListeners();
       return 0;
@@ -1335,9 +1214,7 @@ class ShopProvider extends ChangeNotifier {
   bool isOnScreenKeyboardLoading = false;
 
   bool isOnScreenKeyboardOn() {
-    return OnScreenKeyboardPinFunc()
-            .getOnScreenKeyboardPinClass()
-            ?.isOn ??
+    return OnScreenKeyboardPinFunc().getOnScreenKeyboardPinClass()?.isOn ??
         false;
   }
 
@@ -1345,9 +1222,7 @@ class ShopProvider extends ChangeNotifier {
     isOnScreenKeyboardLoading = true;
     notifyListeners();
     try {
-      var res =
-          await OnScreenKeyboardPinFunc()
-              .toggleOnScreenKeyboard();
+      var res = await OnScreenKeyboardPinFunc().toggleOnScreenKeyboard();
       notifyListeners();
       isOnScreenKeyboardLoading = false;
       return res;
@@ -1372,16 +1247,12 @@ class ShopProvider extends ChangeNotifier {
         Map<String, dynamic>? res =
             await supabase
                 .from('shops')
-                .update({
-                  'bulk_sale': !userShop()!.bulkSale!,
-                })
+                .update({'bulk_sale': !userShop()!.bulkSale!})
                 .eq('shop_id', userShop()!.shopId!)
                 .select()
                 .maybeSingle();
         if (res == null) {
-          await mainLocalLog(
-            'Toggle Bulk Sale Update Failed',
-          );
+          await mainLocalLog('Toggle Bulk Sale Update Failed');
           allowBulkSale = false;
           notifyListeners();
           return 0;
@@ -1438,17 +1309,12 @@ class ShopProvider extends ChangeNotifier {
         Map<String, dynamic>? res =
             await supabase
                 .from('shops')
-                .update({
-                  'manage_productions':
-                      !userShop()!.manageProductions!,
-                })
+                .update({'manage_productions': !userShop()!.manageProductions!})
                 .eq('shop_id', userShop()!.shopId!)
                 .select()
                 .maybeSingle();
         if (res == null) {
-          await mainLocalLog(
-            'Toggle Manage Productions Update Failed',
-          );
+          await mainLocalLog('Toggle Manage Productions Update Failed');
           manageProductions = false;
           notifyListeners();
           return 0;
@@ -1463,8 +1329,7 @@ class ShopProvider extends ChangeNotifier {
       } else {
         try {
           userShop()!.updatedAt = DateTime.now();
-          userShop()!.manageProductions =
-              !userShop()!.manageProductions!;
+          userShop()!.manageProductions = !userShop()!.manageProductions!;
           await ShopFunc().updateShop(userShop()!);
           if (userShop() != null) {
             await UpdatedShopFunc().createUpdatedShop(
@@ -1507,16 +1372,13 @@ class ShopProvider extends ChangeNotifier {
                 .from('shops')
                 .update({
                   'manage_productions_storage':
-                      !userShop()!
-                          .manageProductionsStorage!,
+                      !userShop()!.manageProductionsStorage!,
                 })
                 .eq('shop_id', userShop()!.shopId!)
                 .select()
                 .maybeSingle();
         if (res == null) {
-          await mainLocalLog(
-            'Toggle Manage Productions Storage Update Failed',
-          );
+          await mainLocalLog('Toggle Manage Productions Storage Update Failed');
           manageProductionsStorage = false;
           notifyListeners();
           return 0;
@@ -1581,9 +1443,7 @@ class ShopProvider extends ChangeNotifier {
                 .select()
                 .maybeSingle();
         if (res == null) {
-          await mainLocalLog(
-            'Toggle Manage Production Items Update Failed',
-          );
+          await mainLocalLog('Toggle Manage Production Items Update Failed');
           manageProductionItems = false;
           notifyListeners();
           return 0;
@@ -1641,16 +1501,13 @@ class ShopProvider extends ChangeNotifier {
             await supabase
                 .from('shops')
                 .update({
-                  'manage_customer_reward':
-                      !userShop()!.manageCustomerReward!,
+                  'manage_customer_reward': !userShop()!.manageCustomerReward!,
                 })
                 .eq('shop_id', userShop()!.shopId!)
                 .select()
                 .maybeSingle();
         if (res == null) {
-          await mainLocalLog(
-            'Toggle Manage Customer Reward Update Failed',
-          );
+          await mainLocalLog('Toggle Manage Customer Reward Update Failed');
           manageCustomerReward = false;
           notifyListeners();
           return 0;
@@ -1665,8 +1522,7 @@ class ShopProvider extends ChangeNotifier {
       } else {
         try {
           userShop()!.updatedAt = DateTime.now();
-          userShop()!.manageCustomerReward =
-              !userShop()!.manageCustomerReward!;
+          userShop()!.manageCustomerReward = !userShop()!.manageCustomerReward!;
           await ShopFunc().updateShop(userShop()!);
           if (userShop() != null) {
             await UpdatedShopFunc().createUpdatedShop(
@@ -1715,9 +1571,7 @@ class ShopProvider extends ChangeNotifier {
                 .select()
                 .maybeSingle();
         if (res == null) {
-          await mainLocalLog(
-            'Toggle Manage Customer Account Update Failed',
-          );
+          await mainLocalLog('Toggle Manage Customer Account Update Failed');
           manageCustomerAccount = false;
           notifyListeners();
           return 0;
@@ -1765,9 +1619,7 @@ class ShopProvider extends ChangeNotifier {
 
   bool setCustomersRewardPercent = false;
 
-  Future<int> setCustomersRewardPercentAction({
-    required double amount,
-  }) async {
+  Future<int> setCustomersRewardPercentAction({required double amount}) async {
     setCustomersRewardPercent = true;
     try {
       userShop()!.updatedAt = DateTime.now();
@@ -1804,25 +1656,19 @@ class ShopProvider extends ChangeNotifier {
         Map<String, dynamic>? res =
             await supabase
                 .from('shops')
-                .update({
-                  'manage_departments':
-                      !userShop()!.manageDepartments!,
-                })
+                .update({'manage_departments': !userShop()!.manageDepartments!})
                 .eq('shop_id', userShop()!.shopId!)
                 .select()
                 .maybeSingle();
         if (res == null) {
-          await mainLocalLog(
-            'Manage Departments Update Failed',
-          );
+          await mainLocalLog('Manage Departments Update Failed');
           manageDepartmentsLoading = false;
           notifyListeners();
           return 0;
         }
 
         if (userShop()!.manageDepartments!) {
-          await returnDepartmentProvider()
-              .clearDepartments();
+          await returnDepartmentProvider().clearDepartments();
         }
         var shops = await getUserShops();
         setShops(shops);
@@ -1833,12 +1679,10 @@ class ShopProvider extends ChangeNotifier {
       } else {
         try {
           if (userShop()!.manageDepartments!) {
-            await returnDepartmentProvider()
-                .clearDepartments();
+            await returnDepartmentProvider().clearDepartments();
           }
           userShop()!.updatedAt = DateTime.now();
-          userShop()!.manageDepartments =
-              !userShop()!.manageDepartments!;
+          userShop()!.manageDepartments = !userShop()!.manageDepartments!;
           await ShopFunc().updateShop(userShop()!);
           if (userShop() != null) {
             await UpdatedShopFunc().createUpdatedShop(
@@ -1880,11 +1724,7 @@ class ShopProvider extends ChangeNotifier {
         Map<String, dynamic>? res =
             await supabase
                 .from('shops')
-                .update({
-                  'close_sale_time': timeOfDayToPostgres(
-                    time,
-                  ),
-                })
+                .update({'close_sale_time': timeOfDayToPostgres(time)})
                 .eq('shop_id', userShop()!.shopId!)
                 .select()
                 .maybeSingle();
@@ -1911,9 +1751,7 @@ class ShopProvider extends ChangeNotifier {
           // }
           userShop()!.updatedAt = DateTime.now();
           userShop()!.closeSaleTimeString =
-              time != null
-                  ? timeOfDayToPostgres(time)
-                  : null;
+              time != null ? timeOfDayToPostgres(time) : null;
           await ShopFunc().updateShop(userShop()!);
           if (userShop() != null) {
             await UpdatedShopFunc().createUpdatedShop(
@@ -1935,9 +1773,7 @@ class ShopProvider extends ChangeNotifier {
         }
       }
     } catch (e) {
-      await mainLocalLog(
-        "❌ Failed to Update Close Sale: ${e.toString()}",
-      );
+      await mainLocalLog("❌ Failed to Update Close Sale: ${e.toString()}");
       isSetCloseSaleTimeLoading = false;
       notifyListeners();
       return 0;
@@ -1955,17 +1791,12 @@ class ShopProvider extends ChangeNotifier {
         Map<String, dynamic>? res =
             await supabase
                 .from('shops')
-                .update({
-                  'print_sales_docket':
-                      !userShop()!.printSalesDocket!,
-                })
+                .update({'print_sales_docket': !userShop()!.printSalesDocket!})
                 .eq('shop_id', userShop()!.shopId!)
                 .select()
                 .maybeSingle();
         if (res == null) {
-          await mainLocalLog(
-            'Print Sales Docket Update Failed',
-          );
+          await mainLocalLog('Print Sales Docket Update Failed');
           printSalesDocketLoading = false;
           notifyListeners();
           return 0;
@@ -1986,8 +1817,7 @@ class ShopProvider extends ChangeNotifier {
           //   returnDepartmentProvider().selectDepartment();
           // }
           userShop()!.updatedAt = DateTime.now();
-          userShop()!.printSalesDocket =
-              !userShop()!.printSalesDocket!;
+          userShop()!.printSalesDocket = !userShop()!.printSalesDocket!;
           await ShopFunc().updateShop(userShop()!);
           if (userShop() != null) {
             await UpdatedShopFunc().createUpdatedShop(
@@ -2040,8 +1870,7 @@ class ShopProvider extends ChangeNotifier {
   int discountIndex = 0;
 
   double? currentDiscount() {
-    return userShop()!.fixedDiscount ??
-        userShop()!.percentDiscount;
+    return userShop()!.fixedDiscount ?? userShop()!.percentDiscount;
   }
 
   void switchDiscountIndex(int index) {
@@ -2077,8 +1906,7 @@ class ShopProvider extends ChangeNotifier {
                 .update({
                   'fixed_discount': discount?.toDouble(),
                   'percent_discount': null,
-                  'updated_at':
-                      DateTime.now().toIso8601String(),
+                  'updated_at': DateTime.now().toIso8601String(),
                 })
                 .eq('shop_id', userShop()!.shopId!)
                 .select()
@@ -2114,9 +1942,7 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> setPercentDiscount({
-    double? discount,
-  }) async {
+  Future<void> setPercentDiscount({double? discount}) async {
     var isOnline = await connectivity.isOnline();
     if (isOnline) {
       try {
@@ -2126,8 +1952,7 @@ class ShopProvider extends ChangeNotifier {
                 .update({
                   'fixed_discount': null,
                   'percent_discount': discount?.toDouble(),
-                  'updated_at':
-                      DateTime.now().toIso8601String(),
+                  'updated_at': DateTime.now().toIso8601String(),
                 })
                 .eq('shop_id', userShop()!.shopId!)
                 .select()
@@ -2182,17 +2007,10 @@ class ShopProvider extends ChangeNotifier {
   Future<void> updateShopSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
-      await mainLocalLog(
-        UpdatedShopFunc()
-            .getUpdatedShop()
-            .length
-            .toString(),
-      );
+      await mainLocalLog(UpdatedShopFunc().getUpdatedShop().length.toString());
 
-      if (UpdatedShopFunc().getUpdatedShop().isNotEmpty &&
-          isOnline) {
-        final updatedShop =
-            UpdatedShopFunc().getUpdatedShop();
+      if (UpdatedShopFunc().getUpdatedShop().isNotEmpty && isOnline) {
+        final updatedShop = UpdatedShopFunc().getUpdatedShop();
 
         for (final updated in updatedShop) {
           final localShop = updated.shop;
@@ -2200,9 +2018,7 @@ class ShopProvider extends ChangeNotifier {
           localShop.updatedAt ??= DateTime.now().toUtc();
 
           if (localShop.shopId == null) {
-            await mainLocalLog(
-              '⚠️ Local shopId is null, skipping',
-            );
+            await mainLocalLog('⚠️ Local shopId is null, skipping');
             continue;
           }
           final remoteData =
@@ -2213,39 +2029,25 @@ class ShopProvider extends ChangeNotifier {
                   .maybeSingle();
 
           if (remoteData == null) {
-            await supabase
-                .from('shops')
-                .insert(localShop.toJson());
+            await supabase.from('shops').insert(localShop.toJson());
             await mainLocalLog(
               'Inserted Shop with Shop Id ${localShop.shopId}',
             );
-            await UpdatedShopFunc().deleteUpdatedShop(
-              localShop.shopId!,
-            );
+            await UpdatedShopFunc().deleteUpdatedShop(localShop.shopId!);
           } else {
-            final remoteUpdatedAtRaw =
-                remoteData['updated_at'];
+            final remoteUpdatedAtRaw = remoteData['updated_at'];
             final remoteUpdatedAt =
                 remoteUpdatedAtRaw == null
                     ? null
-                    : DateTime.parse(
-                      remoteUpdatedAtRaw,
-                    ).toUtc();
+                    : DateTime.parse(remoteUpdatedAtRaw).toUtc();
 
             localShop.updatedAt =
-                (localShop.updatedAt ?? DateTime.now())
-                    .toUtc();
-            await mainLocalLog(
-              "Local updatedAt: ${localShop.updatedAt}",
-            );
-            await mainLocalLog(
-              "Remote updatedAt: $remoteUpdatedAt",
-            );
+                (localShop.updatedAt ?? DateTime.now()).toUtc();
+            await mainLocalLog("Local updatedAt: ${localShop.updatedAt}");
+            await mainLocalLog("Remote updatedAt: $remoteUpdatedAt");
 
             if (remoteUpdatedAt == null ||
-                localShop.updatedAt!.isAfter(
-                  remoteUpdatedAt,
-                )) {
+                localShop.updatedAt!.isAfter(remoteUpdatedAt)) {
               await supabase
                   .from('shops')
                   .update(localShop.toJson())
@@ -2253,9 +2055,7 @@ class ShopProvider extends ChangeNotifier {
               await mainLocalLog(
                 'Updated Shop with shopId ${localShop.shopId}',
               );
-              await UpdatedShopFunc().deleteUpdatedShop(
-                localShop.shopId!,
-              );
+              await UpdatedShopFunc().deleteUpdatedShop(localShop.shopId!);
             } else {
               await mainLocalLog(
                 'Skipped Shop ${localShop.shopId}, remote is newer ✅',
@@ -2283,14 +2083,10 @@ class ShopProvider extends ChangeNotifier {
   ) async {
     try {
       bool isOnline = await connectivity.isOnline();
-      await mainLocalLog(
-        CreatedShopLogosFunc().getCreatedLogo().toString(),
-      );
+      await mainLocalLog(CreatedShopLogosFunc().getCreatedLogo().toString());
 
-      if (CreatedShopLogosFunc().getCreatedLogo() != null &&
-          isOnline) {
-        final createdLogo =
-            CreatedShopLogosFunc().getCreatedLogo();
+      if (CreatedShopLogosFunc().getCreatedLogo() != null && isOnline) {
+        final createdLogo = CreatedShopLogosFunc().getCreatedLogo();
         var filePath = createdLogo!.imageName;
         var imageBytes = base64Decode(createdLogo.logoPath);
         var mimeType = "image/${filePath.split('.').last}";
@@ -2301,9 +2097,7 @@ class ShopProvider extends ChangeNotifier {
               .uploadBinary(
                 filePath,
                 imageBytes,
-                fileOptions: FileOptions(
-                  contentType: mimeType,
-                ),
+                fileOptions: FileOptions(contentType: mimeType),
               );
 
           final String publicUrl = supabase.storage
@@ -2322,9 +2116,7 @@ class ShopProvider extends ChangeNotifier {
           userShop()!.imageHeight = imageHeight;
           userShop()!.imageWidth = imageWidth;
           notifyListeners();
-          await mainLocalLog(
-            '✅  Online Logo uploaded and saved successfully!',
-          );
+          await mainLocalLog('✅  Online Logo uploaded and saved successfully!');
           await ShopLogosFunc().createLogo(
             TempShopLogos(
               logoPath: base64Encode(imageBytes),
@@ -2339,9 +2131,7 @@ class ShopProvider extends ChangeNotifier {
         }
 
         await CreatedShopLogosFunc().clearCreatedLogos();
-        await mainLocalLog(
-          'Unsynced updated Shop Logo cleared',
-        );
+        await mainLocalLog('Unsynced updated Shop Logo cleared');
         await mainLocalLog('Mounted, refreshing Shop ✅');
         await getUserShops();
       }
@@ -2411,20 +2201,16 @@ class ShopProvider extends ChangeNotifier {
   }
 
   void showFacebookDownAction() {
-    userShop()!.showFacebookDown =
-        !userShop()!.showFacebookDown!;
+    userShop()!.showFacebookDown = !userShop()!.showFacebookDown!;
     notifyListeners();
   }
 
   void showFacebookTopAction() {
-    userShop()!.showFacebookTop =
-        !userShop()!.showFacebookTop!;
+    userShop()!.showFacebookTop = !userShop()!.showFacebookTop!;
     notifyListeners();
   }
 
-  Future<String> updateShopPrintDetails(
-    BuildContext context,
-  ) async {
+  Future<String> updateShopPrintDetails(BuildContext context) async {
     bool isOnline = await connectivity.isOnline();
     if (logoPicked && selectedLogo != null) {
       try {
@@ -2469,9 +2255,7 @@ class ShopProvider extends ChangeNotifier {
         }
         return 'success';
       } catch (e) {
-        await mainLocalLog(
-          "❌ Failed to update Print Details Online: $e",
-        );
+        await mainLocalLog("❌ Failed to update Print Details Online: $e");
         clearImage();
         return e.toString();
       }
@@ -2489,9 +2273,7 @@ class ShopProvider extends ChangeNotifier {
             : {};
         return 'success';
       } catch (e) {
-        await mainLocalLog(
-          "❌ Failed to update Print Details Offline: $e",
-        );
+        await mainLocalLog("❌ Failed to update Print Details Offline: $e");
         clearImage();
         return e.toString();
       }
@@ -2511,8 +2293,7 @@ class ShopProvider extends ChangeNotifier {
                 .update({
                   'insta_handle': insta,
                   'facebook_handle': face,
-                  'updated_at':
-                      DateTime.now().toIso8601String(),
+                  'updated_at': DateTime.now().toIso8601String(),
                 })
                 .eq('shop_id', userShop()!.shopId!)
                 .maybeSingle();
@@ -2524,9 +2305,7 @@ class ShopProvider extends ChangeNotifier {
         }
         return 1;
       } catch (e) {
-        await mainLocalLog(
-          "❌ Failed to update location Online: $e",
-        );
+        await mainLocalLog("❌ Failed to update location Online: $e");
         return 0;
       }
     } else {
@@ -2545,38 +2324,28 @@ class ShopProvider extends ChangeNotifier {
         }
         return 1;
       } catch (e) {
-        await mainLocalLog(
-          "❌ Failed to update location Offline: $e",
-        );
+        await mainLocalLog("❌ Failed to update location Offline: $e");
         return 0;
       }
     }
   }
 
-  Future<Uint8List?> fetchImageBytes(
-    String imageUrl,
-  ) async {
+  Future<Uint8List?> fetchImageBytes(String imageUrl) async {
     try {
       final response = await http.get(Uri.parse(imageUrl));
       if (response.statusCode == 200) {
         return response.bodyBytes;
       } else {
-        await mainLocalLog(
-          '⚠️ Failed to load image: ${response.statusCode}',
-        );
+        await mainLocalLog('⚠️ Failed to load image: ${response.statusCode}');
         return null;
       }
     } catch (e) {
-      await mainLocalLog(
-        '❌ Error fetching image bytes: $e',
-      );
+      await mainLocalLog('❌ Error fetching image bytes: $e');
       return null;
     }
   }
 
-  Future<ui.Image> getImageInfo(
-    Uint8List imageBytes,
-  ) async {
+  Future<ui.Image> getImageInfo(Uint8List imageBytes) async {
     final Completer<ui.Image> completer = Completer();
     ui.decodeImageFromList(imageBytes, (ui.Image img) {
       completer.complete(img);
@@ -2604,9 +2373,7 @@ class ShopProvider extends ChangeNotifier {
 
   void switchLogoPicked(bool value) {
     logoPicked = value;
-    mainLocalLog(
-      "Logo Picked Value is Now: ${logoPicked.toString()}",
-    );
+    mainLocalLog("Logo Picked Value is Now: ${logoPicked.toString()}");
     notifyListeners();
   }
 
@@ -2623,8 +2390,7 @@ class ShopProvider extends ChangeNotifier {
         return null;
       }
 
-      final Uint8List imageBytes =
-          await image.readAsBytes();
+      final Uint8List imageBytes = await image.readAsBytes();
 
       final imageSize = await getImageInfo(imageBytes);
 
@@ -2644,9 +2410,7 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
-  Future<Uint8List?> getLogoImage(
-    BuildContext context,
-  ) async {
+  Future<Uint8List?> getLogoImage(BuildContext context) async {
     bool isOnline = await connectivity.isOnline();
 
     if (isOnline) {
@@ -2681,9 +2445,7 @@ class ShopProvider extends ChangeNotifier {
         notifyListeners();
         return onlineBytes;
       } catch (e) {
-        await mainLocalLog(
-          '❌❌ Get Logo Error: ${e.toString()}',
-        );
+        await mainLocalLog('❌❌ Get Logo Error: ${e.toString()}');
         // clearImage();
         return null;
       }
@@ -2704,9 +2466,7 @@ class ShopProvider extends ChangeNotifier {
           return imageBytes;
         }
       } catch (e) {
-        await mainLocalLog(
-          '❌❌ Get Logo Offline Error: ${e.toString()}',
-        );
+        await mainLocalLog('❌❌ Get Logo Offline Error: ${e.toString()}');
         // clearImage();
         return null;
       }
@@ -2719,8 +2479,7 @@ class ShopProvider extends ChangeNotifier {
   }) async {
     final bool isOnline = await connectivity.isOnline();
     final imageBytes = await image.readAsBytes();
-    final String ext =
-        image.name.split('.').last.toLowerCase();
+    final String ext = image.name.split('.').last.toLowerCase();
 
     final String mimeType = switch (ext) {
       'jpg' || 'jpeg' => 'image/jpeg',
@@ -2738,9 +2497,7 @@ class ShopProvider extends ChangeNotifier {
             .uploadBinary(
               filePath,
               imageBytes,
-              fileOptions: FileOptions(
-                contentType: mimeType,
-              ),
+              fileOptions: FileOptions(contentType: mimeType),
             );
 
         final String publicUrl = supabase.storage
@@ -2759,9 +2516,7 @@ class ShopProvider extends ChangeNotifier {
         userShop()!.imageHeight = imageHeight;
         userShop()!.imageWidth = imageWidth;
         notifyListeners();
-        await mainLocalLog(
-          '✅  Online Logo uploaded and saved successfully!',
-        );
+        await mainLocalLog('✅  Online Logo uploaded and saved successfully!');
         await ShopLogosFunc().createLogo(
           TempShopLogos(
             logoPath: base64Encode(imageBytes),
@@ -2801,14 +2556,10 @@ class ShopProvider extends ChangeNotifier {
         userShop()!.imageHeight = imageHeight;
         userShop()!.imageWidth = imageWidth;
         notifyListeners();
-        await mainLocalLog(
-          '✅  Offline Logo uploaded and saved successfully!',
-        );
+        await mainLocalLog('✅  Offline Logo uploaded and saved successfully!');
         return 'success';
       } catch (e) {
-        await mainLocalLog(
-          '❌❌ Upload Logo Offline Error: ${e.toString()}',
-        );
+        await mainLocalLog('❌❌ Upload Logo Offline Error: ${e.toString()}');
         clearImage();
         return 'Error uploading logo: The File extension type you selected is not Support. Please Select .jpeg, .jpg, or .png images.';
       }
@@ -2818,10 +2569,7 @@ class ShopProvider extends ChangeNotifier {
   TempBarcodePrinterClass? printerCache;
 
   void setPrinterCache() {
-    printerCache =
-        BarcodePrinterLocalFunc()
-            .getbarcodePrinterLocal()
-            ?.printer;
+    printerCache = BarcodePrinterLocalFunc().getbarcodePrinterLocal()?.printer;
   }
 
   CustomLabelPrinterSettings? customLabelPrinterSettings;
@@ -2830,31 +2578,24 @@ class ShopProvider extends ChangeNotifier {
 
   PriceTagPrinterSettings? priceTagPrinterSettings;
 
-  PriceAndBarcodePrinterSettings?
-  priceAndBarcodePrinterSettings;
+  PriceAndBarcodePrinterSettings? priceAndBarcodePrinterSettings;
 
   void setPrinterSettingsCache() {
     printerSettings =
-        BarcodePrinterLocalFunc()
-            .getbarcodePrinterLocal()
-            ?.settings ??
+        BarcodePrinterLocalFunc().getbarcodePrinterLocal()?.settings ??
         PrinterSettings(
           widthMm: defaultPrinterSettings.widthMm,
           heightMm: defaultPrinterSettings.heightMm,
           startX: defaultPrinterSettings.startX,
           startY: defaultPrinterSettings.startY,
           gapMm: defaultPrinterSettings.gapMm,
-          barcodeHeight:
-              defaultPrinterSettings.barcodeHeight,
+          barcodeHeight: defaultPrinterSettings.barcodeHeight,
           barcodeScale: defaultPrinterSettings.barcodeScale,
-          verticalSpacing:
-              defaultPrinterSettings.verticalSpacing,
+          verticalSpacing: defaultPrinterSettings.verticalSpacing,
         );
 
     priceTagPrinterSettings =
-        PriceTagPrinterFunc()
-            .getPriceTagPrinterLocal()
-            ?.settings ??
+        PriceTagPrinterFunc().getPriceTagPrinterLocal()?.settings ??
         defaultPriceTagPrinterSettings;
 
     priceAndBarcodePrinterSettings =
@@ -2864,8 +2605,7 @@ class ShopProvider extends ChangeNotifier {
         defaultPriceAndBarcodePrinterSettings;
   }
 
-  CustomLabelPrinterSettings
-  defaultCustomLabelPrinterSettings =
+  CustomLabelPrinterSettings defaultCustomLabelPrinterSettings =
       CustomLabelPrinterSettings(
         widthMm: 58,
         heightMm: 25,
@@ -2886,8 +2626,7 @@ class ShopProvider extends ChangeNotifier {
     verticalSpacing: 10,
   );
 
-  PriceAndBarcodePrinterSettings
-  defaultPriceAndBarcodePrinterSettings =
+  PriceAndBarcodePrinterSettings defaultPriceAndBarcodePrinterSettings =
       PriceAndBarcodePrinterSettings(
         widthMm: 58,
         heightMm: 25,
@@ -2909,9 +2648,7 @@ class ShopProvider extends ChangeNotifier {
 
   bool isDesktop() {
     if (!kIsWeb) {
-      if (Platform.isLinux ||
-          Platform.isMacOS ||
-          Platform.isWindows) {
+      if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
         return true;
       } else {
         return false;
@@ -2922,20 +2659,17 @@ class ShopProvider extends ChangeNotifier {
   }
 
   Future<void> updateCustomLabelPrinterSettings(
-    CustomLabelPrinterSettings
-    customLabelPrinterSettingsNew,
+    CustomLabelPrinterSettings customLabelPrinterSettingsNew,
   ) async {
     if (isDesktop()) {
-      await CustomLabelPrinterFunc()
-          .insertCustomLabelPrinter(
-            CustomLabelPrinterLocal(
-              printer: printerCache!,
-              settings: customLabelPrinterSettingsNew,
-            ),
-          );
+      await CustomLabelPrinterFunc().insertCustomLabelPrinter(
+        CustomLabelPrinterLocal(
+          printer: printerCache!,
+          settings: customLabelPrinterSettingsNew,
+        ),
+      );
 
-      customLabelPrinterSettings =
-          customLabelPrinterSettingsNew;
+      customLabelPrinterSettings = customLabelPrinterSettingsNew;
       notifyListeners();
     }
   }
@@ -2943,15 +2677,11 @@ class ShopProvider extends ChangeNotifier {
   Future<void> updatePrinterSettings(
     PrinterSettings newSettings,
     PriceTagPrinterSettings priceNewSettings,
-    PriceAndBarcodePrinterSettings
-    priceAndBarcodePrinterSettingsNew,
+    PriceAndBarcodePrinterSettings priceAndBarcodePrinterSettingsNew,
   ) async {
     if (isDesktop()) {
       await BarcodePrinterLocalFunc().insertbarcodePrinter(
-        BarcodePrinterLocal(
-          printer: printerCache!,
-          settings: newSettings,
-        ),
+        BarcodePrinterLocal(printer: printerCache!, settings: newSettings),
       );
       await PriceTagPrinterFunc().insertPriceTagPrinter(
         PriceTagPrinterLocal(
@@ -2959,17 +2689,15 @@ class ShopProvider extends ChangeNotifier {
           settings: priceNewSettings,
         ),
       );
-      await PriceAndBarcodePrinterLocalFunc()
-          .insertpriceBarcodeAndPrinter(
-            PriceAndBarcodePrinterLocal(
-              printer: printerCache!,
-              settings: priceAndBarcodePrinterSettingsNew,
-            ),
-          );
+      await PriceAndBarcodePrinterLocalFunc().insertpriceBarcodeAndPrinter(
+        PriceAndBarcodePrinterLocal(
+          printer: printerCache!,
+          settings: priceAndBarcodePrinterSettingsNew,
+        ),
+      );
       printerSettings = newSettings;
       priceTagPrinterSettings = priceNewSettings;
-      priceAndBarcodePrinterSettings =
-          priceAndBarcodePrinterSettingsNew;
+      priceAndBarcodePrinterSettings = priceAndBarcodePrinterSettingsNew;
       notifyListeners();
     }
   }
@@ -3001,24 +2729,20 @@ class ShopProvider extends ChangeNotifier {
             title: 'Select Printer?',
             action: () {
               Navigator.of(confirmDialog).pop();
-              if (BarcodePrinterLocalFunc()
-                      .getbarcodePrinterLocal() ==
-                  null) {
-                BarcodePrinterLocalFunc()
-                    .insertbarcodePrinter(
-                      BarcodePrinterLocal(
-                        printer: newPrinter,
-                        settings: defaultPrinterSettings,
-                      ),
-                    );
+              if (BarcodePrinterLocalFunc().getbarcodePrinterLocal() == null) {
+                BarcodePrinterLocalFunc().insertbarcodePrinter(
+                  BarcodePrinterLocal(
+                    printer: newPrinter,
+                    settings: defaultPrinterSettings,
+                  ),
+                );
               } else {
-                BarcodePrinterLocalFunc()
-                    .insertbarcodePrinter(
-                      BarcodePrinterLocal(
-                        printer: newPrinter,
-                        settings: printerSettings!,
-                      ),
-                    );
+                BarcodePrinterLocalFunc().insertbarcodePrinter(
+                  BarcodePrinterLocal(
+                    printer: newPrinter,
+                    settings: printerSettings!,
+                  ),
+                );
               }
               printerCache = newPrinter;
               notifyListeners();
@@ -3046,20 +2770,13 @@ class ShopProvider extends ChangeNotifier {
             theme: returnTheme(context, listen: false),
             message:
                 'This printer${isPaperSize ? " Paper Size" : ''} will be automatically used to print all your subsiquent Receipt, unless if you select another.',
-            title:
-                'Select Printer${isPaperSize ? " Paper Size" : ''}?',
+            title: 'Select Printer${isPaperSize ? " Paper Size" : ''}?',
             action: () {
               Navigator.of(confirmDialog).pop();
-              if (ReceiptPrinterFunc()
-                      .getReceiptPrinterClass() ==
-                  null) {
-                ReceiptPrinterFunc().insertPrinter(
-                  newPrinter,
-                );
+              if (ReceiptPrinterFunc().getReceiptPrinterClass() == null) {
+                ReceiptPrinterFunc().insertPrinter(newPrinter);
               } else {
-                ReceiptPrinterFunc().insertPrinter(
-                  newPrinter,
-                );
+                ReceiptPrinterFunc().insertPrinter(newPrinter);
               }
               // printerCache = newPrinter;
               notifyListeners();

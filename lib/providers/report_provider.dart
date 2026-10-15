@@ -15,23 +15,13 @@ class ReportProvider extends ChangeNotifier {
   // }
 
   void setDay(BuildContext context, DateTime day) {
-    returnExpensesProvider(
-      context,
-      listen: false,
-    ).setDate(day);
-    returnReceiptProvider(
-      context,
-      listen: false,
-    ).setDate(day);
+    returnExpensesProvider(context, listen: false).setDate(day);
+    returnReceiptProvider(context, listen: false).setDate(day);
     // dateSet = 'For ${formatDateTime(day)}';
     notifyListeners();
   }
 
-  void setWeek(
-    BuildContext context,
-    DateTime weekStart,
-    DateTime endOfWeek,
-  ) {
+  void setWeek(BuildContext context, DateTime weekStart, DateTime endOfWeek) {
     returnExpensesProvider(
       context,
       listen: false,
@@ -44,19 +34,12 @@ class ReportProvider extends ChangeNotifier {
   }
 
   void clearDate(BuildContext context) {
-    returnExpensesProvider(
-      context,
-      listen: false,
-    ).clearDate();
-    returnReceiptProvider(
-      context,
-      listen: false,
-    ).clearDate();
+    returnExpensesProvider(context, listen: false).clearDate();
+    returnReceiptProvider(context, listen: false).clearDate();
     notifyListeners();
   }
 
-  List<ProductQuantitySummary>?
-  getTopThreeProductsByQuantity(
+  List<ProductQuantitySummary>? getTopThreeProductsByQuantity(
     List<TempProductClass> allProducts,
     List<TempProductSaleRecord> records,
   ) {
@@ -78,14 +61,11 @@ class ReportProvider extends ChangeNotifier {
         }).toList();
 
     // Step 3: Sort by quantity descending and return top 3
-    summaryList.sort(
-      (a, b) => b.totalQuantity.compareTo(a.totalQuantity),
-    );
+    summaryList.sort((a, b) => b.totalQuantity.compareTo(a.totalQuantity));
     return summaryList.take(3).toList();
   }
 
-  List<ProductQuantitySummary>?
-  getBottomThreeProductsByQuantity(
+  List<ProductQuantitySummary>? getBottomThreeProductsByQuantity(
     List<TempProductClass> allProducts,
     List<TempProductSaleRecord> records,
   ) {
@@ -104,9 +84,7 @@ class ReportProvider extends ChangeNotifier {
           );
         }).toList();
 
-    summaryList.sort(
-      (a, b) => a.totalQuantity.compareTo(b.totalQuantity),
-    );
+    summaryList.sort((a, b) => a.totalQuantity.compareTo(b.totalQuantity));
     return summaryList.take(3).toList();
   }
 }

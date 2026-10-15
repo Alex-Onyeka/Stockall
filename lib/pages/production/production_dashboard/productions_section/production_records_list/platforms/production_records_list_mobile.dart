@@ -33,12 +33,9 @@ class _ProductionRecordsListMobileState
     var records =
         returnProductionRecordsProvider(
           context: context,
-        ).returnProductionRecordsByDayOrWeek().where((
-          item,
-        ) {
+        ).returnProductionRecordsByDayOrWeek().where((item) {
           if (widget.productionItemUuid != null) {
-            return item.itemUuid ==
-                widget.productionItemUuid;
+            return item.itemUuid == widget.productionItemUuid;
           } else if (widget.productUuid != null) {
             return item.salesItemUuid == widget.productUuid;
           } else {
@@ -57,15 +54,12 @@ class _ProductionRecordsListMobileState
           widget: Padding(
             padding: const EdgeInsets.only(right: 15.0),
             child: Visibility(
-              visible: authorization(
-                authorized: Authorizations().viewDate,
-              ),
+              visible: authorization(authorized: Authorizations().viewDate),
               child: InkWell(
                 mouseCursor: SystemMouseCursors.click,
                 onTap: () {
                   if (productionProv.dateSet != null ||
-                      productionProv.rangeStartDate !=
-                          null) {
+                      productionProv.rangeStartDate != null) {
                     productionProv.clearDate();
                   } else {
                     mainDatePicker(
@@ -98,8 +92,7 @@ class _ProductionRecordsListMobileState
                       Text(
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize:
-                              theme.mobileTexts.b3.fontSize,
+                          fontSize: theme.mobileTexts.b3.fontSize,
                         ),
                         returnProductionRecordsProvider(
                                       context: context,
@@ -135,8 +128,7 @@ class _ProductionRecordsListMobileState
         floatingActionButton: Visibility(
           visible:
               authorization(
-                authorized:
-                    Authorizations().addProductionRecords,
+                authorized: Authorizations().addProductionRecords,
               ) &&
               widget.productionItemUuid == null,
           child: FloatingActionButtonMain(
@@ -161,9 +153,7 @@ class _ProductionRecordsListMobileState
           ),
         ),
         body: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20.0,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
             children: [
               Material(
@@ -177,10 +167,9 @@ class _ProductionRecordsListMobileState
                           color: Colors.amber,
                           isMoney: false,
                           title: 'Total Produced',
-                          value: productionProv
-                              .getTotalProducedInProduction(
-                                records: records,
-                              ),
+                          value: productionProv.getTotalProducedInProduction(
+                            records: records,
+                          ),
                         ),
                         ValueSummaryTabSmall(
                           value: records.length.toDouble(),
@@ -214,18 +203,15 @@ class _ProductionRecordsListMobileState
                       return RefreshIndicator(
                         onRefresh: getProductionRecords,
                         backgroundColor: Colors.white,
-                        color:
-                            theme.lightModeColor.prColor300,
+                        color: theme.lightModeColor.prColor300,
                         displacement: 10,
                         child: ListView(
                           children:
                               records
                                   .map(
-                                    (item) =>
-                                        ProductionsRecordTile(
-                                          productionRecord:
-                                              item,
-                                        ),
+                                    (item) => ProductionsRecordTile(
+                                      productionRecord: item,
+                                    ),
                                   )
                                   .toList(),
                         ),

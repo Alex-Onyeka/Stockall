@@ -5,8 +5,7 @@ part 'created_production_materials_usage.g.dart';
 @HiveType(typeId: 122)
 class CreatedProductionMaterialsUsage extends HiveObject {
   @HiveField(0)
-  final ProductionMaterialsUsage
-  createdProductionMaterialsUsage;
+  final ProductionMaterialsUsage createdProductionMaterialsUsage;
 
   CreatedProductionMaterialsUsage({
     required this.createdProductionMaterialsUsage,

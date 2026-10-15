@@ -7,18 +7,13 @@ import 'package:stockall/main.dart';
 
 class IsManagedToggleWidget extends StatefulWidget {
   final TempProductClass product;
-  const IsManagedToggleWidget({
-    super.key,
-    required this.product,
-  });
+  const IsManagedToggleWidget({super.key, required this.product});
 
   @override
-  State<IsManagedToggleWidget> createState() =>
-      _IsManagedToggleWidgetState();
+  State<IsManagedToggleWidget> createState() => _IsManagedToggleWidgetState();
 }
 
-class _IsManagedToggleWidgetState
-    extends State<IsManagedToggleWidget> {
+class _IsManagedToggleWidgetState extends State<IsManagedToggleWidget> {
   bool isLoading = false;
   @override
   Widget build(BuildContext context) {
@@ -52,58 +47,34 @@ class _IsManagedToggleWidgetState
                       isQuantityUpdate: false,
                       quantityChange: null,
                       product: TempProductClass(
-                        manageSalesWastage:
-                            widget
-                                .product
-                                .manageSalesWastage,
-                        heightDimension:
-                            widget.product.heightDimension,
-                        widthDimension:
-                            widget.product.widthDimension,
-                        quantityType:
-                            widget.product.quantityType,
+                        manageSalesWastage: widget.product.manageSalesWastage,
+                        heightDimension: widget.product.heightDimension,
+                        widthDimension: widget.product.widthDimension,
+                        quantityType: widget.product.quantityType,
                         unitsList: widget.product.unitsList,
-                        pricesList:
-                            widget.product.pricesList,
-                        useGroupUnit:
-                            widget.product.useGroupUnit,
-                        categories:
-                            widget.product.categories,
-                        departmentName:
-                            widget.product.departmentName,
-                        departmentUuid:
-                            widget.product.departmentUuid,
+                        pricesList: widget.product.pricesList,
+                        useGroupUnit: widget.product.useGroupUnit,
+                        categories: widget.product.categories,
+                        departmentName: widget.product.departmentName,
+                        departmentUuid: widget.product.departmentUuid,
                         groupUnit: widget.product.groupUnit,
-                        qttyPerGroup:
-                            widget.product.qttyPerGroup,
+                        qttyPerGroup: widget.product.qttyPerGroup,
                         updatedAt: DateTime.now(),
-                        setCustomPrice:
-                            widget.product.setCustomPrice,
-                        isManaged:
-                            widget.product.isManaged
-                                ? false
-                                : true,
+                        setCustomPrice: widget.product.setCustomPrice,
+                        isManaged: widget.product.isManaged ? false : true,
                         name: widget.product.name,
                         totalQttyInStorageDouble:
-                            widget
-                                .product
-                                .totalQttyInStorageDouble,
+                            widget.product.totalQttyInStorageDouble,
                         unit: widget.product.unit,
-                        isRefundable:
-                            widget.product.isRefundable,
+                        isRefundable: widget.product.isRefundable,
                         costPrice: widget.product.costPrice,
-                        sellingPrice:
-                            widget.product.sellingPrice,
-                        wholeSalePrice:
-                            widget.product.wholeSalePrice,
+                        sellingPrice: widget.product.sellingPrice,
+                        wholeSalePrice: widget.product.wholeSalePrice,
                         quantity:
                             !widget.product.isManaged &&
-                                    widget.product
-                                            .getActualQuantity() ==
-                                        null
+                                    widget.product.getActualQuantity() == null
                                 ? 0
-                                : widget.product
-                                    .getActualQuantity(),
+                                : widget.product.getActualQuantity(),
                         shopId: widget.product.shopId,
                         barcode: widget.product.barcode,
                         // categoryUuid:
@@ -111,14 +82,12 @@ class _IsManagedToggleWidgetState
                         createdAt: widget.product.createdAt,
                         discount: widget.product.discount,
                         endDate: widget.product.endDate,
-                        expiryDate:
-                            widget.product.expiryDate,
+                        expiryDate: widget.product.expiryDate,
                         lowQtty: widget.product.lowQtty,
                         sizeType: widget.product.sizeType,
                         startDate: widget.product.startDate,
                         uuid: widget.product.uuid,
-                        storageUuid:
-                            widget.product.storageUuid,
+                        storageUuid: widget.product.storageUuid,
                       ),
                       oldProduct: widget.product,
                     );
@@ -134,28 +103,22 @@ class _IsManagedToggleWidgetState
       },
       child: SubWrapper(
         isVisible:
-            !ItemsAuthAction()
-                .allowStockallToManageItemAction(
-                  context: context,
-                ),
+            !ItemsAuthAction().allowStockallToManageItemAction(
+              context: context,
+            ),
         mainWidget: Stack(
           children: [
             Visibility(
               visible: !isLoading,
               child: Container(
                 width: 38,
-                padding: EdgeInsets.symmetric(
-                  horizontal: 7,
-                  vertical: 3.5,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 7, vertical: 3.5),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color:
                         widget.product.isManaged
-                            ? theme
-                                .lightModeColor
-                                .prColor300
+                            ? theme.lightModeColor.prColor300
                             : Colors.grey,
                   ),
                   color:

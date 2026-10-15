@@ -15,14 +15,10 @@ class AddMaterial extends StatefulWidget {
 }
 
 class _AddMaterialState extends State<AddMaterial> {
-  TextEditingController nameController =
-      TextEditingController();
-  TextEditingController costController =
-      TextEditingController();
-  TextEditingController lowQttyController =
-      TextEditingController(text: '10');
-  TextEditingController qttyPerGroupController =
-      TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController costController = TextEditingController();
+  TextEditingController lowQttyController = TextEditingController(text: '10');
+  TextEditingController qttyPerGroupController = TextEditingController();
 
   @override
   void dispose() {
@@ -36,9 +32,7 @@ class _AddMaterialState extends State<AddMaterial> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap:
-          () =>
-              FocusManager.instance.primaryFocus?.unfocus(),
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: PopScope(
         canPop: false,
         onPopInvokedWithResult: (didPop, result) {
@@ -58,8 +52,7 @@ class _AddMaterialState extends State<AddMaterial> {
                 lowQttyController: lowQttyController,
                 costController: costController,
                 nameController: nameController,
-                qttyPerGroupController:
-                    qttyPerGroupController,
+                qttyPerGroupController: qttyPerGroupController,
               );
             } else {
               return AddMaterialDesktop(
@@ -67,8 +60,7 @@ class _AddMaterialState extends State<AddMaterial> {
                 lowQttyController: lowQttyController,
                 costController: costController,
                 nameController: nameController,
-                qttyPerGroupController:
-                    qttyPerGroupController,
+                qttyPerGroupController: qttyPerGroupController,
               );
             }
           },
@@ -78,16 +70,11 @@ class _AddMaterialState extends State<AddMaterial> {
   }
 }
 
-void checkPop({
-  required BuildContext context,
-  bool? conditionX,
-  bool? didPop,
-}) {
+void checkPop({required BuildContext context, bool? conditionX, bool? didPop}) {
   if (didPop != null && didPop) {
     return;
   }
-  if ((conditionX != null && conditionX == true) ||
-      conditionX == null) {
+  if ((conditionX != null && conditionX == true) || conditionX == null) {
     showDialog(
       context: context,
       builder: (confirmDialog) {

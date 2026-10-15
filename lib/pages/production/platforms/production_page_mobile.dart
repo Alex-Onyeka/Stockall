@@ -13,12 +13,10 @@ class ProductionPageMobile extends StatefulWidget {
   const ProductionPageMobile({super.key});
 
   @override
-  State<ProductionPageMobile> createState() =>
-      _ProductionPageMobileState();
+  State<ProductionPageMobile> createState() => _ProductionPageMobileState();
 }
 
-class _ProductionPageMobileState
-    extends State<ProductionPageMobile> {
+class _ProductionPageMobileState extends State<ProductionPageMobile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,8 +55,7 @@ class _ProductionPageMobileState
                       },
                       icon: Icons.view_in_ar_rounded,
                       isActive: true,
-                      subText:
-                          'Create and Track Productions',
+                      subText: 'Create and Track Productions',
                       title: 'Productions Dashboard',
                     ),
                     ProductionPageListTileWidget(
@@ -74,16 +71,11 @@ class _ProductionPageMobileState
                       },
                       icon: Icons.receipt,
                       isActive: true,
-                      subText:
-                          'View Production Records You Created.',
+                      subText: 'View Production Records You Created.',
                       title: 'Production Records',
                     ),
                     Visibility(
-                      visible:
-                          shop(
-                            context,
-                          )?.manageProductionItems ==
-                          true,
+                      visible: shop(context)?.manageProductionItems == true,
                       child: ProductionPageListTileWidget(
                         action: () {
                           Navigator.push(
@@ -97,8 +89,7 @@ class _ProductionPageMobileState
                         },
                         icon: Icons.api_rounded,
                         isActive: true,
-                        subText:
-                            'Create and Manage Produced Items',
+                        subText: 'Create and Manage Produced Items',
                         title: 'Production Items',
                       ),
                     ),
@@ -115,8 +106,7 @@ class _ProductionPageMobileState
                       },
                       icon: Icons.app_registration_rounded,
                       isActive: true,
-                      subText:
-                          'Create and Manager Production Raw Materials',
+                      subText: 'Create and Manager Production Raw Materials',
                       title: 'Production Materials',
                     ),
                     ProductionPageListTileWidget(
@@ -132,8 +122,7 @@ class _ProductionPageMobileState
                       },
                       icon: Icons.border_horizontal_rounded,
                       isActive: true,
-                      subText:
-                          'Track How materials are used for Productions.',
+                      subText: 'Track How materials are used for Productions.',
                       title: 'Materials Usage Records',
                     ),
                     ProductionPageListTileWidget(
@@ -149,8 +138,7 @@ class _ProductionPageMobileState
                       },
                       icon: Icons.settings,
                       isActive: true,
-                      subText:
-                          'Manage Settings for Production',
+                      subText: 'Manage Settings for Production',
                       title: 'Settings',
                     ),
                     SizedBox(height: 10),

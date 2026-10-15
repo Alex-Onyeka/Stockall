@@ -6,33 +6,25 @@ import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class ProductionItemsQuantityUpdateProvider
-    with ChangeNotifier {
+class ProductionItemsQuantityUpdateProvider with ChangeNotifier {
   final SupabaseClient client = Supabase.instance.client;
-  static final ProductionItemsQuantityUpdateProvider
-  _instance =
+  static final ProductionItemsQuantityUpdateProvider _instance =
       ProductionItemsQuantityUpdateProvider._internal();
-  factory ProductionItemsQuantityUpdateProvider() =>
-      _instance;
+  factory ProductionItemsQuantityUpdateProvider() => _instance;
   ProductionItemsQuantityUpdateProvider._internal();
 
-  List<ProductionItemQuantityUpdate>
-  productionItemsQuantityUpdates = [];
+  List<ProductionItemQuantityUpdate> productionItemsQuantityUpdates = [];
 
   final String tableName = 'production_items';
 
   Future<int> createProductionItemQuantityUpdate({
-    required ProductionItemQuantityUpdate
-    productionItemsQuantityUpdate,
+    required ProductionItemQuantityUpdate productionItemsQuantityUpdate,
   }) async {
     try {
-      productionItemsQuantityUpdate.createdAt =
-          DateTime.now();
+      productionItemsQuantityUpdate.createdAt = DateTime.now();
       productionItemsQuantityUpdate.uuid = uuidGen();
       var res = await ProductionItemsQuantityUpdateFunc()
-          .createProductionItemsQuantityUpdate(
-            productionItemsQuantityUpdate,
-          );
+          .createProductionItemsQuantityUpdate(productionItemsQuantityUpdate);
       notifyListeners();
       return res;
     } catch (e) {
@@ -56,8 +48,7 @@ class ProductionItemsQuantityUpdateProvider
 
   Future<void> productionItemsQuantityUpdateSync() async {
     try {
-      bool isOnline =
-          await ConnectivityProvider().isOnline();
+      bool isOnline = await ConnectivityProvider().isOnline();
       if (ProductionItemsQuantityUpdateFunc()
               .getProductionItemsQuantitiesUpdate()
               .isNotEmpty &&
@@ -68,8 +59,7 @@ class ProductionItemsQuantityUpdateProvider
                 .toList()
                 .map((item) {
                   return {
-                    "productionItemUuid":
-                        item.productionItemUuid,
+                    "productionItemUuid": item.productionItemUuid,
                     "quantity": item.quantity,
                     "isIncrement": item.isIncrement,
                   };
@@ -78,16 +68,12 @@ class ProductionItemsQuantityUpdateProvider
 
         await client.rpc(
           'update_production_items_quantities',
-          params: {
-            'updates': tempProductionItemQuantityUpdates,
-          },
+          params: {'updates': tempProductionItemQuantityUpdates},
         );
 
         await ProductionItemsQuantityUpdateFunc()
             .clearProductionItemsQuantitiesUpdate();
-        await mainLocalLog(
-          'Unsynced ProductionItems Quantity Updates Cleared',
-        );
+        await mainLocalLog('Unsynced ProductionItems Quantity Updates Cleared');
       }
     } catch (e) {
       await mainLocalLog(

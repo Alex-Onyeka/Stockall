@@ -19,19 +19,16 @@ class ItemHistoryMobile extends StatefulWidget {
   });
 
   @override
-  State<ItemHistoryMobile> createState() =>
-      ItemHistoryMobileState();
+  State<ItemHistoryMobile> createState() => ItemHistoryMobileState();
 }
 
-class ItemHistoryMobileState
-    extends State<ItemHistoryMobile> {
+class ItemHistoryMobileState extends State<ItemHistoryMobile> {
   late Future<TempProductClass> productFuture;
 
   bool isLoading = false;
   bool showSuccess = false;
   bool setDate = false;
-  TextEditingController searchController =
-      TextEditingController();
+  TextEditingController searchController = TextEditingController();
 
   @override
   void dispose() {
@@ -48,87 +45,66 @@ class ItemHistoryMobileState
   Widget build(BuildContext context) {
     var theme = returnTheme(context, listen: false);
     List<ItemHistory>? itemHistories =
-        returnItemHistoryProvider(
-          context: context,
-        ).returnItemHistories().where((history) {
-          if (widget.productUuid != null) {
-            return history.itemUuid == widget.productUuid &&
-                (history.itemName?.toLowerCase().contains(
-                          searchController.text
-                              .toLowerCase(),
-                        ) ==
-                        true ||
-                    history.departmentName
-                            ?.toLowerCase()
-                            .contains(
-                              searchController.text
-                                  .toLowerCase(),
-                            ) ==
-                        true ||
-                    history.staffName
-                            ?.toLowerCase()
-                            .contains(
-                              searchController.text
-                                  .toLowerCase(),
-                            ) ==
-                        true ||
-                    history.title.toLowerCase().contains(
-                          searchController.text
-                              .toLowerCase(),
-                        ) ==
-                        true);
-          } else {
-            return (history.itemName
-                        ?.toLowerCase()
-                        .contains(
-                          searchController.text
-                              .toLowerCase(),
-                        ) ==
-                    true ||
-                history.departmentName
-                        ?.toLowerCase()
-                        .contains(
-                          searchController.text
-                              .toLowerCase(),
-                        ) ==
-                    true ||
-                history.staffName?.toLowerCase().contains(
-                      searchController.text.toLowerCase(),
-                    ) ==
-                    true ||
-                history.title.toLowerCase().contains(
-                      searchController.text.toLowerCase(),
-                    ) ==
-                    true);
-          }
-        }).toList();
+        returnItemHistoryProvider(context: context).returnItemHistories().where(
+          (history) {
+            if (widget.productUuid != null) {
+              return history.itemUuid == widget.productUuid &&
+                  (history.itemName?.toLowerCase().contains(
+                            searchController.text.toLowerCase(),
+                          ) ==
+                          true ||
+                      history.departmentName?.toLowerCase().contains(
+                            searchController.text.toLowerCase(),
+                          ) ==
+                          true ||
+                      history.staffName?.toLowerCase().contains(
+                            searchController.text.toLowerCase(),
+                          ) ==
+                          true ||
+                      history.title.toLowerCase().contains(
+                            searchController.text.toLowerCase(),
+                          ) ==
+                          true);
+            } else {
+              return (history.itemName?.toLowerCase().contains(
+                        searchController.text.toLowerCase(),
+                      ) ==
+                      true ||
+                  history.departmentName?.toLowerCase().contains(
+                        searchController.text.toLowerCase(),
+                      ) ==
+                      true ||
+                  history.staffName?.toLowerCase().contains(
+                        searchController.text.toLowerCase(),
+                      ) ==
+                      true ||
+                  history.title.toLowerCase().contains(
+                        searchController.text.toLowerCase(),
+                      ) ==
+                      true);
+            }
+          },
+        ).toList();
     return Scaffold(
       appBar: appBar(
         context: context,
         title: 'Item History',
         widget: Visibility(
-          visible: authorization(
-            authorized: Authorizations().viewDate,
-          ),
+          visible: authorization(authorized: Authorizations().viewDate),
           child: Padding(
             padding: const EdgeInsets.only(right: 15.0),
             child: InkWell(
               mouseCursor: SystemMouseCursors.click,
               onTap: () {
-                if (returnItemHistoryProvider().dateSet !=
-                        null ||
-                    returnItemHistoryProvider()
-                            .rangeStartDate !=
-                        null) {
+                if (returnItemHistoryProvider().dateSet != null ||
+                    returnItemHistoryProvider().rangeStartDate != null) {
                   returnItemHistoryProvider().clearDate();
                 } else {
                   mainDatePicker(
                     context: context,
                     theme: theme,
                     singleDate: (date) {
-                      returnItemHistoryProvider().setDate(
-                        date!,
-                      );
+                      returnItemHistoryProvider().setDate(date!);
                     },
                     rangeDate: (firstDate, lastDate) {
                       returnItemHistoryProvider().setRange(
@@ -154,12 +130,9 @@ class ItemHistoryMobileState
                     Text(
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
+                        fontSize: theme.mobileTexts.b3.fontSize,
                       ),
-                      returnItemHistoryProvider(
-                                    context: context,
-                                  ).dateSet !=
+                      returnItemHistoryProvider(context: context).dateSet !=
                                   null ||
                               returnItemHistoryProvider(
                                     context: context,
@@ -170,9 +143,7 @@ class ItemHistoryMobileState
                     ),
                     Icon(
                       size: 16,
-                      returnItemHistoryProvider(
-                                    context: context,
-                                  ).dateSet !=
+                      returnItemHistoryProvider(context: context).dateSet !=
                                   null ||
                               returnItemHistoryProvider(
                                     context: context,
@@ -199,13 +170,11 @@ class ItemHistoryMobileState
                     return Center(
                       child: EmptyWidgetDisplayOnly(
                         title: 'No Events Found',
-                        subText:
-                            'No event has been created for this date.',
+                        subText: 'No event has been created for this date.',
                         theme: theme,
                         height: 30,
                         altAction: () {
-                          returnItemHistoryProvider()
-                              .getItemHistories();
+                          returnItemHistoryProvider().getItemHistories();
                         },
                         altActionText: 'Reload',
                         icon: Icons.clear,
@@ -218,22 +187,17 @@ class ItemHistoryMobileState
                       displacement: 10,
                       strokeWidth: 1.5,
                       onRefresh: () {
-                        return returnItemHistoryProvider()
-                            .getItemHistories();
+                        return returnItemHistoryProvider().getItemHistories();
                       },
                       child: ListView(
                         children:
                             itemHistories
                                 .map(
                                   (item) => Material(
-                                    type:
-                                        MaterialType
-                                            .transparency,
+                                    type: MaterialType.transparency,
                                     child: ItemHistoryTile(
                                       itemHistory: item,
-                                      fromDetails:
-                                          widget
-                                              .fromItemDetails,
+                                      fromDetails: widget.fromItemDetails,
                                     ),
                                   ),
                                 )

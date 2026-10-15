@@ -665,7 +665,10 @@ class _ProductDetailsDesktopState
                                                           .isManaged,
                                                   source:
                                                       ItemHistoryEventClass
-                                                          .unKnownSource,
+                                                          .productSource,
+                                                  destination:
+                                                      ItemHistoryEventClass
+                                                          .deletedDestination,
                                                   shopId:
                                                       shopId(),
                                                   title:

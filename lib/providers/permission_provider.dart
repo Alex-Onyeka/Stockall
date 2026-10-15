@@ -6,13 +6,11 @@ import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PermissionProvider extends ChangeNotifier {
-  static final PermissionProvider _instance =
-      PermissionProvider._internal();
+  static final PermissionProvider _instance = PermissionProvider._internal();
   factory PermissionProvider() => _instance;
   PermissionProvider._internal();
   final supabase = Supabase.instance.client;
-  final ConnectivityProvider connectivity =
-      ConnectivityProvider();
+  final ConnectivityProvider connectivity = ConnectivityProvider();
 
   List<PermissionModel> permissionsCache = [];
   final String tableName = 'permissions';
@@ -21,9 +19,7 @@ class PermissionProvider extends ChangeNotifier {
       perm.access.sort();
     }
     permissionsCache.sort(
-      (a, b) => (a.permitNumber ?? 0).compareTo(
-        b.permitNumber ?? 0,
-      ),
+      (a, b) => (a.permitNumber ?? 0).compareTo(b.permitNumber ?? 0),
     );
     return permissionsCache;
   }
@@ -44,32 +40,21 @@ class PermissionProvider extends ChangeNotifier {
   //
 
   Future<List<PermissionModel>> getPermissions() async {
-    permissionsCache =
-        PermissionFunc().getPermissionModel();
+    permissionsCache = PermissionFunc().getPermissionModel();
     notifyListeners();
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
-      final response =
-          await supabase.from(tableName).select();
-      await mainLocalLog(
-        'Permissions Gotten: ${response.length}',
-      );
+      final response = await supabase.from(tableName).select();
+      await mainLocalLog('Permissions Gotten: ${response.length}');
 
       permissionsCache =
-          (response as List)
-              .map((e) => PermissionModel.fromJson(e))
-              .toList();
+          (response as List).map((e) => PermissionModel.fromJson(e)).toList();
 
-      await PermissionFunc().insertAllPermissions(
-        permissionsCache,
-      );
+      await PermissionFunc().insertAllPermissions(permissionsCache);
     } else {
-      permissionsCache =
-          PermissionFunc().getPermissionModel();
+      permissionsCache = PermissionFunc().getPermissionModel();
     }
-    permissionsCache.sort(
-      (a, b) => a.permitNumber!.compareTo(b.permitNumber!),
-    );
+    permissionsCache.sort((a, b) => a.permitNumber!.compareTo(b.permitNumber!));
     notifyListeners();
     return permissionsCache;
   }

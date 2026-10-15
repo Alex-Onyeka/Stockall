@@ -32,8 +32,7 @@ class _MaterialsItemHistoryDesktopState
   bool showSuccess = false;
   bool setDate = false;
 
-  TextEditingController searchController =
-      TextEditingController();
+  TextEditingController searchController = TextEditingController();
 
   @override
   void dispose() {
@@ -41,8 +40,7 @@ class _MaterialsItemHistoryDesktopState
     searchController.dispose();
   }
 
-  final GlobalKey<ScaffoldState> _scaffoldKey =
-      GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -52,46 +50,31 @@ class _MaterialsItemHistoryDesktopState
           context: context,
         ).returnMaterialsItemHistories().where((history) {
           if (widget.materialsItemUuid != null) {
-            return history.itemUuid ==
-                    widget.materialsItemUuid &&
+            return history.itemUuid == widget.materialsItemUuid &&
                 (history.itemName?.toLowerCase().contains(
-                          searchController.text
-                              .toLowerCase(),
+                          searchController.text.toLowerCase(),
                         ) ==
                         true ||
-                    history.departmentName
-                            ?.toLowerCase()
-                            .contains(
-                              searchController.text
-                                  .toLowerCase(),
-                            ) ==
+                    history.departmentName?.toLowerCase().contains(
+                          searchController.text.toLowerCase(),
+                        ) ==
                         true ||
-                    history.staffName
-                            ?.toLowerCase()
-                            .contains(
-                              searchController.text
-                                  .toLowerCase(),
-                            ) ==
+                    history.staffName?.toLowerCase().contains(
+                          searchController.text.toLowerCase(),
+                        ) ==
                         true ||
                     history.title.toLowerCase().contains(
-                          searchController.text
-                              .toLowerCase(),
+                          searchController.text.toLowerCase(),
                         ) ==
                         true);
           } else {
-            return (history.itemName
-                        ?.toLowerCase()
-                        .contains(
-                          searchController.text
-                              .toLowerCase(),
-                        ) ==
+            return (history.itemName?.toLowerCase().contains(
+                      searchController.text.toLowerCase(),
+                    ) ==
                     true ||
-                history.departmentName
-                        ?.toLowerCase()
-                        .contains(
-                          searchController.text
-                              .toLowerCase(),
-                        ) ==
+                history.departmentName?.toLowerCase().contains(
+                      searchController.text.toLowerCase(),
+                    ) ==
                     true ||
                 history.staffName?.toLowerCase().contains(
                       searchController.text.toLowerCase(),
@@ -112,10 +95,8 @@ class _MaterialsItemHistoryDesktopState
             width:
                 screenWidth(context) < tabletScreenSmall
                     ? 50
-                    : (screenWidth(context) >
-                            tabletScreenSmall &&
-                        screenWidth(context) <
-                            tabletScreen + 100)
+                    : (screenWidth(context) > tabletScreenSmall &&
+                        screenWidth(context) < tabletScreen + 100)
                     ? 100
                     : 230,
           ),
@@ -128,12 +109,7 @@ class _MaterialsItemHistoryDesktopState
                 borderRadius: BorderRadius.circular(15),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color.fromARGB(
-                      39,
-                      4,
-                      1,
-                      41,
-                    ),
+                    color: const Color.fromARGB(39, 4, 1, 41),
                     blurRadius: 10,
                   ),
                 ],
@@ -146,8 +122,7 @@ class _MaterialsItemHistoryDesktopState
                     spacing: 3,
                     children: [
                       InkWell(
-                        mouseCursor:
-                            SystemMouseCursors.click,
+                        mouseCursor: SystemMouseCursors.click,
                         onTap: () {
                           returnMaterialsItemHistoryProvider()
                               .getMaterialsItemHistories();
@@ -165,13 +140,8 @@ class _MaterialsItemHistoryDesktopState
                             children: [
                               Text(
                                 style: TextStyle(
-                                  fontWeight:
-                                      FontWeight.bold,
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: theme.mobileTexts.b3.fontSize,
                                 ),
                                 'Refresh',
                               ),
@@ -182,47 +152,37 @@ class _MaterialsItemHistoryDesktopState
                       ),
                       Visibility(
                         visible: authorization(
-                          authorized:
-                              Authorizations().viewDate,
+                          authorized: Authorizations().viewDate,
                         ),
                         child: InkWell(
-                          mouseCursor:
-                              SystemMouseCursors.click,
+                          mouseCursor: SystemMouseCursors.click,
                           onTap: () {
-                            if (returnMaterialsItemHistoryProvider()
-                                        .dateSet !=
+                            if (returnMaterialsItemHistoryProvider().dateSet !=
                                     null ||
                                 returnMaterialsItemHistoryProvider()
                                         .rangeStartDate !=
                                     null) {
-                              returnMaterialsItemHistoryProvider()
-                                  .clearDate();
+                              returnMaterialsItemHistoryProvider().clearDate();
                             } else {
                               mainDatePicker(
                                 context: context,
                                 theme: theme,
                                 singleDate: (date) {
-                                  returnMaterialsItemHistoryProvider()
-                                      .setDate(date!);
+                                  returnMaterialsItemHistoryProvider().setDate(
+                                    date!,
+                                  );
                                 },
-                                rangeDate: (
-                                  firstDate,
-                                  lastDate,
-                                ) {
-                                  returnMaterialsItemHistoryProvider()
-                                      .setRange(
-                                        firstDate!,
-                                        lastDate ??
-                                            DateTime.now(),
-                                      );
+                                rangeDate: (firstDate, lastDate) {
+                                  returnMaterialsItemHistoryProvider().setRange(
+                                    firstDate!,
+                                    lastDate ?? DateTime.now(),
+                                  );
                                 },
                               );
                             }
                           },
                           child: Container(
-                            margin: EdgeInsets.only(
-                              right: 5,
-                            ),
+                            margin: EdgeInsets.only(right: 5),
                             padding: EdgeInsets.only(
                               right: 10,
                               left: 10,
@@ -235,22 +195,15 @@ class _MaterialsItemHistoryDesktopState
                               children: [
                                 Text(
                                   style: TextStyle(
-                                    fontWeight:
-                                        FontWeight.bold,
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: theme.mobileTexts.b3.fontSize,
                                   ),
                                   returnMaterialsItemHistoryProvider(
-                                                context:
-                                                    context,
+                                                context: context,
                                               ).dateSet !=
                                               null ||
                                           returnMaterialsItemHistoryProvider(
-                                                context:
-                                                    context,
+                                                context: context,
                                               ).rangeStartDate !=
                                               null
                                       ? 'Clear'
@@ -259,18 +212,15 @@ class _MaterialsItemHistoryDesktopState
                                 Icon(
                                   size: 16,
                                   returnMaterialsItemHistoryProvider(
-                                                context:
-                                                    context,
+                                                context: context,
                                               ).dateSet !=
                                               null ||
                                           returnMaterialsItemHistoryProvider(
-                                                context:
-                                                    context,
+                                                context: context,
                                               ).rangeStartDate !=
                                               null
                                       ? Icons.clear
-                                      : Icons
-                                          .date_range_outlined,
+                                      : Icons.date_range_outlined,
                                 ),
                               ],
                             ),
@@ -281,16 +231,13 @@ class _MaterialsItemHistoryDesktopState
                   ),
                 ),
                 body: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15.0,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
                   child: Column(
                     children: [
                       Expanded(
                         child: Builder(
                           builder: (context) {
-                            if (materialsItemHistories
-                                .isEmpty) {
+                            if (materialsItemHistories.isEmpty) {
                               return Center(
                                 child: EmptyWidgetDisplayOnly(
                                   title: 'No Events Found',
@@ -311,14 +258,10 @@ class _MaterialsItemHistoryDesktopState
                                 children:
                                     materialsItemHistories
                                         .map(
-                                          (
-                                            item,
-                                          ) => ItemHistoryTile(
-                                            materialsItemHistory:
-                                                item,
+                                          (item) => ItemHistoryTile(
+                                            materialsItemHistory: item,
                                             fromDetails:
-                                                widget
-                                                    .fromMaterialsItemDetails,
+                                                widget.fromMaterialsItemDetails,
                                           ),
                                         )
                                         .toList(),
@@ -343,10 +286,8 @@ class _MaterialsItemHistoryDesktopState
             width:
                 screenWidth(context) < tabletScreenSmall
                     ? 50
-                    : (screenWidth(context) >
-                            tabletScreenSmall &&
-                        screenWidth(context) <
-                            tabletScreen + 100)
+                    : (screenWidth(context) > tabletScreenSmall &&
+                        screenWidth(context) < tabletScreen + 100)
                     ? 100
                     : 230,
           ),

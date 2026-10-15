@@ -7,8 +7,7 @@ import 'package:stockall/local_database/countries/countries_func.dart';
 import 'package:stockall/main.dart';
 
 class CountryProvider extends ChangeNotifier {
-  static final CountryProvider _instance =
-      CountryProvider._internal();
+  static final CountryProvider _instance = CountryProvider._internal();
   factory CountryProvider() => _instance;
   CountryProvider._internal();
   List<CountryModel> countries = [];
@@ -27,20 +26,14 @@ class CountryProvider extends ChangeNotifier {
   }
 
   List<CountryModel> getCountries() {
-    countries.sort(
-      (a, b) => a.country!.compareTo(b.country!),
-    );
+    countries.sort((a, b) => a.country!.compareTo(b.country!));
     return countries.toList();
   }
 
   void selectCountry(String? country, bool isUpdate) async {
     selectedCountry =
-        countries
-                .where((coun) => coun.country == country)
-                .isNotEmpty
-            ? countries
-                .where((coun) => coun.country == country)
-                .first
+        countries.where((coun) => coun.country == country).isNotEmpty
+            ? countries.where((coun) => coun.country == country).first
             : null;
     notifyListeners();
     if (selectedCountry != null && !isUpdate) {
@@ -52,20 +45,14 @@ class CountryProvider extends ChangeNotifier {
   }
 
   List<StateModel> getStates() {
-    states.sort(
-      (a, b) => a.stateName!.compareTo(b.stateName!),
-    );
+    states.sort((a, b) => a.stateName!.compareTo(b.stateName!));
     return states.toList();
   }
 
   void selectState(String? state, bool isUpdate) async {
     selectedState =
-        states
-                .where((coun) => coun.stateName == state)
-                .isNotEmpty
-            ? states
-                .where((coun) => coun.stateName == state)
-                .first
+        states.where((coun) => coun.stateName == state).isNotEmpty
+            ? states.where((coun) => coun.stateName == state).first
             : null;
     notifyListeners();
     if (selectedState != null && !isUpdate) {
@@ -116,14 +103,10 @@ class CountryProvider extends ChangeNotifier {
   void setCurrency(String symbol) {
     selectedCurrency =
         getCurrencies()
-                .where(
-                  (currency) => currency.symbol == symbol,
-                )
+                .where((currency) => currency.symbol == symbol)
                 .isNotEmpty
             ? getCurrencies()
-                .where(
-                  (currency) => currency.symbol == symbol,
-                )
+                .where((currency) => currency.symbol == symbol)
                 .first
             : null;
     notifyListeners();
@@ -148,13 +131,11 @@ class CountryProvider extends ChangeNotifier {
         return;
       }
 
-      bool isOnline =
-          returnConnectivityProvider().isConnected;
+      bool isOnline = returnConnectivityProvider().isConnected;
       if (isOnline) {
         final response = await http.get(
           Uri.https('api.geocoded.me', '/countries', {
-            'fields':
-                'name,iso2,currency,currencyName,currencySymbol',
+            'fields': 'name,iso2,currency,currencyName,currencySymbol',
             'limit': '300',
             'offset': '0',
           }),
@@ -162,17 +143,11 @@ class CountryProvider extends ChangeNotifier {
         await mainLocalLog(response.body);
 
         if (response.statusCode == 200) {
-          final Map<String, dynamic> data = jsonDecode(
-            response.body,
-          );
+          final Map<String, dynamic> data = jsonDecode(response.body);
 
           final List countriesData = data['data'];
           List<CountryModel> locatTemp =
-              countriesData
-                  .map(
-                    (loca) => CountryModel.fromJson(loca),
-                  )
-                  .toList();
+              countriesData.map((loca) => CountryModel.fromJson(loca)).toList();
 
           countries = locatTemp;
 
@@ -184,14 +159,10 @@ class CountryProvider extends ChangeNotifier {
 
           notifyListeners();
         } else {
-          throw Exception(
-            'Failed to fetch countries: ${response.statusCode}',
-          );
+          throw Exception('Failed to fetch countries: ${response.statusCode}');
         }
       } else {
-        await mainLocalLog(
-          'Internet Connection Not Detected',
-        );
+        await mainLocalLog('Internet Connection Not Detected');
       }
     } catch (e) {
       throw Exception('Error fetching countries: $e');
@@ -202,8 +173,7 @@ class CountryProvider extends ChangeNotifier {
   }
 
   Future<void> fetchStates() async {
-    bool isOnline =
-        returnConnectivityProvider().isConnected;
+    bool isOnline = returnConnectivityProvider().isConnected;
     if (isOnline) {
       try {
         isLoading = true;
@@ -224,18 +194,14 @@ class CountryProvider extends ChangeNotifier {
         await mainLocalLog(response.body);
 
         if (response.statusCode == 200) {
-          final Map<String, dynamic> data = jsonDecode(
-            response.body,
-          );
+          final Map<String, dynamic> data = jsonDecode(response.body);
 
           final List statesData = data['data'];
           List<StateModel> locatTemp =
               statesData
                   .map(
-                    (loca) => StateModel(
-                      stateName: loca['name'],
-                      code: loca['iso2'],
-                    ),
+                    (loca) =>
+                        StateModel(stateName: loca['name'], code: loca['iso2']),
                   )
                   .toList();
 
@@ -248,9 +214,7 @@ class CountryProvider extends ChangeNotifier {
 
           notifyListeners();
         } else {
-          throw Exception(
-            'Failed to fetch states: ${response.statusCode}',
-          );
+          throw Exception('Failed to fetch states: ${response.statusCode}');
         }
       } catch (e) {
         throw Exception('Error fetching states: $e');
@@ -264,8 +228,7 @@ class CountryProvider extends ChangeNotifier {
   }
 
   Future<void> fetchCities() async {
-    bool isOnline =
-        returnConnectivityProvider().isConnected;
+    bool isOnline = returnConnectivityProvider().isConnected;
     if (isOnline) {
       try {
         isLoading = true;
@@ -286,15 +249,11 @@ class CountryProvider extends ChangeNotifier {
         await mainLocalLog(response.body);
 
         if (response.statusCode == 200) {
-          final Map<String, dynamic> data = jsonDecode(
-            response.body,
-          );
+          final Map<String, dynamic> data = jsonDecode(response.body);
 
           final List citiesData = data['data'];
           List<String> locatTemp =
-              citiesData
-                  .map((loca) => loca['name'] as String)
-                  .toList();
+              citiesData.map((loca) => loca['name'] as String).toList();
 
           cities = locatTemp;
 
@@ -305,9 +264,7 @@ class CountryProvider extends ChangeNotifier {
 
           notifyListeners();
         } else {
-          throw Exception(
-            'Failed to fetch cities: ${response.statusCode}',
-          );
+          throw Exception('Failed to fetch cities: ${response.statusCode}');
         }
       } catch (e) {
         throw Exception('Error fetching cities: $e');
@@ -326,13 +283,10 @@ class CountryProvider extends ChangeNotifier {
   }
 
   Future<bool> isUserInNigeria() async {
-    bool isOnline =
-        returnConnectivityProvider().isConnected;
+    bool isOnline = returnConnectivityProvider().isConnected;
     if (isOnline) {
       try {
-        final response = await http.get(
-          Uri.parse('http://ip-api.com/json/'),
-        );
+        final response = await http.get(Uri.parse('http://ip-api.com/json/'));
 
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
@@ -340,9 +294,7 @@ class CountryProvider extends ChangeNotifier {
 
           return data['countryCode'] == 'NG';
         } else {
-          await mainLocalLog(
-            "Response Status Code: ${response.statusCode}",
-          );
+          await mainLocalLog("Response Status Code: ${response.statusCode}");
           return false;
         }
       } catch (e) {

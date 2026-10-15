@@ -7,8 +7,7 @@ import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 
-class ToggleManageProductionsStorage
-    extends StatelessWidget {
+class ToggleManageProductionsStorage extends StatelessWidget {
   const ToggleManageProductionsStorage({super.key});
 
   @override
@@ -17,16 +16,12 @@ class ToggleManageProductionsStorage
     return Visibility(
       visible:
           authorization(
-            authorized:
-                Authorizations()
-                    .toggleManageProductionsStorage,
+            authorized: Authorizations().toggleManageProductionsStorage,
           ) &&
           !isStoreKeeper(),
       child: SubWrapper(
         isVisible:
-            !GeneralSettingsAuthAction().manageProductions(
-              context: context,
-            ),
+            !GeneralSettingsAuthAction().manageProductions(context: context),
         mainWidget: NavListTileDesktopAlt(
           height: 18,
           action: () {
@@ -40,23 +35,18 @@ class ToggleManageProductionsStorage
                     return ConfirmationAlert(
                       theme: theme,
                       message:
-                          shopProvider
-                                      .userShop()!
-                                      .manageProductionsStorage ??
+                          shopProvider.userShop()!.manageProductionsStorage ??
                                   true
                               ? 'You can no longer manage your productions Storage, are you sure you want to proceed?'
                               : 'You can now manage your productions Storage, are you sure you want to proceed?',
                       title:
-                          shopProvider
-                                      .userShop()!
-                                      .manageProductionsStorage ??
+                          shopProvider.userShop()!.manageProductionsStorage ??
                                   true
                               ? 'Turn Off Productions Storage'
                               : 'Turn On Productions Storage',
                       action: () async {
                         Navigator.of(context).pop();
-                        shopProvider
-                            .toggleManageProductionsStorage();
+                        shopProvider.toggleManageProductionsStorage();
                       },
                     );
                   },
@@ -81,16 +71,15 @@ class ToggleManageProductionsStorage
                 return MyToggleButton(
                   isSmall: true,
                   boolValue:
-                      returnShopProvider(context: context)
-                          .userShop()
-                          ?.manageProductionsStorage ??
+                      returnShopProvider(
+                        context: context,
+                      ).userShop()?.manageProductionsStorage ??
                       true,
                   toggle: () {
                     GeneralSettingsAuthAction().manageProductions(
                       context: context,
                       action: () {
-                        var shopProvider =
-                            returnShopProvider();
+                        var shopProvider = returnShopProvider();
                         showDialog(
                           context: context,
                           builder: (context) {
@@ -112,8 +101,7 @@ class ToggleManageProductionsStorage
                                       : 'Turn On Productions Storage',
                               action: () async {
                                 Navigator.of(context).pop();
-                                shopProvider
-                                    .toggleManageProductionsStorage();
+                                shopProvider.toggleManageProductionsStorage();
                               },
                             );
                           },

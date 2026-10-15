@@ -16,15 +16,12 @@ class SummaryTableHeadingBar extends StatefulWidget {
   final List<TempStorageProducts> product;
   final bool isHeading;
   @override
-  State<SummaryTableHeadingBar> createState() =>
-      _SummaryTableHeadingBarState();
+  State<SummaryTableHeadingBar> createState() => _SummaryTableHeadingBarState();
 }
 
-class _SummaryTableHeadingBarState
-    extends State<SummaryTableHeadingBar> {
+class _SummaryTableHeadingBarState extends State<SummaryTableHeadingBar> {
   double getTotalInStorage() {
-    return returnStorageProductProvider(context: context)
-        .storageProductListMain
+    return returnStorageProductProvider(context: context).storageProductListMain
         .map((item) => item.quantity ?? 0)
         .fold(0, (a, b) => a + b);
   }
@@ -57,10 +54,7 @@ class _SummaryTableHeadingBarState
                   right: BorderSide(color: Colors.grey),
                   bottom: BorderSide(color: Colors.grey),
                 ),
-        color:
-            widget.isHeading
-                ? Colors.grey.shade100
-                : Colors.grey.shade200,
+        color: widget.isHeading ? Colors.grey.shade100 : Colors.grey.shade200,
       ),
       child: Row(
         spacing: 0,
@@ -68,15 +62,11 @@ class _SummaryTableHeadingBarState
         children: [
           Container(
             width: 50,
-            padding: EdgeInsets.symmetric(
-              horizontal: 10,
-              vertical: 10,
-            ),
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: Center(
               child: Text(
                 style: TextStyle(
-                  fontSize:
-                      widget.theme.mobileTexts.b3.fontSize,
+                  fontSize: widget.theme.mobileTexts.b3.fontSize,
                   fontWeight: FontWeight.bold,
                 ),
                 widget.isHeading ? 'S/N' : '',
@@ -86,10 +76,7 @@ class _SummaryTableHeadingBarState
           Expanded(
             flex: 2,
             child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: 10,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               decoration: BoxDecoration(
                 border: Border(
                   left: BorderSide(color: Colors.grey),
@@ -104,21 +91,11 @@ class _SummaryTableHeadingBarState
                         style: TextStyle(
                           fontSize:
                               widget.isHeading
-                                  ? widget
-                                      .theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize
-                                  : widget
-                                      .theme
-                                      .mobileTexts
-                                      .b2
-                                      .fontSize,
+                                  ? widget.theme.mobileTexts.b3.fontSize
+                                  : widget.theme.mobileTexts.b2.fontSize,
                           fontWeight: FontWeight.bold,
                         ),
-                        widget.isHeading
-                            ? 'Item Name'
-                            : 'Total',
+                        widget.isHeading ? 'Item Name' : 'Total',
                       ),
                     ),
                   ],
@@ -129,10 +106,7 @@ class _SummaryTableHeadingBarState
           Expanded(
             flex: 1,
             child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: 10,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               decoration: BoxDecoration(
                 border: Border(
                   left: BorderSide(color: Colors.grey),
@@ -147,23 +121,13 @@ class _SummaryTableHeadingBarState
                         style: TextStyle(
                           fontSize:
                               widget.isHeading
-                                  ? widget
-                                      .theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize
-                                  : widget
-                                      .theme
-                                      .mobileTexts
-                                      .b2
-                                      .fontSize,
+                                  ? widget.theme.mobileTexts.b3.fontSize
+                                  : widget.theme.mobileTexts.b2.fontSize,
                           fontWeight: FontWeight.bold,
                         ),
                         widget.isHeading
                             ? 'In Storage'
-                            : formatLargeNumberDouble(
-                              getTotalInStorage(),
-                            ),
+                            : formatLargeNumberDouble(getTotalInStorage()),
                       ),
                     ),
                   ],
@@ -174,10 +138,7 @@ class _SummaryTableHeadingBarState
           Expanded(
             flex: 1,
             child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: 10,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               decoration: BoxDecoration(
                 border: Border(
                   left: BorderSide(color: Colors.grey),
@@ -192,23 +153,13 @@ class _SummaryTableHeadingBarState
                         style: TextStyle(
                           fontSize:
                               widget.isHeading
-                                  ? widget
-                                      .theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize
-                                  : widget
-                                      .theme
-                                      .mobileTexts
-                                      .b2
-                                      .fontSize,
+                                  ? widget.theme.mobileTexts.b3.fontSize
+                                  : widget.theme.mobileTexts.b2.fontSize,
                           fontWeight: FontWeight.bold,
                         ),
                         widget.isHeading
                             ? 'In Sales'
-                            : formatLargeNumberDouble(
-                              getTotalInSales(),
-                            ),
+                            : formatLargeNumberDouble(getTotalInSales()),
                       ),
                     ),
                   ],
@@ -219,10 +170,7 @@ class _SummaryTableHeadingBarState
           Expanded(
             flex: 1,
             child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: 10,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               decoration: BoxDecoration(
                 border: Border(
                   left: BorderSide(color: Colors.grey),
@@ -237,23 +185,13 @@ class _SummaryTableHeadingBarState
                         style: TextStyle(
                           fontSize:
                               widget.isHeading
-                                  ? widget
-                                      .theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize
-                                  : widget
-                                      .theme
-                                      .mobileTexts
-                                      .b2
-                                      .fontSize,
+                                  ? widget.theme.mobileTexts.b3.fontSize
+                                  : widget.theme.mobileTexts.b2.fontSize,
                           fontWeight: FontWeight.bold,
                         ),
                         widget.isHeading
                             ? 'Total'
-                            : formatLargeNumberDouble(
-                              totalOverAll(),
-                            ),
+                            : formatLargeNumberDouble(totalOverAll()),
                       ),
                     ),
                   ],

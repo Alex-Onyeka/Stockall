@@ -45,8 +45,7 @@ class ManageItemWastage extends StatelessWidget {
           ),
           Checkbox(
             activeColor: theme.lightModeColor.secColor100,
-            value:
-                returnData(context: context).manageWastage,
+            value: returnData(context: context).manageWastage,
             onChanged: (value) {
               returnData().toggleManageWastage();
               FocusManager.instance.primaryFocus?.unfocus();

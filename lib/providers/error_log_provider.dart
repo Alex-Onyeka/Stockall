@@ -11,8 +11,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class ErrorLogProvider with ChangeNotifier {
   final SupabaseClient client = Supabase.instance.client;
   final String tableName = 'error_logs';
-  static final ErrorLogProvider _instance =
-      ErrorLogProvider._internal();
+  static final ErrorLogProvider _instance = ErrorLogProvider._internal();
   factory ErrorLogProvider() => _instance;
   ErrorLogProvider._internal();
 
@@ -46,40 +45,26 @@ class ErrorLogProvider with ChangeNotifier {
   void setRange(DateTime rangeStart, DateTime endOfrange) {
     rangeStartDate = rangeStart;
     rangeEndDate = endOfrange;
-    mainLocalLog(
-      'Date Range set: Start: $rangeStart End: $endOfrange ',
-    );
+    mainLocalLog('Date Range set: Start: $rangeStart End: $endOfrange ');
     dateSet = null;
     notifyListeners();
   }
 
   List<TempErrorLogClass> departmentError() {
-    if (returnShopProvider()
-            .userShop()
-            ?.manageDepartments ==
-        true) {
-      if (!authorization(
-        authorized: Authorizations().viewAllDepartments,
-      )) {
+    if (returnShopProvider().userShop()?.manageDepartments == true) {
+      if (!authorization(authorized: Authorizations().viewAllDepartments)) {
         return logs.where((cat) {
           return cat.departmentUuid ==
-              returnDepartmentProvider()
-                  .currentDepartment()
-                  ?.uuid;
+              returnDepartmentProvider().currentDepartment()?.uuid;
           // }
         }).toList();
       } else {
-        if (returnDepartmentProvider()
-                .currentDepartment()
-                ?.uuid ==
-            null) {
+        if (returnDepartmentProvider().currentDepartment()?.uuid == null) {
           return logs;
         } else {
           return logs.where((cat) {
             return cat.departmentUuid ==
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid;
+                returnDepartmentProvider().currentDepartment()?.uuid;
           }).toList();
         }
       }
@@ -89,39 +74,26 @@ class ErrorLogProvider with ChangeNotifier {
   }
 
   List<TempErrorLogClass> returnLogs() {
-    departmentError().sort(
-      (a, b) => b.createdAt!.compareTo(a.createdAt!),
-    );
-    if (dateSet == null &&
-        rangeEndDate == null &&
-        rangeStartDate == null) {
-      departmentError().sort(
-        (a, b) => b.createdAt!.compareTo(a.createdAt!),
-      );
+    departmentError().sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
+    if (dateSet == null && rangeEndDate == null && rangeStartDate == null) {
+      departmentError().sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
       return departmentError();
     } else if (dateSet != null) {
       return departmentError()
           .where(
             (log) =>
-                !log.createdAt!.isBefore(
-                  fourAm(dateSet!),
-                ) &&
-                log.createdAt!.isBefore(
-                  fourAmNextDay(dateSet!),
-                ),
+                !log.createdAt!.isBefore(fourAm(dateSet!)) &&
+                log.createdAt!.isBefore(fourAmNextDay(dateSet!)),
           )
           .toList();
     } else {
       return departmentError()
           .where(
             (log) =>
-                !log.createdAt!.isBefore(
-                  fourAm(rangeStartDate!),
-                ) &&
+                !log.createdAt!.isBefore(fourAm(rangeStartDate!)) &&
                 log.createdAt!.isBefore(
                   fourAmNextDay(
-                    rangeEndDate ??
-                        resolveBusinessDate(DateTime.now()),
+                    rangeEndDate ?? resolveBusinessDate(DateTime.now()),
                   ),
                 ),
           )
@@ -146,37 +118,27 @@ class ErrorLogProvider with ChangeNotifier {
           notifyListeners();
           return [];
         }
-        logs =
-            res
-                .map((m) => TempErrorLogClass.fromJson(m))
-                .toList();
+        logs = res.map((m) => TempErrorLogClass.fromJson(m)).toList();
 
         await ErrorLogFunc().insertAllErrorLog(logs);
-        await mainLocalLog(
-          '✅✅ Error Gotten Successfully Online',
-        );
+        await mainLocalLog('✅✅ Error Gotten Successfully Online');
         notifyListeners();
 
         return logs;
       } catch (e) {
-        await mainLocalLog(
-          '❌❌ Error Getting Online Failed: ${e.toString()}',
-        );
+        await mainLocalLog('❌❌ Error Getting Online Failed: ${e.toString()}');
         return [];
       }
     } else {
       logs = ErrorLogFunc().getErrorLogs();
 
-      await mainLocalLog(
-        'Error Gotten Successfully Offline',
-      );
+      await mainLocalLog('Error Gotten Successfully Offline');
       notifyListeners();
       return logs;
     }
   }
 
-  Future<List<TempErrorLogClass>>
-  getErrorLogsOffline() async {
+  Future<List<TempErrorLogClass>> getErrorLogsOffline() async {
     logs = ErrorLogFunc().getErrorLogs();
 
     await mainLocalLog('Error Gotten Successfully Offline');
@@ -184,9 +146,7 @@ class ErrorLogProvider with ChangeNotifier {
     return logs;
   }
 
-  TempErrorLogClass createLogAdapter({
-    required String error,
-  }) {
+  TempErrorLogClass createLogAdapter({required String error}) {
     return TempErrorLogClass(
       shopId: shopId(),
       tableName: tableName,
@@ -194,20 +154,10 @@ class ErrorLogProvider with ChangeNotifier {
       uuid: uuidGen(),
       title: 'Error Occoured',
       error: error,
-      staffName:
-          returnUserProviderSingle().currentUserMain?.name,
-      staffId:
-          returnUserProviderSingle()
-              .currentUserMain
-              ?.userId,
-      departmentName:
-          returnDepartmentProvider()
-              .currentDepartment()
-              ?.name,
-      departmentUuid:
-          returnDepartmentProvider()
-              .currentDepartment()
-              ?.uuid,
+      staffName: returnUserProviderSingle().currentUserMain?.name,
+      staffId: returnUserProviderSingle().currentUserMain?.userId,
+      departmentName: returnDepartmentProvider().currentDepartment()?.name,
+      departmentUuid: returnDepartmentProvider().currentDepartment()?.uuid,
     );
   }
 
@@ -268,17 +218,11 @@ class ErrorLogProvider with ChangeNotifier {
 
   Future<void> errorsLogSync() async {
     try {
-      bool isOnline =
-          await ConnectivityProvider().isOnline();
+      bool isOnline = await ConnectivityProvider().isOnline();
       // Prepare batch payload
-      if (CreatedErrorLogFunc()
-              .getCreatedErrorLogs()
-              .isNotEmpty &&
-          isOnline) {
+      if (CreatedErrorLogFunc().getCreatedErrorLogs().isNotEmpty && isOnline) {
         final tempErrorLogs =
-            CreatedErrorLogFunc()
-                .getCreatedErrorLogs()
-                .toList();
+            CreatedErrorLogFunc().getCreatedErrorLogs().toList();
         // var newError = tempErrorLogs.map((log) {
         //   log.errorLog.createdAt = log.errorLog.createdAt!;
         //   return log;
@@ -298,14 +242,10 @@ class ErrorLogProvider with ChangeNotifier {
                 .insert(item.errorLog.toJson())
                 .select();
             count++;
-            await CreatedErrorLogFunc().deleteErrorLog(
-              item.errorLog.uuid!,
-            );
+            await CreatedErrorLogFunc().deleteErrorLog(item.errorLog.uuid!);
           } on PostgrestException catch (e) {
             // if (e.code == '23505') {
-            await CreatedErrorLogFunc().deleteErrorLog(
-              item.errorLog.uuid!,
-            );
+            await CreatedErrorLogFunc().deleteErrorLog(item.errorLog.uuid!);
             await mainLocalLog(
               'Error Occoured While Creating Error Log: ${e.toString()}',
             );
@@ -317,20 +257,14 @@ class ErrorLogProvider with ChangeNotifier {
           }
         }
 
-        await mainLocalLog(
-          '$count Error Log items added successfully ✅',
-        );
+        await mainLocalLog('$count Error Log items added successfully ✅');
         await CreatedErrorLogFunc().clearError();
         await mainLocalLog('Unsynced Error Logs Cleared');
-        await mainLocalLog(
-          'Mounted, refreshing Receipts ✅',
-        );
+        await mainLocalLog('Mounted, refreshing Receipts ✅');
         await getErrorLogs();
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Error Logs insert failed ❌: $e',
-      );
+      await mainLocalLog('Batch Error Logs insert failed ❌: $e');
       // await createErrorLog(
       //   error: 'Batch Error Logs insert failed ❌: $e',
       // );

@@ -31,16 +31,13 @@ import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class InvoicesProvider extends ChangeNotifier {
-  static final InvoicesProvider _instance =
-      InvoicesProvider._internal();
+  static final InvoicesProvider _instance = InvoicesProvider._internal();
   factory InvoicesProvider() => _instance;
   InvoicesProvider._internal();
   bool isLoading = false;
   void toggleIsLoading(bool value) {
     isLoading = value;
-    mainLocalLog(
-      'Invoice is ${value ? 'Loading on' : 'Loading Off'}',
-    );
+    mainLocalLog('Invoice is ${value ? 'Loading on' : 'Loading Off'}');
     notifyListeners();
   }
   //
@@ -48,8 +45,7 @@ class InvoicesProvider extends ChangeNotifier {
   //
 
   final SupabaseClient supabase = Supabase.instance.client;
-  final ConnectivityProvider connectivity =
-      ConnectivityProvider();
+  final ConnectivityProvider connectivity = ConnectivityProvider();
   List<TempInvoice> _invoices = [];
   List<TempInvoice> get invoicesMain => _invoices;
 
@@ -72,9 +68,7 @@ class InvoicesProvider extends ChangeNotifier {
   }
 
   // CREATE a new Invoice
-  Future<TempInvoice?> createInvoices(
-    TempInvoice invoice,
-  ) async {
+  Future<TempInvoice?> createInvoices(TempInvoice invoice) async {
     await mainLocalLog('Inner Invoice Creation Started');
     var barcode = returnOnlyDigits(uuidGen());
     invoice.barcode = barcode;
@@ -86,9 +80,7 @@ class InvoicesProvider extends ChangeNotifier {
     return invoice;
   }
 
-  Future<void> loadSingleInvoice({
-    required String uuid,
-  }) async {
+  Future<void> loadSingleInvoice({required String uuid}) async {
     bool isOnline = await connectivity.isOnline();
     try {
       if (isOnline) {
@@ -102,21 +94,13 @@ class InvoicesProvider extends ChangeNotifier {
           await mainLocalLog('Invoice Not Found');
           return;
         } else {
-          TempInvoice tempInvoice = TempInvoice.fromJson(
-            data,
-          );
+          TempInvoice tempInvoice = TempInvoice.fromJson(data);
           TempInvoice? existingInvoice =
               invoicesMain
-                      .where(
-                        (rec) =>
-                            rec.uuid == tempInvoice.uuid,
-                      )
+                      .where((rec) => rec.uuid == tempInvoice.uuid)
                       .isNotEmpty
                   ? invoicesMain
-                      .where(
-                        (rec) =>
-                            rec.uuid == tempInvoice.uuid,
-                      )
+                      .where((rec) => rec.uuid == tempInvoice.uuid)
                       .first
                   : null;
           if (existingInvoice != null) {
@@ -124,19 +108,13 @@ class InvoicesProvider extends ChangeNotifier {
             invoicesMain.remove(existingInvoice);
           }
           invoicesMain.add(tempInvoice);
-          invoicesMain.sort(
-            (a, b) => b.createdAt.compareTo(a.createdAt),
-          );
-          await mainLocalLog(
-            "💖💖👏🥰 Single Invoice Loaded",
-          );
+          invoicesMain.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          await mainLocalLog("💖💖👏🥰 Single Invoice Loaded");
           notifyListeners();
         }
       }
     } catch (e) {
-      await mainLocalLog(
-        'Error Fetching Single Invoice: ${e.toString()}',
-      );
+      await mainLocalLog('Error Fetching Single Invoice: ${e.toString()}');
     }
   }
 
@@ -153,23 +131,17 @@ class InvoicesProvider extends ChangeNotifier {
             .eq('shop_id', shopId)
             .order('created_at', ascending: false);
         if (data.isNotEmpty) {
-          await mainLocalLog(
-            'Invoices Gotten ${data.length}',
-          );
+          await mainLocalLog('Invoices Gotten ${data.length}');
         }
 
         _invoices =
-            (data as List)
-                .map((json) => TempInvoice.fromJson(json))
-                .toList();
+            (data as List).map((json) => TempInvoice.fromJson(json)).toList();
         notifyListeners();
         await InvoicesFunc().insertAllInvoices(_invoices);
         notifyListeners();
         await mainLocalLog('Invoices Loaded');
       } catch (e) {
-        await mainLocalLog(
-          '❌❌Error Getting Invoices: ${e.toString()}',
-        );
+        await mainLocalLog('❌❌Error Getting Invoices: ${e.toString()}');
         return [];
       }
     } else {
@@ -181,9 +153,7 @@ class InvoicesProvider extends ChangeNotifier {
     return _invoices;
   }
 
-  Future<List<TempInvoice>> loadInvoicesOffline(
-    int shopId,
-  ) async {
+  Future<List<TempInvoice>> loadInvoicesOffline(int shopId) async {
     _invoices = InvoicesFunc().getInvoices();
     notifyListeners();
     await mainLocalLog('Offline Invoices Gotten');
@@ -201,9 +171,7 @@ class InvoicesProvider extends ChangeNotifier {
       var containsCreated =
           CreatedInvoicesFunc()
               .getInvoices()
-              .where(
-                (exp) => exp.invoice.uuid == invoice.uuid,
-              )
+              .where((exp) => exp.invoice.uuid == invoice.uuid)
               .toList();
       if (containsCreated.isEmpty) {
         await UpdatedInvoicesFunc().createUpdatedInvoice(
@@ -225,9 +193,7 @@ class InvoicesProvider extends ChangeNotifier {
       await loadInvoicesOffline(shopId());
       return 1;
     } catch (e) {
-      await mainLocalLog(
-        'Error Updating Invoices: ${e.toString()}',
-      );
+      await mainLocalLog('Error Updating Invoices: ${e.toString()}');
       notifyListeners();
       return 0;
     }
@@ -237,10 +203,7 @@ class InvoicesProvider extends ChangeNotifier {
     TempInvoice invoice,
     List<String> productNames,
   ) async {
-    return await deleteInvoiceAndUpdateInventory(
-      invoice,
-      productNames,
-    );
+    return await deleteInvoiceAndUpdateInventory(invoice, productNames);
   }
 
   Future<int> deleteInvoiceAndUpdateInventory(
@@ -253,40 +216,25 @@ class InvoicesProvider extends ChangeNotifier {
       var containsCreated =
           CreatedInvoicesFunc()
               .getInvoices()
-              .where(
-                (rec) => rec.invoice.uuid == invoice.uuid,
-              )
+              .where((rec) => rec.invoice.uuid == invoice.uuid)
               .toList();
-      var containsUpdate = UpdatedInvoicesFunc()
-          .getInvoiceIds()
-          .where(
-            (rec) =>
-                rec.updatedInvoice.uuid == invoice.uuid!,
-          );
+      var containsUpdate = UpdatedInvoicesFunc().getInvoiceIds().where(
+        (rec) => rec.updatedInvoice.uuid == invoice.uuid!,
+      );
       if (containsCreated.isNotEmpty) {
-        await CreatedInvoicesFunc().deleteInvoice(
-          invoice.uuid!,
-        );
+        await CreatedInvoicesFunc().deleteInvoice(invoice.uuid!);
       } else {
         await DeletedInvoicesFunc().createDeletedInvoice(
           DeletedInvoices(invoiceUuid: invoice.uuid!),
         );
       }
       if (containsUpdate.isNotEmpty) {
-        await UpdatedInvoicesFunc().deleteUpdatedInvoice(
-          invoice.uuid!,
-        );
+        await UpdatedInvoicesFunc().deleteUpdatedInvoice(invoice.uuid!);
       }
-      await ProductRecordFunc().deleteRecordsInInvoice(
-        invoice: invoice,
-      );
+      await ProductRecordFunc().deleteRecordsInInvoice(invoice: invoice);
       if (productNames.isNotEmpty) {
         await returnEventsLogProvider().createLog(
-          returnEventsLogProvider().invoiceAdapter(
-            invoice,
-            productNames,
-            3,
-          ),
+          returnEventsLogProvider().invoiceAdapter(invoice, productNames, 3),
         );
       }
 
@@ -294,20 +242,14 @@ class InvoicesProvider extends ChangeNotifier {
         '✅ Invoice and inventory successfully Delete and Updated.',
       );
 
-      await loadInvoicesOffline(
-        returnShopProvider().userShop()!.shopId!,
-      );
+      await loadInvoicesOffline(returnShopProvider().userShop()!.shopId!);
 
-      await mainLocalLog(
-        'Totally Finished Deleting Invoices',
-      );
+      await mainLocalLog('Totally Finished Deleting Invoices');
       notifyListeners();
       syncData();
       return 1;
     } catch (e) {
-      await mainLocalLog(
-        'Error Deleting Invoice: ${e.toString()}',
-      );
+      await mainLocalLog('Error Deleting Invoice: ${e.toString()}');
       return 0;
     }
   }
@@ -318,53 +260,37 @@ class InvoicesProvider extends ChangeNotifier {
   }) async {
     try {
       await mainLocalLog('Deleting Invoice Offline');
-      await InvoicesFunc().deleteInvoices(
-        invoice.uuid ?? '',
-      );
+      await InvoicesFunc().deleteInvoices(invoice.uuid ?? '');
       var containsCreated =
           CreatedInvoicesFunc()
               .getInvoices()
-              .where(
-                (inv) => inv.invoice.uuid == invoice.uuid,
-              )
+              .where((inv) => inv.invoice.uuid == invoice.uuid)
               .toList();
-      var containsUpdate = UpdatedInvoicesFunc()
-          .getInvoiceIds()
-          .where(
-            (inv) =>
-                inv.updatedInvoice.uuid == invoice.uuid,
-          );
+      var containsUpdate = UpdatedInvoicesFunc().getInvoiceIds().where(
+        (inv) => inv.updatedInvoice.uuid == invoice.uuid,
+      );
       if (containsCreated.isNotEmpty) {
-        await CreatedInvoicesFunc().deleteInvoice(
-          invoice.uuid ?? '',
-        );
+        await CreatedInvoicesFunc().deleteInvoice(invoice.uuid ?? '');
       } else {
         await DeletedInvoicesFunc().createDeletedInvoice(
           DeletedInvoices(invoiceUuid: invoice.uuid ?? ''),
         );
       }
       if (containsUpdate.isNotEmpty) {
-        await UpdatedInvoicesFunc().deleteUpdatedInvoice(
-          invoice.uuid ?? '',
-        );
+        await UpdatedInvoicesFunc().deleteUpdatedInvoice(invoice.uuid ?? '');
       }
-      await ProductRecordFunc()
-          .deleteRecordsInInvoiceWithoutUpdatingInventory(
-            invoice: invoice,
-          );
+      await ProductRecordFunc().deleteRecordsInInvoiceWithoutUpdatingInventory(
+        invoice: invoice,
+      );
       // }
 
       await mainLocalLog(
         '✅ Invoice and inventory successfully Delete and Updated.',
       );
 
-      await loadInvoicesOffline(
-        returnShopProvider().userShop()!.shopId!,
-      );
+      await loadInvoicesOffline(returnShopProvider().userShop()!.shopId!);
 
-      await mainLocalLog(
-        'Totally Finished Deleting Invoice',
-      );
+      await mainLocalLog('Totally Finished Deleting Invoice');
       notifyListeners();
       syncData();
       return 1;
@@ -399,10 +325,7 @@ class InvoicesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool isBalanceSufficient(
-    String customerUuid,
-    double enteredValue,
-  ) {
+  bool isBalanceSufficient(String customerUuid, double enteredValue) {
     List<TempCustomersClass> customers =
         returnCustomersSingle().customers
             .where((item) => item.uuid == customerUuid)
@@ -434,19 +357,14 @@ class InvoicesProvider extends ChangeNotifier {
           invoice: item,
           salesRecords: item.getItems(),
           currentPayment: item.getBalance(),
-          cashAmount:
-              cashAmount != 0 ? item.getBalance() : 0,
-          bankAmount:
-              bankAmount != 0 ? item.getBalance() : 0,
-          customerAmount:
-              customerAmount != 0 ? item.getBalance() : 0,
+          cashAmount: cashAmount != 0 ? item.getBalance() : 0,
+          bankAmount: bankAmount != 0 ? item.getBalance() : 0,
+          customerAmount: customerAmount != 0 ? item.getBalance() : 0,
           isMultiple: true,
         );
       }
       syncData();
-      await mainLocalLog(
-        'Finished Paying all Customers Invoices Success',
-      );
+      await mainLocalLog('Finished Paying all Customers Invoices Success');
       return 1;
     } catch (e) {
       await mainLocalLog(
@@ -480,8 +398,9 @@ class InvoicesProvider extends ChangeNotifier {
         staffId: AuthService().currentUser!,
         staffName:
             "${returnUserProviderSingle().currentUserMain!.name} ${returnUserProviderSingle().currentUserMain!.lastName}",
-        paymentMethod: returnSalesProvider()
-            .returnPaymentMethod(index: paymentOption),
+        paymentMethod: returnSalesProvider().returnPaymentMethod(
+          index: paymentOption,
+        ),
         bank: bankAmount,
         customerAccount: customerAmount,
         cashAlt: cashAmount,
@@ -505,12 +424,9 @@ class InvoicesProvider extends ChangeNotifier {
       // stored in receipt.items and in product_sales.
       final productSaleRecords =
           salesRecords.map((record) {
-            mainLocalLog(
-              'Sales Record about to be Created',
-            );
+            mainLocalLog('Sales Record about to be Created');
             return TempProductSaleRecord(
-              isPercentageWastage:
-                  record.isPercentageWastage,
+              isPercentageWastage: record.isPercentageWastage,
               wastageAmount: record.wastageAmount,
               wastageUnitUuid: record.wastageUnitUuid,
               manageSalesWastage: record.manageSalesWastage,
@@ -538,33 +454,24 @@ class InvoicesProvider extends ChangeNotifier {
               receiptUuid: receipt.uuid,
               quantity: record.quantity,
               revenue: calcSalesRecordRevenue(
-                invoceTotalAmount:
-                    invoice.getTotalMainRevenueInvoice(),
+                invoceTotalAmount: invoice.getTotalMainRevenueInvoice(),
                 receiptPayment: currentPayment,
                 salesRecodRevenue: record.revenue,
               ),
               costPrice: calcSalesRecordCostPrice(
-                invoceTotalAmount:
-                    invoice.getTotalMainRevenueInvoice(),
+                invoceTotalAmount: invoice.getTotalMainRevenueInvoice(),
                 receiptPayment: currentPayment,
-                salesRecodCostPrice:
-                    (record.costPrice ?? 0),
+                salesRecodCostPrice: (record.costPrice ?? 0),
               ),
-              discountedAmount:
-                  calcSalesRecordDiscountedAmount(
-                    invoceTotalAmount:
-                        invoice
-                            .getTotalMainRevenueInvoice(),
-                    receiptPayment: currentPayment,
-                    salesRecodDiscountedAmount:
-                        (record.discountedAmount ?? 0),
-                  ),
-              originalCost: calcSalesRecordOriginalCost(
-                invoceTotalAmount:
-                    invoice.getTotalMainRevenueInvoice(),
+              discountedAmount: calcSalesRecordDiscountedAmount(
+                invoceTotalAmount: invoice.getTotalMainRevenueInvoice(),
                 receiptPayment: currentPayment,
-                salesRecodOriginalCost:
-                    (record.originalCost ?? 0),
+                salesRecodDiscountedAmount: (record.discountedAmount ?? 0),
+              ),
+              originalCost: calcSalesRecordOriginalCost(
+                invoceTotalAmount: invoice.getTotalMainRevenueInvoice(),
+                receiptPayment: currentPayment,
+                salesRecodOriginalCost: (record.originalCost ?? 0),
               ),
               discount: record.discount,
               fixedDiscount: record.fixedDiscount,
@@ -572,14 +479,10 @@ class InvoicesProvider extends ChangeNotifier {
               addToStock: record.addToStock,
               departmentName:
                   record.departmentName ??
-                  returnDepartmentProvider()
-                      .currentDepartment()
-                      ?.name,
+                  returnDepartmentProvider().currentDepartment()?.name,
               departmentUuid:
                   record.departmentUuid ??
-                  returnDepartmentProvider()
-                      .currentDepartment()
-                      ?.uuid,
+                  returnDepartmentProvider().currentDepartment()?.uuid,
               uuid: uuidGen(),
               isProductManaged: record.isProductManaged,
               setTotalPrice: record.setTotalPrice,
@@ -593,24 +496,19 @@ class InvoicesProvider extends ChangeNotifier {
       receipt.items = productSaleRecords;
 
       await mainLocalLog('Checkout Started');
-      var res = await returnReceiptProviderSingle()
-          .createReceipt(receipt);
+      var res = await returnReceiptProviderSingle().createReceipt(receipt);
       if (res != null) {
         await mainLocalLog('Receipt Created');
 
         await returnEventsLogProvider().createLog(
           returnEventsLogProvider().receiptAdapter(
             receipt,
-            salesRecords
-                .map((rec) => rec.productName)
-                .toList(),
+            salesRecords.map((rec) => rec.productName).toList(),
             1,
           ),
         );
 
-        await mainLocalLog(
-          'Creating Record Sales About to Start',
-        );
+        await mainLocalLog('Creating Record Sales About to Start');
         // await returnReceiptProviderSingle()
         //     .createProductSaleRecord(
         //       records: productSaleRecords,
@@ -624,8 +522,7 @@ class InvoicesProvider extends ChangeNotifier {
           invoice: invoice,
           // records: productSaleRecords,
         );
-        await returnReceiptProviderSingle()
-            .loadReceiptsOffline(shopId());
+        await returnReceiptProviderSingle().loadReceiptsOffline(shopId());
         if (isMultiple != true) {
           returnData().syncData();
         }
@@ -635,9 +532,7 @@ class InvoicesProvider extends ChangeNotifier {
         notifyListeners();
         return 1;
       } else {
-        await mainLocalLog(
-          'Failed to Create Receipt From Invoice',
-        );
+        await mainLocalLog('Failed to Create Receipt From Invoice');
         return 0;
       }
     } catch (e) {
@@ -653,10 +548,8 @@ class InvoicesProvider extends ChangeNotifier {
     required double receiptPayment,
     required double salesRecodRevenue,
   }) {
-    double paymentPercent =
-        ((receiptPayment * 100) / invoceTotalAmount);
-    double result =
-        ((paymentPercent * salesRecodRevenue) / 100);
+    double paymentPercent = ((receiptPayment * 100) / invoceTotalAmount);
+    double result = ((paymentPercent * salesRecodRevenue) / 100);
     return result;
   }
 
@@ -665,10 +558,8 @@ class InvoicesProvider extends ChangeNotifier {
     required double receiptPayment,
     required double salesRecodCostPrice,
   }) {
-    double paymentPercent =
-        ((receiptPayment * 100) / invoceTotalAmount);
-    double result =
-        ((paymentPercent * salesRecodCostPrice) / 100);
+    double paymentPercent = ((receiptPayment * 100) / invoceTotalAmount);
+    double result = ((paymentPercent * salesRecodCostPrice) / 100);
     return result;
   }
 
@@ -677,11 +568,8 @@ class InvoicesProvider extends ChangeNotifier {
     required double receiptPayment,
     required double salesRecodDiscountedAmount,
   }) {
-    double paymentPercent =
-        ((receiptPayment * 100) / invoceTotalAmount);
-    double result =
-        ((paymentPercent * salesRecodDiscountedAmount) /
-            100);
+    double paymentPercent = ((receiptPayment * 100) / invoceTotalAmount);
+    double result = ((paymentPercent * salesRecodDiscountedAmount) / 100);
     return result;
   }
 
@@ -690,10 +578,8 @@ class InvoicesProvider extends ChangeNotifier {
     required double receiptPayment,
     required double salesRecodOriginalCost,
   }) {
-    double paymentPercent =
-        ((receiptPayment * 100) / invoceTotalAmount);
-    double result =
-        ((paymentPercent * salesRecodOriginalCost) / 100);
+    double paymentPercent = ((receiptPayment * 100) / invoceTotalAmount);
+    double result = ((paymentPercent * salesRecodOriginalCost) / 100);
     return result;
   }
 
@@ -763,26 +649,19 @@ class InvoicesProvider extends ChangeNotifier {
             isReceiptEdit: true,
             subStaffUuid: invoice.subStaffUuid,
           );
-          await returnSalesProvider().addNewCart(
-            context,
-            tempCart,
-          );
+          await returnSalesProvider().addNewCart(context, tempCart);
           await returnMultiDisplayProvider().updateWindow(
             cartClass: AltCartClass(
               manageCustomerReward:
-                  returnShopProvider()
-                      .userShop()!
-                      .manageCustomerReward ??
+                  returnShopProvider().userShop()!.manageCustomerReward ??
                   false,
               cartId: tempCart.id!,
-              cartItems:
-                  tempCart.cartItems.reversed.toList(),
+              cartItems: tempCart.cartItems.reversed.toList(),
               fixedDiscount: invoice.fixedDiscount,
               percentDiscount: invoice.generalDiscount,
               vat: invoice.vat ?? 0,
               cashBack: invoice.getCustomerReward(),
-              currency:
-                  returnShopProvider().userShop()!.currency,
+              currency: returnShopProvider().userShop()!.currency,
             ),
           );
           notifyListeners();
@@ -791,10 +670,7 @@ class InvoicesProvider extends ChangeNotifier {
             returnSalesProvider()
                 .currentMainCart()
                 .cartQueue
-                .where(
-                  (cart) =>
-                      cart.invoiceUuidEdit == invoice.uuid,
-                )
+                .where((cart) => cart.invoiceUuidEdit == invoice.uuid)
                 .first
                 .id!,
           );
@@ -818,15 +694,12 @@ class InvoicesProvider extends ChangeNotifier {
   }) {
     double tempRev = 0;
     if (record.customPriceSet) {
-      if (record.setTotalPrice != null &&
-          record.setTotalPrice == true) {
+      if (record.setTotalPrice != null && record.setTotalPrice == true) {
         tempRev = record.originalCost ?? 0;
       } else {
         // originalCost was billed on the line's base quantity
         // (area for 2D, after unit conversion) + wastage.
-        tempRev =
-            (record.originalCost ?? 0) /
-            record.getStockQuantity();
+        tempRev = (record.originalCost ?? 0) / record.getStockQuantity();
       }
     }
     return TempCartItem(
@@ -834,13 +707,9 @@ class InvoicesProvider extends ChangeNotifier {
       // Lines saved before wastage was applied keep none, so
       // they aren't re-priced or re-deducted.
       wastageAmount:
-          record.manageSalesWastage == true
-              ? record.wastageAmount
-              : null,
+          record.manageSalesWastage == true ? record.wastageAmount : null,
       wastageUnitUuid:
-          record.manageSalesWastage == true
-              ? record.wastageUnitUuid
-              : null,
+          record.manageSalesWastage == true ? record.wastageUnitUuid : null,
       manageSalesWastage: record.manageSalesWastage,
       heightDimension: record.heightDimension,
       quantityType: record.quantityType,
@@ -894,21 +763,18 @@ class InvoicesProvider extends ChangeNotifier {
           // record.discount = 0;
         }
         final double costPrice =
-            (record.costPrice == null ||
-                    record.costPrice == 0)
+            (record.costPrice == null || record.costPrice == 0)
                 ? 0
                 : record.costPrice!;
 
         final double sellingPrice =
             record.discount == null
                 ? record.revenue / record.quantity
-                : (record.originalCost ?? 0) /
-                    record.quantity;
+                : (record.originalCost ?? 0) / record.quantity;
         final double wholeSalePrice =
             record.discount == null
                 ? record.revenue / record.quantity
-                : (record.originalCost ?? 0) /
-                    record.quantity;
+                : (record.originalCost ?? 0) / record.quantity;
 
         TempProductClass productNew = TempProductClass(
           manageSalesWastage: record.manageSalesWastage,
@@ -970,13 +836,8 @@ class InvoicesProvider extends ChangeNotifier {
               'You are currently editing this invoice, are you sure you want to cancel this edit?',
           title: 'Cancel Edit?',
           action: () async {
-            if (returnSalesProvider()
-                .currentCart()
-                .isReceiptEdit) {
-              if (returnSalesProvider()
-                      .currentMainCart()
-                      .cartQueue
-                      .length ==
+            if (returnSalesProvider().currentCart().isReceiptEdit) {
+              if (returnSalesProvider().currentMainCart().cartQueue.length ==
                   1) {
                 await returnSalesProvider().addNewCart(
                   context,
@@ -1048,40 +909,26 @@ class InvoicesProvider extends ChangeNotifier {
   void setRange(DateTime rangeStart, DateTime endOfrange) {
     rangeStartDate = rangeStart;
     rangeEndDate = endOfrange;
-    mainLocalLog(
-      'Date Range set: Start: $rangeStart End: $endOfrange ',
-    );
+    mainLocalLog('Date Range set: Start: $rangeStart End: $endOfrange ');
     dateSet = null;
     notifyListeners();
   }
 
   List<TempInvoice> departmentInvoices() {
-    if (returnShopProvider()
-            .userShop()
-            ?.manageDepartments ==
-        true) {
-      if (!authorization(
-        authorized: Authorizations().viewAllDepartments,
-      )) {
+    if (returnShopProvider().userShop()?.manageDepartments == true) {
+      if (!authorization(authorized: Authorizations().viewAllDepartments)) {
         return invoicesMain.where((cat) {
           return cat.departmentUuidNew ==
-              returnDepartmentProvider()
-                  .currentDepartment()
-                  ?.uuid;
+              returnDepartmentProvider().currentDepartment()?.uuid;
           // }
         }).toList();
       } else {
-        if (returnDepartmentProvider()
-                .currentDepartment()
-                ?.uuid ==
-            null) {
+        if (returnDepartmentProvider().currentDepartment()?.uuid == null) {
           return invoicesMain;
         } else {
           return invoicesMain.where((cat) {
             return cat.departmentUuidNew ==
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid;
+                returnDepartmentProvider().currentDepartment()?.uuid;
             // }
           }).toList();
         }
@@ -1092,9 +939,7 @@ class InvoicesProvider extends ChangeNotifier {
   }
 
   List<TempInvoice> returnAllOrSetDateInvoices() {
-    if (dateSet == null &&
-        rangeEndDate == null &&
-        rangeStartDate == null) {
+    if (dateSet == null && rangeEndDate == null && rangeStartDate == null) {
       return invoicesMain;
     } else {
       return returnInvoicesByDayOrWeekAll();
@@ -1103,10 +948,7 @@ class InvoicesProvider extends ChangeNotifier {
 
   List<TempInvoice> returnUnpaidInvoices() {
     return returnInvoicesByDayOrWeekAll()
-        .where(
-          (inv) =>
-              (inv.bank + inv.cashAlt) == inv.getBalance(),
-        )
+        .where((inv) => (inv.bank + inv.cashAlt) == inv.getBalance())
         .toList();
   }
 
@@ -1137,12 +979,8 @@ class InvoicesProvider extends ChangeNotifier {
     if (rangeStartDate != null) {
       return departmentInvoices().where((invoice) {
         final created = invoice.createdAt.toLocal();
-        return !created.isBefore(
-              fourAm(rangeStartDate ?? DateTime.now()),
-            ) &&
-            !created.isAfter(
-              fourAmNextDay(rangeEndDate ?? DateTime.now()),
-            );
+        return !created.isBefore(fourAm(rangeStartDate ?? DateTime.now())) &&
+            !created.isAfter(fourAmNextDay(rangeEndDate ?? DateTime.now()));
       }).toList();
     }
 
@@ -1150,12 +988,8 @@ class InvoicesProvider extends ChangeNotifier {
       return departmentInvoices().where((invoice) {
         final created = invoice.createdAt.toLocal();
         final inRange =
-            !created.isBefore(
-              fourAm(dateSet ?? DateTime.now()),
-            ) &&
-            !created.isAfter(
-              fourAmNextDay(dateSet ?? DateTime.now()),
-            );
+            !created.isBefore(fourAm(dateSet ?? DateTime.now())) &&
+            !created.isAfter(fourAmNextDay(dateSet ?? DateTime.now()));
 
         return inRange;
       }).toList();
@@ -1166,11 +1000,7 @@ class InvoicesProvider extends ChangeNotifier {
   List<TempInvoice> returnInvoicesByDayOrWeekAll() {
     if (invoicePaymentStatusIndex == 0) {
       return returnInvoicesBasedOnPaymentStatus()
-          .where(
-            (inv) =>
-                (inv.bank + inv.cashAlt) ==
-                inv.getBalance(),
-          )
+          .where((inv) => (inv.bank + inv.cashAlt) == inv.getBalance())
           .toList();
     } else if (invoicePaymentStatusIndex == 1) {
       return returnInvoicesBasedOnPaymentStatus()
@@ -1232,10 +1062,8 @@ class InvoicesProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
-      if (CreatedInvoicesFunc().getInvoices().isNotEmpty &&
-          isOnline) {
-        final tempInvoice =
-            CreatedInvoicesFunc().getInvoices().toList();
+      if (CreatedInvoicesFunc().getInvoices().isNotEmpty && isOnline) {
+        final tempInvoice = CreatedInvoicesFunc().getInvoices().toList();
         // createdAt is serialized to UTC in toJson(); don't mutate the
         // shared in-memory invoice.
         var newInvoices = tempInvoice;
@@ -1248,14 +1076,10 @@ class InvoicesProvider extends ChangeNotifier {
                 .insert(item.invoice.toJson())
                 .select();
             count++;
-            await CreatedInvoicesFunc().deleteInvoice(
-              item.invoice.uuid!,
-            );
+            await CreatedInvoicesFunc().deleteInvoice(item.invoice.uuid!);
           } on PostgrestException catch (e) {
             if (e.code == '23505') {
-              await CreatedInvoicesFunc().deleteInvoice(
-                item.invoice.uuid!,
-              );
+              await CreatedInvoicesFunc().deleteInvoice(item.invoice.uuid!);
             }
             await mainLocalLog(
               'Error Synchronizing Invoice ${item.invoice.bank + item.invoice.cashAlt}: $e',
@@ -1263,20 +1087,12 @@ class InvoicesProvider extends ChangeNotifier {
           }
         }
 
-        await mainLocalLog(
-          '$count items added successfully ✅',
-        );
-        await mainLocalLog(
-          'Mounted, refreshing Invoices ✅',
-        );
-        await loadInvoices(
-          returnShopProvider().userShop()!.shopId!,
-        );
+        await mainLocalLog('$count items added successfully ✅');
+        await mainLocalLog('Mounted, refreshing Invoices ✅');
+        await loadInvoices(returnShopProvider().userShop()!.shopId!);
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Invoices insert failed ❌: $e',
-      );
+      await mainLocalLog('Batch Invoices insert failed ❌: $e');
     }
   }
 
@@ -1296,26 +1112,18 @@ class InvoicesProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
-      if (DeletedInvoicesFunc()
-              .getInvoiceIds()
-              .isNotEmpty &&
-          isOnline) {
-        final tempInvoice =
-            DeletedInvoicesFunc().getInvoiceIds().toList();
+      if (DeletedInvoicesFunc().getInvoiceIds().isNotEmpty && isOnline) {
+        final tempInvoice = DeletedInvoicesFunc().getInvoiceIds().toList();
 
         for (var inv in tempInvoice) {
           try {
             await supabase.rpc(
               'delete_invoice_without_updating_inventory',
-              params: {
-                'target_invoice_uuid': inv.invoiceUuid,
-              },
+              params: {'target_invoice_uuid': inv.invoiceUuid},
             );
-            await DeletedInvoicesFunc()
-                .deletedDeletedInvoices(inv.invoiceUuid);
+            await DeletedInvoicesFunc().deletedDeletedInvoices(inv.invoiceUuid);
           } catch (e) {
-            await DeletedInvoicesFunc()
-                .deletedDeletedInvoices(inv.invoiceUuid);
+            await DeletedInvoicesFunc().deletedDeletedInvoices(inv.invoiceUuid);
             await mainLocalLog(
               'Error Syncing Deleted Invoice: ${e.toString()}',
             );
@@ -1326,20 +1134,12 @@ class InvoicesProvider extends ChangeNotifier {
           '${tempInvoice.length} Invoices Created successfully ✅',
         );
         await DeletedInvoicesFunc().clearDeletedInvoices();
-        await mainLocalLog(
-          'Unsynced Deleted Invoices Cleared',
-        );
-        await mainLocalLog(
-          'Mounted, refreshing Invoices ✅',
-        );
-        await loadInvoices(
-          returnShopProvider().userShop()!.shopId!,
-        );
+        await mainLocalLog('Unsynced Deleted Invoices Cleared');
+        await mainLocalLog('Mounted, refreshing Invoices ✅');
+        await loadInvoices(returnShopProvider().userShop()!.shopId!);
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Invoices Deleted failed ❌: $e',
-      );
+      await mainLocalLog('Batch Invoices Deleted failed ❌: $e');
     }
   }
 
@@ -1354,29 +1154,19 @@ class InvoicesProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       await mainLocalLog(
-        UpdatedInvoicesFunc()
-            .getInvoiceIds()
-            .length
-            .toString(),
+        UpdatedInvoicesFunc().getInvoiceIds().length.toString(),
       );
 
-      if (UpdatedInvoicesFunc()
-              .getInvoiceIds()
-              .isNotEmpty &&
-          isOnline) {
-        final updatedInvoices =
-            UpdatedInvoicesFunc().getInvoiceIds();
+      if (UpdatedInvoicesFunc().getInvoiceIds().isNotEmpty && isOnline) {
+        final updatedInvoices = UpdatedInvoicesFunc().getInvoiceIds();
 
         for (final updated in updatedInvoices) {
           final localInvoices = updated.updatedInvoice;
 
-          localInvoices.updatedAt ??=
-              DateTime.now().toLocal();
+          localInvoices.updatedAt ??= DateTime.now().toLocal();
 
           if (localInvoices.uuid == null) {
-            await mainLocalLog(
-              'Local Invoices Uuid is Null',
-            );
+            await mainLocalLog('Local Invoices Uuid is Null');
           }
           final remoteData =
               await supabase
@@ -1386,40 +1176,28 @@ class InvoicesProvider extends ChangeNotifier {
                   .maybeSingle();
 
           if (remoteData == null) {
-            await supabase
-                .from('invoices')
-                .insert(localInvoices.toJson());
+            await supabase.from('invoices').insert(localInvoices.toJson());
             await mainLocalLog(
               'Inserted Invoices with uuid ${localInvoices.uuid}',
             );
-            await UpdatedInvoicesFunc()
-                .deleteUpdatedInvoice(
-                  localInvoices.uuid ?? '',
-                );
+            await UpdatedInvoicesFunc().deleteUpdatedInvoice(
+              localInvoices.uuid ?? '',
+            );
           } else {
-            final remoteUpdatedAtRaw =
-                remoteData['updated_at'];
+            final remoteUpdatedAtRaw = remoteData['updated_at'];
             final remoteUpdatedAt =
                 remoteUpdatedAtRaw == null
                     ? null
-                    : DateTime.parse(
-                      remoteUpdatedAtRaw,
-                    ).toUtc();
+                    : DateTime.parse(remoteUpdatedAtRaw).toUtc();
 
             localInvoices.updatedAt =
                 (localInvoices.updatedAt ?? DateTime.now())
                     .toUtc(); // ✅ keep both UTC
-            await mainLocalLog(
-              "Local updatedAt: ${localInvoices.updatedAt}",
-            );
-            await mainLocalLog(
-              "Remote updatedAt: $remoteUpdatedAt",
-            );
+            await mainLocalLog("Local updatedAt: ${localInvoices.updatedAt}");
+            await mainLocalLog("Remote updatedAt: $remoteUpdatedAt");
 
             if (remoteUpdatedAt == null ||
-                localInvoices.updatedAt!.isAfter(
-                  remoteUpdatedAt,
-                )) {
+                localInvoices.updatedAt!.isAfter(remoteUpdatedAt)) {
               await supabase
                   .from('invoices')
                   .update(localInvoices.toJson())
@@ -1427,10 +1205,9 @@ class InvoicesProvider extends ChangeNotifier {
               await mainLocalLog(
                 'Updated Invoices with uuid ${localInvoices.uuid}',
               );
-              await UpdatedInvoicesFunc()
-                  .deleteUpdatedInvoice(
-                    localInvoices.uuid ?? '',
-                  );
+              await UpdatedInvoicesFunc().deleteUpdatedInvoice(
+                localInvoices.uuid ?? '',
+              );
             } else {
               await mainLocalLog(
                 'Skipped Invoices ${localInvoices.uuid}, remote is newer ✅',
@@ -1439,22 +1216,13 @@ class InvoicesProvider extends ChangeNotifier {
           }
         }
 
-        await UpdatedInvoicesFunc()
-            .clearupdatedInvoiceUpdatedInvoices();
-        await mainLocalLog(
-          'Unsynced updated Invoices cleared',
-        );
-        await mainLocalLog(
-          'Mounted, refreshing Invoices ✅',
-        );
-        await loadInvoices(
-          returnShopProvider().userShop()!.shopId!,
-        );
+        await UpdatedInvoicesFunc().clearupdatedInvoiceUpdatedInvoices();
+        await mainLocalLog('Unsynced updated Invoices cleared');
+        await mainLocalLog('Mounted, refreshing Invoices ✅');
+        await loadInvoices(returnShopProvider().userShop()!.shopId!);
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Invoices update failed ❌: $e',
-      );
+      await mainLocalLog('Batch Invoices update failed ❌: $e');
     }
   }
 
@@ -1509,10 +1277,9 @@ class InvoicesProvider extends ChangeNotifier {
 
     var res = grouped.values.toList();
     res.sort(
-      (a, b) => ((a.staffName ?? 'Not Set').toLowerCase())
-          .compareTo(
-            (b.staffName ?? 'Not Set').toLowerCase(),
-          ),
+      (a, b) => ((a.staffName ?? 'Not Set').toLowerCase()).compareTo(
+        (b.staffName ?? 'Not Set').toLowerCase(),
+      ),
     );
     return res;
   }
@@ -1527,9 +1294,7 @@ class InvoicesProvider extends ChangeNotifier {
         grouped[customerUuid] = CustomerGroupInvoices(
           customerUuid: customerUuid ?? '',
           customerName:
-              customerUuid == null
-                  ? null
-                  : invoice.customerName ?? '',
+              customerUuid == null ? null : invoice.customerName ?? '',
           number: 0,
           totalPaid: 0,
           totalBalance: 0,
@@ -1549,17 +1314,14 @@ class InvoicesProvider extends ChangeNotifier {
 
     var res = grouped.values.toList();
     res.sort(
-      (a, b) =>
-          ((a.customerName ?? 'Not Set').toLowerCase())
-              .compareTo(
-                (b.customerName ?? 'Not Set').toLowerCase(),
-              ),
+      (a, b) => ((a.customerName ?? 'Not Set').toLowerCase()).compareTo(
+        (b.customerName ?? 'Not Set').toLowerCase(),
+      ),
     );
     return res;
   }
 
-  List<ChannelGroupInvoices>
-  groupInvoicesByPaymentChannel() {
+  List<ChannelGroupInvoices> groupInvoicesByPaymentChannel() {
     final Map<String, ChannelGroupInvoices> grouped = {};
 
     for (final invoice in returnAllOrSetDateInvoices()) {
@@ -1589,22 +1351,17 @@ class InvoicesProvider extends ChangeNotifier {
     return res;
   }
 
-  List<DepartmentGroupInvoices>
-  groupInvoicesByDepartment() {
-    final Map<String?, DepartmentGroupInvoices> grouped =
-        {};
+  List<DepartmentGroupInvoices> groupInvoicesByDepartment() {
+    final Map<String?, DepartmentGroupInvoices> grouped = {};
 
     for (final invoice in returnAllOrSetDateInvoices()) {
-      final String? departmentUuid =
-          invoice.departmentUuidNew;
+      final String? departmentUuid = invoice.departmentUuidNew;
 
       if (!grouped.containsKey(departmentUuid)) {
         grouped[departmentUuid] = DepartmentGroupInvoices(
           departmentUuid: departmentUuid ?? '',
           departmentName:
-              departmentUuid == null
-                  ? null
-                  : invoice.departmentName ?? '',
+              departmentUuid == null ? null : invoice.departmentName ?? '',
           number: 0,
           totalPaid: 0,
           totalBalance: 0,
@@ -1624,11 +1381,9 @@ class InvoicesProvider extends ChangeNotifier {
 
     var res = grouped.values.toList();
     res.sort(
-      (a, b) => ((a.departmentName ?? 'Not Set')
-              .toLowerCase())
-          .compareTo(
-            (b.departmentName ?? 'Not Set').toLowerCase(),
-          ),
+      (a, b) => ((a.departmentName ?? 'Not Set').toLowerCase()).compareTo(
+        (b.departmentName ?? 'Not Set').toLowerCase(),
+      ),
     );
     return res;
   }
@@ -1636,16 +1391,10 @@ class InvoicesProvider extends ChangeNotifier {
   int sortColumnIndex = 0;
   bool sortAscending = true;
 
-  List<DataColumn> _headingTotal({
-    required BuildContext context,
-  }) {
+  List<DataColumn> _headingTotal({required BuildContext context}) {
     return [
       DataColumn2(label: HeadingTextWidget(title: '#Id')),
-      DataColumn2(
-        size: ColumnSize.L,
-
-        label: HeadingTextWidget(title: 'Staff'),
-      ),
+      DataColumn2(size: ColumnSize.L, label: HeadingTextWidget(title: 'Staff')),
       DataColumn2(
         size: ColumnSize.L,
 
@@ -1666,43 +1415,26 @@ class InvoicesProvider extends ChangeNotifier {
       //   label: HeadingTextWidget(title: 'VAT'),
       // ),
       DataColumn2(label: HeadingTextWidget(title: 'Paid')),
-      DataColumn2(
-        label: HeadingTextWidget(title: 'Balance'),
-      ),
-      DataColumn2(
-        label: HeadingTextWidget(title: 'Sub-Total'),
-      ),
-      DataColumn2(
-        label: HeadingTextWidget(title: 'Revenue'),
-      ),
+      DataColumn2(label: HeadingTextWidget(title: 'Balance')),
+      DataColumn2(label: HeadingTextWidget(title: 'Sub-Total')),
+      DataColumn2(label: HeadingTextWidget(title: 'Revenue')),
     ];
   }
 
   List<DataColumn> _headingStaffs() {
     return [
-      DataColumn2(
-        size: ColumnSize.L,
-
-        label: HeadingTextWidget(title: 'Staff'),
-      ),
+      DataColumn2(size: ColumnSize.L, label: HeadingTextWidget(title: 'Staff')),
       DataColumn2(
         size: ColumnSize.S,
         label: HeadingTextWidget(title: 'Quantity'),
       ),
-      DataColumn2(
-        size: ColumnSize.M,
-        label: HeadingTextWidget(title: 'Paid'),
-      ),
+      DataColumn2(size: ColumnSize.M, label: HeadingTextWidget(title: 'Paid')),
       DataColumn2(
         size: ColumnSize.M,
         label: HeadingTextWidget(title: 'Balance'),
       ),
-      DataColumn2(
-        label: HeadingTextWidget(title: 'Sub-Total'),
-      ),
-      DataColumn2(
-        label: HeadingTextWidget(title: 'Revenue'),
-      ),
+      DataColumn2(label: HeadingTextWidget(title: 'Sub-Total')),
+      DataColumn2(label: HeadingTextWidget(title: 'Revenue')),
     ];
   }
 
@@ -1717,20 +1449,13 @@ class InvoicesProvider extends ChangeNotifier {
         size: ColumnSize.S,
         label: HeadingTextWidget(title: 'Quantity'),
       ),
-      DataColumn2(
-        size: ColumnSize.M,
-        label: HeadingTextWidget(title: 'Paid'),
-      ),
+      DataColumn2(size: ColumnSize.M, label: HeadingTextWidget(title: 'Paid')),
       DataColumn2(
         size: ColumnSize.M,
         label: HeadingTextWidget(title: 'Balance'),
       ),
-      DataColumn2(
-        label: HeadingTextWidget(title: 'Sub-Total'),
-      ),
-      DataColumn2(
-        label: HeadingTextWidget(title: 'Revenue'),
-      ),
+      DataColumn2(label: HeadingTextWidget(title: 'Sub-Total')),
+      DataColumn2(label: HeadingTextWidget(title: 'Revenue')),
     ];
   }
 
@@ -1744,20 +1469,13 @@ class InvoicesProvider extends ChangeNotifier {
         size: ColumnSize.S,
         label: HeadingTextWidget(title: 'Quantity'),
       ),
-      DataColumn2(
-        size: ColumnSize.M,
-        label: HeadingTextWidget(title: 'Paid'),
-      ),
+      DataColumn2(size: ColumnSize.M, label: HeadingTextWidget(title: 'Paid')),
       DataColumn2(
         size: ColumnSize.M,
         label: HeadingTextWidget(title: 'Balance'),
       ),
-      DataColumn2(
-        label: HeadingTextWidget(title: 'Sub-Total'),
-      ),
-      DataColumn2(
-        label: HeadingTextWidget(title: 'Revenue'),
-      ),
+      DataColumn2(label: HeadingTextWidget(title: 'Sub-Total')),
+      DataColumn2(label: HeadingTextWidget(title: 'Revenue')),
     ];
   }
 
@@ -1771,20 +1489,13 @@ class InvoicesProvider extends ChangeNotifier {
         size: ColumnSize.S,
         label: HeadingTextWidget(title: 'Quantity'),
       ),
-      DataColumn2(
-        size: ColumnSize.M,
-        label: HeadingTextWidget(title: 'Paid'),
-      ),
+      DataColumn2(size: ColumnSize.M, label: HeadingTextWidget(title: 'Paid')),
       DataColumn2(
         size: ColumnSize.M,
         label: HeadingTextWidget(title: 'Balance'),
       ),
-      DataColumn2(
-        label: HeadingTextWidget(title: 'Sub-Total'),
-      ),
-      DataColumn2(
-        label: HeadingTextWidget(title: 'Revenue'),
-      ),
+      DataColumn2(label: HeadingTextWidget(title: 'Sub-Total')),
+      DataColumn2(label: HeadingTextWidget(title: 'Revenue')),
     ];
   }
 
@@ -1816,10 +1527,7 @@ class InvoicesProvider extends ChangeNotifier {
         .fold(0, (p, n) => p + n);
   }
 
-  List<DataRow> _rowTotal({
-    required BuildContext context,
-    required int index,
-  }) {
+  List<DataRow> _rowTotal({required BuildContext context, required int index}) {
     return [
       ...(index == 1
               ? returnAllOrSetDateInvoices()
@@ -1831,24 +1539,17 @@ class InvoicesProvider extends ChangeNotifier {
             return DataRow2(
               specificRowHeight:
                   (item.staffName).length > 18 ||
-                          (item.customerName ?? '').length >
-                              18
+                          (item.customerName ?? '').length > 18
                       ? 40
                       : 30,
               cells: [
                 DataCell(
-                  Text(
-                    "#${item.barcode ?? returnOnlyDigits(item.uuid ?? '')}",
-                  ),
+                  Text("#${item.barcode ?? returnOnlyDigits(item.uuid ?? '')}"),
                 ),
                 DataCell(Text(item.staffName)),
-                DataCell(
-                  Text(item.customerName ?? 'Not Set'),
-                ),
+                DataCell(Text(item.customerName ?? 'Not Set')),
                 DataCell(Text(item.paymentMethod)),
-                DataCell(
-                  Text(formatDateTime(item.createdAt)),
-                ),
+                DataCell(Text(formatDateTime(item.createdAt))),
                 DataCell(Text(formatTime(item.createdAt))),
                 DataCell(
                   Text(
@@ -1865,10 +1566,7 @@ class InvoicesProvider extends ChangeNotifier {
                 ),
                 DataCell(
                   Text(
-                    formatMoneyBig(
-                      amount: item.getBalance(),
-                      context: context,
-                    ),
+                    formatMoneyBig(amount: item.getBalance(), context: context),
                   ),
                 ),
                 DataCell(
@@ -1886,9 +1584,7 @@ class InvoicesProvider extends ChangeNotifier {
                       MaterialPageRoute(
                         builder: (context) {
                           return ReceiptPage(
-                            response: CheckoutResponse(
-                              invoice: item,
-                            ),
+                            response: CheckoutResponse(invoice: item),
                             isMain: false,
                           );
                         },
@@ -1896,8 +1592,7 @@ class InvoicesProvider extends ChangeNotifier {
                     );
                   },
                   Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     spacing: 5,
                     children: [
                       Text(
@@ -1924,9 +1619,7 @@ class InvoicesProvider extends ChangeNotifier {
           color: Colors.grey.shade300,
         ),
         cells: [
-          DataCell(
-            Text(style: TextStyle(fontSize: 14), 'TOTAL'),
-          ),
+          DataCell(Text(style: TextStyle(fontSize: 14), 'TOTAL')),
           DataCell(Text('')),
           DataCell(Text('')),
           DataCell(Text('')),
@@ -1936,19 +1629,13 @@ class InvoicesProvider extends ChangeNotifier {
           DataCell(
             Text(
               style: TextStyle(fontSize: 14),
-              formatMoneyBig(
-                amount: rowTotalTotalPaid(),
-                context: context,
-              ),
+              formatMoneyBig(amount: rowTotalTotalPaid(), context: context),
             ),
           ),
           DataCell(
             Text(
               style: TextStyle(fontSize: 14),
-              formatMoneyBig(
-                amount: rowTotalTotalBalance(),
-                context: context,
-              ),
+              formatMoneyBig(amount: rowTotalTotalBalance(), context: context),
             ),
           ),
           DataCell(
@@ -1963,10 +1650,7 @@ class InvoicesProvider extends ChangeNotifier {
           DataCell(
             Text(
               style: TextStyle(fontSize: 16),
-              formatMoneyBig(
-                amount: rowTotalTotalRevenue(),
-                context: context,
-              ),
+              formatMoneyBig(amount: rowTotalTotalRevenue(), context: context),
             ),
           ),
         ],
@@ -2009,34 +1693,19 @@ class InvoicesProvider extends ChangeNotifier {
         .fold<double>(0, (p, n) => p + n);
   }
 
-  List<DataRow> _rowStaffs({
-    required BuildContext context,
-  }) {
+  List<DataRow> _rowStaffs({required BuildContext context}) {
     return [
       ...groupInvoicesByStaff().map((item) {
         return DataRow2(
-          specificRowHeight:
-              (item.staffName ?? '').length > 15 ? 40 : 30,
+          specificRowHeight: (item.staffName ?? '').length > 15 ? 40 : 30,
           cells: [
             DataCell(Text(item.staffName ?? 'Not Set')),
+            DataCell(Text(formatLargeNumberDouble(item.number))),
             DataCell(
-              Text(formatLargeNumberDouble(item.number)),
+              Text(formatMoneyBig(amount: item.totalPaid, context: context)),
             ),
             DataCell(
-              Text(
-                formatMoneyBig(
-                  amount: item.totalPaid,
-                  context: context,
-                ),
-              ),
-            ),
-            DataCell(
-              Text(
-                formatMoneyBig(
-                  amount: item.totalBalance,
-                  context: context,
-                ),
-              ),
+              Text(formatMoneyBig(amount: item.totalBalance, context: context)),
             ),
             DataCell(
               Text(
@@ -2047,12 +1716,7 @@ class InvoicesProvider extends ChangeNotifier {
               ),
             ),
             DataCell(
-              Text(
-                formatMoneyBig(
-                  amount: item.totalRevenue,
-                  context: context,
-                ),
-              ),
+              Text(formatMoneyBig(amount: item.totalRevenue, context: context)),
             ),
           ],
         );
@@ -2064,33 +1728,23 @@ class InvoicesProvider extends ChangeNotifier {
           color: Colors.grey.shade300,
         ),
         cells: [
-          DataCell(
-            Text(style: TextStyle(fontSize: 14), 'TOTAL'),
-          ),
+          DataCell(Text(style: TextStyle(fontSize: 14), 'TOTAL')),
           DataCell(
             Text(
               style: TextStyle(fontSize: 14),
-              formatLargeNumberDouble(
-                rowStaffsTotalQuantity(),
-              ),
+              formatLargeNumberDouble(rowStaffsTotalQuantity()),
             ),
           ),
           DataCell(
             Text(
               style: TextStyle(fontSize: 14),
-              formatMoneyBig(
-                amount: rowStaffsTotalPaid(),
-                context: context,
-              ),
+              formatMoneyBig(amount: rowStaffsTotalPaid(), context: context),
             ),
           ),
           DataCell(
             Text(
               style: TextStyle(fontSize: 14),
-              formatMoneyBig(
-                amount: rowStaffsTotalBalance(),
-                context: context,
-              ),
+              formatMoneyBig(amount: rowStaffsTotalBalance(), context: context),
             ),
           ),
           DataCell(
@@ -2105,10 +1759,7 @@ class InvoicesProvider extends ChangeNotifier {
           DataCell(
             Text(
               style: TextStyle(fontSize: 14),
-              formatMoneyBig(
-                amount: rowStaffsTotalRevenue(),
-                context: context,
-              ),
+              formatMoneyBig(amount: rowStaffsTotalRevenue(), context: context),
             ),
           ),
         ],
@@ -2151,36 +1802,19 @@ class InvoicesProvider extends ChangeNotifier {
         .fold<double>(0, (p, n) => p + n);
   }
 
-  List<DataRow> _rowCustomers({
-    required BuildContext context,
-  }) {
+  List<DataRow> _rowCustomers({required BuildContext context}) {
     return [
       ...groupInvoicesByCustomer().map((item) {
         return DataRow2(
-          specificRowHeight:
-              (item.customerName ?? '').length > 15
-                  ? 40
-                  : 30,
+          specificRowHeight: (item.customerName ?? '').length > 15 ? 40 : 30,
           cells: [
             DataCell(Text(item.customerName ?? 'Not Set')),
+            DataCell(Text(formatLargeNumberDouble(item.number))),
             DataCell(
-              Text(formatLargeNumberDouble(item.number)),
+              Text(formatMoneyBig(amount: item.totalPaid, context: context)),
             ),
             DataCell(
-              Text(
-                formatMoneyBig(
-                  amount: item.totalPaid,
-                  context: context,
-                ),
-              ),
-            ),
-            DataCell(
-              Text(
-                formatMoneyBig(
-                  amount: item.totalBalance,
-                  context: context,
-                ),
-              ),
+              Text(formatMoneyBig(amount: item.totalBalance, context: context)),
             ),
             DataCell(
               Text(
@@ -2191,12 +1825,7 @@ class InvoicesProvider extends ChangeNotifier {
               ),
             ),
             DataCell(
-              Text(
-                formatMoneyBig(
-                  amount: item.totalRevenue,
-                  context: context,
-                ),
-              ),
+              Text(formatMoneyBig(amount: item.totalRevenue, context: context)),
             ),
           ],
         );
@@ -2208,24 +1837,17 @@ class InvoicesProvider extends ChangeNotifier {
           color: Colors.grey.shade300,
         ),
         cells: [
-          DataCell(
-            Text(style: TextStyle(fontSize: 14), 'TOTAL'),
-          ),
+          DataCell(Text(style: TextStyle(fontSize: 14), 'TOTAL')),
           DataCell(
             Text(
               style: TextStyle(fontSize: 14),
-              formatLargeNumberDouble(
-                rowCustomersTotalQuantity(),
-              ),
+              formatLargeNumberDouble(rowCustomersTotalQuantity()),
             ),
           ),
           DataCell(
             Text(
               style: TextStyle(fontSize: 14),
-              formatMoneyBig(
-                amount: rowCustomersTotalPaid(),
-                context: context,
-              ),
+              formatMoneyBig(amount: rowCustomersTotalPaid(), context: context),
             ),
           ),
           DataCell(
@@ -2295,33 +1917,19 @@ class InvoicesProvider extends ChangeNotifier {
         .fold<double>(0, (p, n) => p + n);
   }
 
-  List<DataRow> _rowChannel({
-    required BuildContext context,
-  }) {
+  List<DataRow> _rowChannel({required BuildContext context}) {
     return [
       ...groupInvoicesByPaymentChannel().map((item) {
         return DataRow2(
           specificRowHeight: 30,
           cells: [
             DataCell(Text(item.paymentMethod)),
+            DataCell(Text(formatLargeNumberDouble(item.number))),
             DataCell(
-              Text(formatLargeNumberDouble(item.number)),
+              Text(formatMoneyBig(amount: item.totalPaid, context: context)),
             ),
             DataCell(
-              Text(
-                formatMoneyBig(
-                  amount: item.totalPaid,
-                  context: context,
-                ),
-              ),
-            ),
-            DataCell(
-              Text(
-                formatMoneyBig(
-                  amount: item.totalBalance,
-                  context: context,
-                ),
-              ),
+              Text(formatMoneyBig(amount: item.totalBalance, context: context)),
             ),
             DataCell(
               Text(
@@ -2333,15 +1941,11 @@ class InvoicesProvider extends ChangeNotifier {
             ),
             DataCell(
               Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 spacing: 5,
                 children: [
                   Text(
-                    formatMoneyBig(
-                      amount: item.totalRevenue,
-                      context: context,
-                    ),
+                    formatMoneyBig(amount: item.totalRevenue, context: context),
                   ),
                 ],
               ),
@@ -2356,24 +1960,17 @@ class InvoicesProvider extends ChangeNotifier {
           color: Colors.grey.shade300,
         ),
         cells: [
-          DataCell(
-            Text(style: TextStyle(fontSize: 14), 'TOTAL'),
-          ),
+          DataCell(Text(style: TextStyle(fontSize: 14), 'TOTAL')),
           DataCell(
             Text(
               style: TextStyle(fontSize: 14),
-              formatLargeNumberDouble(
-                rowChannelTotalQuantity(),
-              ),
+              formatLargeNumberDouble(rowChannelTotalQuantity()),
             ),
           ),
           DataCell(
             Text(
               style: TextStyle(fontSize: 14),
-              formatMoneyBig(
-                amount: rowChannelTotalPaid(),
-                context: context,
-              ),
+              formatMoneyBig(amount: rowChannelTotalPaid(), context: context),
             ),
           ),
           DataCell(
@@ -2443,35 +2040,19 @@ class InvoicesProvider extends ChangeNotifier {
         .fold<double>(0, (p, n) => p + n);
   }
 
-  List<DataRow> _rowDepartment({
-    required BuildContext context,
-  }) {
+  List<DataRow> _rowDepartment({required BuildContext context}) {
     return [
       ...groupInvoicesByDepartment().map((item) {
         return DataRow2(
           specificRowHeight: 30,
           cells: [
+            DataCell(Text(item.departmentName ?? 'Not Set')),
+            DataCell(Text(formatLargeNumberDouble(item.number))),
             DataCell(
-              Text(item.departmentName ?? 'Not Set'),
+              Text(formatMoneyBig(amount: item.totalPaid, context: context)),
             ),
             DataCell(
-              Text(formatLargeNumberDouble(item.number)),
-            ),
-            DataCell(
-              Text(
-                formatMoneyBig(
-                  amount: item.totalPaid,
-                  context: context,
-                ),
-              ),
-            ),
-            DataCell(
-              Text(
-                formatMoneyBig(
-                  amount: item.totalBalance,
-                  context: context,
-                ),
-              ),
+              Text(formatMoneyBig(amount: item.totalBalance, context: context)),
             ),
             DataCell(
               Text(
@@ -2483,15 +2064,11 @@ class InvoicesProvider extends ChangeNotifier {
             ),
             DataCell(
               Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 spacing: 5,
                 children: [
                   Text(
-                    formatMoneyBig(
-                      amount: item.totalRevenue,
-                      context: context,
-                    ),
+                    formatMoneyBig(amount: item.totalRevenue, context: context),
                   ),
                 ],
               ),
@@ -2506,15 +2083,11 @@ class InvoicesProvider extends ChangeNotifier {
           color: Colors.grey.shade300,
         ),
         cells: [
-          DataCell(
-            Text(style: TextStyle(fontSize: 14), 'TOTAL'),
-          ),
+          DataCell(Text(style: TextStyle(fontSize: 14), 'TOTAL')),
           DataCell(
             Text(
               style: TextStyle(fontSize: 14),
-              formatLargeNumberDouble(
-                rowDepartmentsTotalQuantity(),
-              ),
+              formatLargeNumberDouble(rowDepartmentsTotalQuantity()),
             ),
           ),
           DataCell(
@@ -2558,10 +2131,7 @@ class InvoicesProvider extends ChangeNotifier {
     ];
   }
 
-  List<DataRow> row({
-    required int sortIndex,
-    required BuildContext context,
-  }) {
+  List<DataRow> row({required int sortIndex, required BuildContext context}) {
     if (sortIndex == 1) {
       return _rowTotal(context: context, index: 1);
     } else if (sortIndex == 2) {
@@ -2583,9 +2153,7 @@ class InvoicesProvider extends ChangeNotifier {
     required int sortIndex,
     required BuildContext context,
   }) {
-    if (sortIndex == 1 ||
-        sortIndex == 2 ||
-        sortIndex == 3) {
+    if (sortIndex == 1 || sortIndex == 2 || sortIndex == 3) {
       return _headingTotal(context: context);
     } else if (sortIndex == 4) {
       return _headingStaffs();

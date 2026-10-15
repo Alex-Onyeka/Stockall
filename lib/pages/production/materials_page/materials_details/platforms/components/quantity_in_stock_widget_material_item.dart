@@ -34,9 +34,7 @@ Widget quantityInStockWidgetMaterialItem({
             ),
           ],
         ),
-        UnitsGridSectionWidgetMaterialItem(
-          material: material,
-        ),
+        UnitsGridSectionWidgetMaterialItem(material: material),
         Visibility(
           visible: material.canUpdateQuantity(),
           child: Row(
@@ -46,10 +44,7 @@ Widget quantityInStockWidgetMaterialItem({
                   child: EditButton(
                     theme: theme,
                     action: () {
-                      updateMaterialItemQuantity(
-                        context,
-                        material,
-                      );
+                      updateMaterialItemQuantity(context, material);
                     },
                     text: 'Edit Qtty',
                   ),
@@ -63,13 +58,9 @@ Widget quantityInStockWidgetMaterialItem({
   );
 }
 
-class UnitsGridSectionWidgetMaterialItem
-    extends StatefulWidget {
+class UnitsGridSectionWidgetMaterialItem extends StatefulWidget {
   final MaterialClass material;
-  const UnitsGridSectionWidgetMaterialItem({
-    super.key,
-    required this.material,
-  });
+  const UnitsGridSectionWidgetMaterialItem({super.key, required this.material});
 
   @override
   State<UnitsGridSectionWidgetMaterialItem> createState() =>
@@ -83,15 +74,11 @@ class _UnitsGridSectionWidgetMaterialItemState
   }
 
   int getFirstEndRand() {
-    return widget.material.getUnitsList().length > 2
-        ? 2
-        : 1;
+    return widget.material.getUnitsList().length > 2 ? 2 : 1;
   }
 
   int getSecondEndRand() {
-    return widget.material.getUnitsList().length > 4
-        ? 4
-        : 3;
+    return widget.material.getUnitsList().length > 4 ? 4 : 3;
   }
 
   @override
@@ -99,16 +86,12 @@ class _UnitsGridSectionWidgetMaterialItemState
     final units = widget.material.getUnitsList();
 
     return Column(
-      children: List.generate((units.length / 2).ceil(), (
-        rowIndex,
-      ) {
+      children: List.generate((units.length / 2).ceil(), (rowIndex) {
         final start = rowIndex * 2;
         final end = (start + 2).clamp(0, units.length);
 
         return Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: 3.0,
-          ),
+          padding: const EdgeInsets.symmetric(vertical: 3.0),
           child: Row(
             spacing: 5,
             children:
@@ -116,10 +99,7 @@ class _UnitsGridSectionWidgetMaterialItemState
                     .sublist(start, end)
                     .map(
                       (item) => Expanded(
-                        child:
-                            QuantityWidgetMaterialItemDetails(
-                              unit: item,
-                            ),
+                        child: QuantityWidgetMaterialItemDetails(unit: item),
                       ),
                     )
                     .toList(),
@@ -130,13 +110,9 @@ class _UnitsGridSectionWidgetMaterialItemState
   }
 }
 
-class QuantityWidgetMaterialItemDetails
-    extends StatelessWidget {
+class QuantityWidgetMaterialItemDetails extends StatelessWidget {
   final ProductUnitsClass unit;
-  const QuantityWidgetMaterialItemDetails({
-    super.key,
-    required this.unit,
-  });
+  const QuantityWidgetMaterialItemDetails({super.key, required this.unit});
 
   @override
   Widget build(BuildContext context) {
@@ -144,10 +120,7 @@ class QuantityWidgetMaterialItemDetails
     return Stack(
       children: [
         Container(
-          padding: EdgeInsets.symmetric(
-            vertical: 5,
-            horizontal: 8,
-          ),
+          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(3),
             border: Border.all(
@@ -167,10 +140,7 @@ class QuantityWidgetMaterialItemDetails
               Text(
                 style: TextStyle(
                   fontSize: theme.mobileTexts.b4.fontSize,
-                  color:
-                      unit.isPrimary
-                          ? Colors.grey.shade200
-                          : null,
+                  color: unit.isPrimary ? Colors.grey.shade200 : null,
                 ),
                 "${unit.name}:",
               ),
@@ -178,16 +148,10 @@ class QuantityWidgetMaterialItemDetails
                 style: TextStyle(
                   fontSize: theme.mobileTexts.b4.fontSize,
                   fontWeight: FontWeight.bold,
-                  color:
-                      unit.isPrimary
-                          ? Colors.grey.shade200
-                          : null,
+                  color: unit.isPrimary ? Colors.grey.shade200 : null,
                 ),
                 formatLargeNumberDouble(
-                  unit.getQuantityEquivDivided(
-                    context: context,
-                    index: 3,
-                  ),
+                  unit.getQuantityEquivDivided(context: context, index: 3),
                 ),
               ),
             ],
@@ -197,11 +161,7 @@ class QuantityWidgetMaterialItemDetails
           visible: unit.isPrimary,
           child: Align(
             alignment: AlignmentGeometry.xy(1, 1),
-            child: Icon(
-              size: 13,
-              color: Colors.white,
-              Icons.check,
-            ),
+            child: Icon(size: 13, color: Colors.white, Icons.check),
           ),
         ),
       ],

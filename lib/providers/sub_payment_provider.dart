@@ -4,8 +4,7 @@ import 'package:stockall/main.dart';
 // import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SubPaymentProvider extends ChangeNotifier {
-  static final SubPaymentProvider _instance =
-      SubPaymentProvider._internal();
+  static final SubPaymentProvider _instance = SubPaymentProvider._internal();
   factory SubPaymentProvider() => _instance;
   SubPaymentProvider._internal();
   final String tableName = 'subscription_payments';
@@ -17,18 +16,9 @@ class SubPaymentProvider extends ChangeNotifier {
     currentDuration = duration;
     if (duration == 6) {
       discount =
-          ((utilProvider
-                      .utilityConstants
-                      ?.sixMonthsDiscount ??
-                  0) /
-              100);
+          ((utilProvider.utilityConstants?.sixMonthsDiscount ?? 0) / 100);
     } else if (duration == 12) {
-      discount =
-          ((utilProvider
-                      .utilityConstants
-                      ?.oneYearDiscount ??
-                  0) /
-              100);
+      discount = ((utilProvider.utilityConstants?.oneYearDiscount ?? 0) / 100);
     } else {
       discount = null;
     }
@@ -63,17 +53,13 @@ class SubPaymentProvider extends ChangeNotifier {
   }) async {
     if (plan == 1) {
       if (duration == 1) {
-        await launchUrlMain(
-          "https://flutterwave.com/pay/basic-plan-one-month",
-        );
+        await launchUrlMain("https://flutterwave.com/pay/basic-plan-one-month");
       } else if (duration == 6) {
         await launchUrlMain(
           "https://flutterwave.com/pay/basic-plan-six-months",
         );
       } else {
-        await launchUrlMain(
-          "https://flutterwave.com/pay/basic-plan-one-year",
-        );
+        await launchUrlMain("https://flutterwave.com/pay/basic-plan-one-year");
       }
     } else if (plan == 2) {
       if (duration == 1) {
@@ -113,23 +99,15 @@ class SubPaymentProvider extends ChangeNotifier {
           "https://flutterwave.com/pay/silver-plan-six-months",
         );
       } else {
-        await launchUrlMain(
-          "https://flutterwave.com/pay/silver-plan-one-year",
-        );
+        await launchUrlMain("https://flutterwave.com/pay/silver-plan-one-year");
       }
     } else if (plan == 5) {
       if (duration == 1) {
-        await launchUrlMain(
-          "https://flutterwave.com/pay/gold-plan-one-month",
-        );
+        await launchUrlMain("https://flutterwave.com/pay/gold-plan-one-month");
       } else if (duration == 6) {
-        await launchUrlMain(
-          "https://flutterwave.com/pay/gold-plan-six-months",
-        );
+        await launchUrlMain("https://flutterwave.com/pay/gold-plan-six-months");
       } else {
-        await launchUrlMain(
-          "https://flutterwave.com/pay/gold-plan-one-year",
-        );
+        await launchUrlMain("https://flutterwave.com/pay/gold-plan-one-year");
       }
     }
   }

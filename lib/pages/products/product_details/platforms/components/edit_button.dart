@@ -47,9 +47,7 @@ class EditButton extends StatelessWidget {
                 ),
                 Icon(
                   size: 18,
-                  color:
-                      color ??
-                      theme.lightModeColor.prColor300,
+                  color: color ?? theme.lightModeColor.prColor300,
                   icon ?? Icons.edit_note_rounded,
                 ),
               ],

@@ -24,12 +24,10 @@ class MaterialsPageDesktop extends StatefulWidget {
   const MaterialsPageDesktop({super.key});
 
   @override
-  State<MaterialsPageDesktop> createState() =>
-      _MaterialsPageDesktopState();
+  State<MaterialsPageDesktop> createState() => _MaterialsPageDesktopState();
 }
 
-class _MaterialsPageDesktopState
-    extends State<MaterialsPageDesktop> {
+class _MaterialsPageDesktopState extends State<MaterialsPageDesktop> {
   int currentSelect = 0;
   void changeSelected(int number) {
     currentSelect = number;
@@ -42,8 +40,7 @@ class _MaterialsPageDesktopState
   }
 
   bool isFocus = false;
-  TextEditingController searchController =
-      TextEditingController();
+  TextEditingController searchController = TextEditingController();
 
   bool isLoading = false;
   bool isDeleteLoading = false;
@@ -79,14 +76,11 @@ class _MaterialsPageDesktopState
     super.dispose();
     searchController.dispose();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      returnMaterialsProvider().toggleIsSelectMaterial(
-        false,
-      );
+      returnMaterialsProvider().toggleIsSelectMaterial(false);
     });
   }
 
-  final GlobalKey<ScaffoldState> _scaffoldKey =
-      GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int filterIndex = 0;
   String? categoryUuid;
 
@@ -103,21 +97,15 @@ class _MaterialsPageDesktopState
                         searchController.text.toLowerCase(),
                       ) ||
                       pr.barcode?.toLowerCase() ==
-                          searchController.text
-                              .toLowerCase(),
+                          searchController.text.toLowerCase(),
                 )
                 .toList()
-            : returnMaterialsProvider(
-              context: context,
-            ).materialList();
+            : returnMaterialsProvider(context: context).materialList();
     List<MaterialClass> filterMaterials() {
       switch (currentSelect) {
         case 1:
           return materials
-              .where(
-                (p) =>
-                    p.quantity != 0 && p.quantity != null,
-              )
+              .where((p) => p.quantity != 0 && p.quantity != null)
               .toList();
         case 2:
           return materials
@@ -129,17 +117,11 @@ class _MaterialsPageDesktopState
               )
               .toList();
         case 3:
-          return materials
-              .where((p) => p.quantity == 0)
-              .toList();
+          return materials.where((p) => p.quantity == 0).toList();
         case 4:
-          return materials
-              .where((p) => !p.isManaged)
-              .toList();
+          return materials.where((p) => !p.isManaged).toList();
         case 5:
-          return materials
-              .where((p) => p.departmentUuid == null)
-              .toList();
+          return materials.where((p) => p.departmentUuid == null).toList();
         case 0:
         default:
           return materials;
@@ -149,11 +131,7 @@ class _MaterialsPageDesktopState
     List<MaterialClass> categoryFilterMaterials() {
       if (categoryUuid != null) {
         return materials
-            .where(
-              (pr) =>
-                  pr.categories?.contains(categoryUuid) ==
-                  true,
-            )
+            .where((pr) => pr.categories?.contains(categoryUuid) == true)
             .toList();
       }
       return materials;
@@ -170,10 +148,8 @@ class _MaterialsPageDesktopState
                 width:
                     screenWidth(context) < tabletScreenSmall
                         ? 50
-                        : (screenWidth(context) >
-                                tabletScreenSmall &&
-                            screenWidth(context) <
-                                tabletScreen + 100)
+                        : (screenWidth(context) > tabletScreenSmall &&
+                            screenWidth(context) < tabletScreen + 100)
                         ? 100
                         : 230,
               ),
@@ -181,23 +157,14 @@ class _MaterialsPageDesktopState
                 child: Stack(
                   children: [
                     Container(
-                      margin: EdgeInsets.symmetric(
-                        vertical: 15,
-                      ),
+                      margin: EdgeInsets.symmetric(vertical: 15),
                       padding: EdgeInsets.all(15),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(
-                          15,
-                        ),
+                        borderRadius: BorderRadius.circular(15),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color.fromARGB(
-                              39,
-                              4,
-                              1,
-                              41,
-                            ),
+                            color: const Color.fromARGB(39, 4, 1, 41),
                             blurRadius: 10,
                           ),
                         ],
@@ -212,49 +179,30 @@ class _MaterialsPageDesktopState
                               Material(
                                 color: Colors.transparent,
                                 child: InkWell(
-                                  mouseCursor:
-                                      SystemMouseCursors
-                                          .click,
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        10,
-                                      ),
+                                  mouseCursor: SystemMouseCursors.click,
+                                  borderRadius: BorderRadius.circular(10),
                                   onTap: () async {
                                     await getMaterialList();
                                   },
                                   child: Padding(
-                                    padding:
-                                        const EdgeInsets.all(
-                                          10,
-                                        ),
+                                    padding: const EdgeInsets.all(10),
                                     child: Row(
                                       spacing: 5,
                                       children: [
                                         Visibility(
                                           visible:
-                                              screenWidth(
-                                                context,
-                                              ) >
+                                              screenWidth(context) >
                                               tabletScreenSmall,
                                           child: Text(
                                             style: TextStyle(
                                               fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b3
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
+                                                  theme.mobileTexts.b3.fontSize,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                             'Refresh',
                                           ),
                                         ),
-                                        Icon(
-                                          size: 18,
-                                          Icons
-                                              .refresh_rounded,
-                                        ),
+                                        Icon(size: 18, Icons.refresh_rounded),
                                       ],
                                     ),
                                   ),
@@ -271,20 +219,15 @@ class _MaterialsPageDesktopState
                                           filterIndex = 0;
                                         });
                                         returnMaterialsProvider()
-                                            .toggleIsSelectMaterial(
-                                              false,
-                                            );
+                                            .toggleIsSelectMaterial(false);
                                       },
                                       child: Padding(
-                                        padding:
-                                            const EdgeInsets.symmetric(
-                                              horizontal:
-                                                  10.0,
-                                            ),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 10.0,
+                                        ),
                                         child: Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .spaceBetween,
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
                                               style: TextStyle(
@@ -294,8 +237,7 @@ class _MaterialsPageDesktopState
                                                         .b3
                                                         .fontSize,
                                                 fontWeight:
-                                                    filterIndex ==
-                                                            0
+                                                    filterIndex == 0
                                                         ? FontWeight.bold
                                                         : null,
                                               ),
@@ -303,16 +245,12 @@ class _MaterialsPageDesktopState
                                             ),
                                             Visibility(
                                               visible:
-                                                  filterIndex ==
-                                                      0 &&
+                                                  filterIndex == 0 &&
                                                   !returnMaterialsProvider()
                                                       .isSelectMaterials,
                                               child: Icon(
                                                 size: 17,
-                                                color:
-                                                    Colors
-                                                        .grey
-                                                        .shade700,
+                                                color: Colors.grey.shade700,
                                                 Icons.check,
                                               ),
                                             ),
@@ -326,20 +264,15 @@ class _MaterialsPageDesktopState
                                           filterIndex = 1;
                                         });
                                         returnMaterialsProvider()
-                                            .toggleIsSelectMaterial(
-                                              false,
-                                            );
+                                            .toggleIsSelectMaterial(false);
                                       },
                                       child: Padding(
-                                        padding:
-                                            const EdgeInsets.symmetric(
-                                              horizontal:
-                                                  10.0,
-                                            ),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 10.0,
+                                        ),
                                         child: Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .spaceBetween,
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
                                               style: TextStyle(
@@ -349,23 +282,17 @@ class _MaterialsPageDesktopState
                                                         .b3
                                                         .fontSize,
                                                 fontWeight:
-                                                    filterIndex ==
-                                                            1
+                                                    filterIndex == 1
                                                         ? FontWeight.bold
                                                         : null,
                                               ),
                                               'Categories',
                                             ),
                                             Visibility(
-                                              visible:
-                                                  filterIndex ==
-                                                  1,
+                                              visible: filterIndex == 1,
                                               child: Icon(
                                                 size: 17,
-                                                color:
-                                                    Colors
-                                                        .grey
-                                                        .shade700,
+                                                color: Colors.grey.shade700,
                                                 Icons.check,
                                               ),
                                             ),
@@ -378,30 +305,22 @@ class _MaterialsPageDesktopState
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (
-                                              context,
-                                            ) {
+                                            builder: (context) {
                                               return MaterialsItemHistoryPage(
-                                                fromMaterialsItemDetails:
-                                                    false,
+                                                fromMaterialsItemDetails: false,
                                               );
                                             },
                                           ),
                                         );
                                       },
                                       child: Padding(
-                                        padding:
-                                            const EdgeInsets.symmetric(
-                                              horizontal:
-                                                  10.0,
-                                            ),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 10.0,
+                                        ),
                                         child: Text(
                                           style: TextStyle(
                                             fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b3
-                                                    .fontSize,
+                                                theme.mobileTexts.b3.fontSize,
                                           ),
                                           'View History',
                                         ),
@@ -412,25 +331,19 @@ class _MaterialsPageDesktopState
                                         if (returnMaterialsProvider()
                                             .isSelectMaterials) {
                                           returnMaterialsProvider()
-                                              .toggleIsSelectMaterial(
-                                                false,
-                                              );
+                                              .toggleIsSelectMaterial(false);
                                         } else {
                                           returnMaterialsProvider()
-                                              .toggleIsSelectMaterial(
-                                                true,
-                                              );
+                                              .toggleIsSelectMaterial(true);
                                         }
                                         setState(() {
                                           filterIndex = 0;
                                         });
                                       },
                                       child: Padding(
-                                        padding:
-                                            const EdgeInsets.symmetric(
-                                              horizontal:
-                                                  10.0,
-                                            ),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 10.0,
+                                        ),
                                         child: Row(
                                           spacing: 5,
                                           children: [
@@ -442,8 +355,7 @@ class _MaterialsPageDesktopState
                                                         .b3
                                                         .fontSize,
                                                 fontWeight:
-                                                    filterIndex ==
-                                                            2
+                                                    filterIndex == 2
                                                         ? FontWeight.bold
                                                         : null,
                                               ),
@@ -458,10 +370,7 @@ class _MaterialsPageDesktopState
                                                       .isSelectMaterials,
                                               child: Icon(
                                                 size: 17,
-                                                color:
-                                                    Colors
-                                                        .grey
-                                                        .shade700,
+                                                color: Colors.grey.shade700,
                                                 Icons.clear,
                                               ),
                                             ),
@@ -472,12 +381,8 @@ class _MaterialsPageDesktopState
                                   ];
                                 },
                                 child: Container(
-                                  padding: EdgeInsets.all(
-                                    5,
-                                  ),
-                                  child: Icon(
-                                    Icons.more_vert_rounded,
-                                  ),
+                                  padding: EdgeInsets.all(5),
+                                  child: Icon(Icons.more_vert_rounded),
                                 ),
                               ),
                             ],
@@ -485,9 +390,7 @@ class _MaterialsPageDesktopState
                         ),
                         floatingActionButton: Visibility(
                           visible: authorization(
-                            authorized:
-                                Authorizations()
-                                    .addMaterials,
+                            authorized: Authorizations().addMaterials,
                           ),
                           child: FloatingActionButtonMain(
                             action: () {
@@ -504,33 +407,27 @@ class _MaterialsPageDesktopState
                                 });
                               });
                             },
-                            color:
-                                theme
-                                    .lightModeColor
-                                    .secColor100,
+                            color: theme.lightModeColor.secColor100,
                             text: 'Add Materials',
                             theme: theme,
                           ),
                         ),
                         floatingActionButtonLocation:
-                            FloatingActionButtonLocation
-                                .endFloat,
+                            FloatingActionButtonLocation.endFloat,
                         body: Stack(
                           children: [
                             Column(
                               children: [
                                 SizedBox(height: 10),
                                 Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(
-                                        horizontal: 30.0,
-                                      ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 30.0,
+                                  ),
                                   child: TextFieldBarcode(
                                     clearTextField: () {
                                       setState(() {});
                                     },
-                                    searchController:
-                                        searchController,
+                                    searchController: searchController,
                                     onChanged: (value) {
                                       setState(() {});
                                     },
@@ -542,109 +439,90 @@ class _MaterialsPageDesktopState
                                   child: SizedBox(
                                     child: Builder(
                                       builder: (context) {
-                                        if (materials
-                                            .isEmpty) {
+                                        if (materials.isEmpty) {
                                           return Center(
                                             child: SingleChildScrollView(
                                               child: RefreshIndicator(
-                                                onRefresh:
-                                                    getMaterialList,
+                                                onRefresh: getMaterialList,
                                                 color:
                                                     theme
                                                         .lightModeColor
                                                         .prColor300,
-                                                backgroundColor:
-                                                    Colors
-                                                        .white,
-                                                displacement:
-                                                    10,
+                                                backgroundColor: Colors.white,
+                                                displacement: 10,
                                                 child: EmptyWidgetDisplay(
-                                                  buttonText:
-                                                      'Add Item',
+                                                  buttonText: 'Add Item',
                                                   subText:
                                                       'Click on the button below to start adding Materials to your store.',
                                                   title:
                                                       'You have no Item Under this Category',
-                                                  icon:
-                                                      Icons
-                                                          .clear,
-                                                  height:
-                                                      35,
+                                                  icon: Icons.clear,
+                                                  height: 35,
                                                   action: () {
                                                     if (authorization(
                                                       authorized:
-                                                          Authorizations().addMaterials,
+                                                          Authorizations()
+                                                              .addMaterials,
                                                     )) {
                                                       Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
-                                                          builder: (
-                                                            context,
-                                                          ) {
+                                                          builder: (context) {
                                                             return AddMaterial();
                                                           },
                                                         ),
-                                                      ).then((
-                                                        _,
-                                                      ) {
+                                                      ).then((_) {
                                                         if (context.mounted) {}
                                                       });
                                                     }
                                                   },
-                                                  theme:
-                                                      theme,
+                                                  theme: theme,
                                                   altAction: () async {
                                                     await returnMaterialsProvider()
                                                         .getMaterials();
                                                   },
-                                                  altActionText:
-                                                      'Refresh',
-                                                  altIcon:
-                                                      Icons
-                                                          .refresh,
+                                                  altActionText: 'Refresh',
+                                                  altIcon: Icons.refresh,
                                                 ),
                                               ),
                                             ),
                                           );
                                         } else {
                                           return Padding(
-                                            padding:
-                                                const EdgeInsets.fromLTRB(
-                                                  10.0,
-                                                  15,
-                                                  10,
-                                                  15,
-                                                ),
+                                            padding: const EdgeInsets.fromLTRB(
+                                              10.0,
+                                              15,
+                                              10,
+                                              15,
+                                            ),
                                             child: Column(
                                               children: [
                                                 Padding(
-                                                  padding: const EdgeInsets.symmetric(
-                                                    horizontal:
-                                                        5.0,
-                                                  ),
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 5.0,
+                                                      ),
                                                   child: SizedBox(
-                                                    width:
-                                                        double.infinity,
+                                                    width: double.infinity,
                                                     // height: 40,
                                                     child: Builder(
-                                                      builder: (
-                                                        context,
-                                                      ) {
+                                                      builder: (context) {
                                                         if (returnMaterialsProvider(
-                                                          context:
-                                                              context,
+                                                          context: context,
                                                         ).isSelectMaterials) {
                                                           return Row(
                                                             // spacing:
                                                             //     5,
                                                             mainAxisAlignment:
-                                                                MainAxisAlignment.center,
+                                                                MainAxisAlignment
+                                                                    .center,
                                                             children: [
                                                               MaterialSelectionActionButton(
-                                                                title:
-                                                                    'Delete',
+                                                                title: 'Delete',
                                                                 action: () {
-                                                                  if (returnMaterialsProvider().selectedMaterials.isNotEmpty) {
+                                                                  if (returnMaterialsProvider()
+                                                                      .selectedMaterials
+                                                                      .isNotEmpty) {
                                                                     showDialog(
                                                                       context:
                                                                           context,
@@ -662,12 +540,10 @@ class _MaterialsPageDesktopState
                                                                             Navigator.of(
                                                                               confirmContext,
                                                                             ).pop();
-                                                                            setState(
-                                                                              () {
-                                                                                isDeleteLoading =
-                                                                                    true;
-                                                                              },
-                                                                            );
+                                                                            setState(() {
+                                                                              isDeleteLoading =
+                                                                                  true;
+                                                                            });
                                                                             var res =
                                                                                 await returnMaterialsProvider().deleteSelectedMaterials();
                                                                             if (res ==
@@ -713,9 +589,12 @@ class _MaterialsPageDesktopState
                                                                   }
                                                                 },
                                                                 icon:
-                                                                    Icons.delete_outline_rounded,
+                                                                    Icons
+                                                                        .delete_outline_rounded,
                                                                 color:
-                                                                    Colors.red.shade600,
+                                                                    Colors
+                                                                        .red
+                                                                        .shade600,
                                                               ),
                                                               MaterialSelectionActionButton(
                                                                 title:
@@ -727,33 +606,30 @@ class _MaterialsPageDesktopState
                                                                     loadingAction: (
                                                                       value,
                                                                     ) {
-                                                                      setState(
-                                                                        () {
-                                                                          isDeleteLoading =
-                                                                              value;
-                                                                        },
-                                                                      );
+                                                                      setState(() {
+                                                                        isDeleteLoading =
+                                                                            value;
+                                                                      });
                                                                     },
                                                                   );
                                                                 },
                                                                 icon:
-                                                                    Icons.control_point_duplicate_rounded,
+                                                                    Icons
+                                                                        .control_point_duplicate_rounded,
                                                                 color:
                                                                     Colors.grey,
                                                               ),
                                                               MaterialSelectionActionButton(
-                                                                title:
-                                                                    'Cancel',
+                                                                title: 'Cancel',
                                                                 action: () {
-                                                                  returnMaterialsProvider().toggleIsSelectMaterial(
-                                                                    false,
-                                                                  );
-                                                                  setState(
-                                                                    () {
-                                                                      filterIndex =
-                                                                          0;
-                                                                    },
-                                                                  );
+                                                                  returnMaterialsProvider()
+                                                                      .toggleIsSelectMaterial(
+                                                                        false,
+                                                                      );
+                                                                  setState(() {
+                                                                    filterIndex =
+                                                                        0;
+                                                                  });
                                                                 },
                                                                 icon:
                                                                     Icons.clear,
@@ -780,19 +656,18 @@ class _MaterialsPageDesktopState
                                                                       spacing:
                                                                           6,
                                                                       mainAxisAlignment:
-                                                                          MainAxisAlignment.center,
+                                                                          MainAxisAlignment
+                                                                              .center,
                                                                       children: [
                                                                         ProductsFilterButton(
                                                                           length:
                                                                               filterMaterials().length,
                                                                           action: () {
-                                                                            setState(
-                                                                              () {
-                                                                                changeSelected(
-                                                                                  0,
-                                                                                );
-                                                                              },
-                                                                            );
+                                                                            setState(() {
+                                                                              changeSelected(
+                                                                                0,
+                                                                              );
+                                                                            });
                                                                           },
                                                                           currentSelected:
                                                                               currentSelect,
@@ -807,13 +682,11 @@ class _MaterialsPageDesktopState
                                                                           length:
                                                                               filterMaterials().length,
                                                                           action: () {
-                                                                            setState(
-                                                                              () {
-                                                                                changeSelected(
-                                                                                  1,
-                                                                                );
-                                                                              },
-                                                                            );
+                                                                            setState(() {
+                                                                              changeSelected(
+                                                                                1,
+                                                                              );
+                                                                            });
                                                                           },
                                                                           currentSelected:
                                                                               currentSelect,
@@ -828,13 +701,11 @@ class _MaterialsPageDesktopState
                                                                           length:
                                                                               filterMaterials().length,
                                                                           action: () {
-                                                                            setState(
-                                                                              () {
-                                                                                changeSelected(
-                                                                                  2,
-                                                                                );
-                                                                              },
-                                                                            );
+                                                                            setState(() {
+                                                                              changeSelected(
+                                                                                2,
+                                                                              );
+                                                                            });
                                                                           },
                                                                           currentSelected:
                                                                               currentSelect,
@@ -851,13 +722,11 @@ class _MaterialsPageDesktopState
                                                                           currentSelected:
                                                                               currentSelect,
                                                                           action: () {
-                                                                            setState(
-                                                                              () {
-                                                                                changeSelected(
-                                                                                  3,
-                                                                                );
-                                                                              },
-                                                                            );
+                                                                            setState(() {
+                                                                              changeSelected(
+                                                                                3,
+                                                                              );
+                                                                            });
                                                                           },
                                                                           number:
                                                                               3,
@@ -872,13 +741,11 @@ class _MaterialsPageDesktopState
                                                                           currentSelected:
                                                                               currentSelect,
                                                                           action: () {
-                                                                            setState(
-                                                                              () {
-                                                                                changeSelected(
-                                                                                  4,
-                                                                                );
-                                                                              },
-                                                                            );
+                                                                            setState(() {
+                                                                              changeSelected(
+                                                                                4,
+                                                                              );
+                                                                            });
                                                                           },
                                                                           number:
                                                                               4,
@@ -924,7 +791,8 @@ class _MaterialsPageDesktopState
                                                                       spacing:
                                                                           6,
                                                                       mainAxisAlignment:
-                                                                          MainAxisAlignment.center,
+                                                                          MainAxisAlignment
+                                                                              .center,
                                                                       children:
                                                                           returnCategoriesProvider()
                                                                               .categories()
@@ -961,14 +829,15 @@ class _MaterialsPageDesktopState
                                                             if (filterIndex ==
                                                                 0) {
                                                               return Row(
-                                                                spacing:
-                                                                    5,
+                                                                spacing: 5,
                                                                 mainAxisAlignment:
-                                                                    MainAxisAlignment.center,
+                                                                    MainAxisAlignment
+                                                                        .center,
                                                                 children: [
                                                                   ProductsFilterButton(
                                                                     length:
-                                                                        filterMaterials().length,
+                                                                        filterMaterials()
+                                                                            .length,
                                                                     action: () {
                                                                       setState(
                                                                         () {
@@ -980,8 +849,7 @@ class _MaterialsPageDesktopState
                                                                     },
                                                                     currentSelected:
                                                                         currentSelect,
-                                                                    number:
-                                                                        0,
+                                                                    number: 0,
                                                                     title:
                                                                         'All Materials',
                                                                     theme:
@@ -989,7 +857,8 @@ class _MaterialsPageDesktopState
                                                                   ),
                                                                   ProductsFilterButton(
                                                                     length:
-                                                                        filterMaterials().length,
+                                                                        filterMaterials()
+                                                                            .length,
                                                                     action: () {
                                                                       setState(
                                                                         () {
@@ -1001,8 +870,7 @@ class _MaterialsPageDesktopState
                                                                     },
                                                                     currentSelected:
                                                                         currentSelect,
-                                                                    number:
-                                                                        1,
+                                                                    number: 1,
                                                                     title:
                                                                         'In Stock',
                                                                     theme:
@@ -1010,7 +878,8 @@ class _MaterialsPageDesktopState
                                                                   ),
                                                                   ProductsFilterButton(
                                                                     length:
-                                                                        filterMaterials().length,
+                                                                        filterMaterials()
+                                                                            .length,
                                                                     action: () {
                                                                       setState(
                                                                         () {
@@ -1022,8 +891,7 @@ class _MaterialsPageDesktopState
                                                                     },
                                                                     currentSelected:
                                                                         currentSelect,
-                                                                    number:
-                                                                        2,
+                                                                    number: 2,
                                                                     title:
                                                                         'Low Stock',
                                                                     theme:
@@ -1031,7 +899,8 @@ class _MaterialsPageDesktopState
                                                                   ),
                                                                   ProductsFilterButton(
                                                                     length:
-                                                                        filterMaterials().length,
+                                                                        filterMaterials()
+                                                                            .length,
                                                                     currentSelected:
                                                                         currentSelect,
                                                                     action: () {
@@ -1043,8 +912,7 @@ class _MaterialsPageDesktopState
                                                                         },
                                                                       );
                                                                     },
-                                                                    number:
-                                                                        3,
+                                                                    number: 3,
                                                                     title:
                                                                         'Out of Stock',
                                                                     theme:
@@ -1052,7 +920,8 @@ class _MaterialsPageDesktopState
                                                                   ),
                                                                   ProductsFilterButton(
                                                                     length:
-                                                                        filterMaterials().length,
+                                                                        filterMaterials()
+                                                                            .length,
                                                                     currentSelected:
                                                                         currentSelect,
                                                                     action: () {
@@ -1064,8 +933,7 @@ class _MaterialsPageDesktopState
                                                                         },
                                                                       );
                                                                     },
-                                                                    number:
-                                                                        4,
+                                                                    number: 4,
                                                                     title:
                                                                         'UnManaged',
                                                                     theme:
@@ -1073,11 +941,14 @@ class _MaterialsPageDesktopState
                                                                   ),
                                                                   Visibility(
                                                                     visible:
-                                                                        returnShopProvider().userShop()?.manageDepartments ==
+                                                                        returnShopProvider()
+                                                                            .userShop()
+                                                                            ?.manageDepartments ==
                                                                         true,
                                                                     child: ProductsFilterButton(
                                                                       length:
-                                                                          filterMaterials().length,
+                                                                          filterMaterials()
+                                                                              .length,
                                                                       currentSelected:
                                                                           currentSelect,
                                                                       action: () {
@@ -1089,8 +960,7 @@ class _MaterialsPageDesktopState
                                                                           },
                                                                         );
                                                                       },
-                                                                      number:
-                                                                          5,
+                                                                      number: 5,
                                                                       title:
                                                                           'No Department',
                                                                       theme:
@@ -1101,10 +971,10 @@ class _MaterialsPageDesktopState
                                                               );
                                                             } else {
                                                               return Row(
-                                                                spacing:
-                                                                    5,
+                                                                spacing: 5,
                                                                 mainAxisAlignment:
-                                                                    MainAxisAlignment.center,
+                                                                    MainAxisAlignment
+                                                                        .center,
                                                                 children:
                                                                     returnCategoriesProvider()
                                                                         .categories()
@@ -1140,30 +1010,27 @@ class _MaterialsPageDesktopState
                                                     ),
                                                   ),
                                                 ),
-                                                SizedBox(
-                                                  height:
-                                                      10,
-                                                ),
+                                                SizedBox(height: 10),
                                                 Expanded(
                                                   child: Builder(
-                                                    builder: (
-                                                      context,
-                                                    ) {
-                                                      if (filterIndex ==
-                                                          0) {
-                                                        if (filterMaterials().isNotEmpty) {
+                                                    builder: (context) {
+                                                      if (filterIndex == 0) {
+                                                        if (filterMaterials()
+                                                            .isNotEmpty) {
                                                           return RefreshIndicator(
                                                             onRefresh:
                                                                 getMaterialList,
                                                             color:
-                                                                theme.lightModeColor.prColor300,
+                                                                theme
+                                                                    .lightModeColor
+                                                                    .prColor300,
                                                             backgroundColor:
                                                                 Colors.white,
-                                                            displacement:
-                                                                10,
+                                                            displacement: 10,
                                                             child: ListView.builder(
                                                               itemCount:
-                                                                  filterMaterials().length,
+                                                                  filterMaterials()
+                                                                      .length,
                                                               itemBuilder: (
                                                                 context,
                                                                 index,
@@ -1174,7 +1041,8 @@ class _MaterialsPageDesktopState
                                                                 materials =
                                                                     filterMaterials();
 
-                                                                MaterialClass material =
+                                                                MaterialClass
+                                                                material =
                                                                     materials[index];
 
                                                                 return MaterialsTileMain(
@@ -1187,7 +1055,8 @@ class _MaterialsPageDesktopState
                                                                       returnMaterialsProvider(
                                                                             context:
                                                                                 context,
-                                                                          ).selectedMaterials
+                                                                          )
+                                                                          .selectedMaterials
                                                                           .map(
                                                                             (
                                                                               pr,
@@ -1197,10 +1066,12 @@ class _MaterialsPageDesktopState
                                                                           )
                                                                           .toList(),
                                                                   action: () {
-                                                                    if (returnMaterialsProvider().isSelectMaterials) {
-                                                                      returnMaterialsProvider().selectMaterial(
-                                                                        material,
-                                                                      );
+                                                                    if (returnMaterialsProvider()
+                                                                        .isSelectMaterials) {
+                                                                      returnMaterialsProvider()
+                                                                          .selectMaterial(
+                                                                            material,
+                                                                          );
                                                                     } else {
                                                                       Navigator.push(
                                                                         context,
@@ -1215,35 +1086,33 @@ class _MaterialsPageDesktopState
                                                                             );
                                                                           },
                                                                         ),
-                                                                      ).then(
-                                                                        (
-                                                                          _,
-                                                                        ) {
-                                                                          if (context.mounted) {
-                                                                            setState(
-                                                                              () {},
-                                                                            );
-                                                                          }
-                                                                        },
-                                                                      );
+                                                                      ).then((
+                                                                        _,
+                                                                      ) {
+                                                                        if (context
+                                                                            .mounted) {
+                                                                          setState(
+                                                                            () {},
+                                                                          );
+                                                                        }
+                                                                      });
                                                                     }
                                                                   },
                                                                   longPress: () {
-                                                                    returnMaterialsProvider().toggleIsSelectMaterial(
-                                                                      true,
-                                                                    );
-                                                                    setState(
-                                                                      () {
-                                                                        filterIndex =
-                                                                            0;
-                                                                      },
-                                                                    );
-                                                                    returnMaterialsProvider().selectMaterial(
-                                                                      material,
-                                                                    );
+                                                                    returnMaterialsProvider()
+                                                                        .toggleIsSelectMaterial(
+                                                                          true,
+                                                                        );
+                                                                    setState(() {
+                                                                      filterIndex =
+                                                                          0;
+                                                                    });
+                                                                    returnMaterialsProvider()
+                                                                        .selectMaterial(
+                                                                          material,
+                                                                        );
                                                                   },
-                                                                  theme:
-                                                                      theme,
+                                                                  theme: theme,
                                                                   material:
                                                                       material,
                                                                 );
@@ -1252,10 +1121,10 @@ class _MaterialsPageDesktopState
                                                           );
                                                         } else {
                                                           return Padding(
-                                                            padding: const EdgeInsets.only(
-                                                              bottom:
-                                                                  30.0,
-                                                            ),
+                                                            padding:
+                                                                const EdgeInsets.only(
+                                                                  bottom: 30.0,
+                                                                ),
                                                             child: EmptyWidgetDisplayOnly(
                                                               title:
                                                                   'Empty List',
@@ -1263,28 +1132,30 @@ class _MaterialsPageDesktopState
                                                                   'You Don\'t have any material under this category',
 
                                                               icon:
-                                                                  Icons.dangerous_outlined,
-                                                              theme:
-                                                                  theme,
-                                                              height:
-                                                                  40,
+                                                                  Icons
+                                                                      .dangerous_outlined,
+                                                              theme: theme,
+                                                              height: 40,
                                                             ),
                                                           );
                                                         }
                                                       } else {
-                                                        if (categoryFilterMaterials().isNotEmpty) {
+                                                        if (categoryFilterMaterials()
+                                                            .isNotEmpty) {
                                                           return RefreshIndicator(
                                                             onRefresh:
                                                                 getMaterialList,
                                                             color:
-                                                                theme.lightModeColor.prColor300,
+                                                                theme
+                                                                    .lightModeColor
+                                                                    .prColor300,
                                                             backgroundColor:
                                                                 Colors.white,
-                                                            displacement:
-                                                                10,
+                                                            displacement: 10,
                                                             child: ListView.builder(
                                                               itemCount:
-                                                                  categoryFilterMaterials().length,
+                                                                  categoryFilterMaterials()
+                                                                      .length,
                                                               itemBuilder: (
                                                                 context,
                                                                 index,
@@ -1295,7 +1166,8 @@ class _MaterialsPageDesktopState
                                                                 materials =
                                                                     categoryFilterMaterials();
 
-                                                                MaterialClass material =
+                                                                MaterialClass
+                                                                material =
                                                                     materials[index];
 
                                                                 return MaterialsTileMain(
@@ -1308,7 +1180,8 @@ class _MaterialsPageDesktopState
                                                                       returnMaterialsProvider(
                                                                             context:
                                                                                 context,
-                                                                          ).selectedMaterials
+                                                                          )
+                                                                          .selectedMaterials
                                                                           .map(
                                                                             (
                                                                               pr,
@@ -1317,10 +1190,12 @@ class _MaterialsPageDesktopState
                                                                           )
                                                                           .toList(),
                                                                   action: () {
-                                                                    if (returnMaterialsProvider().isSelectMaterials) {
-                                                                      returnMaterialsProvider().selectMaterial(
-                                                                        material,
-                                                                      );
+                                                                    if (returnMaterialsProvider()
+                                                                        .isSelectMaterials) {
+                                                                      returnMaterialsProvider()
+                                                                          .selectMaterial(
+                                                                            material,
+                                                                          );
                                                                     } else {
                                                                       Navigator.push(
                                                                         context,
@@ -1334,35 +1209,33 @@ class _MaterialsPageDesktopState
                                                                             );
                                                                           },
                                                                         ),
-                                                                      ).then(
-                                                                        (
-                                                                          _,
-                                                                        ) {
-                                                                          if (context.mounted) {
-                                                                            setState(
-                                                                              () {},
-                                                                            );
-                                                                          }
-                                                                        },
-                                                                      );
+                                                                      ).then((
+                                                                        _,
+                                                                      ) {
+                                                                        if (context
+                                                                            .mounted) {
+                                                                          setState(
+                                                                            () {},
+                                                                          );
+                                                                        }
+                                                                      });
                                                                     }
                                                                   },
                                                                   longPress: () {
-                                                                    returnMaterialsProvider().toggleIsSelectMaterial(
-                                                                      true,
-                                                                    );
-                                                                    setState(
-                                                                      () {
-                                                                        filterIndex =
-                                                                            0;
-                                                                      },
-                                                                    );
-                                                                    returnMaterialsProvider().selectMaterial(
-                                                                      material,
-                                                                    );
+                                                                    returnMaterialsProvider()
+                                                                        .toggleIsSelectMaterial(
+                                                                          true,
+                                                                        );
+                                                                    setState(() {
+                                                                      filterIndex =
+                                                                          0;
+                                                                    });
+                                                                    returnMaterialsProvider()
+                                                                        .selectMaterial(
+                                                                          material,
+                                                                        );
                                                                   },
-                                                                  theme:
-                                                                      theme,
+                                                                  theme: theme,
                                                                   material:
                                                                       material,
                                                                 );
@@ -1371,10 +1244,10 @@ class _MaterialsPageDesktopState
                                                           );
                                                         } else {
                                                           return Padding(
-                                                            padding: const EdgeInsets.only(
-                                                              bottom:
-                                                                  30.0,
-                                                            ),
+                                                            padding:
+                                                                const EdgeInsets.only(
+                                                                  bottom: 30.0,
+                                                                ),
                                                             child: EmptyWidgetDisplayOnly(
                                                               title:
                                                                   'Empty List',
@@ -1382,11 +1255,10 @@ class _MaterialsPageDesktopState
                                                                   'You Don\'t have any material under this category',
 
                                                               icon:
-                                                                  Icons.dangerous_outlined,
-                                                              theme:
-                                                                  theme,
-                                                              height:
-                                                                  40,
+                                                                  Icons
+                                                                      .dangerous_outlined,
+                                                              theme: theme,
+                                                              height: 40,
                                                             ),
                                                           );
                                                         }
@@ -1411,13 +1283,10 @@ class _MaterialsPageDesktopState
                     Visibility(
                       visible: isDeleteLoading,
                       child: Container(
-                        margin: EdgeInsets.symmetric(
-                          vertical: 15,
-                        ),
+                        margin: EdgeInsets.symmetric(vertical: 15),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius:
-                              BorderRadius.circular(40),
+                          borderRadius: BorderRadius.circular(40),
                         ),
                         child: returnCompProvider(
                           context,
@@ -1431,10 +1300,8 @@ class _MaterialsPageDesktopState
                 width:
                     screenWidth(context) < tabletScreenSmall
                         ? 50
-                        : (screenWidth(context) >
-                                tabletScreenSmall &&
-                            screenWidth(context) <
-                                tabletScreen + 100)
+                        : (screenWidth(context) > tabletScreenSmall &&
+                            screenWidth(context) < tabletScreen + 100)
                         ? 100
                         : 230,
               ),
@@ -1462,9 +1329,7 @@ void duplicateMaterialsAction({
   required Function(bool value) loadingAction,
 }) {
   var theme = returnTheme(context, listen: false);
-  if (returnMaterialsProvider()
-      .selectedMaterials
-      .isNotEmpty) {
+  if (returnMaterialsProvider().selectedMaterials.isNotEmpty) {
     showDialog(
       context: context,
       builder: (firstContext) {
@@ -1489,12 +1354,9 @@ void duplicateMaterialsAction({
                         theme: theme,
                         message:
                             'You are about to Duplicate all the selected materials. Please not that this action can not be reversed. Are you sure you want to proceed?',
-                        title:
-                            'Duplicate Selected Materials',
+                        title: 'Duplicate Selected Materials',
                         action: () async {
-                          Navigator.of(
-                            confirmContext,
-                          ).pop();
+                          Navigator.of(confirmContext).pop();
                           Navigator.of(firstContext).pop();
                           loadingAction(true);
                           var res =
@@ -1525,10 +1387,7 @@ void duplicateMaterialsAction({
               ),
               Visibility(
                 visible:
-                    returnShopProvider()
-                        .userShop()
-                        ?.manageDepartments ==
-                    true,
+                    returnShopProvider().userShop()?.manageDepartments == true,
                 child: MainButtonTransparent(
                   themeProvider: theme,
                   constraints: BoxConstraints(),
@@ -1544,17 +1403,13 @@ void duplicateMaterialsAction({
                 ),
               ),
               Visibility(
-                visible:
-                    returnShopProvider().userShops.length >
-                    1,
+                visible: returnShopProvider().userShops.length > 1,
                 child: MainButtonTransparent(
                   themeProvider: theme,
                   constraints: BoxConstraints(),
                   text: 'Copy To Store Branch(s)',
                   action: () {
-                    bool isOnline =
-                        returnConnectivityProvider()
-                            .isConnected;
+                    bool isOnline = returnConnectivityProvider().isConnected;
                     if (!isOnline) {
                       showDialog(
                         context: context,
@@ -1601,8 +1456,7 @@ void selectDepartmentMaterials({
             builder: (secondContext, setState) {
               return DialogTemplate(
                 theme: theme,
-                message:
-                    'Select Department(s) From the List Below',
+                message: 'Select Department(s) From the List Below',
                 title: 'Select Department(s)',
                 action: () {
                   showDialog(
@@ -1612,8 +1466,7 @@ void selectDepartmentMaterials({
                         theme: theme,
                         message:
                             'You are about to Copy all the selected materials Into these Selected Departments. Please note that this action can not be reversed. Are you sure you want to proceed?',
-                        title:
-                            'Copy Materials Into Departments',
+                        title: 'Copy Materials Into Departments',
                         action: () async {
                           loadingAction(true);
                           var res =
@@ -1661,8 +1514,7 @@ void selectDepartmentMaterials({
                       ),
                       child: Builder(
                         builder: (context) {
-                          if (returnDepartmentProvider()
-                              .departments
+                          if (returnDepartmentProvider().departments
                               .where(
                                 (dept) =>
                                     dept.uuid !=
@@ -1674,8 +1526,7 @@ void selectDepartmentMaterials({
                             return SizedBox(
                               height: 400,
                               child: EmptyWidgetDisplayOnly(
-                                title:
-                                    'No Department Found',
+                                title: 'No Department Found',
                                 subText:
                                     'You have not been added to any departments.',
                                 theme: theme,
@@ -1693,9 +1544,8 @@ void selectDepartmentMaterials({
                             return Column(
                               spacing: 5,
                               children:
-                                  returnDepartmentProvider(
-                                        context: context,
-                                      ).departments
+                                  returnDepartmentProvider(context: context)
+                                      .departments
                                       .where(
                                         (dept) =>
                                             dept.uuid !=
@@ -1705,13 +1555,10 @@ void selectDepartmentMaterials({
                                       )
                                       .map(
                                         (dept) => Material(
-                                          color:
-                                              Colors
-                                                  .transparent,
+                                          color: Colors.transparent,
                                           child: InkWell(
                                             mouseCursor:
-                                                SystemMouseCursors
-                                                    .click,
+                                                SystemMouseCursors.click,
                                             onTap: () {
                                               returnDepartmentProvider()
                                                   .selectMultipleDepartments(
@@ -1721,10 +1568,8 @@ void selectDepartmentMaterials({
                                             child: Padding(
                                               padding:
                                                   const EdgeInsets.symmetric(
-                                                    vertical:
-                                                        9.0,
-                                                    horizontal:
-                                                        12,
+                                                    vertical: 9.0,
+                                                    horizontal: 12,
                                                   ),
                                               child: Row(
                                                 mainAxisAlignment:
@@ -1734,39 +1579,40 @@ void selectDepartmentMaterials({
                                                   Text(
                                                     style: TextStyle(
                                                       fontSize:
-                                                          theme.mobileTexts.b3.fontSize,
+                                                          theme
+                                                              .mobileTexts
+                                                              .b3
+                                                              .fontSize,
                                                       fontWeight:
                                                           FontWeight.bold,
                                                     ),
                                                     dept.name,
                                                   ),
                                                   Container(
-                                                    padding:
-                                                        EdgeInsets.all(
-                                                          2,
-                                                        ),
+                                                    padding: EdgeInsets.all(2),
                                                     decoration: BoxDecoration(
-                                                      shape:
-                                                          BoxShape.circle,
+                                                      shape: BoxShape.circle,
                                                       border: Border.all(
-                                                        color:
-                                                            Colors.grey,
+                                                        color: Colors.grey,
                                                       ),
                                                     ),
                                                     child: Container(
-                                                      padding:
-                                                          EdgeInsets.all(
-                                                            5,
-                                                          ),
+                                                      padding: EdgeInsets.all(
+                                                        5,
+                                                      ),
                                                       decoration: BoxDecoration(
-                                                        shape:
-                                                            BoxShape.circle,
+                                                        shape: BoxShape.circle,
                                                         color:
-                                                            returnDepartmentProvider().multipleSelectedDepartments.contains(
-                                                                  dept,
-                                                                )
-                                                                ? theme.lightModeColor.prColor250
-                                                                : Colors.transparent,
+                                                            returnDepartmentProvider()
+                                                                    .multipleSelectedDepartments
+                                                                    .contains(
+                                                                      dept,
+                                                                    )
+                                                                ? theme
+                                                                    .lightModeColor
+                                                                    .prColor250
+                                                                : Colors
+                                                                    .transparent,
                                                       ),
                                                     ),
                                                   ),
@@ -1789,8 +1635,7 @@ void selectDepartmentMaterials({
           );
         },
       ).then((_) {
-        returnDepartmentProvider()
-            .clearMulitpleSelectedDepartments();
+        returnDepartmentProvider().clearMulitpleSelectedDepartments();
       });
     },
   );
@@ -1812,8 +1657,7 @@ void selectShopsMaterials({
             title: 'Select Shops(s)',
             cancelAction: () {
               Navigator.of(context).pop();
-              returnShopProvider()
-                  .clearMulitpleSelectedShops();
+              returnShopProvider().clearMulitpleSelectedShops();
             },
             action: () {
               showDialog(
@@ -1868,22 +1712,18 @@ void selectShopsMaterials({
                           .where(
                             (shop) =>
                                 shop.shopId !=
-                                returnShopProvider()
-                                    .userShop()
-                                    ?.shopId,
+                                returnShopProvider().userShop()?.shopId,
                           )
                           .isEmpty) {
                         return SizedBox(
                           height: 400,
                           child: EmptyWidgetDisplayOnly(
                             title: 'No Shop Found',
-                            subText:
-                                'No Shop Branches Was Found.',
+                            subText: 'No Shop Branches Was Found.',
                             theme: theme,
                             height: 30,
                             altAction: () async {
-                              await returnShopProvider()
-                                  .getUserShops();
+                              await returnShopProvider().getUserShops();
                               setState(() {});
                             },
                             altActionText: 'Refresh',
@@ -1894,43 +1734,29 @@ void selectShopsMaterials({
                         return Column(
                           spacing: 5,
                           children:
-                              returnShopProvider(
-                                    context: context,
-                                  ).userShops
+                              returnShopProvider(context: context).userShops
                                   .where(
                                     (shop) =>
                                         shop.shopId !=
-                                        returnShopProvider()
-                                            .userShop()
-                                            ?.shopId,
+                                        returnShopProvider().userShop()?.shopId,
                                   )
                                   .map(
                                     (shop) => Material(
-                                      color:
-                                          Colors
-                                              .transparent,
+                                      color: Colors.transparent,
                                       child: InkWell(
-                                        mouseCursor:
-                                            SystemMouseCursors
-                                                .click,
+                                        mouseCursor: SystemMouseCursors.click,
                                         onTap: () {
                                           returnShopProvider()
-                                              .selectMultipleShop(
-                                                shop,
-                                              );
+                                              .selectMultipleShop(shop);
                                         },
                                         child: Padding(
-                                          padding:
-                                              const EdgeInsets.symmetric(
-                                                vertical:
-                                                    9.0,
-                                                horizontal:
-                                                    12,
-                                              ),
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 9.0,
+                                            horizontal: 12,
+                                          ),
                                           child: Row(
                                             mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .spaceBetween,
+                                                MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
                                                 style: TextStyle(
@@ -1939,38 +1765,31 @@ void selectShopsMaterials({
                                                           .mobileTexts
                                                           .b3
                                                           .fontSize,
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
                                                 shop.name,
                                               ),
                                               Container(
-                                                padding:
-                                                    EdgeInsets.all(
-                                                      2,
-                                                    ),
+                                                padding: EdgeInsets.all(2),
                                                 decoration: BoxDecoration(
-                                                  shape:
-                                                      BoxShape
-                                                          .circle,
+                                                  shape: BoxShape.circle,
                                                   border: Border.all(
-                                                    color:
-                                                        Colors.grey,
+                                                    color: Colors.grey,
                                                   ),
                                                 ),
                                                 child: Container(
-                                                  padding:
-                                                      EdgeInsets.all(
-                                                        5,
-                                                      ),
+                                                  padding: EdgeInsets.all(5),
                                                   decoration: BoxDecoration(
-                                                    shape:
-                                                        BoxShape.circle,
+                                                    shape: BoxShape.circle,
                                                     color:
-                                                        returnShopProvider().multipleSelectedShops.contains(shop)
-                                                            ? theme.lightModeColor.prColor250
-                                                            : Colors.transparent,
+                                                        returnShopProvider()
+                                                                .multipleSelectedShops
+                                                                .contains(shop)
+                                                            ? theme
+                                                                .lightModeColor
+                                                                .prColor250
+                                                            : Colors
+                                                                .transparent,
                                                   ),
                                                 ),
                                               ),
@@ -1995,8 +1814,7 @@ void selectShopsMaterials({
   );
 }
 
-class MaterialSelectionActionButton
-    extends StatelessWidget {
+class MaterialSelectionActionButton extends StatelessWidget {
   const MaterialSelectionActionButton({
     super.key,
     required this.title,
@@ -2019,10 +1837,7 @@ class MaterialSelectionActionButton
         onTap: action,
         child: Container(
           padding: EdgeInsets.symmetric(
-            horizontal:
-                screenWidth(context) < mobileScreen
-                    ? 6
-                    : 10,
+            horizontal: screenWidth(context) < mobileScreen ? 6 : 10,
             vertical: 5,
           ),
           decoration: BoxDecoration(
@@ -2030,8 +1845,7 @@ class MaterialSelectionActionButton
             border: Border.all(color: Colors.grey.shade400),
           ),
           child: Row(
-            spacing:
-                screenWidth(context) < mobileScreen ? 3 : 5,
+            spacing: screenWidth(context) < mobileScreen ? 3 : 5,
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
@@ -2042,10 +1856,7 @@ class MaterialSelectionActionButton
                 title,
               ),
               Icon(
-                size:
-                    screenWidth(context) < mobileScreen
-                        ? 14
-                        : 16,
+                size: screenWidth(context) < mobileScreen ? 14 : 16,
                 color: color,
                 icon,
               ),

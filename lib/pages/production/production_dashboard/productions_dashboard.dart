@@ -8,12 +8,10 @@ class ProductionsDashboard extends StatefulWidget {
   const ProductionsDashboard({super.key});
 
   @override
-  State<ProductionsDashboard> createState() =>
-      _ProductionsDashboardState();
+  State<ProductionsDashboard> createState() => _ProductionsDashboardState();
 }
 
-class _ProductionsDashboardState
-    extends State<ProductionsDashboard> {
+class _ProductionsDashboardState extends State<ProductionsDashboard> {
   @override
   void initState() {
     super.initState();
@@ -37,19 +35,12 @@ class _ProductionsDashboardState
 }
 
 Future<void> refreshProductionDashboard() async {
-  returnProductionRecordsProvider().getProductionRecords(
-    shopId(),
-  );
-  if (returnShopProvider()
-          .userShop()
-          ?.manageProductionItems ==
-      true) {
-    returnProductionItemHistoryProvider()
-        .getProductionItemHistories();
+  returnProductionRecordsProvider().getProductionRecords(shopId());
+  if (returnShopProvider().userShop()?.manageProductionItems == true) {
+    returnProductionItemHistoryProvider().getProductionItemHistories();
     returnProductionItemsProvider().getProductionItems();
   }
   returnMaterialsUsageActionProvider().getMaterials();
   returnMaterialsProvider().getMaterials();
-  returnMaterialsItemHistoryProvider()
-      .getMaterialsItemHistories();
+  returnMaterialsItemHistoryProvider().getMaterialsItemHistories();
 }

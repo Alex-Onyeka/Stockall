@@ -32,16 +32,13 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 // ///////
 
 class ReceiptsProvider extends ChangeNotifier {
-  static final ReceiptsProvider _instance =
-      ReceiptsProvider._internal();
+  static final ReceiptsProvider _instance = ReceiptsProvider._internal();
   factory ReceiptsProvider() => _instance;
   ReceiptsProvider._internal();
   bool isLoading = false;
   void toggleIsLoading(bool value) {
     isLoading = value;
-    mainLocalLog(
-      'Receipt is ${value ? 'Loading on' : 'Loading Off'}',
-    );
+    mainLocalLog('Receipt is ${value ? 'Loading on' : 'Loading Off'}');
     notifyListeners();
   }
   //
@@ -49,8 +46,7 @@ class ReceiptsProvider extends ChangeNotifier {
   //
 
   final SupabaseClient supabase = Supabase.instance.client;
-  final ConnectivityProvider connectivity =
-      ConnectivityProvider();
+  final ConnectivityProvider connectivity = ConnectivityProvider();
   List<TempMainReceipt> _receipts = [];
   List<TempMainReceipt> get receipts => _receipts;
 
@@ -72,9 +68,7 @@ class ReceiptsProvider extends ChangeNotifier {
   }
 
   // CREATE a new receipt
-  Future<TempMainReceipt?> createReceipt(
-    TempMainReceipt receipt,
-  ) async {
+  Future<TempMainReceipt?> createReceipt(TempMainReceipt receipt) async {
     try {
       await mainLocalLog('Inner Receipt Creation Started');
       var barcode = returnOnlyDigits(uuidGen());
@@ -85,10 +79,7 @@ class ReceiptsProvider extends ChangeNotifier {
       );
       notifyListeners();
       if (receipt.customerUuid != null) {
-        if (returnShopProvider()
-                    .userShop()
-                    ?.manageCustomerReward ==
-                true &&
+        if (returnShopProvider().userShop()?.manageCustomerReward == true &&
             !receipt.isInvoice) {
           CustomerAccountReceipts customerAccountReceipt =
               CustomerAccountReceipts(
@@ -101,15 +92,11 @@ class ReceiptsProvider extends ChangeNotifier {
               );
           await returnCustomerAccountReceiptsProvider()
               .createCustomerAccountReceipts(
-                customerAccountReceipt:
-                    customerAccountReceipt,
+                customerAccountReceipt: customerAccountReceipt,
               );
         }
 
-        if (returnShopProvider()
-                    .userShop()
-                    ?.manageCustomerAccount ==
-                true &&
+        if (returnShopProvider().userShop()?.manageCustomerAccount == true &&
             (receipt.customerAccount ?? 0) > 0) {
           CustomerAccountReceipts customerAccountReceipt =
               CustomerAccountReceipts(
@@ -122,25 +109,20 @@ class ReceiptsProvider extends ChangeNotifier {
               );
           await returnCustomerAccountReceiptsProvider()
               .createCustomerAccountReceipts(
-                customerAccountReceipt:
-                    customerAccountReceipt,
+                customerAccountReceipt: customerAccountReceipt,
               );
         }
       }
 
       return receipt;
     } catch (e) {
-      await mainLocalLog(
-        'Error Creating Receipt: ${e.toString()}',
-      );
+      await mainLocalLog('Error Creating Receipt: ${e.toString()}');
       return null;
     }
     // }
   }
 
-  Future<void> loadSingleReceipt({
-    required String uuid,
-  }) async {
+  Future<void> loadSingleReceipt({required String uuid}) async {
     bool isOnline = await connectivity.isOnline();
     try {
       if (isOnline) {
@@ -154,22 +136,13 @@ class ReceiptsProvider extends ChangeNotifier {
           await mainLocalLog('Receipt Not Found');
           return;
         } else {
-          TempMainReceipt tempMainReceipt =
-              TempMainReceipt.fromJson(data);
+          TempMainReceipt tempMainReceipt = TempMainReceipt.fromJson(data);
           TempMainReceipt? existingReceipt =
               receipts
-                      .where(
-                        (rec) =>
-                            rec.uuid ==
-                            tempMainReceipt.uuid,
-                      )
+                      .where((rec) => rec.uuid == tempMainReceipt.uuid)
                       .isNotEmpty
                   ? receipts
-                      .where(
-                        (rec) =>
-                            rec.uuid ==
-                            tempMainReceipt.uuid,
-                      )
+                      .where((rec) => rec.uuid == tempMainReceipt.uuid)
                       .first
                   : null;
           if (existingReceipt != null) {
@@ -177,26 +150,18 @@ class ReceiptsProvider extends ChangeNotifier {
             receipts.remove(existingReceipt);
           }
           receipts.add(tempMainReceipt);
-          receipts.sort(
-            (a, b) => b.createdAt.compareTo(a.createdAt),
-          );
-          await mainLocalLog(
-            '💖💖👏🥰 Single Receipt Loaded',
-          );
+          receipts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          await mainLocalLog('💖💖👏🥰 Single Receipt Loaded');
         }
         notifyListeners();
       }
     } catch (e) {
-      await mainLocalLog(
-        'Error Fetching Single Receipt: ${e.toString()}',
-      );
+      await mainLocalLog('Error Fetching Single Receipt: ${e.toString()}');
     }
   }
 
   // READ all receipts for a shop
-  Future<List<TempMainReceipt>> loadReceipts(
-    int shopId,
-  ) async {
+  Future<List<TempMainReceipt>> loadReceipts(int shopId) async {
     await loadReceiptsOffline(shopId);
     bool isOnline = await connectivity.isOnline();
     List<Map<String, dynamic>> tempList = [];
@@ -210,9 +175,7 @@ class ReceiptsProvider extends ChangeNotifier {
             .order('created_at', ascending: false)
             .range(0, 1000);
         tempList.addAll(data);
-        await mainLocalLog(
-          'Receipts Gotten ${tempList.length}',
-        );
+        await mainLocalLog('Receipts Gotten ${tempList.length}');
 
         if (data.length >= 1000) {
           final data2 = await supabase
@@ -222,33 +185,23 @@ class ReceiptsProvider extends ChangeNotifier {
               .order('created_at', ascending: false)
               .range(1001, 2000);
           tempList.addAll(data2);
-          await mainLocalLog(
-            'Receipts Gotten Second ${tempList.length}',
-          );
+          await mainLocalLog('Receipts Gotten Second ${tempList.length}');
         }
 
         _receipts =
             (tempList as List)
-                .map(
-                  (json) => TempMainReceipt.fromJson(json),
-                )
+                .map((json) => TempMainReceipt.fromJson(json))
                 .toList();
-        await MainReceiptFunc().insertAllReceipts(
-          _receipts,
-        );
+        await MainReceiptFunc().insertAllReceipts(_receipts);
         await mainLocalLog('Loaded');
         await returnInvoicesProvider().loadInvoices(shopId);
         await returnData().getProducts(
           returnShopProvider().userShop()!.shopId!,
         );
-        await loadProductSalesRecord(
-          returnShopProvider().userShop()!.shopId!,
-        );
+        await loadProductSalesRecord(returnShopProvider().userShop()!.shopId!);
         notifyListeners();
       } catch (e) {
-        await mainLocalLog(
-          'Error Getting Receipts: ${e.toString()}',
-        );
+        await mainLocalLog('Error Getting Receipts: ${e.toString()}');
         return [];
       }
     } else {
@@ -257,21 +210,15 @@ class ReceiptsProvider extends ChangeNotifier {
       await returnInvoicesProvider().loadInvoices(
         returnShopProvider().userShop()!.shopId!,
       );
-      await returnData().getProducts(
-        returnShopProvider().userShop()!.shopId!,
-      );
-      await loadProductSalesRecord(
-        returnShopProvider().userShop()!.shopId!,
-      );
+      await returnData().getProducts(returnShopProvider().userShop()!.shopId!);
+      await loadProductSalesRecord(returnShopProvider().userShop()!.shopId!);
       notifyListeners();
     }
     notifyListeners();
     return _receipts;
   }
 
-  Future<List<TempMainReceipt>> loadReceiptsOffline(
-    int shopId,
-  ) async {
+  Future<List<TempMainReceipt>> loadReceiptsOffline(int shopId) async {
     _receipts = MainReceiptFunc().getReceipts();
     await mainLocalLog('Offline Receipts Gotten');
     await returnInvoicesProvider().loadInvoicesOffline(
@@ -317,9 +264,7 @@ class ReceiptsProvider extends ChangeNotifier {
   void setRange(DateTime rangeStart, DateTime endOfrange) {
     rangeStartDate = rangeStart;
     rangeEndDate = endOfrange;
-    mainLocalLog(
-      'Date Range set: Start: $rangeStart End: $endOfrange ',
-    );
+    mainLocalLog('Date Range set: Start: $rangeStart End: $endOfrange ');
     dateSet = null;
     notifyListeners();
   }
@@ -335,74 +280,51 @@ class ReceiptsProvider extends ChangeNotifier {
       var containsCreated =
           CreatedReceiptsFunc()
               .getReceipts()
-              .where(
-                (rec) => rec.receipt.uuid == receipt.uuid,
-              )
+              .where((rec) => rec.receipt.uuid == receipt.uuid)
               .toList();
-      var containsUpdate = UpdatedReceiptsFunc()
-          .getReceiptIds()
-          .where((rec) => rec.receiptUuid == receipt.uuid!);
+      var containsUpdate = UpdatedReceiptsFunc().getReceiptIds().where(
+        (rec) => rec.receiptUuid == receipt.uuid!,
+      );
       if (containsCreated.isNotEmpty) {
-        await CreatedReceiptsFunc().deleteReceipt(
-          receipt.uuid!,
-        );
+        await CreatedReceiptsFunc().deleteReceipt(receipt.uuid!);
       } else {
         await DeletedReceiptsFunc().createDeletedReceipt(
           DeletedReceipts(receiptUuid: receipt.uuid!),
         );
       }
       if (containsUpdate.isNotEmpty) {
-        await UpdatedReceiptsFunc().deleteUpdatedReceipt(
-          receipt.uuid!,
-        );
+        await UpdatedReceiptsFunc().deleteUpdatedReceipt(receipt.uuid!);
       }
-      await ProductRecordFunc().deleteRecordsInReceipt(
-        receipt: receipt,
-      );
+      await ProductRecordFunc().deleteRecordsInReceipt(receipt: receipt);
       // }
       if (productNames.isNotEmpty) {
         await returnEventsLogProvider().createLog(
-          returnEventsLogProvider().receiptAdapter(
-            receipt,
-            productNames,
-            3,
-          ),
+          returnEventsLogProvider().receiptAdapter(receipt, productNames, 3),
         );
       }
       List<CustomerAccountReceipts> accountReceipts =
-          returnCustomerAccountReceiptsProvider()
-              .customerAccountReceipts
-              .where(
-                (item) => item.receiptUuid == receipt.uuid,
-              )
+          returnCustomerAccountReceiptsProvider().customerAccountReceipts
+              .where((item) => item.receiptUuid == receipt.uuid)
               .toList();
-      if (receipt.customerUuid != null &&
-          accountReceipts.isNotEmpty) {
-        returnCustomerAccountReceiptsProvider()
-            .deleteCustomerAccountReceipts(
-              customerReceipts: accountReceipts,
-              updateCustomerBalance: true,
-            );
+      if (receipt.customerUuid != null && accountReceipts.isNotEmpty) {
+        returnCustomerAccountReceiptsProvider().deleteCustomerAccountReceipts(
+          customerReceipts: accountReceipts,
+          updateCustomerBalance: true,
+        );
       }
 
       await mainLocalLog(
         '✅ Receipt and inventory successfully Delete and Updated.',
       );
 
-      await loadReceiptsOffline(
-        returnShopProvider().userShop()!.shopId!,
-      );
+      await loadReceiptsOffline(returnShopProvider().userShop()!.shopId!);
 
-      await mainLocalLog(
-        'Totally Finished Deleting Receipt',
-      );
+      await mainLocalLog('Totally Finished Deleting Receipt');
       notifyListeners();
       syncData();
       return 1;
     } catch (e) {
-      await mainLocalLog(
-        'Error Deleting Receipt: ${e.toString()}',
-      );
+      await mainLocalLog('Error Deleting Receipt: ${e.toString()}');
       return 0;
     }
   }
@@ -413,46 +335,35 @@ class ReceiptsProvider extends ChangeNotifier {
   }) async {
     await mainLocalLog('Deleting Receipt 2');
     await mainLocalLog('Deleting Receipt Offline');
-    await MainReceiptFunc().deleteReceipt(
-      receipt.uuid ?? '',
-    );
+    await MainReceiptFunc().deleteReceipt(receipt.uuid ?? '');
     var containsCreated =
         CreatedReceiptsFunc()
             .getReceipts()
-            .where(
-              (rec) => rec.receipt.uuid == receipt.uuid,
-            )
+            .where((rec) => rec.receipt.uuid == receipt.uuid)
             .toList();
-    var containsUpdate = UpdatedReceiptsFunc()
-        .getReceiptIds()
-        .where((rec) => rec.receiptUuid == receipt.uuid);
+    var containsUpdate = UpdatedReceiptsFunc().getReceiptIds().where(
+      (rec) => rec.receiptUuid == receipt.uuid,
+    );
     if (containsCreated.isNotEmpty) {
-      await CreatedReceiptsFunc().deleteReceipt(
-        receipt.uuid ?? '',
-      );
+      await CreatedReceiptsFunc().deleteReceipt(receipt.uuid ?? '');
     } else {
       await DeletedReceiptsFunc().createDeletedReceipt(
         DeletedReceipts(receiptUuid: receipt.uuid ?? ''),
       );
     }
     if (containsUpdate.isNotEmpty) {
-      await UpdatedReceiptsFunc().deleteUpdatedReceipt(
-        receipt.uuid ?? '',
-      );
+      await UpdatedReceiptsFunc().deleteUpdatedReceipt(receipt.uuid ?? '');
     }
-    await ProductRecordFunc()
-        .deleteRecordsInReceiptWithoutUpdatingInventory(
-          receipt: receipt,
-        );
+    await ProductRecordFunc().deleteRecordsInReceiptWithoutUpdatingInventory(
+      receipt: receipt,
+    );
     // }
 
     await mainLocalLog(
       '✅ Receipt and inventory successfully Delete and Updated.',
     );
 
-    await loadReceiptsOffline(
-      returnShopProvider().userShop()!.shopId!,
-    );
+    await loadReceiptsOffline(returnShopProvider().userShop()!.shopId!);
 
     await mainLocalLog('Totally Finished Deleting Receipt');
     notifyListeners();
@@ -468,8 +379,7 @@ class ReceiptsProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
-      if (CreatedReceiptsFunc().getReceipts().isNotEmpty &&
-          isOnline) {
+      if (CreatedReceiptsFunc().getReceipts().isNotEmpty && isOnline) {
         List<CreatedReceipts> tempReceipts =
             CreatedReceiptsFunc().getReceipts().toList();
         // createdAt is serialized to UTC inside toJson(), so the
@@ -485,14 +395,10 @@ class ReceiptsProvider extends ChangeNotifier {
                 .insert(item.receipt.toJson())
                 .select();
             count++;
-            await CreatedReceiptsFunc().deleteReceipt(
-              item.receipt.uuid!,
-            );
+            await CreatedReceiptsFunc().deleteReceipt(item.receipt.uuid!);
           } on PostgrestException catch (e) {
             if (e.code == '23505') {
-              await CreatedReceiptsFunc().deleteReceipt(
-                item.receipt.uuid!,
-              );
+              await CreatedReceiptsFunc().deleteReceipt(item.receipt.uuid!);
             }
             await mainLocalLog(
               'Error Synchronizing Receipt ${item.receipt.bank + item.receipt.cashAlt + (item.receipt.customerAccount ?? 0)}: $e',
@@ -500,22 +406,14 @@ class ReceiptsProvider extends ChangeNotifier {
           }
         }
 
-        await mainLocalLog(
-          '$count items added successfully ✅',
-        );
+        await mainLocalLog('$count items added successfully ✅');
         // await CreatedReceiptsFunc().clearReceipts();
         await mainLocalLog('Unsynced Receipts Cleared');
-        await mainLocalLog(
-          'Mounted, refreshing Receipts ✅',
-        );
-        await loadReceipts(
-          returnShopProvider().userShop()!.shopId!,
-        );
+        await mainLocalLog('Mounted, refreshing Receipts ✅');
+        await loadReceipts(returnShopProvider().userShop()!.shopId!);
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Receipts Insert failed ❌: $e',
-      );
+      await mainLocalLog('Batch Receipts Insert failed ❌: $e');
     }
   }
 
@@ -535,42 +433,27 @@ class ReceiptsProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
-      if (DeletedReceiptsFunc()
-              .getReceiptIds()
-              .isNotEmpty &&
-          isOnline) {
-        final tempReceipts =
-            DeletedReceiptsFunc().getReceiptIds().toList();
+      if (DeletedReceiptsFunc().getReceiptIds().isNotEmpty && isOnline) {
+        final tempReceipts = DeletedReceiptsFunc().getReceiptIds().toList();
 
         for (var rec in tempReceipts) {
           await supabase.rpc(
             'delete_receipt_without_updating_inventory',
-            params: {
-              'target_receipt_uuid': rec.receiptUuid,
-            },
+            params: {'target_receipt_uuid': rec.receiptUuid},
           );
-          await DeletedReceiptsFunc()
-              .deletedDeletedReceipts(rec.receiptUuid);
+          await DeletedReceiptsFunc().deletedDeletedReceipts(rec.receiptUuid);
         }
 
         await mainLocalLog(
           '${tempReceipts.length} Receipts Created successfully ✅',
         );
         await DeletedReceiptsFunc().clearDeletedReceipts();
-        await mainLocalLog(
-          'Unsynced Deleted Receipts Cleared',
-        );
-        await mainLocalLog(
-          'Mounted, refreshing Receipts ✅',
-        );
-        await loadReceipts(
-          returnShopProvider().userShop()!.shopId!,
-        );
+        await mainLocalLog('Unsynced Deleted Receipts Cleared');
+        await mainLocalLog('Mounted, refreshing Receipts ✅');
+        await loadReceipts(returnShopProvider().userShop()!.shopId!);
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Receipts Delete failed ❌: $e',
-      );
+      await mainLocalLog('Batch Receipts Delete failed ❌: $e');
     }
   }
   //
@@ -583,39 +466,25 @@ class ReceiptsProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
-      if (UpdatedReceiptsFunc()
-              .getReceiptIds()
-              .isNotEmpty &&
-          isOnline) {
-        final tempReceipts =
-            UpdatedReceiptsFunc().getReceiptIds().toList();
+      if (UpdatedReceiptsFunc().getReceiptIds().isNotEmpty && isOnline) {
+        final tempReceipts = UpdatedReceiptsFunc().getReceiptIds().toList();
         for (var rec in tempReceipts) {
           final updateData = {'is_invoice': false};
           await supabase
               .from('receipts')
               .update(updateData)
               .eq('uuid', rec.receiptUuid);
-          await UpdatedReceiptsFunc().deleteUpdatedReceipt(
-            rec.receiptUuid,
-          );
+          await UpdatedReceiptsFunc().deleteUpdatedReceipt(rec.receiptUuid);
         }
 
-        await mainLocalLog(
-          '${tempReceipts.length} items added successfully ✅',
-        );
+        await mainLocalLog('${tempReceipts.length} items added successfully ✅');
         await UpdatedReceiptsFunc().clearUpdatedReceipts();
         await mainLocalLog('Unsynced Receipts Cleared');
-        await mainLocalLog(
-          'Mounted, refreshing Receipts ✅',
-        );
-        await loadReceipts(
-          returnShopProvider().userShop()!.shopId!,
-        );
+        await mainLocalLog('Mounted, refreshing Receipts ✅');
+        await loadReceipts(returnShopProvider().userShop()!.shopId!);
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Receipts Update failed ❌: $e',
-      );
+      await mainLocalLog('Batch Receipts Update failed ❌: $e');
     }
   }
 
@@ -636,31 +505,22 @@ class ReceiptsProvider extends ChangeNotifier {
   List<TempProductSaleRecord> get mainSales => _sales;
 
   List<TempProductSaleRecord> salesReceipts() {
-    return receipts
-        .expand((item) => item.getItems())
-        .toList();
+    return receipts.expand((item) => item.getItems()).toList();
     // return _salesReceipts;
   }
 
   List<TempProductSaleRecord> getProductRecordsNoVoid() {
-    return salesReceipts()
-        .where((item) => item.isVoid != true)
-        .toList();
+    return salesReceipts().where((item) => item.isVoid != true).toList();
   }
 
   List<TempProductSaleRecord> getProductRecordsVoid() {
-    return salesReceipts()
-        .where((item) => item.isVoid == true)
-        .toList();
+    return salesReceipts().where((item) => item.isVoid == true).toList();
   }
 
-  List<TempProductSaleRecord> salesInvoice({
-    BuildContext? context,
-  }) {
-    return returnInvoicesProvider(context: context)
-        .invoicesMain
-        .expand((item) => item.getItems())
-        .toList();
+  List<TempProductSaleRecord> salesInvoice({BuildContext? context}) {
+    return returnInvoicesProvider(
+      context: context,
+    ).invoicesMain.expand((item) => item.getItems()).toList();
     // return _sales;
   }
 
@@ -703,8 +563,7 @@ class ReceiptsProvider extends ChangeNotifier {
   // }
 
   // READ sales for a shop
-  Future<List<TempProductSaleRecord>>
-  loadProductSalesRecord(int shopId) async {
+  Future<List<TempProductSaleRecord>> loadProductSalesRecord(int shopId) async {
     bool isOnline = await connectivity.isOnline();
     List<Map<String, dynamic>> tempList = [];
     if (isOnline && ProductRecordFunc().isSynced()) {
@@ -716,9 +575,7 @@ class ReceiptsProvider extends ChangeNotifier {
           .range(0, 1000);
       tempList.addAll(data);
 
-      await mainLocalLog(
-        'Items Records gotten First: ${tempList.length}',
-      );
+      await mainLocalLog('Items Records gotten First: ${tempList.length}');
       if (data.length >= 1000) {
         final data2 = await supabase
             .from('product_sales')
@@ -727,9 +584,7 @@ class ReceiptsProvider extends ChangeNotifier {
             .order('created_at', ascending: false)
             .range(1001, 2000);
         tempList.addAll(data2);
-        await mainLocalLog(
-          'Items Records gotten Second: ${tempList.length}',
-        );
+        await mainLocalLog('Items Records gotten Second: ${tempList.length}');
       }
       if (tempList.length >= 2000) {
         final data3 = await supabase
@@ -739,20 +594,13 @@ class ReceiptsProvider extends ChangeNotifier {
             .order('created_at', ascending: false)
             .range(2001, 3000);
         tempList.addAll(data3);
-        await mainLocalLog(
-          'Items Records gotten Third: ${tempList.length}',
-        );
+        await mainLocalLog('Items Records gotten Third: ${tempList.length}');
       }
       _sales =
           (tempList as List)
-              .map(
-                (json) =>
-                    TempProductSaleRecord.fromJson(json),
-              )
+              .map((json) => TempProductSaleRecord.fromJson(json))
               .toList();
-      await ProductRecordFunc().insertAllProductRecords(
-        _sales,
-      );
+      await ProductRecordFunc().insertAllProductRecords(_sales);
     } else {
       _sales = ProductRecordFunc().getProductRecords();
     }
@@ -761,8 +609,9 @@ class ReceiptsProvider extends ChangeNotifier {
     return _sales;
   }
 
-  Future<List<TempProductSaleRecord>>
-  loadProductSalesRecordOffline(int shopId) async {
+  Future<List<TempProductSaleRecord>> loadProductSalesRecordOffline(
+    int shopId,
+  ) async {
     _sales = ProductRecordFunc().getProductRecords();
 
     notifyListeners();
@@ -879,31 +728,19 @@ class ReceiptsProvider extends ChangeNotifier {
   // }
 
   List<TempMainReceipt> departmentReceipts() {
-    if (returnShopProvider()
-            .userShop()
-            ?.manageDepartments ==
-        true) {
-      if (!authorization(
-        authorized: Authorizations().viewAllDepartments,
-      )) {
+    if (returnShopProvider().userShop()?.manageDepartments == true) {
+      if (!authorization(authorized: Authorizations().viewAllDepartments)) {
         return receipts.where((cat) {
           return cat.departmentUuidNew ==
-              returnDepartmentProvider()
-                  .currentDepartment()
-                  ?.uuid;
+              returnDepartmentProvider().currentDepartment()?.uuid;
         }).toList();
       } else {
-        if (returnDepartmentProvider()
-                .currentDepartment()
-                ?.uuid ==
-            null) {
+        if (returnDepartmentProvider().currentDepartment()?.uuid == null) {
           return receipts;
         } else {
           return receipts.where((cat) {
             return cat.departmentUuidNew ==
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid;
+                returnDepartmentProvider().currentDepartment()?.uuid;
             // }
           }).toList();
         }
@@ -944,70 +781,51 @@ class ReceiptsProvider extends ChangeNotifier {
     return tempMeth;
   }
 
-  List<TempMainReceipt>
-  returnReceiptsBasedOnPaymentMethod() {
-    if (returnShopProvider()
-            .userShop()
-            ?.manageDepartments ==
-        true) {
+  List<TempMainReceipt> returnReceiptsBasedOnPaymentMethod() {
+    if (returnShopProvider().userShop()?.manageDepartments == true) {
       if (rangeStartDate != null) {
         return departmentReceipts().where((receipt) {
           final created = receipt.createdAt.toLocal();
-          return !created.isBefore(
-                fourAm(rangeStartDate!),
-              ) &&
+          return !created.isBefore(fourAm(rangeStartDate!)) &&
               created.isBefore(
                 fourAmNextDay(
-                  rangeEndDate ??
-                      resolveBusinessDate(DateTime.now()),
+                  rangeEndDate ?? resolveBusinessDate(DateTime.now()),
                 ),
               );
         }).toList();
       } else {
         // final currentDate = dateSet ?? DateTime.now();
-        final currentDate =
-            dateSet ?? resolveBusinessDate(DateTime.now());
+        final currentDate = dateSet ?? resolveBusinessDate(DateTime.now());
 
         return departmentReceipts()
             .where(
               (receipt) =>
-                  !receipt.createdAt.isBefore(
-                    fourAm(currentDate),
-                  ) &&
-                  receipt.createdAt.isBefore(
-                    fourAmNextDay(currentDate),
-                  ),
+                  !receipt.createdAt.isBefore(fourAm(currentDate)) &&
+                  receipt.createdAt.isBefore(fourAmNextDay(currentDate)),
             )
             .toList();
       }
     } else {
       if (rangeStartDate != null) {
         if (authorization(
-          authorized:
-              Authorizations().viewAllTransactionRecords,
+          authorized: Authorizations().viewAllTransactionRecords,
         )) {
           return receipts.where((receipt) {
             final created = receipt.createdAt.toLocal();
-            return !created.isBefore(
-                  fourAm(rangeStartDate!),
-                ) &&
+            return !created.isBefore(fourAm(rangeStartDate!)) &&
                 created.isBefore(
                   fourAmNextDay(
-                    rangeEndDate ??
-                        resolveBusinessDate(DateTime.now()),
+                    rangeEndDate ?? resolveBusinessDate(DateTime.now()),
                   ),
                 );
           }).toList();
         } else {
           return receipts.where((receipt) {
             final created = receipt.createdAt.toLocal();
-            return !created.isBefore(
-                  fourAm(rangeStartDate!),
-                ) &&
+            return !created.isBefore(fourAm(rangeStartDate!)) &&
                 created.isBefore(
                   fourAmNextDay(
-                    rangeEndDate ??
-                        resolveBusinessDate(DateTime.now()),
+                    rangeEndDate ?? resolveBusinessDate(DateTime.now()),
                   ),
                 ) &&
                 receipt.staffId == currentUser().userId;
@@ -1017,30 +835,21 @@ class ReceiptsProvider extends ChangeNotifier {
         final currentDate = dateSet ?? DateTime.now();
 
         if (authorization(
-          authorized:
-              Authorizations().viewAllTransactionRecords,
+          authorized: Authorizations().viewAllTransactionRecords,
         )) {
           return receipts
               .where(
                 (receipt) =>
-                    !receipt.createdAt.isBefore(
-                      fourAm(currentDate),
-                    ) &&
-                    !receipt.createdAt.isAfter(
-                      fourAmNextDay(currentDate),
-                    ),
+                    !receipt.createdAt.isBefore(fourAm(currentDate)) &&
+                    !receipt.createdAt.isAfter(fourAmNextDay(currentDate)),
               )
               .toList();
         } else {
           return receipts
               .where(
                 (receipt) =>
-                    !receipt.createdAt.isBefore(
-                      fourAm(currentDate),
-                    ) &&
-                    !receipt.createdAt.isAfter(
-                      fourAmNextDay(currentDate),
-                    ) &&
+                    !receipt.createdAt.isBefore(fourAm(currentDate)) &&
+                    !receipt.createdAt.isAfter(fourAmNextDay(currentDate)) &&
                     receipt.staffId == currentUser().userId,
               )
               .toList();
@@ -1058,25 +867,15 @@ class ReceiptsProvider extends ChangeNotifier {
           .toList();
     } else if (paymentMethod == 1) {
       return returnReceiptsBasedOnPaymentMethod()
-          .where(
-            (rec) =>
-                rec.showsPaymentMethod(PaymentMethods.cash),
-          )
+          .where((rec) => rec.showsPaymentMethod(PaymentMethods.cash))
           .toList();
     } else if (paymentMethod == 2) {
       return returnReceiptsBasedOnPaymentMethod()
-          .where(
-            (rec) =>
-                rec.showsPaymentMethod(PaymentMethods.bank),
-          )
+          .where((rec) => rec.showsPaymentMethod(PaymentMethods.bank))
           .toList();
     } else if (paymentMethod == 4) {
       return returnReceiptsBasedOnPaymentMethod()
-          .where(
-            (rec) => rec.showsPaymentMethod(
-              PaymentMethods.account,
-            ),
-          )
+          .where((rec) => rec.showsPaymentMethod(PaymentMethods.account))
           .toList();
     } else {
       return returnReceiptsBasedOnPaymentMethod().toList();
@@ -1092,10 +891,7 @@ class ReceiptsProvider extends ChangeNotifier {
       if (!grouped.containsKey(staffUuid)) {
         grouped[staffUuid] = StaffGroupReceipts(
           staffUuid: staffUuid ?? '',
-          staffName:
-              staffUuid == null
-                  ? null
-                  : receipt.staffName ?? '',
+          staffName: staffUuid == null ? null : receipt.staffName ?? '',
           number: 0,
           totalBalance: 0,
           totalOriginalCost: 0,
@@ -1109,17 +905,14 @@ class ReceiptsProvider extends ChangeNotifier {
       group.totalBalance += receipt.balance ?? 0;
       group.totalOriginalCost += receipt.originalCost ?? 0;
       group.totalRevenue +=
-          receipt.cashAlt +
-          receipt.bank +
-          (receipt.customerAccount ?? 0);
+          receipt.cashAlt + receipt.bank + (receipt.customerAccount ?? 0);
     }
 
     var res = grouped.values.toList();
     res.sort(
-      (a, b) => ((a.staffName ?? 'Not Set').toLowerCase())
-          .compareTo(
-            (b.staffName ?? 'Not Set').toLowerCase(),
-          ),
+      (a, b) => ((a.staffName ?? 'Not Set').toLowerCase()).compareTo(
+        (b.staffName ?? 'Not Set').toLowerCase(),
+      ),
     );
     return res;
   }
@@ -1134,9 +927,7 @@ class ReceiptsProvider extends ChangeNotifier {
         grouped[customerUuid] = CustomerGroupReceipts(
           customerUuid: customerUuid ?? '',
           customerName:
-              customerUuid == null
-                  ? null
-                  : receipt.customerName ?? '',
+              customerUuid == null ? null : receipt.customerName ?? '',
           number: 0,
           totalBalance: 0,
           totalOriginalCost: 0,
@@ -1150,18 +941,14 @@ class ReceiptsProvider extends ChangeNotifier {
       group.totalBalance += receipt.balance ?? 0;
       group.totalOriginalCost += receipt.originalCost ?? 0;
       group.totalRevenue +=
-          receipt.cashAlt +
-          receipt.bank +
-          (receipt.customerAccount ?? 0);
+          receipt.cashAlt + receipt.bank + (receipt.customerAccount ?? 0);
     }
 
     var res = grouped.values.toList();
     res.sort(
-      (a, b) =>
-          ((a.customerName ?? 'Not Set').toLowerCase())
-              .compareTo(
-                (b.customerName ?? 'Not Set').toLowerCase(),
-              ),
+      (a, b) => ((a.customerName ?? 'Not Set').toLowerCase()).compareTo(
+        (b.customerName ?? 'Not Set').toLowerCase(),
+      ),
     );
     return res;
   }
@@ -1169,8 +956,7 @@ class ReceiptsProvider extends ChangeNotifier {
   // One row per method actually paid. A split receipt counts under each
   // method it used; revenue is that method's amount, and balance / cost are
   // shared out by the same proportion so column totals still match.
-  List<ChannelGroupReceipts>
-  groupReceiptsByPaymentChannel() {
+  List<ChannelGroupReceipts> groupReceiptsByPaymentChannel() {
     final Map<String, ChannelGroupReceipts> grouped = {};
 
     for (final receipt in returnOwnReceiptsByDayOrWeek()) {
@@ -1197,10 +983,8 @@ class ReceiptsProvider extends ChangeNotifier {
                 : 1 / payments.length;
 
         group.number++;
-        group.totalBalance +=
-            (receipt.balance ?? 0) * share;
-        group.totalOriginalCost +=
-            (receipt.originalCost ?? 0) * share;
+        group.totalBalance += (receipt.balance ?? 0) * share;
+        group.totalOriginalCost += (receipt.originalCost ?? 0) * share;
         group.totalRevenue += payment.amount;
       }
     }
@@ -1209,29 +993,22 @@ class ReceiptsProvider extends ChangeNotifier {
     res.sort(
       (a, b) => PaymentMethods.all
           .indexOf(a.paymentMethod)
-          .compareTo(
-            PaymentMethods.all.indexOf(b.paymentMethod),
-          ),
+          .compareTo(PaymentMethods.all.indexOf(b.paymentMethod)),
     );
     return res;
   }
 
-  List<DepartmentGroupReceipts>
-  groupReceiptsByDepartment() {
-    final Map<String?, DepartmentGroupReceipts> grouped =
-        {};
+  List<DepartmentGroupReceipts> groupReceiptsByDepartment() {
+    final Map<String?, DepartmentGroupReceipts> grouped = {};
 
     for (final receipt in returnOwnReceiptsByDayOrWeek()) {
-      final String? departmentUuid =
-          receipt.departmentUuidNew;
+      final String? departmentUuid = receipt.departmentUuidNew;
 
       if (!grouped.containsKey(departmentUuid)) {
         grouped[departmentUuid] = DepartmentGroupReceipts(
           departmentUuid: departmentUuid ?? '',
           departmentName:
-              departmentUuid == null
-                  ? null
-                  : receipt.departmentName ?? '',
+              departmentUuid == null ? null : receipt.departmentName ?? '',
           number: 0,
           totalBalance: 0,
           totalOriginalCost: 0,
@@ -1245,51 +1022,39 @@ class ReceiptsProvider extends ChangeNotifier {
       group.totalBalance += receipt.balance ?? 0;
       group.totalOriginalCost += receipt.originalCost ?? 0;
       group.totalRevenue +=
-          receipt.cashAlt +
-          receipt.bank +
-          (receipt.customerAccount ?? 0);
+          receipt.cashAlt + receipt.bank + (receipt.customerAccount ?? 0);
     }
 
     var res = grouped.values.toList();
     res.sort(
-      (a, b) => ((a.departmentName ?? 'Not Set')
-              .toLowerCase())
-          .compareTo(
-            (b.departmentName ?? 'Not Set').toLowerCase(),
-          ),
+      (a, b) => ((a.departmentName ?? 'Not Set').toLowerCase()).compareTo(
+        (b.departmentName ?? 'Not Set').toLowerCase(),
+      ),
     );
     return res;
   }
 
-  List<TempProductSaleRecord>
-  returnProductsRecordByDayOrWeek() {
+  List<TempProductSaleRecord> returnProductsRecordByDayOrWeek() {
     if (rangeStartDate != null) {
       if (authorization(
-        authorized:
-            Authorizations().viewAllTransactionRecords,
+        authorized: Authorizations().viewAllTransactionRecords,
       )) {
         return getProductRecordsNoVoid().where((record) {
           final created = record.createdAt.toLocal();
-          return !created.isBefore(
-                fourAm(rangeStartDate!),
-              ) &&
+          return !created.isBefore(fourAm(rangeStartDate!)) &&
               created.isBefore(
                 fourAmNextDay(
-                  rangeEndDate ??
-                      resolveBusinessDate(DateTime.now()),
+                  rangeEndDate ?? resolveBusinessDate(DateTime.now()),
                 ),
               );
         }).toList();
       } else {
         return getProductRecordsNoVoid().where((record) {
           final created = record.createdAt.toLocal();
-          return !created.isBefore(
-                fourAm(rangeStartDate!),
-              ) &&
+          return !created.isBefore(fourAm(rangeStartDate!)) &&
               created.isBefore(
                 fourAmNextDay(
-                  rangeEndDate ??
-                      resolveBusinessDate(DateTime.now()),
+                  rangeEndDate ?? resolveBusinessDate(DateTime.now()),
                 ),
               ) &&
               record.staffId == currentUser().userId;
@@ -1297,69 +1062,49 @@ class ReceiptsProvider extends ChangeNotifier {
       }
     }
 
-    final currentDate =
-        dateSet ?? resolveBusinessDate(DateTime.now());
+    final currentDate = dateSet ?? resolveBusinessDate(DateTime.now());
 
-    if (authorization(
-      authorized:
-          Authorizations().viewAllTransactionRecords,
-    )) {
+    if (authorization(authorized: Authorizations().viewAllTransactionRecords)) {
       return getProductRecordsNoVoid()
           .where(
             (record) =>
-                !record.createdAt.isBefore(
-                  fourAm(currentDate),
-                ) &&
-                record.createdAt.isBefore(
-                  fourAmNextDay(currentDate),
-                ),
+                !record.createdAt.isBefore(fourAm(currentDate)) &&
+                record.createdAt.isBefore(fourAmNextDay(currentDate)),
           )
           .toList();
     } else {
       return getProductRecordsNoVoid()
           .where(
             (record) =>
-                !record.createdAt.isBefore(
-                  fourAm(currentDate),
-                ) &&
-                record.createdAt.isBefore(
-                  fourAmNextDay(currentDate),
-                ) &&
+                !record.createdAt.isBefore(fourAm(currentDate)) &&
+                record.createdAt.isBefore(fourAmNextDay(currentDate)) &&
                 record.staffId == currentUser().userId,
           )
           .toList();
     }
   }
 
-  List<TempProductSaleRecord>
-  returnProductsRecordByDayOrWeekVoid() {
+  List<TempProductSaleRecord> returnProductsRecordByDayOrWeekVoid() {
     if (rangeStartDate != null) {
       if (authorization(
-        authorized:
-            Authorizations().viewAllTransactionRecords,
+        authorized: Authorizations().viewAllTransactionRecords,
       )) {
         return getProductRecordsVoid().where((record) {
           final created = record.createdAt.toLocal();
-          return !created.isBefore(
-                fourAm(rangeStartDate!),
-              ) &&
+          return !created.isBefore(fourAm(rangeStartDate!)) &&
               created.isBefore(
                 fourAmNextDay(
-                  rangeEndDate ??
-                      resolveBusinessDate(DateTime.now()),
+                  rangeEndDate ?? resolveBusinessDate(DateTime.now()),
                 ),
               );
         }).toList();
       } else {
         return getProductRecordsVoid().where((record) {
           final created = record.createdAt.toLocal();
-          return !created.isBefore(
-                fourAm(rangeStartDate!),
-              ) &&
+          return !created.isBefore(fourAm(rangeStartDate!)) &&
               created.isBefore(
                 fourAmNextDay(
-                  rangeEndDate ??
-                      resolveBusinessDate(DateTime.now()),
+                  rangeEndDate ?? resolveBusinessDate(DateTime.now()),
                 ),
               ) &&
               record.staffId == currentUser().userId;
@@ -1367,34 +1112,22 @@ class ReceiptsProvider extends ChangeNotifier {
       }
     }
 
-    final currentDate =
-        dateSet ?? resolveBusinessDate(DateTime.now());
+    final currentDate = dateSet ?? resolveBusinessDate(DateTime.now());
 
-    if (authorization(
-      authorized:
-          Authorizations().viewAllTransactionRecords,
-    )) {
+    if (authorization(authorized: Authorizations().viewAllTransactionRecords)) {
       return getProductRecordsVoid()
           .where(
             (record) =>
-                !record.createdAt.isBefore(
-                  fourAm(currentDate),
-                ) &&
-                record.createdAt.isBefore(
-                  fourAmNextDay(currentDate),
-                ),
+                !record.createdAt.isBefore(fourAm(currentDate)) &&
+                record.createdAt.isBefore(fourAmNextDay(currentDate)),
           )
           .toList();
     } else {
       return getProductRecordsVoid()
           .where(
             (record) =>
-                !record.createdAt.isBefore(
-                  fourAm(currentDate),
-                ) &&
-                record.createdAt.isBefore(
-                  fourAmNextDay(currentDate),
-                ) &&
+                !record.createdAt.isBefore(fourAm(currentDate)) &&
+                record.createdAt.isBefore(fourAmNextDay(currentDate)) &&
                 record.staffId == currentUser().userId,
           )
           .toList();
@@ -1413,9 +1146,7 @@ class ReceiptsProvider extends ChangeNotifier {
     for (var receipt in returnOwnReceiptsByDayOrWeek(
       // context,
     )) {
-      tempTotalRevenue += getTotalMainRevenueReceipt(
-        receipt,
-      );
+      tempTotalRevenue += getTotalMainRevenueReceipt(receipt);
     }
 
     return tempTotalRevenue;
@@ -1442,9 +1173,7 @@ class ReceiptsProvider extends ChangeNotifier {
               (rec) => rec.customerUuid == customerId,
             )
             : returnOwnReceiptsByDayOrWeek())) {
-      tempTotalRevenue += getTotalMainRevenueReceipt(
-        receipt,
-      );
+      tempTotalRevenue += getTotalMainRevenueReceipt(receipt);
     }
 
     return tempTotalRevenue;
@@ -1466,10 +1195,7 @@ class ReceiptsProvider extends ChangeNotifier {
     )) {
       var productRecords =
           productSalesRecords
-              .where(
-                (record) =>
-                    record.receiptUuid == receipt.uuid,
-              )
+              .where((record) => record.receiptUuid == receipt.uuid)
               .toList();
 
       for (var record in productRecords) {
@@ -1481,15 +1207,11 @@ class ReceiptsProvider extends ChangeNotifier {
   }
 
   double getVATForReceipt(TempMainReceipt receipt) {
-    var vat =
-        ((receipt.originalCost ?? 0) *
-            ((receipt.vat ?? 0) / 100));
+    var vat = ((receipt.originalCost ?? 0) * ((receipt.vat ?? 0) / 100));
     return vat;
   }
 
-  double getDiscountAmountForReceipt(
-    TempMainReceipt receipt,
-  ) {
+  double getDiscountAmountForReceipt(TempMainReceipt receipt) {
     if (receipt.fixedDiscount != null) {
       return (receipt.fixedDiscount ?? 0);
     } else if (receipt.generalDiscount != null) {
@@ -1504,13 +1226,9 @@ class ReceiptsProvider extends ChangeNotifier {
     return receipt.originalCost ?? 0;
   }
 
-  double getTotalMainRevenueReceipt(
-    TempMainReceipt receipt,
-  ) {
+  double getTotalMainRevenueReceipt(TempMainReceipt receipt) {
     var total =
-        ((receipt.bank +
-            receipt.cashAlt +
-            (receipt.customerAccount ?? 0)));
+        ((receipt.bank + receipt.cashAlt + (receipt.customerAccount ?? 0)));
 
     return total;
   }
@@ -1526,8 +1244,7 @@ class ReceiptsProvider extends ChangeNotifier {
   //
   ////////////  GENERAL REPORT PRINTING  // // // /  /  // // //
 
-  List<GeneralReportSalesSummaryItem>
-  returnGeneralReportSalesSummary() {
+  List<GeneralReportSalesSummaryItem> returnGeneralReportSalesSummary() {
     final List<TempProductSaleRecord> records =
         returnProductsRecordByDayOrWeek()
             .where((item) => item.invoiceUuid == null)
@@ -1536,15 +1253,10 @@ class ReceiptsProvider extends ChangeNotifier {
     Map<String, List<TempProductSaleRecord>> grouped = {};
 
     for (var item in records) {
-      if (returnShopProvider()
-              .userShop()
-              ?.manageInventoryStorage ==
-          true) {
+      if (returnShopProvider().userShop()?.manageInventoryStorage == true) {
         List<TempProductClass> productList =
             returnData().productListMain
-                .where(
-                  (pro) => pro.uuid == item.productUuid,
-                )
+                .where((pro) => pro.uuid == item.productUuid)
                 .toList();
         if (productList.isNotEmpty) {
           TempProductClass product = productList.first;
@@ -1587,15 +1299,9 @@ class ReceiptsProvider extends ChangeNotifier {
     List<GeneralReportSalesSummaryItem> result = [];
 
     grouped.forEach((uuid, items) {
-      double totalQtty = items.fold(
-        0,
-        (sum, e) => sum + e.displayQuantity(),
-      );
+      double totalQtty = items.fold(0, (sum, e) => sum + e.displayQuantity());
 
-      double totalCost = items.fold(
-        0,
-        (sum, e) => sum + e.revenue,
-      );
+      double totalCost = items.fold(0, (sum, e) => sum + e.revenue);
 
       double totalCostPrice = items.fold(
         0,
@@ -1605,24 +1311,14 @@ class ReceiptsProvider extends ChangeNotifier {
       String itemName() {
         List<TempProductClass> products =
             returnData().productListMain
-                .where(
-                  (pro) =>
-                      pro.uuid == items.first.productUuid,
-                )
+                .where((pro) => pro.uuid == items.first.productUuid)
                 .toList();
         if (products.isNotEmpty) {
           TempProductClass product = products.first;
-          if (returnShopProvider()
-                  .userShop()
-                  ?.manageInventoryStorage ==
-              true) {
+          if (returnShopProvider().userShop()?.manageInventoryStorage == true) {
             var storageItems =
-                returnStorageProductProvider()
-                    .storageProductListMain
-                    .where(
-                      (item) =>
-                          item.uuid == product.storageUuid,
-                    )
+                returnStorageProductProvider().storageProductListMain
+                    .where((item) => item.uuid == product.storageUuid)
                     .toList();
             if (storageItems.isNotEmpty) {
               return storageItems.first.name;
@@ -1644,12 +1340,8 @@ class ReceiptsProvider extends ChangeNotifier {
           itemUuid: uuid,
           quantity: totalQtty,
           totalCost: totalCost,
-          departmentName:
-              items.first.departmentName ??
-              'Departmant Not Set',
-          departmentUuid:
-              items.first.departmentUuid ??
-              'Department Not Set',
+          departmentName: items.first.departmentName ?? 'Departmant Not Set',
+          departmentUuid: items.first.departmentUuid ?? 'Department Not Set',
           staffName: items.first.staffName ?? '',
           staffUuid: items.first.staffId,
         ),
@@ -1672,8 +1364,7 @@ class ReceiptsProvider extends ChangeNotifier {
   //
   //
   //
-  List<GeneralReportSalesSummaryItem>
-  returnGeneralReportSalesSummaryVoid() {
+  List<GeneralReportSalesSummaryItem> returnGeneralReportSalesSummaryVoid() {
     final List<TempProductSaleRecord> records =
         returnProductsRecordByDayOrWeekVoid()
             .where((item) => item.invoiceUuid == null)
@@ -1682,15 +1373,10 @@ class ReceiptsProvider extends ChangeNotifier {
     Map<String, List<TempProductSaleRecord>> grouped = {};
 
     for (var item in records) {
-      if (returnShopProvider()
-              .userShop()
-              ?.manageInventoryStorage ==
-          true) {
+      if (returnShopProvider().userShop()?.manageInventoryStorage == true) {
         List<TempProductClass> productList =
             returnData().productListMain
-                .where(
-                  (pro) => pro.uuid == item.productUuid,
-                )
+                .where((pro) => pro.uuid == item.productUuid)
                 .toList();
         if (productList.isNotEmpty) {
           TempProductClass product = productList.first;
@@ -1733,15 +1419,9 @@ class ReceiptsProvider extends ChangeNotifier {
     List<GeneralReportSalesSummaryItem> result = [];
 
     grouped.forEach((uuid, items) {
-      double totalQtty = items.fold(
-        0,
-        (sum, e) => sum + e.displayQuantity(),
-      );
+      double totalQtty = items.fold(0, (sum, e) => sum + e.displayQuantity());
 
-      double totalCost = items.fold(
-        0,
-        (sum, e) => sum + e.revenue,
-      );
+      double totalCost = items.fold(0, (sum, e) => sum + e.revenue);
 
       double totalCostPrice = items.fold(
         0,
@@ -1751,24 +1431,14 @@ class ReceiptsProvider extends ChangeNotifier {
       String itemName() {
         List<TempProductClass> products =
             returnData().productListMain
-                .where(
-                  (pro) =>
-                      pro.uuid == items.first.productUuid,
-                )
+                .where((pro) => pro.uuid == items.first.productUuid)
                 .toList();
         if (products.isNotEmpty) {
           TempProductClass product = products.first;
-          if (returnShopProvider()
-                  .userShop()
-                  ?.manageInventoryStorage ==
-              true) {
+          if (returnShopProvider().userShop()?.manageInventoryStorage == true) {
             var storageItems =
-                returnStorageProductProvider()
-                    .storageProductListMain
-                    .where(
-                      (item) =>
-                          item.uuid == product.storageUuid,
-                    )
+                returnStorageProductProvider().storageProductListMain
+                    .where((item) => item.uuid == product.storageUuid)
                     .toList();
             if (storageItems.isNotEmpty) {
               return storageItems.first.name;
@@ -1790,12 +1460,8 @@ class ReceiptsProvider extends ChangeNotifier {
           itemUuid: uuid,
           quantity: totalQtty,
           totalCost: totalCost,
-          departmentName:
-              items.first.departmentName ??
-              'Departmant Not Set',
-          departmentUuid:
-              items.first.departmentUuid ??
-              'Department Not Set',
+          departmentName: items.first.departmentName ?? 'Departmant Not Set',
+          departmentUuid: items.first.departmentUuid ?? 'Department Not Set',
           staffName: items.first.staffName ?? 'Not Set',
           staffUuid: items.first.staffId,
         ),
@@ -1810,24 +1476,17 @@ class ReceiptsProvider extends ChangeNotifier {
     final List<TempProductSaleRecord> records =
         returnProductsRecordByDayOrWeek()
             .where(
-              (item) =>
-                  item.departmentUuid == null &&
-                  item.invoiceUuid == null,
+              (item) => item.departmentUuid == null && item.invoiceUuid == null,
             )
             .toList();
 
     Map<String, List<TempProductSaleRecord>> grouped = {};
 
     for (var item in records) {
-      if (returnShopProvider()
-              .userShop()
-              ?.manageInventoryStorage ==
-          true) {
+      if (returnShopProvider().userShop()?.manageInventoryStorage == true) {
         List<TempProductClass> productList =
             returnData().productListMain
-                .where(
-                  (pro) => pro.uuid == item.productUuid,
-                )
+                .where((pro) => pro.uuid == item.productUuid)
                 .toList();
         if (productList.isNotEmpty) {
           TempProductClass product = productList.first;
@@ -1870,15 +1529,9 @@ class ReceiptsProvider extends ChangeNotifier {
     List<GeneralReportSalesSummaryItem> result = [];
 
     grouped.forEach((uuid, items) {
-      double totalQtty = items.fold(
-        0,
-        (sum, e) => sum + e.displayQuantity(),
-      );
+      double totalQtty = items.fold(0, (sum, e) => sum + e.displayQuantity());
 
-      double totalCost = items.fold(
-        0,
-        (sum, e) => sum + e.revenue,
-      );
+      double totalCost = items.fold(0, (sum, e) => sum + e.revenue);
 
       double totalCostPrice = items.fold(
         0,
@@ -1888,24 +1541,14 @@ class ReceiptsProvider extends ChangeNotifier {
       String itemName() {
         List<TempProductClass> products =
             returnData().productListMain
-                .where(
-                  (pro) =>
-                      pro.uuid == items.first.productUuid,
-                )
+                .where((pro) => pro.uuid == items.first.productUuid)
                 .toList();
         if (products.isNotEmpty) {
           TempProductClass product = products.first;
-          if (returnShopProvider()
-                  .userShop()
-                  ?.manageInventoryStorage ==
-              true) {
+          if (returnShopProvider().userShop()?.manageInventoryStorage == true) {
             var storageItems =
-                returnStorageProductProvider()
-                    .storageProductListMain
-                    .where(
-                      (item) =>
-                          item.uuid == product.storageUuid,
-                    )
+                returnStorageProductProvider().storageProductListMain
+                    .where((item) => item.uuid == product.storageUuid)
                     .toList();
             if (storageItems.isNotEmpty) {
               return storageItems.first.name;
@@ -1927,12 +1570,8 @@ class ReceiptsProvider extends ChangeNotifier {
           itemUuid: uuid,
           quantity: totalQtty,
           totalCost: totalCost,
-          departmentName:
-              items.first.departmentName ??
-              'Departmant Not Set',
-          departmentUuid:
-              items.first.departmentUuid ??
-              'Department Not Set',
+          departmentName: items.first.departmentName ?? 'Departmant Not Set',
+          departmentUuid: items.first.departmentUuid ?? 'Department Not Set',
           staffName: items.first.staffName ?? 'Not Set',
           staffUuid: items.first.staffId,
         ),
@@ -1947,24 +1586,16 @@ class ReceiptsProvider extends ChangeNotifier {
   //
 
   List<GeneralReportSalesSummaryItem>
-  returnGeneralReportSalesSummaryByDepartment(
-    String departmentUuid,
-  ) {
+  returnGeneralReportSalesSummaryByDepartment(String departmentUuid) {
     return returnGeneralReportSalesSummary()
-        .where(
-          (item) => item.departmentUuid == departmentUuid,
-        )
+        .where((item) => item.departmentUuid == departmentUuid)
         .toList();
   }
 
-  double getTotalSalesRevenueForDepartment({
-    required String deptUuid,
-  }) {
+  double getTotalSalesRevenueForDepartment({required String deptUuid}) {
     return returnProductsRecordByDayOrWeek()
         .where(
-          (item) =>
-              item.departmentUuid == deptUuid &&
-              item.invoiceUuid == null,
+          (item) => item.departmentUuid == deptUuid && item.invoiceUuid == null,
         )
         .map((item) => item.revenue)
         .toList()
@@ -1978,9 +1609,7 @@ class ReceiptsProvider extends ChangeNotifier {
   double getTotalSalesRevenueNoDepartment() {
     return returnProductsRecordByDayOrWeek()
         .where(
-          (item) =>
-              item.departmentUuid == null &&
-              item.invoiceUuid == null,
+          (item) => item.departmentUuid == null && item.invoiceUuid == null,
         )
         .map((item) => item.revenue)
         .toList()
@@ -2020,8 +1649,7 @@ class ReceiptsProvider extends ChangeNotifier {
     // STEP 1: Group by staff + product
     for (var item in records) {
       final staffId = item.staffId;
-      final productId =
-          item.productUuid ?? 'unknown_product';
+      final productId = item.productUuid ?? 'unknown_product';
 
       final key = '$staffId|$productId';
 
@@ -2035,15 +1663,9 @@ class ReceiptsProvider extends ChangeNotifier {
     grouped.forEach((key, items) {
       final first = items.first;
 
-      double totalQuantity = items.fold(
-        0,
-        (sum, e) => sum + (e.quantity),
-      );
+      double totalQuantity = items.fold(0, (sum, e) => sum + (e.quantity));
 
-      double totalCost = items.fold(
-        0,
-        (sum, e) => sum + (e.revenue),
-      );
+      double totalCost = items.fold(0, (sum, e) => sum + (e.revenue));
 
       result.add(
         GeneralReportSalesSummaryItemStaff(
@@ -2081,16 +1703,10 @@ class ReceiptsProvider extends ChangeNotifier {
   int sortColumnIndex = 0;
   bool sortAscending = true;
 
-  List<DataColumn> _headingTotal({
-    required BuildContext context,
-  }) {
+  List<DataColumn> _headingTotal({required BuildContext context}) {
     return [
       DataColumn2(label: HeadingTextWidget(title: '#Id')),
-      DataColumn2(
-        size: ColumnSize.L,
-
-        label: HeadingTextWidget(title: 'Staff'),
-      ),
+      DataColumn2(size: ColumnSize.L, label: HeadingTextWidget(title: 'Staff')),
       DataColumn2(
         size: ColumnSize.L,
 
@@ -2106,29 +1722,16 @@ class ReceiptsProvider extends ChangeNotifier {
         size: ColumnSize.S,
         label: HeadingTextWidget(title: 'Discount'),
       ),
-      DataColumn2(
-        size: ColumnSize.S,
-        label: HeadingTextWidget(title: 'VAT'),
-      ),
-      DataColumn2(
-        label: HeadingTextWidget(title: 'Balance'),
-      ),
-      DataColumn2(
-        label: HeadingTextWidget(title: 'Sub-Total'),
-      ),
-      DataColumn2(
-        label: HeadingTextWidget(title: 'Revenue'),
-      ),
+      DataColumn2(size: ColumnSize.S, label: HeadingTextWidget(title: 'VAT')),
+      DataColumn2(label: HeadingTextWidget(title: 'Balance')),
+      DataColumn2(label: HeadingTextWidget(title: 'Sub-Total')),
+      DataColumn2(label: HeadingTextWidget(title: 'Revenue')),
     ];
   }
 
   List<DataColumn> _headingStaffs() {
     return [
-      DataColumn2(
-        size: ColumnSize.L,
-
-        label: HeadingTextWidget(title: 'Staff'),
-      ),
+      DataColumn2(size: ColumnSize.L, label: HeadingTextWidget(title: 'Staff')),
       DataColumn2(
         size: ColumnSize.S,
         label: HeadingTextWidget(title: 'Quantity'),
@@ -2137,12 +1740,8 @@ class ReceiptsProvider extends ChangeNotifier {
         size: ColumnSize.M,
         label: HeadingTextWidget(title: 'Balance'),
       ),
-      DataColumn2(
-        label: HeadingTextWidget(title: 'Sub-Total'),
-      ),
-      DataColumn2(
-        label: HeadingTextWidget(title: 'Revenue'),
-      ),
+      DataColumn2(label: HeadingTextWidget(title: 'Sub-Total')),
+      DataColumn2(label: HeadingTextWidget(title: 'Revenue')),
     ];
   }
 
@@ -2161,12 +1760,8 @@ class ReceiptsProvider extends ChangeNotifier {
         size: ColumnSize.M,
         label: HeadingTextWidget(title: 'Balance'),
       ),
-      DataColumn2(
-        label: HeadingTextWidget(title: 'Sub-Total'),
-      ),
-      DataColumn2(
-        label: HeadingTextWidget(title: 'Revenue'),
-      ),
+      DataColumn2(label: HeadingTextWidget(title: 'Sub-Total')),
+      DataColumn2(label: HeadingTextWidget(title: 'Revenue')),
     ];
   }
 
@@ -2184,12 +1779,8 @@ class ReceiptsProvider extends ChangeNotifier {
         size: ColumnSize.M,
         label: HeadingTextWidget(title: 'Balance'),
       ),
-      DataColumn2(
-        label: HeadingTextWidget(title: 'Sub-Total'),
-      ),
-      DataColumn2(
-        label: HeadingTextWidget(title: 'Revenue'),
-      ),
+      DataColumn2(label: HeadingTextWidget(title: 'Sub-Total')),
+      DataColumn2(label: HeadingTextWidget(title: 'Revenue')),
     ];
   }
 
@@ -2207,12 +1798,8 @@ class ReceiptsProvider extends ChangeNotifier {
         size: ColumnSize.M,
         label: HeadingTextWidget(title: 'Balance'),
       ),
-      DataColumn2(
-        label: HeadingTextWidget(title: 'Sub-Total'),
-      ),
-      DataColumn2(
-        label: HeadingTextWidget(title: 'Revenue'),
-      ),
+      DataColumn2(label: HeadingTextWidget(title: 'Sub-Total')),
+      DataColumn2(label: HeadingTextWidget(title: 'Revenue')),
     ];
   }
 
@@ -2239,9 +1826,7 @@ class ReceiptsProvider extends ChangeNotifier {
 
   List<DataRow> _rowTotal({required BuildContext context}) {
     return [
-      ...returnOwnReceiptsByDayOrWeek().toList().map((
-        item,
-      ) {
+      ...returnOwnReceiptsByDayOrWeek().toList().map((item) {
         return DataRow2(
           specificRowHeight:
               (item.staffName ?? '').length > 18 ||
@@ -2250,9 +1835,7 @@ class ReceiptsProvider extends ChangeNotifier {
                   : 30,
           cells: [
             DataCell(
-              Text(
-                "#${item.barcode ?? returnOnlyDigits(item.uuid ?? '')}",
-              ),
+              Text("#${item.barcode ?? returnOnlyDigits(item.uuid ?? '')}"),
             ),
             DataCell(Text(item.staffName ?? 'Not Set')),
             DataCell(Text(item.customerName ?? 'Not Set')),
@@ -2264,18 +1847,9 @@ class ReceiptsProvider extends ChangeNotifier {
                 "${item.generalDiscount != null ? "" : '${shop(context)?.currency}'}${formatLargeNumberDouble(item.fixedDiscount ?? item.generalDiscount ?? 0)}${item.generalDiscount != null ? "%" : ''}",
               ),
             ),
+            DataCell(Text("${formatLargeNumberDouble(item.vat ?? 0)}%")),
             DataCell(
-              Text(
-                "${formatLargeNumberDouble(item.vat ?? 0)}%",
-              ),
-            ),
-            DataCell(
-              Text(
-                formatMoneyBig(
-                  amount: item.balance ?? 0,
-                  context: context,
-                ),
-              ),
+              Text(formatMoneyBig(amount: item.balance ?? 0, context: context)),
             ),
             DataCell(
               Text(
@@ -2292,9 +1866,7 @@ class ReceiptsProvider extends ChangeNotifier {
                   MaterialPageRoute(
                     builder: (context) {
                       return ReceiptPage(
-                        response: CheckoutResponse(
-                          receipt: item,
-                        ),
+                        response: CheckoutResponse(receipt: item),
                         isMain: false,
                       );
                     },
@@ -2302,8 +1874,7 @@ class ReceiptsProvider extends ChangeNotifier {
                 );
               },
               Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 spacing: 5,
                 children: [
                   Text(
@@ -2330,9 +1901,7 @@ class ReceiptsProvider extends ChangeNotifier {
           color: Colors.grey.shade300,
         ),
         cells: [
-          DataCell(
-            Text(style: TextStyle(fontSize: 14), 'TOTAL'),
-          ),
+          DataCell(Text(style: TextStyle(fontSize: 14), 'TOTAL')),
           DataCell(Text('')),
           DataCell(Text('')),
           DataCell(Text('')),
@@ -2343,10 +1912,7 @@ class ReceiptsProvider extends ChangeNotifier {
           DataCell(
             Text(
               style: TextStyle(fontSize: 14),
-              formatMoneyBig(
-                amount: rowTotalTotalBalance(),
-                context: context,
-              ),
+              formatMoneyBig(amount: rowTotalTotalBalance(), context: context),
             ),
           ),
           DataCell(
@@ -2361,10 +1927,7 @@ class ReceiptsProvider extends ChangeNotifier {
           DataCell(
             Text(
               style: TextStyle(fontSize: 16),
-              formatMoneyBig(
-                amount: rowTotalTotalRevenue(),
-                context: context,
-              ),
+              formatMoneyBig(amount: rowTotalTotalRevenue(), context: context),
             ),
           ),
         ],
@@ -2400,26 +1963,16 @@ class ReceiptsProvider extends ChangeNotifier {
         .fold<double>(0, (p, n) => p + n);
   }
 
-  List<DataRow> _rowStaffs({
-    required BuildContext context,
-  }) {
+  List<DataRow> _rowStaffs({required BuildContext context}) {
     return [
       ...groupReceiptsByStaff().map((item) {
         return DataRow2(
-          specificRowHeight:
-              (item.staffName ?? '').length > 15 ? 40 : 30,
+          specificRowHeight: (item.staffName ?? '').length > 15 ? 40 : 30,
           cells: [
             DataCell(Text(item.staffName ?? 'Not Set')),
+            DataCell(Text(formatLargeNumberDouble(item.number))),
             DataCell(
-              Text(formatLargeNumberDouble(item.number)),
-            ),
-            DataCell(
-              Text(
-                formatMoneyBig(
-                  amount: item.totalBalance,
-                  context: context,
-                ),
-              ),
+              Text(formatMoneyBig(amount: item.totalBalance, context: context)),
             ),
             DataCell(
               Text(
@@ -2430,12 +1983,7 @@ class ReceiptsProvider extends ChangeNotifier {
               ),
             ),
             DataCell(
-              Text(
-                formatMoneyBig(
-                  amount: item.totalRevenue,
-                  context: context,
-                ),
-              ),
+              Text(formatMoneyBig(amount: item.totalRevenue, context: context)),
             ),
           ],
         );
@@ -2447,24 +1995,17 @@ class ReceiptsProvider extends ChangeNotifier {
           color: Colors.grey.shade300,
         ),
         cells: [
-          DataCell(
-            Text(style: TextStyle(fontSize: 14), 'TOTAL'),
-          ),
+          DataCell(Text(style: TextStyle(fontSize: 14), 'TOTAL')),
           DataCell(
             Text(
               style: TextStyle(fontSize: 14),
-              formatLargeNumberDouble(
-                rowStaffsTotalQuantity(),
-              ),
+              formatLargeNumberDouble(rowStaffsTotalQuantity()),
             ),
           ),
           DataCell(
             Text(
               style: TextStyle(fontSize: 14),
-              formatMoneyBig(
-                amount: rowStaffsTotalBalance(),
-                context: context,
-              ),
+              formatMoneyBig(amount: rowStaffsTotalBalance(), context: context),
             ),
           ),
           DataCell(
@@ -2479,10 +2020,7 @@ class ReceiptsProvider extends ChangeNotifier {
           DataCell(
             Text(
               style: TextStyle(fontSize: 14),
-              formatMoneyBig(
-                amount: rowStaffsTotalRevenue(),
-                context: context,
-              ),
+              formatMoneyBig(amount: rowStaffsTotalRevenue(), context: context),
             ),
           ),
         ],
@@ -2518,28 +2056,16 @@ class ReceiptsProvider extends ChangeNotifier {
         .fold<double>(0, (p, n) => p + n);
   }
 
-  List<DataRow> _rowCustomers({
-    required BuildContext context,
-  }) {
+  List<DataRow> _rowCustomers({required BuildContext context}) {
     return [
       ...groupReceiptsByCustomer().map((item) {
         return DataRow2(
-          specificRowHeight:
-              (item.customerName ?? '').length > 15
-                  ? 40
-                  : 30,
+          specificRowHeight: (item.customerName ?? '').length > 15 ? 40 : 30,
           cells: [
             DataCell(Text(item.customerName ?? 'Not Set')),
+            DataCell(Text(formatLargeNumberDouble(item.number))),
             DataCell(
-              Text(formatLargeNumberDouble(item.number)),
-            ),
-            DataCell(
-              Text(
-                formatMoneyBig(
-                  amount: item.totalBalance,
-                  context: context,
-                ),
-              ),
+              Text(formatMoneyBig(amount: item.totalBalance, context: context)),
             ),
             DataCell(
               Text(
@@ -2550,12 +2076,7 @@ class ReceiptsProvider extends ChangeNotifier {
               ),
             ),
             DataCell(
-              Text(
-                formatMoneyBig(
-                  amount: item.totalRevenue,
-                  context: context,
-                ),
-              ),
+              Text(formatMoneyBig(amount: item.totalRevenue, context: context)),
             ),
           ],
         );
@@ -2567,15 +2088,11 @@ class ReceiptsProvider extends ChangeNotifier {
           color: Colors.grey.shade300,
         ),
         cells: [
-          DataCell(
-            Text(style: TextStyle(fontSize: 14), 'TOTAL'),
-          ),
+          DataCell(Text(style: TextStyle(fontSize: 14), 'TOTAL')),
           DataCell(
             Text(
               style: TextStyle(fontSize: 14),
-              formatLargeNumberDouble(
-                rowCustomersTotalQuantity(),
-              ),
+              formatLargeNumberDouble(rowCustomersTotalQuantity()),
             ),
           ),
           DataCell(
@@ -2636,25 +2153,16 @@ class ReceiptsProvider extends ChangeNotifier {
         .fold<double>(0, (p, n) => p + n);
   }
 
-  List<DataRow> _rowChannel({
-    required BuildContext context,
-  }) {
+  List<DataRow> _rowChannel({required BuildContext context}) {
     return [
       ...groupReceiptsByPaymentChannel().map((item) {
         return DataRow2(
           specificRowHeight: 30,
           cells: [
             DataCell(Text(item.paymentMethod)),
+            DataCell(Text(formatLargeNumberDouble(item.number))),
             DataCell(
-              Text(formatLargeNumberDouble(item.number)),
-            ),
-            DataCell(
-              Text(
-                formatMoneyBig(
-                  amount: item.totalBalance,
-                  context: context,
-                ),
-              ),
+              Text(formatMoneyBig(amount: item.totalBalance, context: context)),
             ),
             DataCell(
               Text(
@@ -2666,15 +2174,11 @@ class ReceiptsProvider extends ChangeNotifier {
             ),
             DataCell(
               Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 spacing: 5,
                 children: [
                   Text(
-                    formatMoneyBig(
-                      amount: item.totalRevenue,
-                      context: context,
-                    ),
+                    formatMoneyBig(amount: item.totalRevenue, context: context),
                   ),
                 ],
               ),
@@ -2689,15 +2193,11 @@ class ReceiptsProvider extends ChangeNotifier {
           color: Colors.grey.shade300,
         ),
         cells: [
-          DataCell(
-            Text(style: TextStyle(fontSize: 14), 'TOTAL'),
-          ),
+          DataCell(Text(style: TextStyle(fontSize: 14), 'TOTAL')),
           DataCell(
             Text(
               style: TextStyle(fontSize: 14),
-              formatLargeNumberDouble(
-                rowChannelTotalQuantity(),
-              ),
+              formatLargeNumberDouble(rowChannelTotalQuantity()),
             ),
           ),
           DataCell(
@@ -2760,27 +2260,16 @@ class ReceiptsProvider extends ChangeNotifier {
         .fold<double>(0, (p, n) => p + n);
   }
 
-  List<DataRow> _rowDepartment({
-    required BuildContext context,
-  }) {
+  List<DataRow> _rowDepartment({required BuildContext context}) {
     return [
       ...groupReceiptsByDepartment().map((item) {
         return DataRow2(
           specificRowHeight: 30,
           cells: [
+            DataCell(Text(item.departmentName ?? 'Not Set')),
+            DataCell(Text(formatLargeNumberDouble(item.number))),
             DataCell(
-              Text(item.departmentName ?? 'Not Set'),
-            ),
-            DataCell(
-              Text(formatLargeNumberDouble(item.number)),
-            ),
-            DataCell(
-              Text(
-                formatMoneyBig(
-                  amount: item.totalBalance,
-                  context: context,
-                ),
-              ),
+              Text(formatMoneyBig(amount: item.totalBalance, context: context)),
             ),
             DataCell(
               Text(
@@ -2792,15 +2281,11 @@ class ReceiptsProvider extends ChangeNotifier {
             ),
             DataCell(
               Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 spacing: 5,
                 children: [
                   Text(
-                    formatMoneyBig(
-                      amount: item.totalRevenue,
-                      context: context,
-                    ),
+                    formatMoneyBig(amount: item.totalRevenue, context: context),
                   ),
                 ],
               ),
@@ -2815,15 +2300,11 @@ class ReceiptsProvider extends ChangeNotifier {
           color: Colors.grey.shade300,
         ),
         cells: [
-          DataCell(
-            Text(style: TextStyle(fontSize: 14), 'TOTAL'),
-          ),
+          DataCell(Text(style: TextStyle(fontSize: 14), 'TOTAL')),
           DataCell(
             Text(
               style: TextStyle(fontSize: 14),
-              formatLargeNumberDouble(
-                rowDepartmentsTotalQuantity(),
-              ),
+              formatLargeNumberDouble(rowDepartmentsTotalQuantity()),
             ),
           ),
           DataCell(
@@ -2858,10 +2339,7 @@ class ReceiptsProvider extends ChangeNotifier {
     ];
   }
 
-  List<DataRow> row({
-    required int sortIndex,
-    required BuildContext context,
-  }) {
+  List<DataRow> row({required int sortIndex, required BuildContext context}) {
     if (sortIndex == 1) {
       return _rowTotal(context: context);
     } else if (sortIndex == 2) {

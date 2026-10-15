@@ -9,15 +9,11 @@ import 'package:syncfusion_flutter_xlsio/xlsio.dart';
 import 'package:universal_html/html.dart' as html;
 
 class ExcelProvider with ChangeNotifier {
-  static final ExcelProvider _instance =
-      ExcelProvider._internal();
+  static final ExcelProvider _instance = ExcelProvider._internal();
   factory ExcelProvider() => _instance;
   ExcelProvider._internal();
 
-  void styleHeader({
-    required List items,
-    required Worksheet sheet,
-  }) {
+  void styleHeader({required List items, required Worksheet sheet}) {
     var header = headerRange(items: items, sheet: sheet);
     header.cellStyle.backColor = '#D9EAD3';
     header.cellStyle.bold = true;
@@ -27,15 +23,11 @@ class ExcelProvider with ChangeNotifier {
     header.cellStyle.vAlign = VAlignType.center;
     header.cellStyle.borders.all.lineStyle = LineStyle.thin;
     header.rowHeight = 30;
-    allVerticalColumnsRange(items: items, sheet: sheet)
-        .columnWidth = 30;
+    allVerticalColumnsRange(items: items, sheet: sheet).columnWidth = 30;
     // header.isAutoFitText = true;
   }
 
-  void styleFooter({
-    required List items,
-    required Worksheet sheet,
-  }) {
+  void styleFooter({required List items, required Worksheet sheet}) {
     var footer = footerRange(items: items, sheet: sheet);
     footer.cellStyle.backColor = '#D9EAD3';
     footer.cellStyle.bold = true;
@@ -43,26 +35,14 @@ class ExcelProvider with ChangeNotifier {
     footer.cellStyle.fontColor = '#FF0000';
     footer.cellStyle.hAlign = HAlignType.center;
     footer.cellStyle.vAlign = VAlignType.center;
-    footer.cellStyle.borders.all.lineStyle =
-        LineStyle.thick;
+    footer.cellStyle.borders.all.lineStyle = LineStyle.thick;
   }
 
-  Range headerRange({
-    required List items,
-    required Worksheet sheet,
-  }) {
-    return sheet.getRangeByIndex(
-      1,
-      1,
-      1,
-      headers(items: items).length,
-    );
+  Range headerRange({required List items, required Worksheet sheet}) {
+    return sheet.getRangeByIndex(1, 1, 1, headers(items: items).length);
   }
 
-  Range footerRange({
-    required List items,
-    required Worksheet sheet,
-  }) {
+  Range footerRange({required List items, required Worksheet sheet}) {
     return sheet.getRangeByIndex(
       items.length + 2,
       1,
@@ -83,10 +63,7 @@ class ExcelProvider with ChangeNotifier {
     );
   }
 
-  Range bodyRange({
-    required List items,
-    required Worksheet sheet,
-  }) {
+  Range bodyRange({required List items, required Worksheet sheet}) {
     return sheet.getRangeByIndex(
       2,
       1,
@@ -110,27 +87,15 @@ class ExcelProvider with ChangeNotifier {
     bool addSuffix = true,
   }) async {
     var fileName =
-        addSuffix
-            ? '$name #${uuidGen().substring(0, 5).toUpperCase()}'
-            : name;
+        addSuffix ? '$name #${uuidGen().substring(0, 5).toUpperCase()}' : name;
     try {
       if (kIsWeb) {
-        await downloadExcelWeb(
-          bytes: bytes,
-          fileName: fileName,
-          isCsv: isCsv,
-        );
+        await downloadExcelWeb(bytes: bytes, fileName: fileName, isCsv: isCsv);
       } else {
-        final Uint8List uint8Bytes = Uint8List.fromList(
-          bytes,
-        );
+        final Uint8List uint8Bytes = Uint8List.fromList(bytes);
 
         if (Platform.isAndroid || Platform.isIOS) {
-          await shareExcel(
-            bytes: bytes,
-            fileName: fileName,
-            isCsv: isCsv,
-          );
+          await shareExcel(bytes: bytes, fileName: fileName, isCsv: isCsv);
         } else {
           await FileSaver.instance.saveFile(
             name: fileName,
@@ -187,8 +152,6 @@ class ExcelProvider with ChangeNotifier {
 
     await file.writeAsBytes(bytes);
 
-    await SharePlus.instance.share(
-      ShareParams(files: [XFile(file.path)]),
-    );
+    await SharePlus.instance.share(ShareParams(files: [XFile(file.path)]));
   }
 }

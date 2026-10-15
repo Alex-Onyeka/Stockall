@@ -80,10 +80,7 @@ class ProductionTotalTableMobile extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
-          BoxShadow(
-            color: const Color.fromARGB(25, 0, 0, 0),
-            blurRadius: 10,
-          ),
+          BoxShadow(color: const Color.fromARGB(25, 0, 0, 0), blurRadius: 10),
         ],
       ),
       child: Material(
@@ -98,18 +95,13 @@ class ProductionTotalTableMobile extends StatelessWidget {
             borderRadius: BorderRadius.circular(5),
             onTap: action,
             child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 15,
-                vertical: 15,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     spacing: 8,
                     children: [
                       Container(
@@ -120,11 +112,7 @@ class ProductionTotalTableMobile extends StatelessWidget {
                         ),
                         child: Icon(
                           size: 18,
-                          color:
-                              color ??
-                              theme
-                                  .lightModeColor
-                                  .secColor200,
+                          color: color ?? theme.lightModeColor.secColor200,
                           icon,
                         ),
                       ),
@@ -132,15 +120,8 @@ class ProductionTotalTableMobile extends StatelessWidget {
                         visible: entries != null,
                         child: Text(
                           style: TextStyle(
-                            color:
-                                theme
-                                    .lightModeColor
-                                    .greyColor200,
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b4
-                                    .fontSize,
+                            color: theme.lightModeColor.greyColor200,
+                            fontSize: theme.mobileTexts.b4.fontSize,
                             fontWeight: FontWeight.w500,
                           ),
                           '${formatLargeNumberDouble(entries?.toDouble() ?? 0)}  ${formatEntries(entries)}',
@@ -154,15 +135,8 @@ class ProductionTotalTableMobile extends StatelessWidget {
                       Expanded(
                         child: Text(
                           style: TextStyle(
-                            color:
-                                theme
-                                    .lightModeColor
-                                    .greyColor200,
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
+                            color: theme.lightModeColor.greyColor200,
+                            fontSize: theme.mobileTexts.b3.fontSize,
                             fontWeight: FontWeight.bold,
                           ),
 
@@ -177,29 +151,15 @@ class ProductionTotalTableMobile extends StatelessWidget {
                       // left: 10.0,
                     ),
                     child: Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           style: TextStyle(
-                            color:
-                                theme
-                                    .lightModeColor
-                                    .greyColor200,
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .h4
-                                    .fontSize,
-                            fontWeight:
-                                theme
-                                    .mobileTexts
-                                    .h3
-                                    .fontWeightBold,
+                            color: theme.lightModeColor.greyColor200,
+                            fontSize: theme.mobileTexts.h4.fontSize,
+                            fontWeight: theme.mobileTexts.h3.fontWeightBold,
                           ),
-                          formatLargeNumber(
-                            number.toString(),
-                          ),
+                          formatLargeNumber(number.toString()),
                         ),
                         Visibility(
                           visible: action != null,
@@ -247,10 +207,7 @@ class ProductionTotalTableDesktop extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
-          BoxShadow(
-            color: const Color.fromARGB(25, 0, 0, 0),
-            blurRadius: 10,
-          ),
+          BoxShadow(color: const Color.fromARGB(25, 0, 0, 0), blurRadius: 10),
         ],
       ),
       child: Material(
@@ -266,24 +223,16 @@ class ProductionTotalTableDesktop extends StatelessWidget {
             borderRadius: BorderRadius.circular(5),
             onTap: action,
             child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 15,
-                vertical: 15,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Row(
                     spacing: 8,
                     children: [
                       Visibility(
-                        visible:
-                            MediaQuery.of(
-                              context,
-                            ).size.width >
-                            335,
+                        visible: MediaQuery.of(context).size.width > 335,
                         child: Container(
                           padding: EdgeInsets.all(5),
                           decoration: BoxDecoration(
@@ -292,11 +241,7 @@ class ProductionTotalTableDesktop extends StatelessWidget {
                           ),
                           child: Icon(
                             size: 22,
-                            color:
-                                color ??
-                                theme
-                                    .lightModeColor
-                                    .secColor200,
+                            color: color ?? theme.lightModeColor.secColor200,
                             icon,
                           ),
                         ),
@@ -304,15 +249,8 @@ class ProductionTotalTableDesktop extends StatelessWidget {
                       Expanded(
                         child: Text(
                           style: TextStyle(
-                            color:
-                                theme
-                                    .lightModeColor
-                                    .greyColor200,
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
+                            color: theme.lightModeColor.greyColor200,
+                            fontSize: theme.mobileTexts.b3.fontSize,
                             fontWeight: FontWeight.bold,
                           ),
 
@@ -323,15 +261,8 @@ class ProductionTotalTableDesktop extends StatelessWidget {
                         visible: entries != null,
                         child: Text(
                           style: TextStyle(
-                            color:
-                                theme
-                                    .lightModeColor
-                                    .greyColor200,
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b4
-                                    .fontSize,
+                            color: theme.lightModeColor.greyColor200,
+                            fontSize: theme.mobileTexts.b4.fontSize,
                             fontWeight: FontWeight.w500,
                           ),
                           '${formatLargeNumberDouble(entries?.toDouble() ?? 0)}  ${formatEntries(entries)}',
@@ -341,33 +272,17 @@ class ProductionTotalTableDesktop extends StatelessWidget {
                   ),
                   SizedBox(height: 5),
                   Padding(
-                    padding: const EdgeInsets.only(
-                      left: 10.0,
-                    ),
+                    padding: const EdgeInsets.only(left: 10.0),
                     child: Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           style: TextStyle(
-                            color:
-                                theme
-                                    .lightModeColor
-                                    .greyColor200,
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .h3
-                                    .fontSize,
-                            fontWeight:
-                                theme
-                                    .mobileTexts
-                                    .h3
-                                    .fontWeightBold,
+                            color: theme.lightModeColor.greyColor200,
+                            fontSize: theme.mobileTexts.h3.fontSize,
+                            fontWeight: theme.mobileTexts.h3.fontWeightBold,
                           ),
-                          formatLargeNumber(
-                            number.toString(),
-                          ),
+                          formatLargeNumber(number.toString()),
                         ),
                         Visibility(
                           visible: action != null,
@@ -394,8 +309,6 @@ String formatEntries(int? entries) {
   if (entries == null) {
     return 'entry';
   } else {
-    return entries.toString().length > 1
-        ? 'entries'
-        : 'entry';
+    return entries.toString().length > 1 ? 'entries' : 'entry';
   }
 }

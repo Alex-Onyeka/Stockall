@@ -42,12 +42,9 @@ class _ProductionItemsDetailsDesktopState
   bool showSuccess = false;
   bool setDate = false;
 
-  TextEditingController costController =
-      TextEditingController();
-  TextEditingController quantityController =
-      TextEditingController();
-  TextEditingController qttyPerUnitController =
-      TextEditingController();
+  TextEditingController costController = TextEditingController();
+  TextEditingController quantityController = TextEditingController();
+  TextEditingController qttyPerUnitController = TextEditingController();
 
   @override
   void dispose() {
@@ -57,18 +54,15 @@ class _ProductionItemsDetailsDesktopState
     qttyPerUnitController.dispose();
   }
 
-  final GlobalKey<ScaffoldState> _scaffoldKey =
-      GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     List<ProductionItem>? productionItemList =
-        returnProductionItemsProvider(context: context)
-            .productionItemListMain
+        returnProductionItemsProvider(context: context).productionItemListMain
             .where(
               (productionItem) =>
-                  productionItem.uuid! ==
-                  widget.productionItemUuid,
+                  productionItem.uuid! == widget.productionItemUuid,
             )
             .toList();
     if (productionItemList.isEmpty) {
@@ -79,8 +73,7 @@ class _ProductionItemsDetailsDesktopState
         ).showLoader(message: 'Loading...'),
       );
     } else {
-      ProductionItem productionItem =
-          productionItemList.first;
+      ProductionItem productionItem = productionItemList.first;
       return Scaffold(
         key: _scaffoldKey,
         body: Row(
@@ -90,10 +83,8 @@ class _ProductionItemsDetailsDesktopState
               width:
                   screenWidth(context) < tabletScreenSmall
                       ? 50
-                      : (screenWidth(context) >
-                              tabletScreenSmall &&
-                          screenWidth(context) <
-                              tabletScreen + 100)
+                      : (screenWidth(context) > tabletScreenSmall &&
+                          screenWidth(context) < tabletScreen + 100)
                       ? 100
                       : 230,
             ),
@@ -106,12 +97,7 @@ class _ProductionItemsDetailsDesktopState
                   borderRadius: BorderRadius.circular(15),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color.fromARGB(
-                        39,
-                        4,
-                        1,
-                        41,
-                      ),
+                      color: const Color.fromARGB(39, 4, 1, 41),
                       blurRadius: 10,
                     ),
                   ],
@@ -124,9 +110,7 @@ class _ProductionItemsDetailsDesktopState
                         title: 'Item Details',
                         widget: Visibility(
                           visible: authorization(
-                            authorized:
-                                Authorizations()
-                                    .viewItemsHistory,
+                            authorized: Authorizations().viewItemsHistory,
                           ),
                           child: PopupMenuButton(
                             offset: Offset(-20, 30),
@@ -141,32 +125,27 @@ class _ProductionItemsDetailsDesktopState
                                         builder: (context) {
                                           return ProductionRecordsList(
                                             productionItemUuid:
-                                                widget
-                                                    .productionItemUuid,
+                                                widget.productionItemUuid,
                                           );
                                         },
                                       ),
                                     );
                                   },
                                   child: Padding(
-                                    padding:
-                                        const EdgeInsets.only(
-                                          left: 5.0,
-                                          right: 15,
-                                        ),
+                                    padding: const EdgeInsets.only(
+                                      left: 5.0,
+                                      right: 15,
+                                    ),
                                     child: Row(
                                       spacing: 10,
                                       children: [
                                         Icon(
                                           size: 16,
-                                          Icons
-                                              .view_in_ar_rounded,
+                                          Icons.view_in_ar_rounded,
                                         ),
                                         Text(
                                           style: TextStyle(
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
+                                            fontWeight: FontWeight.bold,
                                             fontSize:
                                                 widget
                                                     .theme
@@ -188,34 +167,28 @@ class _ProductionItemsDetailsDesktopState
                                         builder: (context) {
                                           return ProductionItemHistoryPage(
                                             productionItemUuid:
-                                                widget
-                                                    .productionItemUuid,
-                                            fromProductionItemDetails:
-                                                true,
+                                                widget.productionItemUuid,
+                                            fromProductionItemDetails: true,
                                           );
                                         },
                                       ),
                                     );
                                   },
                                   child: Padding(
-                                    padding:
-                                        const EdgeInsets.only(
-                                          left: 5.0,
-                                          right: 15,
-                                        ),
+                                    padding: const EdgeInsets.only(
+                                      left: 5.0,
+                                      right: 15,
+                                    ),
                                     child: Row(
                                       spacing: 10,
                                       children: [
                                         Icon(
                                           size: 16,
-                                          Icons
-                                              .receipt_long_rounded,
+                                          Icons.receipt_long_rounded,
                                         ),
                                         Text(
                                           style: TextStyle(
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
+                                            fontWeight: FontWeight.bold,
                                             fontSize:
                                                 widget
                                                     .theme
@@ -233,36 +206,27 @@ class _ProductionItemsDetailsDesktopState
                             },
                             child: Container(
                               padding: EdgeInsets.all(5),
-                              child: Icon(
-                                Icons.more_vert_rounded,
-                              ),
+                              child: Icon(Icons.more_vert_rounded),
                             ),
                           ),
                         ),
                       ),
                       body: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 15.0,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
                         child: Column(
                           children: [
                             Expanded(
                               child: SingleChildScrollView(
                                 child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment
-                                          .center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     SizedBox(height: 10),
                                     Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment
-                                              .center,
+                                          CrossAxisAlignment.center,
                                       children: [
                                         Text(
-                                          textAlign:
-                                              TextAlign
-                                                  .center,
+                                          textAlign: TextAlign.center,
                                           style: TextStyle(
                                             fontSize:
                                                 widget
@@ -270,12 +234,9 @@ class _ProductionItemsDetailsDesktopState
                                                     .mobileTexts
                                                     .h4
                                                     .fontSize,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
+                                            fontWeight: FontWeight.bold,
                                           ),
-                                          productionItem
-                                              .name,
+                                          productionItem.name,
                                         ),
                                         Text(
                                           style: TextStyle(
@@ -290,9 +251,7 @@ class _ProductionItemsDetailsDesktopState
                                                     .theme
                                                     .lightModeColor
                                                     .secColor200,
-                                            fontWeight:
-                                                FontWeight
-                                                    .normal,
+                                            fontWeight: FontWeight.normal,
                                           ),
                                           'Date Created:  ${formatDateTime(productionItem.createdAt!)}',
                                         ),
@@ -302,8 +261,7 @@ class _ProductionItemsDetailsDesktopState
                                     Visibility(
                                       visible: authorization(
                                         authorized:
-                                            Authorizations()
-                                                .manageCostPrice,
+                                            Authorizations().manageCostPrice,
                                       ),
                                       child: Row(
                                         children: [
@@ -313,31 +271,30 @@ class _ProductionItemsDetailsDesktopState
                                               children: [
                                                 Row(
                                                   mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .center,
+                                                      MainAxisAlignment.center,
                                                   children: [
                                                     Expanded(
                                                       child: TabContainer(
-                                                        isMoney:
-                                                            true,
-                                                        text:
-                                                            'Cost Price',
+                                                        isMoney: true,
+                                                        text: 'Cost Price',
                                                         price:
-                                                            productionItem.costPrice,
-                                                        theme:
-                                                            widget.theme,
-                                                        backGround: const Color.fromARGB(
-                                                          11,
-                                                          15,
-                                                          4,
-                                                          114,
-                                                        ),
-                                                        border: const Color.fromARGB(
-                                                          32,
-                                                          45,
-                                                          3,
-                                                          255,
-                                                        ),
+                                                            productionItem
+                                                                .costPrice,
+                                                        theme: widget.theme,
+                                                        backGround:
+                                                            const Color.fromARGB(
+                                                              11,
+                                                              15,
+                                                              4,
+                                                              114,
+                                                            ),
+                                                        border:
+                                                            const Color.fromARGB(
+                                                              32,
+                                                              45,
+                                                              3,
+                                                              255,
+                                                            ),
                                                       ),
                                                     ),
                                                   ],
@@ -345,30 +302,25 @@ class _ProductionItemsDetailsDesktopState
                                                 Visibility(
                                                   visible: authorization(
                                                     authorized:
-                                                        Authorizations().updateProductionItems,
+                                                        Authorizations()
+                                                            .updateProductionItems,
                                                   ),
                                                   child: EditButton(
-                                                    theme:
-                                                        widget.theme,
+                                                    theme: widget.theme,
                                                     action: () {
                                                       updateCostPriceActionProductionItem(
                                                         productionItem:
                                                             productionItem,
-                                                        context:
-                                                            context,
+                                                        context: context,
                                                         costController:
                                                             costController,
-                                                        theme:
-                                                            widget.theme,
+                                                        theme: widget.theme,
                                                         setStateAction: () {
-                                                          setState(
-                                                            () {},
-                                                          );
+                                                          setState(() {});
                                                         },
                                                       );
                                                     },
-                                                    text:
-                                                        'Edit Price',
+                                                    text: 'Edit Price',
                                                   ),
                                                 ),
                                               ],
@@ -385,23 +337,17 @@ class _ProductionItemsDetailsDesktopState
                                     ),
                                     SizedBox(height: 10),
                                     Padding(
-                                      padding:
-                                          const EdgeInsets.symmetric(
-                                            horizontal:
-                                                10.0,
-                                          ),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10.0,
+                                      ),
                                       child: Column(
                                         spacing: 0,
                                         children: [
-                                          SizedBox(
-                                            height: 10,
-                                          ),
+                                          SizedBox(height: 10),
                                           Padding(
-                                            padding:
-                                                const EdgeInsets.symmetric(
-                                                  vertical:
-                                                      5.0,
-                                                ),
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 5.0,
+                                            ),
                                             child: Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment
@@ -410,7 +356,11 @@ class _ProductionItemsDetailsDesktopState
                                                 Text(
                                                   style: TextStyle(
                                                     fontSize:
-                                                        widget.theme.mobileTexts.b3.fontSize,
+                                                        widget
+                                                            .theme
+                                                            .mobileTexts
+                                                            .b3
+                                                            .fontSize,
                                                     fontWeight:
                                                         FontWeight.normal,
                                                   ),
@@ -420,9 +370,7 @@ class _ProductionItemsDetailsDesktopState
                                                   productionItem:
                                                       productionItem,
                                                   setStateAction: () {
-                                                    setState(
-                                                      () {},
-                                                    );
+                                                    setState(() {});
                                                   },
                                                 ),
                                               ],
@@ -430,29 +378,27 @@ class _ProductionItemsDetailsDesktopState
                                           ),
                                           Visibility(
                                             visible:
-                                                productionItem
-                                                    .expiryDate !=
+                                                productionItem.expiryDate !=
                                                 null,
                                             child: BottomInfoSection(
-                                              theme:
-                                                  widget
-                                                      .theme,
+                                              theme: widget.theme,
                                               mainText:
                                                   productionItem.expiryDate !=
                                                           null
                                                       ? getDayDifference(
-                                                                productionItem.expiryDate ??
+                                                                productionItem
+                                                                        .expiryDate ??
                                                                     DateTime.now(),
                                                               ) >=
                                                               1
                                                           ? formatDateTime(
-                                                            productionItem.expiryDate ??
+                                                            productionItem
+                                                                    .expiryDate ??
                                                                 DateTime.now(),
                                                           )
                                                           : 'Item Expired'
                                                       : 'Not Set',
-                                              text:
-                                                  'Expiry Date',
+                                              text: 'Expiry Date',
                                             ),
                                           ),
                                           // Visibility(
@@ -648,29 +594,20 @@ class _ProductionItemsDetailsDesktopState
                                           // ),
                                           Visibility(
                                             visible:
-                                                productionItem
-                                                    .sizeType !=
-                                                null,
+                                                productionItem.sizeType != null,
                                             child: BottomInfoSection(
-                                              theme:
-                                                  widget
-                                                      .theme,
+                                              theme: widget.theme,
                                               mainText:
-                                                  productionItem
-                                                      .sizeType ??
+                                                  productionItem.sizeType ??
                                                   'Not Set',
-                                              text:
-                                                  'Size Type',
+                                              text: 'Size Type',
                                             ),
                                           ),
                                           BottomInfoSection(
-                                            theme:
-                                                widget
-                                                    .theme,
+                                            theme: widget.theme,
                                             mainText:
                                                 "(${productionItem.categories?.length ?? 0}) Category(s)",
-                                            text:
-                                                'Categories',
+                                            text: 'Categories',
                                           ),
                                         ],
                                       ),
@@ -681,8 +618,7 @@ class _ProductionItemsDetailsDesktopState
                             ),
                             SizedBox(height: 10),
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               spacing: 5,
                               children: [
                                 Visibility(
@@ -700,12 +636,8 @@ class _ProductionItemsDetailsDesktopState
                                           productionItem,
                                         );
                                       },
-                                      theme: returnTheme(
-                                        context,
-                                      ),
-                                      icon:
-                                          Icons
-                                              .rotate_left_rounded,
+                                      theme: returnTheme(context),
+                                      icon: Icons.rotate_left_rounded,
                                       color: Colors.amber,
                                     ),
                                   ),
@@ -713,90 +645,73 @@ class _ProductionItemsDetailsDesktopState
                                 Visibility(
                                   visible: authorization(
                                     authorized:
-                                        Authorizations()
-                                            .deleteProductionItems,
+                                        Authorizations().deleteProductionItems,
                                   ),
                                   child: Expanded(
                                     child: EditButton(
                                       text: 'Delete Item',
                                       action: () {
-                                        final safeContext =
-                                            context;
+                                        final safeContext = context;
                                         showDialog(
-                                          context:
-                                              safeContext,
-                                          builder: (
-                                            confirmDialog,
-                                          ) {
+                                          context: safeContext,
+                                          builder: (confirmDialog) {
                                             var provider =
                                                 returnProductionItemsProvider();
                                             return ConfirmationAlert(
-                                              theme:
-                                                  returnTheme(
-                                                    context,
-                                                  ),
+                                              theme: returnTheme(context),
                                               message:
                                                   'Are you sure you want to proceed with action?',
-                                              title:
-                                                  'Are you sure?',
+                                              title: 'Are you sure?',
                                               action: () async {
                                                 Navigator.of(
                                                   confirmDialog,
                                                 ).pop();
                                                 setState(() {
-                                                  isLoading =
-                                                      true;
+                                                  isLoading = true;
                                                 });
                                                 ProductionItemHistory
-                                                productionItemHistory = ProductionItemHistory(
-                                                  event:
-                                                      ProductionItemHistoryEventClass
-                                                          .itemDeleted,
-                                                  source:
-                                                      ProductionItemHistoryEventClass
-                                                          .unKnownSource,
-                                                  isManaged:
-                                                      productionItem
-                                                          .isManaged,
-                                                  shopId:
-                                                      shopId(),
-                                                  title:
-                                                      'Item Deleted',
-                                                  quantityChange:
-                                                      0,
-                                                  newValue:
-                                                      (productionItem.quantity ??
-                                                              0)
-                                                          .toString(),
-                                                  desc:
-                                                      'Item Deleted Now',
-                                                  isIncreased:
-                                                      false,
-                                                  oldValue:
-                                                      (productionItem.quantity ??
-                                                              0)
-                                                          .toString(),
-                                                );
-                                                await provider.deleteProductionItemMain(
-                                                  productionItemHistory:
-                                                      productionItemHistory,
-                                                  productionItem:
-                                                      productionItem,
-                                                );
+                                                productionItemHistory =
+                                                    ProductionItemHistory(
+                                                      event:
+                                                          ProductionItemHistoryEventClass
+                                                              .itemDeleted,
+                                                      source:
+                                                          ProductionItemHistoryEventClass
+                                                              .unKnownSource,
+                                                      isManaged:
+                                                          productionItem
+                                                              .isManaged,
+                                                      shopId: shopId(),
+                                                      title: 'Item Deleted',
+                                                      quantityChange: 0,
+                                                      newValue:
+                                                          (productionItem
+                                                                      .quantity ??
+                                                                  0)
+                                                              .toString(),
+                                                      desc: 'Item Deleted Now',
+                                                      isIncreased: false,
+                                                      oldValue:
+                                                          (productionItem
+                                                                      .quantity ??
+                                                                  0)
+                                                              .toString(),
+                                                    );
+                                                await provider
+                                                    .deleteProductionItemMain(
+                                                      productionItemHistory:
+                                                          productionItemHistory,
+                                                      productionItem:
+                                                          productionItem,
+                                                    );
                                                 setState(() {
-                                                  isLoading =
-                                                      false;
-                                                  showSuccess =
-                                                      true;
+                                                  isLoading = false;
+                                                  showSuccess = true;
                                                 });
                                                 Future.delayed(
-                                                  Duration(
-                                                    seconds:
-                                                        1,
-                                                  ),
+                                                  Duration(seconds: 1),
                                                   () {
-                                                    if (safeContext
-                                                        .mounted) {
+                                                    if (safeContext.mounted) {
                                                       Navigator.of(
                                                         safeContext,
                                                       ).pop();
@@ -808,22 +723,16 @@ class _ProductionItemsDetailsDesktopState
                                           },
                                         );
                                       },
-                                      theme: returnTheme(
-                                        context,
-                                      ),
-                                      icon:
-                                          Icons
-                                              .delete_forever_outlined,
-                                      color:
-                                          Colors.redAccent,
+                                      theme: returnTheme(context),
+                                      icon: Icons.delete_forever_outlined,
+                                      color: Colors.redAccent,
                                     ),
                                   ),
                                 ),
                                 Visibility(
                                   visible: authorization(
                                     authorized:
-                                        Authorizations()
-                                            .updateProductionItems,
+                                        Authorizations().updateProductionItems,
                                   ),
                                   child: Expanded(
                                     child: EditButton(
@@ -832,12 +741,9 @@ class _ProductionItemsDetailsDesktopState
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (
-                                              context,
-                                            ) {
+                                            builder: (context) {
                                               return AddProductionItem(
-                                                productionItem:
-                                                    productionItem,
+                                                productionItem: productionItem,
                                               );
                                             },
                                           ),
@@ -845,15 +751,12 @@ class _ProductionItemsDetailsDesktopState
                                           returnProductionItemsProvider()
                                               .getSingleProductionItemOnline(
                                                 itemUuid:
-                                                    widget
-                                                        .productionItemUuid,
+                                                    widget.productionItemUuid,
                                               );
                                           setState(() {});
                                         });
                                       },
-                                      theme: returnTheme(
-                                        context,
-                                      ),
+                                      theme: returnTheme(context),
                                     ),
                                   ),
                                 ),
@@ -879,10 +782,8 @@ class _ProductionItemsDetailsDesktopState
               width:
                   screenWidth(context) < tabletScreenSmall
                       ? 50
-                      : (screenWidth(context) >
-                              tabletScreenSmall &&
-                          screenWidth(context) <
-                              tabletScreen + 100)
+                      : (screenWidth(context) > tabletScreenSmall &&
+                          screenWidth(context) < tabletScreen + 100)
                       ? 100
                       : 230,
             ),

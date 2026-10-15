@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_item_history/production_item_history.dart';
+import 'package:stockall/classes/temp_production_folder/temp_production_item_history/production_item_history_event_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_item_history/unsynced/created_production_item_history.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
@@ -250,6 +251,11 @@ class ProductionItemHistoryProvider with ChangeNotifier {
       productionItemHistory.createdAt ??= DateTime.now();
       productionItemHistory.staffId = currentUser().userId;
       productionItemHistory.staffName = currentUser().name;
+      productionItemHistory.destination ??=
+          ProductionItemHistoryEventClass
+              .unKnownDestination;
+      productionItemHistory.source ??=
+          ProductionItemHistoryEventClass.unKnownSource;
       productionItemHistory.departmentName ??=
           returnDepartmentProvider()
               .currentDepartment()

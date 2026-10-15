@@ -33,12 +33,10 @@ class AddStorageItemDesktop extends StatefulWidget {
   });
 
   @override
-  State<AddStorageItemDesktop> createState() =>
-      _AddStorageItemDesktopState();
+  State<AddStorageItemDesktop> createState() => _AddStorageItemDesktopState();
 }
 
-class _AddStorageItemDesktopState
-    extends State<AddStorageItemDesktop> {
+class _AddStorageItemDesktopState extends State<AddStorageItemDesktop> {
   bool isLoading = false;
   bool showSuccess = false;
   bool isOpen = false;
@@ -51,21 +49,17 @@ class _AddStorageItemDesktopState
           var theme = returnTheme(context);
           return InfoAlert(
             theme: theme,
-            message:
-                'Item Name Must be set before item can be created',
+            message: 'Item Name Must be set before item can be created',
             title: 'Empty Input',
           );
         },
       );
     } else {
       final safeContext = context;
-      var samePro = returnStorageProductProvider()
-          .storageProductListMain
-          .where(
-            (pr) =>
-                pr.name.toLowerCase() ==
-                widget.nameController.text.toLowerCase(),
-          );
+      var samePro = returnStorageProductProvider().storageProductListMain.where(
+        (pr) =>
+            pr.name.toLowerCase() == widget.nameController.text.toLowerCase(),
+      );
 
       showDialog(
         context: safeContext,
@@ -76,10 +70,7 @@ class _AddStorageItemDesktopState
                 samePro.isNotEmpty
                     ? 'Item with the name  ${widget.nameController.text.toUpperCase()}  already Exists in your Inventory. Are you sure you want to proceed to create a duplicate Item?'
                     : 'You are about to add a new item to your stock, are you sure you want to proceed?',
-            title:
-                samePro.isNotEmpty
-                    ? 'Item Already Exists'
-                    : 'Are you sure?',
+            title: samePro.isNotEmpty ? 'Item Already Exists' : 'Are you sure?',
             action: () async {
               Navigator.of(confirmDialog).pop();
 
@@ -87,8 +78,7 @@ class _AddStorageItemDesktopState
                 isLoading = true;
               });
 
-              final dataProvider =
-                  returnStorageProductProvider();
+              final dataProvider = returnStorageProductProvider();
               var product = TempStorageProducts(
                 unitsList: returnData().getTempUnitList(),
                 useGroupUnit: returnData().useGroupUnit,
@@ -97,40 +87,33 @@ class _AddStorageItemDesktopState
                 createdAt: DateTime.now(),
                 groupUnit: returnData().selectedGroupUnit,
                 qttyPerGroup: double.tryParse(
-                  widget.qttyPerGroupController.text
-                      .replaceAll(',', ''),
+                  widget.qttyPerGroupController.text.replaceAll(',', ''),
                 ),
                 quantity: null,
                 unit: returnData().selectedUnit,
                 updatedAt: DateTime.now(),
                 uuid: createdProductUuid,
                 costPrice: double.tryParse(
-                  widget.costPriceController.text
-                      .replaceAll(',', ''),
+                  widget.costPriceController.text.replaceAll(',', ''),
                 ),
                 sellingPrice: double.tryParse(
-                  widget.sellingPriceController.text
-                      .replaceAll(',', ''),
+                  widget.sellingPriceController.text.replaceAll(',', ''),
                 ),
               );
 
-              StorageItemHistory itemHistory =
-                  StorageItemHistory(
-                    event:
-                        StorageItemHistoryEventClass
-                            .itemCreated,
-                    source:
-                        StorageItemHistoryEventClass
-                            .unKnownSource,
-                    storageUnit: 'Not Set',
-                    shopId: shopId(),
-                    title: 'Item Created',
-                    quantityChange: 0,
-                    storageItemNewValue: '0',
-                    desc: 'Item Created Now',
-                    isIncreased: true,
-                    storageItemOldValue: '0',
-                  );
+              StorageItemHistory itemHistory = StorageItemHistory(
+                event: StorageItemHistoryEventClass.itemCreated,
+                source: StorageItemHistoryEventClass.manualSource,
+                destination: StorageItemHistoryEventClass.storageDestination,
+                storageUnit: 'Not Set',
+                shopId: shopId(),
+                title: 'Item Created',
+                quantityChange: 0,
+                storageItemNewValue: '0',
+                desc: 'Item Created Now',
+                isIncreased: true,
+                storageItemOldValue: '0',
+              );
 
               await dataProvider.createStorageProduct(
                 itemHistory: itemHistory,
@@ -145,9 +128,7 @@ class _AddStorageItemDesktopState
               Future.delayed(Duration(seconds: 2), () {
                 // Pop current screen
                 if (safeContext.mounted) {
-                  Navigator.of(
-                    safeContext,
-                  ).pop(); // pop current page
+                  Navigator.of(safeContext).pop(); // pop current page
                 }
               });
             },
@@ -165,8 +146,7 @@ class _AddStorageItemDesktopState
           var theme = returnTheme(context);
           return InfoAlert(
             theme: theme,
-            message:
-                'Item Name Must be set before item can be created',
+            message: 'Item Name Must be set before item can be created',
             title: 'Empty Input',
           );
         },
@@ -179,12 +159,10 @@ class _AddStorageItemDesktopState
           var theme = returnTheme(context);
           return ConfirmationAlert(
             theme: theme,
-            message:
-                'Are you sure you want to proceed with update?',
+            message: 'Are you sure you want to proceed with update?',
             title: 'Proceed?',
             action: () async {
-              final provider =
-                  returnStorageProductProvider();
+              final provider = returnStorageProductProvider();
               final dataProvider = returnData();
               if (safeContext.mounted) {
                 Navigator.of(safeContext).pop();
@@ -200,48 +178,35 @@ class _AddStorageItemDesktopState
                 product: TempStorageProducts(
                   unitsList: returnData().getTempUnitList(),
                   useGroupUnit: returnData().useGroupUnit,
-                  createdAt:
-                      widget.storageProduct?.createdAt,
+                  createdAt: widget.storageProduct?.createdAt,
                   updatedAt: DateTime.now(),
                   uuid: createdProductUuid,
                   name: widget.nameController.text.trim(),
-                  unit:
-                      dataProvider.selectedUnit ??
-                      'Unit(s)',
+                  unit: dataProvider.selectedUnit ?? 'Unit(s)',
                   groupUnit: dataProvider.selectedGroupUnit,
                   qttyPerGroup:
-                      widget
-                              .qttyPerGroupController
-                              .text
-                              .isNotEmpty
+                      widget.qttyPerGroupController.text.isNotEmpty
                           ? double.parse(
-                            widget
-                                .qttyPerGroupController
-                                .text
-                                .replaceAll(',', ''),
+                            widget.qttyPerGroupController.text.replaceAll(
+                              ',',
+                              '',
+                            ),
                           )
                           : null,
                   quantity: widget.storageProduct?.quantity,
                   costPrice:
-                      widget
-                              .costPriceController
-                              .text
-                              .isNotEmpty
+                      widget.costPriceController.text.isNotEmpty
                           ? double.parse(
-                            widget.costPriceController.text
-                                .replaceAll(',', ''),
+                            widget.costPriceController.text.replaceAll(',', ''),
                           )
                           : null,
                   sellingPrice:
-                      widget
-                              .sellingPriceController
-                              .text
-                              .isNotEmpty
+                      widget.sellingPriceController.text.isNotEmpty
                           ? double.parse(
-                            widget
-                                .sellingPriceController
-                                .text
-                                .replaceAll(',', ''),
+                            widget.sellingPriceController.text.replaceAll(
+                              ',',
+                              '',
+                            ),
                           )
                           : null,
                   shopId: shopId(),
@@ -295,26 +260,18 @@ class _AddStorageItemDesktopState
       }
     });
     if (widget.storageProduct != null) {
-      widget.nameController.text =
-          widget.storageProduct?.name ?? '';
-      returnData().selectUnit(
-        widget.storageProduct!.unit ?? 'Unit(s)',
-      );
-      returnData().selectGroupUnit(
-        unit: widget.storageProduct!.groupUnit,
-      );
+      widget.nameController.text = widget.storageProduct?.name ?? '';
+      returnData().selectUnit(widget.storageProduct!.unit ?? 'Unit(s)');
+      returnData().selectGroupUnit(unit: widget.storageProduct!.groupUnit);
 
       returnData().initUnitsList(
-        unitsListNew:
-            widget.storageProduct?.getUnitsList() ?? [],
+        unitsListNew: widget.storageProduct?.getUnitsList() ?? [],
         productUuid: createdProductUuid,
       );
-      returnData().useGroupUnit =
-          widget.storageProduct?.useGroupUnit ?? false;
+      returnData().useGroupUnit = widget.storageProduct?.useGroupUnit ?? false;
       widget.qttyPerGroupController.text =
           widget.storageProduct!.qttyPerGroup != null
-              ? widget.storageProduct!.qttyPerGroup!
-                  .toString()
+              ? widget.storageProduct!.qttyPerGroup!.toString()
               : '';
       widget.costPriceController.text =
           widget.storageProduct!.costPrice == null
@@ -324,8 +281,7 @@ class _AddStorageItemDesktopState
       widget.sellingPriceController.text =
           widget.storageProduct!.sellingPrice == null
               ? ''
-              : widget.storageProduct!.sellingPrice
-                  .toString();
+              : widget.storageProduct!.sellingPrice.toString();
     }
   }
 
@@ -342,26 +298,19 @@ class _AddStorageItemDesktopState
                 scrolledUnderElevation: 0,
                 centerTitle: true,
                 title: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.h4.fontSize,
+                        fontSize: theme.mobileTexts.h4.fontSize,
                         fontWeight: FontWeight.bold,
                       ),
-                      widget.storageProduct != null
-                          ? 'Edit Item'
-                          : 'New Item',
+                      widget.storageProduct != null ? 'Edit Item' : 'New Item',
                     ),
                     SizedBox(height: 5),
                     Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b2.fontSize,
-                      ),
+                      style: TextStyle(fontSize: theme.mobileTexts.b2.fontSize),
                       widget.storageProduct != null
                           ? 'Edit item details'
                           : 'Add a new item to your store.',
@@ -375,16 +324,10 @@ class _AddStorageItemDesktopState
                     children: [
                       Expanded(
                         child: Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 10.0,
-                              ),
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
                           child: SingleChildScrollView(
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.only(
-                                    top: 10.0,
-                                  ),
+                              padding: const EdgeInsets.only(top: 10.0),
                               child: Column(
                                 children: [
                                   GeneralTextField(
@@ -392,39 +335,30 @@ class _AddStorageItemDesktopState
                                     hint: 'Enter Item Name',
                                     lines: 1,
                                     title: 'Item Name',
-                                    controller:
-                                        widget
-                                            .nameController,
+                                    controller: widget.nameController,
                                   ),
                                   SizedBox(height: 5),
                                   MoneyTextfield(
                                     theme: theme,
-                                    hint:
-                                        'Enter Cost Price',
-                                    title:
-                                        'Cost Price (Optional)',
-                                    controller:
-                                        widget
-                                            .costPriceController,
+                                    hint: 'Enter Cost Price',
+                                    title: 'Cost Price (Optional)',
+                                    controller: widget.costPriceController,
                                   ),
                                   SizedBox(height: 15),
                                   Visibility(
                                     visible: authorization(
                                       authorized:
-                                          Authorizations()
-                                              .manageMultipleUnits,
+                                          Authorizations().manageMultipleUnits,
                                     ),
                                     child: Padding(
-                                      padding:
-                                          const EdgeInsets.only(
-                                            bottom: 10.0,
-                                          ),
+                                      padding: const EdgeInsets.only(
+                                        bottom: 10.0,
+                                      ),
                                       child: SubWrapper(
                                         isVisible:
                                             !ItemsAuthAction()
                                                 .applyVariationsAction(
-                                                  context:
-                                                      context,
+                                                  context: context,
                                                 ),
                                         mainWidget: MainDropdown(
                                           valueSet:
@@ -433,15 +367,12 @@ class _AddStorageItemDesktopState
                                                   .isNotEmpty,
                                           onTap: () {
                                             ItemsAuthAction().applyVariationsAction(
-                                              context:
-                                                  context,
+                                              context: context,
                                               action: () {
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
-                                                    builder: (
-                                                      context,
-                                                    ) {
+                                                    builder: (context) {
                                                       return ProductUnitsPage(
                                                         productUuid:
                                                             createdProductUuid ??
@@ -457,12 +388,10 @@ class _AddStorageItemDesktopState
                                               returnData()
                                                   .tempUnitsList
                                                   .isNotEmpty,
-                                          title:
-                                              'Item Unit(s) (Optional)',
+                                          title: 'Item Unit(s) (Optional)',
                                           hint:
                                               returnData(
-                                                    context:
-                                                        context,
+                                                    context: context,
                                                   ).tempUnitsList.isEmpty
                                                   ? 'Unit Not Set'
                                                   : "${returnData(context: context).tempUnitsList.firstWhere((item) => item.isPrimary).name} and (${returnData(context: context).tempUnitsList.length - 1}) More",
@@ -489,16 +418,14 @@ class _AddStorageItemDesktopState
                           child: MainButtonP(
                             themeProvider: theme,
                             action: () {
-                              if (widget.storageProduct !=
-                                  null) {
+                              if (widget.storageProduct != null) {
                                 updateStorageProduct();
                               } else {
                                 checkFields();
                               }
                             },
                             text:
-                                widget.storageProduct !=
-                                        null
+                                widget.storageProduct != null
                                     ? 'Update Item'
                                     : 'Create Item',
                           ),
@@ -512,10 +439,7 @@ class _AddStorageItemDesktopState
           ),
           Visibility(
             visible: isLoading,
-            child: returnCompProvider(
-              context,
-              listen: false,
-            ).showLoader(
+            child: returnCompProvider(context, listen: false).showLoader(
               message:
                   widget.storageProduct != null
                       ? 'Updating Item'
@@ -524,10 +448,7 @@ class _AddStorageItemDesktopState
           ),
           Visibility(
             visible: showSuccess,
-            child: returnCompProvider(
-              context,
-              listen: false,
-            ).showSuccess(
+            child: returnCompProvider(context, listen: false).showSuccess(
               widget.storageProduct != null
                   ? 'Item Updated Successfully'
                   : 'Item Created Successfully',

@@ -31,8 +31,7 @@ class CreateProductUnitWidget extends StatefulWidget {
       _CreateProductUnitWidgetState();
 }
 
-class _CreateProductUnitWidgetState
-    extends State<CreateProductUnitWidget> {
+class _CreateProductUnitWidgetState extends State<CreateProductUnitWidget> {
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -51,17 +50,11 @@ class _CreateProductUnitWidgetState
           );
         },
         child: Container(
-          padding: EdgeInsets.symmetric(
-            vertical: 6,
-            horizontal: 15,
-          ),
+          padding: EdgeInsets.symmetric(vertical: 6, horizontal: 15),
           child: Row(
             spacing: 5,
             children: [
-              Text(
-                style: theme.mobileTexts.b3.textStyleBold,
-                "Add Unit",
-              ),
+              Text(style: theme.mobileTexts.b3.textStyleBold, "Add Unit"),
               Icon(color: Colors.grey, size: 20, Icons.add),
             ],
           ),
@@ -85,8 +78,7 @@ void addProductUnitAction({
     quantityController.text = unit.conversion.toString();
     nameController.text = unit.name;
   }
-  var dimensionType =
-      unit?.dimensionType ?? ProductUnitsClass.sheetUnit;
+  var dimensionType = unit?.dimensionType ?? ProductUnitsClass.sheetUnit;
 
   void addAction() {
     final conversion = double.tryParse(
@@ -101,8 +93,7 @@ void addProductUnitAction({
         builder: (context) {
           return InfoAlert(
             theme: theme,
-            message:
-                'Enter a unit name and a positive conversion.',
+            message: 'Enter a unit name and a positive conversion.',
             title: 'Invalid Unit Details',
           );
         },
@@ -120,8 +111,7 @@ void addProductUnitAction({
               unit?.name = nameController.text.trim();
               unit?.conversion = conversion;
               if (unit != null) {
-                unit.dimensionType =
-                    isDimensional ? dimensionType : null;
+                unit.dimensionType = isDimensional ? dimensionType : null;
               }
               var unitListSingle = ProductUnitsClass(
                 uuid: uuidGen(),
@@ -130,13 +120,9 @@ void addProductUnitAction({
                 staffName: currentUser().name,
                 conversion: conversion,
                 name: nameController.text.trim(),
-                isPrimary:
-                    returnData().tempUnitsList.isEmpty
-                        ? true
-                        : false,
+                isPrimary: returnData().tempUnitsList.isEmpty ? true : false,
                 productUuid: productUuid,
-                dimensionType:
-                    isDimensional ? dimensionType : null,
+                dimensionType: isDimensional ? dimensionType : null,
               );
               returnData().createOrUpdateUnitList(
                 unitListSingle: unit ?? unitListSingle,
@@ -167,107 +153,69 @@ void addProductUnitAction({
               return DialogTemplate(
                 theme: theme,
                 message: 'Enter Product Unit Name',
-                title:
-                    '${unit == null ? 'Create' : 'Update'} Product Unit',
+                title: '${unit == null ? 'Create' : 'Update'} Product Unit',
                 action: () async {
                   addAction();
                 },
                 widget: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: 500,
-                  ),
+                  constraints: BoxConstraints(maxWidth: 500),
                   child: Container(
-                    color: const Color.fromARGB(
-                      47,
-                      255,
-                      255,
-                      255,
-                    ),
+                    color: const Color.fromARGB(47, 255, 255, 255),
                     // height: 150,
                     // width: 500,
                     child: Center(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30.0,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 30.0),
                         child: Column(
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           spacing: 10,
                           children: [
                             if (isDimensional) ...[
                               UnitTypeSelectionWidget(
                                 theme: theme,
-                                currentSelection:
-                                    dimensionType,
+                                currentSelection: dimensionType,
                                 setUnitType: (index) {
                                   {
                                     setState(() {
-                                      dimensionType =
-                                          (index ?? 1);
+                                      dimensionType = (index ?? 1);
                                     });
                                   }
                                 },
                               ),
                             ],
                             Row(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               spacing: 5,
                               children: [
                                 Expanded(
                                   child: GeneralTextField(
-                                    title:
-                                        'Product Unit Name *',
+                                    title: 'Product Unit Name *',
                                     hint: 'Enter Name',
-                                    controller:
-                                        nameController,
+                                    controller: nameController,
                                     lines: 1,
                                     theme: theme,
                                   ),
                                 ),
                                 Material(
-                                  type:
-                                      MaterialType
-                                          .transparency,
+                                  type: MaterialType.transparency,
                                   child: InkWell(
                                     onTap: () {
-                                      unitsBottomSheet(
-                                        context,
-                                        () {
-                                          setState(() {
-                                            setTempUnit();
-                                          });
-                                        },
-                                      );
+                                      unitsBottomSheet(context, () {
+                                        setState(() {
+                                          setTempUnit();
+                                        });
+                                      });
                                     },
-                                    borderRadius:
-                                        BorderRadius.circular(
-                                          5,
-                                        ),
-                                    mouseCursor:
-                                        SystemMouseCursors
-                                            .click,
+                                    borderRadius: BorderRadius.circular(5),
+                                    mouseCursor: SystemMouseCursors.click,
                                     child: Container(
-                                      padding:
-                                          EdgeInsets.fromLTRB(
-                                            8,
-                                            6,
-                                            5,
-                                            6,
-                                          ),
+                                      padding: EdgeInsets.fromLTRB(8, 6, 5, 6),
                                       decoration: BoxDecoration(
                                         border: Border.all(
-                                          color:
-                                              Colors
-                                                  .grey
-                                                  .shade400,
+                                          color: Colors.grey.shade400,
                                         ),
-                                        borderRadius:
-                                            BorderRadius.circular(
-                                              5,
-                                            ),
+                                        borderRadius: BorderRadius.circular(5),
                                       ),
                                       child: Row(
                                         spacing: 3,
@@ -275,20 +223,12 @@ void addProductUnitAction({
                                           Text(
                                             style: TextStyle(
                                               fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b4
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
+                                                  theme.mobileTexts.b4.fontSize,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                             'Select',
                                           ),
-                                          Icon(
-                                            Icons
-                                                .keyboard_arrow_down,
-                                          ),
+                                          Icon(Icons.keyboard_arrow_down),
                                         ],
                                       ),
                                     ),
@@ -300,16 +240,14 @@ void addProductUnitAction({
                               title:
                                   isDimensional &&
                                           dimensionType ==
-                                              ProductUnitsClass
-                                                  .areaUnit
+                                              ProductUnitsClass.areaUnit
                                       ? 'Area conversion *'
                                       : isDimensional
                                       ? 'Slabs / sheets per Unit *'
                                       : 'Conversion',
                               autoFocus: false,
                               hint: 'Enter Conversion',
-                              controller:
-                                  quantityController,
+                              controller: quantityController,
                               theme: theme,
                               onSubmitted: (p0) {
                                 addAction();

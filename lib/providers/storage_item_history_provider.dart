@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:stockall/classes/temp_storage_item_history/storage_item_history.dart';
+import 'package:stockall/classes/temp_storage_item_history/storage_item_history_event_class.dart';
 import 'package:stockall/classes/temp_storage_item_history/unsynced/created_storage_item_history.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
@@ -214,6 +215,14 @@ class StorageItemHistoryProvider with ChangeNotifier {
       itemHistory.createdAt ??= DateTime.now();
       itemHistory.storageStaffId = currentUser().userId;
       itemHistory.storageStaffName = currentUser().name;
+      itemHistory.destination ??=
+          StorageItemHistoryEventClass.unKnownDestination;
+      itemHistory.source ??=
+          StorageItemHistoryEventClass.unKnownSource;
+      itemHistory.destination ??=
+          StorageItemHistoryEventClass.unKnownDestination;
+      itemHistory.source ??=
+          StorageItemHistoryEventClass.unKnownSource;
       itemHistory.storageDepartmentName ??=
           returnDepartmentProvider()
               .currentDepartment()

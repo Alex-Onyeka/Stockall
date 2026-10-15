@@ -29,27 +29,20 @@ class StorageDetailsDesktop extends StatefulWidget {
   });
 
   @override
-  State<StorageDetailsDesktop> createState() =>
-      _StorageDetailsDesktopState();
+  State<StorageDetailsDesktop> createState() => _StorageDetailsDesktopState();
 }
 
-class _StorageDetailsDesktopState
-    extends State<StorageDetailsDesktop> {
+class _StorageDetailsDesktopState extends State<StorageDetailsDesktop> {
   bool isLoading = false;
   bool showSuccess = false;
 
-  final GlobalKey<ScaffoldState> _scaffoldKey =
-      GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     List<TempStorageProducts>? productList =
-        returnStorageProductProvider(context: context)
-            .storageProductListMain
-            .where(
-              (product) =>
-                  product.uuid == widget.productUuid,
-            )
+        returnStorageProductProvider(context: context).storageProductListMain
+            .where((product) => product.uuid == widget.productUuid)
             .toList();
     if (productList.isEmpty) {
       return Scaffold(
@@ -69,10 +62,8 @@ class _StorageDetailsDesktopState
               width:
                   screenWidth(context) < tabletScreenSmall
                       ? 50
-                      : (screenWidth(context) >
-                              tabletScreenSmall &&
-                          screenWidth(context) <
-                              tabletScreen + 100)
+                      : (screenWidth(context) > tabletScreenSmall &&
+                          screenWidth(context) < tabletScreen + 100)
                       ? 100
                       : 230,
             ),
@@ -85,12 +76,7 @@ class _StorageDetailsDesktopState
                   borderRadius: BorderRadius.circular(15),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color.fromARGB(
-                        39,
-                        4,
-                        1,
-                        41,
-                      ),
+                      color: const Color.fromARGB(39, 4, 1, 41),
                       blurRadius: 10,
                     ),
                   ],
@@ -102,16 +88,14 @@ class _StorageDetailsDesktopState
                         context: context,
                         title: 'Item Details',
                         widget: InkWell(
-                          mouseCursor:
-                              SystemMouseCursors.click,
+                          mouseCursor: SystemMouseCursors.click,
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) {
                                   return StorageItemHistoryPage(
-                                    productUuid:
-                                        product.uuid,
+                                    productUuid: product.uuid,
                                     fromItemDetails: true,
                                   );
                                 },
@@ -124,8 +108,7 @@ class _StorageDetailsDesktopState
                               horizontal: 5,
                             ),
                             decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(3),
+                              borderRadius: BorderRadius.circular(3),
                             ),
                             child: Row(
                               spacing: 3,
@@ -133,20 +116,14 @@ class _StorageDetailsDesktopState
                                 Text(
                                   style: TextStyle(
                                     fontSize:
-                                        widget
-                                            .theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
+                                        widget.theme.mobileTexts.b3.fontSize,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                   'History',
                                 ),
                                 Icon(
                                   size: 16,
-                                  color:
-                                      Colors.grey.shade600,
+                                  color: Colors.grey.shade600,
                                   Icons.history,
                                 ),
                               ],
@@ -155,28 +132,21 @@ class _StorageDetailsDesktopState
                         ),
                       ),
                       body: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 15.0,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
                         child: Column(
                           children: [
                             Expanded(
                               child: SingleChildScrollView(
                                 child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment
-                                          .center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     SizedBox(height: 10),
                                     Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment
-                                              .center,
+                                          CrossAxisAlignment.center,
                                       children: [
                                         Text(
-                                          textAlign:
-                                              TextAlign
-                                                  .center,
+                                          textAlign: TextAlign.center,
                                           style: TextStyle(
                                             fontSize:
                                                 widget
@@ -184,9 +154,7 @@ class _StorageDetailsDesktopState
                                                     .mobileTexts
                                                     .h4
                                                     .fontSize,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                           product.name,
                                         ),
@@ -203,9 +171,7 @@ class _StorageDetailsDesktopState
                                                     .theme
                                                     .lightModeColor
                                                     .secColor200,
-                                            fontWeight:
-                                                FontWeight
-                                                    .normal,
+                                            fontWeight: FontWeight.normal,
                                           ),
                                           'Date Created:  ${formatDateTime(product.createdAt ?? DateTime.now())}',
                                         ),
@@ -217,29 +183,21 @@ class _StorageDetailsDesktopState
                                         Expanded(
                                           child: TabContainer(
                                             isMoney: true,
-                                            text:
-                                                'Cost Price',
-                                            price:
-                                                product
-                                                    .costPrice ??
-                                                0,
-                                            theme:
-                                                widget
-                                                    .theme,
-                                            backGround:
-                                                const Color.fromARGB(
-                                                  24,
-                                                  240,
-                                                  206,
-                                                  104,
-                                                ),
-                                            border:
-                                                const Color.fromARGB(
-                                                  71,
-                                                  228,
-                                                  225,
-                                                  41,
-                                                ),
+                                            text: 'Cost Price',
+                                            price: product.costPrice ?? 0,
+                                            theme: widget.theme,
+                                            backGround: const Color.fromARGB(
+                                              24,
+                                              240,
+                                              206,
+                                              104,
+                                            ),
+                                            border: const Color.fromARGB(
+                                              71,
+                                              228,
+                                              225,
+                                              41,
+                                            ),
                                           ),
                                         ),
                                       ],
@@ -252,15 +210,11 @@ class _StorageDetailsDesktopState
                                     SizedBox(height: 20),
                                     Divider(
                                       height: 15,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade200,
+                                      color: Colors.grey.shade200,
                                     ),
                                     Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .center,
+                                          MainAxisAlignment.center,
                                       children: [
                                         Text(
                                           style: TextStyle(
@@ -270,9 +224,7 @@ class _StorageDetailsDesktopState
                                                     .mobileTexts
                                                     .b2
                                                     .fontSize,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                           'Products',
                                         ),
@@ -280,18 +232,13 @@ class _StorageDetailsDesktopState
                                     ),
                                     Divider(
                                       height: 15,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade200,
+                                      color: Colors.grey.shade200,
                                     ),
                                     // SizedBox(height: 10),
                                     Padding(
-                                      padding:
-                                          const EdgeInsets.symmetric(
-                                            horizontal:
-                                                10.0,
-                                          ),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10.0,
+                                      ),
                                       child: Column(
                                         spacing: 0,
                                         children: [
@@ -299,39 +246,24 @@ class _StorageDetailsDesktopState
                                           //   height: 10,
                                           // ),
                                           ManageProductsStorage(
-                                            productUuid:
-                                                widget
-                                                    .productUuid,
-                                            theme:
-                                                widget
-                                                    .theme,
+                                            productUuid: widget.productUuid,
+                                            theme: widget.theme,
                                           ),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
+                                          SizedBox(height: 5),
                                           Column(
                                             children:
-                                                returnData(
-                                                      context:
-                                                          context,
-                                                    )
+                                                returnData(context: context)
                                                     .productListMain
                                                     .where(
-                                                      (
-                                                        pr,
-                                                      ) =>
+                                                      (pr) =>
                                                           pr.storageUuid ==
                                                           widget.productUuid,
                                                     )
                                                     .toList()
                                                     .map(
-                                                      (
-                                                        pro,
-                                                      ) => ProductTileMain(
-                                                        product:
-                                                            pro,
-                                                        theme:
-                                                            widget.theme,
+                                                      (pro) => ProductTileMain(
+                                                        product: pro,
+                                                        theme: widget.theme,
                                                         action: () {
                                                           Navigator.push(
                                                             context,
@@ -360,28 +292,21 @@ class _StorageDetailsDesktopState
                             ),
                             SizedBox(height: 10),
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               spacing: 15,
                               children: [
                                 Visibility(
                                   visible: authorization(
-                                    authorized:
-                                        Authorizations()
-                                            .deleteProduct,
+                                    authorized: Authorizations().deleteProduct,
                                   ),
                                   child: Expanded(
                                     child: EditButton(
                                       text: 'Delete Item',
                                       action: () {
-                                        final safeContext =
-                                            context;
+                                        final safeContext = context;
                                         showDialog(
-                                          context:
-                                              safeContext,
-                                          builder: (
-                                            confirmDialog,
-                                          ) {
+                                          context: safeContext,
+                                          builder: (confirmDialog) {
                                             var provider =
                                                 returnStorageProductProvider();
                                             var shopId =
@@ -389,21 +314,16 @@ class _StorageDetailsDesktopState
                                                     .userShop()!
                                                     .shopId!;
                                             return ConfirmationAlert(
-                                              theme:
-                                                  returnTheme(
-                                                    context,
-                                                  ),
+                                              theme: returnTheme(context),
                                               message:
                                                   'Are you sure you want to proceed with action?',
-                                              title:
-                                                  'Are you sure?',
+                                              title: 'Are you sure?',
                                               action: () async {
                                                 Navigator.of(
                                                   confirmDialog,
                                                 ).pop();
                                                 setState(() {
-                                                  isLoading =
-                                                      true;
+                                                  isLoading = true;
                                                 });
                                                 StorageItemHistory
                                                 itemHistory = StorageItemHistory(
@@ -412,50 +332,37 @@ class _StorageDetailsDesktopState
                                                           .itemDeleted,
                                                   source:
                                                       StorageItemHistoryEventClass
-                                                          .unKnownSource,
-                                                  shopId:
-                                                      shopId,
-                                                  title:
-                                                      'Item Deleted',
-                                                  quantityChange:
-                                                      0,
+                                                          .storageSource,
+                                                  destination:
+                                                      StorageItemHistoryEventClass
+                                                          .deletedDestination,
+                                                  shopId: shopId,
+                                                  title: 'Item Deleted',
+                                                  quantityChange: 0,
                                                   storageItemNewValue:
-                                                      (product.quantity ??
-                                                              0)
+                                                      (product.quantity ?? 0)
                                                           .toString(),
-                                                  desc:
-                                                      'Item Deleted Now',
-                                                  isIncreased:
-                                                      false,
+                                                  desc: 'Item Deleted Now',
+                                                  isIncreased: false,
                                                   storageItemOldValue:
-                                                      (product.quantity ??
-                                                              0)
+                                                      (product.quantity ?? 0)
                                                           .toString(),
-                                                );
-                                                await provider.deleteProductMain(
-                                                  product:
-                                                      product,
-                                                  itemHistory:
-                                                      itemHistory,
                                                 );
                                                 await provider
-                                                    .getStorageProducts(
-                                                      shopId,
+                                                    .deleteProductMain(
+                                                      product: product,
+                                                      itemHistory: itemHistory,
                                                     );
+                                                await provider
+                                                    .getStorageProducts(shopId);
                                                 setState(() {
-                                                  isLoading =
-                                                      false;
-                                                  showSuccess =
-                                                      true;
+                                                  isLoading = false;
+                                                  showSuccess = true;
                                                 });
                                                 Future.delayed(
-                                                  Duration(
-                                                    seconds:
-                                                        2,
-                                                  ),
+                                                  Duration(seconds: 2),
                                                   () {
-                                                    if (safeContext
-                                                        .mounted) {
+                                                    if (safeContext.mounted) {
                                                       Navigator.of(
                                                         safeContext,
                                                       ).pop();
@@ -467,22 +374,15 @@ class _StorageDetailsDesktopState
                                           },
                                         );
                                       },
-                                      theme: returnTheme(
-                                        context,
-                                      ),
-                                      icon:
-                                          Icons
-                                              .delete_forever_outlined,
-                                      color:
-                                          Colors.redAccent,
+                                      theme: returnTheme(context),
+                                      icon: Icons.delete_forever_outlined,
+                                      color: Colors.redAccent,
                                     ),
                                   ),
                                 ),
                                 Visibility(
                                   visible: authorization(
-                                    authorized:
-                                        Authorizations()
-                                            .updateProduct,
+                                    authorized: Authorizations().updateProduct,
                                   ),
                                   child: Expanded(
                                     child: EditButton(
@@ -491,28 +391,21 @@ class _StorageDetailsDesktopState
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (
-                                              context,
-                                            ) {
+                                            builder: (context) {
                                               return AddStorageItem(
-                                                productStorage:
-                                                    product,
+                                                productStorage: product,
                                               );
                                             },
                                           ),
                                         ).then((context) {
                                           returnStorageProductProvider()
                                               .getSingleStorageProductItemOnline(
-                                                itemUuid:
-                                                    widget
-                                                        .productUuid,
+                                                itemUuid: widget.productUuid,
                                               );
                                           setState(() {});
                                         });
                                       },
-                                      theme: returnTheme(
-                                        context,
-                                      ),
+                                      theme: returnTheme(context),
                                     ),
                                   ),
                                 ),
@@ -538,10 +431,8 @@ class _StorageDetailsDesktopState
               width:
                   screenWidth(context) < tabletScreenSmall
                       ? 50
-                      : (screenWidth(context) >
-                              tabletScreenSmall &&
-                          screenWidth(context) <
-                              tabletScreen + 100)
+                      : (screenWidth(context) > tabletScreenSmall &&
+                          screenWidth(context) < tabletScreen + 100)
                       ? 100
                       : 230,
             ),

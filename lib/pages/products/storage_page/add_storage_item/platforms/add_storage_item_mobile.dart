@@ -32,12 +32,10 @@ class AddStorageItemMobile extends StatefulWidget {
   });
 
   @override
-  State<AddStorageItemMobile> createState() =>
-      AddStorageItemMobileState();
+  State<AddStorageItemMobile> createState() => AddStorageItemMobileState();
 }
 
-class AddStorageItemMobileState
-    extends State<AddStorageItemMobile> {
+class AddStorageItemMobileState extends State<AddStorageItemMobile> {
   bool isLoading = false;
   bool showSuccess = false;
 
@@ -49,21 +47,17 @@ class AddStorageItemMobileState
           var theme = returnTheme(context);
           return InfoAlert(
             theme: theme,
-            message:
-                'Item Name Must be set before item can be created',
+            message: 'Item Name Must be set before item can be created',
             title: 'Empty Input',
           );
         },
       );
     } else {
       final safeContext = context;
-      var samePro = returnStorageProductProvider()
-          .storageProductListMain
-          .where(
-            (pr) =>
-                pr.name.toLowerCase() ==
-                widget.nameController.text.toLowerCase(),
-          );
+      var samePro = returnStorageProductProvider().storageProductListMain.where(
+        (pr) =>
+            pr.name.toLowerCase() == widget.nameController.text.toLowerCase(),
+      );
 
       showDialog(
         context: safeContext,
@@ -74,10 +68,7 @@ class AddStorageItemMobileState
                 samePro.isNotEmpty
                     ? 'Item with the name  ${widget.nameController.text.toUpperCase()}  already Exists in your Inventory. Are you sure you want to proceed to create a duplicate Item?'
                     : 'You are about to add a new item to your stock, are you sure you want to proceed?',
-            title:
-                samePro.isNotEmpty
-                    ? 'Item Already Exists'
-                    : 'Are you sure?',
+            title: samePro.isNotEmpty ? 'Item Already Exists' : 'Are you sure?',
             action: () async {
               Navigator.of(confirmDialog).pop();
 
@@ -85,8 +76,7 @@ class AddStorageItemMobileState
                 isLoading = true;
               });
 
-              final dataProvider =
-                  returnStorageProductProvider();
+              final dataProvider = returnStorageProductProvider();
               var product = TempStorageProducts(
                 unitsList: returnData().tempUnitsList,
                 useGroupUnit: returnData().useGroupUnit,
@@ -95,40 +85,33 @@ class AddStorageItemMobileState
                 createdAt: DateTime.now(),
                 groupUnit: returnData().selectedGroupUnit,
                 qttyPerGroup: double.tryParse(
-                  widget.qttyPerGroupController.text
-                      .replaceAll(',', ''),
+                  widget.qttyPerGroupController.text.replaceAll(',', ''),
                 ),
                 quantity: null,
                 unit: returnData().selectedUnit,
                 updatedAt: DateTime.now(),
                 uuid: createdProductUuid,
                 costPrice: double.tryParse(
-                  widget.costPriceController.text
-                      .replaceAll(',', ''),
+                  widget.costPriceController.text.replaceAll(',', ''),
                 ),
                 sellingPrice: double.tryParse(
-                  widget.sellingPriceController.text
-                      .replaceAll(',', ''),
+                  widget.sellingPriceController.text.replaceAll(',', ''),
                 ),
               );
 
-              StorageItemHistory itemHistory =
-                  StorageItemHistory(
-                    event:
-                        StorageItemHistoryEventClass
-                            .itemCreated,
-                    source:
-                        StorageItemHistoryEventClass
-                            .unKnownSource,
-                    storageUnit: 'Not Set',
-                    shopId: shopId(),
-                    title: 'Item Created',
-                    quantityChange: 0,
-                    storageItemNewValue: '0',
-                    desc: 'Item Created Now',
-                    isIncreased: true,
-                    storageItemOldValue: '0',
-                  );
+              StorageItemHistory itemHistory = StorageItemHistory(
+                event: StorageItemHistoryEventClass.itemCreated,
+                source: StorageItemHistoryEventClass.manualSource,
+                destination: StorageItemHistoryEventClass.storageDestination,
+                storageUnit: 'Not Set',
+                shopId: shopId(),
+                title: 'Item Created',
+                quantityChange: 0,
+                storageItemNewValue: '0',
+                desc: 'Item Created Now',
+                isIncreased: true,
+                storageItemOldValue: '0',
+              );
 
               await dataProvider.createStorageProduct(
                 product: product,
@@ -143,9 +126,7 @@ class AddStorageItemMobileState
               Future.delayed(Duration(seconds: 2), () {
                 // Pop current screen
                 if (safeContext.mounted) {
-                  Navigator.of(
-                    safeContext,
-                  ).pop(); // pop current page
+                  Navigator.of(safeContext).pop(); // pop current page
                 }
               });
             },
@@ -163,8 +144,7 @@ class AddStorageItemMobileState
           var theme = returnTheme(context);
           return InfoAlert(
             theme: theme,
-            message:
-                'Item Name Must be set before item can be created',
+            message: 'Item Name Must be set before item can be created',
             title: 'Empty Input',
           );
         },
@@ -177,12 +157,10 @@ class AddStorageItemMobileState
           var theme = returnTheme(context);
           return ConfirmationAlert(
             theme: theme,
-            message:
-                'Are you sure you want to proceed with update?',
+            message: 'Are you sure you want to proceed with update?',
             title: 'Proceed?',
             action: () async {
-              final provider =
-                  returnStorageProductProvider();
+              final provider = returnStorageProductProvider();
               final dataProvider = returnData();
               if (safeContext.mounted) {
                 Navigator.of(safeContext).pop();
@@ -198,48 +176,35 @@ class AddStorageItemMobileState
                 product: TempStorageProducts(
                   unitsList: returnData().tempUnitsList,
                   useGroupUnit: returnData().useGroupUnit,
-                  createdAt:
-                      widget.storageProduct?.createdAt,
+                  createdAt: widget.storageProduct?.createdAt,
                   updatedAt: DateTime.now(),
                   uuid: createdProductUuid,
                   name: widget.nameController.text.trim(),
-                  unit:
-                      dataProvider.selectedUnit ??
-                      'Unit(s)',
+                  unit: dataProvider.selectedUnit ?? 'Unit(s)',
                   groupUnit: dataProvider.selectedGroupUnit,
                   qttyPerGroup:
-                      widget
-                              .qttyPerGroupController
-                              .text
-                              .isNotEmpty
+                      widget.qttyPerGroupController.text.isNotEmpty
                           ? double.parse(
-                            widget
-                                .qttyPerGroupController
-                                .text
-                                .replaceAll(',', ''),
+                            widget.qttyPerGroupController.text.replaceAll(
+                              ',',
+                              '',
+                            ),
                           )
                           : null,
                   quantity: widget.storageProduct?.quantity,
                   costPrice:
-                      widget
-                              .costPriceController
-                              .text
-                              .isNotEmpty
+                      widget.costPriceController.text.isNotEmpty
                           ? double.parse(
-                            widget.costPriceController.text
-                                .replaceAll(',', ''),
+                            widget.costPriceController.text.replaceAll(',', ''),
                           )
                           : null,
                   sellingPrice:
-                      widget
-                              .sellingPriceController
-                              .text
-                              .isNotEmpty
+                      widget.sellingPriceController.text.isNotEmpty
                           ? double.parse(
-                            widget
-                                .sellingPriceController
-                                .text
-                                .replaceAll(',', ''),
+                            widget.sellingPriceController.text.replaceAll(
+                              ',',
+                              '',
+                            ),
                           )
                           : null,
                   shopId: shopId(),
@@ -294,25 +259,17 @@ class AddStorageItemMobileState
       }
     });
     if (widget.storageProduct != null) {
-      widget.nameController.text =
-          widget.storageProduct?.name ?? '';
-      returnData().useGroupUnit =
-          widget.storageProduct?.useGroupUnit ?? false;
-      returnData().selectUnit(
-        widget.storageProduct!.unit ?? 'Others',
-      );
-      returnData().selectGroupUnit(
-        unit: widget.storageProduct!.groupUnit,
-      );
+      widget.nameController.text = widget.storageProduct?.name ?? '';
+      returnData().useGroupUnit = widget.storageProduct?.useGroupUnit ?? false;
+      returnData().selectUnit(widget.storageProduct!.unit ?? 'Others');
+      returnData().selectGroupUnit(unit: widget.storageProduct!.groupUnit);
       returnData().initUnitsList(
-        unitsListNew:
-            widget.storageProduct?.getUnitsList() ?? [],
+        unitsListNew: widget.storageProduct?.getUnitsList() ?? [],
         productUuid: createdProductUuid,
       );
       widget.qttyPerGroupController.text =
           widget.storageProduct!.qttyPerGroup != null
-              ? widget.storageProduct!.qttyPerGroup!
-                  .toString()
+              ? widget.storageProduct!.qttyPerGroup!.toString()
               : '';
       widget.costPriceController.text =
           widget.storageProduct!.costPrice == null
@@ -321,8 +278,7 @@ class AddStorageItemMobileState
       widget.sellingPriceController.text =
           widget.storageProduct!.sellingPrice == null
               ? ''
-              : widget.storageProduct!.sellingPrice
-                  .toString();
+              : widget.storageProduct!.sellingPrice.toString();
     }
   }
 
@@ -344,15 +300,11 @@ class AddStorageItemMobileState
                     fontSize: theme.mobileTexts.h4.fontSize,
                     fontWeight: FontWeight.bold,
                   ),
-                  widget.storageProduct != null
-                      ? 'Edit Item'
-                      : 'New Item',
+                  widget.storageProduct != null ? 'Edit Item' : 'New Item',
                 ),
                 SizedBox(height: 5),
                 Text(
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.b2.fontSize,
-                  ),
+                  style: TextStyle(fontSize: theme.mobileTexts.b2.fontSize),
                   widget.storageProduct != null
                       ? 'Edit item details'
                       : 'Add a new item to your store.',
@@ -366,14 +318,10 @@ class AddStorageItemMobileState
                 children: [
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: SingleChildScrollView(
                         child: Padding(
-                          padding: const EdgeInsets.only(
-                            top: 10.0,
-                          ),
+                          padding: const EdgeInsets.only(top: 10.0),
                           child: Column(
                             children: [
                               GeneralTextField(
@@ -381,42 +329,32 @@ class AddStorageItemMobileState
                                 hint: 'Enter Item Name',
                                 lines: 1,
                                 title: 'Item Name',
-                                controller:
-                                    widget.nameController,
+                                controller: widget.nameController,
                               ),
                               SizedBox(height: 5),
                               MoneyTextfield(
                                 theme: theme,
                                 hint: 'Enter Cost Price',
                                 title: 'Cost Price',
-                                controller:
-                                    widget
-                                        .costPriceController,
+                                controller: widget.costPriceController,
                               ),
                               SizedBox(height: 15),
                               Visibility(
                                 visible: authorization(
                                   authorized:
-                                      Authorizations()
-                                          .manageMultipleUnits,
+                                      Authorizations().manageMultipleUnits,
                                 ),
                                 child: Padding(
-                                  padding:
-                                      const EdgeInsets.only(
-                                        bottom: 10.0,
-                                      ),
+                                  padding: const EdgeInsets.only(bottom: 10.0),
                                   child: SubWrapper(
                                     isVisible:
                                         !ItemsAuthAction()
                                             .applyVariationsAction(
-                                              context:
-                                                  context,
+                                              context: context,
                                             ),
                                     mainWidget: MainDropdown(
                                       valueSet:
-                                          returnData()
-                                              .tempUnitsList
-                                              .isNotEmpty,
+                                          returnData().tempUnitsList.isNotEmpty,
                                       onTap: () {
                                         ItemsAuthAction().applyVariationsAction(
                                           context: context,
@@ -424,9 +362,7 @@ class AddStorageItemMobileState
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                builder: (
-                                                  context,
-                                                ) {
+                                                builder: (context) {
                                                   return ProductUnitsPage(
                                                     productUuid:
                                                         createdProductUuid ??
@@ -439,18 +375,12 @@ class AddStorageItemMobileState
                                         );
                                       },
                                       isOpen:
-                                          returnData()
-                                              .tempUnitsList
-                                              .isNotEmpty,
-                                      title:
-                                          'Item Unit(s) (Optional)',
+                                          returnData().tempUnitsList.isNotEmpty,
+                                      title: 'Item Unit(s) (Optional)',
                                       hint:
                                           returnData(
-                                                    context:
-                                                        context,
-                                                  )
-                                                  .tempUnitsList
-                                                  .isEmpty
+                                                context: context,
+                                              ).tempUnitsList.isEmpty
                                               ? 'Unit Not Set'
                                               : "${returnData(context: context).tempUnitsList.firstWhere((item) => item.isPrimary).name} and (${returnData(context: context).tempUnitsList.length - 1}) More",
                                       theme: theme,
@@ -476,8 +406,7 @@ class AddStorageItemMobileState
                       child: MainButtonP(
                         themeProvider: theme,
                         action: () {
-                          if (widget.storageProduct !=
-                              null) {
+                          if (widget.storageProduct != null) {
                             updateStorageProduct();
                           } else {
                             checkFields();
@@ -498,10 +427,7 @@ class AddStorageItemMobileState
 
         Visibility(
           visible: isLoading,
-          child: returnCompProvider(
-            context,
-            listen: false,
-          ).showLoader(
+          child: returnCompProvider(context, listen: false).showLoader(
             message:
                 widget.storageProduct != null
                     ? 'Updating Item'
@@ -510,10 +436,7 @@ class AddStorageItemMobileState
         ),
         Visibility(
           visible: showSuccess,
-          child: returnCompProvider(
-            context,
-            listen: false,
-          ).showSuccess(
+          child: returnCompProvider(context, listen: false).showSuccess(
             widget.storageProduct != null
                 ? 'Item Updated Successfully'
                 : 'Item Created Successfully',

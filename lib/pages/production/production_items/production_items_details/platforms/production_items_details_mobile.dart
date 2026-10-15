@@ -40,12 +40,9 @@ class _ProductionItemsDetailsMobileState
   bool isLoading = false;
   bool showSuccess = false;
   bool setDate = false;
-  TextEditingController costController =
-      TextEditingController();
-  TextEditingController quantityController =
-      TextEditingController();
-  TextEditingController qttyPerUnitController =
-      TextEditingController();
+  TextEditingController costController = TextEditingController();
+  TextEditingController quantityController = TextEditingController();
+  TextEditingController qttyPerUnitController = TextEditingController();
 
   @override
   void dispose() {
@@ -64,12 +61,10 @@ class _ProductionItemsDetailsMobileState
   Widget build(BuildContext context) {
     // final shopI = returnShopProvider().userShop()!.shopId!;
     List<ProductionItem>? productionItemList =
-        returnProductionItemsProvider(context: context)
-            .productionItemListMain
+        returnProductionItemsProvider(context: context).productionItemListMain
             .where(
               (productionItem) =>
-                  productionItem.uuid! ==
-                  widget.productionItemUuid,
+                  productionItem.uuid! == widget.productionItemUuid,
             )
             .toList();
     if (productionItemList.isEmpty) {
@@ -80,8 +75,7 @@ class _ProductionItemsDetailsMobileState
         ).showLoader(message: 'Loading...'),
       );
     } else {
-      ProductionItem productionItem =
-          productionItemList.first;
+      ProductionItem productionItem = productionItemList.first;
       return Stack(
         children: [
           Scaffold(
@@ -90,8 +84,7 @@ class _ProductionItemsDetailsMobileState
               title: 'Details',
               widget: Visibility(
                 visible: authorization(
-                  authorized:
-                      Authorizations().viewItemsHistory,
+                  authorized: Authorizations().viewItemsHistory,
                 ),
                 child: PopupMenuButton(
                   offset: Offset(-20, 30),
@@ -105,36 +98,23 @@ class _ProductionItemsDetailsMobileState
                             MaterialPageRoute(
                               builder: (context) {
                                 return ProductionRecordsList(
-                                  productionItemUuid:
-                                      widget
-                                          .productionItemUuid,
+                                  productionItemUuid: widget.productionItemUuid,
                                 );
                               },
                             ),
                           );
                         },
                         child: Padding(
-                          padding: const EdgeInsets.only(
-                            left: 5.0,
-                            right: 15,
-                          ),
+                          padding: const EdgeInsets.only(left: 5.0, right: 15),
                           child: Row(
                             spacing: 10,
                             children: [
-                              Icon(
-                                size: 16,
-                                Icons.view_in_ar_rounded,
-                              ),
+                              Icon(size: 16, Icons.view_in_ar_rounded),
                               Text(
                                 style: TextStyle(
-                                  fontWeight:
-                                      FontWeight.bold,
+                                  fontWeight: FontWeight.bold,
                                   fontSize:
-                                      widget
-                                          .theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
+                                      widget.theme.mobileTexts.b3.fontSize,
                                 ),
                                 'View Productions',
                               ),
@@ -149,38 +129,24 @@ class _ProductionItemsDetailsMobileState
                             MaterialPageRoute(
                               builder: (context) {
                                 return ProductionItemHistoryPage(
-                                  productionItemUuid:
-                                      widget
-                                          .productionItemUuid,
-                                  fromProductionItemDetails:
-                                      true,
+                                  productionItemUuid: widget.productionItemUuid,
+                                  fromProductionItemDetails: true,
                                 );
                               },
                             ),
                           );
                         },
                         child: Padding(
-                          padding: const EdgeInsets.only(
-                            left: 5.0,
-                            right: 15,
-                          ),
+                          padding: const EdgeInsets.only(left: 5.0, right: 15),
                           child: Row(
                             spacing: 10,
                             children: [
-                              Icon(
-                                size: 16,
-                                Icons.receipt_long_rounded,
-                              ),
+                              Icon(size: 16, Icons.receipt_long_rounded),
                               Text(
                                 style: TextStyle(
-                                  fontWeight:
-                                      FontWeight.bold,
+                                  fontWeight: FontWeight.bold,
                                   fontSize:
-                                      widget
-                                          .theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
+                                      widget.theme.mobileTexts.b3.fontSize,
                                 ),
                                 'View History',
                               ),
@@ -198,51 +164,34 @@ class _ProductionItemsDetailsMobileState
               ),
             ),
             body: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15.0,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15.0),
               child: Column(
                 children: [
                   Expanded(
                     child: SingleChildScrollView(
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           SizedBox(height: 10),
                           Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize:
-                                      widget
-                                          .theme
-                                          .mobileTexts
-                                          .h4
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
+                                      widget.theme.mobileTexts.h4.fontSize,
+                                  fontWeight: FontWeight.bold,
                                 ),
                                 productionItem.name,
                               ),
                               Text(
                                 style: TextStyle(
                                   fontSize:
-                                      widget
-                                          .theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
+                                      widget.theme.mobileTexts.b2.fontSize,
                                   color:
-                                      widget
-                                          .theme
-                                          .lightModeColor
-                                          .secColor200,
-                                  fontWeight:
-                                      FontWeight.normal,
+                                      widget.theme.lightModeColor.secColor200,
+                                  fontWeight: FontWeight.normal,
                                 ),
                                 'Date Created: ${formatDateTime(productionItem.createdAt!)}',
                               ),
@@ -251,9 +200,7 @@ class _ProductionItemsDetailsMobileState
                           SizedBox(height: 20),
                           Visibility(
                             visible: authorization(
-                              authorized:
-                                  Authorizations()
-                                      .manageCostPrice,
+                              authorized: Authorizations().manageCostPrice,
                             ),
                             child: Row(
                               children: [
@@ -263,34 +210,26 @@ class _ProductionItemsDetailsMobileState
                                     children: [
                                       Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .center,
+                                            MainAxisAlignment.center,
                                         children: [
                                           Expanded(
                                             child: TabContainer(
                                               isMoney: true,
-                                              text:
-                                                  'Cost Price',
-                                              price:
-                                                  productionItem
-                                                      .costPrice,
-                                              theme:
-                                                  widget
-                                                      .theme,
-                                              backGround:
-                                                  const Color.fromARGB(
-                                                    11,
-                                                    15,
-                                                    4,
-                                                    114,
-                                                  ),
-                                              border:
-                                                  const Color.fromARGB(
-                                                    32,
-                                                    45,
-                                                    3,
-                                                    255,
-                                                  ),
+                                              text: 'Cost Price',
+                                              price: productionItem.costPrice,
+                                              theme: widget.theme,
+                                              backGround: const Color.fromARGB(
+                                                11,
+                                                15,
+                                                4,
+                                                114,
+                                              ),
+                                              border: const Color.fromARGB(
+                                                32,
+                                                45,
+                                                3,
+                                                255,
+                                              ),
                                             ),
                                           ),
                                         ],
@@ -302,29 +241,19 @@ class _ProductionItemsDetailsMobileState
                                                   .updateProductionItems,
                                         ),
                                         child: EditButton(
-                                          theme:
-                                              widget.theme,
+                                          theme: widget.theme,
                                           action: () {
                                             updateCostPriceActionProductionItem(
-                                              productionItem:
-                                                  productionItem,
-                                              context:
-                                                  context,
-                                              costController:
-                                                  costController,
-                                              theme:
-                                                  widget
-                                                      .theme,
-                                              setStateAction:
-                                                  () {
-                                                    setState(
-                                                      () {},
-                                                    );
-                                                  },
+                                              productionItem: productionItem,
+                                              context: context,
+                                              costController: costController,
+                                              theme: widget.theme,
+                                              setStateAction: () {
+                                                setState(() {});
+                                              },
                                             );
                                           },
-                                          text:
-                                              'Edit Price',
+                                          text: 'Edit Price',
                                         ),
                                       ),
                                     ],
@@ -341,22 +270,19 @@ class _ProductionItemsDetailsMobileState
                           ),
                           SizedBox(height: 10),
                           Padding(
-                            padding:
-                                const EdgeInsets.symmetric(
-                                  horizontal: 10.0,
-                                ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10.0,
+                            ),
                             child: Column(
                               spacing: 0,
                               children: [
                                 Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(
-                                        vertical: 5.0,
-                                      ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 5.0,
+                                  ),
                                   child: Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         style: TextStyle(
@@ -366,15 +292,12 @@ class _ProductionItemsDetailsMobileState
                                                   .mobileTexts
                                                   .b3
                                                   .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .normal,
+                                          fontWeight: FontWeight.normal,
                                         ),
                                         'Manage this Item?',
                                       ),
                                       ManageThisItemToggleButtonProductionItem(
-                                        productionItem:
-                                            productionItem,
+                                        productionItem: productionItem,
                                         setStateAction: () {
                                           setState(() {});
                                         },
@@ -383,24 +306,19 @@ class _ProductionItemsDetailsMobileState
                                   ),
                                 ),
                                 Visibility(
-                                  visible:
-                                      productionItem
-                                          .expiryDate !=
-                                      null,
+                                  visible: productionItem.expiryDate != null,
                                   child: BottomInfoSection(
                                     theme: widget.theme,
                                     mainText:
-                                        productionItem
-                                                    .expiryDate !=
-                                                null
+                                        productionItem.expiryDate != null
                                             ? getDayDifference(
-                                                      productionItem.expiryDate ??
+                                                      productionItem
+                                                              .expiryDate ??
                                                           DateTime.now(),
                                                     ) >=
                                                     1
                                                 ? formatDateTime(
-                                                  productionItem
-                                                          .expiryDate ??
+                                                  productionItem.expiryDate ??
                                                       DateTime.now(),
                                                 )
                                                 : 'Item Expired'
@@ -436,16 +354,11 @@ class _ProductionItemsDetailsMobileState
                                 //   text: 'Unit',
                                 // ),
                                 Visibility(
-                                  visible:
-                                      productionItem
-                                          .sizeType !=
-                                      null,
+                                  visible: productionItem.sizeType != null,
                                   child: BottomInfoSection(
                                     theme: widget.theme,
                                     mainText:
-                                        productionItem
-                                            .sizeType ??
-                                        'Not Set',
+                                        productionItem.sizeType ?? 'Not Set',
                                     text: 'Size Type',
                                   ),
                                 ),
@@ -464,15 +377,12 @@ class _ProductionItemsDetailsMobileState
                   ),
                   SizedBox(height: 10),
                   Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     spacing: 5,
                     children: [
                       Visibility(
                         visible: authorization(
-                          authorized:
-                              Authorizations()
-                                  .transferProductionItems,
+                          authorized: Authorizations().transferProductionItems,
                         ),
                         child: Expanded(
                           child: EditButton(
@@ -491,9 +401,7 @@ class _ProductionItemsDetailsMobileState
                       ),
                       Visibility(
                         visible: authorization(
-                          authorized:
-                              Authorizations()
-                                  .deleteProductionItems,
+                          authorized: Authorizations().deleteProductionItems,
                         ),
                         child: Expanded(
                           child: EditButton(
@@ -506,90 +414,66 @@ class _ProductionItemsDetailsMobileState
                                   var provider =
                                       returnProductionItemsProvider();
                                   return ConfirmationAlert(
-                                    theme: returnTheme(
-                                      context,
-                                    ),
+                                    theme: returnTheme(context),
                                     message:
                                         'Are you sure you want to proceed with action?',
                                     title: 'Are you sure?',
                                     action: () async {
-                                      Navigator.of(
-                                        confirmDialog,
-                                      ).pop();
+                                      Navigator.of(confirmDialog).pop();
 
                                       setState(() {
                                         isLoading = true;
                                       });
                                       ProductionItemHistory
-                                      productionItemHistory = ProductionItemHistory(
-                                        event:
-                                            ProductionItemHistoryEventClass
-                                                .itemDeleted,
-                                        source:
-                                            ProductionItemHistoryEventClass
-                                                .unKnownSource,
-                                        isManaged:
-                                            productionItem
-                                                .isManaged,
-                                        shopId: shopId(),
-                                        title:
-                                            'Item Deleted',
-                                        quantityChange: 0,
-                                        newValue:
-                                            (productionItem
-                                                        .quantity ??
-                                                    0)
-                                                .toString(),
-                                        desc:
-                                            'Item Deleted Now',
-                                        isIncreased: false,
-                                        oldValue:
-                                            (productionItem
-                                                        .quantity ??
-                                                    0)
-                                                .toString(),
-                                      );
+                                      productionItemHistory =
+                                          ProductionItemHistory(
+                                            event:
+                                                ProductionItemHistoryEventClass
+                                                    .itemDeleted,
+                                            source:
+                                                ProductionItemHistoryEventClass
+                                                    .unKnownSource,
+                                            isManaged: productionItem.isManaged,
+                                            shopId: shopId(),
+                                            title: 'Item Deleted',
+                                            quantityChange: 0,
+                                            newValue:
+                                                (productionItem.quantity ?? 0)
+                                                    .toString(),
+                                            desc: 'Item Deleted Now',
+                                            isIncreased: false,
+                                            oldValue:
+                                                (productionItem.quantity ?? 0)
+                                                    .toString(),
+                                          );
                                       await provider.deleteProductionItemMain(
                                         productionItemHistory:
                                             productionItemHistory,
-                                        productionItem:
-                                            productionItem,
+                                        productionItem: productionItem,
                                       );
                                       setState(() {
                                         isLoading = false;
                                         showSuccess = true;
                                       });
-                                      Future.delayed(
-                                        Duration(
-                                          seconds: 1,
-                                        ),
-                                        () {
-                                          if (safeContext
-                                              .mounted) {
-                                            Navigator.of(
-                                              safeContext,
-                                            ).pop();
-                                          }
-                                        },
-                                      );
+                                      Future.delayed(Duration(seconds: 1), () {
+                                        if (safeContext.mounted) {
+                                          Navigator.of(safeContext).pop();
+                                        }
+                                      });
                                     },
                                   );
                                 },
                               );
                             },
                             theme: returnTheme(context),
-                            icon:
-                                Icons
-                                    .delete_forever_outlined,
+                            icon: Icons.delete_forever_outlined,
                             color: Colors.redAccent,
                           ),
                         ),
                       ),
                       Visibility(
                         visible: authorization(
-                          authorized:
-                              Authorizations()
-                                  .updateProductionItems,
+                          authorized: Authorizations().updateProductionItems,
                         ),
                         child: Expanded(
                           child: EditButton(
@@ -600,17 +484,14 @@ class _ProductionItemsDetailsMobileState
                                 MaterialPageRoute(
                                   builder: (context) {
                                     return AddProductionItem(
-                                      productionItem:
-                                          productionItem,
+                                      productionItem: productionItem,
                                     );
                                   },
                                 ),
                               ).then((context) {
                                 returnProductionItemsProvider()
                                     .getSingleProductionItemOnline(
-                                      itemUuid:
-                                          widget
-                                              .productionItemUuid,
+                                      itemUuid: widget.productionItemUuid,
                                     );
                                 setState(() {});
                               });

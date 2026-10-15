@@ -31,12 +31,10 @@ class ProductPageMobile extends StatefulWidget {
   final ThemeProvider theme;
 
   @override
-  State<ProductPageMobile> createState() =>
-      _ProductPageMobileState();
+  State<ProductPageMobile> createState() => _ProductPageMobileState();
 }
 
-class _ProductPageMobileState
-    extends State<ProductPageMobile> {
+class _ProductPageMobileState extends State<ProductPageMobile> {
   void clearState() {
     setState(() {
       // searchResult = null;
@@ -49,8 +47,7 @@ class _ProductPageMobileState
 
   // List<TempProductClass> productsResult = [];
   String? searchResult;
-  TextEditingController searchController =
-      TextEditingController();
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -62,22 +59,17 @@ class _ProductPageMobileState
 
   late Future<List<TempNotification>> notificationsFuture;
 
-  Future<List<TempNotification>>
-  fetchNotifications() async {
+  Future<List<TempNotification>> fetchNotifications() async {
     var tempGet = await returnNotificationProvider(
       context,
       listen: false,
-    ).fetchRecentNotifications(
-      returnShopProvider().userShop()!.shopId!,
-    );
+    ).fetchRecentNotifications(returnShopProvider().userShop()!.shopId!);
 
     return tempGet;
   }
 
   Future<void> getProductList() async {
-    await RefreshFunctions(
-      context,
-    ).refreshProducts(context);
+    await RefreshFunctions(context).refreshProducts(context);
     setState(() {});
   }
 
@@ -86,8 +78,7 @@ class _ProductPageMobileState
     super.didChangeDependencies();
   }
 
-  final GlobalKey<ScaffoldState> _scaffoldKey =
-      GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -111,9 +102,7 @@ class _ProductPageMobileState
           ItemsAuthAction().numberOfItemsAction(
             context: context,
             action: () {
-              if (authorization(
-                authorized: Authorizations().addProduct,
-              )) {
+              if (authorization(authorized: Authorizations().addProduct)) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -133,8 +122,7 @@ class _ProductPageMobileState
       drawer: FutureBuilder<List<TempNotification>>(
         future: notificationsFuture,
         builder: (context, snapshot) {
-          if (snapshot.connectionState ==
-              ConnectionState.waiting) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return MyDrawerWidget(
               action: () {},
               theme: theme,
@@ -147,8 +135,7 @@ class _ProductPageMobileState
               notifications: [],
             );
           } else {
-            List<TempNotification> notifications =
-                snapshot.data!;
+            List<TempNotification> notifications = snapshot.data!;
             return MyDrawerWidget(
               action: () {
                 showDialog(
@@ -159,11 +146,10 @@ class _ProductPageMobileState
                       message: 'You are about to Logout',
                       title: 'Are you Sure?',
                       action: () async {
-                        var res = await AuthService()
-                            .signOut(
-                              context: context,
-                              allowLogout: false,
-                            );
+                        var res = await AuthService().signOut(
+                          context: context,
+                          allowLogout: false,
+                        );
                         if (res == 1) {
                           if (context.mounted) {
                             Navigator.pushReplacement(
@@ -193,10 +179,7 @@ class _ProductPageMobileState
       ),
       onDrawerChanged: (isOpened) {
         if (!isOpened) {
-          returnNavProvider(
-            context,
-            listen: false,
-          ).closeDrawer();
+          returnNavProvider(context, listen: false).closeDrawer();
         }
       },
       key: _scaffoldKey,
@@ -206,10 +189,7 @@ class _ProductPageMobileState
             children: [
               SizedBox(
                 height:
-                    authorization(
-                          authorized:
-                              Authorizations().addProduct,
-                        )
+                    authorization(authorized: Authorizations().addProduct)
                         ? 270
                         : 250,
                 child: Stack(
@@ -268,34 +248,30 @@ class _ProductPageMobileState
                         mainTitle: 'Items Summary',
                         firsRow: true,
                         scanAction: () {
-                          ItemsAuthAction()
-                              .useOfBArcodeAction(
-                                context: context,
-                                action: () async {
-                                  String? result =
-                                      await scanCode(
-                                        context,
-                                        'Scan Failed',
-                                      );
-                                  setState(() {
-                                    if (result != null) {
-                                      setState(() {
-                                        searchController
-                                            .text = result;
-                                      });
-                                    } else {
-                                      return;
-                                    }
-                                  });
-                                },
+                          ItemsAuthAction().useOfBArcodeAction(
+                            context: context,
+                            action: () async {
+                              String? result = await scanCode(
+                                context,
+                                'Scan Failed',
                               );
+                              setState(() {
+                                if (result != null) {
+                                  setState(() {
+                                    searchController.text = result;
+                                  });
+                                } else {
+                                  return;
+                                }
+                              });
+                            },
+                          );
                         },
                         color1: Colors.green,
                         title1: 'In Stock',
                         color0: Colors.green,
                         show0:
-                            screenWidth(context) >
-                                    mobileScreenSmall
+                            screenWidth(context) > mobileScreenSmall
                                 ? true
                                 : null,
                         title0: 'Total Stock',
@@ -304,10 +280,8 @@ class _ProductPageMobileState
                             products
                                 .where(
                                   (product) =>
-                                      product.getActualQuantity() !=
-                                          null &&
-                                      product.getActualQuantity()! >
-                                          0,
+                                      product.getActualQuantity() != null &&
+                                      product.getActualQuantity()! > 0,
                                 )
                                 .length
                                 .toDouble(),
@@ -316,10 +290,7 @@ class _ProductPageMobileState
                         value2:
                             products
                                 .where(
-                                  (product) =>
-                                      product
-                                          .getActualQuantity() ==
-                                      0,
+                                  (product) => product.getActualQuantity() == 0,
                                 )
                                 .length
                                 .toDouble(),
@@ -337,32 +308,23 @@ class _ProductPageMobileState
                     builder: (context) {
                       if (products.isEmpty) {
                         if (!authorization(
-                          authorized:
-                              Authorizations().addProduct,
+                          authorized: Authorizations().addProduct,
                         )) {
                           return Center(
                             child: SingleChildScrollView(
                               child: RefreshIndicator(
                                 onRefresh: getProductList,
-                                color:
-                                    theme
-                                        .lightModeColor
-                                        .prColor300,
-                                backgroundColor:
-                                    Colors.white,
+                                color: theme.lightModeColor.prColor300,
+                                backgroundColor: Colors.white,
                                 displacement: 10,
                                 child: EmptyWidgetDisplayOnly(
                                   subText:
                                       'No Item has been added to this store yet.',
-                                  title:
-                                      'You have no Items Yet',
+                                  title: 'You have no Items Yet',
                                   height: 35,
                                   icon: Icons.clear,
                                   altAction: () async {
-                                    await returnData()
-                                        .getProducts(
-                                          shopId(),
-                                        );
+                                    await returnData().getProducts(shopId());
                                   },
                                   altActionText: 'Refresh',
                                   altIcon: Icons.refresh,
@@ -377,48 +339,35 @@ class _ProductPageMobileState
                             child: SingleChildScrollView(
                               child: RefreshIndicator(
                                 onRefresh: getProductList,
-                                color:
-                                    theme
-                                        .lightModeColor
-                                        .prColor300,
-                                backgroundColor:
-                                    Colors.white,
+                                color: theme.lightModeColor.prColor300,
+                                backgroundColor: Colors.white,
                                 displacement: 10,
                                 child: EmptyWidgetDisplay(
                                   buttonText: 'Add Item',
                                   subText:
                                       'Click on the button below to start adding Items to your store.',
-                                  title:
-                                      'You have no Items Yet',
+                                  title: 'You have no Items Yet',
                                   svg: productIconSvg,
                                   height: 35,
                                   action: () {
                                     if (authorization(
-                                      authorized:
-                                          Authorizations()
-                                              .addProduct,
+                                      authorized: Authorizations().addProduct,
                                     )) {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (
-                                            context,
-                                          ) {
+                                          builder: (context) {
                                             return AddProduct();
                                           },
                                         ),
                                       ).then((_) {
-                                        if (context
-                                            .mounted) {}
+                                        if (context.mounted) {}
                                       });
                                     }
                                   },
                                   theme: widget.theme,
                                   altAction: () async {
-                                    await returnData()
-                                        .getProducts(
-                                          shopId(),
-                                        );
+                                    await returnData().getProducts(shopId());
                                   },
                                   altActionText: 'Refresh',
                                   altIcon: Icons.refresh,
@@ -429,57 +378,36 @@ class _ProductPageMobileState
                         }
                       } else {
                         return Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(
-                                10.0,
-                                15,
-                                10,
-                                15,
-                              ),
+                          padding: const EdgeInsets.fromLTRB(10.0, 15, 10, 15),
                           child: Column(
                             children: [
                               Visibility(
-                                visible:
-                                    searchController
-                                        .text
-                                        .isEmpty,
+                                visible: searchController.text.isEmpty,
                                 child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(
-                                        horizontal: 20.0,
-                                      ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0,
+                                  ),
                                   child: Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         style: TextStyle(
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                          fontWeight: FontWeight.bold,
                                           fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b1
-                                                  .fontSize,
+                                              theme.mobileTexts.b1.fontSize,
                                         ),
                                         'Items',
                                       ),
                                       MaterialButton(
-                                        mouseCursor:
-                                            SystemMouseCursors
-                                                .click,
+                                        mouseCursor: SystemMouseCursors.click,
                                         onPressed: () {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (
-                                                context,
-                                              ) {
+                                              builder: (context) {
                                                 return TotalProductsPage(
-                                                  theme:
-                                                      theme,
+                                                  theme: theme,
                                                 );
                                               },
                                             ),
@@ -510,8 +438,7 @@ class _ProductPageMobileState
                                                   theme
                                                       .lightModeColor
                                                       .secColor100,
-                                              Icons
-                                                  .arrow_forward_ios_rounded,
+                                              Icons.arrow_forward_ios_rounded,
                                             ),
                                           ],
                                         ),
@@ -523,22 +450,13 @@ class _ProductPageMobileState
                               Expanded(
                                 child: RefreshIndicator(
                                   onRefresh: getProductList,
-                                  color:
-                                      theme
-                                          .lightModeColor
-                                          .prColor300,
-                                  backgroundColor:
-                                      Colors.white,
+                                  color: theme.lightModeColor.prColor300,
+                                  backgroundColor: Colors.white,
                                   displacement: 10,
                                   child: ListView.builder(
-                                    itemCount:
-                                        products.length,
-                                    itemBuilder: (
-                                      context,
-                                      index,
-                                    ) {
-                                      TempProductClass
-                                      product =
+                                    itemCount: products.length,
+                                    itemBuilder: (context, index) {
+                                      TempProductClass product =
                                           products[index];
 
                                       return ProductTileMain(
@@ -546,19 +464,14 @@ class _ProductPageMobileState
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (
-                                                context,
-                                              ) {
+                                              builder: (context) {
                                                 return ProductDetailsPage(
-                                                  productUuid:
-                                                      product
-                                                          .uuid!,
+                                                  productUuid: product.uuid!,
                                                 );
                                               },
                                             ),
                                           ).then((_) {
-                                            if (context
-                                                .mounted) {
+                                            if (context.mounted) {
                                               setState(() {
                                                 // getProductList(
                                                 //   context,

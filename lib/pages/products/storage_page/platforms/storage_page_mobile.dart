@@ -23,19 +23,15 @@ class StoragePageMobile extends StatefulWidget {
   const StoragePageMobile({super.key, this.itemName});
 
   @override
-  State<StoragePageMobile> createState() =>
-      _StoragePageMobileState();
+  State<StoragePageMobile> createState() => _StoragePageMobileState();
 }
 
-class _StoragePageMobileState
-    extends State<StoragePageMobile> {
+class _StoragePageMobileState extends State<StoragePageMobile> {
   int sortIndex = 1;
   bool viewUpdateSummary = false;
 
   Future<void> getProducts() async {
-    await RefreshFunctions(
-      context,
-    ).refreshProducts(context);
+    await RefreshFunctions(context).refreshProducts(context);
   }
 
   int start = 0;
@@ -112,31 +108,23 @@ class _StoragePageMobileState
                 .toList()
                 .sublist(
                   0,
-                  returnStorageProductProvider(
-                                context: context,
-                              ).storageProductListMain
+                  returnStorageProductProvider(context: context)
+                              .storageProductListMain
                               .where(
-                                (pr) => pr.name
-                                    .toLowerCase()
-                                    .contains(
-                                      searchController.text
-                                          .toLowerCase(),
-                                    ),
+                                (pr) => pr.name.toLowerCase().contains(
+                                  searchController.text.toLowerCase(),
+                                ),
                               )
                               .toList()
                               .length >
                           100
                       ? 100
-                      : returnStorageProductProvider(
-                            context: context,
-                          ).storageProductListMain
+                      : returnStorageProductProvider(context: context)
+                          .storageProductListMain
                           .where(
-                            (pr) => pr.name
-                                .toLowerCase()
-                                .contains(
-                                  searchController.text
-                                      .toLowerCase(),
-                                ),
+                            (pr) => pr.name.toLowerCase().contains(
+                              searchController.text.toLowerCase(),
+                            ),
                           )
                           .toList()
                           .length,
@@ -160,13 +148,11 @@ class _StoragePageMobileState
         Scaffold(
           appBar: appBar(
             backAction: () {
-              if (sortIndex != 1 &&
-                  widget.itemName == null) {
+              if (sortIndex != 1 && widget.itemName == null) {
                 setState(() {
                   sortIndex = 1;
                 });
-                returnInventoryUpdatesProvider()
-                    .clearDate();
+                returnInventoryUpdatesProvider().clearDate();
               } else {
                 Navigator.of(context).pop();
               }
@@ -194,20 +180,12 @@ class _StoragePageMobileState
                             sortIndex = 1;
                           });
                           searchController.clear();
-                          returnInventoryUpdatesProvider()
-                              .clearDate();
+                          returnInventoryUpdatesProvider().clearDate();
                         },
                         child: Text(
                           style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b2
-                                    .fontSize,
-                            fontWeight:
-                                sortIndex == 1
-                                    ? FontWeight.bold
-                                    : null,
+                            fontSize: theme.mobileTexts.b2.fontSize,
+                            fontWeight: sortIndex == 1 ? FontWeight.bold : null,
                           ),
                           'View Table',
                         ),
@@ -215,41 +193,29 @@ class _StoragePageMobileState
                       PopupMenuItem(
                         enabled: authorization(
                           authorized:
-                              Authorizations()
-                                  .viewAllTransactionRecords,
+                              Authorizations().viewAllTransactionRecords,
                         ),
                         onTap: () {
                           setState(() {
                             sortIndex = 2;
                           });
                           searchController.clear();
-                          returnInventoryUpdatesProvider()
-                              .clearDate();
+                          returnInventoryUpdatesProvider().clearDate();
                         },
                         child: Text(
                           style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b2
-                                    .fontSize,
-                            fontWeight:
-                                sortIndex == 2
-                                    ? FontWeight.bold
-                                    : null,
+                            fontSize: theme.mobileTexts.b2.fontSize,
+                            fontWeight: sortIndex == 2 ? FontWeight.bold : null,
                           ),
                           'View Total Summary',
                         ),
                       ),
                       PopupMenuItem(
                         enabled: authorization(
-                          authorized:
-                              Authorizations()
-                                  .viewItemsHistory,
+                          authorized: Authorizations().viewItemsHistory,
                         ),
                         onTap: () {
-                          returnStorageItemHistoryProvider()
-                              .clearDate();
+                          returnStorageItemHistoryProvider().clearDate();
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -263,15 +229,8 @@ class _StoragePageMobileState
                         },
                         child: Text(
                           style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b2
-                                    .fontSize,
-                            fontWeight:
-                                sortIndex == 3
-                                    ? FontWeight.bold
-                                    : null,
+                            fontSize: theme.mobileTexts.b2.fontSize,
+                            fontWeight: sortIndex == 3 ? FontWeight.bold : null,
                           ),
                           'View History',
                         ),
@@ -279,26 +238,17 @@ class _StoragePageMobileState
                     ];
                   },
                   child: Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Column(
-                        mainAxisAlignment:
-                            MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            style: TextStyle(fontSize: 8),
-                            'View:',
-                          ),
+                          Text(style: TextStyle(fontSize: 8), 'View:'),
                           Text(
                             style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b4
-                                      .fontSize,
+                              fontSize: theme.mobileTexts.b4.fontSize,
                               fontWeight: FontWeight.bold,
                             ),
                             sortIndex == 1
@@ -324,17 +274,13 @@ class _StoragePageMobileState
                     child: Stack(
                       children: [
                         Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 10.0,
-                              ),
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
                           child: Builder(
                             builder: (context) {
                               if (sortIndex == 1) {
                                 return ListView(
                                   primary: false,
-                                  scrollDirection:
-                                      Axis.horizontal,
+                                  scrollDirection: Axis.horizontal,
                                   children: [
                                     SizedBox(
                                       width: 700,
@@ -342,66 +288,51 @@ class _StoragePageMobileState
                                         onRefresh: () {
                                           return getProducts();
                                         },
-                                        backgroundColor:
-                                            Colors.white,
-                                        color:
-                                            theme
-                                                .lightModeColor
-                                                .prColor300,
+                                        backgroundColor: Colors.white,
+                                        color: theme.lightModeColor.prColor300,
                                         displacement: 10,
                                         child: ListView(
                                           children: [
                                             SummaryTableHeadingBar(
-                                              isHeading:
-                                                  true,
+                                              isHeading: true,
                                               theme: theme,
-                                              product:
-                                                  products,
+                                              product: products,
                                             ),
                                             Builder(
-                                              builder: (
-                                                context,
-                                              ) {
-                                                if (products
-                                                    .isEmpty) {
+                                              builder: (context) {
+                                                if (products.isEmpty) {
                                                   return Padding(
-                                                    padding: const EdgeInsets.only(
-                                                      top:
-                                                          100.0,
-                                                    ),
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                          top: 100.0,
+                                                        ),
                                                     child: EmptyWidgetDisplayOnly(
-                                                      title:
-                                                          'Empty List',
+                                                      title: 'Empty List',
                                                       subText:
                                                           'No Item has been recorded yet',
-                                                      theme:
-                                                          theme,
-                                                      height:
-                                                          35,
-                                                      icon:
-                                                          Icons.clear,
+                                                      theme: theme,
+                                                      height: 35,
+                                                      icon: Icons.clear,
                                                     ),
                                                   );
                                                 } else {
                                                   return RefreshIndicator(
-                                                    onRefresh:
-                                                        () {
-                                                          return getProducts();
-                                                        },
+                                                    onRefresh: () {
+                                                      return getProducts();
+                                                    },
                                                     backgroundColor:
                                                         Colors.white,
                                                     color:
-                                                        theme.lightModeColor.prColor300,
-                                                    displacement:
-                                                        10,
+                                                        theme
+                                                            .lightModeColor
+                                                            .prColor300,
+                                                    displacement: 10,
                                                     child: SingleChildScrollView(
-                                                      primary:
-                                                          true,
+                                                      primary: true,
                                                       child: Column(
                                                         children: [
                                                           ListView.builder(
-                                                            shrinkWrap:
-                                                                true,
+                                                            shrinkWrap: true,
                                                             itemCount:
                                                                 products.length,
                                                             physics:
@@ -414,25 +345,18 @@ class _StoragePageMobileState
                                                               var product =
                                                                   products[index];
                                                               return TableRowRecordWidget(
-                                                                theme:
-                                                                    theme,
+                                                                theme: theme,
                                                                 product:
                                                                     product,
                                                               );
                                                             },
                                                           ),
                                                           SummaryTableHeadingBar(
-                                                            isHeading:
-                                                                false,
-                                                            theme:
-                                                                theme,
-                                                            product:
-                                                                products,
+                                                            isHeading: false,
+                                                            theme: theme,
+                                                            product: products,
                                                           ),
-                                                          SizedBox(
-                                                            height:
-                                                                20,
-                                                          ),
+                                                          SizedBox(height: 20),
                                                         ],
                                                       ),
                                                     ),
@@ -447,9 +371,7 @@ class _StoragePageMobileState
                                   ],
                                 );
                               } else {
-                                return StorageSummaryWidgetMobile(
-                                  theme: theme,
-                                );
+                                return StorageSummaryWidgetMobile(theme: theme);
                               }
                             },
                           ),
@@ -457,116 +379,73 @@ class _StoragePageMobileState
                         Visibility(
                           visible: viewUpdateSummary,
                           child: Align(
-                            alignment: AlignmentGeometry.xy(
-                              0,
-                              1,
-                            ),
+                            alignment: AlignmentGeometry.xy(0, 1),
                             child: Container(
-                              margin: EdgeInsets.symmetric(
-                                horizontal: 15,
-                              ),
+                              margin: EdgeInsets.symmetric(horizontal: 15),
                               width: double.infinity,
-                              padding: EdgeInsets.fromLTRB(
-                                20,
-                                10,
-                                20,
-                                20,
-                              ),
+                              padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      5,
-                                    ),
+                                borderRadius: BorderRadius.circular(5),
                                 boxShadow: [
                                   BoxShadow(
-                                    color:
-                                        const Color.fromARGB(
-                                          30,
-                                          0,
-                                          0,
-                                          0,
-                                        ),
+                                    color: const Color.fromARGB(30, 0, 0, 0),
                                     offset: Offset(0, 1),
                                     blurRadius: 10,
                                   ),
                                 ],
                               ),
                               child: Column(
-                                mainAxisSize:
-                                    MainAxisSize.min,
+                                mainAxisSize: MainAxisSize.min,
                                 spacing: 5,
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .center,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Opacity(
                                         opacity: 0,
                                         child: IconButton(
-                                          mouseCursor:
-                                              SystemMouseCursors
-                                                  .click,
+                                          mouseCursor: SystemMouseCursors.click,
                                           onPressed: () {},
-                                          icon: Icon(
-                                            Icons.clear,
-                                          ),
+                                          icon: Icon(Icons.clear),
                                         ),
                                       ),
                                       Text(
                                         style: TextStyle(
                                           fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b1
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                              theme.mobileTexts.b1.fontSize,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                         'Update Summary',
                                       ),
                                       IconButton(
-                                        mouseCursor:
-                                            SystemMouseCursors
-                                                .click,
+                                        mouseCursor: SystemMouseCursors.click,
                                         onPressed: () {
                                           setState(() {
-                                            viewUpdateSummary =
-                                                false;
+                                            viewUpdateSummary = false;
                                           });
                                         },
-                                        icon: Icon(
-                                          size: 20,
-                                          Icons.clear,
-                                        ),
+                                        icon: Icon(size: 20, Icons.clear),
                                       ),
                                     ],
                                   ),
                                   Divider(),
                                   Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     spacing: 5,
                                     children: [
                                       Expanded(
                                         child: Column(
                                           spacing: 1,
                                           crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .center,
+                                              CrossAxisAlignment.center,
                                           children: [
                                             Text(
                                               style: TextStyle(
                                                 fontSize: 8,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                               'Total Stock In:',
                                             ),
@@ -577,28 +456,31 @@ class _StoragePageMobileState
                                                         .mobileTexts
                                                         .b3
                                                         .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                               returnTotalStockIn(
                                                 updates:
                                                     returnInventoryUpdatesProvider(
-                                                          context:
-                                                              context,
+                                                          context: context,
                                                         )
                                                         .returnInventoryUpdates()
                                                         .where(
-                                                          (
-                                                            update,
-                                                          ) =>
-                                                              update.itemName?.toLowerCase().contains(
-                                                                    searchController.text.toLowerCase(),
-                                                                  ) ==
+                                                          (update) =>
+                                                              update.itemName
+                                                                      ?.toLowerCase()
+                                                                      .contains(
+                                                                        searchController
+                                                                            .text
+                                                                            .toLowerCase(),
+                                                                      ) ==
                                                                   true ||
-                                                              update.title.toLowerCase().contains(
-                                                                searchController.text.toLowerCase(),
-                                                              ),
+                                                              update.title
+                                                                  .toLowerCase()
+                                                                  .contains(
+                                                                    searchController
+                                                                        .text
+                                                                        .toLowerCase(),
+                                                                  ),
                                                         )
                                                         .toList(),
                                               ),
@@ -610,15 +492,12 @@ class _StoragePageMobileState
                                         child: Column(
                                           spacing: 1,
                                           crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .center,
+                                              CrossAxisAlignment.center,
                                           children: [
                                             Text(
                                               style: TextStyle(
                                                 fontSize: 8,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                               'Total Stock Out:',
                                             ),
@@ -629,28 +508,31 @@ class _StoragePageMobileState
                                                         .mobileTexts
                                                         .b3
                                                         .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                               returnTotalStockOut(
                                                 updates:
                                                     returnInventoryUpdatesProvider(
-                                                          context:
-                                                              context,
+                                                          context: context,
                                                         )
                                                         .returnInventoryUpdates()
                                                         .where(
-                                                          (
-                                                            update,
-                                                          ) =>
-                                                              update.itemName?.toLowerCase().contains(
-                                                                    searchController.text.toLowerCase(),
-                                                                  ) ==
+                                                          (update) =>
+                                                              update.itemName
+                                                                      ?.toLowerCase()
+                                                                      .contains(
+                                                                        searchController
+                                                                            .text
+                                                                            .toLowerCase(),
+                                                                      ) ==
                                                                   true ||
-                                                              update.title.toLowerCase().contains(
-                                                                searchController.text.toLowerCase(),
-                                                              ),
+                                                              update.title
+                                                                  .toLowerCase()
+                                                                  .contains(
+                                                                    searchController
+                                                                        .text
+                                                                        .toLowerCase(),
+                                                                  ),
                                                         )
                                                         .toList(),
                                               ),
@@ -662,15 +544,12 @@ class _StoragePageMobileState
                                         child: Column(
                                           spacing: 1,
                                           crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .center,
+                                              CrossAxisAlignment.center,
                                           children: [
                                             Text(
                                               style: TextStyle(
                                                 fontSize: 8,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                               'Net:',
                                             ),
@@ -681,28 +560,31 @@ class _StoragePageMobileState
                                                         .mobileTexts
                                                         .b3
                                                         .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                               returnNet(
                                                 updates:
                                                     returnInventoryUpdatesProvider(
-                                                          context:
-                                                              context,
+                                                          context: context,
                                                         )
                                                         .returnInventoryUpdates()
                                                         .where(
-                                                          (
-                                                            update,
-                                                          ) =>
-                                                              update.itemName?.toLowerCase().contains(
-                                                                    searchController.text.toLowerCase(),
-                                                                  ) ==
+                                                          (update) =>
+                                                              update.itemName
+                                                                      ?.toLowerCase()
+                                                                      .contains(
+                                                                        searchController
+                                                                            .text
+                                                                            .toLowerCase(),
+                                                                      ) ==
                                                                   true ||
-                                                              update.title.toLowerCase().contains(
-                                                                searchController.text.toLowerCase(),
-                                                              ),
+                                                              update.title
+                                                                  .toLowerCase()
+                                                                  .contains(
+                                                                    searchController
+                                                                        .text
+                                                                        .toLowerCase(),
+                                                                  ),
                                                         )
                                                         .toList(),
                                               ),
@@ -726,25 +608,19 @@ class _StoragePageMobileState
                     visible: sortIndex != 2,
                     child: Row(
                       spacing: 5,
-                      mainAxisAlignment:
-                          MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Visibility(
                           visible: sortIndex == 1,
                           child: Material(
                             color: Colors.transparent,
                             child: InkWell(
-                              mouseCursor:
-                                  SystemMouseCursors.click,
-                              borderRadius:
-                                  BorderRadius.circular(3),
+                              mouseCursor: SystemMouseCursors.click,
+                              borderRadius: BorderRadius.circular(3),
                               onTap: () {
-                                if (screenWidth(context) >
-                                    mobileScreen) {
-                                  returnData()
-                                      .unFocusSearchNode();
-                                  returnData()
-                                      .removeSearchNodeListener();
+                                if (screenWidth(context) > mobileScreen) {
+                                  returnData().unFocusSearchNode();
+                                  returnData().removeSearchNodeListener();
                                 }
                                 Navigator.push(
                                   context,
@@ -754,44 +630,27 @@ class _StoragePageMobileState
                                     },
                                   ),
                                 ).then((_) {
-                                  if (screenWidth(context) >
-                                      mobileScreen) {
-                                    returnData()
-                                        .requestFocusSearchNode();
-                                    returnData()
-                                        .addSearchNodeListener();
+                                  if (screenWidth(context) > mobileScreen) {
+                                    returnData().requestFocusSearchNode();
+                                    returnData().addSearchNodeListener();
                                   }
                                 });
                               },
                               child: Padding(
-                                padding:
-                                    const EdgeInsets.all(
-                                      7.0,
-                                    ),
+                                padding: const EdgeInsets.all(7.0),
                                 child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .center,
-                                  mainAxisSize:
-                                      MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
                                   spacing: 3,
                                   children: [
                                     Text(
                                       style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b3
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
+                                        fontSize: theme.mobileTexts.b3.fontSize,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                       'Add',
                                     ),
-                                    Icon(
-                                      size: 18,
-                                      Icons.add,
-                                    ),
+                                    Icon(size: 18, Icons.add),
                                   ],
                                 ),
                               ),
@@ -801,20 +660,16 @@ class _StoragePageMobileState
                         Visibility(
                           visible: sortIndex == 3,
                           child: IconButton(
-                            mouseCursor:
-                                SystemMouseCursors.click,
+                            mouseCursor: SystemMouseCursors.click,
                             onPressed: () {
                               setState(() {
-                                viewUpdateSummary =
-                                    !viewUpdateSummary;
+                                viewUpdateSummary = !viewUpdateSummary;
                               });
                             },
                             icon: Icon(
                               viewUpdateSummary
-                                  ? Icons
-                                      .keyboard_arrow_up_outlined
-                                  : Icons
-                                      .keyboard_arrow_down_outlined,
+                                  ? Icons.keyboard_arrow_up_outlined
+                                  : Icons.keyboard_arrow_down_outlined,
                             ),
                           ),
                         ),
@@ -824,107 +679,66 @@ class _StoragePageMobileState
                             height: 30,
                             width: 150,
                             child: TextField(
-                              focusNode:
-                                  returnData().searchNode,
+                              focusNode: returnData().searchNode,
                               controller: searchController,
                               onChanged: (value) async {
                                 setState(() {
                                   start = 0;
                                   end =
-                                      returnData()
-                                                  .productList()
-                                                  .length >
-                                              50
+                                      returnData().productList().length > 50
                                           ? 50
-                                          : returnData()
-                                              .productList()
-                                              .length;
+                                          : returnData().productList().length;
                                   count = 1;
                                 });
                               },
-                              style: TextStyle(
-                                fontSize: 12,
-                              ),
+                              style: TextStyle(fontSize: 12),
                               decoration: InputDecoration(
                                 suffixIcon: InkWell(
-                                  mouseCursor:
-                                      SystemMouseCursors
-                                          .click,
+                                  mouseCursor: SystemMouseCursors.click,
                                   onTap: () {
-                                    if (searchController
-                                        .text
-                                        .isNotEmpty) {
-                                      searchController
-                                          .clear();
+                                    if (searchController.text.isNotEmpty) {
+                                      searchController.clear();
                                       setState(() {
                                         count = 1;
                                       });
                                     }
                                   },
-                                  child: Icon(
-                                    size: 16,
-                                    Icons.clear,
-                                  ),
+                                  child: Icon(size: 16, Icons.clear),
                                 ),
                                 hintText: 'Search Name',
-                                contentPadding:
-                                    EdgeInsets.symmetric(
-                                      vertical: 5,
-                                      horizontal: 5,
-                                    ),
-                                fillColor:
-                                    Colors.grey.shade200,
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: 5,
+                                  horizontal: 5,
+                                ),
+                                fillColor: Colors.grey.shade200,
                                 border: OutlineInputBorder(
                                   borderSide: BorderSide(
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade200,
+                                    color: Colors.grey.shade200,
                                     width: 2,
                                   ),
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        3,
-                                      ),
+                                  borderRadius: BorderRadius.circular(3),
                                 ),
-                                focusedBorder:
-                                    OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade400,
-                                        width: 2,
-                                      ),
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            3,
-                                          ),
-                                    ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.grey.shade400,
+                                    width: 2,
+                                  ),
+                                  borderRadius: BorderRadius.circular(3),
+                                ),
                               ),
                             ),
                           ),
                         ),
                         Visibility(
-                          visible:
-                              sortIndex == 1 &&
-                              widget.itemName == null,
+                          visible: sortIndex == 1 && widget.itemName == null,
                           child: Opacity(
-                            opacity:
-                                searchController
-                                        .text
-                                        .isNotEmpty
-                                    ? 0
-                                    : 1,
+                            opacity: searchController.text.isNotEmpty ? 0 : 1,
                             child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.end,
                               spacing: 0,
                               children: [
                                 IconButton(
-                                  mouseCursor:
-                                      SystemMouseCursors
-                                          .click,
+                                  mouseCursor: SystemMouseCursors.click,
                                   onPressed: () {
                                     if (start != 0) {
                                       navigate(
@@ -939,55 +753,34 @@ class _StoragePageMobileState
                                     size: 16,
                                     color:
                                         start == 0
-                                            ? Colors
-                                                .grey
-                                                .shade400
-                                            : Colors
-                                                .grey
-                                                .shade800,
+                                            ? Colors.grey.shade400
+                                            : Colors.grey.shade800,
                                     Icons.arrow_back_sharp,
                                   ),
                                 ),
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   spacing: 3,
                                   children: [
                                     Text(
                                       style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b3
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
+                                        fontSize: theme.mobileTexts.b3.fontSize,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                       count.toString(),
                                     ),
                                     Text(
                                       style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b3
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
+                                        fontSize: theme.mobileTexts.b3.fontSize,
+                                        fontWeight: FontWeight.bold,
                                         color: Colors.grey,
                                       ),
                                       '/',
                                     ),
                                     Text(
                                       style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b3
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
+                                        fontSize: theme.mobileTexts.b3.fontSize,
+                                        fontWeight: FontWeight.bold,
                                         color: Colors.grey,
                                       ),
                                       "${returnStorageProductProvider(context: context).storageProductListMain.length > 50 ? (returnStorageProductProvider(context: context).storageProductListMain.length / 50).ceil() : 1}",
@@ -995,9 +788,7 @@ class _StoragePageMobileState
                                   ],
                                 ),
                                 IconButton(
-                                  mouseCursor:
-                                      SystemMouseCursors
-                                          .click,
+                                  mouseCursor: SystemMouseCursors.click,
                                   onPressed: () {
                                     if (end !=
                                         returnStorageProductProvider()
@@ -1016,22 +807,19 @@ class _StoragePageMobileState
                                     color:
                                         end ==
                                                     returnStorageProductProvider(
-                                                      context:
-                                                          context,
-                                                    ).storageProductListMain.length ||
+                                                          context: context,
+                                                        )
+                                                        .storageProductListMain
+                                                        .length ||
                                                 returnStorageProductProvider(
-                                                      context:
-                                                          context,
-                                                    ).storageProductListMain.length <=
+                                                          context: context,
+                                                        )
+                                                        .storageProductListMain
+                                                        .length <=
                                                     50
-                                            ? Colors
-                                                .grey
-                                                .shade400
-                                            : Colors
-                                                .grey
-                                                .shade800,
-                                    Icons
-                                        .arrow_forward_sharp,
+                                            ? Colors.grey.shade400
+                                            : Colors.grey.shade800,
+                                    Icons.arrow_forward_sharp,
                                   ),
                                 ),
                               ],
@@ -1043,19 +831,13 @@ class _StoragePageMobileState
                           child: Container(
                             color: Colors.white,
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.only(
-                                    right: 20.0,
-                                  ),
+                              padding: const EdgeInsets.only(right: 20.0),
                               child: Row(
                                 spacing: 3,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   InkWell(
-                                    mouseCursor:
-                                        SystemMouseCursors
-                                            .click,
+                                    mouseCursor: SystemMouseCursors.click,
                                     onTap: () {
                                       returnInventoryUpdatesProvider()
                                                       .dateSet ==
@@ -1064,36 +846,25 @@ class _StoragePageMobileState
                                                       .rangeStartDate ==
                                                   null
                                           ? mainDatePicker(
-                                            context:
-                                                context,
+                                            context: context,
                                             theme: theme,
-                                            singleDate: (
-                                              date,
-                                            ) {
+                                            singleDate: (date) {
                                               returnInventoryUpdatesProvider()
-                                                  .setDate(
-                                                    date!,
-                                                  );
+                                                  .setDate(date!);
                                             },
-                                            rangeDate: (
-                                              firstDate,
-                                              lastDate,
-                                            ) {
-                                              returnInventoryUpdatesProvider().setRange(
-                                                firstDate!,
-                                                lastDate ??
-                                                    DateTime.now(),
-                                              );
+                                            rangeDate: (firstDate, lastDate) {
+                                              returnInventoryUpdatesProvider()
+                                                  .setRange(
+                                                    firstDate!,
+                                                    lastDate ?? DateTime.now(),
+                                                  );
                                             },
                                           )
                                           : returnInventoryUpdatesProvider()
                                               .clearDate();
                                     },
                                     child: Padding(
-                                      padding:
-                                          const EdgeInsets.all(
-                                            10.0,
-                                          ),
+                                      padding: const EdgeInsets.all(10.0),
                                       child: Row(
                                         spacing: 4,
                                         children: [
@@ -1104,35 +875,27 @@ class _StoragePageMobileState
                                                     .lightModeColor
                                                     .secColor200,
                                             returnInventoryUpdatesProvider(
-                                                          context:
-                                                              context,
+                                                          context: context,
                                                         ).dateSet ==
                                                         null &&
                                                     returnInventoryUpdatesProvider(
-                                                          context:
-                                                              context,
+                                                          context: context,
                                                         ).rangeStartDate ==
                                                         null
-                                                ? Icons
-                                                    .calendar_month
+                                                ? Icons.calendar_month
                                                 : Icons.clear,
                                           ),
                                           Text(
                                             style: TextStyle(
                                               fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b3
-                                                      .fontSize,
+                                                  theme.mobileTexts.b3.fontSize,
                                             ),
                                             returnInventoryUpdatesProvider(
-                                                          context:
-                                                              context,
+                                                          context: context,
                                                         ).dateSet !=
                                                         null ||
                                                     returnInventoryUpdatesProvider(
-                                                          context:
-                                                              context,
+                                                          context: context,
                                                         ).rangeStartDate !=
                                                         null
                                                 ? 'Clear'
@@ -1169,10 +932,7 @@ class _StoragePageMobileState
 }
 
 class StorageSummaryWidgetMobile extends StatelessWidget {
-  const StorageSummaryWidgetMobile({
-    super.key,
-    required this.theme,
-  });
+  const StorageSummaryWidgetMobile({super.key, required this.theme});
 
   final ThemeProvider theme;
 
@@ -1194,16 +954,11 @@ class StorageSummaryWidgetMobile extends StatelessWidget {
                 Column(
                   children: [
                     Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b2
-                                    .fontSize,
+                            fontSize: theme.mobileTexts.b2.fontSize,
                             fontWeight: FontWeight.bold,
                           ),
                           'FINANCE',
@@ -1213,18 +968,13 @@ class StorageSummaryWidgetMobile extends StatelessWidget {
                     SizedBox(height: 8),
                     Column(
                       spacing: 10,
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Row(
                           children: [
                             Expanded(
                               child: TabContainer(
-                                priceTextSize:
-                                    theme
-                                        .mobileTexts
-                                        .h4
-                                        .fontSize,
+                                priceTextSize: theme.mobileTexts.h4.fontSize,
                                 isMoney: true,
                                 text: 'Total Cost Value',
                                 price:
@@ -1232,20 +982,13 @@ class StorageSummaryWidgetMobile extends StatelessWidget {
                                       context: context,
                                     ).getTotalCostPrice(),
                                 theme: theme,
-                                backGround:
-                                    const Color.fromARGB(
-                                      11,
-                                      15,
-                                      4,
-                                      114,
-                                    ),
-                                border:
-                                    const Color.fromARGB(
-                                      32,
-                                      45,
-                                      3,
-                                      255,
-                                    ),
+                                backGround: const Color.fromARGB(
+                                  11,
+                                  15,
+                                  4,
+                                  114,
+                                ),
+                                border: const Color.fromARGB(32, 45, 3, 255),
                               ),
                             ),
                           ],
@@ -1254,11 +997,7 @@ class StorageSummaryWidgetMobile extends StatelessWidget {
                           children: [
                             Expanded(
                               child: TabContainer(
-                                priceTextSize:
-                                    theme
-                                        .mobileTexts
-                                        .h4
-                                        .fontSize,
+                                priceTextSize: theme.mobileTexts.h4.fontSize,
                                 isMoney: true,
                                 text: 'Total Sales Value',
                                 price:
@@ -1266,20 +1005,13 @@ class StorageSummaryWidgetMobile extends StatelessWidget {
                                       context: context,
                                     ).getTotalSellingPrice(),
                                 theme: theme,
-                                backGround:
-                                    const Color.fromARGB(
-                                      18,
-                                      2,
-                                      163,
-                                      31,
-                                    ),
-                                border:
-                                    const Color.fromARGB(
-                                      63,
-                                      2,
-                                      163,
-                                      31,
-                                    ),
+                                backGround: const Color.fromARGB(
+                                  18,
+                                  2,
+                                  163,
+                                  31,
+                                ),
+                                border: const Color.fromARGB(63, 2, 163, 31),
                               ),
                             ),
                           ],
@@ -1305,8 +1037,7 @@ class StorageSummaryWidgetMobile extends StatelessWidget {
                 children: [
                   Text(
                     style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b2.fontSize,
+                      fontSize: theme.mobileTexts.b2.fontSize,
                       fontWeight: FontWeight.bold,
                     ),
                     'STORAGE ITEMS',
@@ -1324,24 +1055,11 @@ class StorageSummaryWidgetMobile extends StatelessWidget {
                       text: 'Total Items',
                       price:
                           returnStorageProductProvider(
-                                context: context,
-                              )
-                              .storageProductListMain
-                              .length
-                              .toDouble(),
+                            context: context,
+                          ).storageProductListMain.length.toDouble(),
                       theme: theme,
-                      backGround: const Color.fromARGB(
-                        11,
-                        15,
-                        4,
-                        114,
-                      ),
-                      border: const Color.fromARGB(
-                        32,
-                        45,
-                        3,
-                        255,
-                      ),
+                      backGround: const Color.fromARGB(11, 15, 4, 114),
+                      border: const Color.fromARGB(32, 45, 3, 255),
                     ),
                   ),
                 ],
@@ -1356,29 +1074,17 @@ class StorageSummaryWidgetMobile extends StatelessWidget {
                       isMoney: false,
                       text: 'In Stock',
                       price:
-                          returnStorageProductProvider(
-                                context: context,
-                              ).storageProductListMain
+                          returnStorageProductProvider(context: context)
+                              .storageProductListMain
                               .where(
                                 (item) =>
-                                    item.quantity != null &&
-                                    item.quantity != 0,
+                                    item.quantity != null && item.quantity != 0,
                               )
                               .length
                               .toDouble(),
                       theme: theme,
-                      backGround: const Color.fromARGB(
-                        18,
-                        2,
-                        163,
-                        31,
-                      ),
-                      border: const Color.fromARGB(
-                        63,
-                        2,
-                        163,
-                        31,
-                      ),
+                      backGround: const Color.fromARGB(18, 2, 163, 31),
+                      border: const Color.fromARGB(63, 2, 163, 31),
                     ),
                   ),
                   Expanded(
@@ -1386,29 +1092,17 @@ class StorageSummaryWidgetMobile extends StatelessWidget {
                       isMoney: false,
                       text: 'Out Of Stock',
                       price:
-                          returnStorageProductProvider(
-                                context: context,
-                              ).storageProductListMain
+                          returnStorageProductProvider(context: context)
+                              .storageProductListMain
                               .where(
                                 (item) =>
-                                    item.quantity != null &&
-                                    item.quantity == 0,
+                                    item.quantity != null && item.quantity == 0,
                               )
                               .length
                               .toDouble(),
                       theme: theme,
-                      backGround: const Color.fromARGB(
-                        25,
-                        235,
-                        150,
-                        3,
-                      ),
-                      border: const Color.fromARGB(
-                        74,
-                        232,
-                        148,
-                        3,
-                      ),
+                      backGround: const Color.fromARGB(25, 235, 150, 3),
+                      border: const Color.fromARGB(74, 232, 148, 3),
                     ),
                   ),
                 ],
@@ -1421,21 +1115,13 @@ class StorageSummaryWidgetMobile extends StatelessWidget {
                     child: TabContainer(
                       isMoney: false,
                       text: 'Total Quantity',
-                      price: returnStorageProductProvider(
-                            context: context,
-                          ).storageProductListMain
-                          .where(
-                            (item) => item.quantity != null,
-                          )
+                      price: returnStorageProductProvider(context: context)
+                          .storageProductListMain
+                          .where((item) => item.quantity != null)
                           .map((item) => item.quantity)
                           .fold(0, (a, b) => a + (b ?? 0)),
                       theme: theme,
-                      backGround: const Color.fromARGB(
-                        141,
-                        245,
-                        245,
-                        245,
-                      ),
+                      backGround: const Color.fromARGB(141, 245, 245, 245),
                       border: Colors.grey.shade300,
                     ),
                   ),
@@ -1451,8 +1137,7 @@ class StorageSummaryWidgetMobile extends StatelessWidget {
                 children: [
                   Text(
                     style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b2.fontSize,
+                      fontSize: theme.mobileTexts.b2.fontSize,
                       fontWeight: FontWeight.bold,
                     ),
                     'ITEMS',
@@ -1473,18 +1158,8 @@ class StorageSummaryWidgetMobile extends StatelessWidget {
                             context: context,
                           ).productList().length.toDouble(),
                       theme: theme,
-                      backGround: const Color.fromARGB(
-                        11,
-                        15,
-                        4,
-                        114,
-                      ),
-                      border: const Color.fromARGB(
-                        32,
-                        45,
-                        3,
-                        255,
-                      ),
+                      backGround: const Color.fromARGB(11, 15, 4, 114),
+                      border: const Color.fromARGB(32, 45, 3, 255),
                     ),
                   ),
                 ],
@@ -1495,8 +1170,7 @@ class StorageSummaryWidgetMobile extends StatelessWidget {
                 children: [
                   Row(
                     spacing: 10,
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Expanded(
                         child: TabContainer(
@@ -1507,26 +1181,14 @@ class StorageSummaryWidgetMobile extends StatelessWidget {
                                   .productList()
                                   .where(
                                     (item) =>
-                                        item.getActualQuantity() !=
-                                            null &&
-                                        item.getActualQuantity() !=
-                                            0,
+                                        item.getActualQuantity() != null &&
+                                        item.getActualQuantity() != 0,
                                   )
                                   .length
                                   .toDouble(),
                           theme: theme,
-                          backGround: const Color.fromARGB(
-                            18,
-                            2,
-                            163,
-                            31,
-                          ),
-                          border: const Color.fromARGB(
-                            63,
-                            2,
-                            163,
-                            31,
-                          ),
+                          backGround: const Color.fromARGB(18, 2, 163, 31),
+                          border: const Color.fromARGB(63, 2, 163, 31),
                         ),
                       ),
                       Expanded(
@@ -1538,26 +1200,14 @@ class StorageSummaryWidgetMobile extends StatelessWidget {
                                   .productList()
                                   .where(
                                     (item) =>
-                                        item.getActualQuantity() !=
-                                            null &&
-                                        item.getActualQuantity() ==
-                                            0,
+                                        item.getActualQuantity() != null &&
+                                        item.getActualQuantity() == 0,
                                   )
                                   .length
                                   .toDouble(),
                           theme: theme,
-                          backGround: const Color.fromARGB(
-                            25,
-                            235,
-                            150,
-                            3,
-                          ),
-                          border: const Color.fromARGB(
-                            74,
-                            232,
-                            148,
-                            3,
-                          ),
+                          backGround: const Color.fromARGB(25, 235, 150, 3),
+                          border: const Color.fromARGB(74, 232, 148, 3),
                         ),
                       ),
                     ],
@@ -1571,56 +1221,30 @@ class StorageSummaryWidgetMobile extends StatelessWidget {
                           price:
                               returnData(context: context)
                                   .productList()
-                                  .where(
-                                    (item) =>
-                                        !item.isManaged,
-                                  )
+                                  .where((item) => !item.isManaged)
                                   .length
                                   .toDouble(),
                           theme: theme,
-                          backGround: const Color.fromARGB(
-                            141,
-                            245,
-                            245,
-                            245,
-                          ),
+                          backGround: const Color.fromARGB(141, 245, 245, 245),
                           border: Colors.grey.shade300,
                         ),
                       ),
                     ],
                   ),
                   Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Expanded(
                         child: TabContainer(
                           isMoney: false,
                           text: 'Total Quantity',
-                          price: returnData(
-                                context: context,
-                              )
+                          price: returnData(context: context)
                               .productList()
-                              .where(
-                                (item) =>
-                                    item.getActualQuantity() !=
-                                    null,
-                              )
-                              .map(
-                                (item) =>
-                                    item.getActualQuantity(),
-                              )
-                              .fold(
-                                0,
-                                (a, b) => a + (b ?? 0),
-                              ),
+                              .where((item) => item.getActualQuantity() != null)
+                              .map((item) => item.getActualQuantity())
+                              .fold(0, (a, b) => a + (b ?? 0)),
                           theme: theme,
-                          backGround: const Color.fromARGB(
-                            141,
-                            245,
-                            245,
-                            245,
-                          ),
+                          backGround: const Color.fromARGB(141, 245, 245, 245),
                           border: Colors.grey.shade300,
                         ),
                       ),
@@ -1638,10 +1262,7 @@ class StorageSummaryWidgetMobile extends StatelessWidget {
 
 class InventoryUpdateWidgetMobile extends StatefulWidget {
   final TempInventoryUpdateClass update;
-  const InventoryUpdateWidgetMobile({
-    super.key,
-    required this.update,
-  });
+  const InventoryUpdateWidgetMobile({super.key, required this.update});
 
   @override
   State<InventoryUpdateWidgetMobile> createState() =>
@@ -1656,22 +1277,14 @@ class _InventoryUpdateWidgetMobileState
       return value.isNotEmpty ? value : 'Null';
     } else {
       if (widget.update.title.split(' ')[1] == 'Selling') {
-        return formatMoneyMid(
-          amount: parsed,
-          context: context,
-        );
+        return formatMoneyMid(amount: parsed, context: context);
       } else {
-        return value.isNotEmpty
-            ? formatLargeNumber(value)
-            : 'Null';
+        return value.isNotEmpty ? formatLargeNumber(value) : 'Null';
       }
     }
   }
 
-  String valueChange({
-    required String one,
-    required String two,
-  }) {
+  String valueChange({required String one, required String two}) {
     double? parsed = double.tryParse(one);
     double? parsedOld = double.tryParse(two);
     if (parsed == null || parsedOld == null) {
@@ -1695,10 +1308,7 @@ class _InventoryUpdateWidgetMobileState
       child: Ink(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(2),
-          border: Border.all(
-            color: Colors.grey.shade200,
-            width: 1,
-          ),
+          border: Border.all(color: Colors.grey.shade200, width: 1),
           color: Colors.white,
         ),
         child: InkWell(
@@ -1710,10 +1320,7 @@ class _InventoryUpdateWidgetMobileState
             });
           },
           child: Container(
-            padding: EdgeInsets.symmetric(
-              vertical: 5,
-              horizontal: 10,
-            ),
+            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -1722,8 +1329,7 @@ class _InventoryUpdateWidgetMobileState
                   children: [
                     Icon(
                       size: 15,
-                      color:
-                          theme.lightModeColor.secColor200,
+                      color: theme.lightModeColor.secColor200,
                       Icons.receipt,
                     ),
                     MyDividerMobile(),
@@ -1731,8 +1337,7 @@ class _InventoryUpdateWidgetMobileState
                       flex: 4,
                       child: Column(
                         spacing: 1,
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             style: TextStyle(
@@ -1743,11 +1348,7 @@ class _InventoryUpdateWidgetMobileState
                           ),
                           Text(
                             style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b4
-                                      .fontSize,
+                              fontSize: theme.mobileTexts.b4.fontSize,
                               // fontWeight: FontWeight.bold,
                             ),
                             widget.update.title,
@@ -1760,8 +1361,7 @@ class _InventoryUpdateWidgetMobileState
                       flex: 4,
                       child: Column(
                         spacing: 1,
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             style: TextStyle(
@@ -1772,11 +1372,7 @@ class _InventoryUpdateWidgetMobileState
                           ),
                           Text(
                             style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b4
-                                      .fontSize,
+                              fontSize: theme.mobileTexts.b4.fontSize,
                               // fontWeight: FontWeight.bold,
                             ),
                             widget.update.itemName ?? '',
@@ -1790,15 +1386,11 @@ class _InventoryUpdateWidgetMobileState
                       color: Colors.grey.shade500,
                       isOpen
                           ? Icons.keyboard_arrow_up_rounded
-                          : Icons
-                              .keyboard_arrow_down_rounded,
+                          : Icons.keyboard_arrow_down_rounded,
                     ),
                   ],
                 ),
-                Visibility(
-                  visible: isOpen,
-                  child: SizedBox(height: 3),
-                ),
+                Visibility(visible: isOpen, child: SizedBox(height: 3)),
                 Visibility(
                   visible: isOpen,
                   child: Divider(
@@ -1817,8 +1409,7 @@ class _InventoryUpdateWidgetMobileState
                         MaterialPageRoute(
                           builder: (context) {
                             return StorageDetailsPage(
-                              productUuid:
-                                  widget.update.itemUuid!,
+                              productUuid: widget.update.itemUuid!,
                             );
                           },
                         ),
@@ -1826,15 +1417,10 @@ class _InventoryUpdateWidgetMobileState
                     },
                     child: Column(
                       spacing: 0,
-                      crossAxisAlignment:
-                          CrossAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Visibility(
-                          visible:
-                              widget
-                                  .update
-                                  .departmentUuidTwo !=
-                              null,
+                          visible: widget.update.departmentUuidTwo != null,
                           child: Column(
                             children: [
                               Row(
@@ -1843,29 +1429,21 @@ class _InventoryUpdateWidgetMobileState
                                     child: Column(
                                       spacing: 1,
                                       crossAxisAlignment:
-                                          CrossAxisAlignment
-                                              .start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           style: TextStyle(
                                             fontSize: 8,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                           'Department:',
                                         ),
                                         Text(
                                           style: TextStyle(
                                             fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b4
-                                                    .fontSize,
+                                                theme.mobileTexts.b4.fontSize,
                                           ),
-                                          widget
-                                                  .update
-                                                  .departmentNameTwo ??
+                                          widget.update.departmentNameTwo ??
                                               'Not Set',
                                         ),
                                       ],
@@ -1882,45 +1460,34 @@ class _InventoryUpdateWidgetMobileState
                           ),
                         ),
                         Visibility(
-                          visible:
-                              widget.update.itemTwoUuid !=
-                              null,
+                          visible: widget.update.itemTwoUuid != null,
                           child: Column(
                             children: [
                               Row(
                                 spacing: 10,
-                                mainAxisSize:
-                                    MainAxisSize.max,
+                                mainAxisSize: MainAxisSize.max,
                                 children: [
                                   Expanded(
                                     child: Column(
                                       spacing: 1,
                                       crossAxisAlignment:
-                                          CrossAxisAlignment
-                                              .start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           style: TextStyle(
                                             fontSize: 8,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                           'Staff Name:',
                                         ),
                                         Text(
                                           style: TextStyle(
                                             fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b4
-                                                    .fontSize,
+                                                theme.mobileTexts.b4.fontSize,
                                             // fontWeight:
                                             //     FontWeight.bold,
                                           ),
-                                          widget
-                                                  .update
-                                                  .staffNameTwo ??
+                                          widget.update.staffNameTwo ??
                                               'Not Set',
                                           // widget.update.title,
                                         ),
@@ -1932,46 +1499,38 @@ class _InventoryUpdateWidgetMobileState
                                     child: Column(
                                       spacing: 1,
                                       crossAxisAlignment:
-                                          CrossAxisAlignment
-                                              .start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           style: TextStyle(
                                             fontSize: 8,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                           'Item-2 Name:',
                                         ),
                                         Text(
                                           style: TextStyle(
                                             fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b4
-                                                    .fontSize,
+                                                theme.mobileTexts.b4.fontSize,
                                             // fontWeight:
                                             //     FontWeight.bold,
                                           ),
-                                          returnData()
-                                                  .productListMain
+                                          returnData().productListMain
                                                   .where(
-                                                    (
-                                                      item,
-                                                    ) =>
+                                                    (item) =>
                                                         item.uuid ==
-                                                        widget.update.itemTwoUuid,
+                                                        widget
+                                                            .update
+                                                            .itemTwoUuid,
                                                   )
                                                   .isNotEmpty
-                                              ? returnData()
-                                                  .productListMain
+                                              ? returnData().productListMain
                                                   .where(
-                                                    (
-                                                      item,
-                                                    ) =>
+                                                    (item) =>
                                                         item.uuid ==
-                                                        widget.update.itemTwoUuid,
+                                                        widget
+                                                            .update
+                                                            .itemTwoUuid,
                                                   )
                                                   .first
                                                   .name
@@ -1994,40 +1553,30 @@ class _InventoryUpdateWidgetMobileState
                           children: [
                             Row(
                               spacing: 10,
-                              mainAxisSize:
-                                  MainAxisSize.max,
+                              mainAxisSize: MainAxisSize.max,
                               children: [
                                 Expanded(
                                   child: Column(
                                     spacing: 1,
                                     crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         style: TextStyle(
                                           fontSize: 8,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                         'Old Value:',
                                       ),
                                       Text(
                                         style: TextStyle(
                                           fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b4
-                                                  .fontSize,
+                                              theme.mobileTexts.b4.fontSize,
                                           // fontWeight:
                                           //     FontWeight.bold,
                                         ),
                                         formatValue(
-                                          widget
-                                                  .update
-                                                  .oldValue ??
-                                              '',
+                                          widget.update.oldValue ?? '',
                                           // widget.update.title,
                                         ),
                                       ),
@@ -2039,33 +1588,24 @@ class _InventoryUpdateWidgetMobileState
                                   child: Column(
                                     spacing: 1,
                                     crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         style: TextStyle(
                                           fontSize: 8,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                         'New Value:',
                                       ),
                                       Text(
                                         style: TextStyle(
                                           fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b4
-                                                  .fontSize,
+                                              theme.mobileTexts.b4.fontSize,
                                           // fontWeight:
                                           //     FontWeight.bold,
                                         ),
                                         formatValue(
-                                          widget
-                                                  .update
-                                                  .newValue ??
-                                              '',
+                                          widget.update.newValue ?? '',
                                           // widget.update.title,
                                         ),
                                       ),
@@ -2077,37 +1617,23 @@ class _InventoryUpdateWidgetMobileState
                                   child: Column(
                                     spacing: 1,
                                     crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         style: TextStyle(
                                           fontSize: 8,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                         'Change:',
                                       ),
                                       Text(
                                         style: TextStyle(
                                           fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b4
-                                                  .fontSize,
+                                              theme.mobileTexts.b4.fontSize,
                                         ),
                                         valueChange(
-                                          one:
-                                              widget
-                                                  .update
-                                                  .oldValue ??
-                                              '',
-                                          two:
-                                              widget
-                                                  .update
-                                                  .newValue ??
-                                              '',
+                                          one: widget.update.oldValue ?? '',
+                                          two: widget.update.newValue ?? '',
                                           // widget.update.title,
                                         ),
                                       ),
@@ -2124,45 +1650,33 @@ class _InventoryUpdateWidgetMobileState
                           ],
                         ),
                         Visibility(
-                          visible:
-                              widget.update.itemTwoUuid !=
-                              null,
+                          visible: widget.update.itemTwoUuid != null,
                           child: Column(
                             children: [
                               Row(
                                 spacing: 10,
-                                mainAxisSize:
-                                    MainAxisSize.max,
+                                mainAxisSize: MainAxisSize.max,
                                 children: [
                                   Expanded(
                                     child: Column(
                                       spacing: 1,
                                       crossAxisAlignment:
-                                          CrossAxisAlignment
-                                              .start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           style: TextStyle(
                                             fontSize: 8,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                           'Item-2 Old:',
                                         ),
                                         Text(
                                           style: TextStyle(
                                             fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b4
-                                                    .fontSize,
+                                                theme.mobileTexts.b4.fontSize,
                                           ),
                                           formatValue(
-                                            widget
-                                                    .update
-                                                    .itemTwoOldValue ??
-                                                '',
+                                            widget.update.itemTwoOldValue ?? '',
                                           ),
                                         ),
                                       ],
@@ -2173,33 +1687,24 @@ class _InventoryUpdateWidgetMobileState
                                     child: Column(
                                       spacing: 1,
                                       crossAxisAlignment:
-                                          CrossAxisAlignment
-                                              .start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           style: TextStyle(
                                             fontSize: 8,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                           'Item-2 New:',
                                         ),
                                         Text(
                                           style: TextStyle(
                                             fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b4
-                                                    .fontSize,
+                                                theme.mobileTexts.b4.fontSize,
                                             // fontWeight:
                                             //     FontWeight.bold,
                                           ),
                                           formatValue(
-                                            widget
-                                                    .update
-                                                    .itemTwoNewValue ??
-                                                '',
+                                            widget.update.itemTwoNewValue ?? '',
                                             // widget.update.title,
                                           ),
                                         ),
@@ -2211,36 +1716,26 @@ class _InventoryUpdateWidgetMobileState
                                     child: Column(
                                       spacing: 1,
                                       crossAxisAlignment:
-                                          CrossAxisAlignment
-                                              .start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           style: TextStyle(
                                             fontSize: 8,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                           'Change:',
                                         ),
                                         Text(
                                           style: TextStyle(
                                             fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b4
-                                                    .fontSize,
+                                                theme.mobileTexts.b4.fontSize,
                                           ),
                                           valueChange(
                                             one:
-                                                widget
-                                                    .update
-                                                    .itemTwoOldValue ??
+                                                widget.update.itemTwoOldValue ??
                                                 '',
                                             two:
-                                                widget
-                                                    .update
-                                                    .itemTwoNewValue ??
+                                                widget.update.itemTwoNewValue ??
                                                 '',
                                             // widget.update.title,
                                           ),
@@ -2268,8 +1763,7 @@ class _InventoryUpdateWidgetMobileState
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment:
-                                MainAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.end,
                             spacing: 10,
                             children: [
                               Row(
@@ -2277,28 +1771,16 @@ class _InventoryUpdateWidgetMobileState
                                 children: [
                                   Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b4
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
+                                      fontSize: theme.mobileTexts.b4.fontSize,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                     'Creator:',
                                   ),
                                   Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b4
-                                              .fontSize,
+                                      fontSize: theme.mobileTexts.b4.fontSize,
                                     ),
-                                    widget
-                                            .update
-                                            .staffName ??
-                                        'Not Set',
+                                    widget.update.staffName ?? 'Not Set',
                                   ),
                                 ],
                               ),
@@ -2308,29 +1790,17 @@ class _InventoryUpdateWidgetMobileState
                                 children: [
                                   Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b4
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
+                                      fontSize: theme.mobileTexts.b4.fontSize,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                     'Date:',
                                   ),
                                   Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b4
-                                              .fontSize,
+                                      fontSize: theme.mobileTexts.b4.fontSize,
                                     ),
                                     formatDateTimeTime(
-                                      widget
-                                              .update
-                                              .createdAt ??
-                                          DateTime.now(),
+                                      widget.update.createdAt ?? DateTime.now(),
                                     ),
                                   ),
                                 ],

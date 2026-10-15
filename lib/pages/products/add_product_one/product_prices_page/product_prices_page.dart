@@ -5,18 +5,13 @@ import 'package:stockall/pages/products/add_product_one/product_prices_page/plat
 
 class ProductPricesPage extends StatefulWidget {
   final String productUuid;
-  const ProductPricesPage({
-    super.key,
-    required this.productUuid,
-  });
+  const ProductPricesPage({super.key, required this.productUuid});
 
   @override
-  State<ProductPricesPage> createState() =>
-      _ProductPricesPageState();
+  State<ProductPricesPage> createState() => _ProductPricesPageState();
 }
 
-class _ProductPricesPageState
-    extends State<ProductPricesPage> {
+class _ProductPricesPageState extends State<ProductPricesPage> {
   final nameController = TextEditingController();
   final priceController = TextEditingController();
   @override

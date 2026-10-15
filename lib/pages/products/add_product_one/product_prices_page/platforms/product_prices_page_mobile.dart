@@ -21,8 +21,7 @@ class ProductPricesPageMobile extends StatefulWidget {
       _ProductPricesPageMobileState();
 }
 
-class _ProductPricesPageMobileState
-    extends State<ProductPricesPageMobile> {
+class _ProductPricesPageMobileState extends State<ProductPricesPageMobile> {
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -47,35 +46,27 @@ class _ProductPricesPageMobileState
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 15.0,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 15.0),
           child: Column(
             children: [
               SizedBox(height: 20),
               Expanded(
                 child: Builder(
                   builder: (context) {
-                    if (returnData()
-                        .tempPricesList
-                        .isEmpty) {
+                    if (returnData().tempPricesList.isEmpty) {
                       return Material(
                         color: Colors.transparent,
                         child: EmptyWidgetDisplayOnly(
                           title: 'No Product Prices Added',
-                          subText:
-                              'You have not added any Product Price.',
+                          subText: 'You have not added any Product Price.',
                           theme: theme,
                           height: 25,
                           altAction: () {
                             addProductPriceAction(
                               context: context,
-                              nameController:
-                                  widget.nameController,
-                              productUuid:
-                                  widget.productUuid,
-                              priceController:
-                                  widget.priceController,
+                              nameController: widget.nameController,
+                              productUuid: widget.productUuid,
+                              priceController: widget.priceController,
                               setStateAction: () {
                                 setState(() {});
                               },
@@ -93,12 +84,9 @@ class _ProductPricesPageMobileState
                             returnData(context: context)
                                 .tempPricesListSorted()
                                 .map(
-                                  (productPrice) =>
-                                      ProductPriceListTileWidget(
-                                        priceUuid:
-                                            productPrice
-                                                .uuid,
-                                      ),
+                                  (productPrice) => ProductPriceListTileWidget(
+                                    priceUuid: productPrice.uuid,
+                                  ),
                                 )
                                 .toList(),
                       );

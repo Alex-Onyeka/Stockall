@@ -6,7 +6,5 @@ class DeletedProductionMaterialsUsage extends HiveObject {
   @HiveField(0)
   final String materialsUsageUuid;
 
-  DeletedProductionMaterialsUsage({
-    required this.materialsUsageUuid,
-  });
+  DeletedProductionMaterialsUsage({required this.materialsUsageUuid});
 }

@@ -6,18 +6,13 @@ import 'package:stockall/pages/production/materials_page/materials_details/platf
 
 class MaterialsDetailsPage extends StatefulWidget {
   final String materialUuid;
-  const MaterialsDetailsPage({
-    super.key,
-    required this.materialUuid,
-  });
+  const MaterialsDetailsPage({super.key, required this.materialUuid});
 
   @override
-  State<MaterialsDetailsPage> createState() =>
-      _MaterialsDetailsPageState();
+  State<MaterialsDetailsPage> createState() => _MaterialsDetailsPageState();
 }
 
-class _MaterialsDetailsPageState
-    extends State<MaterialsDetailsPage> {
+class _MaterialsDetailsPageState extends State<MaterialsDetailsPage> {
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);

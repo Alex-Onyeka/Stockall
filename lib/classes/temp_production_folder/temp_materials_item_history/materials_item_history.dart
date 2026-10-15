@@ -64,6 +64,9 @@ class MaterialsItemHistory {
   @HiveField(19)
   String? source;
 
+  @HiveField(20)
+  String? destination;
+
   MaterialsItemHistory({
     this.uuid,
     this.createdAt,
@@ -85,11 +88,10 @@ class MaterialsItemHistory {
     required this.event,
     required this.isManaged,
     required this.source,
+    this.destination,
   });
 
-  factory MaterialsItemHistory.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory MaterialsItemHistory.fromJson(Map<String, dynamic> json) {
     return MaterialsItemHistory(
       uuid: json['uuid'] as String?,
       createdAt:
@@ -106,8 +108,7 @@ class MaterialsItemHistory {
       staffId: json['staff_id'] as String?,
       departmentName: json['department_name'] as String?,
       departmentUuid: json['department_uuid'] as String?,
-      quantityChange:
-          (json["quantity_change"] as num?)?.toDouble(),
+      quantityChange: (json["quantity_change"] as num?)?.toDouble(),
       desc: json['desc'] as String?,
       isIncreased: json['is_increased'] as bool,
       unit: json['unit'] as String?,
@@ -115,6 +116,7 @@ class MaterialsItemHistory {
       event: json['event'] as String?,
       isManaged: json['is_managed'] as bool?,
       source: json['source'] as String?,
+      destination: json['destination'] as String?,
     );
   }
 
@@ -140,6 +142,7 @@ class MaterialsItemHistory {
       'event': event,
       'is_managed': isManaged,
       'source': source,
+      'destination': destination,
     };
   }
 }

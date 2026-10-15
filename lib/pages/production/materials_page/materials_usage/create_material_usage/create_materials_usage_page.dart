@@ -7,12 +7,10 @@ class CreateMaterialsUsagePage extends StatefulWidget {
   const CreateMaterialsUsagePage({super.key});
 
   @override
-  State<CreateMaterialsUsagePage> createState() =>
-      _CreateProductionState();
+  State<CreateMaterialsUsagePage> createState() => _CreateProductionState();
 }
 
-class _CreateProductionState
-    extends State<CreateMaterialsUsagePage> {
+class _CreateProductionState extends State<CreateMaterialsUsagePage> {
   @override
   // void initState() {
   //   super.initState();

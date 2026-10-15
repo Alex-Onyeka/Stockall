@@ -1102,7 +1102,9 @@ class OrdersProvider extends ChangeNotifier {
               ItemHistory itemHistory = ItemHistory(
                 event: ItemHistoryEventClass.delivered,
                 isManaged: item.isProductManaged ?? false,
-                source: ItemHistoryEventClass.orderSource,
+                source: ItemHistoryEventClass.productSource,
+                destination:
+                    ItemHistoryEventClass.orderDestination,
                 shopId: shopId(),
                 desc:
                     '${item.quantity} ${item.getUnit()} of This Item was Delivered. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}... Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
@@ -1138,7 +1140,9 @@ class OrdersProvider extends ChangeNotifier {
               ItemHistory itemHistory = ItemHistory(
                 event: ItemHistoryEventClass.delivered,
                 isManaged: item.isProductManaged ?? false,
-                source: ItemHistoryEventClass.orderSource,
+                source: ItemHistoryEventClass.productSource,
+                destination:
+                    ItemHistoryEventClass.orderDestination,
                 desc:
                     '${item.quantity} ${item.getUnit()} of This Item was Delivered, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}... Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
                 shopId: shopId(),
@@ -2182,7 +2186,6 @@ class OrdersProvider extends ChangeNotifier {
       DataColumn2(label: HeadingTextWidget(title: '#Id')),
       DataColumn2(
         size: ColumnSize.L,
-
         label: HeadingTextWidget(title: 'Staff'),
       ),
       DataColumn2(
@@ -2216,7 +2219,6 @@ class OrdersProvider extends ChangeNotifier {
     return [
       DataColumn2(
         size: ColumnSize.L,
-
         label: HeadingTextWidget(title: 'Staff'),
       ),
       DataColumn2(
