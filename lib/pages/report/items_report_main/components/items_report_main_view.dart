@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
@@ -16,7 +17,7 @@ class _Col {
   final String label;
   final double width;
   final ItemsSortField? sort;
-  final bool alignEnd;
+  final TextAlign align;
   final Widget Function(ItemsReportRow row, int index) cell;
 
   const _Col({
@@ -24,20 +25,32 @@ class _Col {
     required this.width,
     required this.cell,
     this.sort,
-    this.alignEnd = false,
+    this.align = TextAlign.center,
   });
 }
 
 /// Shared body of the "Items Report Main" page (desktop + mobile).
 class ItemsReportMainView extends StatefulWidget {
   final bool isDesktop;
-  const ItemsReportMainView({super.key, required this.isDesktop});
+  final String? initialCategoryKey;
+  final String? initialDepartmentKey;
+  final String? initialSearch;
+
+  const ItemsReportMainView({
+    super.key,
+    required this.isDesktop,
+    this.initialCategoryKey,
+    this.initialDepartmentKey,
+    this.initialSearch,
+  });
 
   @override
-  State<ItemsReportMainView> createState() => _ItemsReportMainViewState();
+  State<ItemsReportMainView> createState() =>
+      _ItemsReportMainViewState();
 }
 
-class _ItemsReportMainViewState extends State<ItemsReportMainView> {
+class _ItemsReportMainViewState
+    extends State<ItemsReportMainView> {
   final ItemsReportFilters _filters = ItemsReportFilters();
   final _searchCtrl = TextEditingController();
   final _sellMinCtrl = TextEditingController();
@@ -67,8 +80,22 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialCategoryKey != null) {
+      _filters.categoryKey = widget.initialCategoryKey;
+    }
+    if (widget.initialDepartmentKey != null) {
+      _filters.departmentKey = widget.initialDepartmentKey;
+    }
+    if (widget.initialSearch != null && widget.initialSearch!.isNotEmpty) {
+      _searchCtrl.text = widget.initialSearch!;
+      _filters.search = widget.initialSearch!;
+    }
     final today = resolveBusinessDate(DateTime.now());
-    final day = DateTime(today.year, today.month, today.day);
+    final day = DateTime(
+      today.year,
+      today.month,
+      today.day,
+    );
     _range = DateTimeRange(start: day, end: day);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _load(refreshFromStore: false);
@@ -91,28 +118,36 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
   // data
   // ---------------------------------------------------------------
 
-  bool get _departmentsEnabled => shopSingle()?.manageDepartments == true;
+  bool get _departmentsEnabled =>
+      shopSingle()?.manageDepartments == true;
 
-  bool get _canSeeCost =>
-      authorization(authorized: Authorizations().manageCostPrice);
+  bool get _canSeeCost => authorization(
+    authorized: Authorizations().manageCostPrice,
+  );
 
-  bool get _canSeeQuantity =>
-      authorization(authorized: Authorizations().viewItemQuantity);
+  bool get _canSeeQuantity => authorization(
+    authorized: Authorizations().viewItemQuantity,
+  );
 
-  bool get _historyTracked =>
-      ItemsAuthAction().trackItemHistoryAction(context: null);
+  bool get _historyTracked => ItemsAuthAction()
+      .trackItemHistoryAction(context: null);
 
-  Future<void> _load({required bool refreshFromStore}) async {
+  Future<void> _load({
+    required bool refreshFromStore,
+  }) async {
     setState(() {
       _loading = true;
       _error = null;
     });
     try {
       if (refreshFromStore) {
-        await RefreshFunctions(context).refreshProducts(context);
+        await RefreshFunctions(
+          context,
+        ).refreshProducts(context);
       }
       // Local (offline) read; never writes.
-      await returnItemHistoryProvider().getItemHistoriesOffline();
+      await returnItemHistoryProvider()
+          .getItemHistoriesOffline();
       _movements.clear();
       _rebuildBase();
       _recompute();
@@ -150,23 +185,31 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
 
   /// Opening and closing stock for the given rows, reading the history ONCE and
   /// only for items that are not cached yet.
-  void _ensureStockMovements(Iterable<ItemsReportRow> rows) {
+  void _ensureStockMovements(
+    Iterable<ItemsReportRow> rows,
+  ) {
     final needed = <String, ItemsReportRow>{};
     for (final r in rows) {
-      if (!_movements.containsKey(r.uuid)) needed[r.uuid] = r;
+      if (!_movements.containsKey(r.uuid)) {
+        needed[r.uuid] = r;
+      }
     }
     if (needed.isEmpty) return;
 
     if (!_historyTracked) {
       for (final id in needed.keys) {
-        _movements[id] = const ItemStockMovement(opening: null, closing: null);
+        _movements[id] = const ItemStockMovement(
+          opening: null,
+          closing: null,
+        );
       }
       return;
     }
 
     final sid = shopId();
     final byItem = <String, List<ItemHistory>>{};
-    for (final h in returnItemHistoryProvider().itemHistories) {
+    for (final h
+        in returnItemHistoryProvider().itemHistories) {
       final id = h.itemUuid;
       if (id == null || h.shopId != sid) continue;
       if (!needed.containsKey(id)) continue;
@@ -199,9 +242,18 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
       ascending: _ascending,
       departmentsEnabled: _departmentsEnabled,
       costFilterAllowed: _canSeeCost,
-      opening: sortByMovement ? (r) => _movements[r.uuid]?.opening : null,
-      closing: sortByMovement ? (r) => _movements[r.uuid]?.closing : null,
-      stockChange: sortByMovement ? (r) => _movements[r.uuid]?.change : null,
+      opening:
+          sortByMovement
+              ? (r) => _movements[r.uuid]?.opening
+              : null,
+      closing:
+          sortByMovement
+              ? (r) => _movements[r.uuid]?.closing
+              : null,
+      stockChange:
+          sortByMovement
+              ? (r) => _movements[r.uuid]?.change
+              : null,
     );
     final page = ItemsReportQuery.paginate(sorted, _page);
     _page = page.page;
@@ -210,7 +262,10 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
     _result = page;
   }
 
-  void _apply(VoidCallback change, {bool resetPage = true}) {
+  void _apply(
+    VoidCallback change, {
+    bool resetPage = true,
+  }) {
     setState(() {
       change();
       if (resetPage) _page = 1;
@@ -225,7 +280,10 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
 
   void _goToPage(int p) {
     final r = _result;
-    if (r == null || p < 1 || p > r.totalPages || p == r.page) {
+    if (r == null ||
+        p < 1 ||
+        p > r.totalPages ||
+        p == r.page) {
       return;
     }
     _apply(() => _page = p, resetPage: false);
@@ -254,7 +312,8 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
     _apply(_filters.clearAll);
   }
 
-  double? _num(String v) => double.tryParse(v.replaceAll(',', '').trim());
+  double? _num(String v) =>
+      double.tryParse(v.replaceAll(',', '').trim());
 
   void _pickRange() {
     final theme = returnTheme(context, listen: false);
@@ -263,22 +322,39 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
       theme: theme,
       singleDate: (date) {
         if (date == null) return;
-        final day = DateTime(date.year, date.month, date.day);
+        final day = DateTime(
+          date.year,
+          date.month,
+          date.day,
+        );
         _movements.clear();
-        _apply(() => _range = DateTimeRange(start: day, end: day));
+        _apply(
+          () =>
+              _range = DateTimeRange(start: day, end: day),
+        );
       },
       rangeDate: (firstDate, lastDate) {
         if (firstDate == null) return;
-        DateTime s = DateTime(firstDate.year, firstDate.month, firstDate.day);
+        DateTime s = DateTime(
+          firstDate.year,
+          firstDate.month,
+          firstDate.day,
+        );
         final endBase = lastDate ?? firstDate;
-        DateTime e = DateTime(endBase.year, endBase.month, endBase.day);
+        DateTime e = DateTime(
+          endBase.year,
+          endBase.month,
+          endBase.day,
+        );
         if (e.isBefore(s)) {
           final temp = s;
           s = e;
           e = temp;
         }
         _movements.clear();
-        _apply(() => _range = DateTimeRange(start: s, end: e));
+        _apply(
+          () => _range = DateTimeRange(start: s, end: e),
+        );
       },
     );
   }
@@ -301,7 +377,10 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
   void _clearDate() {
     final today = _businessToday;
     _movements.clear();
-    _apply(() => _range = DateTimeRange(start: today, end: today));
+    _apply(
+      () =>
+          _range = DateTimeRange(start: today, end: today),
+    );
   }
 
   void _openItemDetails(ItemsReportRow row) {
@@ -309,7 +388,9 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ProductDetailsPage(productUuid: row.uuid),
+        builder:
+            (context) =>
+                ProductDetailsPage(productUuid: row.uuid),
       ),
     ).then((_) {
       if (mounted) {
@@ -328,14 +409,18 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
   // formatting
   // ---------------------------------------------------------------
 
-  String _money(num v) => formatMoneyBig(amount: v, context: context);
+  String _money(num v) =>
+      formatMoneyBig(amount: v, context: context);
 
   String _qty(num v) => formatLargeNumberDouble(v);
 
   String get _rangeLabel {
     final s = _range.start;
     final e = _range.end;
-    final same = s.year == e.year && s.month == e.month && s.day == e.day;
+    final same =
+        s.year == e.year &&
+        s.month == e.month &&
+        s.day == e.day;
     return same
         ? formatDateTime(s)
         : '${formatDateTime(s)} - ${formatDateTime(e)}';
@@ -374,7 +459,10 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
             child: InkWell(
               mouseCursor: SystemMouseCursors.click,
               borderRadius: BorderRadius.circular(10),
-              onTap: _loading ? null : () => _load(refreshFromStore: true),
+              onTap:
+                  _loading
+                      ? null
+                      : () => _load(refreshFromStore: true),
               child: Padding(
                 padding: const EdgeInsets.all(10),
                 child: Row(
@@ -384,11 +472,15 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
                     Text(
                       'Refresh',
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b3.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const Icon(Icons.refresh_rounded, size: 18),
+                    const Icon(
+                      Icons.refresh_rounded,
+                      size: 18,
+                    ),
                   ],
                 ),
               ),
@@ -405,7 +497,10 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
             if (_showFilters) _filterPanel(theme),
             _activeChips(theme),
             Expanded(child: _content(theme)),
-            if (!_loading && _error == null && _result != null) _pager(theme),
+            if (!_loading &&
+                _error == null &&
+                _result != null)
+              _pager(theme),
             const SizedBox(height: 6),
           ],
         ),
@@ -415,7 +510,9 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
 
   Widget _content(ThemeProvider theme) {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
     }
     if (_error != null) {
       return Center(
@@ -436,7 +533,8 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
               ),
             ),
             OutlinedButton.icon(
-              onPressed: () => _load(refreshFromStore: false),
+              onPressed:
+                  () => _load(refreshFromStore: false),
               icon: const Icon(Icons.refresh_rounded),
               label: const Text('Try again'),
             ),
@@ -450,7 +548,10 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
       return Padding(
         padding: const EdgeInsets.only(top: 60),
         child: EmptyWidgetDisplayOnly(
-          title: hasFilters ? 'No Matching Items' : 'Empty List',
+          title:
+              hasFilters
+                  ? 'No Matching Items'
+                  : 'Empty List',
           subText:
               hasFilters
                   ? 'No item matches your search and filters'
@@ -459,7 +560,8 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
           height: 35,
           icon: Icons.clear,
           altAction: hasFilters ? _resetAll : null,
-          altActionText: hasFilters ? 'Clear all filters' : null,
+          altActionText:
+              hasFilters ? 'Clear all filters' : null,
           altIcon: hasFilters ? Icons.filter_alt_off : null,
         ),
       );
@@ -486,22 +588,33 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
             height: 38,
             child: TextField(
               controller: _searchCtrl,
-              onChanged: (v) => _apply(() => _filters.search = v),
+              onChanged:
+                  (v) => _apply(() => _filters.search = v),
               decoration: InputDecoration(
                 hintText:
                     _departmentsEnabled
                         ? 'Search name, category or department'
                         : 'Search name or category',
-                hintStyle: TextStyle(fontSize: theme.mobileTexts.b3.fontSize),
-                prefixIcon: const Icon(Icons.search, size: 20),
+                hintStyle: TextStyle(
+                  fontSize: theme.mobileTexts.b3.fontSize,
+                ),
+                prefixIcon: const Icon(
+                  Icons.search,
+                  size: 20,
+                ),
                 suffixIcon:
                     _searchCtrl.text.isEmpty
                         ? null
                         : IconButton(
-                          icon: const Icon(Icons.close, size: 18),
+                          icon: const Icon(
+                            Icons.close,
+                            size: 18,
+                          ),
                           onPressed: () {
                             _searchCtrl.clear();
-                            _apply(() => _filters.search = '');
+                            _apply(
+                              () => _filters.search = '',
+                            );
                           },
                         ),
                 contentPadding: EdgeInsets.zero,
@@ -537,16 +650,29 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
                   mouseCursor: SystemMouseCursors.click,
                   borderRadius: BorderRadius.circular(5),
                   child: Padding(
-                    padding: EdgeInsetsGeometry.fromLTRB(10, 12, 10, 12),
+                    padding: EdgeInsetsGeometry.fromLTRB(
+                      10,
+                      12,
+                      10,
+                      12,
+                    ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.close, size: 16, color: accent),
+                        Icon(
+                          Icons.close,
+                          size: 16,
+                          color: accent,
+                        ),
                         Text(
                           'Clear',
                           style: TextStyle(
                             color: accent,
-                            fontSize: theme.mobileTexts.b3.fontSize,
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -562,9 +688,15 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
           child: _pill(
             theme: theme,
             icon: Icons.tune_rounded,
-            label: active == 0 ? 'Filters' : 'Filters ($active)',
+            label:
+                active == 0
+                    ? 'Filters'
+                    : 'Filters ($active)',
             highlighted: _showFilters || active > 0,
-            onTap: () => setState(() => _showFilters = !_showFilters),
+            onTap:
+                () => setState(
+                  () => _showFilters = !_showFilters,
+                ),
           ),
         ),
         if (_filters.hasAnything)
@@ -580,16 +712,26 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
                 mouseCursor: SystemMouseCursors.click,
                 borderRadius: BorderRadius.circular(5),
                 child: Padding(
-                  padding: EdgeInsetsGeometry.fromLTRB(10, 12, 10, 12),
+                  padding: EdgeInsetsGeometry.fromLTRB(
+                    10,
+                    12,
+                    10,
+                    12,
+                  ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.filter_alt_off, size: 16, color: accent),
+                      Icon(
+                        Icons.filter_alt_off,
+                        size: 16,
+                        color: accent,
+                      ),
                       Text(
                         'Reset Filter',
                         style: TextStyle(
                           color: accent,
-                          fontSize: theme.mobileTexts.b3.fontSize,
+                          fontSize:
+                              theme.mobileTexts.b3.fontSize,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -612,7 +754,10 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
   }) {
     final accent = theme.lightModeColor.prColor300;
     return Material(
-      color: highlighted ? accent.withAlpha(30) : Colors.grey.shade100,
+      color:
+          highlighted
+              ? accent.withAlpha(30)
+              : Colors.grey.shade100,
       borderRadius: BorderRadius.circular(5),
       child: InkWell(
         mouseCursor: SystemMouseCursors.click,
@@ -620,7 +765,9 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
         onTap: onTap,
         child: Container(
           height: 38,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 12,
+          ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             spacing: 6,
@@ -628,14 +775,16 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
               Icon(
                 icon,
                 size: 16,
-                color: highlighted ? accent : Colors.black87,
+                color:
+                    highlighted ? accent : Colors.black87,
               ),
               Text(
                 label,
                 style: TextStyle(
                   fontSize: theme.mobileTexts.b3.fontSize,
                   fontWeight: FontWeight.bold,
-                  color: highlighted ? accent : Colors.black87,
+                  color:
+                      highlighted ? accent : Colors.black87,
                 ),
               ),
             ],
@@ -645,7 +794,11 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
     );
   }
 
-  Widget _labeled(String label, Widget child, double width) {
+  Widget _labeled(
+    String label,
+    Widget child,
+    double width,
+  ) {
     return SizedBox(
       width: width,
       child: Column(
@@ -666,30 +819,6 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
     );
   }
 
-  Widget _dropdown<T>({
-    required T value,
-    required List<DropdownMenuItem<T>> items,
-    required ValueChanged<T?> onChanged,
-  }) {
-    return Container(
-      height: 38,
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(5),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<T>(
-          isExpanded: true,
-          value: value,
-          items: items,
-          onChanged: onChanged,
-          style: const TextStyle(fontSize: 12, color: Colors.black87),
-        ),
-      ),
-    );
-  }
-
   Widget _numField(
     TextEditingController c,
     String hint,
@@ -700,11 +829,15 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
       child: TextField(
         controller: c,
         onChanged: onChanged,
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        keyboardType: const TextInputType.numberWithOptions(
+          decimal: true,
+        ),
         style: const TextStyle(fontSize: 12),
         decoration: InputDecoration(
           hintText: hint,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 10,
+          ),
           filled: true,
           fillColor: Colors.grey.shade100,
           border: OutlineInputBorder(
@@ -720,16 +853,22 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
     required String label,
     required TextEditingController minC,
     required TextEditingController maxC,
-    required void Function(double? min, double? max) onChange,
+    required void Function(double? min, double? max)
+    onChange,
   }) {
-    void emit() => onChange(_num(minC.text), _num(maxC.text));
+    void emit() =>
+        onChange(_num(minC.text), _num(maxC.text));
     return _labeled(
       label,
       Row(
         spacing: 6,
         children: [
-          Expanded(child: _numField(minC, 'Min', (_) => emit())),
-          Expanded(child: _numField(maxC, 'Max', (_) => emit())),
+          Expanded(
+            child: _numField(minC, 'Min', (_) => emit()),
+          ),
+          Expanded(
+            child: _numField(maxC, 'Max', (_) => emit()),
+          ),
         ],
       ),
       240,
@@ -738,14 +877,23 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
 
   Widget _filterPanel(ThemeProvider theme) {
     final cats =
-        returnCategoriesProvider(context: context).categoriesMain.toList()
+        returnCategoriesProvider(
+            context: context,
+          ).categoriesMain.toList()
           ..sort(
-            (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+            (a, b) => a.name.toLowerCase().compareTo(
+              b.name.toLowerCase(),
+            ),
           );
     final depts =
-        returnDepartmentProvider(context: context).departments.toList()..sort(
-          (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
-        );
+        returnDepartmentProvider(
+            context: context,
+          ).departments.toList()
+          ..sort(
+            (a, b) => a.name.toLowerCase().compareTo(
+              b.name.toLowerCase(),
+            ),
+          );
 
     return Container(
       margin: const EdgeInsets.only(top: 10),
@@ -754,7 +902,12 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade200),
-        boxShadow: const [BoxShadow(color: Color(0x14000000), blurRadius: 5)],
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x14000000),
+            blurRadius: 5,
+          ),
+        ],
       ),
       child: Wrap(
         spacing: 8,
@@ -762,97 +915,125 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
         children: [
           _labeled(
             'Category',
-            _dropdown<String?>(
+            _SearchableDropdown<String?>(
+              title: 'Category',
               value: _filters.categoryKey,
-              items: [
-                const DropdownMenuItem(
+              options: [
+                const _SearchableOption(
                   value: null,
-                  child: Text('All categories'),
+                  label: 'All categories',
                 ),
-                const DropdownMenuItem(
+                const _SearchableOption(
                   value: itemsReportNoneKey,
-                  child: Text('No Category'),
+                  label: 'No Category',
                 ),
                 ...cats.map(
-                  (c) => DropdownMenuItem(
+                  (c) => _SearchableOption(
                     value: c.uuid,
-                    child: Text(c.name, overflow: TextOverflow.ellipsis),
+                    label: c.name,
                   ),
                 ),
               ],
-              onChanged: (v) => _apply(() => _filters.categoryKey = v),
+              onChanged:
+                  (v) => _apply(
+                    () => _filters.categoryKey = v,
+                  ),
+              theme: theme,
+              searchHint: 'Search categories...',
             ),
             220,
           ),
           if (_departmentsEnabled)
             _labeled(
               'Department',
-              _dropdown<String?>(
+              _SearchableDropdown<String?>(
+                title: 'Department',
                 value: _filters.departmentKey,
-                items: [
-                  const DropdownMenuItem(
+                options: [
+                  const _SearchableOption(
                     value: null,
-                    child: Text('All departments'),
+                    label: 'All departments',
                   ),
-                  const DropdownMenuItem(
+                  const _SearchableOption(
                     value: itemsReportNoneKey,
-                    child: Text('No Department'),
+                    label: 'No Department',
                   ),
                   ...depts.map(
-                    (d) => DropdownMenuItem(
+                    (d) => _SearchableOption(
                       value: d.uuid,
-                      child: Text(d.name, overflow: TextOverflow.ellipsis),
+                      label: d.name,
                     ),
                   ),
                 ],
-                onChanged: (v) => _apply(() => _filters.departmentKey = v),
+                onChanged:
+                    (v) => _apply(
+                      () => _filters.departmentKey = v,
+                    ),
+                theme: theme,
+                searchHint: 'Search departments...',
               ),
               220,
             ),
           _labeled(
             'Quantity level',
-            _dropdown<StockLevelFilter>(
+            _SearchableDropdown<StockLevelFilter>(
+              title: 'Quantity level',
               value: _filters.stockLevel,
-              items: const [
-                DropdownMenuItem(
+              options: const [
+                _SearchableOption(
                   value: StockLevelFilter.all,
-                  child: Text('All levels'),
+                  label: 'All levels',
                 ),
-                DropdownMenuItem(
+                _SearchableOption(
                   value: StockLevelFilter.inStock,
-                  child: Text('In Stock'),
+                  label: 'In Stock',
                 ),
-                DropdownMenuItem(
+                _SearchableOption(
                   value: StockLevelFilter.lowStock,
-                  child: Text('Low in Stock'),
+                  label: 'Low in Stock',
                 ),
-                DropdownMenuItem(
+                _SearchableOption(
                   value: StockLevelFilter.outOfStock,
-                  child: Text('Out of Stock'),
+                  label: 'Out of Stock',
                 ),
               ],
               onChanged:
-                  (v) => _apply(
-                    () => _filters.stockLevel = v ?? StockLevelFilter.all,
-                  ),
+                  (v) =>
+                      _apply(() => _filters.stockLevel = v),
+              theme: theme,
+              searchHint: 'Search levels...',
             ),
             180,
           ),
           _labeled(
             'Inventory management',
-            _dropdown<int>(
-              value: _filters.managed == null ? 0 : (_filters.managed! ? 1 : 2),
-              items: const [
-                DropdownMenuItem(value: 0, child: Text('All')),
-                DropdownMenuItem(value: 1, child: Text('Managed')),
-                DropdownMenuItem(value: 2, child: Text('Un-Managed')),
+            _SearchableDropdown<int>(
+              title: 'Inventory management',
+              value:
+                  _filters.managed == null
+                      ? 0
+                      : (_filters.managed! ? 1 : 2),
+              options: const [
+                _SearchableOption(value: 0, label: 'All'),
+                _SearchableOption(
+                  value: 1,
+                  label: 'Managed',
+                ),
+                _SearchableOption(
+                  value: 2,
+                  label: 'Un-Managed',
+                ),
               ],
               onChanged:
                   (v) => _apply(
                     () =>
                         _filters.managed =
-                            v == 1 ? true : (v == 2 ? false : null),
+                            v == 1
+                                ? true
+                                : (v == 2 ? false : null),
                   ),
+              theme: theme,
+              searchHint: 'Search management...',
             ),
             180,
           ),
@@ -884,21 +1065,30 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
 
   Widget _activeChips(ThemeProvider theme) {
     final chips = <Widget>[];
-    Widget chip(String text, VoidCallback onRemove) => InputChip(
-      label: Text(text, style: const TextStyle(fontSize: 10)),
-      onDeleted: onRemove,
-      deleteIcon: const Icon(Icons.close, size: 12),
-      visualDensity: VisualDensity.compact,
-      backgroundColor: theme.lightModeColor.prColor300.withAlpha(25),
-      side: BorderSide.none,
-    );
+    Widget chip(String text, VoidCallback onRemove) =>
+        InputChip(
+          label: Text(
+            text,
+            style: const TextStyle(fontSize: 10),
+          ),
+          onDeleted: onRemove,
+          deleteIcon: const Icon(Icons.close, size: 12),
+          visualDensity: VisualDensity.compact,
+          backgroundColor: theme.lightModeColor.prColor300
+              .withAlpha(25),
+          side: BorderSide.none,
+        );
 
     if (_filters.categoryKey != null) {
       final name =
           _filters.categoryKey == itemsReportNoneKey
               ? 'No Category'
-              : returnCategoriesProvider(context: context).categoriesMain
-                      .where((c) => c.uuid == _filters.categoryKey)
+              : returnCategoriesProvider(context: context)
+                      .categoriesMain
+                      .where(
+                        (c) =>
+                            c.uuid == _filters.categoryKey,
+                      )
                       .map((c) => c.name)
                       .firstOrNull ??
                   'Category';
@@ -909,12 +1099,18 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
         ),
       );
     }
-    if (_departmentsEnabled && _filters.departmentKey != null) {
+    if (_departmentsEnabled &&
+        _filters.departmentKey != null) {
       final name =
           _filters.departmentKey == itemsReportNoneKey
               ? 'No Department'
-              : returnDepartmentProvider(context: context).departments
-                      .where((d) => d.uuid == _filters.departmentKey)
+              : returnDepartmentProvider(context: context)
+                      .departments
+                      .where(
+                        (d) =>
+                            d.uuid ==
+                            _filters.departmentKey,
+                      )
                       .map((d) => d.name)
                       .firstOrNull ??
                   'Department';
@@ -935,7 +1131,10 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
       chips.add(
         chip(
           'Quantity: $t',
-          () => _apply(() => _filters.stockLevel = StockLevelFilter.all),
+          () => _apply(
+            () =>
+                _filters.stockLevel = StockLevelFilter.all,
+          ),
         ),
       );
     }
@@ -947,7 +1146,8 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
         ),
       );
     }
-    if (_filters.sellingMin != null || _filters.sellingMax != null) {
+    if (_filters.sellingMin != null ||
+        _filters.sellingMax != null) {
       chips.add(
         chip(
           'Selling: ${_filters.sellingMin != null ? _money(_filters.sellingMin!) : 'Any'}'
@@ -963,7 +1163,9 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
         ),
       );
     }
-    if (_canSeeCost && (_filters.costMin != null || _filters.costMax != null)) {
+    if (_canSeeCost &&
+        (_filters.costMin != null ||
+            _filters.costMax != null)) {
       chips.add(
         chip(
           'Cost: ${_filters.costMin != null ? _money(_filters.costMin!) : 'Any'}'
@@ -984,7 +1186,11 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
       padding: const EdgeInsets.only(top: 8),
       child: Align(
         alignment: Alignment.centerLeft,
-        child: Wrap(spacing: 6, runSpacing: 4, children: chips),
+        child: Wrap(
+          spacing: 6,
+          runSpacing: 4,
+          children: chips,
+        ),
       ),
     );
   }
@@ -1008,22 +1214,31 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
     String text, {
     bool bold = false,
     Color? color,
+    TextAlign? align,
   }) => Text(
     text,
     maxLines: 2,
     overflow: TextOverflow.ellipsis,
+    textAlign: align,
     style: _cellStyle(theme, bold: bold, color: color),
   );
 
   Widget _badge(String text, Color color) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+    padding: const EdgeInsets.symmetric(
+      horizontal: 10,
+      vertical: 4,
+    ),
     decoration: BoxDecoration(
       color: color.withAlpha(30),
       borderRadius: BorderRadius.circular(20),
     ),
     child: Text(
       text,
-      style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: color),
+      style: TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.bold,
+        color: color,
+      ),
     ),
   );
 
@@ -1039,28 +1254,34 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
       _Col(
         label: 'No.',
         width: 60,
-        cell: (r, i) => _txt(theme, '${pageStart + i}', bold: true),
+        cell:
+            (r, i) =>
+                _txt(theme, '${pageStart + i}', bold: true),
       ),
       _Col(
         label: 'Item Name',
         width: 230,
         sort: ItemsSortField.name,
-        cell: (r, i) => _txt(theme, r.name, bold: true),
+        align: TextAlign.start,
+        cell: (r, i) => _txt(theme, r.name, bold: true, align: TextAlign.start),
       ),
       _Col(
         label: 'Quantity',
         width: 120,
         sort: ItemsSortField.quantity,
-        alignEnd: true,
         cell:
             (r, i) => _txt(
               theme,
               !seeQty
                   ? '****'
-                  : (r.quantity == null ? dash : _qty(r.quantity!)),
+                  : (r.quantity == null
+                      ? dash
+                      : _qty(r.quantity!)),
               bold: true,
               color:
-                  r.isManaged && r.stockLevel == StockLevelFilter.outOfStock
+                  r.isManaged &&
+                          r.stockLevel ==
+                              StockLevelFilter.outOfStock
                       ? red
                       : null,
             ),
@@ -1068,13 +1289,13 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
       _Col(
         label: 'Primary Unit',
         width: 110,
-        cell: (r, i) => _txt(theme, r.primaryUnit),
+        align: TextAlign.start,
+        cell: (r, i) => _txt(theme, r.primaryUnit, align: TextAlign.start),
       ),
       _Col(
         label: 'Opening Stock',
         width: 130,
         sort: ItemsSortField.openingStock,
-        alignEnd: true,
         cell: (r, i) {
           if (!seeQty) return _txt(theme, '****');
           if (!r.isManaged) return _txt(theme, dash);
@@ -1087,7 +1308,6 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
         label: 'Closing Stock',
         width: 130,
         sort: ItemsSortField.closingStock,
-        alignEnd: true,
         cell: (r, i) {
           if (!seeQty) return _txt(theme, '****');
           if (!r.isManaged) return _txt(theme, dash);
@@ -1100,34 +1320,40 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
         label: 'Stock Change',
         width: 130,
         sort: ItemsSortField.stockChange,
-        alignEnd: true,
         cell: (r, i) {
           if (!seeQty) return _txt(theme, '****');
           if (!r.isManaged) return _txt(theme, dash);
           if (!trackHistory) return _txt(theme, 'N/A');
           final diff = _movements[r.uuid]?.change;
           if (diff == null) return _txt(theme, dash);
-          final text = diff > 0 ? '+${_qty(diff)}' : _qty(diff);
-          final color = diff > 0 ? green : (diff < 0 ? red : null);
-          return _txt(theme, text, color: color, bold: diff != 0);
+          final text =
+              diff > 0 ? '+${_qty(diff)}' : _qty(diff);
+          final color =
+              diff > 0 ? green : (diff < 0 ? red : null);
+          return _txt(
+            theme,
+            text,
+            color: color,
+            bold: diff != 0,
+          );
         },
       ),
       _Col(
         label: 'Selling Price',
         width: 130,
         sort: ItemsSortField.sellingPrice,
-        alignEnd: true,
         cell: (r, i) => _txt(theme, _money(r.sellingPrice)),
       ),
       _Col(
         label: 'Total Selling Value',
         width: 160,
         sort: ItemsSortField.totalSellingValue,
-        alignEnd: true,
         cell:
             (r, i) => _txt(
               theme,
-              r.totalSellingValue == null ? dash : _money(r.totalSellingValue!),
+              r.totalSellingValue == null
+                  ? dash
+                  : _money(r.totalSellingValue!),
               bold: true,
             ),
       ),
@@ -1136,7 +1362,6 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
           label: 'Cost Price',
           width: 130,
           sort: ItemsSortField.costPrice,
-          alignEnd: true,
           cell: (r, i) => _txt(theme, _money(r.costPrice)),
         ),
       if (cost)
@@ -1144,20 +1369,20 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
           label: 'Total Cost Value',
           width: 160,
           sort: ItemsSortField.totalCostValue,
-          alignEnd: true,
           cell:
-              (r, i) => _txt(
-                theme,
-                r.totalCostValue == null ? dash : _money(r.totalCostValue!),
-                bold: true,
-              ),
+            (r, i) => _txt(
+              theme,
+              r.totalCostValue == null
+                  ? dash
+                  : _money(r.totalCostValue!),
+              bold: true,
+            ),
         ),
       if (cost)
         _Col(
           label: 'Profit Per Unit',
           width: 140,
           sort: ItemsSortField.profitPerUnit,
-          alignEnd: true,
           cell:
               (r, i) => _txt(
                 theme,
@@ -1171,13 +1396,15 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
           label: 'Total Profit',
           width: 140,
           sort: ItemsSortField.profit,
-          alignEnd: true,
           cell:
               (r, i) => _txt(
                 theme,
                 r.profit == null ? dash : _money(r.profit!),
                 bold: true,
-                color: r.profit == null ? null : (r.profit! < 0 ? red : green),
+                color:
+                    r.profit == null
+                        ? null
+                        : (r.profit! < 0 ? red : green),
               ),
         ),
       if (cost)
@@ -1185,20 +1412,21 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
           label: 'Profit Margin',
           width: 120,
           sort: ItemsSortField.margin,
-          alignEnd: true,
           cell:
               (r, i) => _txt(
                 theme,
                 r.margin == null
                     ? 'N/A'
                     : '${formatLargeNumberDouble(double.parse(r.margin!.toStringAsFixed(2)))}%',
-                color: r.margin == null ? null : (r.margin! < 0 ? red : green),
+                color:
+                    r.margin == null
+                        ? null
+                        : (r.margin! < 0 ? red : green),
               ),
         ),
       _Col(
         label: 'Discount',
         width: 100,
-        alignEnd: true,
         cell:
             (r, i) => _txt(
               theme,
@@ -1213,10 +1441,19 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
         sort: ItemsSortField.expiry,
         cell: (r, i) {
           if (r.expiryDate == null) {
-            return _txt(theme, 'Not Set', color: Colors.grey);
+            return _txt(
+              theme,
+              'Not Set',
+              color: Colors.grey,
+            );
           }
           if (r.isExpired) {
-            return _txt(theme, 'Expired', bold: true, color: red);
+            return _txt(
+              theme,
+              'Expired',
+              bold: true,
+              color: red,
+            );
           }
           return _txt(theme, formatDateTime(r.expiryDate!));
         },
@@ -1226,35 +1463,38 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
           label: 'Department',
           width: 160,
           sort: ItemsSortField.department,
+          align: TextAlign.start,
           cell:
               (r, i) => _txt(
                 theme,
                 r.departmentLabel,
-                color: r.departmentUuid == null ? Colors.grey : null,
+                align: TextAlign.start,
+                color:
+                    r.departmentUuid == null
+                        ? Colors.grey
+                        : null,
               ),
         ),
       _Col(
         label: 'Quantity Type',
         width: 140,
         cell:
-            (r, i) => Align(
-              alignment: Alignment.centerLeft,
-              child: _badge(
-                r.quantityTypeLabel,
-                r.isTwoDimensional ? Colors.deepPurple : Colors.blueGrey,
-              ),
+            (r, i) => _badge(
+              r.quantityTypeLabel,
+              r.isTwoDimensional
+                  ? Colors.deepPurple
+                  : Colors.blueGrey,
             ),
       ),
       _Col(
         label: 'Is-Managed',
         width: 130,
         cell:
-            (r, i) => Align(
-              alignment: Alignment.centerLeft,
-              child: _badge(
-                r.isManaged ? 'Managed' : 'Un-Managed',
-                r.isManaged ? green : Colors.orange.shade800,
-              ),
+            (r, i) => _badge(
+              r.isManaged ? 'Managed' : 'Un-Managed',
+              r.isManaged
+                  ? green
+                  : Colors.orange.shade800,
             ),
       ),
       _Col(
@@ -1264,7 +1504,9 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
         cell:
             (r, i) => _txt(
               theme,
-              r.createdAt == null ? dash : formatDateTime(r.createdAt!),
+              r.createdAt == null
+                  ? dash
+                  : formatDateTime(r.createdAt!),
             ),
       ),
       _Col(
@@ -1274,7 +1516,9 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
         cell:
             (r, i) => _txt(
               theme,
-              r.createdAt == null ? dash : formatTime(r.createdAt!),
+              r.createdAt == null
+                  ? dash
+                  : formatTime(r.createdAt!),
             ),
       ),
       _Col(
@@ -1285,7 +1529,10 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
             (r, i) => _txt(
               theme,
               r.categoryLabel,
-              color: r.categoryNames.isEmpty ? Colors.grey : null,
+              color:
+                  r.categoryNames.isEmpty
+                      ? Colors.grey
+                      : null,
             ),
       ),
     ];
@@ -1299,7 +1546,7 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
         c.label,
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
-        textAlign: c.alignEnd ? TextAlign.end : TextAlign.start,
+        textAlign: c.align,
         style: TextStyle(
           fontSize: theme.mobileTexts.b3.fontSize,
           fontWeight: FontWeight.bold,
@@ -1308,8 +1555,12 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
       ),
     );
     final content = Row(
-      mainAxisAlignment:
-          c.alignEnd ? MainAxisAlignment.end : MainAxisAlignment.start,
+      mainAxisAlignment: c.align == TextAlign.start
+          ? MainAxisAlignment.start
+          : (c.align == TextAlign.end
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.center),
+      mainAxisSize: MainAxisSize.min,
       spacing: 3,
       children: [
         label,
@@ -1330,15 +1581,33 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
       child:
           c.sort == null
               ? Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: content,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                ),
+                child: Align(
+                  alignment: c.align == TextAlign.start
+                      ? Alignment.centerLeft
+                      : (c.align == TextAlign.end
+                          ? Alignment.centerRight
+                          : Alignment.center),
+                  child: content,
+                ),
               )
               : InkWell(
                 mouseCursor: SystemMouseCursors.click,
                 onTap: () => _setSort(c.sort!),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: content,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                  ),
+                  child: Align(
+                    alignment: c.align == TextAlign.start
+                        ? Alignment.centerLeft
+                        : (c.align == TextAlign.end
+                            ? Alignment.centerRight
+                            : Alignment.center),
+                    child: content,
+                  ),
                 ),
               ),
     );
@@ -1346,7 +1615,10 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
 
   Widget _table(ThemeProvider theme, ItemsReportPage res) {
     final cols = _columns(theme, res.firstIndex);
-    final totalWidth = cols.fold<double>(0, (s, c) => s + c.width);
+    final totalWidth = cols.fold<double>(
+      0,
+      (s, c) => s + c.width,
+    );
 
     return Padding(
       padding: const EdgeInsets.only(top: 10),
@@ -1357,9 +1629,14 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade200),
+                border: Border.all(
+                  color: Colors.grey.shade200,
+                ),
                 boxShadow: const [
-                  BoxShadow(color: Color(0x14000000), blurRadius: 12),
+                  BoxShadow(
+                    color: Color(0x14000000),
+                    blurRadius: 12,
+                  ),
                 ],
               ),
               clipBehavior: Clip.antiAlias,
@@ -1373,12 +1650,16 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
                     controller: _vScroll,
                     thumbVisibility: true,
                     notificationPredicate:
-                        (notif) => notif.metrics.axis == Axis.vertical,
+                        (notif) =>
+                            notif.metrics.axis ==
+                            Axis.vertical,
                     child: Scrollbar(
                       controller: _hScroll,
                       thumbVisibility: true,
                       notificationPredicate:
-                          (notif) => notif.metrics.axis == Axis.horizontal,
+                          (notif) =>
+                              notif.metrics.axis ==
+                              Axis.horizontal,
                       child: SingleChildScrollView(
                         controller: _hScroll,
                         scrollDirection: Axis.horizontal,
@@ -1389,44 +1670,73 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
                             children: [
                               Container(
                                 height: 48,
-                                color: theme.lightModeColor.prColor300
+                                color: theme
+                                    .lightModeColor
+                                    .prColor300
                                     .withAlpha(22),
                                 child: Row(
                                   children:
                                       cols
-                                          .map((c) => _headerCell(theme, c))
+                                          .map(
+                                            (c) =>
+                                                _headerCell(
+                                                  theme,
+                                                  c,
+                                                ),
+                                          )
                                           .toList(),
                                 ),
                               ),
                               const Divider(height: 1),
                               Expanded(
                                 child: ScrollConfiguration(
-                                  behavior: ScrollConfiguration.of(
-                                    context,
-                                  ).copyWith(scrollbars: false),
+                                  behavior:
+                                      ScrollConfiguration.of(
+                                        context,
+                                      ).copyWith(
+                                        scrollbars: false,
+                                      ),
                                   child: ListView.builder(
                                     controller: _vScroll,
-                                    itemCount: res.rows.length,
+                                    itemCount:
+                                        res.rows.length,
                                     itemExtent: 52,
-                                    itemBuilder: (context, i) {
+                                    itemBuilder: (
+                                      context,
+                                      i,
+                                    ) {
                                       final r = res.rows[i];
                                       return Material(
                                         color:
                                             i.isEven
-                                                ? Colors.white
-                                                : Colors.grey.shade50,
+                                                ? Colors
+                                                    .white
+                                                : Colors
+                                                    .grey
+                                                    .shade50,
                                         child: InkWell(
-                                          mouseCursor: SystemMouseCursors.click,
+                                          mouseCursor:
+                                              SystemMouseCursors
+                                                  .click,
                                           hoverColor: theme
                                               .lightModeColor
                                               .prColor300
-                                              .withAlpha(20),
-                                          onTap: () => _openItemDetails(r),
+                                              .withAlpha(
+                                                20,
+                                              ),
+                                          onTap:
+                                              () =>
+                                                  _openItemDetails(
+                                                    r,
+                                                  ),
                                           child: Container(
                                             decoration: BoxDecoration(
                                               border: Border(
                                                 bottom: BorderSide(
-                                                  color: Colors.grey.shade100,
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade100,
                                                 ),
                                               ),
                                             ),
@@ -1434,21 +1744,23 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
                                               children:
                                                   cols
                                                       .map(
-                                                        (c) => SizedBox(
-                                                          width: c.width,
+                                                        (
+                                                          c,
+                                                        ) => SizedBox(
+                                                          width:
+                                                              c.width,
                                                           child: Padding(
-                                                            padding:
-                                                                const EdgeInsets.symmetric(
-                                                                  horizontal:
-                                                                      10,
-                                                                ),
+                                                            padding: const EdgeInsets.symmetric(
+                                                              horizontal:
+                                                                  10,
+                                                            ),
                                                             child: Align(
                                                               alignment:
-                                                                  c.alignEnd
-                                                                      ? Alignment
-                                                                          .centerRight
-                                                                      : Alignment
-                                                                          .centerLeft,
+                                                                  c.align == TextAlign.start
+                                                                      ? Alignment.centerLeft
+                                                                      : (c.align == TextAlign.end
+                                                                          ? Alignment.centerRight
+                                                                          : Alignment.center),
                                                               child: c.cell(
                                                                 r,
                                                                 i,
@@ -1498,12 +1810,17 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
           mainAxisSize: MainAxisSize.min,
           spacing: 4,
           children: [
-            if (!iconRight) Icon(icon, size: 16, color: color),
+            if (!iconRight)
+              Icon(icon, size: 16, color: color),
             Text(
               text,
-              style: TextStyle(color: color, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            if (iconRight) Icon(icon, size: 16, color: color),
+            if (iconRight)
+              Icon(icon, size: 16, color: color),
           ],
         ),
       );
@@ -1559,6 +1876,722 @@ class _ItemsReportMainViewState extends State<ItemsReportMainView> {
                 iconRight: true,
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SearchableOption<T> {
+  final T value;
+  final String label;
+
+  const _SearchableOption({
+    required this.value,
+    required this.label,
+  });
+}
+
+class _DropdownSelectionResult<T> {
+  final T value;
+  const _DropdownSelectionResult(this.value);
+}
+
+class _SearchableDropdown<T> extends StatefulWidget {
+  final String title;
+  final T value;
+  final List<_SearchableOption<T>> options;
+  final ValueChanged<T> onChanged;
+  final ThemeProvider theme;
+  final String? searchHint;
+  final bool showSearch;
+
+  const _SearchableDropdown({
+    super.key,
+    required this.title,
+    required this.value,
+    required this.options,
+    required this.onChanged,
+    required this.theme,
+    this.searchHint,
+    this.showSearch = true,
+  });
+
+  @override
+  State<_SearchableDropdown<T>> createState() =>
+      _SearchableDropdownState<T>();
+}
+
+class _SearchableDropdownState<T>
+    extends State<_SearchableDropdown<T>> {
+  Future<void> _openPicker() async {
+    final renderBox =
+        context.findRenderObject() as RenderBox?;
+    if (renderBox == null || !renderBox.attached) return;
+    final triggerOffset = renderBox.localToGlobal(
+      Offset.zero,
+    );
+    final triggerSize = renderBox.size;
+
+    final result =
+        await showDialog<_DropdownSelectionResult<T>>(
+          context: context,
+          barrierColor: Colors.black.withAlpha(25),
+          barrierDismissible: true,
+          builder: (ctx) {
+            return _SearchableDropdownPopup<T>(
+              triggerOffset: triggerOffset,
+              triggerSize: triggerSize,
+              title: widget.title,
+              currentValue: widget.value,
+              options: widget.options,
+              searchHint: widget.searchHint,
+              showSearch: widget.showSearch,
+              theme: widget.theme,
+            );
+          },
+        );
+
+    if (result != null) {
+      widget.onChanged(result.value);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = widget.theme;
+    final accent = theme.lightModeColor.prColor300;
+
+    _SearchableOption<T>? selectedOption;
+    for (final opt in widget.options) {
+      if (opt.value == widget.value) {
+        selectedOption = opt;
+        break;
+      }
+    }
+    selectedOption ??=
+        widget.options.isNotEmpty
+            ? widget.options.first
+            : _SearchableOption(
+              value: widget.value,
+              label: '',
+            );
+
+    final bool isHighlighted =
+        widget.value != null &&
+        (widget.value is! StockLevelFilter ||
+            widget.value != StockLevelFilter.all) &&
+        (widget.value is! int || widget.value != 0);
+
+    return Material(
+      color: Colors.transparent,
+      child: Ink(
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(5),
+          border: Border.all(
+            color:
+                isHighlighted
+                    ? accent.withAlpha(90)
+                    : Colors.transparent,
+            width: 1,
+          ),
+        ),
+        child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
+          borderRadius: BorderRadius.circular(5),
+          onTap: _openPicker,
+          child: Container(
+            height: 38,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    selectedOption.label,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight:
+                          isHighlighted
+                              ? FontWeight.w600
+                              : FontWeight.normal,
+                      color:
+                          isHighlighted
+                              ? accent
+                              : Colors.black87,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Icon(
+                  Icons.arrow_drop_down_rounded,
+                  size: 20,
+                  color:
+                      isHighlighted
+                          ? accent
+                          : Colors.black54,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SearchableDropdownPopup<T> extends StatefulWidget {
+  final Offset triggerOffset;
+  final Size triggerSize;
+  final String title;
+  final T currentValue;
+  final List<_SearchableOption<T>> options;
+  final String? searchHint;
+  final bool showSearch;
+  final ThemeProvider theme;
+
+  const _SearchableDropdownPopup({
+    super.key,
+    required this.triggerOffset,
+    required this.triggerSize,
+    required this.title,
+    required this.currentValue,
+    required this.options,
+    this.searchHint,
+    this.showSearch = true,
+    required this.theme,
+  });
+
+  @override
+  State<_SearchableDropdownPopup<T>> createState() =>
+      _SearchableDropdownPopupState<T>();
+}
+
+class _SearchableDropdownPopupState<T>
+    extends State<_SearchableDropdownPopup<T>> {
+  late final TextEditingController _searchCtrl;
+  final FocusNode _focusNode = FocusNode();
+  final ScrollController _scrollCtrl = ScrollController();
+  String _query = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _searchCtrl = TextEditingController();
+    _searchCtrl.addListener(() {
+      final text = _searchCtrl.text.trim().toLowerCase();
+      if (_query != text) {
+        setState(() {
+          _query = text;
+        });
+      }
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && widget.showSearch) {
+        _focusNode.requestFocus();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    _focusNode.dispose();
+    _scrollCtrl.dispose();
+    super.dispose();
+  }
+
+  List<_SearchableOption<T>> _getFilteredOptions() {
+    if (_query.isEmpty) {
+      return widget.options;
+    }
+    return widget.options.where((opt) {
+      return opt.label.toLowerCase().contains(_query);
+    }).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    final screenSize = media.size;
+    final viewInsets = media.viewInsets;
+    final theme = widget.theme;
+    final accent = theme.lightModeColor.prColor300;
+
+    final filtered = _getFilteredOptions();
+
+    final isMobile = screenSize.width < 520;
+
+    final double popupWidth =
+        isMobile
+            ? (screenSize.width - 32.0).clamp(260.0, 420.0)
+            : math
+                .max(widget.triggerSize.width, 280.0)
+                .clamp(240.0, screenSize.width - 32.0);
+
+    final double left =
+        isMobile
+            ? (screenSize.width - popupWidth) / 2
+            : widget.triggerOffset.dx.clamp(
+              16.0,
+              screenSize.width - popupWidth - 16.0,
+            );
+
+    final double maxPossibleHeight = math.min(
+      380.0,
+      screenSize.height - viewInsets.bottom - 40.0,
+    );
+
+    final double spaceBelow =
+        screenSize.height -
+        viewInsets.bottom -
+        (widget.triggerOffset.dy +
+            widget.triggerSize.height) -
+        16.0;
+    final double spaceAbove =
+        widget.triggerOffset.dy - 16.0;
+
+    final bool placeBelow =
+        isMobile
+            ? false
+            : (spaceBelow >= 240.0 ||
+                spaceBelow >= spaceAbove);
+
+    final double? top =
+        isMobile
+            ? ((screenSize.height -
+                        viewInsets.bottom -
+                        maxPossibleHeight) /
+                    2)
+                .clamp(
+                  20.0,
+                  screenSize.height -
+                      maxPossibleHeight -
+                      20.0,
+                )
+            : (placeBelow
+                ? widget.triggerOffset.dy +
+                    widget.triggerSize.height +
+                    4.0
+                : null);
+
+    final double? bottom =
+        (!isMobile && !placeBelow)
+            ? (screenSize.height -
+                widget.triggerOffset.dy +
+                4.0)
+            : null;
+
+    final double availableHeight =
+        isMobile
+            ? maxPossibleHeight
+            : (placeBelow ? spaceBelow : spaceAbove).clamp(
+              180.0,
+              maxPossibleHeight,
+            );
+
+    return Material(
+      color: Colors.transparent,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => Navigator.of(context).pop(),
+              child: const SizedBox.expand(),
+            ),
+          ),
+          Positioned(
+            left: left,
+            top: top,
+            bottom: bottom,
+            child: GestureDetector(
+              onTap: () {},
+              child: Container(
+                width: popupWidth,
+                constraints: BoxConstraints(
+                  maxHeight: availableHeight,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: Colors.grey.shade300,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withAlpha(45),
+                      blurRadius: 18,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment:
+                        CrossAxisAlignment.stretch,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          12,
+                          8,
+                          6,
+                          4,
+                        ),
+                        child: Row(
+                          children: [
+                            Text(
+                              widget.title,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const Spacer(),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.close_rounded,
+                                size: 16,
+                              ),
+                              padding: EdgeInsets.zero,
+                              constraints:
+                                  const BoxConstraints(
+                                    minWidth: 26,
+                                    minHeight: 26,
+                                  ),
+                              splashRadius: 14,
+                              color: Colors.grey.shade600,
+                              onPressed:
+                                  () =>
+                                      Navigator.of(
+                                        context,
+                                      ).pop(),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (widget.showSearch)
+                        Padding(
+                          padding:
+                              const EdgeInsets.fromLTRB(
+                                10,
+                                2,
+                                10,
+                                8,
+                              ),
+                          child: SizedBox(
+                            height: 34,
+                            child: TextField(
+                              controller: _searchCtrl,
+                              focusNode: _focusNode,
+                              style: const TextStyle(
+                                fontSize: 12,
+                              ),
+                              textInputAction:
+                                  TextInputAction.search,
+                              onSubmitted: (_) {
+                                if (filtered.isNotEmpty) {
+                                  Navigator.of(context).pop(
+                                    _DropdownSelectionResult<
+                                      T
+                                    >(filtered.first.value),
+                                  );
+                                }
+                              },
+                              decoration: InputDecoration(
+                                hintText:
+                                    widget.searchHint ??
+                                    'Search ${widget.title.toLowerCase()}...',
+                                hintStyle: TextStyle(
+                                  fontSize: 11,
+                                  color:
+                                      Colors.grey.shade500,
+                                ),
+                                prefixIcon: const Icon(
+                                  Icons.search_rounded,
+                                  size: 16,
+                                  color: Colors.grey,
+                                ),
+                                suffixIcon:
+                                    _searchCtrl
+                                            .text
+                                            .isNotEmpty
+                                        ? IconButton(
+                                          icon: const Icon(
+                                            Icons
+                                                .close_rounded,
+                                            size: 14,
+                                          ),
+                                          padding:
+                                              EdgeInsets
+                                                  .zero,
+                                          splashRadius: 14,
+                                          onPressed: () {
+                                            _searchCtrl
+                                                .clear();
+                                          },
+                                        )
+                                        : null,
+                                contentPadding:
+                                    const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 0,
+                                    ),
+                                filled: true,
+                                fillColor:
+                                    Colors.grey.shade100,
+                                border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        6,
+                                      ),
+                                  borderSide: BorderSide(
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade300,
+                                  ),
+                                ),
+                                enabledBorder:
+                                    OutlineInputBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            6,
+                                          ),
+                                      borderSide: BorderSide(
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade300,
+                                      ),
+                                    ),
+                                focusedBorder:
+                                    OutlineInputBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            6,
+                                          ),
+                                      borderSide:
+                                          BorderSide(
+                                            color: accent,
+                                            width: 1.5,
+                                          ),
+                                    ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      const Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: Color(0xFFEEEEEE),
+                      ),
+                      Flexible(
+                        child:
+                            filtered.isEmpty
+                                ? Container(
+                                  padding:
+                                      const EdgeInsets.symmetric(
+                                        vertical: 24,
+                                        horizontal: 16,
+                                      ),
+                                  alignment:
+                                      Alignment.center,
+                                  child: Column(
+                                    mainAxisSize:
+                                        MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons
+                                            .search_off_rounded,
+                                        size: 26,
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade400,
+                                      ),
+                                      const SizedBox(
+                                        height: 6,
+                                      ),
+                                      Text(
+                                        'No matches found',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color:
+                                              Colors
+                                                  .grey
+                                                  .shade600,
+                                          fontWeight:
+                                              FontWeight
+                                                  .w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                                : Scrollbar(
+                                  controller: _scrollCtrl,
+                                  thumbVisibility: true,
+                                  child: ListView.builder(
+                                    controller: _scrollCtrl,
+                                    shrinkWrap: true,
+                                    itemCount:
+                                        filtered.length,
+                                    padding:
+                                        const EdgeInsets.symmetric(
+                                          vertical: 4,
+                                        ),
+                                    itemBuilder: (
+                                      ctx,
+                                      index,
+                                    ) {
+                                      final opt =
+                                          filtered[index];
+                                      final isSelected =
+                                          opt.value ==
+                                          widget
+                                              .currentValue;
+
+                                      return Material(
+                                        color:
+                                            isSelected
+                                                ? accent
+                                                    .withAlpha(
+                                                      20,
+                                                    )
+                                                : Colors
+                                                    .transparent,
+                                        child: InkWell(
+                                          onTap: () {
+                                            Navigator.of(
+                                              context,
+                                            ).pop(
+                                              _DropdownSelectionResult<
+                                                T
+                                              >(opt.value),
+                                            );
+                                          },
+                                          hoverColor: accent
+                                              .withAlpha(
+                                                12,
+                                              ),
+                                          child: Padding(
+                                            padding:
+                                                const EdgeInsets.symmetric(
+                                                  horizontal:
+                                                      12,
+                                                  vertical:
+                                                      8,
+                                                ),
+                                            child: Row(
+                                              children: [
+                                                SizedBox(
+                                                  width: 18,
+                                                  child:
+                                                      isSelected
+                                                          ? Icon(
+                                                            Icons.check_rounded,
+                                                            size:
+                                                                16,
+                                                            color:
+                                                                accent,
+                                                          )
+                                                          : null,
+                                                ),
+                                                const SizedBox(
+                                                  width: 6,
+                                                ),
+                                                Expanded(
+                                                  child: Text(
+                                                    opt.label,
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          12,
+                                                      fontWeight:
+                                                          isSelected
+                                                              ? FontWeight.bold
+                                                              : FontWeight.normal,
+                                                      color:
+                                                          isSelected
+                                                              ? accent
+                                                              : Colors.black87,
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                      ),
+                      if (widget.options.length > 6)
+                        Container(
+                          padding:
+                              const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade50,
+                            border: Border(
+                              top: BorderSide(
+                                color: Colors.grey.shade200,
+                              ),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment
+                                    .spaceBetween,
+                            children: [
+                              Text(
+                                _query.isEmpty
+                                    ? '${widget.options.length} ${widget.title.toLowerCase()}${widget.options.length == 1 ? '' : 's'}'
+                                    : '${filtered.length} of ${widget.options.length}',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color:
+                                      Colors.grey.shade600,
+                                  fontWeight:
+                                      FontWeight.w500,
+                                ),
+                              ),
+                              if (_query.isNotEmpty)
+                                InkWell(
+                                  onTap:
+                                      () =>
+                                          _searchCtrl
+                                              .clear(),
+                                  child: Text(
+                                    'Clear search',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: accent,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),
