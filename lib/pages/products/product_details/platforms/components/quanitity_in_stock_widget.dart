@@ -60,18 +60,13 @@ Widget quantityInStockWidget(
 
 class UnitsGridSectionWidget extends StatefulWidget {
   final TempProductClass product;
-  const UnitsGridSectionWidget({
-    super.key,
-    required this.product,
-  });
+  const UnitsGridSectionWidget({super.key, required this.product});
 
   @override
-  State<UnitsGridSectionWidget> createState() =>
-      _UnitsGridSectionWidgetState();
+  State<UnitsGridSectionWidget> createState() => _UnitsGridSectionWidgetState();
 }
 
-class _UnitsGridSectionWidgetState
-    extends State<UnitsGridSectionWidget> {
+class _UnitsGridSectionWidgetState extends State<UnitsGridSectionWidget> {
   int getNumberOfUnits() {
     return widget.product.getUnitsList().length;
   }
@@ -89,16 +84,12 @@ class _UnitsGridSectionWidgetState
     final units = widget.product.getUnitsList();
 
     return Column(
-      children: List.generate((units.length / 2).ceil(), (
-        rowIndex,
-      ) {
+      children: List.generate((units.length / 2).ceil(), (rowIndex) {
         final start = rowIndex * 2;
         final end = (start + 2).clamp(0, units.length);
 
         return Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: 3.0,
-          ),
+          padding: const EdgeInsets.symmetric(vertical: 3.0),
           child: Row(
             spacing: 5,
             children:
@@ -106,9 +97,7 @@ class _UnitsGridSectionWidgetState
                     .sublist(start, end)
                     .map(
                       (item) => Expanded(
-                        child: QuantityWidgetProductDetails(
-                          unit: item,
-                        ),
+                        child: QuantityWidgetProductDetails(unit: item),
                       ),
                     )
                     .toList(),
@@ -121,10 +110,7 @@ class _UnitsGridSectionWidgetState
 
 class QuantityWidgetProductDetails extends StatelessWidget {
   final ProductUnitsClass unit;
-  const QuantityWidgetProductDetails({
-    super.key,
-    required this.unit,
-  });
+  const QuantityWidgetProductDetails({super.key, required this.unit});
 
   @override
   Widget build(BuildContext context) {
@@ -132,10 +118,7 @@ class QuantityWidgetProductDetails extends StatelessWidget {
     return Stack(
       children: [
         Container(
-          padding: EdgeInsets.symmetric(
-            vertical: 5,
-            horizontal: 8,
-          ),
+          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(3),
             border: Border.all(
@@ -156,10 +139,7 @@ class QuantityWidgetProductDetails extends StatelessWidget {
                 child: Text(
                   style: TextStyle(
                     fontSize: theme.mobileTexts.b4.fontSize,
-                    color:
-                        unit.isPrimary
-                            ? Colors.grey.shade200
-                            : null,
+                    color: unit.isPrimary ? Colors.grey.shade200 : null,
                   ),
                   "${unit.name}:",
                 ),
@@ -168,16 +148,10 @@ class QuantityWidgetProductDetails extends StatelessWidget {
                 style: TextStyle(
                   fontSize: theme.mobileTexts.b4.fontSize,
                   fontWeight: FontWeight.bold,
-                  color:
-                      unit.isPrimary
-                          ? Colors.grey.shade200
-                          : null,
+                  color: unit.isPrimary ? Colors.grey.shade200 : null,
                 ),
                 formatLargeNumberDouble(
-                  unit.getQuantityEquivDivided(
-                    context: context,
-                    index: 1,
-                  ),
+                  unit.getQuantityEquivDivided(context: context, index: 1),
                 ),
               ),
               SizedBox(width: 2),
@@ -188,11 +162,7 @@ class QuantityWidgetProductDetails extends StatelessWidget {
           visible: unit.isPrimary,
           child: Align(
             alignment: AlignmentGeometry.xy(1, 1),
-            child: Icon(
-              size: 13,
-              color: Colors.white,
-              Icons.check,
-            ),
+            child: Icon(size: 13, color: Colors.white, Icons.check),
           ),
         ),
       ],

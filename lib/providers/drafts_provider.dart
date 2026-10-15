@@ -18,14 +18,12 @@ import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DraftsProvider extends ChangeNotifier {
-  static final DraftsProvider _instance =
-      DraftsProvider._internal();
+  static final DraftsProvider _instance = DraftsProvider._internal();
   factory DraftsProvider() => _instance;
   DraftsProvider._internal();
 
   final SupabaseClient supabase = Supabase.instance.client;
-  final ConnectivityProvider connectivity =
-      ConnectivityProvider();
+  final ConnectivityProvider connectivity = ConnectivityProvider();
   List<Drafts> _drafts = [];
   List<Drafts> get drafts => _drafts;
 
@@ -41,16 +39,12 @@ class DraftsProvider extends ChangeNotifier {
   Future<Drafts?> createDraft(Drafts draft) async {
     try {
       await DraftsFunc().createDraft(draft);
-      await CreatedDraftsFunc().createDrafts(
-        CreatedDrafts(draft: draft),
-      );
+      await CreatedDraftsFunc().createDrafts(CreatedDrafts(draft: draft));
       await loadDraftsOffline(shopId());
       syncData();
       return draft;
     } catch (e) {
-      await mainLocalLog(
-        'Error Creating Draft: ${e.toString()}',
-      );
+      await mainLocalLog('Error Creating Draft: ${e.toString()}');
       return null;
     }
   }
@@ -67,17 +61,13 @@ class DraftsProvider extends ChangeNotifier {
       if (containsCreated.isEmpty) {
         await UpdatedDraftsFunc().createUpdatedDraft(draft);
       } else {
-        await CreatedDraftsFunc().createDrafts(
-          CreatedDrafts(draft: draft),
-        );
+        await CreatedDraftsFunc().createDrafts(CreatedDrafts(draft: draft));
       }
       await loadDraftsOffline(shopId());
       syncData();
       return 1;
     } catch (e) {
-      await mainLocalLog(
-        'Error Updating Draft: ${e.toString()}',
-      );
+      await mainLocalLog('Error Updating Draft: ${e.toString()}');
       notifyListeners();
       return 0;
     }
@@ -102,18 +92,14 @@ class DraftsProvider extends ChangeNotifier {
           DeletedDrafts(draftUuid: draftUuid),
         );
       }
-      await UpdatedDraftsFunc().deleteUpdatedDraft(
-        draftUuid,
-      );
+      await UpdatedDraftsFunc().deleteUpdatedDraft(draftUuid);
 
       await loadDraftsOffline(shopId());
       await mainLocalLog('Totally Finished Deleting Draft');
       syncData();
       return 1;
     } catch (e) {
-      await mainLocalLog(
-        'Error Deleting Draft: ${e.toString()}',
-      );
+      await mainLocalLog('Error Deleting Draft: ${e.toString()}');
       return 0;
     }
   }
@@ -141,17 +127,12 @@ class DraftsProvider extends ChangeNotifier {
             .range(0, 1000);
         await mainLocalLog('Drafts Gotten ${data.length}');
 
-        _drafts =
-            data
-                .map((json) => Drafts.fromJson(json))
-                .toList();
+        _drafts = data.map((json) => Drafts.fromJson(json)).toList();
         await DraftsFunc().insertAllDrafts(_drafts);
         _drafts = DraftsFunc().getDrafts();
         notifyListeners();
       } catch (e) {
-        await mainLocalLog(
-          'Error Getting Drafts: ${e.toString()}',
-        );
+        await mainLocalLog('Error Getting Drafts: ${e.toString()}');
         return _drafts;
       }
     }
@@ -178,32 +159,22 @@ class DraftsProvider extends ChangeNotifier {
   Future<void> createDraftsSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
-      if (CreatedDraftsFunc().getDrafts().isNotEmpty &&
-          isOnline) {
-        final tempDrafts =
-            CreatedDraftsFunc().getDrafts().toList();
+      if (CreatedDraftsFunc().getDrafts().isNotEmpty && isOnline) {
+        final tempDrafts = CreatedDraftsFunc().getDrafts().toList();
         int count = 0;
         for (var item in tempDrafts) {
           final payload = item.draft.toJson();
           payload['created_at'] =
-              item.draft.createdAt
-                  .toUtc()
-                  .toIso8601String();
+              item.draft.createdAt.toUtc().toIso8601String();
           payload['updated_at'] =
-              item.draft.updatedAt
-                  ?.toUtc()
-                  .toIso8601String();
+              item.draft.updatedAt?.toUtc().toIso8601String();
           try {
             await supabase.from(tableName).insert(payload);
             count++;
-            await CreatedDraftsFunc().deleteDraft(
-              item.draft.uuid!,
-            );
+            await CreatedDraftsFunc().deleteDraft(item.draft.uuid!);
           } on PostgrestException catch (e) {
             if (e.code == '23505') {
-              await CreatedDraftsFunc().deleteDraft(
-                item.draft.uuid!,
-              );
+              await CreatedDraftsFunc().deleteDraft(item.draft.uuid!);
             }
             await mainLocalLog(
               'Error Synchronizing Draft ${item.draft.uuid}: $e',
@@ -211,34 +182,23 @@ class DraftsProvider extends ChangeNotifier {
           }
         }
 
-        await mainLocalLog(
-          '$count drafts added successfully ✅',
-        );
+        await mainLocalLog('$count drafts added successfully ✅');
         await loadDrafts(shopId());
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Drafts Insert failed ❌: $e',
-      );
+      await mainLocalLog('Batch Drafts Insert failed ❌: $e');
     }
   }
 
   Future<void> deleteDraftsSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
-      if (DeletedDraftsFunc().getDraftIds().isNotEmpty &&
-          isOnline) {
-        final tempDrafts =
-            DeletedDraftsFunc().getDraftIds().toList();
+      if (DeletedDraftsFunc().getDraftIds().isNotEmpty && isOnline) {
+        final tempDrafts = DeletedDraftsFunc().getDraftIds().toList();
 
         for (var rec in tempDrafts) {
-          await supabase
-              .from(tableName)
-              .delete()
-              .eq('uuid', rec.draftUuid);
-          await DeletedDraftsFunc().deletedDeletedDraft(
-            rec.draftUuid,
-          );
+          await supabase.from(tableName).delete().eq('uuid', rec.draftUuid);
+          await DeletedDraftsFunc().deletedDeletedDraft(rec.draftUuid);
         }
 
         await mainLocalLog(
@@ -247,34 +207,25 @@ class DraftsProvider extends ChangeNotifier {
         await loadDrafts(shopId());
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Drafts Delete failed ❌: $e',
-      );
+      await mainLocalLog('Batch Drafts Delete failed ❌: $e');
     }
   }
 
   Future<void> updateDraftsSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
-      if (UpdatedDraftsFunc().getDraftIds().isNotEmpty &&
-          isOnline) {
-        final tempDrafts =
-            UpdatedDraftsFunc().getDraftIds().toList();
+      if (UpdatedDraftsFunc().getDraftIds().isNotEmpty && isOnline) {
+        final tempDrafts = UpdatedDraftsFunc().getDraftIds().toList();
         for (var rec in tempDrafts) {
           final payload = rec.draft.toJson();
-          payload['created_at'] =
-              rec.draft.createdAt.toUtc().toIso8601String();
+          payload['created_at'] = rec.draft.createdAt.toUtc().toIso8601String();
           payload['updated_at'] =
-              rec.draft.updatedAt
-                  ?.toUtc()
-                  .toIso8601String();
+              rec.draft.updatedAt?.toUtc().toIso8601String();
           await supabase
               .from(tableName)
               .update(payload)
               .eq('uuid', rec.draft.uuid ?? '');
-          await UpdatedDraftsFunc().deleteUpdatedDraft(
-            rec.draft.uuid ?? '',
-          );
+          await UpdatedDraftsFunc().deleteUpdatedDraft(rec.draft.uuid ?? '');
         }
 
         await mainLocalLog(
@@ -283,9 +234,7 @@ class DraftsProvider extends ChangeNotifier {
         await loadDrafts(shopId());
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Drafts Update failed ❌: $e',
-      );
+      await mainLocalLog('Batch Drafts Update failed ❌: $e');
     }
   }
 
@@ -330,8 +279,7 @@ class DraftsProvider extends ChangeNotifier {
         unitsList: cartItem.getUnitListFinal(),
         priceUuid: cartItem.priceUuid,
         pricesList: cartItem.getPriceListFinal(),
-        sellingPrice:
-            cartItem.getSelectedPrice().priceValue,
+        sellingPrice: cartItem.getSelectedPrice().priceValue,
         costPrice: product.costPrice,
         isProductManaged: product.isManaged,
         revenue: cartItem.revenue(),
@@ -370,9 +318,7 @@ class DraftsProvider extends ChangeNotifier {
     );
   }
 
-  List<TempCartItem> convertDraftToCartItems({
-    required Drafts draft,
-  }) {
+  List<TempCartItem> convertDraftToCartItems({required Drafts draft}) {
     List<TempCartItem> cartItems = [];
 
     for (var record in draft.draftItems) {
@@ -382,10 +328,7 @@ class DraftsProvider extends ChangeNotifier {
 
       if (products.isNotEmpty) {
         cartItems.add(
-          draftItemToCartItem(
-            record: record,
-            product: products.first,
-          ),
+          draftItemToCartItem(record: record, product: products.first),
         );
       } else {
         // Custom item, or the product was deleted since the
@@ -428,12 +371,7 @@ class DraftsProvider extends ChangeNotifier {
           updatedAt: DateTime.now(),
           uuid: record.productUuid ?? uuidGen(),
         );
-        cartItems.add(
-          draftItemToCartItem(
-            record: record,
-            product: productNew,
-          ),
-        );
+        cartItems.add(draftItemToCartItem(record: record, product: productNew));
       }
     }
 
@@ -446,15 +384,12 @@ class DraftsProvider extends ChangeNotifier {
     required Drafts draft,
     required BuildContext context,
   }) async {
-    var openCarts = returnSalesProvider()
-        .currentMainCart()
-        .cartQueue
-        .where((cart) => cart.draftUuid == draft.uuid);
+    var openCarts = returnSalesProvider().currentMainCart().cartQueue.where(
+      (cart) => cart.draftUuid == draft.uuid,
+    );
 
     if (openCarts.isNotEmpty) {
-      await returnSalesProvider().selectCart(
-        openCarts.first.id!,
-      );
+      await returnSalesProvider().selectCart(openCarts.first.id!);
       return;
     }
 
@@ -486,32 +421,20 @@ class DraftsProvider extends ChangeNotifier {
       cartName: draft.cartName,
       draftUuid: draft.uuid,
     );
-    await returnSalesProvider().addNewCart(
-      context,
-      tempCart,
-    );
+    await returnSalesProvider().addNewCart(context, tempCart);
     // addNewCart is gated by the cart limit and may not add it.
-    if (!returnSalesProvider().checkIfCartExists(
-      tempCart.id!,
-    )) {
+    if (!returnSalesProvider().checkIfCartExists(tempCart.id!)) {
       return;
     }
     await returnMultiDisplayProvider().updateWindow(
       cartClass: AltCartClass(
         manageCustomerReward:
-            returnShopProvider()
-                .userShop()!
-                .manageCustomerReward ??
-            false,
+            returnShopProvider().userShop()!.manageCustomerReward ?? false,
         cartId: tempCart.id!,
         cartItems: tempCart.cartItems.reversed.toList(),
         fixedDiscount: draft.fixedDiscount,
         percentDiscount: draft.generalDiscount,
-        vat:
-            returnShopProvider().userShop()?.applyVAT ==
-                    true
-                ? vat
-                : 0,
+        vat: returnShopProvider().userShop()?.applyVAT == true ? vat : 0,
         cashBack: null,
         currency: returnShopProvider().userShop()!.currency,
       ),

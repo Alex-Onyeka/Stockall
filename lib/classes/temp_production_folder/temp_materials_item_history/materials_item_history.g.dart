@@ -37,13 +37,14 @@ class MaterialsItemHistoryAdapter extends TypeAdapter<MaterialsItemHistory> {
       event: fields[17] as String?,
       isManaged: fields[18] as bool?,
       source: fields[19] as String?,
+      destination: fields[20] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, MaterialsItemHistory obj) {
     writer
-      ..writeByte(20)
+      ..writeByte(21)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -83,7 +84,9 @@ class MaterialsItemHistoryAdapter extends TypeAdapter<MaterialsItemHistory> {
       ..writeByte(18)
       ..write(obj.isManaged)
       ..writeByte(19)
-      ..write(obj.source);
+      ..write(obj.source)
+      ..writeByte(20)
+      ..write(obj.destination);
   }
 
   @override

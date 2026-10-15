@@ -27,8 +27,7 @@ class CreateProductPriceWidget extends StatefulWidget {
       _CreateProductPriceWidgetState();
 }
 
-class _CreateProductPriceWidgetState
-    extends State<CreateProductPriceWidget> {
+class _CreateProductPriceWidgetState extends State<CreateProductPriceWidget> {
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -46,17 +45,11 @@ class _CreateProductPriceWidgetState
           );
         },
         child: Container(
-          padding: EdgeInsets.symmetric(
-            vertical: 6,
-            horizontal: 15,
-          ),
+          padding: EdgeInsets.symmetric(vertical: 6, horizontal: 15),
           child: Row(
             spacing: 5,
             children: [
-              Text(
-                style: theme.mobileTexts.b3.textStyleBold,
-                "Add Price",
-              ),
+              Text(style: theme.mobileTexts.b3.textStyleBold, "Add Price"),
               Icon(color: Colors.grey, size: 20, Icons.add),
             ],
           ),
@@ -109,8 +102,7 @@ void addProductPriceAction({
               Navigator.of(mainDialog).pop();
               price?.name = nameController.text.trim();
               price?.priceValue = priceValue;
-              price?.isFixed =
-                  currentSelection == 1 ? false : true;
+              price?.isFixed = currentSelection == 1 ? false : true;
               price?.priceType = currentSelection;
               var priceListSingle = ProductPricesClass(
                 uuid: uuidGen(),
@@ -122,13 +114,9 @@ void addProductPriceAction({
                     nameController.text.isEmpty
                         ? 'Price'
                         : nameController.text.trim(),
-                isPrimary:
-                    returnData().tempPricesList.isEmpty
-                        ? true
-                        : false,
+                isPrimary: returnData().tempPricesList.isEmpty ? true : false,
                 itemUuid: productUuid,
-                isFixed:
-                    currentSelection == 1 ? false : true,
+                isFixed: currentSelection == 1 ? false : true,
                 priceType: currentSelection,
               );
               returnData().createOrUpdatePriceList(
@@ -150,30 +138,21 @@ void addProductPriceAction({
           return DialogTemplate(
             theme: theme,
             message: 'Enter Product Price Name',
-            title:
-                '${price == null ? 'Create' : 'Update'} Product Price',
+            title: '${price == null ? 'Create' : 'Update'} Product Price',
             action: () async {
               addAction();
             },
             widget: ConstrainedBox(
               constraints: BoxConstraints(maxWidth: 500),
               child: Container(
-                color: const Color.fromARGB(
-                  47,
-                  255,
-                  255,
-                  255,
-                ),
+                color: const Color.fromARGB(47, 255, 255, 255),
                 // height: 150,
                 // width: 500,
                 child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 30.0,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
                     child: Column(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
                       spacing: 10,
                       children: [
@@ -187,8 +166,7 @@ void addProductPriceAction({
                         SizedBox(height: 5),
                         PriceTypeSelectionWidget(
                           theme: theme,
-                          currentSelection:
-                              currentSelection,
+                          currentSelection: currentSelection,
                           setPriceType: (index) {
                             setState(() {
                               currentSelection = index ?? 1;

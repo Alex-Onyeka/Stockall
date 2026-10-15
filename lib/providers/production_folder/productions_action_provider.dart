@@ -22,9 +22,7 @@ class ProductionsActionProvider extends ChangeNotifier {
   Future<void> createProductionsCart({
     required ProductionsCart cartItem,
   }) async {
-    await ProductionsCartFunc().createProductionsCart(
-      cartItem,
-    );
+    await ProductionsCartFunc().createProductionsCart(cartItem);
     notifyListeners();
   }
 
@@ -60,11 +58,8 @@ class ProductionsActionProvider extends ChangeNotifier {
   }
 
   bool isCartEmpty() {
-    return ProductionsCartFunc().getProductionsCart() ==
-            null ||
-        (ProductionsCartFunc()
-                    .getProductionsCart()
-                    ?.productionsCartItem ==
+    return ProductionsCartFunc().getProductionsCart() == null ||
+        (ProductionsCartFunc().getProductionsCart()?.productionsCartItem ==
                 null &&
             ProductionsCartFunc()
                     .getProductionsCart()
@@ -73,9 +68,7 @@ class ProductionsActionProvider extends ChangeNotifier {
                 true);
   }
 
-  Future<void> addItemToCart({
-    required ProductionsCartItem item,
-  }) async {
+  Future<void> addItemToCart({required ProductionsCartItem item}) async {
     await ProductionsCartFunc().addProductionsItemToCart(
       productionsCartItem: item,
     );
@@ -85,20 +78,18 @@ class ProductionsActionProvider extends ChangeNotifier {
   Future<void> addMaterialItemToCart({
     required ProductionMaterialCartItem item,
   }) async {
-    await ProductionsCartFunc()
-        .addProductionsMaterialItemToCart(
-          productionsMaterialCartItem: item,
-        );
+    await ProductionsCartFunc().addProductionsMaterialItemToCart(
+      productionsMaterialCartItem: item,
+    );
     notifyListeners();
   }
 
   Future<void> removeMaterialItemFromCart({
     required ProductionMaterialCartItem item,
   }) async {
-    await ProductionsCartFunc()
-        .removeProductionsMaterialItemFromCart(
-          productionsMaterialCartItem: item,
-        );
+    await ProductionsCartFunc().removeProductionsMaterialItemFromCart(
+      productionsMaterialCartItem: item,
+    );
     notifyListeners();
   }
 

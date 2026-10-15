@@ -25,8 +25,7 @@ class ProductionItemsTileMain extends StatefulWidget {
       _ProductionItemsTileMainState();
 }
 
-class _ProductionItemsTileMainState
-    extends State<ProductionItemsTileMain> {
+class _ProductionItemsTileMainState extends State<ProductionItemsTileMain> {
   bool isManaged() {
     return widget.productionItem.isManaged;
   }
@@ -41,12 +40,7 @@ class _ProductionItemsTileMainState
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: const Color.fromARGB(
-                30,
-                158,
-                158,
-                158,
-              ),
+              color: const Color.fromARGB(30, 158, 158, 158),
               blurRadius: 5,
             ),
           ],
@@ -65,8 +59,7 @@ class _ProductionItemsTileMainState
                 horizontal: 20,
                 vertical:
                     widget.isSelectProductionItem != null &&
-                            widget.isSelectProductionItem ==
-                                true
+                            widget.isSelectProductionItem == true
                         ? 19
                         : 15,
               ),
@@ -74,19 +67,15 @@ class _ProductionItemsTileMainState
                 children: [
                   Visibility(
                     visible:
-                        widget.isSelectProductionItem !=
-                            null &&
-                        widget.isSelectProductionItem ==
-                            true,
+                        widget.isSelectProductionItem != null &&
+                        widget.isSelectProductionItem == true,
                     child: Row(
                       children: [
                         Container(
                           padding: EdgeInsets.all(1),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.grey.shade600,
-                            ),
+                            border: Border.all(color: Colors.grey.shade600),
                           ),
                           child: Container(
                             padding: EdgeInsets.all(5),
@@ -94,16 +83,10 @@ class _ProductionItemsTileMainState
                               shape: BoxShape.circle,
                               color:
                                   widget.uuidList != null &&
-                                          widget.uuidList!
-                                              .contains(
-                                                widget
-                                                    .productionItem
-                                                    .uuid!,
-                                              )
-                                      ? widget
-                                          .theme
-                                          .lightModeColor
-                                          .prColor250
+                                          widget.uuidList!.contains(
+                                            widget.productionItem.uuid!,
+                                          )
+                                      ? widget.theme.lightModeColor.prColor250
                                       : Colors.transparent,
                             ),
                           ),
@@ -116,21 +99,11 @@ class _ProductionItemsTileMainState
                     height: 30,
                     width: 30,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        5,
-                      ),
-                      color:
-                          widget
-                              .theme
-                              .lightModeColor
-                              .secColor50,
+                      borderRadius: BorderRadius.circular(5),
+                      color: widget.theme.lightModeColor.secColor50,
                     ),
                     child: Icon(
-                      color:
-                          widget
-                              .theme
-                              .lightModeColor
-                              .secColor200,
+                      color: widget.theme.lightModeColor.secColor200,
                       Icons.api_rounded,
                     ),
                   ),
@@ -140,12 +113,7 @@ class _ProductionItemsTileMainState
                       children: [
                         Text(
                           style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b2
-                                    .fontSize,
+                            fontSize: widget.theme.mobileTexts.b2.fontSize,
                             fontWeight: FontWeight.bold,
                           ),
                           widget.productionItem.name,
@@ -154,18 +122,14 @@ class _ProductionItemsTileMainState
                     ),
                   ),
                   Column(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment:
-                        CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     spacing: 5,
                     children: [
                       Visibility(
                         visible:
-                            widget.isSelectProductionItem ==
-                                null ||
-                            widget.isSelectProductionItem ==
-                                false,
+                            widget.isSelectProductionItem == null ||
+                            widget.isSelectProductionItem == false,
                         child: Icon(
                           size: 16,
                           color: Colors.grey.shade400,
@@ -175,31 +139,21 @@ class _ProductionItemsTileMainState
                       Container(
                         decoration: BoxDecoration(
                           color: Colors.grey.shade100,
-                          border: Border.all(
-                            color: Colors.grey.shade400,
-                          ),
-                          borderRadius:
-                              BorderRadius.circular(5),
+                          border: Border.all(color: Colors.grey.shade400),
+                          borderRadius: BorderRadius.circular(5),
                         ),
                         child: Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 8.0,
-                                vertical: 3,
-                              ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 3,
+                          ),
                           child: Text(
                             style: TextStyle(
-                              fontSize:
-                                  widget
-                                      .theme
-                                      .mobileTexts
-                                      .b4
-                                      .fontSize,
+                              fontSize: widget.theme.mobileTexts.b4.fontSize,
                               fontWeight: FontWeight.bold,
                               color: Colors.grey.shade700,
                             ),
-                            widget.productionItem
-                                .getQuantityText(index: 2),
+                            widget.productionItem.getQuantityText(index: 2),
                           ),
                         ),
                       ),

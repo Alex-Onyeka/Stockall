@@ -152,7 +152,10 @@ class _AddProductMobileState
 
               final dataProvider = returnData();
               ItemHistory itemHistory = ItemHistory(
-                source: 'Not Set',
+                source: ItemHistoryEventClass.manualSource,
+                destination:
+                    ItemHistoryEventClass
+                        .productDestination,
                 event: ItemHistoryEventClass.itemCreated,
                 isManaged: true,
                 unit: 'Not Set',

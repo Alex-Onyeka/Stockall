@@ -7,40 +7,27 @@ import 'package:stockall/pages/report/events_log/platforms/events_log_desktop.da
 
 class InventoryUpdateWidget extends StatefulWidget {
   final TempInventoryUpdateClass update;
-  const InventoryUpdateWidget({
-    super.key,
-    required this.update,
-  });
+  const InventoryUpdateWidget({super.key, required this.update});
 
   @override
-  State<InventoryUpdateWidget> createState() =>
-      _InventoryUpdateWidgetState();
+  State<InventoryUpdateWidget> createState() => _InventoryUpdateWidgetState();
 }
 
-class _InventoryUpdateWidgetState
-    extends State<InventoryUpdateWidget> {
+class _InventoryUpdateWidgetState extends State<InventoryUpdateWidget> {
   String formatValue(String value) {
     double? parsed = double.tryParse(value);
     if (parsed == null) {
       return value.isNotEmpty ? value : 'Null';
     } else {
       if (widget.update.title.split(' ')[1] == 'Selling') {
-        return formatMoneyMid(
-          amount: parsed,
-          context: context,
-        );
+        return formatMoneyMid(amount: parsed, context: context);
       } else {
-        return value.isNotEmpty
-            ? formatLargeNumber(value)
-            : 'Null';
+        return value.isNotEmpty ? formatLargeNumber(value) : 'Null';
       }
     }
   }
 
-  String valueChange({
-    required String one,
-    required String two,
-  }) {
+  String valueChange({required String one, required String two}) {
     double? parsed = double.tryParse(one);
     double? parsedOld = double.tryParse(two);
     if (parsed == null || parsedOld == null) {
@@ -64,10 +51,7 @@ class _InventoryUpdateWidgetState
       child: Ink(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5),
-          border: Border.all(
-            color: Colors.grey.shade200,
-            width: 1,
-          ),
+          border: Border.all(color: Colors.grey.shade200, width: 1),
           color: Colors.white,
         ),
         child: InkWell(
@@ -79,10 +63,7 @@ class _InventoryUpdateWidgetState
             });
           },
           child: Container(
-            padding: EdgeInsets.symmetric(
-              vertical: 10,
-              horizontal: 10,
-            ),
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -91,8 +72,7 @@ class _InventoryUpdateWidgetState
                   children: [
                     Icon(
                       size: 20,
-                      color:
-                          theme.lightModeColor.secColor200,
+                      color: theme.lightModeColor.secColor200,
                       Icons.receipt,
                     ),
                     MyDivider(),
@@ -100,8 +80,7 @@ class _InventoryUpdateWidgetState
                       flex: 4,
                       child: Column(
                         spacing: 1,
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             style: TextStyle(
@@ -112,11 +91,7 @@ class _InventoryUpdateWidgetState
                           ),
                           Text(
                             style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
+                              fontSize: theme.mobileTexts.b3.fontSize,
                               fontWeight: FontWeight.bold,
                             ),
                             widget.update.title,
@@ -129,8 +104,7 @@ class _InventoryUpdateWidgetState
                       flex: 8,
                       child: Column(
                         spacing: 1,
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             style: TextStyle(
@@ -141,11 +115,7 @@ class _InventoryUpdateWidgetState
                           ),
                           Text(
                             style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
+                              fontSize: theme.mobileTexts.b3.fontSize,
                               fontWeight: FontWeight.bold,
                             ),
                             widget.update.itemName ?? '',
@@ -158,8 +128,7 @@ class _InventoryUpdateWidgetState
                       flex: 3,
                       child: Column(
                         spacing: 1,
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             style: TextStyle(
@@ -170,16 +139,10 @@ class _InventoryUpdateWidgetState
                           ),
                           Text(
                             style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
+                              fontSize: theme.mobileTexts.b3.fontSize,
                               fontWeight: FontWeight.bold,
                             ),
-                            formatValue(
-                              widget.update.oldValue ?? '',
-                            ),
+                            formatValue(widget.update.oldValue ?? ''),
                           ),
                         ],
                       ),
@@ -189,8 +152,7 @@ class _InventoryUpdateWidgetState
                       flex: 3,
                       child: Column(
                         spacing: 1,
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             style: TextStyle(
@@ -201,16 +163,10 @@ class _InventoryUpdateWidgetState
                           ),
                           Text(
                             style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
+                              fontSize: theme.mobileTexts.b3.fontSize,
                               fontWeight: FontWeight.bold,
                             ),
-                            formatValue(
-                              widget.update.newValue ?? '',
-                            ),
+                            formatValue(widget.update.newValue ?? ''),
                           ),
                         ],
                       ),
@@ -220,8 +176,7 @@ class _InventoryUpdateWidgetState
                       flex: 3,
                       child: Column(
                         spacing: 1,
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             style: TextStyle(
@@ -232,26 +187,14 @@ class _InventoryUpdateWidgetState
                           ),
                           Text(
                             style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
+                              fontSize: theme.mobileTexts.b3.fontSize,
                               fontWeight: FontWeight.bold,
                             ),
                             formatValue(
                               valueChange(
-                                one:
-                                    widget
-                                        .update
-                                        .oldValue ??
-                                    '',
+                                one: widget.update.oldValue ?? '',
 
-                                two:
-                                    widget
-                                        .update
-                                        .newValue ??
-                                    '',
+                                two: widget.update.newValue ?? '',
                               ),
                             ),
                           ),
@@ -264,15 +207,11 @@ class _InventoryUpdateWidgetState
                       color: Colors.grey.shade500,
                       isOpen
                           ? Icons.keyboard_arrow_up_rounded
-                          : Icons
-                              .keyboard_arrow_down_rounded,
+                          : Icons.keyboard_arrow_down_rounded,
                     ),
                   ],
                 ),
-                Visibility(
-                  visible: isOpen,
-                  child: SizedBox(height: 3),
-                ),
+                Visibility(visible: isOpen, child: SizedBox(height: 3)),
                 Visibility(
                   visible: isOpen,
                   child: Divider(
@@ -286,9 +225,7 @@ class _InventoryUpdateWidgetState
                   child: Column(
                     children: [
                       Visibility(
-                        visible:
-                            widget.update.itemTwoUuid !=
-                            null,
+                        visible: widget.update.itemTwoUuid != null,
                         child: Column(
                           children: [
                             Row(
@@ -305,33 +242,22 @@ class _InventoryUpdateWidgetState
                                   child: Column(
                                     spacing: 1,
                                     crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         style: TextStyle(
                                           fontSize: 8,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                         'Staff:',
                                       ),
                                       Text(
                                         style: TextStyle(
                                           fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                              theme.mobileTexts.b3.fontSize,
+                                          fontWeight: FontWeight.bold,
                                         ),
-                                        widget
-                                                .update
-                                                .staffNameTwo ??
-                                            'Not Set',
+                                        widget.update.staffNameTwo ?? 'Not Set',
                                       ),
                                     ],
                                   ),
@@ -342,47 +268,33 @@ class _InventoryUpdateWidgetState
                                   child: Column(
                                     spacing: 1,
                                     crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         style: TextStyle(
                                           fontSize: 8,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                         'Item-2 Name:',
                                       ),
                                       Text(
                                         style: TextStyle(
                                           fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                              theme.mobileTexts.b3.fontSize,
+                                          fontWeight: FontWeight.bold,
                                         ),
-                                        returnData()
-                                                .productListMain
+                                        returnData().productListMain
                                                 .where(
                                                   (item) =>
                                                       item.uuid ==
-                                                      widget
-                                                          .update
-                                                          .itemTwoUuid,
+                                                      widget.update.itemTwoUuid,
                                                 )
                                                 .isNotEmpty
-                                            ? returnData()
-                                                .productListMain
+                                            ? returnData().productListMain
                                                 .where(
                                                   (item) =>
                                                       item.uuid ==
-                                                      widget
-                                                          .update
-                                                          .itemTwoUuid,
+                                                      widget.update.itemTwoUuid,
                                                 )
                                                 .first
                                                 .name
@@ -397,34 +309,23 @@ class _InventoryUpdateWidgetState
                                   child: Column(
                                     spacing: 1,
                                     crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         style: TextStyle(
                                           fontSize: 8,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                         'Item-2 Old Value:',
                                       ),
                                       Text(
                                         style: TextStyle(
                                           fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                              theme.mobileTexts.b3.fontSize,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                         formatValue(
-                                          widget
-                                                  .update
-                                                  .itemTwoOldValue ??
-                                              '',
+                                          widget.update.itemTwoOldValue ?? '',
                                         ),
                                       ),
                                     ],
@@ -436,34 +337,23 @@ class _InventoryUpdateWidgetState
                                   child: Column(
                                     spacing: 1,
                                     crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         style: TextStyle(
                                           fontSize: 8,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                         'Item-2 New Value:',
                                       ),
                                       Text(
                                         style: TextStyle(
                                           fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                              theme.mobileTexts.b3.fontSize,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                         formatValue(
-                                          widget
-                                                  .update
-                                                  .itemTwoNewValue ??
-                                              '',
+                                          widget.update.itemTwoNewValue ?? '',
                                         ),
                                       ),
                                     ],
@@ -475,41 +365,29 @@ class _InventoryUpdateWidgetState
                                   child: Column(
                                     spacing: 1,
                                     crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         style: TextStyle(
                                           fontSize: 8,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                         'Item-2 Change:',
                                       ),
                                       Text(
                                         style: TextStyle(
                                           fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                              theme.mobileTexts.b3.fontSize,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                         formatValue(
                                           valueChange(
                                             one:
-                                                widget
-                                                    .update
-                                                    .itemTwoOldValue ??
+                                                widget.update.itemTwoOldValue ??
                                                 '',
 
                                             two:
-                                                widget
-                                                    .update
-                                                    .itemTwoNewValue ??
+                                                widget.update.itemTwoNewValue ??
                                                 '',
                                           ),
                                         ),
@@ -520,13 +398,10 @@ class _InventoryUpdateWidgetState
                                 MyDivider(),
                                 Icon(
                                   size: 18,
-                                  color:
-                                      Colors.grey.shade500,
+                                  color: Colors.grey.shade500,
                                   isOpen
-                                      ? Icons
-                                          .keyboard_arrow_up_rounded
-                                      : Icons
-                                          .keyboard_arrow_down_rounded,
+                                      ? Icons.keyboard_arrow_up_rounded
+                                      : Icons.keyboard_arrow_down_rounded,
                                 ),
                               ],
                             ),
@@ -542,49 +417,30 @@ class _InventoryUpdateWidgetState
 
                       Row(
                         mainAxisAlignment:
-                            widget
-                                        .update
-                                        .departmentUuidTwo !=
-                                    null
-                                ? MainAxisAlignment
-                                    .spaceBetween
+                            widget.update.departmentUuidTwo != null
+                                ? MainAxisAlignment.spaceBetween
                                 : MainAxisAlignment.end,
                         children: [
                           Visibility(
-                            visible:
-                                widget
-                                    .update
-                                    .departmentUuidTwo !=
-                                null,
+                            visible: widget.update.departmentUuidTwo != null,
                             child: Expanded(
                               child: Column(
                                 spacing: 1,
-                                crossAxisAlignment:
-                                    CrossAxisAlignment
-                                        .start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     style: TextStyle(
                                       fontSize: 8,
-                                      fontWeight:
-                                          FontWeight.bold,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                     'Department:',
                                   ),
                                   Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
+                                      fontSize: theme.mobileTexts.b3.fontSize,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    widget
-                                            .update
-                                            .departmentNameTwo ??
-                                        '',
+                                    widget.update.departmentNameTwo ?? '',
                                   ),
                                 ],
                               ),
@@ -600,10 +456,8 @@ class _InventoryUpdateWidgetState
                               color: Colors.grey.shade100,
                             ),
                             child: Row(
-                              mainAxisSize:
-                                  MainAxisSize.min,
-                              mainAxisAlignment:
-                                  MainAxisAlignment.end,
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.end,
                               spacing: 10,
                               children: [
                                 Row(
@@ -611,28 +465,16 @@ class _InventoryUpdateWidgetState
                                   children: [
                                     Text(
                                       style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b4
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
+                                        fontSize: theme.mobileTexts.b4.fontSize,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                       'Creator:',
                                     ),
                                     Text(
                                       style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b4
-                                                .fontSize,
+                                        fontSize: theme.mobileTexts.b4.fontSize,
                                       ),
-                                      widget
-                                              .update
-                                              .staffName ??
-                                          '',
+                                      widget.update.staffName ?? '',
                                     ),
                                   ],
                                 ),
@@ -642,28 +484,17 @@ class _InventoryUpdateWidgetState
                                   children: [
                                     Text(
                                       style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b4
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
+                                        fontSize: theme.mobileTexts.b4.fontSize,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                       'Date:',
                                     ),
                                     Text(
                                       style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b4
-                                                .fontSize,
+                                        fontSize: theme.mobileTexts.b4.fontSize,
                                       ),
                                       formatDateTimeTime(
-                                        widget
-                                                .update
-                                                .createdAt ??
+                                        widget.update.createdAt ??
                                             DateTime.now(),
                                       ),
                                     ),
@@ -671,40 +502,27 @@ class _InventoryUpdateWidgetState
                                 ),
                                 Visibility(
                                   visible:
-                                      widget
-                                              .update
-                                              .itemUuid !=
-                                          null &&
+                                      widget.update.itemUuid != null &&
                                       returnStorageProductProvider()
                                           .storageProductListMain
                                           .where(
                                             (pr) =>
                                                 pr.uuid ==
-                                                widget
-                                                    .update
-                                                    .itemUuid,
+                                                widget.update.itemUuid,
                                           )
                                           .isNotEmpty,
                                   child: Material(
-                                    type:
-                                        MaterialType
-                                            .transparency,
+                                    type: MaterialType.transparency,
                                     child: InkWell(
-                                      mouseCursor:
-                                          SystemMouseCursors
-                                              .click,
+                                      mouseCursor: SystemMouseCursors.click,
                                       onTap: () {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (
-                                              context,
-                                            ) {
+                                            builder: (context) {
                                               return StorageDetailsPage(
                                                 productUuid:
-                                                    widget
-                                                        .update
-                                                        .itemUuid!,
+                                                    widget.update.itemUuid!,
                                                 // comingFromInventoryUpdatesPage:
                                                 //     true,
                                               );
@@ -713,19 +531,15 @@ class _InventoryUpdateWidgetState
                                         );
                                       },
                                       child: Padding(
-                                        padding:
-                                            const EdgeInsets.symmetric(
-                                              horizontal:
-                                                  10.0,
-                                              vertical: 5,
-                                            ),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 10.0,
+                                          vertical: 5,
+                                        ),
                                         child: Row(
                                           spacing: 4,
                                           children: [
                                             MyDivider(),
-                                            SizedBox(
-                                              width: 10,
-                                            ),
+                                            SizedBox(width: 10),
                                             Text(
                                               style: TextStyle(
                                                 fontSize:
@@ -733,23 +547,19 @@ class _InventoryUpdateWidgetState
                                                         .mobileTexts
                                                         .b3
                                                         .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                               'View Item',
                                             ),
                                             Icon(
                                               size: 15,
-                                              color:
-                                                  const Color.fromARGB(
-                                                    255,
-                                                    255,
-                                                    176,
-                                                    7,
-                                                  ),
-                                              Icons
-                                                  .arrow_forward_ios_rounded,
+                                              color: const Color.fromARGB(
+                                                255,
+                                                255,
+                                                176,
+                                                7,
+                                              ),
+                                              Icons.arrow_forward_ios_rounded,
                                             ),
                                           ],
                                         ),

@@ -13,33 +13,26 @@ import 'package:stockall/pages/production/materials_page/materials_usage/platfor
 
 class MaterialsUsageMobile extends StatefulWidget {
   final String? materialUuid;
-  const MaterialsUsageMobile({
-    super.key,
-    this.materialUuid,
-  });
+  const MaterialsUsageMobile({super.key, this.materialUuid});
 
   @override
-  State<MaterialsUsageMobile> createState() =>
-      _MaterialsUsageMobileState();
+  State<MaterialsUsageMobile> createState() => _MaterialsUsageMobileState();
 }
 
-class _MaterialsUsageMobileState
-    extends State<MaterialsUsageMobile> {
+class _MaterialsUsageMobileState extends State<MaterialsUsageMobile> {
   @override
   Widget build(BuildContext context) {
     var materialUsageProv = returnMaterialsUsageProvider();
     var records =
-        returnMaterialsUsageProvider(context: context)
-            .returnOwnProductionMaterialsUsageByDayOrWeek()
-            .where((item) {
-              if (widget.materialUuid != null) {
-                return item.materialUuid ==
-                    widget.materialUuid;
-              } else {
-                return true;
-              }
-            })
-            .toList();
+        returnMaterialsUsageProvider(
+          context: context,
+        ).returnOwnProductionMaterialsUsageByDayOrWeek().where((item) {
+          if (widget.materialUuid != null) {
+            return item.materialUuid == widget.materialUuid;
+          } else {
+            return true;
+          }
+        }).toList();
     var theme = returnTheme(context);
     return GestureDetector(
       onTap: () {
@@ -52,15 +45,12 @@ class _MaterialsUsageMobileState
           widget: Padding(
             padding: const EdgeInsets.only(right: 15.0),
             child: Visibility(
-              visible: authorization(
-                authorized: Authorizations().viewDate,
-              ),
+              visible: authorization(authorized: Authorizations().viewDate),
               child: InkWell(
                 mouseCursor: SystemMouseCursors.click,
                 onTap: () {
                   if (materialUsageProv.dateSet != null ||
-                      materialUsageProv.rangeStartDate !=
-                          null) {
+                      materialUsageProv.rangeStartDate != null) {
                     materialUsageProv.clearDate();
                   } else {
                     mainDatePicker(
@@ -93,8 +83,7 @@ class _MaterialsUsageMobileState
                       Text(
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize:
-                              theme.mobileTexts.b3.fontSize,
+                          fontSize: theme.mobileTexts.b3.fontSize,
                         ),
                         returnMaterialsUsageProvider(
                                       context: context,
@@ -129,10 +118,7 @@ class _MaterialsUsageMobileState
         ),
         floatingActionButton: Visibility(
           visible:
-              authorization(
-                authorized:
-                    Authorizations().addMaterialsUsage,
-              ) &&
+              authorization(authorized: Authorizations().addMaterialsUsage) &&
               widget.materialUuid == null,
           child: FloatingActionButtonMain(
             action: () {
@@ -156,9 +142,7 @@ class _MaterialsUsageMobileState
           ),
         ),
         body: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20.0,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
             children: [
               Material(
@@ -172,9 +156,7 @@ class _MaterialsUsageMobileState
                           color: Colors.amber,
                           isMoney: false,
                           title: 'Total Used',
-                          value:
-                              materialUsageProv
-                                  .getTotalMaterialsUsed(),
+                          value: materialUsageProv.getTotalMaterialsUsed(),
                         ),
                         ValueSummaryTabSmall(
                           value: records.length.toDouble(),
@@ -208,16 +190,13 @@ class _MaterialsUsageMobileState
                       return RefreshIndicator(
                         onRefresh: getMaterialUsage,
                         backgroundColor: Colors.white,
-                        color:
-                            theme.lightModeColor.prColor300,
+                        color: theme.lightModeColor.prColor300,
                         displacement: 10,
                         child: ListView(
                           children:
                               records
                                   .map(
-                                    (
-                                      item,
-                                    ) => MaterialsUsageTile(
+                                    (item) => MaterialsUsageTile(
                                       materialsUsage: item,
                                       fromDetails: false,
                                     ),

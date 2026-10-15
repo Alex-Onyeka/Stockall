@@ -20,11 +20,9 @@ class MaterialUsageCartItemTile extends StatefulWidget {
       MaterialUsageCartItemTileState();
 }
 
-class MaterialUsageCartItemTileState
-    extends State<MaterialUsageCartItemTile> {
+class MaterialUsageCartItemTileState extends State<MaterialUsageCartItemTile> {
   String cutLongText(String text) {
-    if (text.length >
-        (screenWidth(context) > mobileScreen ? 25 : 15)) {
+    if (text.length > (screenWidth(context) > mobileScreen ? 25 : 15)) {
       return '${text.substring(0, (screenWidth(context) > mobileScreen ? 25 : 15))}...';
     } else {
       return text;
@@ -35,18 +33,12 @@ class MaterialUsageCartItemTileState
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 3.0,
-        horizontal: 5,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 5),
       child: Container(
         padding: EdgeInsets.fromLTRB(8, 15, 15, 15),
         decoration: BoxDecoration(
           boxShadow: [
-            BoxShadow(
-              color: const Color.fromARGB(20, 0, 0, 0),
-              blurRadius: 10,
-            ),
+            BoxShadow(color: const Color.fromARGB(20, 0, 0, 0), blurRadius: 10),
           ],
           borderRadius: BorderRadius.circular(5),
           color: Colors.white,
@@ -56,8 +48,7 @@ class MaterialUsageCartItemTileState
           spacing: 10,
           children: [
             Visibility(
-              visible:
-                  screenWidth(context) > mobileScreenSmall,
+              visible: screenWidth(context) > mobileScreenSmall,
               child: Container(
                 padding: EdgeInsets.all(5),
                 decoration: BoxDecoration(
@@ -76,24 +67,16 @@ class MaterialUsageCartItemTileState
                 children: [
                   Row(
                     spacing: 15,
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment:
-                        CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Expanded(
                         child: Text(
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b2
-                                    .fontSize,
+                            fontSize: theme.mobileTexts.b2.fontSize,
                           ),
-                          (widget
-                              .materialsUsageCartItem
-                              .name),
+                          (widget.materialsUsageCartItem.name),
                         ),
                       ),
                       Row(
@@ -103,18 +86,15 @@ class MaterialUsageCartItemTileState
                             type: MaterialType.transparency,
                             child: InkWell(
                               onTap: widget.editAction,
-                              mouseCursor:
-                                  SystemMouseCursors.click,
+                              mouseCursor: SystemMouseCursors.click,
                               child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(
-                                      vertical: 6.0,
-                                      horizontal: 8,
-                                    ),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 6.0,
+                                  horizontal: 8,
+                                ),
                                 child: Icon(
                                   size: 20,
-                                  color:
-                                      Colors.grey.shade400,
+                                  color: Colors.grey.shade400,
                                   Icons.edit,
                                 ),
                               ),
@@ -131,8 +111,7 @@ class MaterialUsageCartItemTileState
                                       theme: theme,
                                       message:
                                           'You are about to remove this material from the cart. Are you sure you want to proceed?',
-                                      title:
-                                          'Remove Material From Cart',
+                                      title: 'Remove Material From Cart',
                                       action: () {
                                         returnMaterialsUsageActionProvider()
                                             .removeMaterialItemFromCart(
@@ -142,26 +121,21 @@ class MaterialUsageCartItemTileState
                                                       .uuid ??
                                                   '',
                                             );
-                                        Navigator.of(
-                                          context,
-                                        ).pop();
+                                        Navigator.of(context).pop();
                                       },
                                     );
                                   },
                                 );
                               },
-                              mouseCursor:
-                                  SystemMouseCursors.click,
+                              mouseCursor: SystemMouseCursors.click,
                               child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(
-                                      vertical: 6.0,
-                                      horizontal: 8,
-                                    ),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 6.0,
+                                  horizontal: 8,
+                                ),
                                 child: Icon(
                                   size: 20,
-                                  color:
-                                      Colors.red.shade400,
+                                  color: Colors.red.shade400,
                                   Icons.clear,
                                 ),
                               ),
@@ -179,22 +153,16 @@ class MaterialUsageCartItemTileState
                   ),
                   SizedBox(height: 10),
                   Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
                         child: Row(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           spacing: 5,
                           children: [
                             Text(
                               style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
+                                fontSize: theme.mobileTexts.b3.fontSize,
                                 color: Colors.grey.shade600,
                               ),
                               'Cost:',
@@ -202,23 +170,13 @@ class MaterialUsageCartItemTileState
                             Flexible(
                               child: Text(
                                 style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  color:
-                                      theme
-                                          .lightModeColor
-                                          .prColor300,
-                                  fontWeight:
-                                      FontWeight.bold,
+                                  fontSize: theme.mobileTexts.b3.fontSize,
+                                  color: theme.lightModeColor.prColor300,
+                                  fontWeight: FontWeight.bold,
                                 ),
                                 formatMoneyBig(
                                   amount:
-                                      widget
-                                          .materialsUsageCartItem
-                                          .costPrice ??
+                                      widget.materialsUsageCartItem.costPrice ??
                                       0,
                                   context: context,
                                 ),
@@ -233,34 +191,20 @@ class MaterialUsageCartItemTileState
                           Text(
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                              color:
-                                  theme
-                                      .lightModeColor
-                                      .prColor250,
+                              fontSize: theme.mobileTexts.b3.fontSize,
+                              color: theme.lightModeColor.prColor250,
                             ),
                             formatLargeNumberDouble(
-                              widget
-                                  .materialsUsageCartItem
-                                  .quantity,
+                              widget.materialsUsageCartItem.quantity,
                             ),
                           ),
                           Text(
                             style: TextStyle(
                               fontWeight: FontWeight.normal,
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
+                              fontSize: theme.mobileTexts.b3.fontSize,
                               color: Colors.grey.shade600,
                             ),
-                            widget.materialsUsageCartItem
-                                .getUnit(),
+                            widget.materialsUsageCartItem.getUnit(),
                           ),
                         ],
                       ),

@@ -19,32 +19,24 @@ class TableRowRecordWidget extends StatefulWidget {
   final TempStorageProducts product;
 
   @override
-  State<TableRowRecordWidget> createState() =>
-      _TableRowRecordWidgetState();
+  State<TableRowRecordWidget> createState() => _TableRowRecordWidgetState();
 }
 
-class _TableRowRecordWidgetState
-    extends State<TableRowRecordWidget> {
+class _TableRowRecordWidgetState extends State<TableRowRecordWidget> {
   double getTotalInStorage() {
-    return widget.product
-        .getProductUnit()
-        .getQuantityEquivDivided(index: 4);
+    return widget.product.getProductUnit().getQuantityEquivDivided(index: 4);
   }
 
   double getTotalInSales() {
     List<TempProductClass> items =
         returnData().productListMain
-            .where(
-              (item) =>
-                  item.storageUuid == widget.product.uuid,
-            )
+            .where((item) => item.storageUuid == widget.product.uuid)
             .toList();
 
     return items
         .map(
-          (item) => widget.product
-              .getProductUnit()
-              .getQuantityEquivDivided(index: 4),
+          (item) =>
+              widget.product.getProductUnit().getQuantityEquivDivided(index: 4),
         )
         .fold(0, (a, b) => a + b);
   }
@@ -66,9 +58,7 @@ class _TableRowRecordWidgetState
           context,
           MaterialPageRoute(
             builder: (context) {
-              return StorageDetailsPage(
-                productUuid: widget.product.uuid!,
-              );
+              return StorageDetailsPage(productUuid: widget.product.uuid!);
             },
           ),
         ).then((_) {
@@ -96,30 +86,19 @@ class _TableRowRecordWidgetState
               padding: EdgeInsets.all(10),
               child: Center(
                 child: Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Flexible(
                       child: Text(
                         style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
+                          fontSize: widget.theme.mobileTexts.b3.fontSize,
                           fontWeight: FontWeight.bold,
                         ),
                         (returnStorageProductProvider(
-                                      context: context,
-                                    ).storageProductListMain
-                                    .indexWhere(
-                                      (item) =>
-                                          item.uuid ==
-                                          widget
-                                              .product
-                                              .uuid,
-                                    ) +
+                                  context: context,
+                                ).storageProductListMain.indexWhere(
+                                  (item) => item.uuid == widget.product.uuid,
+                                ) +
                                 1)
                             .toString(),
                       ),
@@ -144,12 +123,7 @@ class _TableRowRecordWidgetState
                       Flexible(
                         child: Text(
                           style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
+                            fontSize: widget.theme.mobileTexts.b3.fontSize,
                             fontWeight: FontWeight.bold,
                           ),
                           widget.product.name,
@@ -176,12 +150,7 @@ class _TableRowRecordWidgetState
                       Flexible(
                         child: Text(
                           style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
+                            fontSize: widget.theme.mobileTexts.b3.fontSize,
                             fontWeight: FontWeight.bold,
                           ),
                           "${formatLargeNumberDouble(getTotalInStorage())} ${widget.product.getProductUnit().name}",
@@ -208,12 +177,7 @@ class _TableRowRecordWidgetState
                       Flexible(
                         child: Text(
                           style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
+                            fontSize: widget.theme.mobileTexts.b3.fontSize,
                             fontWeight: FontWeight.bold,
                           ),
                           "${formatLargeNumberDouble(getTotalInSales())} ${widget.product.getProductUnit().name}",
@@ -240,12 +204,7 @@ class _TableRowRecordWidgetState
                       Flexible(
                         child: Text(
                           style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
+                            fontSize: widget.theme.mobileTexts.b3.fontSize,
                             fontWeight: FontWeight.bold,
                           ),
                           "${formatLargeNumberDouble(getOverallTotal())} ${widget.product.getProductUnit().name}",

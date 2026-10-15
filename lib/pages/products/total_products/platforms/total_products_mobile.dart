@@ -34,12 +34,10 @@ class TotalProductsMobile extends StatefulWidget {
   final String? categoryUuid;
 
   @override
-  State<TotalProductsMobile> createState() =>
-      _TotalProductsMobileState();
+  State<TotalProductsMobile> createState() => _TotalProductsMobileState();
 }
 
-class _TotalProductsMobileState
-    extends State<TotalProductsMobile> {
+class _TotalProductsMobileState extends State<TotalProductsMobile> {
   int currentSelect = 0;
   void changeSelected(int number) {
     currentSelect = number;
@@ -56,8 +54,7 @@ class _TotalProductsMobileState
   // List<TempProductClass> productsResult = [];
   // String? searchResult;
   bool isFocus = false;
-  TextEditingController searchController =
-      TextEditingController();
+  TextEditingController searchController = TextEditingController();
 
   // late Future<List<TempProductClass>> _productsFuture;
   @override
@@ -65,15 +62,9 @@ class _TotalProductsMobileState
     super.initState();
     returnData().toggleFloatingAction(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (returnCategoriesProvider()
-          .categories()
-          .isNotEmpty) {
+      if (returnCategoriesProvider().categories().isNotEmpty) {
         setState(() {
-          categoryUuid =
-              returnCategoriesProvider()
-                  .categories()
-                  .first
-                  .uuid;
+          categoryUuid = returnCategoriesProvider().categories().first.uuid;
         });
       }
     });
@@ -89,9 +80,7 @@ class _TotalProductsMobileState
   }
 
   Future<void> getProductList() async {
-    await RefreshFunctions(
-      context,
-    ).refreshProducts(context);
+    await RefreshFunctions(context).refreshProducts(context);
     setState(() {});
   }
 
@@ -117,28 +106,21 @@ class _TotalProductsMobileState
                         searchController.text.toLowerCase(),
                       ) ||
                       pr.barcode?.toLowerCase() ==
-                          searchController.text
-                              .toLowerCase(),
+                          searchController.text.toLowerCase(),
                 )
                 .toList()
             : widget.categoryUuid != null
             ? returnData()
                 .productList()
                 .where(
-                  (pr) =>
-                      pr.categories?.contains(
-                        widget.categoryUuid,
-                      ) ==
-                      true,
+                  (pr) => pr.categories?.contains(widget.categoryUuid) == true,
                 )
                 .toList()
             : returnData().productList();
     List<TempProductClass> filterProducts() {
       switch (currentSelect) {
         case 1:
-          return products
-              .where((p) => p.getActualQuantity() != 0)
-              .toList();
+          return products.where((p) => p.getActualQuantity() != 0).toList();
         case 2:
           return products
               .where(
@@ -149,17 +131,11 @@ class _TotalProductsMobileState
               )
               .toList();
         case 3:
-          return products
-              .where((p) => p.getActualQuantity() == 0)
-              .toList();
+          return products.where((p) => p.getActualQuantity() == 0).toList();
         case 4:
-          return products
-              .where((p) => p.getActualQuantity() == null)
-              .toList();
+          return products.where((p) => p.getActualQuantity() == null).toList();
         case 5:
-          return products
-              .where((p) => p.departmentUuid == null)
-              .toList();
+          return products.where((p) => p.departmentUuid == null).toList();
         case 0:
         default:
           return products;
@@ -169,11 +145,7 @@ class _TotalProductsMobileState
     List<TempProductClass> categoryFilterProducts() {
       if (categoryUuid != null) {
         return products
-            .where(
-              (pr) =>
-                  pr.categories?.contains(categoryUuid) ==
-                  true,
-            )
+            .where((pr) => pr.categories?.contains(categoryUuid) == true)
             .toList();
       }
       return products;
@@ -198,32 +170,22 @@ class _TotalProductsMobileState
                               setState(() {
                                 filterIndex = 0;
                               });
-                              returnData()
-                                  .toggleIsSelectProduct(
-                                    false,
-                                  );
+                              returnData().toggleIsSelectProduct(false);
                             },
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                    horizontal: 10.0,
-                                  ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10.0,
+                              ),
                               child: Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
+                                      fontSize: theme.mobileTexts.b3.fontSize,
                                       fontWeight:
                                           filterIndex == 0
-                                              ? FontWeight
-                                                  .bold
+                                              ? FontWeight.bold
                                               : null,
                                     ),
                                     'Inventory Record',
@@ -231,14 +193,10 @@ class _TotalProductsMobileState
                                   Visibility(
                                     visible:
                                         filterIndex == 0 &&
-                                        !returnData()
-                                            .isSelectProducts,
+                                        !returnData().isSelectProducts,
                                     child: Icon(
                                       size: 17,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade700,
+                                      color: Colors.grey.shade700,
                                       Icons.check,
                                     ),
                                   ),
@@ -251,45 +209,31 @@ class _TotalProductsMobileState
                               setState(() {
                                 filterIndex = 1;
                               });
-                              returnData()
-                                  .toggleIsSelectProduct(
-                                    false,
-                                  );
+                              returnData().toggleIsSelectProduct(false);
                             },
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                    horizontal: 10.0,
-                                  ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10.0,
+                              ),
                               child: Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
+                                      fontSize: theme.mobileTexts.b3.fontSize,
                                       fontWeight:
                                           filterIndex == 1
-                                              ? FontWeight
-                                                  .bold
+                                              ? FontWeight.bold
                                               : null,
                                     ),
                                     'Categories',
                                   ),
                                   Visibility(
-                                    visible:
-                                        filterIndex == 1,
+                                    visible: filterIndex == 1,
                                     child: Icon(
                                       size: 17,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade700,
+                                      color: Colors.grey.shade700,
                                       Icons.check,
                                     ),
                                   ),
@@ -304,30 +248,23 @@ class _TotalProductsMobileState
                                 MaterialPageRoute(
                                   builder: (context) {
                                     return ItemHistoryPage(
-                                      fromItemDetails:
-                                          false,
+                                      fromItemDetails: false,
                                     );
                                   },
                                 ),
                               );
                             },
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                    horizontal: 10.0,
-                                  ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10.0,
+                              ),
                               child: Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
+                                      fontSize: theme.mobileTexts.b3.fontSize,
                                     ),
                                     'View History',
                                   ),
@@ -337,58 +274,39 @@ class _TotalProductsMobileState
                           ),
                           PopupMenuItem(
                             onTap: () {
-                              if (returnData()
-                                  .isSelectProducts) {
-                                returnData()
-                                    .toggleIsSelectProduct(
-                                      false,
-                                    );
+                              if (returnData().isSelectProducts) {
+                                returnData().toggleIsSelectProduct(false);
                               } else {
-                                returnData()
-                                    .toggleIsSelectProduct(
-                                      true,
-                                    );
+                                returnData().toggleIsSelectProduct(true);
                               }
                               setState(() {
                                 filterIndex = 0;
                               });
                             },
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                    horizontal: 10.0,
-                                  ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10.0,
+                              ),
                               child: Row(
                                 spacing: 5,
                                 children: [
                                   Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
+                                      fontSize: theme.mobileTexts.b3.fontSize,
                                       fontWeight:
                                           filterIndex == 2
-                                              ? FontWeight
-                                                  .bold
+                                              ? FontWeight.bold
                                               : null,
                                     ),
-                                    returnData()
-                                            .isSelectProducts
+                                    returnData().isSelectProducts
                                         ? 'Cancel'
                                         : 'Select Items',
                                   ),
                                   Visibility(
-                                    visible:
-                                        returnData()
-                                            .isSelectProducts,
+                                    visible: returnData().isSelectProducts,
                                     child: Icon(
                                       size: 17,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade700,
+                                      color: Colors.grey.shade700,
                                       Icons.clear,
                                     ),
                                   ),
@@ -399,9 +317,7 @@ class _TotalProductsMobileState
                         ];
                       },
                       child: Padding(
-                        padding: const EdgeInsets.only(
-                          right: 10.0,
-                        ),
+                        padding: const EdgeInsets.only(right: 10.0),
                         child: Container(
                           padding: EdgeInsets.all(5),
                           child: Row(
@@ -409,17 +325,10 @@ class _TotalProductsMobileState
                             children: [
                               Text(
                                 style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
+                                  fontSize: theme.mobileTexts.b3.fontSize,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                filterIndex == 0
-                                    ? 'Inventory'
-                                    : 'Categories',
+                                filterIndex == 0 ? 'Inventory' : 'Categories',
                               ),
                               Icon(Icons.more_vert_rounded),
                             ],
@@ -430,9 +339,7 @@ class _TotalProductsMobileState
           ),
           floatingActionButton: Visibility(
             visible:
-                authorization(
-                  authorized: Authorizations().addProduct,
-                ) &&
+                authorization(authorized: Authorizations().addProduct) &&
                 widget.categoryUuid == null,
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -461,43 +368,40 @@ class _TotalProductsMobileState
                   theme: theme,
                 ),
                 FloatingActionButtonMain(
-              action: () {
-                ItemsAuthAction().numberOfItemsAction(
-                  context: context,
                   action: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return AddProduct();
-                        },
-                      ),
-                    ).then((_) {
-                      setState(() {
-                        // getProductList(context);
-                      });
-                    });
+                    ItemsAuthAction().numberOfItemsAction(
+                      context: context,
+                      action: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return AddProduct();
+                            },
+                          ),
+                        ).then((_) {
+                          setState(() {
+                            // getProductList(context);
+                          });
+                        });
+                      },
+                    );
                   },
-                );
-              },
-              color: theme.lightModeColor.secColor100,
-              text: 'Add Products',
-              theme: theme,
+                  color: theme.lightModeColor.secColor100,
+                  text: 'Add Products',
+                  theme: theme,
                 ),
               ],
             ),
           ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.endFloat,
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
           body: Stack(
             children: [
               Column(
                 children: [
                   SizedBox(height: 10),
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 30.0,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
                     child: TextFieldBarcode(
                       clearTextField: () {
                         setState(() {});
@@ -508,25 +412,21 @@ class _TotalProductsMobileState
                           if (products
                               .where(
                                 (pr) =>
-                                    pr.barcode
-                                        ?.toLowerCase() ==
-                                    searchController.text
-                                        .toLowerCase(),
+                                    pr.barcode?.toLowerCase() ==
+                                    searchController.text.toLowerCase(),
                               )
                               .isNotEmpty) {
-                            ItemsAuthAction()
-                                .useOfBArcodeAction(
-                                  context: context,
-                                  action: () {
-                                    setState(() {});
-                                  },
-                                  failAction: () {
-                                    setState(() {
-                                      searchController
-                                          .clear();
-                                    });
-                                  },
-                                );
+                            ItemsAuthAction().useOfBArcodeAction(
+                              context: context,
+                              action: () {
+                                setState(() {});
+                              },
+                              failAction: () {
+                                setState(() {
+                                  searchController.clear();
+                                });
+                              },
+                            );
                           } else {
                             setState(() {});
                           }
@@ -543,8 +443,7 @@ class _TotalProductsMobileState
                             );
                             setState(() {
                               if (result != null) {
-                                searchController.text =
-                                    result;
+                                searchController.text = result;
                               } else {
                                 return;
                               }
@@ -574,61 +473,46 @@ class _TotalProductsMobileState
                               child: SingleChildScrollView(
                                 child: RefreshIndicator(
                                   onRefresh: getProductList,
-                                  color:
-                                      theme
-                                          .lightModeColor
-                                          .prColor300,
-                                  backgroundColor:
-                                      Colors.white,
+                                  color: theme.lightModeColor.prColor300,
+                                  backgroundColor: Colors.white,
                                   displacement: 10,
                                   child: EmptyWidgetDisplay(
                                     buttonText: 'Add Item',
                                     subText:
-                                        widget.categoryUuid ==
-                                                null
+                                        widget.categoryUuid == null
                                             ? 'Click on the button below to start adding Items to your store.'
                                             : 'Go to your Items Page to add items to your store.',
                                     title:
-                                        widget.categoryUuid ==
-                                                null
+                                        widget.categoryUuid == null
                                             ? 'You have not Item Under this Category'
                                             : 'You have no Items Yet',
                                     svg: productIconSvg,
                                     height: 35,
                                     action:
-                                        widget.categoryUuid !=
-                                                null
+                                        widget.categoryUuid != null
                                             ? () {
                                               if (authorization(
                                                 authorized:
-                                                    Authorizations()
-                                                        .addProduct,
+                                                    Authorizations().addProduct,
                                               )) {
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
-                                                    builder: (
-                                                      context,
-                                                    ) {
+                                                    builder: (context) {
                                                       return AddProduct();
                                                     },
                                                   ),
                                                 ).then((_) {
-                                                  if (context
-                                                      .mounted) {}
+                                                  if (context.mounted) {}
                                                 });
                                               }
                                             }
                                             : () {},
                                     theme: widget.theme,
                                     altAction: () async {
-                                      await returnData()
-                                          .getProducts(
-                                            shopId(),
-                                          );
+                                      await returnData().getProducts(shopId());
                                     },
-                                    altActionText:
-                                        'Refresh',
+                                    altActionText: 'Refresh',
                                     altIcon: Icons.refresh,
                                   ),
                                 ),
@@ -636,53 +520,43 @@ class _TotalProductsMobileState
                             );
                           } else {
                             return Padding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(
-                                    10.0,
-                                    15,
-                                    10,
-                                    15,
-                                  ),
+                              padding: const EdgeInsets.fromLTRB(
+                                10.0,
+                                15,
+                                10,
+                                15,
+                              ),
                               child: Column(
                                 children: [
                                   Visibility(
-                                    visible:
-                                        widget
-                                            .categoryUuid ==
-                                        null,
+                                    visible: widget.categoryUuid == null,
                                     child: Padding(
-                                      padding:
-                                          const EdgeInsets.symmetric(
-                                            horizontal:
-                                                10.0,
-                                          ),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10.0,
+                                      ),
                                       child: SizedBox(
-                                        width:
-                                            double.infinity,
+                                        width: double.infinity,
                                         // height: 40,
                                         child: Builder(
-                                          builder: (
-                                            context,
-                                          ) {
-                                            if (returnData()
-                                                .isSelectProducts) {
+                                          builder: (context) {
+                                            if (returnData().isSelectProducts) {
                                               return SizedBox(
-                                                width:
-                                                    double
-                                                        .infinity,
+                                                width: double.infinity,
                                                 child: Center(
                                                   child: SingleChildScrollView(
                                                     scrollDirection:
                                                         Axis.horizontal,
                                                     child: Row(
                                                       mainAxisAlignment:
-                                                          MainAxisAlignment.center,
+                                                          MainAxisAlignment
+                                                              .center,
                                                       children: [
                                                         ProductSelectionActionButton(
-                                                          title:
-                                                              'Delete',
+                                                          title: 'Delete',
                                                           action: () {
-                                                            if (returnData().selectedProducts.isNotEmpty) {
+                                                            if (returnData()
+                                                                .selectedProducts
+                                                                .isNotEmpty) {
                                                               showDialog(
                                                                 context:
                                                                     context,
@@ -700,22 +574,19 @@ class _TotalProductsMobileState
                                                                       Navigator.of(
                                                                         confirmContext,
                                                                       ).pop();
-                                                                      setState(
-                                                                        () {
-                                                                          isDeleteLoading =
-                                                                              true;
-                                                                        },
-                                                                      );
+                                                                      setState(() {
+                                                                        isDeleteLoading =
+                                                                            true;
+                                                                      });
                                                                       var res =
-                                                                          await returnData().deleteSelectedProducts();
+                                                                          await returnData()
+                                                                              .deleteSelectedProducts();
                                                                       if (res ==
                                                                           0) {
-                                                                        setState(
-                                                                          () {
-                                                                            isDeleteLoading =
-                                                                                false;
-                                                                          },
-                                                                        );
+                                                                        setState(() {
+                                                                          isDeleteLoading =
+                                                                              false;
+                                                                        });
                                                                         showDialog(
                                                                           // ignore: use_build_context_synchronously
                                                                           context:
@@ -734,12 +605,10 @@ class _TotalProductsMobileState
                                                                           },
                                                                         );
                                                                       } else {
-                                                                        setState(
-                                                                          () {
-                                                                            isDeleteLoading =
-                                                                                false;
-                                                                          },
-                                                                        );
+                                                                        setState(() {
+                                                                          isDeleteLoading =
+                                                                              false;
+                                                                        });
                                                                         // returnData().toggleIsSelectProduct(
                                                                         //   false,
                                                                         // );
@@ -751,33 +620,32 @@ class _TotalProductsMobileState
                                                             }
                                                           },
                                                           icon:
-                                                              Icons.delete_outline_rounded,
+                                                              Icons
+                                                                  .delete_outline_rounded,
                                                           color:
-                                                              Colors.red.shade600,
+                                                              Colors
+                                                                  .red
+                                                                  .shade600,
                                                         ),
                                                         ProductSelectionActionButton(
-                                                          title:
-                                                              'Duplicate',
+                                                          title: 'Duplicate',
                                                           action: () {
                                                             duplicateItemsAction(
-                                                              context:
-                                                                  context,
+                                                              context: context,
                                                               loadingAction: (
                                                                 value,
                                                               ) {
-                                                                setState(
-                                                                  () {
-                                                                    isDeleteLoading =
-                                                                        value;
-                                                                  },
-                                                                );
+                                                                setState(() {
+                                                                  isDeleteLoading =
+                                                                      value;
+                                                                });
                                                               },
                                                             );
                                                           },
                                                           icon:
-                                                              Icons.control_point_duplicate_rounded,
-                                                          color:
-                                                              Colors.grey,
+                                                              Icons
+                                                                  .control_point_duplicate_rounded,
+                                                          color: Colors.grey,
                                                         ),
                                                         Visibility(
                                                           visible:
@@ -789,7 +657,9 @@ class _TotalProductsMobileState
                                                             title:
                                                                 'Generate Storage',
                                                             action: () {
-                                                              if (returnData().selectedProducts.isNotEmpty) {
+                                                              if (returnData()
+                                                                  .selectedProducts
+                                                                  .isNotEmpty) {
                                                                 showDialog(
                                                                   context:
                                                                       context,
@@ -807,22 +677,18 @@ class _TotalProductsMobileState
                                                                         Navigator.of(
                                                                           confirmContext,
                                                                         ).pop();
-                                                                        setState(
-                                                                          () {
-                                                                            isDeleteLoading =
-                                                                                true;
-                                                                          },
-                                                                        );
+                                                                        setState(() {
+                                                                          isDeleteLoading =
+                                                                              true;
+                                                                        });
                                                                         var res =
                                                                             await returnData().generateStorageSelectedProducts();
                                                                         if (res ==
                                                                             0) {
-                                                                          setState(
-                                                                            () {
-                                                                              isDeleteLoading =
-                                                                                  false;
-                                                                            },
-                                                                          );
+                                                                          setState(() {
+                                                                            isDeleteLoading =
+                                                                                false;
+                                                                          });
                                                                           showDialog(
                                                                             // ignore: use_build_context_synchronously
                                                                             context:
@@ -841,12 +707,10 @@ class _TotalProductsMobileState
                                                                             },
                                                                           );
                                                                         } else {
-                                                                          setState(
-                                                                            () {
-                                                                              isDeleteLoading =
-                                                                                  false;
-                                                                            },
-                                                                          );
+                                                                          setState(() {
+                                                                            isDeleteLoading =
+                                                                                false;
+                                                                          });
                                                                         }
                                                                       },
                                                                     );
@@ -855,29 +719,24 @@ class _TotalProductsMobileState
                                                               }
                                                             },
                                                             icon:
-                                                                Icons.storage_rounded,
-                                                            color:
-                                                                Colors.grey,
+                                                                Icons
+                                                                    .storage_rounded,
+                                                            color: Colors.grey,
                                                           ),
                                                         ),
                                                         ProductSelectionActionButton(
-                                                          title:
-                                                              'Cancel',
+                                                          title: 'Cancel',
                                                           action: () {
-                                                            returnData().toggleIsSelectProduct(
-                                                              false,
-                                                            );
-                                                            setState(
-                                                              () {
-                                                                filterIndex =
-                                                                    0;
-                                                              },
-                                                            );
+                                                            returnData()
+                                                                .toggleIsSelectProduct(
+                                                                  false,
+                                                                );
+                                                            setState(() {
+                                                              filterIndex = 0;
+                                                            });
                                                           },
-                                                          icon:
-                                                              Icons.clear,
-                                                          color:
-                                                              Colors.grey,
+                                                          icon: Icons.clear,
+                                                          color: Colors.grey,
                                                         ),
                                                       ],
                                                     ),
@@ -885,148 +744,113 @@ class _TotalProductsMobileState
                                                 ),
                                               );
                                             } else {
-                                              if (filterIndex ==
-                                                  0) {
+                                              if (filterIndex == 0) {
                                                 return SingleChildScrollView(
-                                                  clipBehavior:
-                                                      Clip.hardEdge,
+                                                  clipBehavior: Clip.hardEdge,
                                                   scrollDirection:
                                                       Axis.horizontal,
                                                   child: Row(
-                                                    spacing:
-                                                        5,
+                                                    spacing: 5,
                                                     mainAxisAlignment:
-                                                        MainAxisAlignment.center,
+                                                        MainAxisAlignment
+                                                            .center,
                                                     children: [
                                                       ProductsFilterButton(
                                                         length:
-                                                            filterProducts().length,
+                                                            filterProducts()
+                                                                .length,
                                                         action: () {
-                                                          setState(
-                                                            () {
-                                                              changeSelected(
-                                                                0,
-                                                              );
-                                                            },
-                                                          );
+                                                          setState(() {
+                                                            changeSelected(0);
+                                                          });
                                                         },
                                                         currentSelected:
                                                             currentSelect,
-                                                        number:
-                                                            0,
-                                                        title:
-                                                            'All Items',
-                                                        theme:
-                                                            theme,
+                                                        number: 0,
+                                                        title: 'All Items',
+                                                        theme: theme,
                                                       ),
                                                       ProductsFilterButton(
                                                         length:
-                                                            filterProducts().length,
+                                                            filterProducts()
+                                                                .length,
                                                         action: () {
-                                                          setState(
-                                                            () {
-                                                              changeSelected(
-                                                                1,
-                                                              );
-                                                            },
-                                                          );
+                                                          setState(() {
+                                                            changeSelected(1);
+                                                          });
                                                         },
                                                         currentSelected:
                                                             currentSelect,
-                                                        number:
-                                                            1,
-                                                        title:
-                                                            'In Stock',
-                                                        theme:
-                                                            theme,
+                                                        number: 1,
+                                                        title: 'In Stock',
+                                                        theme: theme,
                                                       ),
                                                       ProductsFilterButton(
                                                         length:
-                                                            filterProducts().length,
+                                                            filterProducts()
+                                                                .length,
                                                         action: () {
-                                                          setState(
-                                                            () {
-                                                              changeSelected(
-                                                                2,
-                                                              );
-                                                            },
-                                                          );
+                                                          setState(() {
+                                                            changeSelected(2);
+                                                          });
                                                         },
                                                         currentSelected:
                                                             currentSelect,
-                                                        number:
-                                                            2,
-                                                        title:
-                                                            'Low Stock',
-                                                        theme:
-                                                            theme,
+                                                        number: 2,
+                                                        title: 'Low Stock',
+                                                        theme: theme,
                                                       ),
                                                       ProductsFilterButton(
                                                         length:
-                                                            filterProducts().length,
+                                                            filterProducts()
+                                                                .length,
                                                         currentSelected:
                                                             currentSelect,
                                                         action: () {
-                                                          setState(
-                                                            () {
-                                                              changeSelected(
-                                                                3,
-                                                              );
-                                                            },
-                                                          );
+                                                          setState(() {
+                                                            changeSelected(3);
+                                                          });
                                                         },
-                                                        number:
-                                                            3,
-                                                        title:
-                                                            'Out of Stock',
-                                                        theme:
-                                                            theme,
+                                                        number: 3,
+                                                        title: 'Out of Stock',
+                                                        theme: theme,
                                                       ),
                                                       ProductsFilterButton(
                                                         length:
-                                                            filterProducts().length,
+                                                            filterProducts()
+                                                                .length,
                                                         currentSelected:
                                                             currentSelect,
                                                         action: () {
-                                                          setState(
-                                                            () {
-                                                              changeSelected(
-                                                                4,
-                                                              );
-                                                            },
-                                                          );
+                                                          setState(() {
+                                                            changeSelected(4);
+                                                          });
                                                         },
-                                                        number:
-                                                            4,
-                                                        title:
-                                                            'UnManaged',
-                                                        theme:
-                                                            theme,
+                                                        number: 4,
+                                                        title: 'UnManaged',
+                                                        theme: theme,
                                                       ),
                                                       Visibility(
                                                         visible:
-                                                            returnShopProvider().userShop()?.manageDepartments ==
+                                                            returnShopProvider()
+                                                                .userShop()
+                                                                ?.manageDepartments ==
                                                             true,
                                                         child: ProductsFilterButton(
                                                           length:
-                                                              filterProducts().length,
+                                                              filterProducts()
+                                                                  .length,
                                                           currentSelected:
                                                               currentSelect,
                                                           action: () {
-                                                            setState(
-                                                              () {
-                                                                changeSelected(
-                                                                  5,
-                                                                );
-                                                              },
-                                                            );
+                                                            setState(() {
+                                                              changeSelected(5);
+                                                            });
                                                           },
-                                                          number:
-                                                              5,
+                                                          number: 5,
                                                           title:
                                                               'No Department',
-                                                          theme:
-                                                              theme,
+                                                          theme: theme,
                                                         ),
                                                       ),
                                                     ],
@@ -1038,10 +862,10 @@ class _TotalProductsMobileState
                                                     scrollDirection:
                                                         Axis.horizontal,
                                                     child: Row(
-                                                      spacing:
-                                                          6,
+                                                      spacing: 6,
                                                       mainAxisAlignment:
-                                                          MainAxisAlignment.center,
+                                                          MainAxisAlignment
+                                                              .center,
                                                       children:
                                                           returnCategoriesProvider()
                                                               .categories()
@@ -1049,15 +873,12 @@ class _TotalProductsMobileState
                                                                 (
                                                                   cat,
                                                                 ) => ProductFilterButtonCategory(
-                                                                  theme:
-                                                                      theme,
+                                                                  theme: theme,
                                                                   action: () {
-                                                                    setState(
-                                                                      () {
-                                                                        categoryUuid =
-                                                                            cat.uuid;
-                                                                      },
-                                                                    );
+                                                                    setState(() {
+                                                                      categoryUuid =
+                                                                          cat.uuid;
+                                                                    });
                                                                   },
                                                                   currentSelected:
                                                                       categoryUuid!,
@@ -1082,126 +903,96 @@ class _TotalProductsMobileState
                                   Expanded(
                                     child: Builder(
                                       builder: (context) {
-                                        if (filterIndex ==
-                                            0) {
-                                          if (filterProducts()
-                                              .isNotEmpty) {
+                                        if (filterIndex == 0) {
+                                          if (filterProducts().isNotEmpty) {
                                             return RefreshIndicator(
-                                              onRefresh:
-                                                  getProductList,
+                                              onRefresh: getProductList,
                                               color:
                                                   theme
                                                       .lightModeColor
                                                       .prColor300,
-                                              backgroundColor:
-                                                  Colors
-                                                      .white,
-                                              displacement:
-                                                  10,
+                                              backgroundColor: Colors.white,
+                                              displacement: 10,
                                               child: ListView.builder(
                                                 itemCount:
-                                                    filterProducts()
-                                                        .length,
-                                                itemBuilder: (
-                                                  context,
-                                                  index,
-                                                ) {
-                                                  List<
-                                                    TempProductClass
-                                                  >
-                                                  products =
-                                                      filterProducts();
+                                                    filterProducts().length,
+                                                itemBuilder: (context, index) {
+                                                  List<TempProductClass>
+                                                  products = filterProducts();
 
-                                                  TempProductClass
-                                                  product =
+                                                  TempProductClass product =
                                                       products[index];
 
                                                   return ProductTileMain(
                                                     isSelectProduct:
                                                         returnData(
-                                                          context:
-                                                              context,
+                                                          context: context,
                                                         ).isSelectProducts,
                                                     uuidList:
                                                         returnData(
-                                                              context:
-                                                                  context,
+                                                              context: context,
                                                             ).selectedProducts
                                                             .map(
-                                                              (
-                                                                pr,
-                                                              ) =>
-                                                                  pr.uuid!,
+                                                              (pr) => pr.uuid!,
                                                             )
                                                             .toList(),
                                                     action: () {
                                                       if (returnData()
                                                           .isSelectProducts) {
-                                                        returnData().selectProduct(
-                                                          product,
-                                                        );
+                                                        returnData()
+                                                            .selectProduct(
+                                                              product,
+                                                            );
                                                       } else {
                                                         Navigator.push(
                                                           context,
                                                           MaterialPageRoute(
-                                                            builder: (
-                                                              context,
-                                                            ) {
+                                                            builder: (context) {
                                                               return ProductDetailsPage(
                                                                 productUuid:
-                                                                    product.uuid!,
+                                                                    product
+                                                                        .uuid!,
                                                               );
                                                             },
                                                           ),
-                                                        ).then((
-                                                          _,
-                                                        ) {
+                                                        ).then((_) {
                                                           if (context.mounted) {
-                                                            setState(
-                                                              () {},
-                                                            );
+                                                            setState(() {});
                                                           }
                                                         });
                                                       }
                                                     },
                                                     longPress: () {
-                                                      returnData().toggleIsSelectProduct(
-                                                        true,
-                                                      );
+                                                      returnData()
+                                                          .toggleIsSelectProduct(
+                                                            true,
+                                                          );
                                                       setState(() {
-                                                        filterIndex =
-                                                            0;
+                                                        filterIndex = 0;
                                                       });
-                                                      returnData().selectProduct(
-                                                        product,
-                                                      );
+                                                      returnData()
+                                                          .selectProduct(
+                                                            product,
+                                                          );
                                                     },
-                                                    theme:
-                                                        theme,
-                                                    product:
-                                                        product,
+                                                    theme: theme,
+                                                    product: product,
                                                   );
                                                 },
                                               ),
                                             );
                                           } else {
                                             return Padding(
-                                              padding:
-                                                  const EdgeInsets.only(
-                                                    bottom:
-                                                        30.0,
-                                                  ),
+                                              padding: const EdgeInsets.only(
+                                                bottom: 30.0,
+                                              ),
                                               child: EmptyWidgetDisplayOnly(
-                                                title:
-                                                    'Empty List',
+                                                title: 'Empty List',
                                                 subText:
                                                     'You Don\'t have any item under this category',
 
-                                                icon:
-                                                    Icons
-                                                        .dangerous_outlined,
-                                                theme:
-                                                    theme,
+                                                icon: Icons.dangerous_outlined,
+                                                theme: theme,
                                                 height: 40,
                                               ),
                                             );
@@ -1210,121 +1001,95 @@ class _TotalProductsMobileState
                                           if (categoryFilterProducts()
                                               .isNotEmpty) {
                                             return RefreshIndicator(
-                                              onRefresh:
-                                                  getProductList,
+                                              onRefresh: getProductList,
                                               color:
                                                   theme
                                                       .lightModeColor
                                                       .prColor300,
-                                              backgroundColor:
-                                                  Colors
-                                                      .white,
-                                              displacement:
-                                                  10,
+                                              backgroundColor: Colors.white,
+                                              displacement: 10,
                                               child: ListView.builder(
                                                 itemCount:
                                                     categoryFilterProducts()
                                                         .length,
-                                                itemBuilder: (
-                                                  context,
-                                                  index,
-                                                ) {
-                                                  List<
-                                                    TempProductClass
-                                                  >
+                                                itemBuilder: (context, index) {
+                                                  List<TempProductClass>
                                                   products =
                                                       categoryFilterProducts();
 
-                                                  TempProductClass
-                                                  product =
+                                                  TempProductClass product =
                                                       products[index];
 
                                                   return ProductTileMain(
                                                     isSelectProduct:
                                                         returnData(
-                                                          context:
-                                                              context,
+                                                          context: context,
                                                         ).isSelectProducts,
                                                     uuidList:
                                                         returnData(
-                                                              context:
-                                                                  context,
+                                                              context: context,
                                                             ).selectedProducts
                                                             .map(
-                                                              (
-                                                                pr,
-                                                              ) =>
-                                                                  pr.uuid!,
+                                                              (pr) => pr.uuid!,
                                                             )
                                                             .toList(),
                                                     action: () {
                                                       if (returnData()
                                                           .isSelectProducts) {
-                                                        returnData().selectProduct(
-                                                          product,
-                                                        );
+                                                        returnData()
+                                                            .selectProduct(
+                                                              product,
+                                                            );
                                                       } else {
                                                         Navigator.push(
                                                           context,
                                                           MaterialPageRoute(
-                                                            builder: (
-                                                              context,
-                                                            ) {
+                                                            builder: (context) {
                                                               return ProductDetailsPage(
                                                                 productUuid:
-                                                                    product.uuid!,
+                                                                    product
+                                                                        .uuid!,
                                                               );
                                                             },
                                                           ),
-                                                        ).then((
-                                                          _,
-                                                        ) {
+                                                        ).then((_) {
                                                           if (context.mounted) {
-                                                            setState(
-                                                              () {},
-                                                            );
+                                                            setState(() {});
                                                           }
                                                         });
                                                       }
                                                     },
                                                     longPress: () {
-                                                      returnData().toggleIsSelectProduct(
-                                                        true,
-                                                      );
+                                                      returnData()
+                                                          .toggleIsSelectProduct(
+                                                            true,
+                                                          );
                                                       setState(() {
-                                                        filterIndex =
-                                                            0;
+                                                        filterIndex = 0;
                                                       });
-                                                      returnData().selectProduct(
-                                                        product,
-                                                      );
+                                                      returnData()
+                                                          .selectProduct(
+                                                            product,
+                                                          );
                                                     },
-                                                    theme:
-                                                        theme,
-                                                    product:
-                                                        product,
+                                                    theme: theme,
+                                                    product: product,
                                                   );
                                                 },
                                               ),
                                             );
                                           } else {
                                             return Padding(
-                                              padding:
-                                                  const EdgeInsets.only(
-                                                    bottom:
-                                                        30.0,
-                                                  ),
+                                              padding: const EdgeInsets.only(
+                                                bottom: 30.0,
+                                              ),
                                               child: EmptyWidgetDisplayOnly(
-                                                title:
-                                                    'Empty List',
+                                                title: 'Empty List',
                                                 subText:
                                                     'You Don\'t have any item under this category',
 
-                                                icon:
-                                                    Icons
-                                                        .dangerous_outlined,
-                                                theme:
-                                                    theme,
+                                                icon: Icons.dangerous_outlined,
+                                                theme: theme,
                                                 height: 40,
                                               ),
                                             );
@@ -1348,9 +1113,7 @@ class _TotalProductsMobileState
         ),
         Visibility(
           visible: isDeleteLoading,
-          child: returnCompProvider(
-            context,
-          ).showLoader(message: 'Loading'),
+          child: returnCompProvider(context).showLoader(message: 'Loading'),
         ),
       ],
     );

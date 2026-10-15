@@ -27,8 +27,7 @@ class ProductionItemsProvider extends ChangeNotifier {
   ProductionItemsProvider._internal();
 
   bool isLoading = false;
-  ConnectivityProvider connectivity =
-      ConnectivityProvider();
+  ConnectivityProvider connectivity = ConnectivityProvider();
 
   void toggleIsLoading(bool value) {
     isLoading = value;
@@ -36,9 +35,7 @@ class ProductionItemsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  String unitText({
-    required ProductionItem productionItem,
-  }) {
+  String unitText({required ProductionItem productionItem}) {
     return isGroupUnit
         ? productionItem.groupUnit ?? 'Group'
         : productionItem.unit;
@@ -70,28 +67,21 @@ class ProductionItemsProvider extends ChangeNotifier {
     productionItem.updatedAt = DateTime.now();
     productionItem.createdAt ??= DateTime.now();
 
-    await ProductionItemsFunc().createProductionItem(
-      productionItem,
-    );
+    await ProductionItemsFunc().createProductionItem(productionItem);
     await CreatedProductionItemsFunc().createProductionItem(
       CreatedProductionItem(
         productionItem: productionItem,
         includeQuantity: true,
       ),
     );
-    await mainLocalLog(
-      'Offline ProductionItem inserted Successfully',
-    );
-    await getProductionItemsOffline(
-      returnShopProvider().userShop()!.shopId!,
-    );
+    await mainLocalLog('Offline ProductionItem inserted Successfully');
+    await getProductionItemsOffline(returnShopProvider().userShop()!.shopId!);
     if (productionItemHistory != null) {
       productionItemHistory.itemName = productionItem.name;
       productionItemHistory.itemUuid = productionItem.uuid;
-      await returnProductionItemHistoryProvider()
-          .createProductionItemHistory(
-            productionItemHistory,
-          );
+      await returnProductionItemHistoryProvider().createProductionItemHistory(
+        productionItemHistory,
+      );
     }
 
     if (!isMultiple) {
@@ -105,14 +95,10 @@ class ProductionItemsProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
-      if (CreatedProductionItemsFunc()
-              .getProductionItems()
-              .isNotEmpty &&
+      if (CreatedProductionItemsFunc().getProductionItems().isNotEmpty &&
           isOnline) {
         final tempProductionItems =
-            CreatedProductionItemsFunc()
-                .getProductionItems()
-                .toList();
+            CreatedProductionItemsFunc().getProductionItems().toList();
         int count = 0;
         for (var item in tempProductionItems) {
           try {
@@ -122,18 +108,16 @@ class ProductionItemsProvider extends ChangeNotifier {
                     .from(tableName)
                     .insert(
                       item.productionItem.toJson(
-                        isIncludeQuantity:
-                            item.includeQuantity ?? true,
+                        isIncludeQuantity: item.includeQuantity ?? true,
                       ),
                     )
                     .select()
                     .maybeSingle();
             if (res != null) {
               count++;
-              await CreatedProductionItemsFunc()
-                  .deleteProductionItem(
-                    item.productionItem.uuid!,
-                  );
+              await CreatedProductionItemsFunc().deleteProductionItem(
+                item.productionItem.uuid!,
+              );
             } else {
               await mainLocalLog(
                 'Error Synchronizing Created Production Item ${item.productionItem.name}',
@@ -141,10 +125,9 @@ class ProductionItemsProvider extends ChangeNotifier {
             }
           } on PostgrestException catch (e) {
             if (e.code == '23505') {
-              await CreatedProductionItemsFunc()
-                  .deleteProductionItem(
-                    item.productionItem.uuid!,
-                  );
+              await CreatedProductionItemsFunc().deleteProductionItem(
+                item.productionItem.uuid!,
+              );
             }
             await mainLocalLog(
               'Error Synchronizing ProductionItem ${item.productionItem.name}: $e',
@@ -152,23 +135,15 @@ class ProductionItemsProvider extends ChangeNotifier {
           }
         }
 
-        await mainLocalLog(
-          '$count productionItems added successfully ✅',
-        );
+        await mainLocalLog('$count productionItems added successfully ✅');
         // await CreatedProductionItemsFunc().clearProductionItems();
-        await mainLocalLog(
-          'Mounted, refreshing productionItems ✅',
-        );
+        await mainLocalLog('Mounted, refreshing productionItems ✅');
         await getProductionItems();
 
-        await mainLocalLog(
-          'Unsynced ProductionItems Cleared',
-        );
+        await mainLocalLog('Unsynced ProductionItems Cleared');
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch ProductionItems insert failed ❌: $e',
-      );
+      await mainLocalLog('Batch ProductionItems insert failed ❌: $e');
     }
   }
 
@@ -176,9 +151,7 @@ class ProductionItemsProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
 
-      if (DeletedProductionItemsFunc()
-              .getProductionItemIds()
-              .isNotEmpty &&
+      if (DeletedProductionItemsFunc().getProductionItemIds().isNotEmpty &&
           isOnline) {
         final uuids =
             DeletedProductionItemsFunc()
@@ -197,22 +170,15 @@ class ProductionItemsProvider extends ChangeNotifier {
           '${data.length} productionItems deleted successfully ✅',
         );
 
-        await DeletedProductionItemsFunc()
-            .clearDeletedProductionItem();
+        await DeletedProductionItemsFunc().clearDeletedProductionItem();
 
-        await mainLocalLog(
-          'Mounted, refreshing productionItems ✅',
-        );
+        await mainLocalLog('Mounted, refreshing productionItems ✅');
         await getProductionItems();
 
-        await mainLocalLog(
-          'Unsynced deleted productionItems cleared',
-        );
+        await mainLocalLog('Unsynced deleted productionItems cleared');
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch ProductionItems delete failed ❌: $e',
-      );
+      await mainLocalLog('Batch ProductionItems delete failed ❌: $e');
     }
   }
 
@@ -220,31 +186,21 @@ class ProductionItemsProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       await mainLocalLog(
-        UpdatedProductionItemsFunc()
-            .getProductionItems()
-            .length
-            .toString(),
+        UpdatedProductionItemsFunc().getProductionItems().length.toString(),
       );
 
-      if (UpdatedProductionItemsFunc()
-              .getProductionItems()
-              .isNotEmpty &&
+      if (UpdatedProductionItemsFunc().getProductionItems().isNotEmpty &&
           isOnline) {
         final updatedProductionItems =
-            UpdatedProductionItemsFunc()
-                .getProductionItems();
+            UpdatedProductionItemsFunc().getProductionItems();
 
         for (final updated in updatedProductionItems) {
-          final localProductionItem =
-              updated.productionItem;
+          final localProductionItem = updated.productionItem;
 
-          localProductionItem.updatedAt ??=
-              DateTime.now().toLocal();
+          localProductionItem.updatedAt ??= DateTime.now().toLocal();
 
           if (localProductionItem.uuid == null) {
-            await mainLocalLog(
-              'Local ProductionItem Uuid is Null',
-            );
+            await mainLocalLog('Local ProductionItem Uuid is Null');
           }
           final remoteData =
               await supabase
@@ -259,70 +215,57 @@ class ProductionItemsProvider extends ChangeNotifier {
                   .from(tableName)
                   .insert(
                     localProductionItem.toJson(
-                      isIncludeQuantity:
-                          updated.includeQuantity,
+                      isIncludeQuantity: updated.includeQuantity,
                     ),
                   );
               await mainLocalLog(
                 'Inserted productionItem with uuid ${localProductionItem.uuid}',
               );
-              await UpdatedProductionItemsFunc()
-                  .deleteUpdatedProductionItem(
-                    localProductionItem.uuid ?? '',
-                  );
+              await UpdatedProductionItemsFunc().deleteUpdatedProductionItem(
+                localProductionItem.uuid ?? '',
+              );
             } on PostgrestException catch (e) {
               if (e.code == '23505') {
-                await UpdatedProductionItemsFunc()
-                    .deleteUpdatedProductionItem(
-                      localProductionItem.uuid ?? '',
-                    );
+                await UpdatedProductionItemsFunc().deleteUpdatedProductionItem(
+                  localProductionItem.uuid ?? '',
+                );
               }
               await mainLocalLog(
                 'Error Synchronizing ProductionItems ${localProductionItem.name}: $e',
               );
             }
           } else {
-            final remoteUpdatedAtRaw =
-                remoteData['updated_at'];
+            final remoteUpdatedAtRaw = remoteData['updated_at'];
             final remoteUpdatedAt =
                 remoteUpdatedAtRaw == null
                     ? null
-                    : DateTime.parse(
-                      remoteUpdatedAtRaw,
-                    ).toUtc();
+                    : DateTime.parse(remoteUpdatedAtRaw).toUtc();
 
             localProductionItem.updatedAt =
-                (localProductionItem.updatedAt ??
-                        DateTime.now())
+                (localProductionItem.updatedAt ?? DateTime.now())
                     .toUtc(); // ✅ keep both UTC
             await mainLocalLog(
               "Local updatedAt: ${localProductionItem.updatedAt}",
             );
-            await mainLocalLog(
-              "Remote updatedAt: $remoteUpdatedAt",
-            );
+            await mainLocalLog("Remote updatedAt: $remoteUpdatedAt");
 
             if (remoteUpdatedAt == null ||
-                localProductionItem.updatedAt!.isAfter(
-                  remoteUpdatedAt,
-                )) {
+                localProductionItem.updatedAt!.isAfter(remoteUpdatedAt)) {
               try {
                 await supabase
                     .from(tableName)
                     .update(
                       localProductionItem.toJson(
-                        isIncludeQuantity:
-                            updated.includeQuantity,
+                        isIncludeQuantity: updated.includeQuantity,
                       ),
                     )
                     .eq('uuid', localProductionItem.uuid!);
                 await mainLocalLog(
                   'Updated productionItem with uuid ${localProductionItem.uuid}',
                 );
-                await UpdatedProductionItemsFunc()
-                    .deleteUpdatedProductionItem(
-                      localProductionItem.uuid ?? '',
-                    );
+                await UpdatedProductionItemsFunc().deleteUpdatedProductionItem(
+                  localProductionItem.uuid ?? '',
+                );
               } on PostgrestException catch (e) {
                 if (e.code == '23505') {
                   await UpdatedProductionItemsFunc()
@@ -343,18 +286,12 @@ class ProductionItemsProvider extends ChangeNotifier {
         }
 
         // await UpdatedProductionItemsFunc().clearupdatedProductionItems();
-        await mainLocalLog(
-          'Unsynced updated productionItems cleared',
-        );
-        await mainLocalLog(
-          'Mounted, refreshing productionItems ✅',
-        );
+        await mainLocalLog('Unsynced updated productionItems cleared');
+        await mainLocalLog('Mounted, refreshing productionItems ✅');
         await getProductionItems();
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch ProductionItems update failed ❌: $e',
-      );
+      await mainLocalLog('Batch ProductionItems update failed ❌: $e');
     }
   }
 
@@ -367,9 +304,7 @@ class ProductionItemsProvider extends ChangeNotifier {
 
   List<ProductionItem> productionItemListMain = [];
 
-  void insertSingleItemIntoCache({
-    required ProductionItem newItem,
-  }) {
+  void insertSingleItemIntoCache({required ProductionItem newItem}) {
     var items = productionItemListMain.where(
       (item) => item.uuid == newItem.uuid,
     );
@@ -383,28 +318,18 @@ class ProductionItemsProvider extends ChangeNotifier {
   }
 
   List<ProductionItem> productionItemList() {
-    if (returnShopProvider()
-            .userShop()
-            ?.manageDepartments ==
-        true) {
-      if (!authorization(
-        authorized: Authorizations().viewAllDepartments,
-      )) {
+    if (returnShopProvider().userShop()?.manageDepartments == true) {
+      if (!authorization(authorized: Authorizations().viewAllDepartments)) {
         return productionItemListMain.where((cat) {
           if (cat.departmentUuid == null) {
             return true;
           } else {
             return cat.departmentUuid ==
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid;
+                returnDepartmentProvider().currentDepartment()?.uuid;
           }
         }).toList();
       } else {
-        if (returnDepartmentProvider()
-                .currentDepartment()
-                ?.uuid ==
-            null) {
+        if (returnDepartmentProvider().currentDepartment()?.uuid == null) {
           return productionItemListMain;
         } else {
           return productionItemListMain.where((cat) {
@@ -412,9 +337,7 @@ class ProductionItemsProvider extends ChangeNotifier {
               return true;
             } else {
               return cat.departmentUuid ==
-                  returnDepartmentProvider()
-                      .currentDepartment()
-                      ?.uuid;
+                  returnDepartmentProvider().currentDepartment()?.uuid;
             }
           }).toList();
         }
@@ -438,16 +361,9 @@ class ProductionItemsProvider extends ChangeNotifier {
       await mainLocalLog('✅✅ ProductionItems List Cleared');
       if (isOnline &&
           ProductionItemsFunc().isSynced() &&
-          returnShopProvider()
-                  .userShop()
-                  ?.manageProductions ==
-              true &&
-          authorization(
-            authorized: Authorizations().viewProductions,
-          ) &&
-          GeneralSettingsAuthAction().manageProductions(
-            context: null,
-          )) {
+          returnShopProvider().userShop()?.manageProductions == true &&
+          authorization(authorized: Authorizations().viewProductions) &&
+          GeneralSettingsAuthAction().manageProductions(context: null)) {
         final data = await supabase
             .from(tableName)
             .select()
@@ -460,20 +376,14 @@ class ProductionItemsProvider extends ChangeNotifier {
                   : 1000,
             );
 
-        await mainLocalLog(
-          'ProductionItems gotten: ${data.length}',
-        );
+        await mainLocalLog('ProductionItems gotten: ${data.length}');
 
         productionItemListMain =
             (data as List)
-                .map(
-                  (json) => ProductionItem.fromJson(json),
-                )
+                .map((json) => ProductionItem.fromJson(json))
                 .toList();
         productionItemListMain.sort(
-          (a, b) => a.name.toLowerCase().compareTo(
-            b.name.toLowerCase(),
-          ),
+          (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
         );
         await mainLocalLog(
           'ProductionItem List Set: ${productionItemListMain.length}',
@@ -490,20 +400,14 @@ class ProductionItemsProvider extends ChangeNotifier {
                     ? (allowedRangeProductionItems ?? 0) - 1
                     : 2000,
               );
-          await mainLocalLog(
-            'ProductionItems 2 gotten: ${data2.length}',
-          );
+          await mainLocalLog('ProductionItems 2 gotten: ${data2.length}');
           productionItemListMain.addAll(
             (data2 as List)
-                .map(
-                  (stuff) => ProductionItem.fromJson(stuff),
-                )
+                .map((stuff) => ProductionItem.fromJson(stuff))
                 .toList(),
           );
           productionItemListMain.sort(
-            (a, b) => a.name.toLowerCase().compareTo(
-              b.name.toLowerCase(),
-            ),
+            (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
           );
           await mainLocalLog(
             'ProductionItem List 2 Set: ${productionItemListMain.length}',
@@ -515,25 +419,15 @@ class ProductionItemsProvider extends ChangeNotifier {
                 .select()
                 .eq('shop_id', shopId())
                 .order('name', ascending: true)
-                .range(
-                  2001,
-                  allowedRangeProductionItems ?? 3000,
-                );
-            await mainLocalLog(
-              'ProductionItems 3 gotten: ${data3.length}',
-            );
+                .range(2001, allowedRangeProductionItems ?? 3000);
+            await mainLocalLog('ProductionItems 3 gotten: ${data3.length}');
             productionItemListMain.addAll(
               (data3 as List)
-                  .map(
-                    (stuff) =>
-                        ProductionItem.fromJson(stuff),
-                  )
+                  .map((stuff) => ProductionItem.fromJson(stuff))
                   .toList(),
             );
             productionItemListMain.sort(
-              (a, b) => a.name.toLowerCase().compareTo(
-                b.name.toLowerCase(),
-              ),
+              (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
             );
             await mainLocalLog(
               'ProductionItem List 3 Set: ${productionItemListMain.length}',
@@ -543,17 +437,15 @@ class ProductionItemsProvider extends ChangeNotifier {
         }
         notifyListeners();
 
-        await ProductionItemsFunc()
-            .insertAllProductionItems(
-              productionItemListMain,
-            );
+        await ProductionItemsFunc().insertAllProductionItems(
+          productionItemListMain,
+        );
       } else {
         returnData().syncData();
         await mainLocalLog(
           "Offline Data Gotten: ${ProductionItemsFunc().getProductionItems().length}",
         );
-        productionItemListMain =
-            ProductionItemsFunc().getProductionItems();
+        productionItemListMain = ProductionItemsFunc().getProductionItems();
         notifyListeners();
       }
 
@@ -567,27 +459,17 @@ class ProductionItemsProvider extends ChangeNotifier {
     }
   }
 
-  Future<List<ProductionItem>>
-  getSingleProductionItemOnline({
+  Future<List<ProductionItem>> getSingleProductionItemOnline({
     required String itemUuid,
   }) async {
     try {
       bool isOnline = await connectivity.isOnline();
-      await mainLocalLog(
-        '✅✅ Getting Single Production Item',
-      );
+      await mainLocalLog('✅✅ Getting Single Production Item');
       if (isOnline &&
           ProductionItemsFunc().isSynced() &&
-          returnShopProvider()
-                  .userShop()
-                  ?.manageProductions ==
-              true &&
-          authorization(
-            authorized: Authorizations().viewProductions,
-          ) &&
-          GeneralSettingsAuthAction().manageProductions(
-            context: null,
-          )) {
+          returnShopProvider().userShop()?.manageProductions == true &&
+          authorization(authorized: Authorizations().viewProductions) &&
+          GeneralSettingsAuthAction().manageProductions(context: null)) {
         final data =
             await supabase
                 .from(tableName)
@@ -596,22 +478,16 @@ class ProductionItemsProvider extends ChangeNotifier {
                 .maybeSingle();
 
         if (data == null) {
-          mainLocalLog(
-            'Error Getting Single Production item',
-          );
+          mainLocalLog('Error Getting Single Production item');
           return [];
         }
         notifyListeners();
 
-        ProductionItem tempItem = ProductionItem.fromJson(
-          data,
-        );
+        ProductionItem tempItem = ProductionItem.fromJson(data);
         mainLocalLog(
           'Single Production item Gotten Successfully: ${tempItem.name}',
         );
-        ProductionItemsFunc().createProductionItem(
-          tempItem,
-        );
+        ProductionItemsFunc().createProductionItem(tempItem);
         insertSingleItemIntoCache(newItem: tempItem);
         notifyListeners();
       } else {
@@ -619,8 +495,7 @@ class ProductionItemsProvider extends ChangeNotifier {
         await mainLocalLog(
           "Offline Data Gotten: ${ProductionItemsFunc().getProductionItems().length}",
         );
-        productionItemListMain =
-            ProductionItemsFunc().getProductionItems();
+        productionItemListMain = ProductionItemsFunc().getProductionItems();
         notifyListeners();
       }
 
@@ -634,18 +509,14 @@ class ProductionItemsProvider extends ChangeNotifier {
     }
   }
 
-  Future<List<ProductionItem>> getProductionItemsOffline(
-    int shopId,
-  ) async {
+  Future<List<ProductionItem>> getProductionItemsOffline(int shopId) async {
     try {
       await mainLocalLog(
         "Offline Data Gotten: ${ProductionItemsFunc().getProductionItems().length}",
       );
-      productionItemListMain =
-          ProductionItemsFunc().getProductionItems();
+      productionItemListMain = ProductionItemsFunc().getProductionItems();
       notifyListeners();
-      await returnInventoryUpdatesProvider()
-          .getInventoryUpdatesOffline();
+      await returnInventoryUpdatesProvider().getInventoryUpdatesOffline();
 
       notifyListeners();
       return productionItemListMain;
@@ -668,11 +539,10 @@ class ProductionItemsProvider extends ChangeNotifier {
     bool? isMultipleUpdate,
   }) async {
     try {
-      await mainLocalLog(
-        productionItem.isManaged.toString(),
+      await mainLocalLog(productionItem.isManaged.toString());
+      var res = await ProductionItemsFunc().updateProductionItem(
+        productionItem,
       );
-      var res = await ProductionItemsFunc()
-          .updateProductionItem(productionItem);
       if (res == 1) {
         if (isQuantityUpdate == false) {
           var containsCreated =
@@ -680,32 +550,27 @@ class ProductionItemsProvider extends ChangeNotifier {
                   .getProductionItems()
                   .where(
                     (createdProductionItem) =>
-                        createdProductionItem
-                            .productionItem
-                            .uuid ==
+                        createdProductionItem.productionItem.uuid ==
                         productionItem.uuid,
                   )
                   .toList();
           if (containsCreated.isEmpty) {
-            await UpdatedProductionItemsFunc()
-                .createUpdatedProductionItem(
-                  UpdatedProductionItem(
-                    productionItem: productionItem,
-                    includeQuantity: includeQuantity,
-                  ),
-                );
+            await UpdatedProductionItemsFunc().createUpdatedProductionItem(
+              UpdatedProductionItem(
+                productionItem: productionItem,
+                includeQuantity: includeQuantity,
+              ),
+            );
           } else {
-            await CreatedProductionItemsFunc()
-                .updateProductionItem(
-                  CreatedProductionItem(
-                    productionItem: productionItem,
-                    includeQuantity: includeQuantity,
-                  ),
-                );
+            await CreatedProductionItemsFunc().updateProductionItem(
+              CreatedProductionItem(
+                productionItem: productionItem,
+                includeQuantity: includeQuantity,
+              ),
+            );
           }
         } else {
-          ProductionItemQuantityUpdate
-          productionItemsQuantityUpdate =
+          ProductionItemQuantityUpdate productionItemsQuantityUpdate =
               ProductionItemQuantityUpdate(
                 quantity: (quantityChange ?? 0).abs(),
                 productionItemUuid: productionItem.uuid!,
@@ -713,20 +578,15 @@ class ProductionItemsProvider extends ChangeNotifier {
               );
           await returnProductionItemsQuantityUpdateProvider()
               .createProductionItemQuantityUpdate(
-                productionItemsQuantityUpdate:
-                    productionItemsQuantityUpdate,
+                productionItemsQuantityUpdate: productionItemsQuantityUpdate,
               );
         }
         if ((isQuantityUpdate || includeQuantity) &&
             productionItemHistory != null) {
-          productionItemHistory.itemName =
-              productionItem.name;
-          productionItemHistory.itemUuid =
-              productionItem.uuid;
+          productionItemHistory.itemName = productionItem.name;
+          productionItemHistory.itemUuid = productionItem.uuid;
           await returnProductionItemHistoryProvider()
-              .createProductionItemHistory(
-                productionItemHistory,
-              );
+              .createProductionItemHistory(productionItemHistory);
         }
         await getProductionItemsOffline(
           returnShopProvider().userShop()!.shopId!,
@@ -735,19 +595,16 @@ class ProductionItemsProvider extends ChangeNotifier {
         if (isMultipleUpdate != true) {
           syncData();
         }
-        return ProductionItemsFunc()
-            .getSingleProductionItem(
-              uuid: productionItem.uuid!,
-            );
+        return ProductionItemsFunc().getSingleProductionItem(
+          uuid: productionItem.uuid!,
+        );
       } else {
         notifyListeners();
         return null;
       }
     } catch (e) {
       notifyListeners();
-      await mainLocalLog(
-        "Error Updating ProductionItem: ${e.toString()}",
-      );
+      await mainLocalLog("Error Updating ProductionItem: ${e.toString()}");
       return null;
     }
   }
@@ -757,57 +614,40 @@ class ProductionItemsProvider extends ChangeNotifier {
     bool? isMultipleDelete,
     required ProductionItemHistory? productionItemHistory,
   }) async {
-    await ProductionItemsFunc().deleteProductionItem(
-      productionItem.uuid!,
-    );
+    await ProductionItemsFunc().deleteProductionItem(productionItem.uuid!);
     var containsCreated =
         CreatedProductionItemsFunc()
             .getProductionItems()
-            .where(
-              (pr) =>
-                  pr.productionItem.uuid ==
-                  productionItem.uuid,
-            )
+            .where((pr) => pr.productionItem.uuid == productionItem.uuid)
             .toList();
 
     var containsUpdated =
         UpdatedProductionItemsFunc()
             .getProductionItems()
-            .where(
-              (pr) =>
-                  pr.productionItem.uuid ==
-                  productionItem.uuid,
-            )
+            .where((pr) => pr.productionItem.uuid == productionItem.uuid)
             .toList();
     if (containsCreated.isNotEmpty) {
-      await CreatedProductionItemsFunc()
-          .createdProductionItemsBox
-          .delete(productionItem.uuid);
+      await CreatedProductionItemsFunc().createdProductionItemsBox.delete(
+        productionItem.uuid,
+      );
     } else {
-      await DeletedProductionItemsFunc()
-          .createDeletedProductionItem(
-            DeletedProductionItem(
-              productionItemUuid: productionItem.uuid!,
-            ),
-          );
+      await DeletedProductionItemsFunc().createDeletedProductionItem(
+        DeletedProductionItem(productionItemUuid: productionItem.uuid!),
+      );
     }
     if (containsUpdated.isNotEmpty) {
-      await UpdatedProductionItemsFunc()
-          .deleteUpdatedProductionItem(
-            containsUpdated.first.productionItem.uuid!,
-          );
+      await UpdatedProductionItemsFunc().deleteUpdatedProductionItem(
+        containsUpdated.first.productionItem.uuid!,
+      );
       await mainLocalLog('Deleted Update Log');
     }
-    await getProductionItemsOffline(
-      returnShopProvider().userShop()!.shopId!,
-    );
+    await getProductionItemsOffline(returnShopProvider().userShop()!.shopId!);
     if (productionItemHistory != null) {
       productionItemHistory.itemName = productionItem.name;
       productionItemHistory.itemUuid = null;
-      await returnProductionItemHistoryProvider()
-          .createProductionItemHistory(
-            productionItemHistory,
-          );
+      await returnProductionItemHistoryProvider().createProductionItemHistory(
+        productionItemHistory,
+      );
     }
     notifyListeners();
     if (isMultipleDelete != true) {
@@ -821,13 +661,10 @@ class ProductionItemsProvider extends ChangeNotifier {
   //
   //
   //
-  double returnGroupQuantityValue(
-    ProductionItem productionItem,
-  ) {
+  double returnGroupQuantityValue(ProductionItem productionItem) {
     return productionItem.quantity != null &&
             productionItem.qttyPerGroup != null
-        ? (productionItem.quantity ?? 0) /
-            (productionItem.qttyPerGroup ?? 0)
+        ? (productionItem.quantity ?? 0) / (productionItem.qttyPerGroup ?? 0)
         : 0;
   }
 
@@ -857,12 +694,8 @@ class ProductionItemsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void selectProductionItem(
-    ProductionItem newProductionItem,
-  ) {
-    if (selectedProductionItems.contains(
-      newProductionItem,
-    )) {
+  void selectProductionItem(ProductionItem newProductionItem) {
+    if (selectedProductionItems.contains(newProductionItem)) {
       selectedProductionItems.remove(newProductionItem);
     } else {
       selectedProductionItems.add(newProductionItem);
@@ -898,32 +731,24 @@ class ProductionItemsProvider extends ChangeNotifier {
 
   Future<int> deleteSelectedProductionItems() async {
     try {
-      for (var pr in ProductionItemsFunc()
-          .getProductionItems()
-          .where(
-            (prr) => selectedProductionItems.contains(prr),
-          )) {
-        ProductionItemHistory
-        productionItemHistory = ProductionItemHistory(
-          event:
-              ProductionItemHistoryEventClass.itemDeleted,
-          source:
-              ProductionItemHistoryEventClass.unKnownSource,
+      for (var pr in ProductionItemsFunc().getProductionItems().where(
+        (prr) => selectedProductionItems.contains(prr),
+      )) {
+        ProductionItemHistory productionItemHistory = ProductionItemHistory(
+          event: ProductionItemHistoryEventClass.itemDeleted,
+          source: ProductionItemHistoryEventClass.productionItemSource,
+          destination: ProductionItemHistoryEventClass.deletedDestination,
           isManaged: pr.isManaged,
           shopId: shopId(),
           title: 'Item Deleted',
           quantityChange: 0,
           newValue: formatLargeNumberDouble(
-            pr.getProductUnit().getQuantityEquivDivided(
-              index: 2,
-            ),
+            pr.getProductUnit().getQuantityEquivDivided(index: 2),
           ),
           desc: 'Production Item Deleted Now',
           isIncreased: false,
           oldValue: formatLargeNumberDouble(
-            pr.getProductUnit().getQuantityEquivDivided(
-              index: 2,
-            ),
+            pr.getProductUnit().getQuantityEquivDivided(index: 2),
           ),
           unit: pr.getPrimaryUnit().name,
           primaryUnit: pr.getPrimaryUnit().name,
@@ -968,12 +793,11 @@ class ProductionItemsProvider extends ChangeNotifier {
 
         newProductionItem.unitsList = tempItems;
 
-        ProductionItemHistory
-        productionItemHistory = ProductionItemHistory(
-          event:
-              ProductionItemHistoryEventClass.itemCreated,
-          source:
-              ProductionItemHistoryEventClass.unKnownSource,
+        ProductionItemHistory productionItemHistory = ProductionItemHistory(
+          event: ProductionItemHistoryEventClass.itemCreated,
+          source: ProductionItemHistoryEventClass.productionItemSource,
+          destination:
+              ProductionItemHistoryEventClass.productionItemDestination,
           isManaged: false,
           shopId: shopId(),
           title: 'Item Created',
@@ -983,14 +807,10 @@ class ProductionItemsProvider extends ChangeNotifier {
           unit: pr.getPrimaryUnit().name,
           primaryUnit: pr.getPrimaryUnit().name,
           oldValue: formatLargeNumberDouble(
-            pr.getProductUnit().getQuantityEquivDivided(
-              index: 2,
-            ),
+            pr.getProductUnit().getQuantityEquivDivided(index: 2),
           ),
           newValue: formatLargeNumberDouble(
-            pr.getProductUnit().getQuantityEquivDivided(
-              index: 2,
-            ),
+            pr.getProductUnit().getQuantityEquivDivided(index: 2),
           ),
         );
         await createProductionItem(
@@ -1012,12 +832,10 @@ class ProductionItemsProvider extends ChangeNotifier {
     }
   }
 
-  Future<int>
-  duplicateSelectedProductionItemsForShops() async {
+  Future<int> duplicateSelectedProductionItemsForShops() async {
     try {
       for (var pr in selectedProductionItems) {
-        for (var shop
-            in returnShopProvider().multipleSelectedShops) {
+        for (var shop in returnShopProvider().multipleSelectedShops) {
           String newUuid = uuidGen();
           final newProductionItem = pr.copyWith(
             uuid: newUuid,
@@ -1045,11 +863,7 @@ class ProductionItemsProvider extends ChangeNotifier {
 
           await supabase
               .from(tableName)
-              .insert(
-                newProductionItem.toJson(
-                  isIncludeQuantity: true,
-                ),
-              );
+              .insert(newProductionItem.toJson(isIncludeQuantity: true));
         }
       }
       await getProductionItemsOffline(shopId());
@@ -1065,13 +879,11 @@ class ProductionItemsProvider extends ChangeNotifier {
     }
   }
 
-  Future<int>
-  duplicateSelectedProductionItemsForDepartments() async {
+  Future<int> duplicateSelectedProductionItemsForDepartments() async {
     try {
       for (var pr in selectedProductionItems) {
         for (var depart
-            in returnDepartmentProvider()
-                .multipleSelectedDepartments) {
+            in returnDepartmentProvider().multipleSelectedDepartments) {
           String newUuid = uuidGen();
           final newProductionItem = pr.copyWith(
             uuid: newUuid,
@@ -1094,14 +906,10 @@ class ProductionItemsProvider extends ChangeNotifier {
 
           newProductionItem.unitsList = tempItems;
 
-          ProductionItemHistory
-          productionItemHistory = ProductionItemHistory(
-            event:
-                ProductionItemHistoryEventClass
-                    .itemDuplicated,
-            source:
-                ProductionItemHistoryEventClass
-                    .unKnownSource,
+          ProductionItemHistory productionItemHistory = ProductionItemHistory(
+            event: ProductionItemHistoryEventClass.itemDuplicated,
+            source: ProductionItemHistoryEventClass.productionItemSource,
+            destination: ProductionItemHistoryEventClass.departmentDestination,
             isManaged: newProductionItem.isManaged,
             shopId: shopId(),
             title: 'Item Created',
@@ -1114,14 +922,10 @@ class ProductionItemsProvider extends ChangeNotifier {
             unit: pr.getPrimaryUnit().name,
             primaryUnit: pr.getPrimaryUnit().name,
             oldValue: formatLargeNumberDouble(
-              pr.getProductUnit().getQuantityEquivDivided(
-                index: 2,
-              ),
+              pr.getProductUnit().getQuantityEquivDivided(index: 2),
             ),
             newValue: formatLargeNumberDouble(
-              pr.getProductUnit().getQuantityEquivDivided(
-                index: 2,
-              ),
+              pr.getProductUnit().getQuantityEquivDivided(index: 2),
             ),
           );
           await createProductionItem(
@@ -1132,8 +936,7 @@ class ProductionItemsProvider extends ChangeNotifier {
         }
       }
       toggleIsSelectProductionItem(false);
-      returnDepartmentProvider()
-          .clearMulitpleSelectedDepartments();
+      returnDepartmentProvider().clearMulitpleSelectedDepartments();
       syncData();
       return 1;
     } catch (e) {

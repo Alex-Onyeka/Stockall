@@ -16,9 +16,7 @@ class DeletedProductionItemAdapter extends TypeAdapter<DeletedProductionItem> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return DeletedProductionItem(
-      productionItemUuid: fields[0] as String,
-    );
+    return DeletedProductionItem(productionItemUuid: fields[0] as String);
   }
 
   @override

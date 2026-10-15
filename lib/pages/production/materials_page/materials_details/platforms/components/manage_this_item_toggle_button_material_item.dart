@@ -7,8 +7,7 @@ import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
-class ManageThisItemToggleButtonMaterialItem
-    extends StatelessWidget {
+class ManageThisItemToggleButtonMaterialItem extends StatelessWidget {
   final MaterialClass material;
   final ThemeProvider theme;
   final Function() setStataAction;
@@ -40,11 +39,9 @@ class ManageThisItemToggleButtonMaterialItem
                 context: context,
                 action: () async {
                   if (authorization(
-                    authorized:
-                        Authorizations().updateMaterials,
+                    authorized: Authorizations().updateMaterials,
                   )) {
-                    var materialsProvider =
-                        returnMaterialsProvider();
+                    var materialsProvider = returnMaterialsProvider();
                     showDialog(
                       context: context,
                       builder: (confirmDialog) {
@@ -56,9 +53,7 @@ class ManageThisItemToggleButtonMaterialItem
                                   : 'This item quantity will now be automatically managed by Stockall, are you sure you want to proceed?',
                           title: 'Proceed with Action?',
                           action: () async {
-                            Navigator.of(
-                              confirmDialog,
-                            ).pop();
+                            Navigator.of(confirmDialog).pop();
                             // setState(() {
                             //   isLoading = true;
                             // });
@@ -70,46 +65,30 @@ class ManageThisItemToggleButtonMaterialItem
                               isQuantityUpdate: false,
                               quantityChange: null,
                               material: MaterialClass(
-                                unitsList:
-                                    material.unitsList,
-                                useGroupUnit:
-                                    material.useGroupUnit,
-                                categories:
-                                    material.categories,
-                                departmentName:
-                                    material.departmentName,
-                                departmentUuid:
-                                    material.departmentUuid,
-                                groupUnit:
-                                    material.groupUnit,
-                                qttyPerGroup:
-                                    material.qttyPerGroup,
+                                unitsList: material.unitsList,
+                                useGroupUnit: material.useGroupUnit,
+                                categories: material.categories,
+                                departmentName: material.departmentName,
+                                departmentUuid: material.departmentUuid,
+                                groupUnit: material.groupUnit,
+                                qttyPerGroup: material.qttyPerGroup,
                                 updatedAt: DateTime.now(),
-                                isManaged:
-                                    material.isManaged
-                                        ? false
-                                        : true,
+                                isManaged: material.isManaged ? false : true,
                                 name: material.name,
                                 unit: material.unit,
-                                costPrice:
-                                    material.costPrice,
+                                costPrice: material.costPrice,
                                 quantity:
                                     !material.isManaged &&
-                                            material.quantity ==
-                                                null
+                                            material.quantity == null
                                         ? 0
                                         : material.quantity,
                                 shopId: material.shopId,
                                 barcode: material.barcode,
                                 // categoryUuid:
                                 //     material.categoryUuid,
-                                createdAt:
-                                    material.createdAt,
-                                expiryDate:
-                                    material.expiryDate,
-                                lowQtty:
-                                    (material.lowQtty ??
-                                        10),
+                                createdAt: material.createdAt,
+                                expiryDate: material.expiryDate,
+                                lowQtty: (material.lowQtty ?? 10),
                                 sizeType: material.sizeType,
                                 uuid: material.uuid,
                               ),
@@ -126,24 +105,18 @@ class ManageThisItemToggleButtonMaterialItem
             },
             child: SubWrapper(
               isVisible:
-                  !ItemsAuthAction()
-                      .allowStockallToManageItemAction(
-                        context: context,
-                      ),
+                  !ItemsAuthAction().allowStockallToManageItemAction(
+                    context: context,
+                  ),
               mainWidget: Container(
                 width: 50,
-                padding: EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 5,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color:
                         material.isManaged
-                            ? theme
-                                .lightModeColor
-                                .prColor250
+                            ? theme.lightModeColor.prColor250
                             : Colors.grey,
                   ),
                   color:

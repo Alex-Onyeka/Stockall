@@ -109,9 +109,7 @@ class ProductionMaterialsUsage extends HiveObject {
     this.productionRecordUuid,
   });
 
-  factory ProductionMaterialsUsage.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory ProductionMaterialsUsage.fromJson(Map<String, dynamic> json) {
     return ProductionMaterialsUsage(
       uuid: json['uuid'],
       quantity: (json['quantity'] as num).toDouble(),
@@ -119,8 +117,7 @@ class ProductionMaterialsUsage extends HiveObject {
       materialName: json['material_name'] as String,
       materialUuid: json['material_uuid'] as String,
       isGroup: json['is_group'],
-      qttyPerGroup:
-          (json['qtty_per_group'] as num?)?.toDouble(),
+      qttyPerGroup: (json['qtty_per_group'] as num?)?.toDouble(),
       totalCost: (json['total_cost'] as num?)?.toDouble(),
       createdAt:
           json['created_at'] != null
@@ -138,24 +135,19 @@ class ProductionMaterialsUsage extends HiveObject {
       customCost: (json['custom_cost'] as num?)?.toDouble(),
       customUnit: json['custom_unit'] as String?,
       groupUnit: json['group_unit'] as String?,
-      originalCostPerItem:
-          (json['original_cost_per_item'] as num?)
-              ?.toDouble(),
-      originalUseGroupQuantity:
-          json['original_use_group_quantity'] as bool?,
+      originalCostPerItem: (json['original_cost_per_item'] as num?)?.toDouble(),
+      originalUseGroupQuantity: json['original_use_group_quantity'] as bool?,
       selectedCostInt: json['selected_cost_int'] as int?,
       isManaged: json['is_managed'] as bool?,
       unitUuid: json['unit_uuid'] as String?,
       unitsList:
           (json['units_list'] as List<dynamic>?)
               ?.map(
-                (item) => ProductUnitsClass.fromJson(
-                  item as Map<String, dynamic>,
-                ),
+                (item) =>
+                    ProductUnitsClass.fromJson(item as Map<String, dynamic>),
               )
               .toList(),
-      productionRecordUuid:
-          json['production_record_uuid'] as String?,
+      productionRecordUuid: json['production_record_uuid'] as String?,
     );
   }
 
@@ -179,14 +171,12 @@ class ProductionMaterialsUsage extends HiveObject {
       'updated_at': updatedAt?.toIso8601String(),
       'custom_unit': customUnit,
       'group_unit': groupUnit,
-      'original_use_group_quantity':
-          originalUseGroupQuantity,
+      'original_use_group_quantity': originalUseGroupQuantity,
       'original_cost_per_item': originalCostPerItem,
       'selected_cost_int': selectedCostInt,
       'is_managed': isManaged,
       'unit_uuid': unitUuid,
-      'units_list':
-          unitsList?.map((item) => item.toJson()).toList(),
+      'units_list': unitsList?.map((item) => item.toJson()).toList(),
       'production_record_uuid': productionRecordUuid,
     };
   }
@@ -237,20 +227,14 @@ class ProductionMaterialsUsage extends HiveObject {
       updatedAt: updatedAt ?? this.updatedAt,
       customUnit: customUnit ?? this.customUnit,
       groupUnit: groupUnit ?? this.groupUnit,
-      originalCostPerItem:
-          originalCostPerItem ?? this.originalCostPerItem,
+      originalCostPerItem: originalCostPerItem ?? this.originalCostPerItem,
       originalUseGroupQuantity:
-          originalUseGroupQuantity ??
-          this.originalUseGroupQuantity,
-      selectedCostInt:
-          selectedCostInt ?? this.selectedCostInt,
+          originalUseGroupQuantity ?? this.originalUseGroupQuantity,
+      selectedCostInt: selectedCostInt ?? this.selectedCostInt,
       isManaged: isManaged ?? this.isManaged,
       unitUuid: unitUuid ?? this.unitUuid,
-      unitsList: copyProductionUnitSnapshot(
-        unitsList ?? this.unitsList,
-      ),
-      productionRecordUuid:
-          productionRecordUuid ?? this.productionRecordUuid,
+      unitsList: copyProductionUnitSnapshot(unitsList ?? this.unitsList),
+      productionRecordUuid: productionRecordUuid ?? this.productionRecordUuid,
     );
   }
 

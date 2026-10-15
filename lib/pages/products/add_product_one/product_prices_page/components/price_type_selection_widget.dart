@@ -19,8 +19,7 @@ class PriceTypeSelectionWidget extends StatefulWidget {
       _PriceTypeSelectionWidgetState();
 }
 
-class _PriceTypeSelectionWidgetState
-    extends State<PriceTypeSelectionWidget> {
+class _PriceTypeSelectionWidgetState extends State<PriceTypeSelectionWidget> {
   List<PriceTypeClass> priceList = [
     PriceTypeClass(index: 1, name: 'Dynamic'),
     PriceTypeClass(index: 2, name: 'Fixed'),
@@ -34,8 +33,7 @@ class _PriceTypeSelectionWidgetState
           visible: widget.showSelectPriceText != false,
           child: Text(
             style: TextStyle(
-              fontSize:
-                  widget.theme.mobileTexts.b4.fontSize,
+              fontSize: widget.theme.mobileTexts.b4.fontSize,
               fontWeight: FontWeight.bold,
             ),
             'Select Price Type:',
@@ -50,45 +48,32 @@ class _PriceTypeSelectionWidgetState
                 (context) =>
                     priceList
                         .map(
-                          (item) =>
-                              myPopUpMenuItemPriceSelection(
-                                item: item,
-                                setPriceIndex:
-                                    widget.setPriceType,
-                                theme: widget.theme,
-                                currentSelection:
-                                    widget.currentSelection,
-                                context: context,
-                              ),
+                          (item) => myPopUpMenuItemPriceSelection(
+                            item: item,
+                            setPriceIndex: widget.setPriceType,
+                            theme: widget.theme,
+                            currentSelection: widget.currentSelection,
+                            context: context,
+                          ),
                         )
                         .toList(),
             child: Container(
               padding: EdgeInsets.fromLTRB(10, 5, 5, 5),
               decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.grey.shade200,
-                ),
+                border: Border.all(color: Colors.grey.shade200),
                 borderRadius: BorderRadius.circular(3),
               ),
               child: Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     style: TextStyle(
-                      fontSize:
-                          widget
-                              .theme
-                              .mobileTexts
-                              .b3
-                              .fontSize,
+                      fontSize: widget.theme.mobileTexts.b3.fontSize,
                       fontWeight: FontWeight.bold,
                     ),
                     priceList
                         .firstWhere(
-                          (item) =>
-                              item.index ==
-                              widget.currentSelection,
+                          (item) => item.index == widget.currentSelection,
                         )
                         .name,
                   ),
@@ -136,19 +121,12 @@ PopupMenuItem myPopUpMenuItemPriceSelection({
 
   return PopupMenuItem(
     onTap: () {
-      setPriceIndex != null
-          ? setPriceIndex(item.index)
-          : {};
+      setPriceIndex != null ? setPriceIndex(item.index) : {};
     },
     child: ConstrainedBox(
-      constraints: BoxConstraints(
-        maxWidth: 500,
-        minWidth: 300,
-      ),
+      constraints: BoxConstraints(maxWidth: 500, minWidth: 300),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 10.0,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -156,19 +134,14 @@ PopupMenuItem myPopUpMenuItemPriceSelection({
               child: Text(
                 style: TextStyle(
                   fontSize: theme.mobileTexts.b3.fontSize,
-                  fontWeight:
-                      getBold() ? FontWeight.bold : null,
+                  fontWeight: getBold() ? FontWeight.bold : null,
                 ),
                 item.name,
               ),
             ),
             Visibility(
               visible: getVisibility(),
-              child: Icon(
-                size: 17,
-                color: Colors.grey.shade700,
-                Icons.check,
-              ),
+              child: Icon(size: 17, color: Colors.grey.shade700, Icons.check),
             ),
           ],
         ),

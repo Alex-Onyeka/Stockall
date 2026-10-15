@@ -445,8 +445,17 @@ class _UpdateProductionItemQuantityWidgetState
                                                 : ProductionItemHistoryEventClass
                                                     .quantityUpdatedDecrease,
                                         source:
-                                            ProductionItemHistoryEventClass
-                                                .unKnownSource,
+                                            isIncrement
+                                                ? ProductionItemHistoryEventClass
+                                                    .manualSource
+                                                : ProductionItemHistoryEventClass
+                                                    .productionItemSource,
+                                        destination:
+                                            isIncrement
+                                                ? ProductionItemHistoryEventClass
+                                                    .productionItemDestination
+                                                : ProductionItemHistoryEventClass
+                                                    .manualDestination,
                                         isManaged:
                                             widget
                                                 .productionItem

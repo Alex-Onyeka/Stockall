@@ -54,8 +54,7 @@ class ProductionItemCartItem extends StatelessWidget {
   }
 }
 
-class ProductionItemCartItemleMobile
-    extends StatelessWidget {
+class ProductionItemCartItemleMobile extends StatelessWidget {
   final ProductionsCartItem productionsCartItem;
   final ThemeProvider theme;
   final Function()? editAction;
@@ -69,18 +68,12 @@ class ProductionItemCartItemleMobile
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 15,
-        vertical: 15,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
         color: Colors.white,
         boxShadow: [
-          BoxShadow(
-            color: const Color.fromARGB(25, 0, 0, 0),
-            blurRadius: 10,
-          ),
+          BoxShadow(color: const Color.fromARGB(25, 0, 0, 0), blurRadius: 10),
         ],
       ),
       child: Column(
@@ -88,8 +81,7 @@ class ProductionItemCartItemleMobile
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             spacing: 8,
             children: [
               Container(
@@ -111,8 +103,7 @@ class ProductionItemCartItemleMobile
                   fontWeight: FontWeight.w500,
                 ),
                 formatMoneyBig(
-                  amount:
-                      productionsCartItem.costPrice ?? 0,
+                  amount: productionsCartItem.costPrice ?? 0,
                   context: context,
                 ),
               ),
@@ -124,8 +115,7 @@ class ProductionItemCartItemleMobile
               Expanded(
                 child: Text(
                   style: TextStyle(
-                    color:
-                        theme.lightModeColor.greyColor200,
+                    color: theme.lightModeColor.greyColor200,
                     fontSize: theme.mobileTexts.b2.fontSize,
                     fontWeight: FontWeight.bold,
                   ),
@@ -141,39 +131,25 @@ class ProductionItemCartItemleMobile
               // left: 10.0,
             ),
             child: Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   spacing: 3,
                   children: [
                     Text(
                       style: TextStyle(
-                        color:
-                            theme
-                                .lightModeColor
-                                .greyColor200,
-                        fontSize:
-                            theme.mobileTexts.h4.fontSize,
-                        fontWeight:
-                            theme
-                                .mobileTexts
-                                .h3
-                                .fontWeightBold,
+                        color: theme.lightModeColor.greyColor200,
+                        fontSize: theme.mobileTexts.h4.fontSize,
+                        fontWeight: theme.mobileTexts.h3.fontWeightBold,
                       ),
                       formatLargeNumber(
-                        productionsCartItem.quantity
-                            .toString(),
+                        productionsCartItem.quantity.toString(),
                       ),
                     ),
                     Text(
                       style: TextStyle(
-                        color:
-                            theme
-                                .lightModeColor
-                                .greyColor200,
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
+                        color: theme.lightModeColor.greyColor200,
+                        fontSize: theme.mobileTexts.b3.fontSize,
                         fontWeight: FontWeight.normal,
                       ),
                       productionsCartItem.getUnit(),
@@ -187,14 +163,12 @@ class ProductionItemCartItemleMobile
                       type: MaterialType.transparency,
                       child: InkWell(
                         onTap: editAction,
-                        mouseCursor:
-                            SystemMouseCursors.click,
+                        mouseCursor: SystemMouseCursors.click,
                         child: Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 8.0,
-                                vertical: 5,
-                              ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 5,
+                          ),
                           child: Icon(
                             color: Colors.grey.shade600,
                             size: 22,
@@ -214,27 +188,22 @@ class ProductionItemCartItemleMobile
                                 theme: theme,
                                 message:
                                     'You are about to remove this item from the cart. Are you sure you want to proceed?',
-                                title:
-                                    'Remove Item From Cart',
+                                title: 'Remove Item From Cart',
                                 action: () {
                                   returnProductionsActionProvider()
                                       .removeProductionItemFromCart();
-                                  Navigator.of(
-                                    confirmContext,
-                                  ).pop();
+                                  Navigator.of(confirmContext).pop();
                                 },
                               );
                             },
                           );
                         },
-                        mouseCursor:
-                            SystemMouseCursors.click,
+                        mouseCursor: SystemMouseCursors.click,
                         child: Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 8.0,
-                                vertical: 5,
-                              ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 5,
+                          ),
                           child: Icon(
                             color: Colors.red.shade300,
                             size: 22,
@@ -254,8 +223,7 @@ class ProductionItemCartItemleMobile
   }
 }
 
-class ProductionItemCartItemleDesktop
-    extends StatelessWidget {
+class ProductionItemCartItemleDesktop extends StatelessWidget {
   final ProductionsCartItem productionsCartItem;
   final ThemeProvider theme;
   final Function()? editAction;
@@ -269,16 +237,10 @@ class ProductionItemCartItemleDesktop
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 15,
-        vertical: 15,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
       decoration: BoxDecoration(
         boxShadow: [
-          BoxShadow(
-            color: const Color.fromARGB(25, 0, 0, 0),
-            blurRadius: 10,
-          ),
+          BoxShadow(color: const Color.fromARGB(25, 0, 0, 0), blurRadius: 10),
         ],
         borderRadius: BorderRadius.circular(5),
         color: Colors.white,
@@ -291,8 +253,7 @@ class ProductionItemCartItemleDesktop
             spacing: 8,
             children: [
               Visibility(
-                visible:
-                    MediaQuery.of(context).size.width > 335,
+                visible: MediaQuery.of(context).size.width > 335,
                 child: Container(
                   padding: EdgeInsets.all(5),
                   decoration: BoxDecoration(
@@ -309,8 +270,7 @@ class ProductionItemCartItemleDesktop
               Expanded(
                 child: Text(
                   style: TextStyle(
-                    color:
-                        theme.lightModeColor.greyColor200,
+                    color: theme.lightModeColor.greyColor200,
                     fontSize: theme.mobileTexts.b3.fontSize,
                     fontWeight: FontWeight.bold,
                   ),
@@ -325,8 +285,7 @@ class ProductionItemCartItemleDesktop
                   fontWeight: FontWeight.bold,
                 ),
                 formatMoneyBig(
-                  amount:
-                      productionsCartItem.costPrice ?? 0,
+                  amount: productionsCartItem.costPrice ?? 0,
                   context: context,
                 ),
               ),
@@ -336,39 +295,25 @@ class ProductionItemCartItemleDesktop
           Padding(
             padding: const EdgeInsets.only(left: 10.0),
             child: Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   spacing: 5,
                   children: [
                     Text(
                       style: TextStyle(
-                        color:
-                            theme
-                                .lightModeColor
-                                .greyColor200,
-                        fontSize:
-                            theme.mobileTexts.h3.fontSize,
-                        fontWeight:
-                            theme
-                                .mobileTexts
-                                .h3
-                                .fontWeightBold,
+                        color: theme.lightModeColor.greyColor200,
+                        fontSize: theme.mobileTexts.h3.fontSize,
+                        fontWeight: theme.mobileTexts.h3.fontWeightBold,
                       ),
                       formatLargeNumber(
-                        productionsCartItem.quantity
-                            .toString(),
+                        productionsCartItem.quantity.toString(),
                       ),
                     ),
                     Text(
                       style: TextStyle(
-                        color:
-                            theme
-                                .lightModeColor
-                                .greyColor200,
-                        fontSize:
-                            theme.mobileTexts.b2.fontSize,
+                        color: theme.lightModeColor.greyColor200,
+                        fontSize: theme.mobileTexts.b2.fontSize,
                         fontWeight: FontWeight.normal,
                       ),
                       productionsCartItem.getUnit(),
@@ -382,14 +327,12 @@ class ProductionItemCartItemleDesktop
                       type: MaterialType.transparency,
                       child: InkWell(
                         onTap: editAction,
-                        mouseCursor:
-                            SystemMouseCursors.click,
+                        mouseCursor: SystemMouseCursors.click,
                         child: Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 8.0,
-                                vertical: 5,
-                              ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 5,
+                          ),
                           child: Icon(
                             color: Colors.grey.shade600,
                             size: 22,
@@ -409,27 +352,22 @@ class ProductionItemCartItemleDesktop
                                 theme: theme,
                                 message:
                                     'You are about to remove this item from the cart. Are you sure you want to proceed?',
-                                title:
-                                    'Remove Item From Cart',
+                                title: 'Remove Item From Cart',
                                 action: () {
                                   returnProductionsActionProvider()
                                       .removeProductionItemFromCart();
-                                  Navigator.of(
-                                    confirmContext,
-                                  ).pop();
+                                  Navigator.of(confirmContext).pop();
                                 },
                               );
                             },
                           );
                         },
-                        mouseCursor:
-                            SystemMouseCursors.click,
+                        mouseCursor: SystemMouseCursors.click,
                         child: Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 8.0,
-                                vertical: 5,
-                              ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 5,
+                          ),
                           child: Icon(
                             color: Colors.red.shade300,
                             size: 22,

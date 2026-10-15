@@ -24,8 +24,7 @@ class ProductTileMain extends StatefulWidget {
   final ThemeProvider theme;
 
   @override
-  State<ProductTileMain> createState() =>
-      _ProductTileMainState();
+  State<ProductTileMain> createState() => _ProductTileMainState();
 }
 
 class _ProductTileMainState extends State<ProductTileMain> {
@@ -45,12 +44,7 @@ class _ProductTileMainState extends State<ProductTileMain> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: const Color.fromARGB(
-                    24,
-                    158,
-                    158,
-                    158,
-                  ),
+                  color: const Color.fromARGB(24, 158, 158, 158),
                   blurRadius: 5,
                 ),
               ],
@@ -65,18 +59,14 @@ class _ProductTileMainState extends State<ProductTileMain> {
                 onTap: widget.action,
                 onLongPress: widget.longPress,
                 child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
 
                   child: Row(
                     // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Visibility(
                         visible:
-                            widget.isSelectProduct !=
-                                null &&
+                            widget.isSelectProduct != null &&
                             widget.isSelectProduct == true,
                         child: Row(
                           children: [
@@ -84,31 +74,22 @@ class _ProductTileMainState extends State<ProductTileMain> {
                               padding: EdgeInsets.all(1),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                border: Border.all(
-                                  color:
-                                      Colors.grey.shade600,
-                                ),
+                                border: Border.all(color: Colors.grey.shade600),
                               ),
                               child: Container(
                                 padding: EdgeInsets.all(5),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color:
-                                      widget.uuidList !=
-                                                  null &&
-                                              widget
-                                                  .uuidList!
-                                                  .contains(
-                                                    widget
-                                                        .product
-                                                        .uuid!,
-                                                  )
+                                      widget.uuidList != null &&
+                                              widget.uuidList!.contains(
+                                                widget.product.uuid!,
+                                              )
                                           ? widget
                                               .theme
                                               .lightModeColor
                                               .prColor250
-                                          : Colors
-                                              .transparent,
+                                          : Colors.transparent,
                                 ),
                               ),
                             ),
@@ -120,27 +101,19 @@ class _ProductTileMainState extends State<ProductTileMain> {
                         height: 50,
                         width: 30,
                         decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(5),
+                          borderRadius: BorderRadius.circular(5),
                           color: Colors.grey.shade200,
                         ),
-                        child: Icon(
-                          Icons.shopping_bag_outlined,
-                        ),
+                        child: Icon(Icons.shopping_bag_outlined),
                       ),
                       SizedBox(width: 10),
                       Expanded(
                         child: Column(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .spaceBetween,
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Flexible(
                                   child: Row(
@@ -148,8 +121,7 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                       Flexible(
                                         child: Column(
                                           crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .start,
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               style: TextStyle(
@@ -159,40 +131,21 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                         .mobileTexts
                                                         .b2
                                                         .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
+                                                fontWeight: FontWeight.bold,
                                               ),
-                                              widget
-                                                  .product
-                                                  .name,
+                                              widget.product.name,
                                             ),
                                             Text(
                                               [
-                                                if (widget
-                                                        .product
-                                                        .color !=
+                                                if (widget.product.color !=
                                                     null)
-                                                  widget
-                                                      .product
-                                                      .color,
-                                                if (widget
-                                                        .product
-                                                        .sizeType !=
+                                                  widget.product.color,
+                                                if (widget.product.sizeType !=
                                                     null)
-                                                  widget
-                                                      .product
-                                                      .sizeType,
-                                                if (widget
-                                                        .product
-                                                        .size !=
-                                                    null)
-                                                  widget
-                                                      .product
-                                                      .size,
-                                              ].join(
-                                                '  |  ',
-                                              ),
+                                                  widget.product.sizeType,
+                                                if (widget.product.size != null)
+                                                  widget.product.size,
+                                              ].join('  |  '),
                                               style: TextStyle(
                                                 fontSize:
                                                     widget
@@ -200,9 +153,7 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                         .mobileTexts
                                                         .b4
                                                         .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .w600,
+                                                fontWeight: FontWeight.w600,
                                                 color:
                                                     widget
                                                         .theme
@@ -218,19 +169,12 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                 ),
                                 Visibility(
                                   visible:
-                                      widget
-                                              .product
-                                              .departmentUuid !=
-                                          null &&
-                                      shop(
-                                            context,
-                                          )?.manageDepartments ==
-                                          true,
+                                      widget.product.departmentUuid != null &&
+                                      shop(context)?.manageDepartments == true,
                                   child: Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(
-                                          horizontal: 5.0,
-                                        ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 5.0,
+                                    ),
                                     child: Text(
                                       style: TextStyle(
                                         fontSize:
@@ -246,9 +190,7 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                 .secColor200,
                                       ),
                                       cutLongText(
-                                        widget
-                                                .product
-                                                .departmentName ??
+                                        widget.product.departmentName ??
                                             'Not Set',
                                         10,
                                       ),
@@ -257,26 +199,18 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                 ),
                                 Visibility(
                                   visible:
-                                      widget.isSelectProduct ==
-                                          null ||
-                                      widget.isSelectProduct ==
-                                          false,
+                                      widget.isSelectProduct == null ||
+                                      widget.isSelectProduct == false,
                                   child: Icon(
                                     size: 18,
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade400,
-                                    Icons
-                                        .arrow_forward_ios_rounded,
+                                    color: Colors.grey.shade400,
+                                    Icons.arrow_forward_ios_rounded,
                                   ),
                                 ),
                               ],
                             ),
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(
                                   spacing: 5,
@@ -289,8 +223,7 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                 .mobileTexts
                                                 .b3
                                                 .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
+                                        fontWeight: FontWeight.bold,
                                         color:
                                             widget
                                                 .theme
@@ -299,16 +232,11 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                       ),
                                       widget.product
                                           .getItemTilePriceWithDiscount(
-                                            context:
-                                                context,
+                                            context: context,
                                           ),
                                     ),
                                     Visibility(
-                                      visible:
-                                          widget
-                                              .product
-                                              .discount !=
-                                          null,
+                                      visible: widget.product.discount != null,
                                       child: Text(
                                         style: TextStyle(
                                           fontSize:
@@ -322,32 +250,23 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                       ),
                                     ),
                                     Visibility(
-                                      visible:
-                                          widget
-                                              .product
-                                              .discount !=
-                                          null,
+                                      visible: widget.product.discount != null,
                                       child: Text(
                                         style: TextStyle(
                                           decoration:
-                                              TextDecoration
-                                                  .lineThrough,
+                                              TextDecoration.lineThrough,
                                           fontSize:
                                               widget
                                                   .theme
                                                   .mobileTexts
                                                   .b3
                                                   .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                          color:
-                                              Colors.grey,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.grey,
                                         ),
                                         widget.product
                                             .getItemTilePriceNoDiscount(
-                                              context:
-                                                  context,
+                                              context: context,
                                             ),
                                       ),
                                     ),
@@ -358,7 +277,9 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                     color:
                                         isManaged()
                                             ? getDayDifference(
-                                                          widget.product.expiryDate ??
+                                                          widget
+                                                                  .product
+                                                                  .expiryDate ??
                                                               DateTime.now(),
                                                         ) <
                                                         1 &&
@@ -370,17 +291,19 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                   232,
                                                   231,
                                                 )
-                                                : widget.product.getActualQuantity() !=
+                                                : widget.product
+                                                            .getActualQuantity() !=
                                                         0 &&
-                                                    (widget.product.getActualQuantity() ??
+                                                    (widget.product
+                                                                .getActualQuantity() ??
                                                             0) >
                                                         widget.product.lowQtty!
-                                                ? Colors
-                                                    .grey
-                                                    .shade100
-                                                : widget.product.getActualQuantity() !=
+                                                ? Colors.grey.shade100
+                                                : widget.product
+                                                            .getActualQuantity() !=
                                                         0 &&
-                                                    (widget.product.getActualQuantity() ??
+                                                    (widget.product
+                                                                .getActualQuantity() ??
                                                             0) <=
                                                         widget.product.lowQtty!
                                                 ? const Color.fromARGB(
@@ -395,18 +318,20 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                   232,
                                                   231,
                                                 )
-                                            : Colors
-                                                .grey
-                                                .shade100,
+                                            : Colors.grey.shade100,
                                     border: Border.all(
                                       color:
                                           isManaged()
                                               ? getDayDifference(
-                                                            widget.product.expiryDate ??
+                                                            widget
+                                                                    .product
+                                                                    .expiryDate ??
                                                                 DateTime.now(),
                                                           ) <
                                                           1 &&
-                                                      widget.product.expiryDate !=
+                                                      widget
+                                                              .product
+                                                              .expiryDate !=
                                                           null
                                                   ? const Color.fromARGB(
                                                     255,
@@ -414,19 +339,25 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                     142,
                                                     134,
                                                   )
-                                                  : widget.product.getActualQuantity() !=
+                                                  : widget.product
+                                                              .getActualQuantity() !=
                                                           0 &&
-                                                      (widget.product.getActualQuantity() ??
+                                                      (widget.product
+                                                                  .getActualQuantity() ??
                                                               0) >
-                                                          widget.product.lowQtty!
-                                                  ? Colors
-                                                      .grey
-                                                      .shade700
-                                                  : widget.product.getActualQuantity() !=
+                                                          widget
+                                                              .product
+                                                              .lowQtty!
+                                                  ? Colors.grey.shade700
+                                                  : widget.product
+                                                              .getActualQuantity() !=
                                                           0 &&
-                                                      (widget.product.getActualQuantity() ??
+                                                      (widget.product
+                                                                  .getActualQuantity() ??
                                                               0) <=
-                                                          widget.product.lowQtty!
+                                                          widget
+                                                              .product
+                                                              .lowQtty!
                                                   ? const Color.fromARGB(
                                                     255,
                                                     255,
@@ -439,21 +370,15 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                     142,
                                                     134,
                                                   )
-                                              : Colors
-                                                  .grey
-                                                  .shade700,
+                                              : Colors.grey.shade700,
                                     ),
-                                    borderRadius:
-                                        BorderRadius.circular(
-                                          20,
-                                        ),
+                                    borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(
-                                          horizontal: 8.0,
-                                          vertical: 3,
-                                        ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0,
+                                      vertical: 3,
+                                    ),
                                     child: Text(
                                       style: TextStyle(
                                         fontSize:
@@ -462,16 +387,19 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                 .mobileTexts
                                                 .b4
                                                 .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
+                                        fontWeight: FontWeight.bold,
                                         color:
                                             isManaged()
                                                 ? getDayDifference(
-                                                              widget.product.expiryDate ??
+                                                              widget
+                                                                      .product
+                                                                      .expiryDate ??
                                                                   DateTime.now(),
                                                             ) <
                                                             1 &&
-                                                        widget.product.expiryDate !=
+                                                        widget
+                                                                .product
+                                                                .expiryDate !=
                                                             null
                                                     ? const Color.fromARGB(
                                                       255,
@@ -479,19 +407,25 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                       142,
                                                       134,
                                                     )
-                                                    : widget.product.getActualQuantity() !=
+                                                    : widget.product
+                                                                .getActualQuantity() !=
                                                             0 &&
-                                                        (widget.product.getActualQuantity() ??
+                                                        (widget.product
+                                                                    .getActualQuantity() ??
                                                                 0) >
-                                                            widget.product.lowQtty!
-                                                    ? Colors
-                                                        .grey
-                                                        .shade700
-                                                    : widget.product.getActualQuantity() !=
+                                                            widget
+                                                                .product
+                                                                .lowQtty!
+                                                    ? Colors.grey.shade700
+                                                    : widget.product
+                                                                .getActualQuantity() !=
                                                             0 &&
-                                                        (widget.product.getActualQuantity() ??
+                                                        (widget.product
+                                                                    .getActualQuantity() ??
                                                                 0) <=
-                                                            widget.product.lowQtty!
+                                                            widget
+                                                                .product
+                                                                .lowQtty!
                                                     ? const Color.fromARGB(
                                                       255,
                                                       132,
@@ -504,16 +438,12 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                       142,
                                                       134,
                                                     )
-                                                : Colors
-                                                    .grey
-                                                    .shade700,
+                                                : Colors.grey.shade700,
                                       ),
-                                      widget.product
-                                          .getQuantityText(
-                                            index: 1,
-                                            context:
-                                                context,
-                                          ),
+                                      widget.product.getQuantityText(
+                                        index: 1,
+                                        context: context,
+                                      ),
                                     ),
                                   ),
                                 ),

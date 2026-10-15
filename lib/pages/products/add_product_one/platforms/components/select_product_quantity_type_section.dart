@@ -4,8 +4,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/platforms/components/manage_item_wastage.dart';
 import 'package:stockall/pages/products/add_product_one/platforms/components/quantity_type_selection_widget.dart';
 
-class SelectProductQuantityTypeSection
-    extends StatelessWidget {
+class SelectProductQuantityTypeSection extends StatelessWidget {
   final int quantityType;
   final Function(int index) switchQuantityType;
   final TextEditingController widthController;
@@ -36,10 +35,7 @@ class SelectProductQuantityTypeSection
         Visibility(
           visible: quantityType == 2,
           child: Container(
-            padding: const EdgeInsets.symmetric(
-              vertical: 15.0,
-              horizontal: 15,
-            ),
+            padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 15),
             margin: EdgeInsets.only(bottom: 10),
             decoration: BoxDecoration(
               color: Colors.grey.shade100,

@@ -10,8 +10,5 @@ class UpdatedMaterial extends HiveObject {
   @HiveField(1)
   final bool includeQuantity;
 
-  UpdatedMaterial({
-    required this.material,
-    this.includeQuantity = false,
-  });
+  UpdatedMaterial({required this.material, this.includeQuantity = false});
 }

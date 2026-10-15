@@ -18,19 +18,16 @@ class ProductSummaryTab extends StatefulWidget {
   });
 
   @override
-  State<ProductSummaryTab> createState() =>
-      _ProductSummaryTabState();
+  State<ProductSummaryTab> createState() => _ProductSummaryTabState();
 }
 
-class _ProductSummaryTabState
-    extends State<ProductSummaryTab> {
+class _ProductSummaryTabState extends State<ProductSummaryTab> {
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal:
-            widget.value.toString().length < 5 ? 10 : 7,
+        horizontal: widget.value.toString().length < 5 ? 10 : 7,
         vertical: 10,
       ),
       decoration: BoxDecoration(
@@ -91,10 +88,7 @@ class _ProductSummaryTabState
                   color: Colors.grey.shade700,
                 ),
                 widget.isMoney != null
-                    ? formatMoneyMid(
-                      amount: widget.value,
-                      context: context,
-                    )
+                    ? formatMoneyMid(amount: widget.value, context: context)
                     : formatLargeNumberDouble(widget.value),
               ),
             ],

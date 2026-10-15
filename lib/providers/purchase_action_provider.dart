@@ -28,20 +28,14 @@ class PurchaseActionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  String itemUnit({
-    required PurchaseListItem purchaseItem,
-  }) {
+  String itemUnit({required PurchaseListItem purchaseItem}) {
     List<TempProductClass> products =
         returnData().productListMain
-            .where(
-              (item) => item.uuid == purchaseItem.itemUuid,
-            )
+            .where((item) => item.uuid == purchaseItem.itemUuid)
             .toList();
     if (products.isNotEmpty) {
       var product = products.first;
-      return (purchaseItem.isGroup
-              ? product.groupUnit
-              : product.unit) ??
+      return (purchaseItem.isGroup ? product.groupUnit : product.unit) ??
           'unit';
     } else {
       return purchaseItem.unit ?? 'unit';
@@ -61,8 +55,7 @@ class PurchaseActionProvider extends ChangeNotifier {
     var temp =
         purchaseListItems.where((purch) {
           if (item.storageItemUuid != null) {
-            return purch.storageItemUuid ==
-                item.storageItemUuid;
+            return purch.storageItemUuid == item.storageItemUuid;
           } else {
             return purch.itemUuid == item.itemUuid;
           }
@@ -107,12 +100,11 @@ class PurchaseActionProvider extends ChangeNotifier {
   }) async {
     try {
       if (purchase != null) {
-        var res = await returnPurchaseProvider()
-            .deletePurchase(
-              purchase,
-              updateInventory,
-              false,
-            );
+        var res = await returnPurchaseProvider().deletePurchase(
+          purchase,
+          updateInventory,
+          false,
+        );
         if (res == 0) {
           return 0;
         }
@@ -122,8 +114,7 @@ class PurchaseActionProvider extends ChangeNotifier {
         createdAt: purchase?.createdAt ?? DateTime.now(),
         shopId: purchase?.shopId ?? shopId(),
         staffId: purchase?.staffId ?? currentUser().userId,
-        staffName:
-            purchase?.staffName ?? currentUser().name,
+        staffName: purchase?.staffName ?? currentUser().name,
         supplierId: tempSupplier?.uuid,
         supplierName: tempSupplier?.name,
         total: totalPurchaseAmount(),
@@ -141,13 +132,9 @@ class PurchaseActionProvider extends ChangeNotifier {
                     purchaseId: tempUuid,
                     createdAt: DateTime.now(),
                     amount: paymentAmount,
-                    userId:
-                        purchase?.staffId ??
-                        currentUser().userId!,
+                    userId: purchase?.staffId ?? currentUser().userId!,
                     paymentMethod: 'Cash',
-                    staffName:
-                        purchase?.staffName ??
-                        currentUser().name,
+                    staffName: purchase?.staffName ?? currentUser().name,
                   ),
                 ],
       );
@@ -162,12 +149,9 @@ class PurchaseActionProvider extends ChangeNotifier {
                   unit: item.unit,
                   customPrice: item.customPrice,
                   originalPrice: item.originalPrice,
-                  createdAt:
-                      purchase?.createdAt ?? DateTime.now(),
+                  createdAt: purchase?.createdAt ?? DateTime.now(),
                   shopId: purchase?.shopId ?? shopId(),
-                  staffId:
-                      purchase?.staffId ??
-                      currentUser().userId,
+                  staffId: purchase?.staffId ?? currentUser().userId,
                   itemId: item.itemUuid,
                   storageItemId: item.storageItemUuid,
                   itemName: item.itemName,
@@ -183,8 +167,9 @@ class PurchaseActionProvider extends ChangeNotifier {
               .toList();
       tempPurchase.items = purchaseRecords;
 
-      var purchaseRes = await returnPurchaseProvider()
-          .createPurchase(tempPurchase);
+      var purchaseRes = await returnPurchaseProvider().createPurchase(
+        tempPurchase,
+      );
 
       if (purchaseRes == null) {
         return 0;
@@ -193,27 +178,18 @@ class PurchaseActionProvider extends ChangeNotifier {
       if (purchase != null) {
         await returnData().getProducts(shopId());
       }
-      await returnPurchaseProvider()
-          .createItemPurchaseRecord(purchaseRecords);
+      await returnPurchaseProvider().createItemPurchaseRecord(purchaseRecords);
       clearAll();
-      if (returnShopProvider()
-              .userShop()
-              ?.manageInventoryStorage ==
-          true) {
-        await returnStorageProductProvider()
-            .getStorageProducts(shopId());
+      if (returnShopProvider().userShop()?.manageInventoryStorage == true) {
+        await returnStorageProductProvider().getStorageProducts(shopId());
       } else {
         await returnData().getProducts(shopId());
       }
       syncData();
-      await returnPurchaseProvider().loadPurchases(
-        shopId(),
-      );
+      await returnPurchaseProvider().loadPurchases(shopId());
       return 1;
     } catch (e) {
-      await mainLocalLog(
-        'Error Creating Purchase Action: ${e.toString()}',
-      );
+      await mainLocalLog('Error Creating Purchase Action: ${e.toString()}');
       return 0;
     }
   }
@@ -257,8 +233,7 @@ class PurchaseActionProvider extends ChangeNotifier {
       );
       tempSupplier = sups.isEmpty ? null : sups.first;
 
-      customTotalAmount =
-          purchase.isCustomPriceSet ? purchase.total : null;
+      customTotalAmount = purchase.isCustomPriceSet ? purchase.total : null;
       notifyListeners();
       Navigator.push(
         context,
@@ -269,9 +244,7 @@ class PurchaseActionProvider extends ChangeNotifier {
         ),
       );
     } catch (e) {
-      mainLocalLog(
-        'Error Initiating Edit Purchase: ${e.toString()}',
-      );
+      mainLocalLog('Error Initiating Edit Purchase: ${e.toString()}');
     }
   }
 }

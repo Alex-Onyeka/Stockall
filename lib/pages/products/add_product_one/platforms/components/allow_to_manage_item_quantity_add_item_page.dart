@@ -2,12 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
-class AllowToManageItemQuantityAddItemPage
-    extends StatelessWidget {
-  const AllowToManageItemQuantityAddItemPage({
-    super.key,
-    required this.theme,
-  });
+class AllowToManageItemQuantityAddItemPage extends StatelessWidget {
+  const AllowToManageItemQuantityAddItemPage({super.key, required this.theme});
 
   final ThemeProvider theme;
 
@@ -52,9 +48,7 @@ class AllowToManageItemQuantityAddItemPage
             activeColor: theme.lightModeColor.secColor100,
             value: returnData(context: context).isManaged,
             onChanged: (value) {
-              returnData().toggleIsManaged(
-                context: context,
-              );
+              returnData().toggleIsManaged(context: context);
               FocusManager.instance.primaryFocus?.unfocus();
             },
           ),

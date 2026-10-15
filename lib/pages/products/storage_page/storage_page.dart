@@ -18,9 +18,7 @@ class _StoragePageState extends State<StoragePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       returnStorageItemHistoryProvider().clearDate();
-      returnStorageProductProvider().getStorageProducts(
-        shopId(),
-      );
+      returnStorageProductProvider().getStorageProducts(shopId());
     });
   }
 
@@ -29,13 +27,9 @@ class _StoragePageState extends State<StoragePage> {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth < tabletScreenSmall) {
-          return StoragePageMobile(
-            itemName: widget.itemName,
-          );
+          return StoragePageMobile(itemName: widget.itemName);
         } else {
-          return StoragePageDesktop(
-            itemName: widget.itemName,
-          );
+          return StoragePageDesktop(itemName: widget.itemName);
         }
       },
     );

@@ -16,8 +16,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class CustomerAccountReceiptsProvider
-    extends ChangeNotifier {
+class CustomerAccountReceiptsProvider extends ChangeNotifier {
   static final CustomerAccountReceiptsProvider _instance =
       CustomerAccountReceiptsProvider._internal();
   factory CustomerAccountReceiptsProvider() => _instance;
@@ -35,14 +34,12 @@ class CustomerAccountReceiptsProvider
   //
 
   final SupabaseClient supabase = Supabase.instance.client;
-  final ConnectivityProvider connectivity =
-      ConnectivityProvider();
+  final ConnectivityProvider connectivity = ConnectivityProvider();
 
-  List<CustomerAccountReceipts> _customerAccountReceipts =
-      [];
+  List<CustomerAccountReceipts> _customerAccountReceipts = [];
 
-  List<CustomerAccountReceipts>
-  get customerAccountReceipts => _customerAccountReceipts;
+  List<CustomerAccountReceipts> get customerAccountReceipts =>
+      _customerAccountReceipts;
 
   final String tableName = 'customer_account_receipts';
 
@@ -52,16 +49,13 @@ class CustomerAccountReceiptsProvider
     notifyListeners();
   }
 
-  CustomerAccountReceipts?
-  getSingleCustomerAccountReceipts({
+  CustomerAccountReceipts? getSingleCustomerAccountReceipts({
     required String recordUuid,
   }) {
     return customerAccountReceipts
             .where((item) => item.uuid == recordUuid)
             .isNotEmpty
-        ? customerAccountReceipts
-            .where((item) => item.uuid == recordUuid)
-            .first
+        ? customerAccountReceipts.where((item) => item.uuid == recordUuid).first
         : null;
   }
 
@@ -74,138 +68,106 @@ class CustomerAccountReceiptsProvider
   }
 
   // CREATE a new CustomerAccountReceipts
-  Future<CustomerAccountReceipts?>
-  createCustomerAccountReceipts({
+  Future<CustomerAccountReceipts?> createCustomerAccountReceipts({
     required CustomerAccountReceipts customerAccountReceipt,
   }) async {
-    if ((returnShopProvider()
-                    .userShop()
-                    ?.manageCustomerReward ==
-                true ||
-            returnShopProvider()
-                    .userShop()
-                    ?.manageCustomerAccount ==
-                true) &&
-        GeneralSettingsAuthAction()
-                .manageCustomersAccountAndPoints(
-                  context: null,
-                ) ==
+    if ((returnShopProvider().userShop()?.manageCustomerReward == true ||
+            returnShopProvider().userShop()?.manageCustomerAccount == true) &&
+        GeneralSettingsAuthAction().manageCustomersAccountAndPoints(
+              context: null,
+            ) ==
             true) {
       try {
-        await mainLocalLog(
-          'Customer Account Receipt/Reward Creation Started',
-        );
+        await mainLocalLog('Customer Account Receipt/Reward Creation Started');
         if (customerAccountReceipt.isAdd &&
             customerAccountReceipt.title == null) {
           if (customerAccountReceipt.isBalance ?? true) {
-            customerAccountReceipt.title =
-                'Account Credited';
+            customerAccountReceipt.title = 'Account Credited';
           } else {
             customerAccountReceipt.title = 'Reward Earned';
           }
         } else {
           if (customerAccountReceipt.isBalance ?? true) {
-            customerAccountReceipt.title =
-                'Account Debited';
+            customerAccountReceipt.title = 'Account Debited';
           } else {
-            customerAccountReceipt.title =
-                'Reward Deducted';
+            customerAccountReceipt.title = 'Reward Deducted';
           }
         }
         customerAccountReceipt.uuid = uuidGen();
         customerAccountReceipt.createdAt = DateTime.now();
         customerAccountReceipt.shopId = shopId();
-        customerAccountReceipt.staffId =
-            currentUser().userId;
-        customerAccountReceipt.staffName =
-            currentUser().name;
+        customerAccountReceipt.staffId = currentUser().userId;
+        customerAccountReceipt.staffName = currentUser().name;
 
-        await CustomerAccountReceiptsFunc()
-            .createCustomerAccountReceipts(
-              customerAccountReceipt,
-            );
+        await CustomerAccountReceiptsFunc().createCustomerAccountReceipts(
+          customerAccountReceipt,
+        );
         await CreatedCustomerAccountReceiptsFunc()
             .createCustomerAccountReceipts(
               CreatedCustomerAccountReceipts(
-                createdCustomerAccountReceipts:
-                    customerAccountReceipt,
+                createdCustomerAccountReceipts: customerAccountReceipt,
               ),
             );
         List<TempCustomersClass> customers =
             returnCustomersSingle().customers
                 .where(
-                  (item) =>
-                      item.uuid ==
-                      customerAccountReceipt.customerUuid,
+                  (item) => item.uuid == customerAccountReceipt.customerUuid,
                 )
                 .toList();
         if (customers.isNotEmpty) {
           var customerOld = customers.first;
           var customer = customerOld.copyWith();
-          CustomerAccountUpdate accountUpdate =
-              CustomerAccountUpdate(
-                amount:
-                    (customerAccountReceipt.amount ?? 0),
-                customerUuid: customer.uuid!,
-                isIncrement: true,
-                isBalance: false,
-                createdAt: DateTime.now(),
-                uuid: uuidGen(),
-              );
+          CustomerAccountUpdate accountUpdate = CustomerAccountUpdate(
+            amount: (customerAccountReceipt.amount ?? 0),
+            customerUuid: customer.uuid!,
+            isIncrement: true,
+            isBalance: false,
+            createdAt: DateTime.now(),
+            uuid: uuidGen(),
+          );
           if (customerAccountReceipt.isAdd) {
             if (customerAccountReceipt.isBalance ?? true) {
-              customerAccountReceipt.oldBalance =
-                  customerOld.balance;
+              customerAccountReceipt.oldBalance = customerOld.balance;
               customer.balance =
                   (customer.balance ?? 0) +
                   (customerAccountReceipt.amount ?? 0);
               accountUpdate.isBalance = true;
-              customerAccountReceipt.newBalance =
-                  customer.balance;
+              customerAccountReceipt.newBalance = customer.balance;
             } else {
-              customerAccountReceipt.oldBalance =
-                  customerOld.cashReward;
+              customerAccountReceipt.oldBalance = customerOld.cashReward;
               customer.cashReward =
                   (customer.cashReward ?? 0) +
                   (customerAccountReceipt.amount ?? 0);
               accountUpdate.isBalance = false;
-              customerAccountReceipt.newBalance =
-                  customer.cashReward;
+              customerAccountReceipt.newBalance = customer.cashReward;
             }
             accountUpdate.isIncrement = true;
           } else {
             if (customerAccountReceipt.isBalance ?? true) {
-              customerAccountReceipt.oldBalance =
-                  customerOld.balance;
-              double amount =
-                  customerAccountReceipt.amount ?? 0;
+              customerAccountReceipt.oldBalance = customerOld.balance;
+              double amount = customerAccountReceipt.amount ?? 0;
 
               double balance = customer.balance ?? 0;
 
               customer.balance = balance - amount;
               accountUpdate.isBalance = true;
-              customerAccountReceipt.newBalance =
-                  customer.balance;
+              customerAccountReceipt.newBalance = customer.balance;
             } else {
-              customerAccountReceipt.oldBalance =
-                  customerOld.cashReward;
-              double amount =
-                  customerAccountReceipt.amount ?? 0;
+              customerAccountReceipt.oldBalance = customerOld.cashReward;
+              double amount = customerAccountReceipt.amount ?? 0;
 
               double cashReward = customer.cashReward ?? 0;
 
               customer.cashReward = cashReward - amount;
               accountUpdate.isBalance = false;
-              customerAccountReceipt.newBalance =
-                  customer.cashReward;
+              customerAccountReceipt.newBalance = customer.cashReward;
             }
             accountUpdate.isIncrement = false;
           }
-          await CustomerAccountUpdateFunc()
-              .createCustomerAccountUpdate(accountUpdate);
-          await returnCustomersSingle().updateCustomerMain(
-            customer,
+          await CustomerAccountUpdateFunc().createCustomerAccountUpdate(
+            accountUpdate,
           );
+          await returnCustomersSingle().updateCustomerMain(customer);
         }
         await getCustomerAccountReceiptsOffline();
         return customerAccountReceipt;
@@ -221,25 +183,19 @@ class CustomerAccountReceiptsProvider
   }
 
   // READ all CustomerAccountReceipts for a shop
-  Future<List<CustomerAccountReceipts>>
-  getCustomerAccountReceipts(int shopId) async {
+  Future<List<CustomerAccountReceipts>> getCustomerAccountReceipts(
+    int shopId,
+  ) async {
     await getCustomerAccountReceiptsOffline();
     bool isOnline = await connectivity.isOnline();
     if (isOnline &&
         CustomerAccountReceiptsFunc().isSynced() &&
-        authorization(
-          authorized: Authorizations().viewCustomersAccount,
+        authorization(authorized: Authorizations().viewCustomersAccount) &&
+        GeneralSettingsAuthAction().manageCustomersAccountAndPoints(
+          context: null,
         ) &&
-        GeneralSettingsAuthAction()
-            .manageCustomersAccountAndPoints(
-              context: null,
-            ) &&
-        returnShopProvider()
-                .userShop()
-                ?.manageCustomerAccount ==
-            true) {
-      await CustomerAccountReceiptsFunc()
-          .clearCustomerAccountReceipts();
+        returnShopProvider().userShop()?.manageCustomerAccount == true) {
+      await CustomerAccountReceiptsFunc().clearCustomerAccountReceipts();
       try {
         final data = await supabase
             .from(tableName)
@@ -247,24 +203,16 @@ class CustomerAccountReceiptsProvider
             .eq('shop_id', shopId)
             .order('created_at', ascending: false);
         if (data.isNotEmpty) {
-          await mainLocalLog(
-            'Customer Account Receipts Gotten ${data.length}',
-          );
+          await mainLocalLog('Customer Account Receipts Gotten ${data.length}');
         }
 
         _customerAccountReceipts =
             (data as List)
-                .map(
-                  (json) =>
-                      CustomerAccountReceipts.fromJson(
-                        json,
-                      ),
-                )
+                .map((json) => CustomerAccountReceipts.fromJson(json))
                 .toList();
-        await CustomerAccountReceiptsFunc()
-            .insertAllCustomerAccountReceipts(
-              _customerAccountReceipts,
-            );
+        await CustomerAccountReceiptsFunc().insertAllCustomerAccountReceipts(
+          _customerAccountReceipts,
+        );
         await mainLocalLog('Loaded');
         notifyListeners();
       } catch (e) {
@@ -275,11 +223,8 @@ class CustomerAccountReceiptsProvider
       }
     } else {
       _customerAccountReceipts =
-          CustomerAccountReceiptsFunc()
-              .getCustomerAccountReceipts();
-      await mainLocalLog(
-        'Offline Customer Account Receipts Gotten',
-      );
+          CustomerAccountReceiptsFunc().getCustomerAccountReceipts();
+      await mainLocalLog('Offline Customer Account Receipts Gotten');
       notifyListeners();
     }
     notifyListeners();
@@ -289,11 +234,8 @@ class CustomerAccountReceiptsProvider
   Future<List<CustomerAccountReceipts>>
   getCustomerAccountReceiptsOffline() async {
     _customerAccountReceipts =
-        CustomerAccountReceiptsFunc()
-            .getCustomerAccountReceipts();
-    await mainLocalLog(
-      'Offline Customer Account Receipts Gotten',
-    );
+        CustomerAccountReceiptsFunc().getCustomerAccountReceipts();
+    await mainLocalLog('Offline Customer Account Receipts Gotten');
     notifyListeners();
     return _customerAccountReceipts;
   }
@@ -326,9 +268,7 @@ class CustomerAccountReceiptsProvider
   void setRange(DateTime rangeStart, DateTime endOfrange) {
     rangeStartDate = rangeStart;
     rangeEndDate = endOfrange;
-    mainLocalLog(
-      'Date Range set: Start: $rangeStart End: $endOfrange ',
-    );
+    mainLocalLog('Date Range set: Start: $rangeStart End: $endOfrange ');
     dateSet = null;
     notifyListeners();
   }
@@ -338,50 +278,37 @@ class CustomerAccountReceiptsProvider
     required List<CustomerAccountReceipts> customerReceipts,
     required bool? updateCustomerBalance,
   }) async {
-    await mainLocalLog(
-      'Deleting Customer Account Receipts',
-    );
+    await mainLocalLog('Deleting Customer Account Receipts');
     try {
-      await mainLocalLog(
-        'Deleting Customer Account Receipts Offline',
-      );
+      await mainLocalLog('Deleting Customer Account Receipts Offline');
       for (var customerAccountReceipt in customerReceipts) {
-        await CustomerAccountReceiptsFunc()
-            .deleteCustomerAccountReceipts(
-              customerAccountReceipt.uuid!,
-            );
+        await CustomerAccountReceiptsFunc().deleteCustomerAccountReceipts(
+          customerAccountReceipt.uuid!,
+        );
         var containsCreated =
             CreatedCustomerAccountReceiptsFunc()
                 .getCustomerAccountReceipts()
                 .where(
                   (productRecord) =>
-                      productRecord
-                          .createdCustomerAccountReceipts
-                          .uuid ==
+                      productRecord.createdCustomerAccountReceipts.uuid ==
                       customerAccountReceipt.uuid,
                 )
                 .toList();
-        var containsUpdate =
-            UpdatedCustomerAccountReceiptsFunc()
-                .getCustomerAccountReceiptsIds()
-                .where(
-                  (productRecord) =>
-                      productRecord
-                          .updatedCustomerAccountReceipts
-                          .uuid ==
-                      customerAccountReceipt.uuid!,
-                );
+        var containsUpdate = UpdatedCustomerAccountReceiptsFunc()
+            .getCustomerAccountReceiptsIds()
+            .where(
+              (productRecord) =>
+                  productRecord.updatedCustomerAccountReceipts.uuid ==
+                  customerAccountReceipt.uuid!,
+            );
         if (containsCreated.isNotEmpty) {
           await CreatedCustomerAccountReceiptsFunc()
-              .deleteCustomerAccountReceipt(
-                customerAccountReceipt.uuid!,
-              );
+              .deleteCustomerAccountReceipt(customerAccountReceipt.uuid!);
         } else {
           await DeletedCustomerAccountReceiptsFunc()
               .createDeletedCustomerAccountReceipts(
                 DeletedCustomerAccountReceipts(
-                  customerAccountReceiptUuid:
-                      customerAccountReceipt.uuid!,
+                  customerAccountReceiptUuid: customerAccountReceipt.uuid!,
                 ),
               );
         }
@@ -397,9 +324,7 @@ class CustomerAccountReceiptsProvider
                 returnCustomersSingle().customers
                     .where(
                       (item) =>
-                          item.uuid ==
-                          customerAccountReceipt
-                              .customerUuid,
+                          item.uuid == customerAccountReceipt.customerUuid,
                     )
                     .toList();
             if (customers.isNotEmpty) {
@@ -414,12 +339,9 @@ class CustomerAccountReceiptsProvider
                     createdAt: DateTime.now(),
                     uuid: uuidGen(),
                   );
-              if (customerAccountReceipt.isBalance ??
-                  true) {
-                customerAccountReceipt.oldBalance =
-                    customerOld.balance;
-                double amount =
-                    customerAccountReceipt.amount ?? 0;
+              if (customerAccountReceipt.isBalance ?? true) {
+                customerAccountReceipt.oldBalance = customerOld.balance;
+                double amount = customerAccountReceipt.amount ?? 0;
 
                 double balance = customer.balance ?? 0;
 
@@ -433,30 +355,23 @@ class CustomerAccountReceiptsProvider
                   customerAccountUpdate.isIncrement = true;
                 }
                 customerAccountUpdate.amount = amount;
-                customerAccountReceipt.newBalance =
-                    customer.balance;
+                customerAccountReceipt.newBalance = customer.balance;
               } else {
-                customerAccountReceipt.oldBalance =
-                    customerOld.cashReward;
-                double amount =
-                    customerAccountReceipt.amount ?? 0;
+                customerAccountReceipt.oldBalance = customerOld.cashReward;
+                double amount = customerAccountReceipt.amount ?? 0;
 
-                double cashReward =
-                    customer.cashReward ?? 0;
+                double cashReward = customer.cashReward ?? 0;
 
                 customer.cashReward = cashReward - amount;
                 customerAccountUpdate.isBalance = false;
                 customerAccountUpdate.isIncrement = false;
                 customerAccountUpdate.amount = amount;
-                customerAccountReceipt.newBalance =
-                    customer.cashReward;
+                customerAccountReceipt.newBalance = customer.cashReward;
               }
-              await CustomerAccountUpdateFunc()
-                  .createCustomerAccountUpdate(
-                    customerAccountUpdate,
-                  );
-              await returnCustomersSingle()
-                  .updateCustomerMain(customer);
+              await CustomerAccountUpdateFunc().createCustomerAccountUpdate(
+                customerAccountUpdate,
+              );
+              await returnCustomersSingle().updateCustomerMain(customer);
             }
           }
           // syncData();
@@ -464,9 +379,7 @@ class CustomerAccountReceiptsProvider
           // syncData();
         }
 
-        await mainLocalLog(
-          '✅ Customer Account Receipts succesfully Delete.',
-        );
+        await mainLocalLog('✅ Customer Account Receipts succesfully Delete.');
       }
       notifyListeners();
       return 1;
@@ -516,51 +429,31 @@ class CustomerAccountReceiptsProvider
             CreatedCustomerAccountReceiptsFunc()
                 .getCustomerAccountReceipts()
                 .toList();
-        var newCustomerAccountReceipts =
-            tempCustomerAccountReceipts.map((rec) {
-              rec.createdCustomerAccountReceipts.createdAt =
-                  rec
-                      .createdCustomerAccountReceipts
-                      .createdAt
-                      ?.toUtc();
-              return rec;
-            });
+        var newCustomerAccountReceipts = tempCustomerAccountReceipts.map((rec) {
+          rec.createdCustomerAccountReceipts.createdAt =
+              rec.createdCustomerAccountReceipts.createdAt?.toUtc();
+          return rec;
+        });
         final payload =
             newCustomerAccountReceipts
-                .map(
-                  (p) =>
-                      p.createdCustomerAccountReceipts
-                          .toJson(),
-                )
+                .map((p) => p.createdCustomerAccountReceipts.toJson())
                 .toList();
 
         // Insert all at once
-        final data =
-            await supabase
-                .from(tableName)
-                .insert(payload)
-                .select();
+        final data = await supabase.from(tableName).insert(payload).select();
 
-        await mainLocalLog(
-          '${data.length} items added succesfully ✅',
-        );
+        await mainLocalLog('${data.length} items added succesfully ✅');
         await CreatedCustomerAccountReceiptsFunc()
             .clearCustomerAccountReceipts();
-        await mainLocalLog(
-          'Unsynced Customer Account Receipts Cleared',
-        );
+        await mainLocalLog('Unsynced Customer Account Receipts Cleared');
 
-        await mainLocalLog(
-          'Mounted, refreshing Customer Account Receipts ✅',
-        );
+        await mainLocalLog('Mounted, refreshing Customer Account Receipts ✅');
         await getCustomerAccountReceipts(
           returnShopProvider().userShop()!.shopId!,
         );
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Customer Account Receipts insert failed ❌: $e',
-      );
+      await mainLocalLog('Batch Customer Account Receipts insert failed ❌: $e');
     }
   }
 
@@ -568,23 +461,19 @@ class CustomerAccountReceiptsProvider
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
-      if (CustomerAccountUpdateFunc()
-              .getQuantitiesUpdate()
-              .isNotEmpty &&
+      if (CustomerAccountUpdateFunc().getQuantitiesUpdate().isNotEmpty &&
           isOnline) {
         final tempAccountUpdates =
-            CustomerAccountUpdateFunc()
-                .getQuantitiesUpdate()
-                .toList()
-                .map((item) {
-                  return {
-                    "customerUuid": item.customerUuid,
-                    "amount": item.amount,
-                    "isIncrement": item.isIncrement,
-                    'isBalance': item.isBalance,
-                  };
-                })
-                .toList();
+            CustomerAccountUpdateFunc().getQuantitiesUpdate().toList().map((
+              item,
+            ) {
+              return {
+                "customerUuid": item.customerUuid,
+                "amount": item.amount,
+                "isIncrement": item.isIncrement,
+                'isBalance': item.isBalance,
+              };
+            }).toList();
         await mainLocalLog(
           '❌🔥❌❌🔥❌❌❌❌❌❌❌🔥Customer Updates Length: ${tempAccountUpdates.length}',
         );
@@ -594,21 +483,16 @@ class CustomerAccountReceiptsProvider
           params: {'updates': tempAccountUpdates},
         );
 
-        await CustomerAccountUpdateFunc()
-            .clearQuantitiesUpdate();
+        await CustomerAccountUpdateFunc().clearQuantitiesUpdate();
 
-        await mainLocalLog(
-          'Unsynced Customer Account Updates Cleared',
-        );
+        await mainLocalLog('Unsynced Customer Account Updates Cleared');
 
         await mainLocalLog(
           '❌🔥❌❌🔥❌❌❌❌❌❌❌🔥Mounted, refreshing Customer Account Updates ✅',
         );
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Customer Account Updates insert failed ❌: $e',
-      );
+      await mainLocalLog('Batch Customer Account Updates insert failed ❌: $e');
     }
   }
 
@@ -653,9 +537,7 @@ class CustomerAccountReceiptsProvider
           'Unsynced Deleted Customer Account Receipts Cleared',
         );
 
-        await mainLocalLog(
-          'Mounted, refreshing Customer Account Receipts ✅',
-        );
+        await mainLocalLog('Mounted, refreshing Customer Account Receipts ✅');
         await getCustomerAccountReceipts(
           returnShopProvider().userShop()!.shopId!,
         );
@@ -690,35 +572,26 @@ class CustomerAccountReceiptsProvider
             UpdatedCustomerAccountReceiptsFunc()
                 .getCustomerAccountReceiptsIds();
 
-        for (final updated
-            in updatedCustomerAccountReceipts) {
+        for (final updated in updatedCustomerAccountReceipts) {
           final localCustomerAccountReceipts =
               updated.updatedCustomerAccountReceipts;
 
-          localCustomerAccountReceipts.updatedAt ??=
-              DateTime.now().toLocal();
+          localCustomerAccountReceipts.updatedAt ??= DateTime.now().toLocal();
 
           if (localCustomerAccountReceipts.uuid == null) {
-            await mainLocalLog(
-              'Local Customer Account Receipts Uuid is Null',
-            );
+            await mainLocalLog('Local Customer Account Receipts Uuid is Null');
           }
           final remoteData =
               await supabase
                   .from(tableName)
                   .select('uuid, updated_at')
-                  .eq(
-                    'uuid',
-                    localCustomerAccountReceipts.uuid!,
-                  )
+                  .eq('uuid', localCustomerAccountReceipts.uuid!)
                   .maybeSingle();
 
           if (remoteData == null) {
             await supabase
                 .from(tableName)
-                .insert(
-                  localCustomerAccountReceipts.toJson(),
-                );
+                .insert(localCustomerAccountReceipts.toJson());
             await mainLocalLog(
               'Inserted product with uuid ${localCustomerAccountReceipts.uuid}',
             );
@@ -727,38 +600,28 @@ class CustomerAccountReceiptsProvider
                   localCustomerAccountReceipts.uuid ?? '',
                 );
           } else {
-            final remoteUpdatedAtRaw =
-                remoteData['updated_at'];
+            final remoteUpdatedAtRaw = remoteData['updated_at'];
             final remoteUpdatedAt =
                 remoteUpdatedAtRaw == null
                     ? null
-                    : DateTime.parse(
-                      remoteUpdatedAtRaw,
-                    ).toUtc();
+                    : DateTime.parse(remoteUpdatedAtRaw).toUtc();
 
             localCustomerAccountReceipts.updatedAt =
-                (localCustomerAccountReceipts.updatedAt ??
-                        DateTime.now())
+                (localCustomerAccountReceipts.updatedAt ?? DateTime.now())
                     .toUtc(); // ✅ keep both UTC
             await mainLocalLog(
               "Local updatedAt: ${localCustomerAccountReceipts.updatedAt}",
             );
-            await mainLocalLog(
-              "Remote updatedAt: $remoteUpdatedAt",
-            );
+            await mainLocalLog("Remote updatedAt: $remoteUpdatedAt");
 
             if (remoteUpdatedAt == null ||
-                localCustomerAccountReceipts.updatedAt!
-                    .isAfter(remoteUpdatedAt)) {
+                localCustomerAccountReceipts.updatedAt!.isAfter(
+                  remoteUpdatedAt,
+                )) {
               await supabase
                   .from(tableName)
-                  .update(
-                    localCustomerAccountReceipts.toJson(),
-                  )
-                  .eq(
-                    'uuid',
-                    localCustomerAccountReceipts.uuid!,
-                  );
+                  .update(localCustomerAccountReceipts.toJson())
+                  .eq('uuid', localCustomerAccountReceipts.uuid!);
               await mainLocalLog(
                 'Updated CustomerAccountReceipts with uuid ${localCustomerAccountReceipts.uuid}',
               );
@@ -779,17 +642,13 @@ class CustomerAccountReceiptsProvider
         await mainLocalLog(
           'Unsynced Customer Account Receipts products cleared',
         );
-        await mainLocalLog(
-          'Mounted, refreshing Customer Account Receipts ✅',
-        );
+        await mainLocalLog('Mounted, refreshing Customer Account Receipts ✅');
         await getCustomerAccountReceipts(
           returnShopProvider().userShop()!.shopId!,
         );
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Customer Account Receipts update failed ❌: $e',
-      );
+      await mainLocalLog('Batch Customer Account Receipts update failed ❌: $e');
     }
   }
   //
@@ -799,38 +658,25 @@ class CustomerAccountReceiptsProvider
   //
   //
 
-  List<CustomerAccountReceipts>
-  returnCustomerAccountReceiptsByDayOrWeek() {
-    if (returnShopProvider()
-            .userShop()
-            ?.manageDepartments ==
-        true) {
+  List<CustomerAccountReceipts> returnCustomerAccountReceiptsByDayOrWeek() {
+    if (returnShopProvider().userShop()?.manageDepartments == true) {
       if (rangeStartDate != null) {
-        return customerAccountReceipts.where((
-          productionRecord,
-        ) {
-          final created =
-              productionRecord.createdAt!.toLocal();
-          return !created.isBefore(
-                fourAm(rangeStartDate!),
-              ) &&
+        return customerAccountReceipts.where((productionRecord) {
+          final created = productionRecord.createdAt!.toLocal();
+          return !created.isBefore(fourAm(rangeStartDate!)) &&
               created.isBefore(
                 fourAmNextDay(
-                  rangeEndDate ??
-                      resolveBusinessDate(DateTime.now()),
+                  rangeEndDate ?? resolveBusinessDate(DateTime.now()),
                 ),
               );
         }).toList();
       } else {
-        final currentDate =
-            dateSet ?? resolveBusinessDate(DateTime.now());
+        final currentDate = dateSet ?? resolveBusinessDate(DateTime.now());
 
         return customerAccountReceipts
             .where(
               (productionRecord) =>
-                  !productionRecord.createdAt!.isBefore(
-                    fourAm(currentDate),
-                  ) &&
+                  !productionRecord.createdAt!.isBefore(fourAm(currentDate)) &&
                   productionRecord.createdAt!.isBefore(
                     fourAmNextDay(currentDate),
                   ),
@@ -840,49 +686,34 @@ class CustomerAccountReceiptsProvider
     } else {
       if (rangeStartDate != null) {
         if (authorization(
-          authorized:
-              Authorizations().viewAllTransactionRecords,
+          authorized: Authorizations().viewAllTransactionRecords,
         )) {
-          return customerAccountReceipts.where((
-            productionRecord,
-          ) {
-            final created =
-                productionRecord.createdAt!.toLocal();
-            return !created.isBefore(
-                  fourAm(rangeStartDate!),
-                ) &&
+          return customerAccountReceipts.where((productionRecord) {
+            final created = productionRecord.createdAt!.toLocal();
+            return !created.isBefore(fourAm(rangeStartDate!)) &&
                 created.isBefore(
                   fourAmNextDay(
-                    rangeEndDate ??
-                        resolveBusinessDate(DateTime.now()),
+                    rangeEndDate ?? resolveBusinessDate(DateTime.now()),
                   ),
                 );
           }).toList();
         } else {
-          return customerAccountReceipts.where((
-            productionRecord,
-          ) {
-            final created =
-                productionRecord.createdAt!.toLocal();
-            return !created.isBefore(
-                  fourAm(rangeStartDate!),
-                ) &&
+          return customerAccountReceipts.where((productionRecord) {
+            final created = productionRecord.createdAt!.toLocal();
+            return !created.isBefore(fourAm(rangeStartDate!)) &&
                 created.isBefore(
                   fourAmNextDay(
-                    rangeEndDate ??
-                        resolveBusinessDate(DateTime.now()),
+                    rangeEndDate ?? resolveBusinessDate(DateTime.now()),
                   ),
                 ) &&
-                productionRecord.staffId ==
-                    currentUser().userId;
+                productionRecord.staffId == currentUser().userId;
           }).toList();
         }
       } else {
         final currentDate = dateSet ?? DateTime.now();
 
         if (authorization(
-          authorized:
-              Authorizations().viewAllTransactionRecords,
+          authorized: Authorizations().viewAllTransactionRecords,
         )) {
           return customerAccountReceipts
               .where(
@@ -905,8 +736,7 @@ class CustomerAccountReceiptsProvider
                     !productionRecord.createdAt!.isAfter(
                       fourAmNextDay(currentDate),
                     ) &&
-                    productionRecord.staffId ==
-                        currentUser().userId,
+                    productionRecord.staffId == currentUser().userId,
               )
               .toList();
         }

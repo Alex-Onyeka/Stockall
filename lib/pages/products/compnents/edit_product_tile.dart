@@ -20,15 +20,10 @@ class ProductActionTile extends StatelessWidget {
       mouseCursor: SystemMouseCursors.click,
       onTap: action,
       child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 15,
-        ),
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border(
-            bottom: BorderSide(color: Colors.grey.shade400),
-          ),
+          border: Border(bottom: BorderSide(color: Colors.grey.shade400)),
         ),
         child: Row(
           spacing: 15,
@@ -36,10 +31,7 @@ class ProductActionTile extends StatelessWidget {
             SvgPicture.asset(svg),
             Text(
               style: TextStyle(
-                fontSize:
-                    returnTheme(
-                      context,
-                    ).mobileTexts.b2.fontSize,
+                fontSize: returnTheme(context).mobileTexts.b2.fontSize,
                 fontWeight: FontWeight.w600,
               ),
               text,

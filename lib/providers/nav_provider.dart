@@ -6,8 +6,7 @@ import 'package:stockall/pages/restricted_page/restricted_page.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class NavProvider extends ChangeNotifier {
-  static final NavProvider _instance =
-      NavProvider._internal();
+  static final NavProvider _instance = NavProvider._internal();
   factory NavProvider() => _instance;
   NavProvider._internal();
   int currentPage = 0;
@@ -69,37 +68,24 @@ class NavProvider extends ChangeNotifier {
       checkSubExp(context);
     }
     var dataProvider = returnData();
-    final userProvider = returnUserProvider(
-      context,
-      listen: false,
-    );
-    bool isOnline =
-        returnConnectivityProvider().isConnected;
+    final userProvider = returnUserProvider(context, listen: false);
+    bool isOnline = returnConnectivityProvider().isConnected;
     if (!context.mounted) {
       return;
     }
     final shopProvider = returnShopProvider();
 
-    final subPro = returnSubcsription(
-      context,
-      listen: false,
-    );
+    final subPro = returnSubcsription(context, listen: false);
 
-    final appVersionP = returnAppVersionProvider(
-      context,
-      listen: false,
-    );
+    final appVersionP = returnAppVersionProvider(context, listen: false);
 
-    final utilityConstants =
-        returnUtilityConstantProvider();
+    final utilityConstants = returnUtilityConstantProvider();
 
     await shopProvider.getUserShops();
     if (!context.mounted) {
       return;
     }
-    final subsription = await subPro.getSubscription(
-      context,
-    );
+    final subsription = await subPro.getSubscription(context);
     if (!context.mounted) {
       return;
     }
@@ -110,17 +96,11 @@ class NavProvider extends ChangeNotifier {
       var userOffline = AuthService().currentUserOffline;
       var userAuth = AuthService().currentUserAuth;
       if (userAuth == null && userOffline != null) {
-        await AuthService().signIn(
-          userOffline.email,
-          userOffline.password,
-        );
+        await AuthService().signIn(userOffline.email, userOffline.password);
       } else if (userAuth != null &&
           userOffline != null &&
           userAuth.id != userOffline.userId) {
-        await AuthService().signIn(
-          userOffline.email,
-          userOffline.password,
-        );
+        await AuthService().signIn(userOffline.email, userOffline.password);
       }
     }
 
@@ -136,19 +116,12 @@ class NavProvider extends ChangeNotifier {
     //   );
     //   return;
     // }
-    if (returnDepartmentProvider().currentDepartment() ==
-            null &&
-        !authorization(
-          authorized: Authorizations().viewAllDepartments,
-        )) {
+    if (returnDepartmentProvider().currentDepartment() == null &&
+        !authorization(authorized: Authorizations().viewAllDepartments)) {
       returnDepartmentProvider().selectDepartment(
         departmentClass:
-            returnDepartmentProvider()
-                    .departments
-                    .isNotEmpty
-                ? returnDepartmentProvider()
-                    .departments
-                    .first
+            returnDepartmentProvider().departments.isNotEmpty
+                ? returnDepartmentProvider().departments.first
                 : null,
       );
     }
@@ -156,18 +129,12 @@ class NavProvider extends ChangeNotifier {
     if (subsription != null &&
         subsription.plan != 0 &&
         (subsription.nextPayment != null &&
-            (DateTime.now().isAfter(
-                  subsription.nextPayment!,
-                ) ||
-                DateTime.now().isAtSameMomentAs(
-                  subsription.nextPayment!,
-                )))) {
+            (DateTime.now().isAfter(subsription.nextPayment!) ||
+                DateTime.now().isAtSameMomentAs(subsription.nextPayment!)))) {
       // returnShopProvider( ).clearDiscountsCache();
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(
-          builder: (context) => RestrictedPage(),
-        ),
+        MaterialPageRoute(builder: (context) => RestrictedPage()),
         (route) => false,
       );
       return;

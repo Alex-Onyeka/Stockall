@@ -26,24 +26,18 @@ class StorageDetailsMobile extends StatefulWidget {
   });
 
   @override
-  State<StorageDetailsMobile> createState() =>
-      _StorageDetailsMobileState();
+  State<StorageDetailsMobile> createState() => _StorageDetailsMobileState();
 }
 
-class _StorageDetailsMobileState
-    extends State<StorageDetailsMobile> {
+class _StorageDetailsMobileState extends State<StorageDetailsMobile> {
   bool isLoading = false;
   bool showSuccess = false;
 
   @override
   Widget build(BuildContext context) {
     List<TempStorageProducts>? productList =
-        returnStorageProductProvider(context: context)
-            .storageProductListMain
-            .where(
-              (product) =>
-                  product.uuid == widget.productUuid,
-            )
+        returnStorageProductProvider(context: context).storageProductListMain
+            .where((product) => product.uuid == widget.productUuid)
             .toList();
     if (productList.isEmpty) {
       return Scaffold(
@@ -76,10 +70,7 @@ class _StorageDetailsMobileState
                   );
                 },
                 child: Container(
-                  padding: EdgeInsets.symmetric(
-                    vertical: 5,
-                    horizontal: 5,
-                  ),
+                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(3),
                   ),
@@ -88,12 +79,7 @@ class _StorageDetailsMobileState
                     children: [
                       Text(
                         style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
+                          fontSize: widget.theme.mobileTexts.b3.fontSize,
                           fontWeight: FontWeight.bold,
                         ),
                         'History',
@@ -110,51 +96,34 @@ class _StorageDetailsMobileState
               ),
             ),
             body: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15.0,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15.0),
               child: Column(
                 children: [
                   Expanded(
                     child: SingleChildScrollView(
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           SizedBox(height: 10),
                           Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize:
-                                      widget
-                                          .theme
-                                          .mobileTexts
-                                          .h4
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
+                                      widget.theme.mobileTexts.h4.fontSize,
+                                  fontWeight: FontWeight.bold,
                                 ),
                                 product.name,
                               ),
                               Text(
                                 style: TextStyle(
                                   fontSize:
-                                      widget
-                                          .theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
+                                      widget.theme.mobileTexts.b3.fontSize,
                                   color:
-                                      widget
-                                          .theme
-                                          .lightModeColor
-                                          .secColor200,
-                                  fontWeight:
-                                      FontWeight.normal,
+                                      widget.theme.lightModeColor.secColor200,
+                                  fontWeight: FontWeight.normal,
                                 ),
                                 'Date Created: ${formatDateTime(product.createdAt!)}',
                               ),
@@ -167,106 +136,75 @@ class _StorageDetailsMobileState
                                 child: TabContainer(
                                   isMoney: true,
                                   text: 'Cost Price',
-                                  price:
-                                      product.costPrice ??
-                                      0,
+                                  price: product.costPrice ?? 0,
                                   theme: widget.theme,
-                                  backGround:
-                                      const Color.fromARGB(
-                                        24,
-                                        240,
-                                        206,
-                                        104,
-                                      ),
-                                  border:
-                                      const Color.fromARGB(
-                                        71,
-                                        228,
-                                        225,
-                                        41,
-                                      ),
+                                  backGround: const Color.fromARGB(
+                                    24,
+                                    240,
+                                    206,
+                                    104,
+                                  ),
+                                  border: const Color.fromARGB(
+                                    71,
+                                    228,
+                                    225,
+                                    41,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
                           SizedBox(height: 20),
-                          quantityInStockWidgetStorageItem(
-                            context,
-                            product,
-                          ),
+                          quantityInStockWidgetStorageItem(context, product),
                           SizedBox(height: 20),
-                          Divider(
-                            height: 15,
-                            color: Colors.grey.shade200,
-                          ),
+                          Divider(height: 15, color: Colors.grey.shade200),
                           Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
                                 style: TextStyle(
                                   fontSize:
-                                      widget
-                                          .theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
+                                      widget.theme.mobileTexts.b2.fontSize,
+                                  fontWeight: FontWeight.bold,
                                 ),
                                 'Products',
                               ),
                             ],
                           ),
-                          Divider(
-                            height: 15,
-                            color: Colors.grey.shade200,
-                          ),
+                          Divider(height: 15, color: Colors.grey.shade200),
                           Padding(
-                            padding:
-                                const EdgeInsets.symmetric(
-                                  horizontal: 3.0,
-                                ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 3.0,
+                            ),
                             child: Column(
                               spacing: 0,
                               children: [
                                 ManageProductsStorage(
-                                  productUuid:
-                                      widget.productUuid,
+                                  productUuid: widget.productUuid,
                                   theme: widget.theme,
                                 ),
                                 SizedBox(height: 5),
                                 Column(
                                   children:
-                                      returnData(
-                                            context:
-                                                context,
-                                          ).productListMain
+                                      returnData(context: context)
+                                          .productListMain
                                           .where(
                                             (pr) =>
                                                 pr.storageUuid ==
-                                                widget
-                                                    .productUuid,
+                                                widget.productUuid,
                                           )
                                           .toList()
                                           .map(
-                                            (
-                                              pro,
-                                            ) => ProductTileMain(
+                                            (pro) => ProductTileMain(
                                               product: pro,
-                                              theme:
-                                                  widget
-                                                      .theme,
+                                              theme: widget.theme,
                                               action: () {
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
-                                                    builder: (
-                                                      context,
-                                                    ) {
+                                                    builder: (context) {
                                                       return ProductDetailsPage(
-                                                        productUuid:
-                                                            pro.uuid!,
+                                                        productUuid: pro.uuid!,
                                                       );
                                                     },
                                                   ),
@@ -285,8 +223,7 @@ class _StorageDetailsMobileState
                   ),
                   SizedBox(height: 10),
                   Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     spacing: 15,
                     children: [
                       Expanded(
@@ -297,23 +234,16 @@ class _StorageDetailsMobileState
                             showDialog(
                               context: safeContext,
                               builder: (confirmDialog) {
-                                var provider =
-                                    returnStorageProductProvider();
+                                var provider = returnStorageProductProvider();
                                 var shopId =
-                                    returnShopProvider()
-                                        .userShop()!
-                                        .shopId!;
+                                    returnShopProvider().userShop()!.shopId!;
                                 return ConfirmationAlert(
-                                  theme: returnTheme(
-                                    context,
-                                  ),
+                                  theme: returnTheme(context),
                                   message:
                                       'Are you sure you want to proceed with action?',
                                   title: 'Are you sure?',
                                   action: () async {
-                                    Navigator.of(
-                                      confirmDialog,
-                                    ).pop();
+                                    Navigator.of(confirmDialog).pop();
                                     setState(() {
                                       isLoading = true;
                                     });
@@ -324,55 +254,41 @@ class _StorageDetailsMobileState
                                               .itemDeleted,
                                       source:
                                           StorageItemHistoryEventClass
-                                              .unKnownSource,
+                                              .storageSource,
+                                      destination:
+                                          StorageItemHistoryEventClass
+                                              .deletedDestination,
                                       shopId: shopId,
                                       title: 'Item Deleted',
                                       quantityChange: 0,
                                       storageItemNewValue:
-                                          (product.quantity ??
-                                                  0)
-                                              .toString(),
-                                      desc:
-                                          'Item Deleted Now',
+                                          (product.quantity ?? 0).toString(),
+                                      desc: 'Item Deleted Now',
                                       isIncreased: false,
                                       storageItemOldValue:
-                                          (product.quantity ??
-                                                  0)
-                                              .toString(),
+                                          (product.quantity ?? 0).toString(),
                                     );
-                                    await provider
-                                        .deleteProductMain(
-                                          product: product,
-                                          itemHistory:
-                                              itemHistory,
-                                        );
-                                    await provider
-                                        .getStorageProducts(
-                                          shopId,
-                                        );
+                                    await provider.deleteProductMain(
+                                      product: product,
+                                      itemHistory: itemHistory,
+                                    );
+                                    await provider.getStorageProducts(shopId);
                                     setState(() {
                                       isLoading = false;
                                       showSuccess = true;
                                     });
-                                    Future.delayed(
-                                      Duration(seconds: 2),
-                                      () {
-                                        if (safeContext
-                                            .mounted) {
-                                          Navigator.of(
-                                            safeContext,
-                                          ).pop();
-                                        }
-                                      },
-                                    );
+                                    Future.delayed(Duration(seconds: 2), () {
+                                      if (safeContext.mounted) {
+                                        Navigator.of(safeContext).pop();
+                                      }
+                                    });
                                   },
                                 );
                               },
                             );
                           },
                           theme: returnTheme(context),
-                          icon:
-                              Icons.delete_forever_outlined,
+                          icon: Icons.delete_forever_outlined,
                           color: Colors.redAccent,
                         ),
                       ),
@@ -392,8 +308,7 @@ class _StorageDetailsMobileState
                             ).then((context) {
                               returnStorageProductProvider()
                                   .getSingleStorageProductItemOnline(
-                                    itemUuid:
-                                        widget.productUuid,
+                                    itemUuid: widget.productUuid,
                                   );
                               setState(() {});
                             });

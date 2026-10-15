@@ -22,12 +22,10 @@ class MaterialsTileMain extends StatefulWidget {
   final ThemeProvider theme;
 
   @override
-  State<MaterialsTileMain> createState() =>
-      _MaterialsTileMainState();
+  State<MaterialsTileMain> createState() => _MaterialsTileMainState();
 }
 
-class _MaterialsTileMainState
-    extends State<MaterialsTileMain> {
+class _MaterialsTileMainState extends State<MaterialsTileMain> {
   bool isManaged() {
     return widget.material.isManaged;
   }
@@ -42,12 +40,7 @@ class _MaterialsTileMainState
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: const Color.fromARGB(
-                30,
-                158,
-                158,
-                158,
-              ),
+              color: const Color.fromARGB(30, 158, 158, 158),
               blurRadius: 5,
             ),
           ],
@@ -82,9 +75,7 @@ class _MaterialsTileMainState
                           padding: EdgeInsets.all(1),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.grey.shade600,
-                            ),
+                            border: Border.all(color: Colors.grey.shade600),
                           ),
                           child: Container(
                             padding: EdgeInsets.all(5),
@@ -92,16 +83,11 @@ class _MaterialsTileMainState
                               shape: BoxShape.circle,
                               color:
                                   widget.uuidList != null &&
-                                          widget.uuidList
-                                                  ?.contains(
-                                                    widget.material.uuid ??
-                                                        '',
-                                                  ) ==
+                                          widget.uuidList?.contains(
+                                                widget.material.uuid ?? '',
+                                              ) ==
                                               true
-                                      ? widget
-                                          .theme
-                                          .lightModeColor
-                                          .prColor250
+                                      ? widget.theme.lightModeColor.prColor250
                                       : Colors.transparent,
                             ),
                           ),
@@ -114,21 +100,11 @@ class _MaterialsTileMainState
                     height: 25,
                     width: 25,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        5,
-                      ),
-                      color:
-                          widget
-                              .theme
-                              .lightModeColor
-                              .tertColor50,
+                      borderRadius: BorderRadius.circular(5),
+                      color: widget.theme.lightModeColor.tertColor50,
                     ),
                     child: Icon(
-                      color:
-                          widget
-                              .theme
-                              .lightModeColor
-                              .tertColor200,
+                      color: widget.theme.lightModeColor.tertColor200,
                       size: 20,
                       Icons.app_registration_rounded,
                     ),
@@ -139,12 +115,7 @@ class _MaterialsTileMainState
                       children: [
                         Text(
                           style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b2
-                                    .fontSize,
+                            fontSize: widget.theme.mobileTexts.b2.fontSize,
                             fontWeight: FontWeight.bold,
                           ),
                           widget.material.name,
@@ -153,18 +124,14 @@ class _MaterialsTileMainState
                     ),
                   ),
                   Column(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment:
-                        CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     spacing: 5,
                     children: [
                       Visibility(
                         visible:
-                            widget.isSelectMaterial ==
-                                null ||
-                            widget.isSelectMaterial ==
-                                false,
+                            widget.isSelectMaterial == null ||
+                            widget.isSelectMaterial == false,
                         child: Icon(
                           size: 16,
                           color: Colors.grey.shade400,
@@ -176,59 +143,21 @@ class _MaterialsTileMainState
                           color:
                               isManaged()
                                   ? getDayDifference(
-                                                widget
-                                                        .material
-                                                        .expiryDate ??
+                                                widget.material.expiryDate ??
                                                     DateTime.now(),
                                               ) <
                                               1 &&
-                                          widget
-                                                  .material
-                                                  .expiryDate !=
-                                              null
-                                      ? const Color.fromARGB(
-                                        255,
-                                        255,
-                                        232,
-                                        231,
-                                      )
-                                      : widget
-                                                  .material
-                                                  .quantity !=
-                                              0 &&
-                                          (widget
-                                                      .material
-                                                      .quantity ??
-                                                  0) >
-                                              (widget
-                                                      .material
-                                                      .lowQtty ??
-                                                  10)
+                                          widget.material.expiryDate != null
+                                      ? const Color.fromARGB(255, 255, 232, 231)
+                                      : widget.material.quantity != 0 &&
+                                          (widget.material.quantity ?? 0) >
+                                              (widget.material.lowQtty ?? 10)
                                       ? Colors.grey.shade100
-                                      : widget
-                                                  .material
-                                                  .quantity !=
-                                              0 &&
-                                          (widget
-                                                      .material
-                                                      .quantity ??
-                                                  0) <=
-                                              (widget
-                                                      .material
-                                                      .lowQtty ??
-                                                  10)
-                                      ? const Color.fromARGB(
-                                        255,
-                                        255,
-                                        249,
-                                        227,
-                                      )
-                                      : const Color.fromARGB(
-                                        255,
-                                        255,
-                                        232,
-                                        231,
-                                      )
+                                      : widget.material.quantity != 0 &&
+                                          (widget.material.quantity ?? 0) <=
+                                              (widget.material.lowQtty ?? 10)
+                                      ? const Color.fromARGB(255, 255, 249, 227)
+                                      : const Color.fromARGB(255, 255, 232, 231)
                                   : Colors.grey.shade100,
                           border: Border.all(
                             color:
@@ -238,39 +167,20 @@ class _MaterialsTileMainState
                                                       DateTime.now(),
                                                 ) <
                                                 1 &&
-                                            widget
-                                                    .material
-                                                    .expiryDate !=
-                                                null
+                                            widget.material.expiryDate != null
                                         ? const Color.fromARGB(
                                           255,
                                           255,
                                           142,
                                           134,
                                         )
-                                        : widget
-                                                    .material
-                                                    .quantity !=
-                                                0 &&
-                                            (widget.material.quantity ??
-                                                    0) >
-                                                (widget
-                                                        .material
-                                                        .lowQtty ??
-                                                    10)
-                                        ? Colors
-                                            .grey
-                                            .shade700
-                                        : widget
-                                                    .material
-                                                    .quantity !=
-                                                0 &&
-                                            (widget.material.quantity ??
-                                                    0) <=
-                                                (widget
-                                                        .material
-                                                        .lowQtty ??
-                                                    0)
+                                        : widget.material.quantity != 0 &&
+                                            (widget.material.quantity ?? 0) >
+                                                (widget.material.lowQtty ?? 10)
+                                        ? Colors.grey.shade700
+                                        : widget.material.quantity != 0 &&
+                                            (widget.material.quantity ?? 0) <=
+                                                (widget.material.lowQtty ?? 0)
                                         ? const Color.fromARGB(
                                           255,
                                           255,
@@ -285,63 +195,41 @@ class _MaterialsTileMainState
                                         )
                                     : Colors.grey.shade400,
                           ),
-                          borderRadius:
-                              BorderRadius.circular(5),
+                          borderRadius: BorderRadius.circular(5),
                         ),
                         child: Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 8.0,
-                                vertical: 3,
-                              ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 3,
+                          ),
                           child: Text(
                             style: TextStyle(
-                              fontSize:
-                                  widget
-                                      .theme
-                                      .mobileTexts
-                                      .b4
-                                      .fontSize,
+                              fontSize: widget.theme.mobileTexts.b4.fontSize,
                               fontWeight: FontWeight.bold,
                               color:
                                   isManaged()
                                       ? getDayDifference(
-                                                    widget.material.expiryDate ??
+                                                    widget
+                                                            .material
+                                                            .expiryDate ??
                                                         DateTime.now(),
                                                   ) <
                                                   1 &&
-                                              widget
-                                                      .material
-                                                      .expiryDate !=
-                                                  null
+                                              widget.material.expiryDate != null
                                           ? const Color.fromARGB(
                                             255,
                                             255,
                                             142,
                                             134,
                                           )
-                                          : widget
-                                                      .material
-                                                      .quantity !=
-                                                  0 &&
-                                              (widget.material.quantity ??
-                                                      0) >
-                                                  (widget
-                                                          .material
-                                                          .lowQtty ??
+                                          : widget.material.quantity != 0 &&
+                                              (widget.material.quantity ?? 0) >
+                                                  (widget.material.lowQtty ??
                                                       10)
-                                          ? Colors
-                                              .grey
-                                              .shade700
-                                          : widget
-                                                      .material
-                                                      .quantity !=
-                                                  0 &&
-                                              (widget.material.quantity ??
-                                                      0) <=
-                                                  widget
-                                                      .material
-                                                      .lowQtty!
+                                          ? Colors.grey.shade700
+                                          : widget.material.quantity != 0 &&
+                                              (widget.material.quantity ?? 0) <=
+                                                  widget.material.lowQtty!
                                           ? const Color.fromARGB(
                                             255,
                                             132,
@@ -354,13 +242,9 @@ class _MaterialsTileMainState
                                             142,
                                             134,
                                           )
-                                      : Colors
-                                          .grey
-                                          .shade700,
+                                      : Colors.grey.shade700,
                             ),
-                            widget.material.getQuantityText(
-                              index: 3,
-                            ),
+                            widget.material.getQuantityText(index: 3),
                           ),
                         ),
                       ),

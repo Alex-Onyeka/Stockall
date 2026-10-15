@@ -13,12 +13,10 @@ class ProductionPageDesktop extends StatefulWidget {
   const ProductionPageDesktop({super.key});
 
   @override
-  State<ProductionPageDesktop> createState() =>
-      _ProductionPageDesktopState();
+  State<ProductionPageDesktop> createState() => _ProductionPageDesktopState();
 }
 
-class _ProductionPageDesktopState
-    extends State<ProductionPageDesktop> {
+class _ProductionPageDesktopState extends State<ProductionPageDesktop> {
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -29,8 +27,7 @@ class _ProductionPageDesktopState
         children: [
           SizedBox(height: 5),
           Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Material(
                 color: Colors.transparent,
@@ -40,10 +37,7 @@ class _ProductionPageDesktopState
                     Navigator.of(context).pop();
                   },
                   child: Container(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 6,
-                      horizontal: 20,
-                    ),
+                    padding: EdgeInsets.symmetric(vertical: 6, horizontal: 20),
                     child: Icon(
                       color: Colors.grey,
                       size: 20,
@@ -57,26 +51,14 @@ class _ProductionPageDesktopState
                 children: [
                   Text(
                     style: TextStyle(
-                      color:
-                          theme
-                              .lightModeColor
-                              .shadesColorBlack,
-                      fontSize:
-                          theme.mobileTexts.h4.fontSize,
-                      fontWeight:
-                          theme
-                              .mobileTexts
-                              .h4
-                              .fontWeightBold,
+                      color: theme.lightModeColor.shadesColorBlack,
+                      fontSize: theme.mobileTexts.h4.fontSize,
+                      fontWeight: theme.mobileTexts.h4.fontWeightBold,
                     ),
                     'Production',
                   ),
                   Text(
-                    style:
-                        theme
-                            .mobileTexts
-                            .b3
-                            .textStyleNormal,
+                    style: theme.mobileTexts.b3.textStyleNormal,
                     "Manage Your Items Production",
                   ),
                 ],
@@ -84,10 +66,7 @@ class _ProductionPageDesktopState
               Opacity(
                 opacity: 0,
                 child: Container(
-                  padding: EdgeInsets.symmetric(
-                    vertical: 6,
-                    horizontal: 20,
-                  ),
+                  padding: EdgeInsets.symmetric(vertical: 6, horizontal: 20),
                   child: Icon(
                     color: Colors.grey,
                     size: 20,
@@ -130,16 +109,11 @@ class _ProductionPageDesktopState
                   },
                   icon: Icons.receipt,
                   isActive: true,
-                  subText:
-                      'View Production Records You Created.',
+                  subText: 'View Production Records You Created.',
                   title: 'Production Records',
                 ),
                 Visibility(
-                  visible:
-                      shop(
-                        context,
-                      )?.manageProductionItems ==
-                      true,
+                  visible: shop(context)?.manageProductionItems == true,
                   child: ProductionPageListTileWidget(
                     action: () {
                       Navigator.push(
@@ -153,8 +127,7 @@ class _ProductionPageDesktopState
                     },
                     icon: Icons.api_rounded,
                     isActive: true,
-                    subText:
-                        'Create and Manage Produced Items',
+                    subText: 'Create and Manage Produced Items',
                     title: 'Production Items',
                   ),
                 ),
@@ -171,8 +144,7 @@ class _ProductionPageDesktopState
                   },
                   icon: Icons.app_registration_rounded,
                   isActive: true,
-                  subText:
-                      'Create and Manager Production Raw Materials',
+                  subText: 'Create and Manager Production Raw Materials',
                   title: 'Production Materials',
                 ),
                 ProductionPageListTileWidget(
@@ -188,8 +160,7 @@ class _ProductionPageDesktopState
                   },
                   icon: Icons.border_horizontal_rounded,
                   isActive: true,
-                  subText:
-                      'Track How materials are used for Productions.',
+                  subText: 'Track How materials are used for Productions.',
                   title: 'Materials Usage Records',
                 ),
                 ProductionPageListTileWidget(

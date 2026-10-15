@@ -22,9 +22,7 @@ class MaterialsUsageActionProvider extends ChangeNotifier {
   Future<void> createMaterialsUsageCart({
     required MaterialsUsageCart cartItem,
   }) async {
-    await MaterialsUsageCartFunc().createMaterialsUsageCart(
-      cartItem,
-    );
+    await MaterialsUsageCartFunc().createMaterialsUsageCart(cartItem);
     notifyListeners();
   }
 
@@ -33,25 +31,20 @@ class MaterialsUsageActionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> removeMaterialItemFromCart({
-    required String itemUuid,
-  }) async {
-    await MaterialsUsageCartFunc()
-        .removeMaterialsUsageMaterialItemFromCart(
-          itemUuid: itemUuid,
-        );
+  Future<void> removeMaterialItemFromCart({required String itemUuid}) async {
+    await MaterialsUsageCartFunc().removeMaterialsUsageMaterialItemFromCart(
+      itemUuid: itemUuid,
+    );
     notifyListeners();
   }
 
   Future<void> resetMaterialsUsageCart() async {
-    await MaterialsUsageCartFunc()
-        .updateMaterialsUsageCart();
+    await MaterialsUsageCartFunc().updateMaterialsUsageCart();
     notifyListeners();
   }
 
   Future<void> clearMaterialsUsageMainCart() async {
-    await MaterialsUsageCartFunc()
-        .clearMaterialsUsageCart();
+    await MaterialsUsageCartFunc().clearMaterialsUsageCart();
     notifyListeners();
   }
 
@@ -68,68 +61,53 @@ class MaterialsUsageActionProvider extends ChangeNotifier {
     return MaterialsUsageCartFunc().getMaterials();
   }
 
-  MaterialsUsageCartItem? getSingleMaterial({
-    required String itemUuid,
-  }) {
-    return MaterialsUsageCartFunc().getSingleMaterial(
-      itemUuid: itemUuid,
-    );
+  MaterialsUsageCartItem? getSingleMaterial({required String itemUuid}) {
+    return MaterialsUsageCartFunc().getSingleMaterial(itemUuid: itemUuid);
   }
 
   bool isCartEmpty() {
-    return MaterialsUsageCartFunc()
-                .getMaterialsUsageCart() ==
-            null ||
+    return MaterialsUsageCartFunc().getMaterialsUsageCart() == null ||
         MaterialsUsageCartFunc().getMaterials().isEmpty;
   }
 
   Future<void> addMaterialItemToCart({
     required MaterialsUsageCartItem item,
   }) async {
-    await MaterialsUsageCartFunc()
-        .addMaterialsUsageItemToCart(
-          materialsUsageCartItem: item,
-        );
+    await MaterialsUsageCartFunc().addMaterialsUsageItemToCart(
+      materialsUsageCartItem: item,
+    );
     notifyListeners();
   }
 
   Future<int> createMaterialsUsageAction() async {
     try {
       List<MaterialsUsageCartItem> items = getMaterials();
-      var supabaseItems =
-          MaterialsUsageCartItem.fromCartMaterialItem(
-            items: items,
-          );
+      var supabaseItems = MaterialsUsageCartItem.fromCartMaterialItem(
+        items: items,
+      );
       final usageProvider = returnMaterialsUsageProvider();
       for (var item in supabaseItems) {
         var isEdit = getMaterialsUsageCart()?.isEdit;
         ProductionMaterialsUsage? existingUsage;
         if (isEdit == true) {
-          for (final usage
-              in usageProvider.productionMaterialsUsage) {
+          for (final usage in usageProvider.productionMaterialsUsage) {
             if (usage.uuid == item.uuid) {
               existingUsage = usage;
               break;
             }
           }
           if (existingUsage == null) return 0;
-          final deleteResult =
-              await returnMaterialsUsageProvider()
-                  .deleteProductionMaterialsUsage(
-                    existingUsage,
-                    true,
-                    true,
-                  );
+          final deleteResult = await returnMaterialsUsageProvider()
+              .deleteProductionMaterialsUsage(existingUsage, true, true);
           if (deleteResult != 1) return 0;
         }
-        final createdUsage = await usageProvider
-            .createProductionMaterialsUsage(item);
+        final createdUsage = await usageProvider.createProductionMaterialsUsage(
+          item,
+        );
         if (createdUsage == null) {
           if (existingUsage != null) {
             final restoredUsage = await usageProvider
-                .createProductionMaterialsUsage(
-                  existingUsage,
-                );
+                .createProductionMaterialsUsage(existingUsage);
             if (restoredUsage == null) {
               await mainLocalLog(
                 'Failed to restore material usage ${existingUsage.uuid} after its replacement failed.',
@@ -139,8 +117,7 @@ class MaterialsUsageActionProvider extends ChangeNotifier {
           return 0;
         }
       }
-      await returnMaterialsUsageProvider()
-          .getProductionMaterialsUsageOffline();
+      await returnMaterialsUsageProvider().getProductionMaterialsUsageOffline();
       if (getMaterialsUsageCart()?.isEdit == true) {
         await MaterialsUsageCartFunc().toggleIsEdit(false);
       }
@@ -164,9 +141,7 @@ class MaterialsUsageActionProvider extends ChangeNotifier {
         );
         return 0;
       }
-      var item = MaterialsUsageCartItem.toCartMaterialsItem(
-        items: [record],
-      );
+      var item = MaterialsUsageCartItem.toCartMaterialsItem(items: [record]);
       await addMaterialItemToCart(item: item.first);
       await MaterialsUsageCartFunc().toggleIsEdit(true);
       return 1;

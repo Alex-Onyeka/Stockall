@@ -8,22 +8,17 @@ class CreateProduction extends StatefulWidget {
   const CreateProduction({super.key});
 
   @override
-  State<CreateProduction> createState() =>
-      _CreateProductionState();
+  State<CreateProduction> createState() => _CreateProductionState();
 }
 
-class _CreateProductionState
-    extends State<CreateProduction> {
+class _CreateProductionState extends State<CreateProduction> {
   @override
   void initState() {
     super.initState();
-    if (returnProductionsActionProvider()
-            .getProductionsCart()
-            ?.isEdit !=
+    if (returnProductionsActionProvider().getProductionsCart()?.isEdit !=
         true) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        returnProductionsActionProvider()
-            .initProductionsCart();
+        returnProductionsActionProvider().initProductionsCart();
       });
     }
   }

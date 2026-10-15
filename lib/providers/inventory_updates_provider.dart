@@ -47,41 +47,26 @@ class InventoryUpdatesProvider with ChangeNotifier {
   void setRange(DateTime rangeStart, DateTime endOfrange) {
     rangeStartDate = rangeStart;
     rangeEndDate = endOfrange;
-    mainLocalLog(
-      'Date Range set: Start: $rangeStart End: $endOfrange ',
-    );
+    mainLocalLog('Date Range set: Start: $rangeStart End: $endOfrange ');
     dateSet = null;
     notifyListeners();
   }
 
-  List<TempInventoryUpdateClass>
-  departmentInventoryUpdates() {
-    if (returnShopProvider()
-            .userShop()
-            ?.manageDepartments ==
-        true) {
-      if (!authorization(
-        authorized: Authorizations().viewAllDepartments,
-      )) {
+  List<TempInventoryUpdateClass> departmentInventoryUpdates() {
+    if (returnShopProvider().userShop()?.manageDepartments == true) {
+      if (!authorization(authorized: Authorizations().viewAllDepartments)) {
         return inventoryUpdates.where((cat) {
           return cat.departmentUuid ==
-              returnDepartmentProvider()
-                  .currentDepartment()
-                  ?.uuid;
+              returnDepartmentProvider().currentDepartment()?.uuid;
           // }
         }).toList();
       } else {
-        if (returnDepartmentProvider()
-                .currentDepartment()
-                ?.uuid ==
-            null) {
+        if (returnDepartmentProvider().currentDepartment()?.uuid == null) {
           return inventoryUpdates;
         } else {
           return inventoryUpdates.where((cat) {
             return cat.departmentUuid ==
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid;
+                returnDepartmentProvider().currentDepartment()?.uuid;
             // }
           }).toList();
         }
@@ -95,9 +80,7 @@ class InventoryUpdatesProvider with ChangeNotifier {
     departmentInventoryUpdates().sort(
       (a, b) => b.createdAt!.compareTo(a.createdAt!),
     );
-    if (dateSet == null &&
-        rangeEndDate == null &&
-        rangeStartDate == null) {
+    if (dateSet == null && rangeEndDate == null && rangeStartDate == null) {
       departmentInventoryUpdates().sort(
         (a, b) => b.createdAt!.compareTo(a.createdAt!),
       );
@@ -106,31 +89,22 @@ class InventoryUpdatesProvider with ChangeNotifier {
       return departmentInventoryUpdates()
           .where(
             (inventoryUpdate) =>
-                !inventoryUpdate.createdAt!.isBefore(
-                  fourAm(dateSet!),
-                ) &&
-                !inventoryUpdate.createdAt!.isAfter(
-                  fourAmNextDay(dateSet!),
-                ),
+                !inventoryUpdate.createdAt!.isBefore(fourAm(dateSet!)) &&
+                !inventoryUpdate.createdAt!.isAfter(fourAmNextDay(dateSet!)),
           )
           .toList();
     } else {
       return departmentInventoryUpdates()
           .where(
             (update) =>
-                ((!update.createdAt!.isBefore(
-                      fourAm(rangeStartDate!),
-                    )) &&
-                    (!update.createdAt!.isAfter(
-                      fourAmNextDay(rangeEndDate!),
-                    ))),
+                ((!update.createdAt!.isBefore(fourAm(rangeStartDate!))) &&
+                    (!update.createdAt!.isAfter(fourAmNextDay(rangeEndDate!)))),
           )
           .toList();
     }
   }
 
-  Future<List<TempInventoryUpdateClass>>
-  getInventoryUpdates() async {
+  Future<List<TempInventoryUpdateClass>> getInventoryUpdates() async {
     await getInventoryUpdatesOffline();
     bool isOnline = await ConnectivityProvider().isOnline();
     var shopId = returnShopProvider().userShop()!.shopId!;
@@ -142,26 +116,18 @@ class InventoryUpdatesProvider with ChangeNotifier {
             .eq('shop_id', shopId)
             .order('created_at', ascending: false);
         if (res.isEmpty) {
-          await mainLocalLog(
-            'No Inventory Updates Returned',
-          );
+          await mainLocalLog('No Inventory Updates Returned');
           inventoryUpdates.clear();
           InventoryUpdatesFunc().clearInventoryUpdates();
           notifyListeners();
           return [];
         }
         inventoryUpdates =
-            res
-                .map(
-                  (m) =>
-                      TempInventoryUpdateClass.fromJson(m),
-                )
-                .toList();
-        await InventoryUpdatesFunc()
-            .insertAllInventoryUpdates(inventoryUpdates);
-        await mainLocalLog(
-          '✅✅ Inventory Updates Gotten Successfully Online',
+            res.map((m) => TempInventoryUpdateClass.fromJson(m)).toList();
+        await InventoryUpdatesFunc().insertAllInventoryUpdates(
+          inventoryUpdates,
         );
+        await mainLocalLog('✅✅ Inventory Updates Gotten Successfully Online');
         notifyListeners();
 
         return inventoryUpdates;
@@ -172,23 +138,16 @@ class InventoryUpdatesProvider with ChangeNotifier {
         return [];
       }
     } else {
-      inventoryUpdates =
-          InventoryUpdatesFunc().getInventoryUpdatess();
-      await mainLocalLog(
-        'Inventory Updates Gotten Successfully Offline',
-      );
+      inventoryUpdates = InventoryUpdatesFunc().getInventoryUpdatess();
+      await mainLocalLog('Inventory Updates Gotten Successfully Offline');
       notifyListeners();
       return inventoryUpdates;
     }
   }
 
-  Future<List<TempInventoryUpdateClass>>
-  getInventoryUpdatesOffline() async {
-    inventoryUpdates =
-        InventoryUpdatesFunc().getInventoryUpdatess();
-    await mainLocalLog(
-      'Inventory Updates Gotten Successfully Offline',
-    );
+  Future<List<TempInventoryUpdateClass>> getInventoryUpdatesOffline() async {
+    inventoryUpdates = InventoryUpdatesFunc().getInventoryUpdatess();
+    await mainLocalLog('Inventory Updates Gotten Successfully Offline');
     notifyListeners();
     return inventoryUpdates;
   }
@@ -196,29 +155,19 @@ class InventoryUpdatesProvider with ChangeNotifier {
   Future<int> createInventoryUpdate(
     TempInventoryUpdateClass inventoryUpdate,
   ) async {
-    if (returnShopProvider()
-            .userShop()
-            ?.manageInventoryStorage ==
-        true) {
+    if (returnShopProvider().userShop()?.manageInventoryStorage == true) {
       inventoryUpdate.uuid = uuidGen();
       inventoryUpdate.createdAt ??= DateTime.now();
       try {
-        await InventoryUpdatesFunc().createInventoryUpdates(
-          inventoryUpdate,
+        await InventoryUpdatesFunc().createInventoryUpdates(inventoryUpdate);
+        await CreatedInventoryUpdatesFunc().createInventoryUpdate(
+          CreatedInventoryUpdatesClass(inventoryUpdate: inventoryUpdate),
         );
-        await CreatedInventoryUpdatesFunc()
-            .createInventoryUpdate(
-              CreatedInventoryUpdatesClass(
-                inventoryUpdate: inventoryUpdate,
-              ),
-            );
         await getInventoryUpdatesOffline();
         syncData();
         return 1;
       } catch (e) {
-        await mainLocalLog(
-          'Offline Creating Failed: ${e.toString()}',
-        );
+        await mainLocalLog('Offline Creating Failed: ${e.toString()}');
         return 0;
       }
     } else {
@@ -228,8 +177,7 @@ class InventoryUpdatesProvider with ChangeNotifier {
 
   Future<void> inventoryUpdatesSync() async {
     try {
-      bool isOnline =
-          await ConnectivityProvider().isOnline();
+      bool isOnline = await ConnectivityProvider().isOnline();
       if (CreatedInventoryUpdatesFunc()
               .getCreatedInventoryUpdatess()
               .isNotEmpty &&
@@ -238,42 +186,27 @@ class InventoryUpdatesProvider with ChangeNotifier {
             CreatedInventoryUpdatesFunc()
                 .getCreatedInventoryUpdatess()
                 .toList();
-        var newInventoryUpdates = tempInventoryUpdates.map((
-          inventoryUpdate,
-        ) {
+        var newInventoryUpdates = tempInventoryUpdates.map((inventoryUpdate) {
           inventoryUpdate.inventoryUpdate.createdAt =
               inventoryUpdate.inventoryUpdate.createdAt!;
           return inventoryUpdate;
         });
         final payload =
-            newInventoryUpdates
-                .map((p) => p.inventoryUpdate.toJson())
-                .toList();
+            newInventoryUpdates.map((p) => p.inventoryUpdate.toJson()).toList();
 
         // Insert all at once
-        final data =
-            await client
-                .from(tableName)
-                .insert(payload)
-                .select();
+        final data = await client.from(tableName).insert(payload).select();
 
         await mainLocalLog(
           '${data.length} Inventory Update items added successfully ✅',
         );
-        await CreatedInventoryUpdatesFunc()
-            .clearInventoryUpdate();
-        await mainLocalLog(
-          'Unsynced Inventory Updates Cleared',
-        );
-        await mainLocalLog(
-          'Mounted, refreshing Inventory Updates ✅',
-        );
+        await CreatedInventoryUpdatesFunc().clearInventoryUpdate();
+        await mainLocalLog('Unsynced Inventory Updates Cleared');
+        await mainLocalLog('Mounted, refreshing Inventory Updates ✅');
         await getInventoryUpdates();
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Inventory Updates insert failed ❌: $e',
-      );
+      await mainLocalLog('Batch Inventory Updates insert failed ❌: $e');
     }
   }
 

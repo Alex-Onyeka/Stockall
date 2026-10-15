@@ -7,7 +7,5 @@ part 'created_production_item_history.g.dart';
 class CreatedProductionItemHistory {
   @HiveField(0)
   final ProductionItemHistory productionItemHistory;
-  CreatedProductionItemHistory({
-    required this.productionItemHistory,
-  });
+  CreatedProductionItemHistory({required this.productionItemHistory});
 }

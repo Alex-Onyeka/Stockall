@@ -30,29 +30,21 @@ class ProductDetailsMobile extends StatefulWidget {
   });
 
   @override
-  State<ProductDetailsMobile> createState() =>
-      _ProductDetailsMobileState();
+  State<ProductDetailsMobile> createState() => _ProductDetailsMobileState();
 }
 
-class _ProductDetailsMobileState
-    extends State<ProductDetailsMobile> {
+class _ProductDetailsMobileState extends State<ProductDetailsMobile> {
   late Future<TempProductClass> productFuture;
 
   bool isLoading = false;
   bool showSuccess = false;
   bool setDate = false;
-  TextEditingController costController =
-      TextEditingController();
-  TextEditingController sellingController =
-      TextEditingController();
-  TextEditingController wholeSaleController =
-      TextEditingController();
-  TextEditingController quantityController =
-      TextEditingController();
-  TextEditingController discountController =
-      TextEditingController();
-  TextEditingController qttyPerUnitController =
-      TextEditingController();
+  TextEditingController costController = TextEditingController();
+  TextEditingController sellingController = TextEditingController();
+  TextEditingController wholeSaleController = TextEditingController();
+  TextEditingController quantityController = TextEditingController();
+  TextEditingController discountController = TextEditingController();
+  TextEditingController qttyPerUnitController = TextEditingController();
 
   @override
   void dispose() {
@@ -74,10 +66,7 @@ class _ProductDetailsMobileState
     final shopI = returnShopProvider().userShop()!.shopId!;
     List<TempProductClass>? productList =
         returnData(context: context).productListMain
-            .where(
-              (product) =>
-                  product.uuid! == widget.productUuid,
-            )
+            .where((product) => product.uuid! == widget.productUuid)
             .toList();
     if (productList.isEmpty) {
       return Scaffold(
@@ -94,75 +83,48 @@ class _ProductDetailsMobileState
             appBar: appBar(
               context: context,
               title: 'Details',
-              widget: ProductDetailsMoreWidget(
-                productUuid: product.uuid ?? '',
-              ),
+              widget: ProductDetailsMoreWidget(productUuid: product.uuid ?? ''),
             ),
             body: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15.0,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15.0),
               child: Column(
                 children: [
                   Expanded(
                     child: SingleChildScrollView(
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           SizedBox(height: 10),
                           Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize:
-                                      widget
-                                          .theme
-                                          .mobileTexts
-                                          .h4
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
+                                      widget.theme.mobileTexts.h4.fontSize,
+                                  fontWeight: FontWeight.bold,
                                 ),
                                 product.name,
                               ),
                               Text(
                                 style: TextStyle(
                                   fontSize:
-                                      widget
-                                          .theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
+                                      widget.theme.mobileTexts.b2.fontSize,
                                   color:
-                                      widget
-                                          .theme
-                                          .lightModeColor
-                                          .secColor200,
-                                  fontWeight:
-                                      FontWeight.normal,
+                                      widget.theme.lightModeColor.secColor200,
+                                  fontWeight: FontWeight.normal,
                                 ),
                                 'Date Created: ${formatDateTime(product.createdAt!)}',
                               ),
                             ],
                           ),
                           SizedBox(height: 20),
-                          priceSectionWidget(
-                            context,
-                            product,
-                            shopI,
-                          ),
+                          priceSectionWidget(context, product, shopI),
                           SizedBox(height: 20),
                           Column(
                             children: [
-                              quantityInStockWidget(
-                                context,
-                                product,
-                                shopI,
-                              ),
+                              quantityInStockWidget(context, product, shopI),
                             ],
                           ),
                           // SizedBox(height: 20),
@@ -195,22 +157,19 @@ class _ProductDetailsMobileState
                           // ),
                           SizedBox(height: 10),
                           Padding(
-                            padding:
-                                const EdgeInsets.symmetric(
-                                  horizontal: 10.0,
-                                ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10.0,
+                            ),
                             child: Column(
                               spacing: 0,
                               children: [
                                 Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(
-                                        vertical: 5.0,
-                                      ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 5.0,
+                                  ),
                                   child: Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         style: TextStyle(
@@ -220,9 +179,7 @@ class _ProductDetailsMobileState
                                                   .mobileTexts
                                                   .b2
                                                   .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .normal,
+                                          fontWeight: FontWeight.normal,
                                         ),
                                         'Manage this Item?',
                                       ),
@@ -236,14 +193,11 @@ class _ProductDetailsMobileState
                                   ),
                                 ),
                                 Visibility(
-                                  visible:
-                                      product.expiryDate !=
-                                      null,
+                                  visible: product.expiryDate != null,
                                   child: BottomInfoSection(
                                     theme: widget.theme,
                                     mainText:
-                                        product.expiryDate !=
-                                                null
+                                        product.expiryDate != null
                                             ? getDayDifference(
                                                       product.expiryDate ??
                                                           DateTime.now(),
@@ -278,17 +232,13 @@ class _ProductDetailsMobileState
                                 // ),
                                 BottomInfoSection(
                                   theme: widget.theme,
-                                  mainText:
-                                      product.barcode ??
-                                      'Not Set',
+                                  mainText: product.barcode ?? 'Not Set',
                                   text: 'Barcode',
                                   onClick: () {
                                     createBarcodeActionProductDetails(
                                       context: context,
                                       product: product,
-                                      toggleLoadingAction: (
-                                        value,
-                                      ) {
+                                      toggleLoadingAction: (value) {
                                         setState(() {
                                           isLoading = value;
                                         });
@@ -296,8 +246,7 @@ class _ProductDetailsMobileState
                                     );
                                   },
                                   setBarcodeAction:
-                                      product.barcode ==
-                                              null
+                                      product.barcode == null
                                           ? () {
                                             if (authorization(
                                               authorized:
@@ -305,17 +254,15 @@ class _ProductDetailsMobileState
                                                       .updateProduct,
                                             )) {
                                               ItemsAuthAction().generateBarcodeAction(
-                                                context:
-                                                    context,
+                                                context: context,
                                                 action: () {
-                                                  returnData().addToBarcodeGenerationList(
-                                                    ProductBarcode(
-                                                      product:
-                                                          product,
-                                                      number:
-                                                          1,
-                                                    ),
-                                                  );
+                                                  returnData()
+                                                      .addToBarcodeGenerationList(
+                                                        ProductBarcode(
+                                                          product: product,
+                                                          number: 1,
+                                                        ),
+                                                      );
                                                   generateBarcodeAndPrint(
                                                     context,
                                                     returnData()
@@ -328,8 +275,7 @@ class _ProductDetailsMobileState
                                           }
                                           : null,
                                   actionText:
-                                      product.barcode ==
-                                              null
+                                      product.barcode == null
                                           ? 'Create Barcode'
                                           : null,
                                 ),
@@ -337,8 +283,7 @@ class _ProductDetailsMobileState
                                 BottomInfoSection(
                                   theme: widget.theme,
                                   mainText:
-                                      product.discount !=
-                                              null
+                                      product.discount != null
                                           ? "${product.discount}%"
                                           : 'Not Set',
                                   text: 'Discount',
@@ -351,14 +296,10 @@ class _ProductDetailsMobileState
                                 //   text: 'Unit',
                                 // ),
                                 Visibility(
-                                  visible:
-                                      product.sizeType !=
-                                      null,
+                                  visible: product.sizeType != null,
                                   child: BottomInfoSection(
                                     theme: widget.theme,
-                                    mainText:
-                                        product.sizeType ??
-                                        'Not Set',
+                                    mainText: product.sizeType ?? 'Not Set',
                                     text: 'Size Type',
                                   ),
                                 ),
@@ -370,11 +311,8 @@ class _ProductDetailsMobileState
                                 ),
                                 BottomInfoSection(
                                   theme: widget.theme,
-                                  mainText:
-                                      product.lowQtty!
-                                          .toString(),
-                                  text:
-                                      'Low Quantity Limit',
+                                  mainText: product.lowQtty!.toString(),
+                                  text: 'Low Quantity Limit',
                                 ),
                                 // BottomInfoSection(
                                 //   theme: widget.theme,
@@ -387,23 +325,16 @@ class _ProductDetailsMobileState
                                 BottomInfoSection(
                                   theme: widget.theme,
                                   mainText:
-                                      product.setCustomPrice
-                                          ? 'True'
-                                          : 'False',
-                                  text:
-                                      'Can Set Custom Price?',
+                                      product.setCustomPrice ? 'True' : 'False',
+                                  text: 'Can Set Custom Price?',
                                 ),
                                 Visibility(
                                   visible:
-                                      shop(
-                                        context,
-                                      )?.manageDepartments ==
-                                      true,
+                                      shop(context)?.manageDepartments == true,
                                   child: BottomInfoSection(
                                     theme: widget.theme,
                                     mainText: cutLongText(
-                                      product.departmentName ??
-                                          'Not Set',
+                                      product.departmentName ?? 'Not Set',
                                       20,
                                     ),
                                     text: 'Department',
@@ -418,24 +349,18 @@ class _ProductDetailsMobileState
                   ),
                   SizedBox(height: 10),
                   Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     spacing: 5,
                     children: [
                       Visibility(
                         visible: authorization(
-                          authorized:
-                              Authorizations()
-                                  .transferProduct,
+                          authorized: Authorizations().transferProduct,
                         ),
                         child: Expanded(
                           child: EditButton(
                             text: 'Transfer',
                             action: () {
-                              transferItemQuantity(
-                                context,
-                                product,
-                              );
+                              transferItemQuantity(context, product);
                             },
                             theme: returnTheme(context),
                             icon: Icons.rotate_left_rounded,
@@ -445,9 +370,7 @@ class _ProductDetailsMobileState
                       ),
                       Visibility(
                         visible: authorization(
-                          authorized:
-                              Authorizations()
-                                  .deleteProduct,
+                          authorized: Authorizations().deleteProduct,
                         ),
                         child: Expanded(
                           child: EditButton(
@@ -457,57 +380,43 @@ class _ProductDetailsMobileState
                               showDialog(
                                 context: safeContext,
                                 builder: (confirmDialog) {
-                                  var provider =
-                                      returnData();
+                                  var provider = returnData();
                                   return ConfirmationAlert(
-                                    theme: returnTheme(
-                                      context,
-                                    ),
+                                    theme: returnTheme(context),
                                     message:
                                         'Are you sure you want to proceed with action?',
                                     title: 'Are you sure?',
                                     action: () async {
-                                      Navigator.of(
-                                        confirmDialog,
-                                      ).pop();
+                                      Navigator.of(confirmDialog).pop();
 
                                       setState(() {
                                         isLoading = true;
                                       });
-                                      ItemHistory
-                                      itemHistory = ItemHistory(
+                                      ItemHistory itemHistory = ItemHistory(
                                         event:
-                                            ItemHistoryEventClass
-                                                .itemDeleted,
-                                        isManaged:
-                                            product
-                                                .isManaged,
+                                            ItemHistoryEventClass.itemDeleted,
+                                        isManaged: product.isManaged,
                                         source:
+                                            ItemHistoryEventClass.productSource,
+                                        destination:
                                             ItemHistoryEventClass
-                                                .unKnownSource,
+                                                .deletedDestination,
                                         shopId: shopId(),
-                                        title:
-                                            'Item Deleted',
+                                        title: 'Item Deleted',
                                         quantityChange: 0,
                                         newValue:
-                                            (product.getActualQuantity() ??
-                                                    0)
+                                            (product.getActualQuantity() ?? 0)
                                                 .toString(),
-                                        desc:
-                                            'Item Deleted Now',
+                                        desc: 'Item Deleted Now',
                                         isIncreased: false,
                                         oldValue:
-                                            (product.getActualQuantity() ??
-                                                    0)
+                                            (product.getActualQuantity() ?? 0)
                                                 .toString(),
                                       );
-                                      await provider
-                                          .deleteProductMain(
-                                            itemHistory:
-                                                itemHistory,
-                                            product:
-                                                product,
-                                          );
+                                      await provider.deleteProductMain(
+                                        itemHistory: itemHistory,
+                                        product: product,
+                                      );
                                       // await provider
                                       //     .getProducts(
                                       //       shopId,
@@ -516,37 +425,25 @@ class _ProductDetailsMobileState
                                         isLoading = false;
                                         showSuccess = true;
                                       });
-                                      Future.delayed(
-                                        Duration(
-                                          seconds: 1,
-                                        ),
-                                        () {
-                                          if (safeContext
-                                              .mounted) {
-                                            Navigator.of(
-                                              safeContext,
-                                            ).pop();
-                                          }
-                                        },
-                                      );
+                                      Future.delayed(Duration(seconds: 1), () {
+                                        if (safeContext.mounted) {
+                                          Navigator.of(safeContext).pop();
+                                        }
+                                      });
                                     },
                                   );
                                 },
                               );
                             },
                             theme: returnTheme(context),
-                            icon:
-                                Icons
-                                    .delete_forever_outlined,
+                            icon: Icons.delete_forever_outlined,
                             color: Colors.redAccent,
                           ),
                         ),
                       ),
                       Visibility(
                         visible: authorization(
-                          authorized:
-                              Authorizations()
-                                  .updateProduct,
+                          authorized: Authorizations().updateProduct,
                         ),
                         child: Expanded(
                           child: EditButton(
@@ -556,9 +453,7 @@ class _ProductDetailsMobileState
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) {
-                                    return AddProduct(
-                                      product: product,
-                                    );
+                                    return AddProduct(product: product);
                                   },
                                 ),
                               ).then((context) {
@@ -595,9 +490,7 @@ void createBarcodeActionProductDetails({
   required Function(bool value) toggleLoadingAction,
 }) {
   var theme = returnTheme(context, listen: false);
-  if (authorization(
-    authorized: Authorizations().updateProduct,
-  )) {
+  if (authorization(authorized: Authorizations().updateProduct)) {
     ItemsAuthAction().generateBarcodeAction(
       context: context,
       action: () {

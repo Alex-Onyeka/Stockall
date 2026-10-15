@@ -117,9 +117,7 @@ class ProductionRecord {
   });
 
   /// FROM JSON
-  factory ProductionRecord.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory ProductionRecord.fromJson(Map<String, dynamic> json) {
     return ProductionRecord(
       uuid: json['uuid'],
       createdAt:
@@ -149,27 +147,21 @@ class ProductionRecord {
       quantity: (json['quantity'] as num?)?.toDouble(),
       unit: json['unit'] as String?,
       // isGroup: json['is_group'] as bool?,
-      qttyPerGroup:
-          (json['qtty_per_group'] as num?)?.toDouble(),
+      qttyPerGroup: (json['qtty_per_group'] as num?)?.toDouble(),
       totalCost: (json['total_cost'] as num?)?.toDouble(),
       customCost: (json['custom_cost'] as num?)?.toDouble(),
       comment: json['comment'] as String?,
-      selectedCostPriceOption:
-          json['selected_cost_price_option'] as int?,
-      originalCostPerItem:
-          (json['original_cost_per_item'] as num?)
-              ?.toDouble(),
-      originalUseGroupQuantity:
-          json['original_use_group_quantity'] as bool?,
+      selectedCostPriceOption: json['selected_cost_price_option'] as int?,
+      originalCostPerItem: (json['original_cost_per_item'] as num?)?.toDouble(),
+      originalUseGroupQuantity: json['original_use_group_quantity'] as bool?,
       useGroupQuantity: json['use_group_quantity'] as bool?,
       groupUnit: json['group_unit'] as String?,
       unitUuid: json['unit_uuid'] as String?,
       unitsList:
           (json['units_list'] as List<dynamic>?)
               ?.map(
-                (item) => ProductUnitsClass.fromJson(
-                  item as Map<String, dynamic>,
-                ),
+                (item) =>
+                    ProductUnitsClass.fromJson(item as Map<String, dynamic>),
               )
               .toList(),
     );
@@ -186,8 +178,7 @@ class ProductionRecord {
       'department_id': departmentId,
       'department_name': departmentName,
       'updated_at': updatedAt?.toIso8601String(),
-      'materials':
-          materials.map((e) => e.toJson()).toList(),
+      'materials': materials.map((e) => e.toJson()).toList(),
       'item_uuid': itemUuid,
       'sales_item_uuid': salesItemUuid,
       'item_name': itemName,
@@ -200,13 +191,11 @@ class ProductionRecord {
       'comment': comment,
       'selected_cost_price_option': selectedCostPriceOption,
       'original_cost_per_item': originalCostPerItem,
-      'original_use_group_quantity':
-          originalUseGroupQuantity,
+      'original_use_group_quantity': originalUseGroupQuantity,
       'use_group_quantity': useGroupQuantity,
       'group_unit': groupUnit,
       'unit_uuid': unitUuid,
-      'units_list':
-          unitsList?.map((item) => item.toJson()).toList(),
+      'units_list': unitsList?.map((item) => item.toJson()).toList(),
     };
   }
 
@@ -218,19 +207,15 @@ class ProductionRecord {
       uuid: cartItem.uuid,
       createdAt: cartItem.createdDate,
       shopId: shopIdd,
-      materials:
-          ProductionRecordMaterials.fromCartMaterialItem(
-            items: cartItem.materialsCartItems,
-          ),
-      itemName:
-          cartItem.productionsCartItem?.name ?? 'Not Set',
+      materials: ProductionRecordMaterials.fromCartMaterialItem(
+        items: cartItem.materialsCartItems,
+      ),
+      itemName: cartItem.productionsCartItem?.name ?? 'Not Set',
       itemUuid: cartItem.productionsCartItem?.itemUuid,
-      salesItemUuid:
-          cartItem.productionsCartItem?.salesItemUuid,
+      salesItemUuid: cartItem.productionsCartItem?.salesItemUuid,
       quantity: cartItem.productionsCartItem?.quantity,
       unit: cartItem.productionsCartItem?.unit,
-      qttyPerGroup:
-          cartItem.productionsCartItem?.qttyPerGroup,
+      qttyPerGroup: cartItem.productionsCartItem?.qttyPerGroup,
       totalCost: cartItem.getCostPrice(),
       customCost: cartItem.customPrice,
       comment: cartItem.comment,
@@ -238,17 +223,11 @@ class ProductionRecord {
       departmentName: currentDepartment()?.name,
       staffId: currentUser().userId,
       staffName: currentUser().name,
-      selectedCostPriceOption:
-          cartItem.selectCostPriceToUse,
+      selectedCostPriceOption: cartItem.selectCostPriceToUse,
       originalCostPerItem:
-          cartItem
-              .productionsCartItem
-              ?.originalCostPerItem ??
-          0,
-      originalUseGroupQuantity:
-          cartItem.originalUseGroupQuantity,
-      useGroupQuantity:
-          cartItem.productionsCartItem?.useGroupQuantity,
+          cartItem.productionsCartItem?.originalCostPerItem ?? 0,
+      originalUseGroupQuantity: cartItem.originalUseGroupQuantity,
+      useGroupQuantity: cartItem.productionsCartItem?.useGroupQuantity,
       groupUnit: cartItem.productionsCartItem?.groupUnit,
       unitUuid: cartItem.productionsCartItem?.unitUuid,
       unitsList: copyProductionUnitSnapshot(
@@ -268,8 +247,7 @@ class ProductionRecord {
         addToStock: false,
         useGroupQuantity: useGroupQuantity ?? false,
         originalCostPerItem: originalCostPerItem,
-        originalUseGroupQuantity:
-            originalUseGroupQuantity ?? false,
+        originalUseGroupQuantity: originalUseGroupQuantity ?? false,
         groupUnit: groupUnit,
         unitUuid: unitUuid,
         unitsList: copyProductionUnitSnapshot(unitsList),
@@ -286,10 +264,9 @@ class ProductionRecord {
       customDate: null,
       timeOfDay: null,
       comment: comment,
-      materialsCartItems:
-          ProductionRecordMaterials.toCartMaterialsItem(
-            items: materials,
-          ),
+      materialsCartItems: ProductionRecordMaterials.toCartMaterialsItem(
+        items: materials,
+      ),
       createdDate: createdAt,
       customPrice: customCost,
       isEdit: true,
@@ -349,20 +326,14 @@ class ProductionRecord {
       customCost: customCost ?? this.customCost,
       comment: comment ?? this.comment,
       selectedCostPriceOption:
-          selectedCostPriceOption ??
-          this.selectedCostPriceOption,
-      originalCostPerItem:
-          originalCostPerItem ?? this.originalCostPerItem,
+          selectedCostPriceOption ?? this.selectedCostPriceOption,
+      originalCostPerItem: originalCostPerItem ?? this.originalCostPerItem,
       originalUseGroupQuantity:
-          originalUseGroupQuantity ??
-          this.originalUseGroupQuantity,
-      useGroupQuantity:
-          useGroupQuantity ?? this.useGroupQuantity,
+          originalUseGroupQuantity ?? this.originalUseGroupQuantity,
+      useGroupQuantity: useGroupQuantity ?? this.useGroupQuantity,
       groupUnit: groupUnit ?? this.groupUnit,
       unitUuid: unitUuid ?? this.unitUuid,
-      unitsList: copyProductionUnitSnapshot(
-        unitsList ?? this.unitsList,
-      ),
+      unitsList: copyProductionUnitSnapshot(unitsList ?? this.unitsList),
     );
   }
 

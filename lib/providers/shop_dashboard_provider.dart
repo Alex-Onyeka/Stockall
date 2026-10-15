@@ -60,9 +60,7 @@ class ShopDashboardProvider extends ChangeNotifier {
   void setRange(DateTime rangeStart, DateTime endOfrange) {
     rangeStartDate = rangeStart;
     rangeEndDate = endOfrange;
-    mainLocalLog(
-      'Date Range set: Start: $rangeStart End: $endOfrange ',
-    );
+    mainLocalLog('Date Range set: Start: $rangeStart End: $endOfrange ');
     dateSet = null;
     notifyListeners();
   }
@@ -82,9 +80,7 @@ class ShopDashboardProvider extends ChangeNotifier {
       notifyListeners();
       return 1;
     } catch (e) {
-      await mainLocalLog(
-        'Error Fetching All Records: ${e.toString()}',
-      );
+      await mainLocalLog('Error Fetching All Records: ${e.toString()}');
       isLoading = false;
       return 0;
     }
@@ -99,45 +95,30 @@ class ShopDashboardProvider extends ChangeNotifier {
             .select()
             .eq('shop_id', shop.shopId!)
             .order('created_at', ascending: false);
-        temp.addAll(
-          data
-              .map((dat) => TempMainReceipt.fromJson(dat))
-              .toList(),
-        );
+        temp.addAll(data.map((dat) => TempMainReceipt.fromJson(dat)).toList());
       }
       allReceipts = temp;
-      await mainLocalLog(
-        "Receipts Gotten: ${allReceipts.length}",
-      );
+      await mainLocalLog("Receipts Gotten: ${allReceipts.length}");
       return allReceipts;
     } catch (e) {
-      await mainLocalLog(
-        'Error Getting Receipts: ${e.toString()}',
-      );
+      await mainLocalLog('Error Getting Receipts: ${e.toString()}');
       return [];
     }
   }
 
-  List<TempMainReceipt> returnReceipts({
-    TempShopClass? shop,
-  }) {
+  List<TempMainReceipt> returnReceipts({TempShopClass? shop}) {
     List<TempMainReceipt> tempRecs =
         shop == null
             ? allReceipts
-            : allReceipts
-                .where((rec) => rec.shopId == shop.shopId)
-                .toList();
+            : allReceipts.where((rec) => rec.shopId == shop.shopId).toList();
     if (rangeStartDate != null) {
       return tempRecs
           .where(
             (recc) =>
-                !recc.createdAt.isBefore(
-                  fourAm(rangeStartDate!),
-                ) &&
+                !recc.createdAt.isBefore(fourAm(rangeStartDate!)) &&
                 recc.createdAt.isBefore(
                   fourAmNextDay(
-                    rangeEndDate ??
-                        resolveBusinessDate(DateTime.now()),
+                    rangeEndDate ?? resolveBusinessDate(DateTime.now()),
                   ),
                 ),
           )
@@ -147,16 +128,10 @@ class ShopDashboardProvider extends ChangeNotifier {
           .where(
             (recc) =>
                 !recc.createdAt.isBefore(
-                  fourAm(
-                    dateSet ??
-                        resolveBusinessDate(DateTime.now()),
-                  ),
+                  fourAm(dateSet ?? resolveBusinessDate(DateTime.now())),
                 ) &&
                 recc.createdAt.isBefore(
-                  fourAmNextDay(
-                    dateSet ??
-                        resolveBusinessDate(DateTime.now()),
-                  ),
+                  fourAmNextDay(dateSet ?? resolveBusinessDate(DateTime.now())),
                 ),
           )
           .toList();
@@ -172,44 +147,31 @@ class ShopDashboardProvider extends ChangeNotifier {
             .select()
             .eq('shop_id', shop.shopId!);
         temp.addAll(
-          data
-              .map((dat) => TempExpensesClass.fromJson(dat))
-              .toList(),
+          data.map((dat) => TempExpensesClass.fromJson(dat)).toList(),
         );
       }
       allExpenses = temp;
-      await mainLocalLog(
-        "Expenses Gotten ${allExpenses.length}",
-      );
+      await mainLocalLog("Expenses Gotten ${allExpenses.length}");
       return allExpenses;
     } catch (e) {
-      await mainLocalLog(
-        'Error Getting Expenses: ${e.toString()}',
-      );
+      await mainLocalLog('Error Getting Expenses: ${e.toString()}');
       return [];
     }
   }
 
-  List<TempExpensesClass> returnExpenses({
-    TempShopClass? shop,
-  }) {
+  List<TempExpensesClass> returnExpenses({TempShopClass? shop}) {
     List<TempExpensesClass> tempExp =
         shop == null
             ? allExpenses
-            : allExpenses
-                .where((ex) => ex.shopId == shop.shopId)
-                .toList();
+            : allExpenses.where((ex) => ex.shopId == shop.shopId).toList();
     if (rangeStartDate != null) {
       return tempExp
           .where(
             (exp) =>
-                !exp.createdDate!.isBefore(
-                  fourAm(rangeStartDate!),
-                ) &&
+                !exp.createdDate!.isBefore(fourAm(rangeStartDate!)) &&
                 exp.createdDate!.isBefore(
                   fourAmNextDay(
-                    rangeEndDate ??
-                        resolveBusinessDate(DateTime.now()),
+                    rangeEndDate ?? resolveBusinessDate(DateTime.now()),
                   ),
                 ),
           )
@@ -219,16 +181,10 @@ class ShopDashboardProvider extends ChangeNotifier {
           .where(
             (exp) =>
                 !exp.createdDate!.isBefore(
-                  fourAm(
-                    dateSet ??
-                        resolveBusinessDate(DateTime.now()),
-                  ),
+                  fourAm(dateSet ?? resolveBusinessDate(DateTime.now())),
                 ) &&
                 exp.createdDate!.isBefore(
-                  fourAmNextDay(
-                    dateSet ??
-                        resolveBusinessDate(DateTime.now()),
-                  ),
+                  fourAmNextDay(dateSet ?? resolveBusinessDate(DateTime.now())),
                 ),
           )
           .toList();
@@ -244,21 +200,13 @@ class ShopDashboardProvider extends ChangeNotifier {
             .select()
             .eq('shop_id', shop.shopId!)
             .order('created_at', ascending: false);
-        temp.addAll(
-          data
-              .map((dat) => TempInvoice.fromJson(dat))
-              .toList(),
-        );
+        temp.addAll(data.map((dat) => TempInvoice.fromJson(dat)).toList());
       }
       allInvoices = temp;
-      await mainLocalLog(
-        "Invoices Gotten ${allInvoices.length}",
-      );
+      await mainLocalLog("Invoices Gotten ${allInvoices.length}");
       return allInvoices;
     } catch (e) {
-      await mainLocalLog(
-        'Error Getting Invoices: ${e.toString()}',
-      );
+      await mainLocalLog('Error Getting Invoices: ${e.toString()}');
       return [];
     }
   }
@@ -267,20 +215,15 @@ class ShopDashboardProvider extends ChangeNotifier {
     List<TempInvoice> tempInv =
         shop == null
             ? allInvoices
-            : allInvoices
-                .where((inv) => inv.shopId == shop.shopId)
-                .toList();
+            : allInvoices.where((inv) => inv.shopId == shop.shopId).toList();
     if (rangeStartDate != null) {
       return tempInv
           .where(
             (inv) =>
-                !inv.createdAt.isBefore(
-                  fourAm(rangeStartDate!),
-                ) &&
+                !inv.createdAt.isBefore(fourAm(rangeStartDate!)) &&
                 inv.createdAt.isBefore(
                   fourAmNextDay(
-                    rangeEndDate ??
-                        resolveBusinessDate(DateTime.now()),
+                    rangeEndDate ?? resolveBusinessDate(DateTime.now()),
                   ),
                 ),
           )
@@ -290,16 +233,10 @@ class ShopDashboardProvider extends ChangeNotifier {
           .where(
             (inv) =>
                 !inv.createdAt.isBefore(
-                  fourAm(
-                    dateSet ??
-                        resolveBusinessDate(DateTime.now()),
-                  ),
+                  fourAm(dateSet ?? resolveBusinessDate(DateTime.now())),
                 ) &&
                 inv.createdAt.isBefore(
-                  fourAmNextDay(
-                    dateSet ??
-                        resolveBusinessDate(DateTime.now()),
-                  ),
+                  fourAmNextDay(dateSet ?? resolveBusinessDate(DateTime.now())),
                 ),
           )
           .toList();
@@ -315,37 +252,24 @@ class ShopDashboardProvider extends ChangeNotifier {
             .select()
             .eq('shop_id', shop.shopId!);
         temp.addAll(
-          data
-              .map(
-                (dat) => TempCustomersClass.fromJson(dat),
-              )
-              .toList(),
+          data.map((dat) => TempCustomersClass.fromJson(dat)).toList(),
         );
       }
       allCustomers = temp;
-      await mainLocalLog(
-        "Customers Gotten ${allCustomers.length}",
-      );
+      await mainLocalLog("Customers Gotten ${allCustomers.length}");
       return allCustomers;
     } catch (e) {
-      await mainLocalLog(
-        'Error Getting Customers: ${e.toString()}',
-      );
+      await mainLocalLog('Error Getting Customers: ${e.toString()}');
       return [];
     }
   }
 
-  List<TempCustomersClass> returnCustomers({
-    TempShopClass? shop,
-  }) {
+  List<TempCustomersClass> returnCustomers({TempShopClass? shop}) {
     List<TempCustomersClass> tempCustomers =
         shop == null
             ? allCustomers
             : allCustomers
-                .where(
-                  (customer) =>
-                      shop.shopId == customer.shopId,
-                )
+                .where((customer) => shop.shopId == customer.shopId)
                 .toList();
     return tempCustomers;
   }
@@ -358,40 +282,29 @@ class ShopDashboardProvider extends ChangeNotifier {
             .from('products')
             .select()
             .eq('shop_id', shop.shopId!);
-        temp.addAll(
-          data
-              .map((dat) => TempProductClass.fromJson(dat))
-              .toList(),
-        );
+        temp.addAll(data.map((dat) => TempProductClass.fromJson(dat)).toList());
       }
       allItems = temp;
       await mainLocalLog("Items Gotten ${allItems.length}");
       return allItems;
     } catch (e) {
-      await mainLocalLog(
-        'Error Getting Items: ${e.toString()}',
-      );
+      await mainLocalLog('Error Getting Items: ${e.toString()}');
       return [];
     }
   }
 
-  List<TempProductClass> returnItems({
-    TempShopClass? shop,
-  }) {
+  List<TempProductClass> returnItems({TempShopClass? shop}) {
     List<TempProductClass> tempItems =
         shop == null
             ? allItems
-            : allItems
-                .where((item) => item.shopId == shop.shopId)
-                .toList();
+            : allItems.where((item) => item.shopId == shop.shopId).toList();
     return tempItems;
   }
 
   double returnAllItems({TempShopClass? shop}) {
     double temp = 0;
     for (var item in returnItems(shop: shop)) {
-      if (item.getActualQuantity() != null &&
-          item.getActualQuantity() != 0) {
+      if (item.getActualQuantity() != null && item.getActualQuantity() != 0) {
         temp += item.getActualQuantity()!;
       }
     }
@@ -401,11 +314,9 @@ class ShopDashboardProvider extends ChangeNotifier {
   double returnAllItemsValeu({TempShopClass? shop}) {
     double temp = 0;
     for (var item in returnItems(shop: shop)) {
-      if (item.getActualQuantity() != null &&
-          item.getActualQuantity() != 0) {
+      if (item.getActualQuantity() != null && item.getActualQuantity() != 0) {
         temp +=
-            (item.getActualQuantity()! *
-                (item.getPrimaryPrice().priceValue));
+            (item.getActualQuantity()! * (item.getPrimaryPrice().priceValue));
       }
     }
     return temp;
@@ -423,21 +334,15 @@ class ShopDashboardProvider extends ChangeNotifier {
 
         temp.addAll(
           data
-              .map<TempUserClass>(
-                (json) => TempUserClass.fromJson(json),
-              )
+              .map<TempUserClass>((json) => TempUserClass.fromJson(json))
               .toList(),
         );
       }
       allStaffs = temp;
-      await mainLocalLog(
-        "Staffs Gotten ${allStaffs.length}",
-      );
+      await mainLocalLog("Staffs Gotten ${allStaffs.length}");
       return allStaffs;
     } catch (e) {
-      await mainLocalLog(
-        'Error Getting Items: ${e.toString()}',
-      );
+      await mainLocalLog('Error Getting Items: ${e.toString()}');
       return [];
     }
   }
@@ -447,11 +352,7 @@ class ShopDashboardProvider extends ChangeNotifier {
         shop == null
             ? allStaffs
             : allStaffs
-                .where(
-                  (staff) => shop.employees!.contains(
-                    staff.userId,
-                  ),
-                )
+                .where((staff) => shop.employees!.contains(staff.userId))
                 .toList();
     return tempStaffs;
   }
@@ -460,8 +361,9 @@ class ShopDashboardProvider extends ChangeNotifier {
     double tempTotal = 0;
 
     for (var rec in returnReceipts(shop: shop)) {
-      tempTotal += returnReceiptProviderSingle()
-          .getTotalMainRevenueReceipt(rec);
+      tempTotal += returnReceiptProviderSingle().getTotalMainRevenueReceipt(
+        rec,
+      );
     }
     return tempTotal;
   }
@@ -476,7 +378,6 @@ class ShopDashboardProvider extends ChangeNotifier {
   }
 
   double returnProfit({TempShopClass? shop}) {
-    return (returnTotalRevenue(shop: shop) -
-        returnTotalExpenses(shop: shop));
+    return (returnTotalRevenue(shop: shop) - returnTotalExpenses(shop: shop));
   }
 }

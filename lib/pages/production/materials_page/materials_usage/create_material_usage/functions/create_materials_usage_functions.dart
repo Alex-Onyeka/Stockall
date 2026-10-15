@@ -18,9 +18,7 @@ class CreateMaterialsUsageFunctions {
   //
   //
   //
-  void selectItemForMaterialsUsageCart({
-    required BuildContext firstContext,
-  }) {
+  void selectItemForMaterialsUsageCart({required BuildContext firstContext}) {
     var theme = returnTheme(firstContext, listen: false);
     final searchController = TextEditingController();
     MaterialClass? selectedMaterial;
@@ -31,8 +29,7 @@ class CreateMaterialsUsageFunctions {
           builder: (statefulContext, setState) {
             return DialogTemplate(
               theme: theme,
-              message:
-                  'Select a Material From the List Below',
+              message: 'Select a Material From the List Below',
               title: 'Select Material',
               action: () {
                 if (selectedMaterial != null) {
@@ -47,8 +44,7 @@ class CreateMaterialsUsageFunctions {
                 child: Column(
                   children: [
                     Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Expanded(
                           child: ConstrainedBox(
@@ -74,31 +70,25 @@ class CreateMaterialsUsageFunctions {
                     Expanded(
                       child: SingleChildScrollView(
                         child: Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 5.0,
-                                vertical: 10,
-                              ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5.0,
+                            vertical: 10,
+                          ),
                           child: Builder(
                             builder: (context) {
                               if (returnMaterialsProvider()
                                   .materialList()
                                   .where(
-                                    (item) => item.name
-                                        .toLowerCase()
-                                        .contains(
-                                          searchController
-                                              .text
-                                              .toLowerCase(),
-                                        ),
+                                    (item) => item.name.toLowerCase().contains(
+                                      searchController.text.toLowerCase(),
+                                    ),
                                   )
                                   .isEmpty) {
                                 return SizedBox(
                                   height: 400,
                                   child: EmptyWidgetDisplayOnly(
                                     title: 'No Item Found',
-                                    subText:
-                                        'No item was found.',
+                                    subText: 'No item was found.',
                                     theme: theme,
                                     height: 30,
                                     altAction: () async {
@@ -106,8 +96,7 @@ class CreateMaterialsUsageFunctions {
                                           .getMaterials();
                                       setState(() {});
                                     },
-                                    altActionText:
-                                        'Refresh',
+                                    altActionText: 'Refresh',
                                     icon: Icons.clear,
                                   ),
                                 );
@@ -118,29 +107,22 @@ class CreateMaterialsUsageFunctions {
                                       returnMaterialsProvider()
                                           .materialList()
                                           .where(
-                                            (item) => item
-                                                .name
+                                            (item) => item.name
                                                 .toLowerCase()
                                                 .contains(
-                                                  searchController
-                                                      .text
+                                                  searchController.text
                                                       .toLowerCase(),
                                                 ),
                                           )
                                           .map(
-                                            (
-                                              item,
-                                            ) => SelectMaterialItemTile(
+                                            (item) => SelectMaterialItemTile(
                                               action: () {
                                                 setState(() {
-                                                  if (selectedMaterial
-                                                          ?.uuid ==
+                                                  if (selectedMaterial?.uuid ==
                                                       item.uuid) {
-                                                    selectedMaterial =
-                                                        null;
+                                                    selectedMaterial = null;
                                                   } else {
-                                                    selectedMaterial =
-                                                        item;
+                                                    selectedMaterial = item;
                                                   }
                                                 });
                                               },
@@ -187,15 +169,13 @@ class CreateMaterialsUsageFunctions {
                 )
                 .toList();
         final units =
-            ((editMaterialItem?.unitsList?.isNotEmpty ==
-                            true
+            ((editMaterialItem?.unitsList?.isNotEmpty == true
                         ? editMaterialItem!.unitsList
                         : null) ??
                     selectedMaterial?.getUnitsList() ??
                     (existingMaterial.isEmpty
                         ? null
-                        : existingMaterial.first
-                            .getUnitsList()) ??
+                        : existingMaterial.first.getUnitsList()) ??
                     [])
                 .map((unit) => unit.copyWith())
                 .toList();
@@ -203,19 +183,13 @@ class CreateMaterialsUsageFunctions {
             editMaterialItem?.unitUuid ??
             legacyProductionUnitUuid(
               unitsList: units,
-              useGroupQuantity:
-                  editMaterialItem?.useGroupQuantity,
+              useGroupQuantity: editMaterialItem?.useGroupQuantity,
               groupUnit: editMaterialItem?.groupUnit,
             );
         if (selectedUnitUuid == null && units.isNotEmpty) {
-          final primaryUnits =
-              units
-                  .where((unit) => unit.isPrimary)
-                  .toList();
+          final primaryUnits = units.where((unit) => unit.isPrimary).toList();
           selectedUnitUuid =
-              primaryUnits.isEmpty
-                  ? units.first.uuid
-                  : primaryUnits.first.uuid;
+              primaryUnits.isEmpty ? units.first.uuid : primaryUnits.first.uuid;
         }
         ProductUnitsClass? currentUnit() {
           for (final unit in units) {
@@ -225,19 +199,15 @@ class CreateMaterialsUsageFunctions {
         }
 
         final quantityController = TextEditingController();
-        final customCostController =
-            TextEditingController();
+        final customCostController = TextEditingController();
         int currentSelection = 1;
         // String? customUnit;
         if (editMaterialItem != null) {
-          quantityController.text =
-              editMaterialItem.quantity.toString();
+          quantityController.text = editMaterialItem.quantity.toString();
           customCostController.text =
-              (editMaterialItem.customPrice)?.toString() ??
-              '';
+              (editMaterialItem.customPrice)?.toString() ?? '';
           // customUnit = editMaterialItem.customUnit;
-          currentSelection =
-              editMaterialItem.selectedCostInt;
+          currentSelection = editMaterialItem.selectedCostInt;
         }
 
         void checkIsManagedAndClearTextFieldAction() {
@@ -245,49 +215,35 @@ class CreateMaterialsUsageFunctions {
               (editMaterialItem?.isManaged ??
                   selectedMaterial?.isManaged ??
                   false);
-          var materials = returnMaterialsProvider()
-              .materialListMain
-              .where(
-                (item) =>
-                    item.uuid ==
-                    (editMaterialItem?.materialItemUuid ??
-                        selectedMaterial?.uuid),
-              );
+          var materials = returnMaterialsProvider().materialListMain.where(
+            (item) =>
+                item.uuid ==
+                (editMaterialItem?.materialItemUuid ?? selectedMaterial?.uuid),
+          );
           double quantity = 0;
           if (materials.isNotEmpty) {
             quantity = (materials.first.quantity ?? 0);
           }
 
           final enteredQuantity =
-              double.tryParse(
-                quantityController.text.replaceAll(',', ''),
-              ) ??
-              0;
-          final otherCartDemand =
-              returnMaterialsUsageActionProvider()
-                  .getMaterials()
-                  .where(
-                    (item) =>
-                        item.materialItemUuid ==
-                            (editMaterialItem
-                                    ?.materialItemUuid ??
-                                selectedMaterial?.uuid) &&
-                        item.uuid !=
-                            editMaterialItem?.uuid &&
-                        item.isManaged != false,
-                  )
-                  .fold<double>(
-                    0,
-                    (total, item) =>
-                        total + item.getRealQuantity(),
-                  );
+              double.tryParse(quantityController.text.replaceAll(',', '')) ?? 0;
+          final otherCartDemand = returnMaterialsUsageActionProvider()
+              .getMaterials()
+              .where(
+                (item) =>
+                    item.materialItemUuid ==
+                        (editMaterialItem?.materialItemUuid ??
+                            selectedMaterial?.uuid) &&
+                    item.uuid != editMaterialItem?.uuid &&
+                    item.isManaged != false,
+              )
+              .fold<double>(0, (total, item) => total + item.getRealQuantity());
           final availableQuantity =
               quantity -
               otherCartDemand +
               (editMaterialItem?.getRealQuantity() ?? 0);
           if (isManaged &&
-              enteredQuantity *
-                      (currentUnit()?.conversion ?? 1) >
+              enteredQuantity * (currentUnit()?.conversion ?? 1) >
                   availableQuantity) {
             quantityController.text = '0';
           }
@@ -299,12 +255,7 @@ class CreateMaterialsUsageFunctions {
               currentUnit() != null) {
             final unit = currentUnit()!;
             final quantity =
-                double.tryParse(
-                  quantityController.text.replaceAll(
-                    ',',
-                    '',
-                  ),
-                ) ??
+                double.tryParse(quantityController.text.replaceAll(',', '')) ??
                 0;
             if (!unit.conversion.isFinite ||
                 unit.conversion <= 0 ||
@@ -325,19 +276,14 @@ class CreateMaterialsUsageFunctions {
                     customCost < 0)) {
               return;
             }
-            final primaryUnits =
-                units
-                    .where((item) => item.isPrimary)
-                    .toList();
+            final primaryUnits = units.where((item) => item.isPrimary).toList();
             var tempCartItem = MaterialsUsageCartItem(
               isManaged:
-                  editMaterialItem?.isManaged ??
-                  selectedMaterial?.isManaged,
+                  editMaterialItem?.isManaged ?? selectedMaterial?.isManaged,
               productionItemName: null,
               productionItemId: null,
               originalUseGroupQuantity:
-                  editMaterialItem
-                      ?.originalUseGroupQuantity ??
+                  editMaterialItem?.originalUseGroupQuantity ??
                   selectedMaterial?.useGroupUnit,
               customUnit: null,
               originalCostPerItem:
@@ -352,29 +298,23 @@ class CreateMaterialsUsageFunctions {
                   selectedMaterial?.uuid ??
                   'Not Set',
               name:
-                  editMaterialItem?.name ??
-                  selectedMaterial?.name ??
-                  'Not Set',
+                  editMaterialItem?.name ?? selectedMaterial?.name ?? 'Not Set',
               quantity: quantity,
               addToStock: false,
               useGroupQuantity: !unit.isPrimary,
               costPrice:
                   currentSelection == 1
-                      ? originalCost *
-                          quantity *
-                          unit.conversion
+                      ? originalCost * quantity * unit.conversion
                       : customCost,
               groupUnit: unit.isPrimary ? null : unit.name,
               qttyPerGroup: unit.conversion,
-              unit:
-                  primaryUnits.isEmpty
-                      ? 'Unit(s)'
-                      : primaryUnits.first.name,
+              unit: primaryUnits.isEmpty ? 'Unit(s)' : primaryUnits.first.name,
               unitUuid: unit.uuid,
               unitsList: units,
             );
-            await returnMaterialsUsageActionProvider()
-                .addMaterialItemToCart(item: tempCartItem);
+            await returnMaterialsUsageActionProvider().addMaterialItemToCart(
+              item: tempCartItem,
+            );
             if (editMaterialItem == null) {
               Navigator.of(thirdContext).pop();
             }
@@ -433,8 +373,7 @@ class CreateMaterialsUsageFunctions {
                         SelectTotalCostWidget(
                           title: 'Set Material Item Cost',
                           index: 1,
-                          currentSelection:
-                              currentSelection,
+                          currentSelection: currentSelection,
                           subText:
                               'Set The total Cost From The total Cost of the Materials Used',
                           action: () {
@@ -447,8 +386,7 @@ class CreateMaterialsUsageFunctions {
                         SelectTotalCostWidget(
                           title: 'Set Custom Cost',
                           index: 2,
-                          currentSelection:
-                              currentSelection,
+                          currentSelection: currentSelection,
                           subText:
                               'Set a Custom Cost amount for this material Usage Record.',
                           action: () {
@@ -466,8 +404,7 @@ class CreateMaterialsUsageFunctions {
                                 autoFocus: true,
                                 title: 'Enter Total',
                                 hint: 'Enter Custom Total',
-                                controller:
-                                    customCostController,
+                                controller: customCostController,
                                 theme: theme,
                                 showTitle: false,
                                 onChanged: (p0) {
@@ -486,54 +423,35 @@ class CreateMaterialsUsageFunctions {
                       ),
                       decoration: BoxDecoration(
                         color: Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(
-                          2,
-                        ),
+                        borderRadius: BorderRadius.circular(2),
                       ),
                       child: Column(
                         // spacing: 5,
                         children: [
                           Padding(
-                            padding:
-                                const EdgeInsets.symmetric(
-                                  vertical: 5.0,
-                                ),
+                            padding: const EdgeInsets.symmetric(vertical: 5.0),
                             child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               spacing: 10,
                               children: [
                                 Text(
                                   style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.normal,
+                                    fontSize: theme.mobileTexts.b3.fontSize,
+                                    fontWeight: FontWeight.normal,
                                   ),
                                   'Total Quantity:',
                                 ),
                                 Text(
                                   style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
+                                    fontSize: theme.mobileTexts.b3.fontSize,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                   formatLargeNumberDouble(
                                     double.tryParse(
-                                          quantityController
-                                              .text
-                                              .replaceAll(
-                                                ',',
-                                                '',
-                                              ),
+                                          quantityController.text.replaceAll(
+                                            ',',
+                                            '',
+                                          ),
                                         ) ??
                                         0,
                                   ),
@@ -542,64 +460,40 @@ class CreateMaterialsUsageFunctions {
                             ),
                           ),
                           Padding(
-                            padding:
-                                const EdgeInsets.symmetric(
-                                  vertical: 5.0,
-                                ),
+                            padding: const EdgeInsets.symmetric(vertical: 5.0),
                             child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               spacing: 10,
                               children: [
                                 Text(
                                   style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.normal,
+                                    fontSize: theme.mobileTexts.b3.fontSize,
+                                    fontWeight: FontWeight.normal,
                                   ),
                                   'Total Cost Price:',
                                 ),
                                 Text(
                                   style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
+                                    fontSize: theme.mobileTexts.b3.fontSize,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                   formatMoneyBig(
                                     amount:
-                                        currentSelection ==
-                                                1
+                                        currentSelection == 1
                                             ? (editMaterialItem
                                                         ?.originalCostPerItem ??
                                                     selectedMaterial
                                                         ?.costPrice ??
                                                     0) *
                                                 (double.tryParse(
-                                                      quantityController.text.replaceAll(
-                                                        ',',
-                                                        '',
-                                                      ),
+                                                      quantityController.text
+                                                          .replaceAll(',', ''),
                                                     ) ??
                                                     0) *
-                                                (currentUnit()
-                                                        ?.conversion ??
-                                                    1)
+                                                (currentUnit()?.conversion ?? 1)
                                             : double.tryParse(
-                                                  customCostController
-                                                      .text
-                                                      .replaceAll(
-                                                        ',',
-                                                        '',
-                                                      ),
+                                                  customCostController.text
+                                                      .replaceAll(',', ''),
                                                 ) ??
                                                 0,
                                     context: context,
@@ -640,13 +534,9 @@ class SelectMaterialItemTile extends StatelessWidget {
         mouseCursor: SystemMouseCursors.click,
         onTap: action,
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: 9.0,
-            horizontal: 10,
-          ),
+          padding: const EdgeInsets.symmetric(vertical: 9.0, horizontal: 10),
           child: Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 style: TextStyle(
@@ -660,8 +550,7 @@ class SelectMaterialItemTile extends StatelessWidget {
                 children: [
                   Text(
                     style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b3.fontSize,
+                      fontSize: theme.mobileTexts.b3.fontSize,
                       fontWeight: FontWeight.bold,
                     ),
                     '${formatLargeNumberDouble(item.getPrimaryUnit().getQuantityEquivDivided(index: 3, material: item))} ${cutLongText(item.getPrimaryUnit().name, 8)}',
@@ -670,20 +559,15 @@ class SelectMaterialItemTile extends StatelessWidget {
                     padding: EdgeInsets.all(2),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.grey,
-                      ),
+                      border: Border.all(color: Colors.grey),
                     ),
                     child: Container(
                       padding: EdgeInsets.all(5),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color:
-                            selectedMaterial?.uuid ==
-                                    item.uuid
-                                ? theme
-                                    .lightModeColor
-                                    .prColor250
+                            selectedMaterial?.uuid == item.uuid
+                                ? theme.lightModeColor.prColor250
                                 : Colors.transparent,
                       ),
                     ),

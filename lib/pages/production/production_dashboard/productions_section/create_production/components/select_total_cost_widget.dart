@@ -31,28 +31,17 @@ class SelectTotalCostWidget extends StatelessWidget {
           onTap: action,
           child: SizedBox(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                20,
-                7,
-                10,
-                7,
-              ),
+              padding: const EdgeInsets.fromLTRB(20, 7, 10, 7),
               child: Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
+                            fontSize: theme.mobileTexts.b3.fontSize,
                             fontWeight: FontWeight.bold,
                             color: null,
                           ),
@@ -60,16 +49,9 @@ class SelectTotalCostWidget extends StatelessWidget {
                         ),
                         Text(
                           style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b4
-                                    .fontSize,
+                            fontSize: theme.mobileTexts.b4.fontSize,
                             fontWeight: FontWeight.normal,
-                            color:
-                                theme
-                                    .lightModeColor
-                                    .secColor200,
+                            color: theme.lightModeColor.secColor200,
                           ),
                           subText,
                         ),
@@ -82,18 +64,11 @@ class SelectTotalCostWidget extends StatelessWidget {
                       activeColor:
                           index != currentSelection
                               ? Colors.grey
-                              : theme
-                                  .lightModeColor
-                                  .prColor250,
-                      shape: CircleBorder(
-                        side: BorderSide(),
-                      ),
+                              : theme.lightModeColor.prColor250,
+                      shape: CircleBorder(side: BorderSide()),
                       side: BorderSide(
                         width: 1,
-                        color:
-                            theme
-                                .lightModeColor
-                                .secColor200,
+                        color: theme.lightModeColor.secColor200,
                       ),
                       value: index == currentSelection,
                       onChanged: (value) {},

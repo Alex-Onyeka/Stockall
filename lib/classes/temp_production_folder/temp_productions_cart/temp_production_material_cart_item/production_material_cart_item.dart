@@ -109,13 +109,10 @@ class ProductionMaterialCartItem extends HiveObject {
     'production_item_uuid': productionItemId,
     'is_managed': isManaged,
     'unit_uuid': unitUuid,
-    'units_list':
-        unitsList?.map((item) => item.toJson()).toList(),
+    'units_list': unitsList?.map((item) => item.toJson()).toList(),
   };
 
-  factory ProductionMaterialCartItem.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory ProductionMaterialCartItem.fromJson(Map<String, dynamic> json) {
     return ProductionMaterialCartItem(
       uuid: json['uuid'],
       materialItemUuid: json['materiel_item_uuid'],
@@ -131,8 +128,7 @@ class ProductionMaterialCartItem extends HiveObject {
       useGroupQuantity: json['use_group'],
       originalCostPerItem: json['original_cost_per_item'],
       customUnit: json['custom_unit'],
-      originalUseGroupQuantity:
-          json['original_use_group_quantity'],
+      originalUseGroupQuantity: json['original_use_group_quantity'],
       productionItemId: json['production_item_uuid'],
       productionItemName: json['production_item_name'],
       isManaged: json['is_managed'],
@@ -140,9 +136,8 @@ class ProductionMaterialCartItem extends HiveObject {
       unitsList:
           (json['units_list'] as List<dynamic>?)
               ?.map(
-                (item) => ProductUnitsClass.fromJson(
-                  item as Map<String, dynamic>,
-                ),
+                (item) =>
+                    ProductUnitsClass.fromJson(item as Map<String, dynamic>),
               )
               .toList(),
     );
@@ -233,34 +228,26 @@ class ProductionMaterialCartItem extends HiveObject {
   }) {
     return ProductionMaterialCartItem(
       uuid: uuid ?? this.uuid,
-      materialItemUuid:
-          materialItemUuid ?? this.materialItemUuid,
+      materialItemUuid: materialItemUuid ?? this.materialItemUuid,
       name: name ?? this.name,
       quantity: quantity ?? this.quantity,
       customPrice: customPrice ?? this.customPrice,
       setCustomPrice: setCustomPrice ?? this.setCustomPrice,
       addToStock: addToStock ?? this.addToStock,
-      useGroupQuantity:
-          useGroupQuantity ?? this.useGroupQuantity,
+      useGroupQuantity: useGroupQuantity ?? this.useGroupQuantity,
       costPrice: costPrice ?? this.costPrice,
       groupUnit: groupUnit ?? this.groupUnit,
       qttyPerGroup: qttyPerGroup ?? this.qttyPerGroup,
       unit: unit ?? this.unit,
-      originalCostPerItem:
-          originalCostPerItem ?? this.originalCostPerItem,
+      originalCostPerItem: originalCostPerItem ?? this.originalCostPerItem,
       customUnit: customUnit ?? this.customUnit,
       originalUseGroupQuantity:
-          originalUseGroupQuantity ??
-          this.originalUseGroupQuantity,
-      productionItemId:
-          productionItemId ?? this.productionItemId,
-      productionItemName:
-          productionItemName ?? this.productionItemName,
+          originalUseGroupQuantity ?? this.originalUseGroupQuantity,
+      productionItemId: productionItemId ?? this.productionItemId,
+      productionItemName: productionItemName ?? this.productionItemName,
       isManaged: isManaged ?? this.isManaged,
       unitUuid: unitUuid ?? this.unitUuid,
-      unitsList: copyProductionUnitSnapshot(
-        unitsList ?? this.unitsList,
-      ),
+      unitsList: copyProductionUnitSnapshot(unitsList ?? this.unitsList),
     );
   }
 }

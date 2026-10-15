@@ -23,15 +23,13 @@ class StorageItemHistoryMobile extends StatefulWidget {
       StorageItemHistoryMobileState();
 }
 
-class StorageItemHistoryMobileState
-    extends State<StorageItemHistoryMobile> {
+class StorageItemHistoryMobileState extends State<StorageItemHistoryMobile> {
   late Future<TempProductClass> productFuture;
 
   bool isLoading = false;
   bool showSuccess = false;
   bool setDate = false;
-  TextEditingController searchController =
-      TextEditingController();
+  TextEditingController searchController = TextEditingController();
 
   @override
   void dispose() {
@@ -52,55 +50,35 @@ class StorageItemHistoryMobileState
           context: context,
         ).returnItemHistories().where((history) {
           if (widget.productUuid != null) {
-            return history.storageItemUuid ==
-                    widget.productUuid &&
-                (history.storageItemName
-                            ?.toLowerCase()
-                            .contains(
-                              searchController.text
-                                  .toLowerCase(),
-                            ) ==
+            return history.storageItemUuid == widget.productUuid &&
+                (history.storageItemName?.toLowerCase().contains(
+                          searchController.text.toLowerCase(),
+                        ) ==
                         true ||
-                    history.storageDepartmentName
-                            ?.toLowerCase()
-                            .contains(
-                              searchController.text
-                                  .toLowerCase(),
-                            ) ==
+                    history.storageDepartmentName?.toLowerCase().contains(
+                          searchController.text.toLowerCase(),
+                        ) ==
                         true ||
-                    history.storageStaffName
-                            ?.toLowerCase()
-                            .contains(
-                              searchController.text
-                                  .toLowerCase(),
-                            ) ==
+                    history.storageStaffName?.toLowerCase().contains(
+                          searchController.text.toLowerCase(),
+                        ) ==
                         true ||
                     history.title.toLowerCase().contains(
-                          searchController.text
-                              .toLowerCase(),
+                          searchController.text.toLowerCase(),
                         ) ==
                         true);
           } else {
-            return (history.storageItemName
-                        ?.toLowerCase()
-                        .contains(
-                          searchController.text
-                              .toLowerCase(),
-                        ) ==
+            return (history.storageItemName?.toLowerCase().contains(
+                      searchController.text.toLowerCase(),
+                    ) ==
                     true ||
-                history.storageDepartmentName
-                        ?.toLowerCase()
-                        .contains(
-                          searchController.text
-                              .toLowerCase(),
-                        ) ==
+                history.storageDepartmentName?.toLowerCase().contains(
+                      searchController.text.toLowerCase(),
+                    ) ==
                     true ||
-                history.storageStaffName
-                        ?.toLowerCase()
-                        .contains(
-                          searchController.text
-                              .toLowerCase(),
-                        ) ==
+                history.storageStaffName?.toLowerCase().contains(
+                      searchController.text.toLowerCase(),
+                    ) ==
                     true ||
                 history.title.toLowerCase().contains(
                       searchController.text.toLowerCase(),
@@ -113,36 +91,27 @@ class StorageItemHistoryMobileState
         context: context,
         title: 'Item History',
         widget: Visibility(
-          visible: authorization(
-            authorized: Authorizations().viewDate,
-          ),
+          visible: authorization(authorized: Authorizations().viewDate),
           child: Padding(
             padding: const EdgeInsets.only(right: 15.0),
             child: InkWell(
               mouseCursor: SystemMouseCursors.click,
               onTap: () {
-                if (returnStorageItemHistoryProvider()
-                            .dateSet !=
-                        null ||
-                    returnStorageItemHistoryProvider()
-                            .rangeStartDate !=
-                        null) {
-                  returnStorageItemHistoryProvider()
-                      .clearDate();
+                if (returnStorageItemHistoryProvider().dateSet != null ||
+                    returnStorageItemHistoryProvider().rangeStartDate != null) {
+                  returnStorageItemHistoryProvider().clearDate();
                 } else {
                   mainDatePicker(
                     context: context,
                     theme: theme,
                     singleDate: (date) {
-                      returnStorageItemHistoryProvider()
-                          .setDate(date!);
+                      returnStorageItemHistoryProvider().setDate(date!);
                     },
                     rangeDate: (firstDate, lastDate) {
-                      returnStorageItemHistoryProvider()
-                          .setRange(
-                            firstDate!,
-                            lastDate ?? DateTime.now(),
-                          );
+                      returnStorageItemHistoryProvider().setRange(
+                        firstDate!,
+                        lastDate ?? DateTime.now(),
+                      );
                     },
                   );
                 }
@@ -162,8 +131,7 @@ class StorageItemHistoryMobileState
                     Text(
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
+                        fontSize: theme.mobileTexts.b3.fontSize,
                       ),
                       returnStorageItemHistoryProvider(
                                     context: context,
@@ -207,13 +175,11 @@ class StorageItemHistoryMobileState
                     return Center(
                       child: EmptyWidgetDisplayOnly(
                         title: 'No Events Found',
-                        subText:
-                            'No event has been created for this date.',
+                        subText: 'No event has been created for this date.',
                         theme: theme,
                         height: 30,
                         altAction: () {
-                          returnStorageItemHistoryProvider()
-                              .getItemHistories();
+                          returnStorageItemHistoryProvider().getItemHistories();
                         },
                         altActionText: 'Reload',
                         icon: Icons.clear,
@@ -234,14 +200,10 @@ class StorageItemHistoryMobileState
                             itemHistories
                                 .map(
                                   (item) => Material(
-                                    type:
-                                        MaterialType
-                                            .transparency,
+                                    type: MaterialType.transparency,
                                     child: StorageItemHistoryTile(
                                       itemHistory: item,
-                                      fromDetails:
-                                          widget
-                                              .fromItemDetails,
+                                      fromDetails: widget.fromItemDetails,
                                     ),
                                   ),
                                 )

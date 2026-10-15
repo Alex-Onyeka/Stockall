@@ -14,8 +14,7 @@ class ItemHistoryPage extends StatefulWidget {
   });
 
   @override
-  State<ItemHistoryPage> createState() =>
-      _ItemHistoryPageState();
+  State<ItemHistoryPage> createState() => _ItemHistoryPageState();
 }
 
 class _ItemHistoryPageState extends State<ItemHistoryPage> {

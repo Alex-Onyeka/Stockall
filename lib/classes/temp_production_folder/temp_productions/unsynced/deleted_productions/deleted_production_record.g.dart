@@ -17,9 +17,7 @@ class DeletedProductionRecordAdapter
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return DeletedProductionRecord(
-      productionRecordUuid: fields[0] as String,
-    );
+    return DeletedProductionRecord(productionRecordUuid: fields[0] as String);
   }
 
   @override

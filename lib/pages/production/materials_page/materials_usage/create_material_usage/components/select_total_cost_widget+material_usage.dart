@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/main.dart';
 
-class SelectTotalCostWidgetMaterialUsage
-    extends StatelessWidget {
+class SelectTotalCostWidgetMaterialUsage extends StatelessWidget {
   final int index;
   final int currentSelection;
   final Function()? action;
@@ -32,28 +31,17 @@ class SelectTotalCostWidgetMaterialUsage
           onTap: action,
           child: SizedBox(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                20,
-                7,
-                10,
-                7,
-              ),
+              padding: const EdgeInsets.fromLTRB(20, 7, 10, 7),
               child: Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
+                            fontSize: theme.mobileTexts.b3.fontSize,
                             fontWeight: FontWeight.bold,
                             color: null,
                           ),
@@ -61,16 +49,9 @@ class SelectTotalCostWidgetMaterialUsage
                         ),
                         Text(
                           style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b4
-                                    .fontSize,
+                            fontSize: theme.mobileTexts.b4.fontSize,
                             fontWeight: FontWeight.normal,
-                            color:
-                                theme
-                                    .lightModeColor
-                                    .secColor200,
+                            color: theme.lightModeColor.secColor200,
                           ),
                           subText,
                         ),
@@ -81,14 +62,11 @@ class SelectTotalCostWidgetMaterialUsage
                     activeColor:
                         index != currentSelection
                             ? Colors.grey
-                            : theme
-                                .lightModeColor
-                                .prColor250,
+                            : theme.lightModeColor.prColor250,
                     shape: CircleBorder(side: BorderSide()),
                     side: BorderSide(
                       width: 1,
-                      color:
-                          theme.lightModeColor.secColor200,
+                      color: theme.lightModeColor.secColor200,
                     ),
                     value: index == currentSelection,
                     onChanged: (value) {},

@@ -19,12 +19,10 @@ class ProductUnitsPageMobile extends StatefulWidget {
   });
 
   @override
-  State<ProductUnitsPageMobile> createState() =>
-      _ProductUnitsPageMobileState();
+  State<ProductUnitsPageMobile> createState() => _ProductUnitsPageMobileState();
 }
 
-class _ProductUnitsPageMobileState
-    extends State<ProductUnitsPageMobile> {
+class _ProductUnitsPageMobileState extends State<ProductUnitsPageMobile> {
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -50,37 +48,28 @@ class _ProductUnitsPageMobileState
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 15.0,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 15.0),
           child: Column(
             children: [
               SizedBox(height: 20),
               Expanded(
                 child: Builder(
                   builder: (context) {
-                    if (returnData()
-                        .tempUnitsList
-                        .isEmpty) {
+                    if (returnData().tempUnitsList.isEmpty) {
                       return Material(
                         color: Colors.transparent,
                         child: EmptyWidgetDisplayOnly(
                           title: 'No Product Units Added',
-                          subText:
-                              'You have not added any Product Unit.',
+                          subText: 'You have not added any Product Unit.',
                           theme: theme,
                           height: 25,
                           altAction: () {
                             addProductUnitAction(
                               context: context,
-                              nameController:
-                                  widget.nameController,
-                              productUuid:
-                                  widget.productUuid,
-                              isDimensional:
-                                  widget.isDimensional,
-                              quantityController:
-                                  widget.quantityController,
+                              nameController: widget.nameController,
+                              productUuid: widget.productUuid,
+                              isDimensional: widget.isDimensional,
+                              quantityController: widget.quantityController,
                               setStateAction: () {
                                 setState(() {});
                               },
@@ -98,14 +87,10 @@ class _ProductUnitsPageMobileState
                             returnData(context: context)
                                 .tempUnitsListSorted()
                                 .map(
-                                  (productUnit) =>
-                                      ProductUnitListTileWidget(
-                                        unitUuid:
-                                            productUnit
-                                                .uuid,
-                                        isDimensional:
-                                            widget.isDimensional,
-                                      ),
+                                  (productUnit) => ProductUnitListTileWidget(
+                                    unitUuid: productUnit.uuid,
+                                    isDimensional: widget.isDimensional,
+                                  ),
                                 )
                                 .toList(),
                       );

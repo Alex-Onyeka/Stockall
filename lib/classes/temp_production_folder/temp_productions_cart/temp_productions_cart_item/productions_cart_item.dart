@@ -94,13 +94,10 @@ class ProductionsCartItem extends HiveObject {
     'original_use_group_quantity': originalUseGroupQuantity,
     'sales_item_uuid': salesItemUuid,
     'unit_uuid': unitUuid,
-    'units_list':
-        unitsList?.map((item) => item.toJson()).toList(),
+    'units_list': unitsList?.map((item) => item.toJson()).toList(),
   };
 
-  factory ProductionsCartItem.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory ProductionsCartItem.fromJson(Map<String, dynamic> json) {
     return ProductionsCartItem(
       uuid: json['uuid'],
       itemUuid: json['item_uuid'],
@@ -115,16 +112,14 @@ class ProductionsCartItem extends HiveObject {
       addToStock: json['add_to_stock'],
       useGroupQuantity: json['sell_group'],
       originalCostPerItem: json['original_cost_per)_item'],
-      originalUseGroupQuantity:
-          json['original_use_group_quantity'],
+      originalUseGroupQuantity: json['original_use_group_quantity'],
       salesItemUuid: json['sales_item_uuid'],
       unitUuid: json['unit_uuid'] as String?,
       unitsList:
           (json['units_list'] as List<dynamic>?)
               ?.map(
-                (item) => ProductUnitsClass.fromJson(
-                  item as Map<String, dynamic>,
-                ),
+                (item) =>
+                    ProductUnitsClass.fromJson(item as Map<String, dynamic>),
               )
               .toList(),
     );
@@ -168,15 +163,9 @@ class ProductionsCartItem extends HiveObject {
     }
   }
 
-  double getRealCostForSales({
-    required double qtty,
-    required bool useGroup,
-  }) {
+  double getRealCostForSales({required double qtty, required bool useGroup}) {
     return (originalCostPerItem ?? 0) *
-        getRealQuantityForSales(
-          qtty: qtty,
-          useGroup: useGroup,
-        );
+        getRealQuantityForSales(qtty: qtty, useGroup: useGroup);
   }
 
   String getUnit() {
@@ -233,22 +222,17 @@ class ProductionsCartItem extends HiveObject {
       customPrice: customPrice ?? this.customPrice,
       setCustomPrice: setCustomPrice ?? this.setCustomPrice,
       addToStock: addToStock ?? this.addToStock,
-      useGroupQuantity:
-          useGroupQuantity ?? this.useGroupQuantity,
+      useGroupQuantity: useGroupQuantity ?? this.useGroupQuantity,
       costPrice: costPrice ?? this.costPrice,
       groupUnit: groupUnit ?? this.groupUnit,
       qttyPerGroup: qttyPerGroup ?? this.qttyPerGroup,
       unit: unit ?? this.unit,
-      originalCostPerItem:
-          originalCostPerItem ?? this.originalCostPerItem,
+      originalCostPerItem: originalCostPerItem ?? this.originalCostPerItem,
       originalUseGroupQuantity:
-          originalUseGroupQuantity ??
-          this.originalUseGroupQuantity,
+          originalUseGroupQuantity ?? this.originalUseGroupQuantity,
       salesItemUuid: salesItemUuid ?? this.salesItemUuid,
       unitUuid: unitUuid ?? this.unitUuid,
-      unitsList: copyProductionUnitSnapshot(
-        unitsList ?? this.unitsList,
-      ),
+      unitsList: copyProductionUnitSnapshot(unitsList ?? this.unitsList),
     );
   }
 }

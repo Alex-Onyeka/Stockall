@@ -49,83 +49,56 @@ Widget priceSectionWidget(
                   theme: theme,
                   action: () {
                     costController.text =
-                        product.costPrice
-                            .toString()
-                            .toString();
+                        product.costPrice.toString().toString();
                     bool isEditPriceLoading = false;
                     returnData().initPricesList(
                       productUuid: product.uuid,
-                      pricesListNew:
-                          product.getPricesList(),
+                      pricesListNew: product.getPricesList(),
                     );
                     showGeneralDialog(
                       context: context,
-                      pageBuilder: (
-                        context,
-                        animation,
-                        secondaryAnimation,
-                      ) {
+                      pageBuilder: (context, animation, secondaryAnimation) {
                         return StatefulBuilder(
                           builder:
-                              (
-                                context,
-                                setState,
-                              ) => Material(
+                              (context, setState) => Material(
                                 color: Colors.transparent,
                                 child: GestureDetector(
                                   onTap:
                                       () =>
-                                          FocusManager
-                                              .instance
-                                              .primaryFocus
+                                          FocusManager.instance.primaryFocus
                                               ?.unfocus(),
                                   child: Container(
-                                    decoration:
-                                        BoxDecoration(
-                                          color:
-                                              Colors.white,
-                                        ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                    ),
                                     child: Padding(
-                                      padding:
-                                          const EdgeInsets.only(
-                                            left: 20.0,
-                                            top: 40,
-                                            right: 20,
-                                          ),
+                                      padding: const EdgeInsets.only(
+                                        left: 20.0,
+                                        top: 40,
+                                        right: 20,
+                                      ),
                                       child: Column(
                                         mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .center,
+                                            MainAxisAlignment.center,
                                         children: [
                                           Container(
-                                            padding:
-                                                EdgeInsets.all(
-                                                  20,
-                                                ),
-                                            margin:
-                                                EdgeInsets.only(
-                                                  bottom:
-                                                      100,
-                                                ),
+                                            padding: EdgeInsets.all(20),
+                                            margin: EdgeInsets.only(
+                                              bottom: 100,
+                                            ),
                                             decoration: BoxDecoration(
-                                              color:
-                                                  Colors
-                                                      .white,
+                                              color: Colors.white,
                                               borderRadius:
-                                                  BorderRadius.circular(
-                                                    15,
-                                                  ),
+                                                  BorderRadius.circular(15),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color:
-                                                      const Color.fromARGB(
-                                                        39,
-                                                        4,
-                                                        1,
-                                                        41,
-                                                      ),
-                                                  blurRadius:
-                                                      10,
+                                                  color: const Color.fromARGB(
+                                                    39,
+                                                    4,
+                                                    1,
+                                                    41,
+                                                  ),
+                                                  blurRadius: 10,
                                                 ),
                                               ],
                                             ),
@@ -138,49 +111,47 @@ Widget priceSectionWidget(
                                                           .spaceBetween,
                                                   children: [
                                                     Opacity(
-                                                      opacity:
-                                                          0,
+                                                      opacity: 0,
                                                       child: IconButton(
                                                         mouseCursor:
-                                                            SystemMouseCursors.click,
-                                                        onPressed:
-                                                            () {},
-                                                        icon: Icon(
-                                                          Icons.clear,
-                                                        ),
+                                                            SystemMouseCursors
+                                                                .click,
+                                                        onPressed: () {},
+                                                        icon: Icon(Icons.clear),
                                                       ),
                                                     ),
                                                     Text(
                                                       style: TextStyle(
                                                         fontSize:
-                                                            theme.mobileTexts.b1.fontSize,
+                                                            theme
+                                                                .mobileTexts
+                                                                .b1
+                                                                .fontSize,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
                                                       'Edit Prices',
                                                     ),
                                                     Builder(
-                                                      builder: (
-                                                        context,
-                                                      ) {
+                                                      builder: (context) {
                                                         if (isEditPriceLoading ==
                                                             true) {
                                                           return SizedBox(
-                                                            height:
-                                                                20,
-                                                            width:
-                                                                20,
+                                                            height: 20,
+                                                            width: 20,
                                                             child: CircularProgressIndicator(
-                                                              strokeWidth:
-                                                                  1.5,
+                                                              strokeWidth: 1.5,
                                                               color:
-                                                                  theme.lightModeColor.secColor200,
+                                                                  theme
+                                                                      .lightModeColor
+                                                                      .secColor200,
                                                             ),
                                                           );
                                                         } else {
                                                           return IconButton(
                                                             mouseCursor:
-                                                                SystemMouseCursors.click,
+                                                                SystemMouseCursors
+                                                                    .click,
                                                             onPressed: () {
                                                               Navigator.of(
                                                                 context,
@@ -195,46 +166,44 @@ Widget priceSectionWidget(
                                                     ),
                                                   ],
                                                 ),
-                                                SizedBox(
-                                                  height:
-                                                      15,
-                                                ),
+                                                SizedBox(height: 15),
                                                 Column(
                                                   children: [
                                                     Visibility(
                                                       visible: authorization(
                                                         authorized:
-                                                            Authorizations().manageCostPrice,
+                                                            Authorizations()
+                                                                .manageCostPrice,
                                                       ),
                                                       child: MoneyTextfield(
-                                                        title:
-                                                            'Cost Price',
+                                                        title: 'Cost Price',
                                                         hint:
                                                             'Enter Cost Price',
                                                         controller:
                                                             costController,
-                                                        theme:
-                                                            theme,
+                                                        theme: theme,
                                                       ),
                                                     ),
                                                     Visibility(
                                                       visible: authorization(
                                                         authorized:
-                                                            Authorizations().manageCostPrice,
+                                                            Authorizations()
+                                                                .manageCostPrice,
                                                       ),
                                                       child: SizedBox(
-                                                        height:
-                                                            10,
+                                                        height: 10,
                                                       ),
                                                     ),
                                                     Padding(
-                                                      padding: const EdgeInsets.only(
-                                                        bottom:
-                                                            10.0,
-                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                            bottom: 10.0,
+                                                          ),
                                                       child: MainDropdown(
                                                         valueSet:
-                                                            returnData().tempPricesList.isNotEmpty,
+                                                            returnData()
+                                                                .tempPricesList
+                                                                .isNotEmpty,
                                                         onTap: () {
                                                           Navigator.push(
                                                             context,
@@ -244,7 +213,8 @@ Widget priceSectionWidget(
                                                               ) {
                                                                 return ProductPricesPage(
                                                                   productUuid:
-                                                                      product.uuid ??
+                                                                      product
+                                                                          .uuid ??
                                                                       '',
                                                                 );
                                                               },
@@ -252,59 +222,52 @@ Widget priceSectionWidget(
                                                           );
                                                         },
                                                         isOpen:
-                                                            returnData().tempPricesList.isNotEmpty,
+                                                            returnData()
+                                                                .tempPricesList
+                                                                .isNotEmpty,
                                                         title:
                                                             'Selling Price(s)',
                                                         hint:
                                                             returnData(
-                                                                  context:
-                                                                      context,
-                                                                ).tempPricesList.isEmpty
+                                                                      context:
+                                                                          context,
+                                                                    )
+                                                                    .tempPricesList
+                                                                    .isEmpty
                                                                 ? 'Add Price(s)'
                                                                 : "${returnData(context: context).tempPricesList.firstWhere((item) => item.isPrimary).priceValue} and (${returnData(context: context).tempPricesList.length - 1}) More",
-                                                        theme:
-                                                            theme,
+                                                        theme: theme,
                                                       ),
                                                     ),
                                                   ],
                                                 ),
-                                                SizedBox(
-                                                  height:
-                                                      20,
-                                                ),
+                                                SizedBox(height: 20),
                                                 MainButtonP(
-                                                  themeProvider:
-                                                      theme,
+                                                  themeProvider: theme,
                                                   action: () {
-                                                    final safeContext =
-                                                        context;
+                                                    final safeContext = context;
                                                     if (isEditPriceLoading ==
                                                         false) {
                                                       showDialog(
-                                                        context:
-                                                            safeContext,
+                                                        context: safeContext,
                                                         builder: (
                                                           confirmDialog,
                                                         ) {
                                                           return ConfirmationAlert(
-                                                            theme:
-                                                                theme,
+                                                            theme: theme,
                                                             message:
                                                                 'Are you sure you want to proceed?',
-                                                            title:
-                                                                'Proceed?',
+                                                            title: 'Proceed?',
                                                             action: () async {
                                                               final dataProvider =
                                                                   returnData();
                                                               Navigator.of(
                                                                 confirmDialog,
                                                               ).pop();
-                                                              setState(
-                                                                () {
-                                                                  isEditPriceLoading =
-                                                                      true;
-                                                                },
-                                                              );
+                                                              setState(() {
+                                                                isEditPriceLoading =
+                                                                    true;
+                                                              });
                                                               await dataProvider.updateProduct(
                                                                 itemHistory:
                                                                     null,
@@ -324,13 +287,16 @@ Widget priceSectionWidget(
                                                                   // elsewhere, which would otherwise
                                                                   // empty this product's prices.
                                                                   pricesList:
-                                                                      returnData().getTempPriceList(),
+                                                                      returnData()
+                                                                          .getTempPriceList(),
                                                                   costPrice:
                                                                       double.tryParse(
-                                                                        costController.text.replaceAll(
-                                                                          ',',
-                                                                          '',
-                                                                        ),
+                                                                        costController
+                                                                            .text
+                                                                            .replaceAll(
+                                                                              ',',
+                                                                              '',
+                                                                            ),
                                                                       ) ??
                                                                       0,
                                                                   // Keep the raw stored quantity.
@@ -338,7 +304,8 @@ Widget priceSectionWidget(
                                                                   // the sheet area for quantityType 2,
                                                                   // inflating stock on every update.
                                                                   quantity:
-                                                                      product.quantity,
+                                                                      product
+                                                                          .quantity,
                                                                 ),
                                                                 oldProduct:
                                                                     product,
@@ -359,16 +326,15 @@ Widget priceSectionWidget(
                                                               //   },
                                                               // );
 
-                                                              if (safeContext.mounted) {
+                                                              if (safeContext
+                                                                  .mounted) {
                                                                 Navigator.of(
                                                                   safeContext,
                                                                 ).pop();
-                                                                setState(
-                                                                  () {
-                                                                    // productFuture =
-                                                                    //     getProduct();
-                                                                  },
-                                                                );
+                                                                setState(() {
+                                                                  // productFuture =
+                                                                  //     getProduct();
+                                                                });
                                                               }
 
                                                               // setState(
@@ -383,27 +349,19 @@ Widget priceSectionWidget(
                                                       );
                                                     }
                                                   },
-                                                  text:
-                                                      'Update Prices',
+                                                  text: 'Update Prices',
                                                 ),
-                                                SizedBox(
-                                                  height:
-                                                      15,
-                                                ),
+                                                SizedBox(height: 15),
                                                 Material(
-                                                  color:
-                                                      Colors
-                                                          .transparent,
+                                                  color: Colors.transparent,
                                                   child: EditButton(
-                                                    text:
-                                                        'Cancel',
+                                                    text: 'Cancel',
                                                     action: () {
                                                       Navigator.of(
                                                         context,
                                                       ).pop();
                                                     },
-                                                    theme:
-                                                        theme,
+                                                    theme: theme,
                                                   ),
                                                 ),
                                               ],
@@ -432,32 +390,24 @@ Widget priceSectionWidget(
 
 class PricesGridSectionWidget extends StatefulWidget {
   final TempProductClass product;
-  const PricesGridSectionWidget({
-    super.key,
-    required this.product,
-  });
+  const PricesGridSectionWidget({super.key, required this.product});
 
   @override
   State<PricesGridSectionWidget> createState() =>
       _PricesGridSectionWidgetState();
 }
 
-class _PricesGridSectionWidgetState
-    extends State<PricesGridSectionWidget> {
+class _PricesGridSectionWidgetState extends State<PricesGridSectionWidget> {
   int getNumberOfPrices() {
     return widget.product.getPricesList().length;
   }
 
   int getFirstEndRand() {
-    return widget.product.getPricesList().length > 2
-        ? 2
-        : 1;
+    return widget.product.getPricesList().length > 2 ? 2 : 1;
   }
 
   int getSecondEndRand() {
-    return widget.product.getPricesList().length > 4
-        ? 4
-        : 3;
+    return widget.product.getPricesList().length > 4 ? 4 : 3;
   }
 
   @override
@@ -467,42 +417,24 @@ class _PricesGridSectionWidgetState
     return Column(
       children: [
         Visibility(
-          visible: authorization(
-            authorized: Authorizations().manageCostPrice,
-          ),
+          visible: authorization(authorized: Authorizations().manageCostPrice),
           child: Padding(
             padding: const EdgeInsets.only(bottom: 10.0),
             child: Row(
               children: [
                 Expanded(
                   child: Container(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 5,
-                      horizontal: 8,
-                    ),
+                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        3,
-                      ),
+                      borderRadius: BorderRadius.circular(3),
                       border: Border.all(
-                        color: const Color.fromARGB(
-                          75,
-                          255,
-                          214,
-                          79,
-                        ),
+                        color: const Color.fromARGB(75, 255, 214, 79),
                       ),
-                      color: const Color.fromARGB(
-                        64,
-                        255,
-                        226,
-                        138,
-                      ),
+                      color: const Color.fromARGB(64, 255, 226, 138),
                     ),
                     child: Row(
                       spacing: 5,
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           style: TextStyle(
@@ -526,8 +458,7 @@ class _PricesGridSectionWidgetState
                             color: null,
                           ),
                           formatMoneyBig(
-                            amount:
-                                widget.product.costPrice,
+                            amount: widget.product.costPrice,
                             context: context,
                           ),
                         ),
@@ -539,16 +470,12 @@ class _PricesGridSectionWidgetState
             ),
           ),
         ),
-        ...List.generate((prices.length / 2).ceil(), (
-          rowIndex,
-        ) {
+        ...List.generate((prices.length / 2).ceil(), (rowIndex) {
           final start = rowIndex * 2;
           final end = (start + 2).clamp(0, prices.length);
 
           return Padding(
-            padding: const EdgeInsets.symmetric(
-              vertical: 3.0,
-            ),
+            padding: const EdgeInsets.symmetric(vertical: 3.0),
             child: Row(
               spacing: 5,
               children:
@@ -556,9 +483,7 @@ class _PricesGridSectionWidgetState
                       .sublist(start, end)
                       .map(
                         (item) => Expanded(
-                          child: PriceWidgetProductDetails(
-                            price: item,
-                          ),
+                          child: PriceWidgetProductDetails(price: item),
                         ),
                       )
                       .toList(),
@@ -572,10 +497,7 @@ class _PricesGridSectionWidgetState
 
 class PriceWidgetProductDetails extends StatelessWidget {
   final ProductPricesClass price;
-  const PriceWidgetProductDetails({
-    super.key,
-    required this.price,
-  });
+  const PriceWidgetProductDetails({super.key, required this.price});
 
   @override
   Widget build(BuildContext context) {
@@ -583,10 +505,7 @@ class PriceWidgetProductDetails extends StatelessWidget {
     return Stack(
       children: [
         Container(
-          padding: EdgeInsets.symmetric(
-            vertical: 5,
-            horizontal: 8,
-          ),
+          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(3),
             border: Border.all(
@@ -607,10 +526,7 @@ class PriceWidgetProductDetails extends StatelessWidget {
                 child: Text(
                   style: TextStyle(
                     fontSize: theme.mobileTexts.b4.fontSize,
-                    color:
-                        price.isPrimary
-                            ? Colors.grey.shade200
-                            : null,
+                    color: price.isPrimary ? Colors.grey.shade200 : null,
                   ),
                   "${price.name}:",
                 ),
@@ -619,15 +535,9 @@ class PriceWidgetProductDetails extends StatelessWidget {
                 style: TextStyle(
                   fontSize: theme.mobileTexts.b4.fontSize,
                   fontWeight: FontWeight.bold,
-                  color:
-                      price.isPrimary
-                          ? Colors.grey.shade200
-                          : null,
+                  color: price.isPrimary ? Colors.grey.shade200 : null,
                 ),
-                formatMoneyBig(
-                  amount: price.priceValue,
-                  context: context,
-                ),
+                formatMoneyBig(amount: price.priceValue, context: context),
               ),
               SizedBox(width: 2),
             ],
@@ -637,11 +547,7 @@ class PriceWidgetProductDetails extends StatelessWidget {
           visible: price.isPrimary,
           child: Align(
             alignment: AlignmentGeometry.xy(1, 1),
-            child: Icon(
-              size: 13,
-              color: Colors.white,
-              Icons.check,
-            ),
+            child: Icon(size: 13, color: Colors.white, Icons.check),
           ),
         ),
       ],

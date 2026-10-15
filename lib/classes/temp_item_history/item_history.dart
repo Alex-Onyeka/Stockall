@@ -64,6 +64,9 @@ class ItemHistory {
   @HiveField(19)
   String? source;
 
+  @HiveField(20)
+  String? destination;
+
   ItemHistory({
     this.uuid,
     this.createdAt,
@@ -85,6 +88,7 @@ class ItemHistory {
     required this.event,
     required this.isManaged,
     required this.source,
+    this.destination,
   });
 
   factory ItemHistory.fromJson(Map<String, dynamic> json) {
@@ -113,6 +117,7 @@ class ItemHistory {
       event: json['event'] as String?,
       isManaged: json['is_managed'] as bool?,
       source: json['source'] as String?,
+      destination: json['destination'] as String?,
     );
   }
 
@@ -138,6 +143,7 @@ class ItemHistory {
       'event': event,
       'is_managed': isManaged,
       'source': source,
+      'destination': destination,
     };
   }
 }

@@ -7,20 +7,15 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/production/production_dashboard/productions_section/production_details/production_details_page.dart';
 
 class ProductionsRecordTile extends StatefulWidget {
-  const ProductionsRecordTile({
-    super.key,
-    required this.productionRecord,
-  });
+  const ProductionsRecordTile({super.key, required this.productionRecord});
 
   final ProductionRecord productionRecord;
 
   @override
-  State<ProductionsRecordTile> createState() =>
-      ProductionsRecordTileState();
+  State<ProductionsRecordTile> createState() => ProductionsRecordTileState();
 }
 
-class ProductionsRecordTileState
-    extends State<ProductionsRecordTile> {
+class ProductionsRecordTileState extends State<ProductionsRecordTile> {
   String cutLongText(String text, int number) {
     if (text.length > number) {
       return '${text.substring(0, number)}...';
@@ -50,8 +45,7 @@ class ProductionsRecordTileState
                 MaterialPageRoute(
                   builder: (context) {
                     return ProductionDetailsPage(
-                      productionRecordUuid:
-                          widget.productionRecord.uuid!,
+                      productionRecordUuid: widget.productionRecord.uuid!,
                     );
                   },
                 ),
@@ -61,8 +55,7 @@ class ProductionsRecordTileState
             child: Container(
               padding: EdgeInsets.fromLTRB(8, 15, 15, 15),
               child: Row(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: 10,
                 children: [
                   Stack(
@@ -86,41 +79,28 @@ class ProductionsRecordTileState
                       children: [
                         Row(
                           spacing: 15,
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
                               child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment
-                                        .start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 spacing: 5,
                                 children: [
                                   Row(
                                     spacing: 5,
                                     crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Expanded(
                                         child: Text(
                                           style: TextStyle(
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
+                                            fontWeight: FontWeight.bold,
                                             fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b2
-                                                    .fontSize,
+                                                theme.mobileTexts.b2.fontSize,
                                           ),
                                           cutLongText(
-                                            widget
-                                                    .productionRecord
-                                                    .itemName ??
+                                            widget.productionRecord.itemName ??
                                                 'Item Not Set',
                                             30,
                                           ),
@@ -128,41 +108,23 @@ class ProductionsRecordTileState
                                       ),
                                       Text(
                                         style: TextStyle(
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                          fontWeight: FontWeight.bold,
                                           fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b2
-                                                  .fontSize,
+                                              theme.mobileTexts.b2.fontSize,
                                           color:
-                                              theme
-                                                  .lightModeColor
-                                                  .secColor200,
+                                              theme.lightModeColor.secColor200,
                                         ),
                                         formatLargeNumberDouble(
-                                          widget
-                                                  .productionRecord
-                                                  .quantity ??
-                                              0,
+                                          widget.productionRecord.quantity ?? 0,
                                         ),
                                       ),
                                     ],
                                   ),
                                   Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b4
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.normal,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade700,
+                                      fontSize: theme.mobileTexts.b4.fontSize,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.grey.shade700,
                                     ),
 
                                     'Materials Used: ${widget.productionRecord.materials.length}',
@@ -174,27 +136,14 @@ class ProductionsRecordTileState
                               children: [
                                 Visibility(
                                   visible:
-                                      screenWidth(context) >
-                                      mobileScreenSmall,
+                                      screenWidth(context) > mobileScreenSmall,
                                   child: Padding(
-                                    padding:
-                                        const EdgeInsets.only(
-                                          right: 4.0,
-                                        ),
+                                    padding: const EdgeInsets.only(right: 4.0),
                                     child: Text(
                                       style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b4
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight
-                                                .normal,
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade700,
+                                        fontSize: theme.mobileTexts.b4.fontSize,
+                                        fontWeight: FontWeight.normal,
+                                        color: Colors.grey.shade700,
                                       ),
                                       'View More',
                                     ),
@@ -202,57 +151,37 @@ class ProductionsRecordTileState
                                 ),
                                 Icon(
                                   size: 15,
-                                  color:
-                                      Colors.grey.shade400,
-                                  Icons
-                                      .arrow_forward_ios_rounded,
+                                  color: Colors.grey.shade400,
+                                  Icons.arrow_forward_ios_rounded,
                                 ),
                               ],
                             ),
                           ],
                         ),
                         SizedBox(height: 5),
-                        Divider(
-                          color: Colors.grey.shade400,
-                          thickness: 0.5,
-                        ),
+                        Divider(color: Colors.grey.shade400, thickness: 0.5),
                         Padding(
-                          padding: const EdgeInsets.only(
-                            right: 15,
-                          ),
+                          padding: const EdgeInsets.only(right: 15),
                           child: Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Expanded(
                                 child: Row(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment
-                                          .start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Visibility(
                                       visible:
-                                          screenWidth(
-                                            context,
-                                          ) >
+                                          screenWidth(context) >
                                           mobileScreenSmall,
                                       child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(
-                                              right: 5.0,
-                                            ),
+                                        padding: const EdgeInsets.only(
+                                          right: 5.0,
+                                        ),
                                         child: Text(
                                           style: TextStyle(
                                             fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b4
-                                                    .fontSize,
-                                            color:
-                                                Colors
-                                                    .grey
-                                                    .shade600,
+                                                theme.mobileTexts.b4.fontSize,
+                                            color: Colors.grey.shade600,
                                           ),
                                           'Staff:',
                                         ),
@@ -262,22 +191,13 @@ class ProductionsRecordTileState
                                       child: Text(
                                         style: TextStyle(
                                           fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b4
-                                                  .fontSize,
+                                              theme.mobileTexts.b4.fontSize,
                                           color:
-                                              theme
-                                                  .lightModeColor
-                                                  .prColor300,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                              theme.lightModeColor.prColor300,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                         cutLongText(
-                                          widget
-                                                  .productionRecord
-                                                  .staffName ??
+                                          widget.productionRecord.staffName ??
                                               'Item Not Set',
                                           15,
                                         ),
@@ -290,26 +210,17 @@ class ProductionsRecordTileState
                                 children: [
                                   Visibility(
                                     visible:
-                                        screenWidth(
-                                          context,
-                                        ) >
+                                        screenWidth(context) >
                                         mobileScreenSmall,
                                     child: Padding(
-                                      padding:
-                                          const EdgeInsets.only(
-                                            right: 4.0,
-                                          ),
+                                      padding: const EdgeInsets.only(
+                                        right: 4.0,
+                                      ),
                                       child: Text(
                                         style: TextStyle(
                                           fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b4
-                                                  .fontSize,
-                                          color:
-                                              Colors
-                                                  .grey
-                                                  .shade600,
+                                              theme.mobileTexts.b4.fontSize,
+                                          color: Colors.grey.shade600,
                                         ),
                                         'Date:',
                                       ),
@@ -317,22 +228,12 @@ class ProductionsRecordTileState
                                   ),
                                   Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b4
-                                              .fontSize,
-                                      color:
-                                          theme
-                                              .lightModeColor
-                                              .prColor300,
-                                      fontWeight:
-                                          FontWeight.bold,
+                                      fontSize: theme.mobileTexts.b4.fontSize,
+                                      color: theme.lightModeColor.prColor300,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                     formatDateTimeTime(
-                                      widget
-                                              .productionRecord
-                                              .createdAt ??
+                                      widget.productionRecord.createdAt ??
                                           DateTime.now(),
                                     ),
                                   ),

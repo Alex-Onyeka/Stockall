@@ -7,14 +7,10 @@ class ThemeProvider extends ChangeNotifier {
   TabletTexts tabletTexts = TabletTexts();
   DesktopTexts desktopTexts = DesktopTexts();
 
-  dynamic returnPlatform(
-    BoxConstraints constraints,
-    BuildContext context,
-  ) {
+  dynamic returnPlatform(BoxConstraints constraints, BuildContext context) {
     if (constraints.maxWidth < 600) {
       return mobileTexts;
-    } else if (constraints.maxWidth > 600 &&
-        constraints.maxWidth < 900) {
+    } else if (constraints.maxWidth > 600 && constraints.maxWidth < 900) {
       return tabletTexts;
     } else {
       return desktopTexts;

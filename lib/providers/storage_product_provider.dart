@@ -21,8 +21,7 @@ class StorageProductProvider extends ChangeNotifier {
   StorageProductProvider._internal();
 
   bool isLoading = false;
-  ConnectivityProvider connectivity =
-      ConnectivityProvider();
+  ConnectivityProvider connectivity = ConnectivityProvider();
 
   void toggleIsLoading(bool value) {
     isLoading = value;
@@ -30,9 +29,7 @@ class StorageProductProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  String unitText({
-    required TempStorageProducts storageProduct,
-  }) {
+  String unitText({required TempStorageProducts storageProduct}) {
     return isGroupUnit
         ? storageProduct.groupUnit ?? 'Group'
         : storageProduct.unit ?? 'Unit';
@@ -57,27 +54,22 @@ class StorageProductProvider extends ChangeNotifier {
     product.updatedAt = DateTime.now();
     product.createdAt ??= DateTime.now();
 
-    await StorageProductsFunc().createStorageProduct(
-      product,
-    );
+    await StorageProductsFunc().createStorageProduct(product);
     await CreatedStorageProductsFunc().createStorageProduct(
       CreatedStorageProducts(storageProduct: product),
     );
     await mainLocalLog('Offline Success');
-    await mainLocalLog(
-      'Offline Storage Product inserted Successfully',
-    );
+    await mainLocalLog('Offline Storage Product inserted Successfully');
     // }
     if (itemHistory != null) {
       itemHistory.storageItemName = product.name;
       itemHistory.storageItemUuid = product.uuid;
-      await returnStorageItemHistoryProvider()
-          .createStorageItemHistory(itemHistory);
+      await returnStorageItemHistoryProvider().createStorageItemHistory(
+        itemHistory,
+      );
     }
 
-    await getStorageProductsOffline(
-      returnShopProvider().userShop()!.shopId!,
-    );
+    await getStorageProductsOffline(returnShopProvider().userShop()!.shopId!);
     if (isMultiple != true) {
       syncData();
     }
@@ -87,14 +79,10 @@ class StorageProductProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
-      if (CreatedStorageProductsFunc()
-              .getStorageProducts()
-              .isNotEmpty &&
+      if (CreatedStorageProductsFunc().getStorageProducts().isNotEmpty &&
           isOnline) {
         final tempProducts =
-            CreatedStorageProductsFunc()
-                .getStorageProducts()
-                .toList();
+            CreatedStorageProductsFunc().getStorageProducts().toList();
         // final payload =
         //     tempProducts
         //         .map((p) => p.storageProduct.toJson())
@@ -110,16 +98,14 @@ class StorageProductProvider extends ChangeNotifier {
                 .insert(item.storageProduct.toJson())
                 .select();
             count++;
-            await CreatedStorageProductsFunc()
-                .deleteCreatedStorageProduct(
-                  item.storageProduct.uuid!,
-                );
+            await CreatedStorageProductsFunc().deleteCreatedStorageProduct(
+              item.storageProduct.uuid!,
+            );
           } on PostgrestException catch (e) {
             if (e.code == '23505') {
-              await CreatedStorageProductsFunc()
-                  .deleteCreatedStorageProduct(
-                    item.storageProduct.uuid!,
-                  );
+              await CreatedStorageProductsFunc().deleteCreatedStorageProduct(
+                item.storageProduct.uuid!,
+              );
             }
             await mainLocalLog(
               'Error Synchronizing Storage Product ${item.storageProduct.name}: $e',
@@ -127,25 +113,15 @@ class StorageProductProvider extends ChangeNotifier {
           }
         }
 
-        await mainLocalLog(
-          '$count items added successfully ✅',
-        );
+        await mainLocalLog('$count items added successfully ✅');
         // await CreatedStorageProductsFunc()
         //     .clearCreatedStorageProducts();
-        await mainLocalLog(
-          'Mounted, refreshing Storage Products ✅',
-        );
-        await getStorageProducts(
-          returnShopProvider().userShop()!.shopId!,
-        );
-        await mainLocalLog(
-          'Unsynced Storage Products Cleared',
-        );
+        await mainLocalLog('Mounted, refreshing Storage Products ✅');
+        await getStorageProducts(returnShopProvider().userShop()!.shopId!);
+        await mainLocalLog('Unsynced Storage Products Cleared');
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Storage Products Insert failed ❌: $e',
-      );
+      await mainLocalLog('Batch Storage Products Insert failed ❌: $e');
     }
   }
 
@@ -153,9 +129,7 @@ class StorageProductProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
 
-      if (DeletedStorageProductsFunc()
-              .getStorageProductIds()
-              .isNotEmpty &&
+      if (DeletedStorageProductsFunc().getStorageProductIds().isNotEmpty &&
           isOnline) {
         final uuids =
             DeletedStorageProductsFunc()
@@ -167,32 +141,18 @@ class StorageProductProvider extends ChangeNotifier {
             await supabase
                 .from(tableName)
                 .delete()
-                .inFilter(
-                  'uuid',
-                  uuids,
-                ) // delete where id is in the list
+                .inFilter('uuid', uuids) // delete where id is in the list
                 .select();
 
-        await mainLocalLog(
-          '${data.length} items deleted successfully ✅',
-        );
+        await mainLocalLog('${data.length} items deleted successfully ✅');
 
-        await DeletedStorageProductsFunc()
-            .clearDeletedStorageProduct();
-        await mainLocalLog(
-          'Mounted, refreshing Storage Products ✅',
-        );
-        await getStorageProducts(
-          returnShopProvider().userShop()!.shopId!,
-        );
-        await mainLocalLog(
-          'Unsynced deleted Storage products cleared',
-        );
+        await DeletedStorageProductsFunc().clearDeletedStorageProduct();
+        await mainLocalLog('Mounted, refreshing Storage Products ✅');
+        await getStorageProducts(returnShopProvider().userShop()!.shopId!);
+        await mainLocalLog('Unsynced deleted Storage products cleared');
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Storage Products Delete failed ❌: $e',
-      );
+      await mainLocalLog('Batch Storage Products Delete failed ❌: $e');
     }
   }
 
@@ -200,31 +160,21 @@ class StorageProductProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       await mainLocalLog(
-        UpdatedStorageProductsFunc()
-            .getStorageProductIds()
-            .length
-            .toString(),
+        UpdatedStorageProductsFunc().getStorageProductIds().length.toString(),
       );
 
-      if (UpdatedStorageProductsFunc()
-              .getStorageProductIds()
-              .isNotEmpty &&
+      if (UpdatedStorageProductsFunc().getStorageProductIds().isNotEmpty &&
           isOnline) {
         final updatedProducts =
-            UpdatedStorageProductsFunc()
-                .getStorageProductIds();
+            UpdatedStorageProductsFunc().getStorageProductIds();
 
         for (final updated in updatedProducts) {
-          final localProduct =
-              updated.updatedStorageProduct;
+          final localProduct = updated.updatedStorageProduct;
 
-          localProduct.updatedAt ??=
-              DateTime.now().toLocal();
+          localProduct.updatedAt ??= DateTime.now().toLocal();
 
           if (localProduct.uuid == null) {
-            await mainLocalLog(
-              'Local Storage Product Uuid is Null',
-            );
+            await mainLocalLog('Local Storage Product Uuid is Null');
           }
           final remoteData =
               await supabase
@@ -234,40 +184,28 @@ class StorageProductProvider extends ChangeNotifier {
                   .maybeSingle();
 
           if (remoteData == null) {
-            await supabase
-                .from(tableName)
-                .insert(localProduct.toJson());
+            await supabase.from(tableName).insert(localProduct.toJson());
             await mainLocalLog(
               'Inserted Storage product with uuid ${localProduct.uuid}',
             );
-            await UpdatedStorageProductsFunc()
-                .deleteUpdatedStorageProduct(
-                  localProduct.uuid ?? '',
-                );
+            await UpdatedStorageProductsFunc().deleteUpdatedStorageProduct(
+              localProduct.uuid ?? '',
+            );
           } else {
-            final remoteUpdatedAtRaw =
-                remoteData['updated_at'];
+            final remoteUpdatedAtRaw = remoteData['updated_at'];
             final remoteUpdatedAt =
                 remoteUpdatedAtRaw == null
                     ? null
-                    : DateTime.parse(
-                      remoteUpdatedAtRaw,
-                    ).toUtc();
+                    : DateTime.parse(remoteUpdatedAtRaw).toUtc();
 
             localProduct.updatedAt =
                 (localProduct.updatedAt ?? DateTime.now())
                     .toUtc(); // ✅ keep both UTC
-            await mainLocalLog(
-              "Local updatedAt: ${localProduct.updatedAt}",
-            );
-            await mainLocalLog(
-              "Remote updatedAt: $remoteUpdatedAt",
-            );
+            await mainLocalLog("Local updatedAt: ${localProduct.updatedAt}");
+            await mainLocalLog("Remote updatedAt: $remoteUpdatedAt");
 
             if (remoteUpdatedAt == null ||
-                localProduct.updatedAt!.isAfter(
-                  remoteUpdatedAt,
-                )) {
+                localProduct.updatedAt!.isAfter(remoteUpdatedAt)) {
               await supabase
                   .from(tableName)
                   .update(localProduct.toJson())
@@ -275,10 +213,9 @@ class StorageProductProvider extends ChangeNotifier {
               await mainLocalLog(
                 'Updated product with uuid ${localProduct.uuid}',
               );
-              await UpdatedStorageProductsFunc()
-                  .deleteUpdatedStorageProduct(
-                    localProduct.uuid ?? '',
-                  );
+              await UpdatedStorageProductsFunc().deleteUpdatedStorageProduct(
+                localProduct.uuid ?? '',
+              );
             } else {
               await mainLocalLog(
                 'Skipped Storage product ${localProduct.uuid}, remote is newer ✅',
@@ -287,22 +224,13 @@ class StorageProductProvider extends ChangeNotifier {
           }
         }
 
-        await UpdatedStorageProductsFunc()
-            .clearUpdatedStorageProduct();
-        await mainLocalLog(
-          'Unsynced updated Storage products cleared',
-        );
-        await mainLocalLog(
-          'Mounted, refreshing products ✅',
-        );
-        await getStorageProducts(
-          returnShopProvider().userShop()!.shopId!,
-        );
+        await UpdatedStorageProductsFunc().clearUpdatedStorageProduct();
+        await mainLocalLog('Unsynced updated Storage products cleared');
+        await mainLocalLog('Mounted, refreshing products ✅');
+        await getStorageProducts(returnShopProvider().userShop()!.shopId!);
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Storage Products Update failed ❌: $e',
-      );
+      await mainLocalLog('Batch Storage Products Update failed ❌: $e');
     }
   }
 
@@ -338,10 +266,7 @@ class StorageProductProvider extends ChangeNotifier {
 
   int? allowedRangeItems;
 
-  void setAllowedRange({
-    int? plan,
-    required BuildContext context,
-  }) {
+  void setAllowedRange({int? plan, required BuildContext context}) {
     allowedRangeItems =
         plan == 3
             ? null
@@ -352,9 +277,7 @@ class StorageProductProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<TempStorageProducts>> getStorageProducts(
-    int shopId,
-  ) async {
+  Future<List<TempStorageProducts>> getStorageProducts(int shopId) async {
     await getStorageProductsOffline(shopId);
     bool isOnline = await connectivity.isOnline();
     await mainLocalLog('✅✅ Products List Cleared');
@@ -366,28 +289,19 @@ class StorageProductProvider extends ChangeNotifier {
           .order('name', ascending: true)
           .range(
             0,
-            allowedRangeItems != null
-                ? (allowedRangeItems ?? 0) - 1
-                : 1000,
+            allowedRangeItems != null ? (allowedRangeItems ?? 0) - 1 : 1000,
           );
 
       await mainLocalLog('Items gotten: ${data.length}');
 
       storageProductListMain =
           (data as List)
-              .map(
-                (json) =>
-                    TempStorageProducts.fromJson(json),
-              )
+              .map((json) => TempStorageProducts.fromJson(json))
               .toList();
       storageProductListMain.sort(
-        (a, b) => a.name.toLowerCase().compareTo(
-          b.name.toLowerCase(),
-        ),
+        (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
       );
-      await mainLocalLog(
-        'Product List Set: ${storageProductListMain.length}',
-      );
+      await mainLocalLog('Product List Set: ${storageProductListMain.length}');
       if (data.length > 999) {
         final data2 = await supabase
             .from(tableName)
@@ -396,25 +310,16 @@ class StorageProductProvider extends ChangeNotifier {
             .order('name', ascending: true)
             .range(
               1001,
-              allowedRangeItems != null
-                  ? (allowedRangeItems ?? 0) - 1
-                  : 2000,
+              allowedRangeItems != null ? (allowedRangeItems ?? 0) - 1 : 2000,
             );
-        await mainLocalLog(
-          'Items 2 gotten: ${data2.length}',
-        );
+        await mainLocalLog('Items 2 gotten: ${data2.length}');
         storageProductListMain.addAll(
           (data2 as List)
-              .map(
-                (stuff) =>
-                    TempStorageProducts.fromJson(stuff),
-              )
+              .map((stuff) => TempStorageProducts.fromJson(stuff))
               .toList(),
         );
         storageProductListMain.sort(
-          (a, b) => a.name.toLowerCase().compareTo(
-            b.name.toLowerCase(),
-          ),
+          (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
         );
         await mainLocalLog(
           'Product List 2 Set: ${storageProductListMain.length}',
@@ -427,21 +332,14 @@ class StorageProductProvider extends ChangeNotifier {
               .eq('shop_id', shopId)
               .order('name', ascending: true)
               .range(2001, allowedRangeItems ?? 3000);
-          await mainLocalLog(
-            'Items 3 gotten: ${data3.length}',
-          );
+          await mainLocalLog('Items 3 gotten: ${data3.length}');
           storageProductListMain.addAll(
             (data3 as List)
-                .map(
-                  (stuff) =>
-                      TempStorageProducts.fromJson(stuff),
-                )
+                .map((stuff) => TempStorageProducts.fromJson(stuff))
                 .toList(),
           );
           storageProductListMain.sort(
-            (a, b) => a.name.toLowerCase().compareTo(
-              b.name.toLowerCase(),
-            ),
+            (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
           );
           await mainLocalLog(
             'Product List 3 Set: ${storageProductListMain.length}',
@@ -450,8 +348,7 @@ class StorageProductProvider extends ChangeNotifier {
         notifyListeners();
       }
       notifyListeners();
-      await returnInventoryUpdatesProvider()
-          .getInventoryUpdates();
+      await returnInventoryUpdatesProvider().getInventoryUpdates();
 
       await StorageProductsFunc().insertAllStorageProducts(
         storageProductListMain,
@@ -460,11 +357,9 @@ class StorageProductProvider extends ChangeNotifier {
       await mainLocalLog(
         "Offline Data Gotten: ${StorageProductsFunc().getStorageProducts().length}",
       );
-      storageProductListMain =
-          StorageProductsFunc().getStorageProducts();
+      storageProductListMain = StorageProductsFunc().getStorageProducts();
       notifyListeners();
-      await returnInventoryUpdatesProvider()
-          .getInventoryUpdatesOffline();
+      await returnInventoryUpdatesProvider().getInventoryUpdatesOffline();
     }
 
     notifyListeners();
@@ -475,15 +370,12 @@ class StorageProductProvider extends ChangeNotifier {
   //
   //
   //
-  Future<TempStorageProducts?>
-  getSingleStorageProductItemOnline({
+  Future<TempStorageProducts?> getSingleStorageProductItemOnline({
     required String itemUuid,
   }) async {
     try {
       bool isOnline = await connectivity.isOnline();
-      await mainLocalLog(
-        '✅✅ Getting Single Storage Product Item',
-      );
+      await mainLocalLog('✅✅ Getting Single Storage Product Item');
       if (isOnline && StorageProductsFunc().isSynced()) {
         final data =
             await supabase
@@ -493,21 +385,16 @@ class StorageProductProvider extends ChangeNotifier {
                 .maybeSingle();
 
         if (data == null) {
-          mainLocalLog(
-            'Error Getting Single Storage Product item',
-          );
+          mainLocalLog('Error Getting Single Storage Product item');
           return null;
         }
         notifyListeners();
 
-        TempStorageProducts tempItem =
-            TempStorageProducts.fromJson(data);
+        TempStorageProducts tempItem = TempStorageProducts.fromJson(data);
         mainLocalLog(
           'Single Storage Product item Gotten Successfully: ${tempItem.name}',
         );
-        StorageProductsFunc().createStorageProduct(
-          tempItem,
-        );
+        StorageProductsFunc().createStorageProduct(tempItem);
         insertSingleStorageItemIntoCache(newItem: tempItem);
         notifyListeners();
       } else {
@@ -515,8 +402,7 @@ class StorageProductProvider extends ChangeNotifier {
         await mainLocalLog(
           "Offline Data Gotten: ${StorageProductsFunc().getStorageProducts().length}",
         );
-        storageProductListMain =
-            StorageProductsFunc().getStorageProducts();
+        storageProductListMain = StorageProductsFunc().getStorageProducts();
         notifyListeners();
       }
 
@@ -534,16 +420,15 @@ class StorageProductProvider extends ChangeNotifier {
   //
   //
 
-  Future<List<TempStorageProducts>>
-  getStorageProductsOffline(int shopId) async {
+  Future<List<TempStorageProducts>> getStorageProductsOffline(
+    int shopId,
+  ) async {
     await mainLocalLog(
       "Offline Data Gotten: ${StorageProductsFunc().getStorageProducts().length}",
     );
-    storageProductListMain =
-        StorageProductsFunc().getStorageProducts();
+    storageProductListMain = StorageProductsFunc().getStorageProducts();
     notifyListeners();
-    await returnInventoryUpdatesProvider()
-        .getInventoryUpdatesOffline();
+    await returnInventoryUpdatesProvider().getInventoryUpdatesOffline();
 
     notifyListeners();
     return storageProductListMain;
@@ -558,8 +443,7 @@ class StorageProductProvider extends ChangeNotifier {
     TempStorageProducts? oldProduct,
   }) async {
     try {
-      var res = await StorageProductsFunc()
-          .updateStorageProduct(product);
+      var res = await StorageProductsFunc().updateStorageProduct(product);
       if (res == 1) {
         // if (isQuantityUpdate == false) {
         List<CreatedStorageProducts> containsCreated =
@@ -567,34 +451,27 @@ class StorageProductProvider extends ChangeNotifier {
                 .getStorageProducts()
                 .where(
                   (createdProduct) =>
-                      createdProduct.storageProduct.uuid ==
-                      product.uuid,
+                      createdProduct.storageProduct.uuid == product.uuid,
                 )
                 .toList();
         if (containsCreated.isEmpty) {
-          await UpdatedStorageProductsFunc()
-              .createUpdatedStorageProduct(
-                UpdatedStorageProduct(
-                  updatedStorageProduct: product,
-                ),
-              );
+          await UpdatedStorageProductsFunc().createUpdatedStorageProduct(
+            UpdatedStorageProduct(updatedStorageProduct: product),
+          );
         } else {
-          await CreatedStorageProductsFunc()
-              .updateCreatedStorageProduct(
-                CreatedStorageProducts(
-                  storageProduct: product,
-                ),
-              );
+          await CreatedStorageProductsFunc().updateCreatedStorageProduct(
+            CreatedStorageProducts(storageProduct: product),
+          );
         }
         await getStorageProductsOffline(
           returnShopProvider().userShop()!.shopId!,
         );
-        if (isQuantityUpdate &&
-            storageItemHistory != null) {
+        if (isQuantityUpdate && storageItemHistory != null) {
           storageItemHistory.storageItemName = product.name;
           storageItemHistory.storageItemUuid = product.uuid;
-          await returnStorageItemHistoryProvider()
-              .createStorageItemHistory(storageItemHistory);
+          await returnStorageItemHistoryProvider().createStorageItemHistory(
+            storageItemHistory,
+          );
         }
         notifyListeners();
         syncData();
@@ -606,9 +483,7 @@ class StorageProductProvider extends ChangeNotifier {
       // }
     } catch (e) {
       notifyListeners();
-      await mainLocalLog(
-        "Error Updating Product: ${e.toString()}",
-      );
+      await mainLocalLog("Error Updating Product: ${e.toString()}");
       return 0;
     }
   }
@@ -617,16 +492,13 @@ class StorageProductProvider extends ChangeNotifier {
     required TempStorageProducts product,
     required StorageItemHistory? itemHistory,
   }) async {
-    await StorageProductsFunc().deleteStorageProduct(
-      product.uuid!,
-    );
+    await StorageProductsFunc().deleteStorageProduct(product.uuid!);
     var containsCreated =
         CreatedStorageProductsFunc()
             .getStorageProducts()
             .where(
               (product) =>
-                  product.storageProduct.uuid ==
-                  product.storageProduct.uuid,
+                  product.storageProduct.uuid == product.storageProduct.uuid,
             )
             .toList();
 
@@ -639,42 +511,31 @@ class StorageProductProvider extends ChangeNotifier {
                   product.updatedStorageProduct.uuid,
             )
             .toList();
-    await mainLocalLog(
-      'Updated: ${containsCreated.length.toString()}',
-    );
-    await mainLocalLog(
-      'Updated: ${containsUpdated.length.toString()}',
-    );
+    await mainLocalLog('Updated: ${containsCreated.length.toString()}');
+    await mainLocalLog('Updated: ${containsUpdated.length.toString()}');
     if (containsCreated.isNotEmpty) {
-      await CreatedStorageProductsFunc()
-          .deleteCreatedStorageProduct(product.uuid!);
+      await CreatedStorageProductsFunc().deleteCreatedStorageProduct(
+        product.uuid!,
+      );
     } else {
-      await DeletedStorageProductsFunc()
-          .createDeletedStorageProduct(
-            DeletedStorageProduct(
-              storageProducteUuid: product.uuid!,
-            ),
-          );
+      await DeletedStorageProductsFunc().createDeletedStorageProduct(
+        DeletedStorageProduct(storageProducteUuid: product.uuid!),
+      );
     }
     if (containsUpdated.isNotEmpty) {
-      await UpdatedStorageProductsFunc()
-          .deleteUpdatedStorageProduct(
-            containsUpdated
-                .first
-                .updatedStorageProduct
-                .uuid!,
-          );
+      await UpdatedStorageProductsFunc().deleteUpdatedStorageProduct(
+        containsUpdated.first.updatedStorageProduct.uuid!,
+      );
       await mainLocalLog('Deleted Update Log');
     }
     if (itemHistory != null) {
       itemHistory.storageItemName = product.name;
       itemHistory.storageItemUuid = product.uuid;
-      await returnStorageItemHistoryProvider()
-          .createStorageItemHistory(itemHistory);
+      await returnStorageItemHistoryProvider().createStorageItemHistory(
+        itemHistory,
+      );
     }
-    await getStorageProductsOffline(
-      returnShopProvider().userShop()!.shopId!,
-    );
+    await getStorageProductsOffline(returnShopProvider().userShop()!.shopId!);
     notifyListeners();
     syncData();
   }
@@ -696,8 +557,7 @@ class StorageProductProvider extends ChangeNotifier {
               (item.getActualQuantity() ?? 0));
     }
     for (var item in storageProductListMain) {
-      tempTotal +=
-          ((item.sellingPrice ?? 0) * (item.quantity ?? 0));
+      tempTotal += ((item.sellingPrice ?? 0) * (item.quantity ?? 0));
     }
     return tempTotal;
   }
@@ -706,13 +566,10 @@ class StorageProductProvider extends ChangeNotifier {
     double tempTotal = 0;
     var products = returnData().productListMain;
     for (var item in products) {
-      tempTotal +=
-          (item.costPrice *
-              (item.getActualQuantity() ?? 0));
+      tempTotal += (item.costPrice * (item.getActualQuantity() ?? 0));
     }
     for (var item in storageProductListMain) {
-      tempTotal +=
-          ((item.costPrice ?? 0) * (item.quantity ?? 0));
+      tempTotal += ((item.costPrice ?? 0) * (item.quantity ?? 0));
     }
     return tempTotal;
   }
@@ -745,9 +602,7 @@ class StorageProductInput {
   }
 
   /// Optional: create object from JSON
-  factory StorageProductInput.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory StorageProductInput.fromJson(Map<String, dynamic> json) {
     return StorageProductInput(
       name: json['name'] as String,
       shopId: json['shop_id'] as int,

@@ -733,6 +733,9 @@ void selectItemInADepartmentProducts({
                               source:
                                   ItemHistoryEventClass
                                       .departmentSource,
+                              destination:
+                                  ItemHistoryEventClass
+                                      .productDestination,
                               shopId: shopId(),
                               isIncreased: true,
                               departmentName:
@@ -824,7 +827,10 @@ void selectItemInADepartmentProducts({
                                   oldProduct.isManaged,
                               source:
                                   ItemHistoryEventClass
-                                      .departmentSource,
+                                      .productSource,
+                              destination:
+                                  ItemHistoryEventClass
+                                      .departmentDestination,
                               shopId: shopId(),
                               isIncreased: false,
                               desc:
@@ -1403,6 +1409,9 @@ void selectItemInAShop({
                           source:
                               ItemHistoryEventClass
                                   .branchStoreSource,
+                          destination:
+                              ItemHistoryEventClass
+                                  .productDestination,
                           desc:
                               'Item Quantity Received From Transfer - From Item Name: ${mainItem.name}. Shop Name: ${returnShopProvider().userShop()?.name}.',
                           shopId: shop.shopId!,
@@ -1482,7 +1491,10 @@ void selectItemInAShop({
                           isManaged: oldProduct.isManaged,
                           source:
                               ItemHistoryEventClass
-                                  .branchStoreSource,
+                                  .productSource,
+                          destination:
+                              ItemHistoryEventClass
+                                  .branchStoreDestination,
                           shopId: shopId(),
                           isIncreased: false,
                           desc:

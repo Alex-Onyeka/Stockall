@@ -61,10 +61,7 @@ Widget quantityInStockWidgetStorageItem(
 
 class UnitsGridSectionWidgetStorage extends StatefulWidget {
   final TempStorageProducts product;
-  const UnitsGridSectionWidgetStorage({
-    super.key,
-    required this.product,
-  });
+  const UnitsGridSectionWidgetStorage({super.key, required this.product});
 
   @override
   State<UnitsGridSectionWidgetStorage> createState() =>
@@ -90,16 +87,12 @@ class _UnitsGridSectionWidgetStorageState
     final units = widget.product.getUnitsList();
 
     return Column(
-      children: List.generate((units.length / 2).ceil(), (
-        rowIndex,
-      ) {
+      children: List.generate((units.length / 2).ceil(), (rowIndex) {
         final start = rowIndex * 2;
         final end = (start + 2).clamp(0, units.length);
 
         return Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: 3.0,
-          ),
+          padding: const EdgeInsets.symmetric(vertical: 3.0),
           child: Row(
             spacing: 5,
             children:
@@ -107,10 +100,7 @@ class _UnitsGridSectionWidgetStorageState
                     .sublist(start, end)
                     .map(
                       (item) => Expanded(
-                        child:
-                            QuantityWidgetStorageProductDetails(
-                              unit: item,
-                            ),
+                        child: QuantityWidgetStorageProductDetails(unit: item),
                       ),
                     )
                     .toList(),
@@ -121,13 +111,9 @@ class _UnitsGridSectionWidgetStorageState
   }
 }
 
-class QuantityWidgetStorageProductDetails
-    extends StatelessWidget {
+class QuantityWidgetStorageProductDetails extends StatelessWidget {
   final ProductUnitsClass unit;
-  const QuantityWidgetStorageProductDetails({
-    super.key,
-    required this.unit,
-  });
+  const QuantityWidgetStorageProductDetails({super.key, required this.unit});
 
   @override
   Widget build(BuildContext context) {
@@ -135,10 +121,7 @@ class QuantityWidgetStorageProductDetails
     return Stack(
       children: [
         Container(
-          padding: EdgeInsets.symmetric(
-            vertical: 5,
-            horizontal: 8,
-          ),
+          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(3),
             border: Border.all(
@@ -158,10 +141,7 @@ class QuantityWidgetStorageProductDetails
               Text(
                 style: TextStyle(
                   fontSize: theme.mobileTexts.b4.fontSize,
-                  color:
-                      unit.isPrimary
-                          ? Colors.grey.shade200
-                          : null,
+                  color: unit.isPrimary ? Colors.grey.shade200 : null,
                 ),
                 "${unit.name}:",
               ),
@@ -169,16 +149,10 @@ class QuantityWidgetStorageProductDetails
                 style: TextStyle(
                   fontSize: theme.mobileTexts.b4.fontSize,
                   fontWeight: FontWeight.bold,
-                  color:
-                      unit.isPrimary
-                          ? Colors.grey.shade200
-                          : null,
+                  color: unit.isPrimary ? Colors.grey.shade200 : null,
                 ),
                 formatLargeNumberDouble(
-                  unit.getQuantityEquivDivided(
-                    context: context,
-                    index: 4,
-                  ),
+                  unit.getQuantityEquivDivided(context: context, index: 4),
                 ),
               ),
             ],
@@ -188,11 +162,7 @@ class QuantityWidgetStorageProductDetails
           visible: unit.isPrimary,
           child: Align(
             alignment: AlignmentGeometry.xy(1, 1),
-            child: Icon(
-              size: 13,
-              color: Colors.white,
-              Icons.check,
-            ),
+            child: Icon(size: 13, color: Colors.white, Icons.check),
           ),
         ),
       ],

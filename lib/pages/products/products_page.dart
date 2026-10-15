@@ -32,17 +32,11 @@ class _ProductsPageState extends State<ProductsPage> {
     var theme = returnTheme(context);
     return SafeArea(
       child: GestureDetector(
-        onTap:
-            () =>
-                FocusManager.instance.primaryFocus
-                    ?.unfocus(),
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: PopScope(
           canPop: false,
           onPopInvokedWithResult: (didPop, result) {
-            returnNavProvider(
-              context,
-              listen: false,
-            ).navigate(0);
+            returnNavProvider(context, listen: false).navigate(0);
           },
           child: LayoutBuilder(
             builder: (context, constraints) {

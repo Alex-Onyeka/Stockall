@@ -15,29 +15,20 @@ class AddProduct extends StatefulWidget {
 }
 
 class _AddProductState extends State<AddProduct> {
-  TextEditingController nameController =
-      TextEditingController();
+  TextEditingController nameController = TextEditingController();
 
-  TextEditingController costController =
-      TextEditingController();
-  TextEditingController sellingController =
-      TextEditingController();
-  TextEditingController lowQttyController =
-      TextEditingController(text: '10');
+  TextEditingController costController = TextEditingController();
+  TextEditingController sellingController = TextEditingController();
+  TextEditingController lowQttyController = TextEditingController(text: '10');
   // TextEditingController quantityController =
   //     TextEditingController();
-  TextEditingController discountController =
-      TextEditingController();
+  TextEditingController discountController = TextEditingController();
   // TextEditingController storageQuantityController =
   //     TextEditingController();
-  TextEditingController qttyPerGroupController =
-      TextEditingController();
-  TextEditingController wholeSaleController =
-      TextEditingController();
-  TextEditingController heightController =
-      TextEditingController();
-  TextEditingController widthController =
-      TextEditingController();
+  TextEditingController qttyPerGroupController = TextEditingController();
+  TextEditingController wholeSaleController = TextEditingController();
+  TextEditingController heightController = TextEditingController();
+  TextEditingController widthController = TextEditingController();
 
   @override
   void dispose() {
@@ -57,9 +48,7 @@ class _AddProductState extends State<AddProduct> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap:
-          () =>
-              FocusManager.instance.primaryFocus?.unfocus(),
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: PopScope(
         canPop: false,
         onPopInvokedWithResult: (didPop, result) {
@@ -86,8 +75,7 @@ class _AddProductState extends State<AddProduct> {
                 costController: costController,
                 sellingController: sellingController,
                 nameController: nameController,
-                qttyPerGroupController:
-                    qttyPerGroupController,
+                qttyPerGroupController: qttyPerGroupController,
                 wholeSaleController: wholeSaleController,
                 heightController: heightController,
                 widthController: widthController,
@@ -103,8 +91,7 @@ class _AddProductState extends State<AddProduct> {
                 costController: costController,
                 sellingController: sellingController,
                 nameController: nameController,
-                qttyPerGroupController:
-                    qttyPerGroupController,
+                qttyPerGroupController: qttyPerGroupController,
                 wholeSaleController: wholeSaleController,
                 heightController: heightController,
                 widthController: widthController,
@@ -117,16 +104,11 @@ class _AddProductState extends State<AddProduct> {
   }
 }
 
-void checkPop({
-  required BuildContext context,
-  bool? conditionX,
-  bool? didPop,
-}) {
+void checkPop({required BuildContext context, bool? conditionX, bool? didPop}) {
   if (didPop != null && didPop) {
     return;
   }
-  if ((conditionX != null && conditionX == true) ||
-      conditionX == null) {
+  if ((conditionX != null && conditionX == true) || conditionX == null) {
     showDialog(
       context: context,
       builder: (confirmDialog) {

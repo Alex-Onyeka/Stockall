@@ -30,12 +30,10 @@ class UnitSelectionWidget extends StatefulWidget {
   });
 
   @override
-  State<UnitSelectionWidget> createState() =>
-      _UnitSelectionWidgetState();
+  State<UnitSelectionWidget> createState() => _UnitSelectionWidgetState();
 }
 
-class _UnitSelectionWidgetState
-    extends State<UnitSelectionWidget> {
+class _UnitSelectionWidgetState extends State<UnitSelectionWidget> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -45,8 +43,7 @@ class _UnitSelectionWidgetState
           visible: widget.showSelectUnitText != false,
           child: Text(
             style: TextStyle(
-              fontSize:
-                  widget.theme.mobileTexts.b4.fontSize,
+              fontSize: widget.theme.mobileTexts.b4.fontSize,
               fontWeight: FontWeight.bold,
             ),
             'Select Unit:',
@@ -61,154 +58,116 @@ class _UnitSelectionWidgetState
                 (context) =>
                     widget.unitList
                         ?.map(
-                          (item) =>
-                              myPopUpMenuItemUnitSelection(
-                                unitList: widget.unitList,
-                                item: item,
-                                material: widget.material,
-                                storageProduct:
-                                    widget.storageProduct,
-                                product: widget.product,
-                                productionItem:
-                                    widget.productionItem,
-                                setUnitUuid:
-                                    widget.setUnitUuid,
-                                theme: widget.theme,
-                                unitUuid: widget.unitUuid,
-                              ),
+                          (item) => myPopUpMenuItemUnitSelection(
+                            unitList: widget.unitList,
+                            item: item,
+                            material: widget.material,
+                            storageProduct: widget.storageProduct,
+                            product: widget.product,
+                            productionItem: widget.productionItem,
+                            setUnitUuid: widget.setUnitUuid,
+                            theme: widget.theme,
+                            unitUuid: widget.unitUuid,
+                          ),
                         )
                         .toList() ??
                     widget.product
                         ?.getUnitsList()
                         .map(
-                          (item) =>
-                              myPopUpMenuItemUnitSelection(
-                                unitList: widget.unitList,
-                                item: item,
-                                material: widget.material,
-                                storageProduct:
-                                    widget.storageProduct,
-                                product: widget.product,
-                                productionItem:
-                                    widget.productionItem,
-                                setUnitUuid:
-                                    widget.setUnitUuid,
-                                theme: widget.theme,
-                                unitUuid: widget.unitUuid,
-                              ),
+                          (item) => myPopUpMenuItemUnitSelection(
+                            unitList: widget.unitList,
+                            item: item,
+                            material: widget.material,
+                            storageProduct: widget.storageProduct,
+                            product: widget.product,
+                            productionItem: widget.productionItem,
+                            setUnitUuid: widget.setUnitUuid,
+                            theme: widget.theme,
+                            unitUuid: widget.unitUuid,
+                          ),
                         )
                         .toList() ??
                     widget.productionItem
                         ?.getUnitsList()
                         .map(
-                          (item) =>
-                              myPopUpMenuItemUnitSelection(
-                                unitList: widget.unitList,
-                                item: item,
-                                material: widget.material,
-                                storageProduct:
-                                    widget.storageProduct,
-                                product: widget.product,
-                                productionItem:
-                                    widget.productionItem,
-                                setUnitUuid:
-                                    widget.setUnitUuid,
-                                theme: widget.theme,
-                                unitUuid: widget.unitUuid,
-                              ),
+                          (item) => myPopUpMenuItemUnitSelection(
+                            unitList: widget.unitList,
+                            item: item,
+                            material: widget.material,
+                            storageProduct: widget.storageProduct,
+                            product: widget.product,
+                            productionItem: widget.productionItem,
+                            setUnitUuid: widget.setUnitUuid,
+                            theme: widget.theme,
+                            unitUuid: widget.unitUuid,
+                          ),
                         )
                         .toList() ??
                     widget.material
                         ?.getUnitsList()
                         .map(
-                          (item) =>
-                              myPopUpMenuItemUnitSelection(
-                                unitList: widget.unitList,
-                                item: item,
-                                material: widget.material,
-                                product: widget.product,
-                                storageProduct:
-                                    widget.storageProduct,
-                                productionItem:
-                                    widget.productionItem,
-                                setUnitUuid:
-                                    widget.setUnitUuid,
-                                theme: widget.theme,
-                                unitUuid: widget.unitUuid,
-                              ),
+                          (item) => myPopUpMenuItemUnitSelection(
+                            unitList: widget.unitList,
+                            item: item,
+                            material: widget.material,
+                            product: widget.product,
+                            storageProduct: widget.storageProduct,
+                            productionItem: widget.productionItem,
+                            setUnitUuid: widget.setUnitUuid,
+                            theme: widget.theme,
+                            unitUuid: widget.unitUuid,
+                          ),
                         )
                         .toList() ??
                     widget.storageProduct
                         ?.getUnitsList()
                         .map(
-                          (item) =>
-                              myPopUpMenuItemUnitSelection(
-                                unitList: widget.unitList,
-                                item: item,
-                                material: widget.material,
-                                storageProduct:
-                                    widget.storageProduct,
-                                product: widget.product,
-                                productionItem:
-                                    widget.productionItem,
-                                setUnitUuid:
-                                    widget.setUnitUuid,
-                                theme: widget.theme,
-                                unitUuid: widget.unitUuid,
-                              ),
+                          (item) => myPopUpMenuItemUnitSelection(
+                            unitList: widget.unitList,
+                            item: item,
+                            material: widget.material,
+                            storageProduct: widget.storageProduct,
+                            product: widget.product,
+                            productionItem: widget.productionItem,
+                            setUnitUuid: widget.setUnitUuid,
+                            theme: widget.theme,
+                            unitUuid: widget.unitUuid,
+                          ),
                         )
                         .toList() ??
                     [],
             child: Container(
               padding: EdgeInsets.fromLTRB(10, 5, 5, 5),
               decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.grey.shade200,
-                ),
+                border: Border.all(color: Colors.grey.shade200),
                 borderRadius: BorderRadius.circular(3),
               ),
               child: Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     style: TextStyle(
-                      fontSize:
-                          widget
-                              .theme
-                              .mobileTexts
-                              .b3
-                              .fontSize,
+                      fontSize: widget.theme.mobileTexts.b3.fontSize,
                       fontWeight: FontWeight.bold,
                     ),
                     widget.unitList != null
                         ? widget.unitList
                                 ?.firstWhere(
-                                  (item) =>
-                                      item.uuid ==
-                                      widget.unitUuid,
+                                  (item) => item.uuid == widget.unitUuid,
                                 )
                                 .name ??
                             'Not Set'
                         : widget.product
-                                ?.getProductUnit(
-                                  unitUuid: widget.unitUuid,
-                                )
+                                ?.getProductUnit(unitUuid: widget.unitUuid)
                                 .name ??
                             widget.productionItem
-                                ?.getProductUnit(
-                                  unitUuid: widget.unitUuid,
-                                )
+                                ?.getProductUnit(unitUuid: widget.unitUuid)
                                 .name ??
                             widget.material
-                                ?.getProductUnit(
-                                  unitUuid: widget.unitUuid,
-                                )
+                                ?.getProductUnit(unitUuid: widget.unitUuid)
                                 .name ??
                             widget.storageProduct
-                                ?.getProductUnit(
-                                  unitUuid: widget.unitUuid,
-                                )
+                                ?.getProductUnit(unitUuid: widget.unitUuid)
                                 .name ??
                             'Name',
                   ),
@@ -238,18 +197,10 @@ PopupMenuItem myPopUpMenuItemUnitSelection({
   bool getBold() {
     if (unitList != null && item.uuid == unitUuid) {
       return true;
-    } else if ((product
-                ?.getProductUnit(unitUuid: unitUuid)
-                .uuid ??
-            productionItem
-                ?.getProductUnit(unitUuid: unitUuid)
-                .uuid ??
-            material
-                ?.getProductUnit(unitUuid: unitUuid)
-                .uuid ??
-            storageProduct
-                ?.getProductUnit(unitUuid: unitUuid)
-                .uuid) ==
+    } else if ((product?.getProductUnit(unitUuid: unitUuid).uuid ??
+            productionItem?.getProductUnit(unitUuid: unitUuid).uuid ??
+            material?.getProductUnit(unitUuid: unitUuid).uuid ??
+            storageProduct?.getProductUnit(unitUuid: unitUuid).uuid) ==
         item.uuid) {
       return true;
     } else {
@@ -260,18 +211,10 @@ PopupMenuItem myPopUpMenuItemUnitSelection({
   bool getVisibility() {
     if (unitList != null && item.uuid == unitUuid) {
       return true;
-    } else if ((product
-                ?.getProductUnit(unitUuid: unitUuid)
-                .uuid ??
-            productionItem
-                ?.getProductUnit(unitUuid: unitUuid)
-                .uuid ??
-            material
-                ?.getProductUnit(unitUuid: unitUuid)
-                .uuid ??
-            storageProduct
-                ?.getProductUnit(unitUuid: unitUuid)
-                .uuid) ==
+    } else if ((product?.getProductUnit(unitUuid: unitUuid).uuid ??
+            productionItem?.getProductUnit(unitUuid: unitUuid).uuid ??
+            material?.getProductUnit(unitUuid: unitUuid).uuid ??
+            storageProduct?.getProductUnit(unitUuid: unitUuid).uuid) ==
         item.uuid) {
       return true;
     } else {
@@ -292,19 +235,14 @@ PopupMenuItem myPopUpMenuItemUnitSelection({
             child: Text(
               style: TextStyle(
                 fontSize: theme.mobileTexts.b3.fontSize,
-                fontWeight:
-                    getBold() ? FontWeight.bold : null,
+                fontWeight: getBold() ? FontWeight.bold : null,
               ),
               item.name,
             ),
           ),
           Visibility(
             visible: getVisibility(),
-            child: Icon(
-              size: 17,
-              color: Colors.grey.shade700,
-              Icons.check,
-            ),
+            child: Icon(size: 17, color: Colors.grey.shade700, Icons.check),
           ),
         ],
       ),

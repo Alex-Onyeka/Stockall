@@ -14,12 +14,10 @@ class StorageItemHistoryPage extends StatefulWidget {
   });
 
   @override
-  State<StorageItemHistoryPage> createState() =>
-      _StorageItemHistoryPageState();
+  State<StorageItemHistoryPage> createState() => _StorageItemHistoryPageState();
 }
 
-class _StorageItemHistoryPageState
-    extends State<StorageItemHistoryPage> {
+class _StorageItemHistoryPageState extends State<StorageItemHistoryPage> {
   @override
   void initState() {
     super.initState();

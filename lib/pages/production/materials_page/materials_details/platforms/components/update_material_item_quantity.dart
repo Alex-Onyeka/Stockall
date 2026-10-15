@@ -18,19 +18,14 @@ Future<Object?> updateMaterialItemQuantity(
   return showGeneralDialog(
     context: context,
     pageBuilder: (context, animation, secondaryAnimation) {
-      return UpdateMaterialQuantityWidget(
-        materialClass: materialClass,
-      );
+      return UpdateMaterialQuantityWidget(materialClass: materialClass);
     },
   );
 }
 
 class UpdateMaterialQuantityWidget extends StatefulWidget {
   final MaterialClass materialClass;
-  const UpdateMaterialQuantityWidget({
-    super.key,
-    required this.materialClass,
-  });
+  const UpdateMaterialQuantityWidget({super.key, required this.materialClass});
 
   @override
   State<UpdateMaterialQuantityWidget> createState() =>
@@ -51,18 +46,11 @@ class _UpdateMaterialQuantityWidgetState
     return Scaffold(
       body: Center(
         child: GestureDetector(
-          onTap:
-              () =>
-                  FocusManager.instance.primaryFocus
-                      ?.unfocus(),
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: Container(
             decoration: BoxDecoration(color: Colors.white),
             child: Padding(
-              padding: const EdgeInsets.only(
-                left: 20.0,
-                top: 40,
-                right: 20,
-              ),
+              padding: const EdgeInsets.only(left: 20.0, top: 40, right: 20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -71,17 +59,10 @@ class _UpdateMaterialQuantityWidgetState
                     margin: EdgeInsets.only(bottom: 10),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(
-                        15,
-                      ),
+                      borderRadius: BorderRadius.circular(15),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color.fromARGB(
-                            39,
-                            4,
-                            1,
-                            41,
-                          ),
+                          color: const Color.fromARGB(39, 4, 1, 41),
                           blurRadius: 10,
                         ),
                       ],
@@ -90,60 +71,41 @@ class _UpdateMaterialQuantityWidgetState
                     child: Column(
                       children: [
                         Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Opacity(
                               opacity: 0,
                               child: IconButton(
-                                mouseCursor:
-                                    SystemMouseCursors
-                                        .click,
+                                mouseCursor: SystemMouseCursors.click,
                                 onPressed: () {},
                                 icon: Icon(Icons.clear),
                               ),
                             ),
                             Text(
                               style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b2
-                                        .fontSize,
+                                fontSize: theme.mobileTexts.b2.fontSize,
                                 fontWeight: FontWeight.bold,
                               ),
                               'Edit ${widget.materialClass.getProductUnit(unitUuid: unitUuid).name} Quantity',
                             ),
                             Builder(
                               builder: (context) {
-                                if (isEditQuantityLoading ==
-                                    true) {
+                                if (isEditQuantityLoading == true) {
                                   return SizedBox(
                                     height: 20,
                                     width: 20,
                                     child: CircularProgressIndicator(
-                                      color:
-                                          theme
-                                              .lightModeColor
-                                              .secColor200,
+                                      color: theme.lightModeColor.secColor200,
                                       strokeWidth: 3,
                                     ),
                                   );
                                 } else {
                                   return IconButton(
-                                    mouseCursor:
-                                        SystemMouseCursors
-                                            .click,
+                                    mouseCursor: SystemMouseCursors.click,
                                     onPressed: () {
-                                      Navigator.of(
-                                        context,
-                                      ).pop();
+                                      Navigator.of(context).pop();
                                     },
-                                    icon: Icon(
-                                      size: 20,
-                                      Icons.clear,
-                                    ),
+                                    icon: Icon(size: 20, Icons.clear),
                                   );
                                 }
                               },
@@ -157,16 +119,9 @@ class _UpdateMaterialQuantityWidgetState
                             Text(
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
+                                fontSize: theme.mobileTexts.b3.fontSize,
                               ),
-                              widget
-                                          .materialClass
-                                          .quantity ==
-                                      null
+                              widget.materialClass.quantity == null
                                   ? 'Quantity Not Set'
                                   : 'Current Quantity in ${widget.materialClass.getProductUnit(unitUuid: unitUuid).name}: ${formatLargeNumberDouble(widget.materialClass.getProductUnit(unitUuid: unitUuid).getQuantityEquivDivided(index: 3, context: context))}',
                             ),
@@ -174,16 +129,14 @@ class _UpdateMaterialQuantityWidgetState
                               onChanged: (value) {
                                 if (value.isEmpty) {
                                   setState(() {
-                                    quantityController
-                                        .text = '0';
+                                    quantityController.text = '0';
                                   });
                                 }
                               },
                               title:
                                   '${widget.materialClass.getProductUnit(unitUuid: unitUuid).name} Quantity',
                               hint: 'Enter Quantity Amount',
-                              controller:
-                                  quantityController,
+                              controller: quantityController,
                               theme: theme,
                             ),
                           ],
@@ -203,27 +156,23 @@ class _UpdateMaterialQuantityWidgetState
                           unitUuid: unitUuid,
                         ),
                         Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           spacing: 5,
                           children: [
                             Material(
                               color: Colors.transparent,
                               child: InkWell(
-                                mouseCursor:
-                                    SystemMouseCursors
-                                        .click,
+                                mouseCursor: SystemMouseCursors.click,
                                 onTap: () {
                                   setState(() {
                                     isAddToQuantity = true;
                                   });
                                 },
                                 child: Container(
-                                  padding:
-                                      EdgeInsets.symmetric(
-                                        horizontal: 6,
-                                        vertical: 6,
-                                      ),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 6,
+                                  ),
                                   child: Row(
                                     spacing: 6,
                                     children: [
@@ -232,39 +181,28 @@ class _UpdateMaterialQuantityWidgetState
                                           border: Border.all(
                                             color:
                                                 !isAddToQuantity
-                                                    ? Colors
-                                                        .grey
-                                                    : Colors
-                                                        .transparent,
+                                                    ? Colors.grey
+                                                    : Colors.transparent,
                                           ),
                                           color:
                                               isAddToQuantity
                                                   ? theme
                                                       .lightModeColor
                                                       .prColor250
-                                                  : Colors
-                                                      .transparent,
-                                          shape:
-                                              BoxShape
-                                                  .circle,
+                                                  : Colors.transparent,
+                                          shape: BoxShape.circle,
                                         ),
                                         child: Icon(
                                           size: 14,
-                                          color:
-                                              Colors.white,
+                                          color: Colors.white,
                                           Icons.check,
                                         ),
                                       ),
                                       Text(
                                         style: TextStyle(
                                           fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b4
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                              theme.mobileTexts.b4.fontSize,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                         'Add to Quantity',
                                       ),
@@ -276,20 +214,17 @@ class _UpdateMaterialQuantityWidgetState
                             Material(
                               color: Colors.transparent,
                               child: InkWell(
-                                mouseCursor:
-                                    SystemMouseCursors
-                                        .click,
+                                mouseCursor: SystemMouseCursors.click,
                                 onTap: () {
                                   setState(() {
                                     isAddToQuantity = false;
                                   });
                                 },
                                 child: Container(
-                                  padding:
-                                      EdgeInsets.symmetric(
-                                        vertical: 6,
-                                        horizontal: 6,
-                                      ),
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 6,
+                                    horizontal: 6,
+                                  ),
                                   child: Row(
                                     spacing: 5,
                                     children: [
@@ -298,39 +233,28 @@ class _UpdateMaterialQuantityWidgetState
                                           border: Border.all(
                                             color:
                                                 isAddToQuantity
-                                                    ? Colors
-                                                        .grey
-                                                    : Colors
-                                                        .transparent,
+                                                    ? Colors.grey
+                                                    : Colors.transparent,
                                           ),
                                           color:
                                               !isAddToQuantity
                                                   ? theme
                                                       .lightModeColor
                                                       .prColor250
-                                                  : Colors
-                                                      .transparent,
-                                          shape:
-                                              BoxShape
-                                                  .circle,
+                                                  : Colors.transparent,
+                                          shape: BoxShape.circle,
                                         ),
                                         child: Icon(
                                           size: 14,
-                                          color:
-                                              Colors.white,
+                                          color: Colors.white,
                                           Icons.check,
                                         ),
                                       ),
                                       Text(
                                         style: TextStyle(
                                           fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b4
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                              theme.mobileTexts.b4.fontSize,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                         'Replace Quantity',
                                       ),
@@ -342,10 +266,7 @@ class _UpdateMaterialQuantityWidgetState
                           ],
                         ),
                         SizedBox(height: 15),
-                        ItemCommentWidget(
-                          commentController:
-                              commentController,
-                        ),
+                        ItemCommentWidget(commentController: commentController),
                         SizedBox(height: 15),
                         MainButtonP(
                           themeProvider: theme,
@@ -355,73 +276,52 @@ class _UpdateMaterialQuantityWidgetState
                             final materialClasssProvider =
                                 returnMaterialsProvider();
 
-                            if (isEditQuantityLoading ==
-                                false) {
+                            if (isEditQuantityLoading == false) {
                               showDialog(
                                 context: safeContext,
                                 builder: (confirmDialog) {
                                   return ConfirmationAlert(
                                     theme: theme,
                                     message:
-                                        quantityController
-                                                    .text
-                                                    .isEmpty &&
+                                        quantityController.text.isEmpty &&
                                                 !isAddToQuantity
                                             ? 'You are about to empty your entire Materials Item stock, are you sure?'
                                             : 'Are you sure you want to proceed?',
                                     title:
-                                        quantityController
-                                                    .text
-                                                    .isEmpty &&
+                                        quantityController.text.isEmpty &&
                                                 !isAddToQuantity
                                             ? "Empty Stock?"
                                             : 'Proceed?',
                                     action: () async {
-                                      Navigator.of(
-                                        confirmDialog,
-                                      ).pop();
+                                      Navigator.of(confirmDialog).pop();
                                       setState(() {
-                                        isEditQuantityLoading =
-                                            true;
+                                        isEditQuantityLoading = true;
                                       });
                                       double setQuantity() {
                                         if (isAddToQuantity) {
-                                          return widget
-                                                  .materialClass
+                                          return widget.materialClass
                                                   .getProductUnit(
-                                                    unitUuid:
-                                                        unitUuid,
+                                                    unitUuid: unitUuid,
                                                   )
                                                   .getQuantityEquivMultiplied(
-                                                    index:
-                                                        3,
+                                                    index: 3,
                                                     newQuantity: double.parse(
-                                                      quantityController.text.replaceAll(
-                                                        ',',
-                                                        '',
-                                                      ),
+                                                      quantityController.text
+                                                          .replaceAll(',', ''),
                                                     ),
                                                   ) +
-                                              (widget
-                                                      .materialClass
-                                                      .quantity ??
+                                              (widget.materialClass.quantity ??
                                                   0);
                                         } else {
-                                          return widget
-                                              .materialClass
+                                          return widget.materialClass
                                               .getProductUnit(
-                                                unitUuid:
-                                                    unitUuid,
+                                                unitUuid: unitUuid,
                                               )
                                               .getQuantityEquivMultiplied(
                                                 index: 3,
                                                 newQuantity: double.parse(
-                                                  quantityController
-                                                      .text
-                                                      .replaceAll(
-                                                        ',',
-                                                        '',
-                                                      ),
+                                                  quantityController.text
+                                                      .replaceAll(',', ''),
                                                 ),
                                               );
                                         }
@@ -429,10 +329,7 @@ class _UpdateMaterialQuantityWidgetState
 
                                       bool isIncrement =
                                           setQuantity() >=
-                                          (widget
-                                                  .materialClass
-                                                  .quantity ??
-                                              0);
+                                          (widget.materialClass.quantity ?? 0);
                                       MaterialsItemHistory
                                       materialsItemHistory = MaterialsItemHistory(
                                         event:
@@ -442,182 +339,143 @@ class _UpdateMaterialQuantityWidgetState
                                                 : MaterialItemHistoryEventClass
                                                     .quantityUpdatedDecrease,
                                         isManaged:
-                                            widget
-                                                .materialClass
-                                                .isManaged,
+                                            widget.materialClass.isManaged,
                                         source:
                                             MaterialItemHistoryEventClass
                                                 .unKnownSource,
                                         primaryUnit:
-                                            widget
-                                                .materialClass
+                                            widget.materialClass
                                                 .getProductUnit()
                                                 .name,
                                         unit:
-                                            widget
-                                                .materialClass
+                                            widget.materialClass
                                                 .getProductUnit(
-                                                  unitUuid:
-                                                      unitUuid,
+                                                  unitUuid: unitUuid,
                                                 )
                                                 .name,
                                         shopId: shopId(),
                                         desc:
-                                            commentController
-                                                    .text
-                                                    .isNotEmpty
-                                                ? commentController
-                                                    .text
+                                            commentController.text.isNotEmpty
+                                                ? commentController.text
                                                 : 'Item Quantity Updated',
-                                        isIncreased:
-                                            isIncrement,
+                                        isIncreased: isIncrement,
                                         title:
                                             'Item Quantity ${isIncrement ? "Increased" : 'Reduced'}',
-                                        quantityChange: widget
-                                            .materialClass
-                                            .getProductUnit(
-                                              unitUuid:
-                                                  unitUuid,
-                                            )
+                                        quantityChange: widget.materialClass
+                                            .getProductUnit(unitUuid: unitUuid)
                                             .getQuantityEquivDivided(
                                               index: 3,
                                               newQuantity:
                                                   (setQuantity() -
-                                                      (widget.materialClass.quantity ??
+                                                      (widget
+                                                              .materialClass
+                                                              .quantity ??
                                                           0)),
                                             ),
                                         newValue: formatLargeNumberDouble(
-                                          widget
-                                              .materialClass
+                                          widget.materialClass
                                               .getProductUnit()
                                               .getQuantityEquivDivided(
                                                 index: 3,
-                                                newQuantity:
-                                                    setQuantity(),
+                                                newQuantity: setQuantity(),
                                               ),
                                         ),
                                         oldValue: formatLargeNumberDouble(
-                                          widget
-                                              .materialClass
+                                          widget.materialClass
                                               .getProductUnit()
                                               .getQuantityEquivDivided(
                                                 index: 3,
                                                 newQuantity:
-                                                    (widget.materialClass.quantity ??
+                                                    (widget
+                                                            .materialClass
+                                                            .quantity ??
                                                         0),
                                               ),
                                         ),
                                       );
 
-                                      await materialClasssProvider.updateMaterial(
-                                        isMultipleUpdate:
-                                            false,
-                                        materialsItemHistory:
-                                            materialsItemHistory,
-                                        includeQuantity:
-                                            true,
-                                        isIncrement:
-                                            isIncrement,
-                                        isQuantityUpdate:
-                                            true,
-                                        quantityChange:
-                                            (setQuantity() -
-                                                (widget
-                                                        .materialClass
-                                                        .quantity ??
-                                                    0)),
-                                        material: MaterialClass(
-                                          unitsList:
-                                              widget
-                                                  .materialClass
-                                                  .unitsList,
-                                          useGroupUnit:
-                                              widget
-                                                  .materialClass
-                                                  .useGroupUnit,
-                                          categories:
-                                              widget
-                                                  .materialClass
-                                                  .categories,
-                                          lowQtty:
-                                              widget
-                                                  .materialClass
-                                                  .lowQtty,
-                                          departmentName:
-                                              widget
-                                                  .materialClass
-                                                  .departmentName,
-                                          departmentUuid:
-                                              widget
-                                                  .materialClass
-                                                  .departmentUuid,
-                                          groupUnit:
-                                              widget
-                                                  .materialClass
-                                                  .groupUnit,
-                                          qttyPerGroup:
-                                              widget
-                                                  .materialClass
-                                                  .qttyPerGroup,
-                                          updatedAt:
-                                              DateTime.now(),
-                                          isManaged:
-                                              widget
-                                                  .materialClass
-                                                  .isManaged,
-                                          name:
-                                              widget
-                                                  .materialClass
-                                                  .name,
-                                          unit:
-                                              widget
-                                                  .materialClass
-                                                  .unit,
-                                          costPrice:
-                                              widget
-                                                  .materialClass
-                                                  .costPrice,
-                                          quantity:
-                                              setQuantity(),
-                                          shopId:
-                                              widget
-                                                  .materialClass
-                                                  .shopId,
-                                          barcode:
-                                              widget
-                                                  .materialClass
-                                                  .barcode,
-                                          // categoryUuid:
-                                          //     widget
-                                          //         .materialClass
-                                          //         .categoryUuid,
-                                          createdAt:
-                                              widget
-                                                  .materialClass
-                                                  .createdAt,
-                                          expiryDate:
-                                              widget
-                                                  .materialClass
-                                                  .expiryDate,
-                                          sizeType:
-                                              widget
-                                                  .materialClass
-                                                  .sizeType,
-                                          uuid:
-                                              widget
-                                                  .materialClass
-                                                  .uuid,
-                                        ),
-                                        oldMaterial:
-                                            widget
-                                                .materialClass,
-                                      );
+                                      await materialClasssProvider
+                                          .updateMaterial(
+                                            isMultipleUpdate: false,
+                                            materialsItemHistory:
+                                                materialsItemHistory,
+                                            includeQuantity: true,
+                                            isIncrement: isIncrement,
+                                            isQuantityUpdate: true,
+                                            quantityChange:
+                                                (setQuantity() -
+                                                    (widget
+                                                            .materialClass
+                                                            .quantity ??
+                                                        0)),
+                                            material: MaterialClass(
+                                              unitsList:
+                                                  widget
+                                                      .materialClass
+                                                      .unitsList,
+                                              useGroupUnit:
+                                                  widget
+                                                      .materialClass
+                                                      .useGroupUnit,
+                                              categories:
+                                                  widget
+                                                      .materialClass
+                                                      .categories,
+                                              lowQtty:
+                                                  widget.materialClass.lowQtty,
+                                              departmentName:
+                                                  widget
+                                                      .materialClass
+                                                      .departmentName,
+                                              departmentUuid:
+                                                  widget
+                                                      .materialClass
+                                                      .departmentUuid,
+                                              groupUnit:
+                                                  widget
+                                                      .materialClass
+                                                      .groupUnit,
+                                              qttyPerGroup:
+                                                  widget
+                                                      .materialClass
+                                                      .qttyPerGroup,
+                                              updatedAt: DateTime.now(),
+                                              isManaged:
+                                                  widget
+                                                      .materialClass
+                                                      .isManaged,
+                                              name: widget.materialClass.name,
+                                              unit: widget.materialClass.unit,
+                                              costPrice:
+                                                  widget
+                                                      .materialClass
+                                                      .costPrice,
+                                              quantity: setQuantity(),
+                                              shopId:
+                                                  widget.materialClass.shopId,
+                                              barcode:
+                                                  widget.materialClass.barcode,
+                                              // categoryUuid:
+                                              //     widget
+                                              //         .materialClass
+                                              //         .categoryUuid,
+                                              createdAt:
+                                                  widget
+                                                      .materialClass
+                                                      .createdAt,
+                                              expiryDate:
+                                                  widget
+                                                      .materialClass
+                                                      .expiryDate,
+                                              sizeType:
+                                                  widget.materialClass.sizeType,
+                                              uuid: widget.materialClass.uuid,
+                                            ),
+                                            oldMaterial: widget.materialClass,
+                                          );
 
-                                      if (safeContext
-                                          .mounted) {
-                                        Navigator.of(
-                                          safeContext,
-                                        ).pop();
+                                      if (safeContext.mounted) {
+                                        Navigator.of(safeContext).pop();
                                         setState(() {});
                                       }
                                     },

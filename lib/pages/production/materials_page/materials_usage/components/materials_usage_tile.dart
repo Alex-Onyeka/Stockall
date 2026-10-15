@@ -23,15 +23,12 @@ class MaterialsUsageTile extends StatefulWidget {
   final bool fromDetails;
 
   @override
-  State<MaterialsUsageTile> createState() =>
-      MaterialsUsageTileState();
+  State<MaterialsUsageTile> createState() => MaterialsUsageTileState();
 }
 
-class MaterialsUsageTileState
-    extends State<MaterialsUsageTile> {
+class MaterialsUsageTileState extends State<MaterialsUsageTile> {
   String cutLongText(String text) {
-    if (text.length >
-        (screenWidth(context) > mobileScreen ? 25 : 15)) {
+    if (text.length > (screenWidth(context) > mobileScreen ? 25 : 15)) {
       return '${text.substring(0, (screenWidth(context) > mobileScreen ? 25 : 15))}...';
     } else {
       return text;
@@ -88,19 +85,15 @@ class MaterialsUsageTileState
               spacing: 10,
               children: [
                 Visibility(
-                  visible:
-                      screenWidth(context) >
-                      mobileScreenSmall,
+                  visible: screenWidth(context) > mobileScreenSmall,
                   child: Container(
                     padding: EdgeInsets.all(5),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color:
-                          theme.lightModeColor.tertColor50,
+                      color: theme.lightModeColor.tertColor50,
                     ),
                     child: Icon(
-                      color:
-                          theme.lightModeColor.tertColor200,
+                      color: theme.lightModeColor.tertColor200,
                       size: 20,
                       Icons.border_horizontal_rounded,
                     ),
@@ -111,81 +104,50 @@ class MaterialsUsageTileState
                     children: [
                       Row(
                         spacing: 15,
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
                             child: Row(
                               spacing: 5,
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Expanded(
                                   child: Text(
                                     style: TextStyle(
-                                      fontWeight:
-                                          FontWeight.bold,
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: theme.mobileTexts.b2.fontSize,
                                     ),
-                                    (widget
-                                        .materialsUsage
-                                        .materialName),
+                                    (widget.materialsUsage.materialName),
                                   ),
                                 ),
                                 Row(
                                   children: [
                                     Text(
                                       style: TextStyle(
-                                        fontWeight:
-                                            FontWeight.bold,
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b2
-                                                .fontSize,
-                                        color:
-                                            theme
-                                                .lightModeColor
-                                                .secColor200,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: theme.mobileTexts.b2.fontSize,
+                                        color: theme.lightModeColor.secColor200,
                                       ),
                                       formatLargeNumberDouble(
-                                        widget
-                                            .materialsUsage
-                                            .quantity,
+                                        widget.materialsUsage.quantity,
                                       ),
                                     ),
                                     Visibility(
                                       visible:
-                                          screenWidth(
-                                            context,
-                                          ) >
+                                          screenWidth(context) >
                                           mobileScreenSmall,
                                       child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(
-                                              left: 5.0,
-                                            ),
+                                        padding: const EdgeInsets.only(
+                                          left: 5.0,
+                                        ),
                                         child: Text(
                                           style: TextStyle(
                                             fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b4
-                                                    .fontSize,
-                                            color:
-                                                Colors
-                                                    .grey
-                                                    .shade600,
+                                                theme.mobileTexts.b4.fontSize,
+                                            color: Colors.grey.shade600,
                                           ),
-                                          widget
-                                              .materialsUsage
-                                              .getUnit(),
+                                          widget.materialsUsage.getUnit(),
                                         ),
                                       ),
                                     ),
@@ -202,10 +164,7 @@ class MaterialsUsageTileState
                         ],
                       ),
                       SizedBox(height: 5),
-                      Divider(
-                        color: Colors.grey.shade400,
-                        thickness: 0.5,
-                      ),
+                      Divider(color: Colors.grey.shade400, thickness: 0.5),
                       Padding(
                         padding: const EdgeInsets.only(
                           // top: 5.0,
@@ -213,50 +172,30 @@ class MaterialsUsageTileState
                           right: 15,
                         ),
                         child: Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Expanded(
                               child: Row(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment
-                                        .start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 spacing: 5,
                                 children: [
                                   Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b4
-                                              .fontSize,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade600,
+                                      fontSize: theme.mobileTexts.b4.fontSize,
+                                      color: Colors.grey.shade600,
                                     ),
                                     'Cost:',
                                   ),
                                   Flexible(
                                     child: Text(
                                       style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b4
-                                                .fontSize,
-                                        color:
-                                            theme
-                                                .lightModeColor
-                                                .prColor300,
-                                        fontWeight:
-                                            FontWeight.bold,
+                                        fontSize: theme.mobileTexts.b4.fontSize,
+                                        color: theme.lightModeColor.prColor300,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                       formatMoneyBig(
                                         amount:
-                                            widget
-                                                .materialsUsage
+                                            widget.materialsUsage
                                                 .getTotalCost(),
                                         context: context,
                                       ),
@@ -270,41 +209,23 @@ class MaterialsUsageTileState
                               children: [
                                 Visibility(
                                   visible:
-                                      screenWidth(context) >
-                                      mobileScreenSmall,
+                                      screenWidth(context) > mobileScreenSmall,
                                   child: Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b4
-                                              .fontSize,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade600,
+                                      fontSize: theme.mobileTexts.b4.fontSize,
+                                      color: Colors.grey.shade600,
                                     ),
                                     'Date:',
                                   ),
                                 ),
                                 Text(
                                   style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b4
-                                            .fontSize,
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .prColor300,
-                                    fontWeight:
-                                        FontWeight.bold,
+                                    fontSize: theme.mobileTexts.b4.fontSize,
+                                    color: theme.lightModeColor.prColor300,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                   formatDateTimeTime(
-                                    widget
-                                            .materialsUsage
-                                            .createdAt ??
+                                    widget.materialsUsage.createdAt ??
                                         DateTime.now(),
                                   ),
                                 ),
@@ -355,9 +276,7 @@ class _MaterialUsageDetailsWidgetState
               children: [
                 ItemHistorySectionWidget(
                   title: 'Material Name',
-                  message:
-                      widget.materialsUsage?.materialName ??
-                      'Not Set',
+                  message: widget.materialsUsage?.materialName ?? 'Not Set',
                 ),
                 ItemHistorySectionWidget(
                   title: 'Quantity',
@@ -368,56 +287,37 @@ class _MaterialUsageDetailsWidgetState
                   title: 'Single Cost',
                   message: formatMoneyBig(
                     context: context,
-                    amount:
-                        widget
-                            .materialsUsage
-                            ?.originalCostPerItem ??
-                        0,
+                    amount: widget.materialsUsage?.originalCostPerItem ?? 0,
                   ),
                 ),
                 ItemHistorySectionWidget(
                   title: 'Total Cost',
                   message: formatMoneyBig(
                     context: context,
-                    amount:
-                        widget.materialsUsage
-                            ?.getTotalCost() ??
-                        0,
+                    amount: widget.materialsUsage?.getTotalCost() ?? 0,
                   ),
                 ),
                 ItemHistorySectionWidget(
                   title: 'Created Date',
                   message: formatDateWithTime(
-                    widget.materialsUsage?.createdAt ??
-                        DateTime.now(),
+                    widget.materialsUsage?.createdAt ?? DateTime.now(),
                   ),
                 ),
                 ItemHistorySectionWidget(
                   title: 'Creator',
-                  message:
-                      widget.materialsUsage?.staffName ??
-                      'Not Set',
+                  message: widget.materialsUsage?.staffName ?? 'Not Set',
                 ),
                 Visibility(
-                  visible:
-                      (widget
-                          .materialsUsage
-                          ?.departmentName) !=
-                      null,
+                  visible: (widget.materialsUsage?.departmentName) != null,
                   child: ItemHistorySectionWidget(
                     title: 'Department Name',
-                    message:
-                        widget
-                            .materialsUsage
-                            ?.departmentName ??
-                        'Not Set',
+                    message: widget.materialsUsage?.departmentName ?? 'Not Set',
                   ),
                 ),
               ],
             ),
           ),
-          if (widget.materialsUsage?.productionRecordUuid ==
-              null)
+          if (widget.materialsUsage?.productionRecordUuid == null)
             Row(
               spacing: 10,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -431,56 +331,43 @@ class _MaterialUsageDetailsWidgetState
                           bool updateInventory = false;
                           return StatefulBuilder(
                             builder:
-                                (
-                                  newContext,
-                                  setStatee,
-                                ) => DialogTemplate(
+                                (newContext, setStatee) => DialogTemplate(
                                   theme: theme,
                                   message:
                                       'You are about to delete this Usage Record, are you sure you want to proceed?',
-                                  title:
-                                      'Delete Usage Record?',
+                                  title: 'Delete Usage Record?',
                                   action: () async {
-                                    Navigator.of(
-                                      confirmDialog,
-                                    ).pop();
-                                    var res = await returnMaterialsUsageProvider()
-                                        .deleteProductionMaterialsUsage(
-                                          widget
-                                              .materialsUsage!,
-                                          updateInventory,
-                                          true,
-                                        );
+                                    Navigator.of(confirmDialog).pop();
+                                    var res =
+                                        await returnMaterialsUsageProvider()
+                                            .deleteProductionMaterialsUsage(
+                                              widget.materialsUsage!,
+                                              updateInventory,
+                                              true,
+                                            );
                                     if (res == 1) {
                                       await returnMaterialsUsageProvider()
                                           .getProductionMaterialsUsageOffline();
-                                      Navigator.of(
-                                        context,
-                                      ).pop();
+                                      Navigator.of(context).pop();
                                     }
                                   },
                                   widget: Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(
-                                          horizontal: 20.0,
-                                          vertical: 10,
-                                        ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20.0,
+                                      vertical: 10,
+                                    ),
                                     child: Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .spaceBetween,
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
                                           style: TextStyle(
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                           'Update Item Quantity?',
                                         ),
                                         MyToggleButton(
-                                          boolValue:
-                                              updateInventory,
+                                          boolValue: updateInventory,
                                           toggle: () {
                                             setStatee(() {
                                               updateInventory =
@@ -506,29 +393,23 @@ class _MaterialUsageDetailsWidgetState
                 Expanded(
                   child: EditButton(
                     action: () {
-                      if (returnMaterialsUsageActionProvider()
-                          .isCartEmpty()) {
+                      if (returnMaterialsUsageActionProvider().isCartEmpty()) {
                         showDialog(
                           context: context,
                           builder: (confirmContext) {
                             return ConfirmationAlert(
                               action: () async {
-                                var res = await returnMaterialsUsageActionProvider()
-                                    .editMaterialsUsageRecord(
-                                      record:
-                                          widget
-                                              .materialsUsage!,
-                                    );
+                                var res =
+                                    await returnMaterialsUsageActionProvider()
+                                        .editMaterialsUsageRecord(
+                                          record: widget.materialsUsage!,
+                                        );
                                 if (res == 1) {
-                                  Navigator.of(
-                                    confirmContext,
-                                  ).pop();
+                                  Navigator.of(confirmContext).pop();
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (
-                                        navContext,
-                                      ) {
+                                      builder: (navContext) {
                                         return CreateMaterialsUsagePage();
                                       },
                                     ),
@@ -548,8 +429,7 @@ class _MaterialUsageDetailsWidgetState
                           builder: (context) {
                             return InfoAlert(
                               theme: theme,
-                              message:
-                                  'Materials Cart it Not Empty.',
+                              message: 'Materials Cart it Not Empty.',
                               title: 'Cart Not Empty',
                             );
                           },
@@ -574,8 +454,7 @@ class _MaterialUsageDetailsWidgetState
           Visibility(
             visible:
                 !widget.fromDetails &&
-                (widget.materialsUsage?.materialUuid) !=
-                    null,
+                (widget.materialsUsage?.materialUuid) != null,
             child: MainButtonP(
               themeProvider: theme,
               action: () {
@@ -585,11 +464,7 @@ class _MaterialUsageDetailsWidgetState
                   MaterialPageRoute(
                     builder: (context) {
                       return MaterialsDetailsPage(
-                        materialUuid:
-                            widget
-                                .materialsUsage
-                                ?.materialUuid ??
-                            '',
+                        materialUuid: widget.materialsUsage?.materialUuid ?? '',
                       );
                     },
                   ),
@@ -627,12 +502,7 @@ class ItemHistorySectionWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: EdgeInsetsGeometry.fromLTRB(
-              10,
-              7,
-              10,
-              5,
-            ),
+            padding: EdgeInsetsGeometry.fromLTRB(10, 7, 10, 5),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(5),
@@ -645,8 +515,7 @@ class ItemHistorySectionWidget extends StatelessWidget {
                 Expanded(
                   child: Text(
                     style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b4.fontSize,
+                      fontSize: theme.mobileTexts.b4.fontSize,
                       fontWeight: FontWeight.bold,
                       color: Colors.grey.shade900,
                     ),
@@ -657,12 +526,7 @@ class ItemHistorySectionWidget extends StatelessWidget {
             ),
           ),
           Container(
-            padding: EdgeInsetsGeometry.fromLTRB(
-              10,
-              5,
-              10,
-              10,
-            ),
+            padding: EdgeInsetsGeometry.fromLTRB(10, 5, 10, 10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(2),
               color: Colors.grey.shade100,
@@ -672,8 +536,7 @@ class ItemHistorySectionWidget extends StatelessWidget {
                 Expanded(
                   child: Text(
                     style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b3.fontSize,
+                      fontSize: theme.mobileTexts.b3.fontSize,
                       fontWeight: FontWeight.normal,
                       color: Colors.grey.shade700,
                     ),

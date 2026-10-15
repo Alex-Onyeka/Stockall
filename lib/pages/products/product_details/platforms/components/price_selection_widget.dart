@@ -24,12 +24,10 @@ class PriceSelectionWidget extends StatefulWidget {
   });
 
   @override
-  State<PriceSelectionWidget> createState() =>
-      _PriceSelectionWidgetState();
+  State<PriceSelectionWidget> createState() => _PriceSelectionWidgetState();
 }
 
-class _PriceSelectionWidgetState
-    extends State<PriceSelectionWidget> {
+class _PriceSelectionWidgetState extends State<PriceSelectionWidget> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -39,8 +37,7 @@ class _PriceSelectionWidgetState
           visible: widget.showSelectPriceText != false,
           child: Text(
             style: TextStyle(
-              fontSize:
-                  widget.theme.mobileTexts.b4.fontSize,
+              fontSize: widget.theme.mobileTexts.b4.fontSize,
               fontWeight: FontWeight.bold,
             ),
             'Select Price:',
@@ -55,60 +52,46 @@ class _PriceSelectionWidgetState
                 (context) =>
                     widget.priceList
                         ?.map(
-                          (item) =>
-                              myPopUpMenuItemPriceSelection(
-                                priceList: widget.priceList,
-                                conversion:
-                                    widget.conversion,
-                                item: item,
-                                product: widget.product,
-                                setPriceUuid:
-                                    widget.setPriceUuid,
-                                theme: widget.theme,
-                                priceUuid: widget.priceUuid,
-                                context: context,
-                              ),
+                          (item) => myPopUpMenuItemPriceSelection(
+                            priceList: widget.priceList,
+                            conversion: widget.conversion,
+                            item: item,
+                            product: widget.product,
+                            setPriceUuid: widget.setPriceUuid,
+                            theme: widget.theme,
+                            priceUuid: widget.priceUuid,
+                            context: context,
+                          ),
                         )
                         .toList() ??
                     widget.product
                         ?.getPricesList()
                         .map(
-                          (item) =>
-                              myPopUpMenuItemPriceSelection(
-                                priceList: widget.priceList,
-                                item: item,
-                                product: widget.product,
-                                conversion:
-                                    widget.conversion,
-                                setPriceUuid:
-                                    widget.setPriceUuid,
-                                theme: widget.theme,
-                                priceUuid: widget.priceUuid,
-                                context: context,
-                              ),
+                          (item) => myPopUpMenuItemPriceSelection(
+                            priceList: widget.priceList,
+                            item: item,
+                            product: widget.product,
+                            conversion: widget.conversion,
+                            setPriceUuid: widget.setPriceUuid,
+                            theme: widget.theme,
+                            priceUuid: widget.priceUuid,
+                            context: context,
+                          ),
                         )
                         .toList() ??
                     [],
             child: Container(
               padding: EdgeInsets.fromLTRB(10, 5, 5, 5),
               decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.grey.shade200,
-                ),
+                border: Border.all(color: Colors.grey.shade200),
                 borderRadius: BorderRadius.circular(3),
               ),
               child: Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     style: TextStyle(
-                      fontSize:
-                          widget
-                              .theme
-                              .mobileTexts
-                              .b3
-                              .fontSize,
+                      fontSize: widget.theme.mobileTexts.b3.fontSize,
                       fontWeight: FontWeight.bold,
                     ),
                     widget.priceList != null
@@ -133,9 +116,7 @@ class _PriceSelectionWidgetState
   }
 
   ProductPricesClass? productPrice() {
-    return widget.product?.getProductPrice(
-      priceUuid: widget.priceUuid,
-    );
+    return widget.product?.getProductPrice(priceUuid: widget.priceUuid);
   }
 }
 
@@ -152,9 +133,7 @@ PopupMenuItem myPopUpMenuItemPriceSelection({
   bool getBold() {
     if (priceList != null && item.uuid == priceUuid) {
       return true;
-    } else if ((product
-            ?.getProductPrice(priceUuid: priceUuid)
-            .uuid) ==
+    } else if ((product?.getProductPrice(priceUuid: priceUuid).uuid) ==
         item.uuid) {
       return true;
     } else {
@@ -165,9 +144,7 @@ PopupMenuItem myPopUpMenuItemPriceSelection({
   bool getVisibility() {
     if (priceList != null && item.uuid == priceUuid) {
       return true;
-    } else if ((product
-            ?.getProductPrice(priceUuid: priceUuid)
-            .uuid) ==
+    } else if ((product?.getProductPrice(priceUuid: priceUuid).uuid) ==
         item.uuid) {
       return true;
     } else {
@@ -188,19 +165,14 @@ PopupMenuItem myPopUpMenuItemPriceSelection({
             child: Text(
               style: TextStyle(
                 fontSize: theme.mobileTexts.b3.fontSize,
-                fontWeight:
-                    getBold() ? FontWeight.bold : null,
+                fontWeight: getBold() ? FontWeight.bold : null,
               ),
               "${item.name ?? 'Name'}: ${formatMoneyBig(amount: item.priceValue * ((item.priceType == 2) ? 1 : (conversion ?? 1)), context: context)}",
             ),
           ),
           Visibility(
             visible: getVisibility(),
-            child: Icon(
-              size: 17,
-              color: Colors.grey.shade700,
-              Icons.check,
-            ),
+            child: Icon(size: 17, color: Colors.grey.shade700, Icons.check),
           ),
         ],
       ),
