@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/desktop_page_container.dart';
 import 'package:stockall/components/major/drawer_widget/my_drawer_widget.dart';
@@ -11,17 +10,13 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/report_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/components/report_list_tile.dart';
 import 'package:stockall/pages/report/customer_report/customer_report_page.dart';
 import 'package:stockall/pages/report/error_log/error_log.dart';
 import 'package:stockall/pages/report/events_log/events_log.dart';
 import 'package:stockall/pages/report/invoice_sales_report/invoice_sales_report.dart';
-import 'package:stockall/pages/report/item_sales/item_sales_report.dart';
-import 'package:stockall/pages/report/item_history_report/item_history_report_page.dart';
-import 'package:stockall/pages/report/items_report_analysis/items_report_analysis_page.dart';
-import 'package:stockall/pages/report/items_report_main/items_report_main_page.dart';
-import 'package:stockall/pages/report/product_report/product_report_page.dart';
-import 'package:stockall/pages/report/receipt_sales_report/receipt_sales_report.dart';
-import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/pages/report/items_report/items_report_page.dart';
+import 'package:stockall/pages/report/sales_report/sales_report_page.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class ReportDesktop extends StatefulWidget {
@@ -178,43 +173,12 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                   SizedBox(height: 10),
                                   Column(
                                     children: [
-                                      // Visibility(
-                                      //   visible:
-                                      //       !isStoreKeeper() &&
-                                      //       authorization(
-                                      //         authorized:
-                                      //             Authorizations()
-                                      //                 .viewGeneralReport,
-                                      //       ),
-                                      //   child: ReportListTile(
-                                      //     isActive: true,
-                                      //     theme: theme,
-                                      //     action: () {
-                                      //       Navigator.push(
-                                      //         context,
-                                      //         MaterialPageRoute(
-                                      //           builder: (
-                                      //             context,
-                                      //           ) {
-                                      //             return GeneralReportPage();
-                                      //           },
-                                      //         ),
-                                      //       );
-                                      //     },
-                                      //     subText:
-                                      //         'View a Summary of your business Report',
-                                      //     title:
-                                      //         'General Overview',
-                                      //   ),
-                                      // ),
                                       Visibility(
-                                        visible:
-                                            !isStoreKeeper() &&
-                                            authorization(
-                                              authorized:
-                                                  Authorizations()
-                                                      .viewReceiptSalesReport,
-                                            ),
+                                        visible: authorization(
+                                          authorized:
+                                              Authorizations()
+                                                  .viewItemsReport,
+                                        ),
                                         child: ReportListTile(
                                           isActive: true,
                                           theme: theme,
@@ -222,18 +186,52 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                builder: (
-                                                  context,
-                                                ) {
-                                                  return ReceiptSalesReport();
-                                                },
+                                                builder:
+                                                    (
+                                                      context,
+                                                    ) =>
+                                                        const ItemsReportPage(),
                                               ),
                                             );
                                           },
                                           subText:
-                                              'View a breakdown of your Receipt Sales, revenue and Profit',
+                                              'View your stock summary, items main report, analysis and history',
                                           title:
-                                              'Receipt Sales Report',
+                                              'Items Report',
+                                        ),
+                                      ),
+                                      Visibility(
+                                        visible:
+                                            !isStoreKeeper() &&
+                                            (authorization(
+                                                  authorized:
+                                                      Authorizations()
+                                                          .viewReceiptSalesReport,
+                                                ) ||
+                                                authorization(
+                                                  authorized:
+                                                      Authorizations()
+                                                          .viewItemSalesReport,
+                                                )),
+                                        child: ReportListTile(
+                                          isActive: true,
+                                          theme: theme,
+                                          action: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder:
+                                                    (
+                                                      context,
+                                                    ) =>
+                                                        const SalesReportPage(),
+                                              ),
+                                            );
+                                          },
+                                          subText:
+                                              'View a breakdown of your Receipt and Item Sales reports',
+                                          title:
+                                              'Sales Report',
                                         ),
                                       ),
                                       Visibility(
@@ -251,11 +249,11 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                builder: (
-                                                  context,
-                                                ) {
-                                                  return InvoiceSalesReport();
-                                                },
+                                                builder:
+                                                    (
+                                                      context,
+                                                    ) =>
+                                                        InvoiceSalesReport(),
                                               ),
                                             );
                                           },
@@ -263,143 +261,6 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                               'View a breakdown of your Invoice Sales, revenue and Profit',
                                           title:
                                               'Invoice Sales Report',
-                                        ),
-                                      ),
-                                      Visibility(
-                                        visible:
-                                            !isStoreKeeper() &&
-                                            authorization(
-                                              authorized:
-                                                  Authorizations()
-                                                      .viewItemSalesReport,
-                                            ),
-                                        child: ReportListTile(
-                                          isActive: true,
-                                          theme: theme,
-                                          action: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (
-                                                  context,
-                                                ) {
-                                                  return ItemSalesReport();
-                                                },
-                                              ),
-                                            );
-                                          },
-                                          subText:
-                                              'View a breakdown of your Items Sales, revenue and Profit',
-                                          title:
-                                              'Item Sales Report',
-                                        ),
-                                      ),
-                                      Visibility(
-                                        visible: authorization(
-                                          authorized:
-                                              Authorizations()
-                                                  .viewItemsReport,
-                                        ),
-                                        child: ReportListTile(
-                                          isActive: true,
-                                          theme: theme,
-                                          action: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (
-                                                  context,
-                                                ) {
-                                                  return ProductReportPage();
-                                                },
-                                              ),
-                                            );
-                                          },
-                                          subText:
-                                              'View a Summary of your Stock and Inventory',
-                                          title:
-                                              'Items Report',
-                                        ),
-                                      ),
-                                      Visibility(
-                                        visible: authorization(
-                                          authorized:
-                                              Authorizations()
-                                                  .viewItemsReport,
-                                        ),
-                                        child: ReportListTile(
-                                          isActive: true,
-                                          theme: theme,
-                                          action: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (
-                                                  context,
-                                                ) {
-                                                  return ItemsReportMainPage();
-                                                },
-                                              ),
-                                            );
-                                          },
-                                          subText:
-                                              'Search, filter and sort a detailed table of your inventory items',
-                                          title:
-                                              'Items Report Main',
-                                        ),
-                                      ),
-                                      Visibility(
-                                        visible: authorization(
-                                          authorized:
-                                              Authorizations()
-                                                  .viewItemsReport,
-                                        ),
-                                        child: ReportListTile(
-                                          isActive: true,
-                                          theme: theme,
-                                          action: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (
-                                                  context,
-                                                ) {
-                                                  return const ItemsReportAnalysisPage();
-                                                },
-                                              ),
-                                            );
-                                          },
-                                          subText:
-                                              'Aggregated stock position, inventory value, potential profit, and performance analysis',
-                                          title:
-                                              'Items Report Analysis',
-                                        ),
-                                      ),
-                                      Visibility(
-                                        visible: authorization(
-                                          authorized:
-                                              Authorizations()
-                                                  .viewItemsReport,
-                                        ),
-                                        child: ReportListTile(
-                                          isActive: true,
-                                          theme: theme,
-                                          action: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (
-                                                  context,
-                                                ) {
-                                                  return const ItemHistoryReportPage();
-                                                },
-                                              ),
-                                            );
-                                          },
-                                          subText:
-                                              'Search, filter and sort a detailed table of your inventory history records',
-                                          title:
-                                              'Item History Report',
                                         ),
                                       ),
                                       Visibility(
@@ -526,108 +387,6 @@ class _ReportDesktopState extends State<ReportDesktop> {
             ).showLoader(message: 'Logging Out...'),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class ReportListTile extends StatelessWidget {
-  final ThemeProvider theme;
-  final String title;
-  final String subText;
-  final Function() action;
-  final bool isActive;
-
-  const ReportListTile({
-    super.key,
-    required this.theme,
-    required this.title,
-    required this.subText,
-    required this.action,
-    required this.isActive,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: Ink(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color:
-                  isActive
-                      ? const Color.fromARGB(22, 0, 0, 0)
-                      : Colors.transparent,
-              blurRadius: 10,
-            ),
-          ],
-          borderRadius: BorderRadius.circular(5),
-          color: Colors.white,
-        ),
-        child: InkWell(
-          mouseCursor: SystemMouseCursors.click,
-          borderRadius: BorderRadius.circular(5),
-          onTap: action,
-          child: Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: 15,
-              vertical: 20,
-            ),
-            child: Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  child: Row(
-                    spacing: 10,
-                    children: [
-                      SvgPicture.asset(receiptIconSvg),
-                      Flexible(
-                        child: Column(
-                          spacing: 5,
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b2
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              title,
-                            ),
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
-                                color: Colors.grey,
-                                // fontWeight:
-                                //     FontWeight.bold,
-                              ),
-                              subText,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Icon(
-                  color: Colors.grey.shade400,
-                  size: 20,
-                  Icons.arrow_forward_ios_rounded,
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }
