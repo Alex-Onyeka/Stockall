@@ -8,6 +8,7 @@ import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/add_product_one/platforms/components/use_multiple_toggle_add_item_page.dart';
 import 'package:stockall/pages/products/add_product_one/product_prices_page/product_prices_page.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/edit_button.dart';
 
@@ -18,6 +19,7 @@ Widget priceSectionWidget(
 ) {
   var theme = returnTheme(context, listen: false);
   final costController = TextEditingController();
+  final sellingController = TextEditingController();
   return Container(
     padding: EdgeInsets.all(10),
     decoration: BoxDecoration(
@@ -58,6 +60,13 @@ Widget priceSectionWidget(
                       pricesListNew:
                           product.getPricesList(),
                     );
+                    returnData().initPriceUnitModes();
+                    final primaryValue =
+                        product.getPrimaryPrice().priceValue;
+                    sellingController.text =
+                        primaryValue != 0
+                            ? primaryValue.toString()
+                            : '';
                     showGeneralDialog(
                       context: context,
                       pageBuilder: (
@@ -227,43 +236,101 @@ Widget priceSectionWidget(
                                                             10,
                                                       ),
                                                     ),
-                                                    Padding(
-                                                      padding: const EdgeInsets.only(
-                                                        bottom:
-                                                            10.0,
-                                                      ),
-                                                      child: MainDropdown(
-                                                        valueSet:
-                                                            returnData().tempPricesList.isNotEmpty,
-                                                        onTap: () {
-                                                          Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder: (
+                                                    UseMultipleToggleAddItemPage(
+                                                      theme:
+                                                          theme,
+                                                      title:
+                                                          'Manage Multiple Prices',
+                                                      description:
+                                                          'Turn on to set more than one selling price for this item.',
+                                                      value:
+                                                          returnData(
+                                                            context:
                                                                 context,
-                                                              ) {
-                                                                return ProductPricesPage(
-                                                                  productUuid:
-                                                                      product.uuid ??
-                                                                      '',
-                                                                );
-                                                              },
-                                                            ),
-                                                          );
-                                                        },
-                                                        isOpen:
-                                                            returnData().tempPricesList.isNotEmpty,
-                                                        title:
-                                                            'Selling Price(s)',
-                                                        hint:
-                                                            returnData(
-                                                                  context:
-                                                                      context,
-                                                                ).tempPricesList.isEmpty
-                                                                ? 'Add Price(s)'
-                                                                : "${returnData(context: context).tempPricesList.firstWhere((item) => item.isPrimary).priceValue} and (${returnData(context: context).tempPricesList.length - 1}) More",
-                                                        theme:
-                                                            theme,
+                                                          ).useMultiplePrices,
+                                                      onTap: () {
+                                                        toggleMultiplePricesAction(
+                                                          context:
+                                                              context,
+                                                          sellingController:
+                                                              sellingController,
+                                                          productUuid:
+                                                              product.uuid ??
+                                                              '',
+                                                        );
+                                                      },
+                                                    ),
+                                                    SizedBox(
+                                                      height:
+                                                          10,
+                                                    ),
+                                                    Visibility(
+                                                      visible:
+                                                          !returnData(
+                                                            context:
+                                                                context,
+                                                          ).useMultiplePrices,
+                                                      child: Padding(
+                                                        padding: const EdgeInsets.only(
+                                                          bottom:
+                                                              10.0,
+                                                        ),
+                                                        child: MoneyTextfield(
+                                                          title:
+                                                              'Selling Price',
+                                                          hint:
+                                                              'Enter Selling Price',
+                                                          controller:
+                                                              sellingController,
+                                                          theme:
+                                                              theme,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Visibility(
+                                                      visible:
+                                                          returnData(
+                                                            context:
+                                                                context,
+                                                          ).useMultiplePrices,
+                                                      child: Padding(
+                                                        padding: const EdgeInsets.only(
+                                                          bottom:
+                                                              10.0,
+                                                        ),
+                                                        child: MainDropdown(
+                                                          valueSet:
+                                                              returnData().tempPricesList.isNotEmpty,
+                                                          onTap: () {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder: (
+                                                                  context,
+                                                                ) {
+                                                                  return ProductPricesPage(
+                                                                    productUuid:
+                                                                        product.uuid ??
+                                                                        '',
+                                                                  );
+                                                                },
+                                                              ),
+                                                            );
+                                                          },
+                                                          isOpen:
+                                                              returnData().tempPricesList.isNotEmpty,
+                                                          title:
+                                                              'Selling Price(s)',
+                                                          hint:
+                                                              returnData(
+                                                                    context:
+                                                                        context,
+                                                                  ).tempPricesList.isEmpty
+                                                                  ? 'Add Price(s)'
+                                                                  : "${returnData(context: context).tempPricesList.firstWhere((item) => item.isPrimary).priceValue} and (${returnData(context: context).tempPricesList.length - 1}) More",
+                                                          theme:
+                                                              theme,
+                                                        ),
                                                       ),
                                                     ),
                                                   ],
@@ -327,8 +394,13 @@ Widget priceSectionWidget(
                                                                       product.quantityType,
                                                                   unitsList:
                                                                       product.unitsList,
-                                                                  pricesList:
-                                                                      returnData().tempPricesList,
+                                                                  pricesList: dataProvider.getFinalPriceList(
+                                                                    productUuid:
+                                                                        product.uuid ??
+                                                                        '',
+                                                                    sellingText:
+                                                                        sellingController.text,
+                                                                  ),
                                                                   useGroupUnit:
                                                                       product.useGroupUnit,
                                                                   categories:
@@ -368,7 +440,14 @@ Widget priceSectionWidget(
                                                                       ) ??
                                                                       0,
                                                                   sellingPrice:
-                                                                      product.sellingPrice,
+                                                                      dataProvider.useMultiplePrices
+                                                                          ? product.sellingPrice
+                                                                          : double.tryParse(
+                                                                            sellingController.text.replaceAll(
+                                                                              ',',
+                                                                              '',
+                                                                            ),
+                                                                          ),
                                                                   wholeSalePrice:
                                                                       product.wholeSalePrice,
                                                                   quantity:

@@ -3027,6 +3027,8 @@ class DataProvider extends ChangeNotifier {
     clearUnit();
     clearTempUnitsList();
     clearTempPricesList();
+    useMultiplePrices = false;
+    useMultipleUnits = false;
     notifyListeners();
   }
 
@@ -3503,6 +3505,134 @@ class DataProvider extends ChangeNotifier {
       }
     }
     notifyListeners();
+  }
+
+  //
+  //
+  //
+  // S I N G L E  /  M U L T I P L E  P R I C E S  &  U N I T S
+
+  // Not stored on the product: derived from the temp lists
+  // when an item is opened (more than one entry = multiple).
+  bool useMultiplePrices = false;
+  bool useMultipleUnits = false;
+
+  void initPriceUnitModes() {
+    useMultiplePrices = ProductPricesClass.hasMultiple(
+      tempPricesList,
+    );
+    useMultipleUnits = ProductUnitsClass.hasMultiple(
+      tempUnitsList,
+    );
+    notifyListeners();
+  }
+
+  void setUseMultiplePrices(bool value) {
+    useMultiplePrices = value;
+    notifyListeners();
+  }
+
+  void setUseMultipleUnits(bool value) {
+    useMultipleUnits = value;
+    notifyListeners();
+  }
+
+  ProductPricesClass newPrimaryPrice(String productUuid) {
+    return ProductPricesClass(
+      uuid: uuidGen(),
+      staffUuid: currentUser().userId,
+      createdAt: DateTime.now(),
+      staffName: currentUser().name,
+      priceValue: 0,
+      name: 'Price',
+      isPrimary: true,
+      itemUuid: productUuid,
+      priceType: 1,
+    );
+  }
+
+  ProductUnitsClass newPrimaryUnit({
+    required String productUuid,
+    required bool isDimensional,
+  }) {
+    return ProductUnitsClass(
+      uuid: uuidGen(),
+      staffUuid: currentUser().userId,
+      createdAt: DateTime.now(),
+      staffName: currentUser().name,
+      conversion: 1,
+      name: 'Unit(s)',
+      isPrimary: true,
+      productUuid: productUuid,
+      dimensionType:
+          isDimensional ? ProductUnitsClass.sheetUnit : null,
+    );
+  }
+
+  // Writes the single price field into the primary price
+  // and keeps the other prices (used when switching to
+  // multiple prices).
+  void setPrimaryPriceValue({
+    required String productUuid,
+    required double priceValue,
+  }) {
+    var newList = ProductPricesClass.withPrimaryValue(
+      prices: tempPricesList,
+      priceValue: priceValue,
+      newPrice: () => newPrimaryPrice(productUuid),
+    );
+    tempPricesList
+      ..clear()
+      ..addAll(newList);
+    notifyListeners();
+  }
+
+  // Single unit mode: renames the one unit (same uuid).
+  void setSinglePrimaryUnit({
+    required String name,
+    required String productUuid,
+    required bool isDimensional,
+  }) {
+    var newList = ProductUnitsClass.withPrimaryName(
+      units: tempUnitsList,
+      name: name,
+      newUnit:
+          () => newPrimaryUnit(
+            productUuid: productUuid,
+            isDimensional: isDimensional,
+          ),
+    );
+    tempUnitsList
+      ..clear()
+      ..addAll(newList);
+    notifyListeners();
+  }
+
+  String? singleUnitName() {
+    return ProductUnitsClass.primaryOf(tempUnitsList)?.name;
+  }
+
+  List<ProductPricesClass> getFinalPriceList({
+    required String productUuid,
+    required String sellingText,
+  }) {
+    if (useMultiplePrices) {
+      return getTempPriceList();
+    }
+    return ProductPricesClass.singlePriceList(
+      prices: tempPricesList,
+      priceValue: double.tryParse(
+        sellingText.replaceAll(',', '').trim(),
+      ),
+      newPrice: () => newPrimaryPrice(productUuid),
+    );
+  }
+
+  List<ProductUnitsClass> getFinalUnitList() {
+    if (useMultipleUnits) {
+      return getTempUnitList();
+    }
+    return ProductUnitsClass.singleUnitList(tempUnitsList);
   }
 
   //

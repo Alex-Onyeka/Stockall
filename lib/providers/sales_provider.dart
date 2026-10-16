@@ -4173,6 +4173,21 @@ class SalesProvider extends ChangeNotifier {
   //
   //
   //
+  // The line's price, added back from the receipt line's snapshot
+  // if it was removed from the item. Units already come from the
+  // snapshot (convertReceiptToCartItems).
+  static TempProductClass editLineProduct({
+    required TempProductSaleRecord record,
+    required TempProductClass product,
+    void Function(String message)? onMissing,
+  }) {
+    return product.withLineSnapshot(
+      priceUuid: record.priceUuid,
+      snapshotPrices: record.pricesList,
+      onMissing: onMissing ?? (message) => mainLocalLog(message),
+    );
+  }
+
   // EDIT RECEIPT
   TempCartItem saleRecordToCartItem({
     required TempProductSaleRecord record,
@@ -4249,7 +4264,10 @@ class SalesProvider extends ChangeNotifier {
         newProduct.unitsList = record.getUnitListFinal();
         final cartItem = saleRecordToCartItem(
           record: newRecord,
-          product: newProduct,
+          product: editLineProduct(
+            record: newRecord,
+            product: newProduct,
+          ),
         );
         cartItems.add(cartItem);
       } else {
