@@ -9,12 +9,14 @@ class SelectProductQuantityTypeSection extends StatelessWidget {
   final Function(int index) switchQuantityType;
   final TextEditingController widthController;
   final TextEditingController heightController;
+  final bool showManageSalesWastage;
   const SelectProductQuantityTypeSection({
     super.key,
     required this.quantityType,
     required this.switchQuantityType,
     required this.widthController,
     required this.heightController,
+    this.showManageSalesWastage = true,
   });
 
   @override
@@ -65,7 +67,8 @@ class SelectProductQuantityTypeSection extends StatelessWidget {
                     ),
                   ],
                 ),
-                ManageItemWastage(theme: theme),
+                if (showManageSalesWastage)
+                  ManageItemWastage(theme: theme),
               ],
             ),
           ),

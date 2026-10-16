@@ -40,179 +40,353 @@ void unitsBottomSheet(
   BuildContext context,
   Function()? action,
 ) async {
+  final TextEditingController searchController =
+      TextEditingController();
+
   await showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    shape: RoundedRectangleBorder(
+    shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(
         top: Radius.circular(20),
       ),
     ),
     backgroundColor: Colors.white,
-    builder: (BuildContext context) {
-      return DraggableScrollableSheet(
-        expand: false,
-        initialChildSize: 0.9,
-        maxChildSize: 0.9,
-        minChildSize: 0.3,
-        builder: (context, scrollController) {
-          List<String> units =
-              returnData(context: context).units;
-          units.sort();
+    builder: (BuildContext sheetContext) {
+      return StatefulBuilder(
+        builder: (context, setModalState) {
+          return DraggableScrollableSheet(
+            expand: false,
+            initialChildSize: 0.9,
+            maxChildSize: 0.9,
+            minChildSize: 0.3,
+            builder: (context, scrollController) {
+              List<String> units = List<String>.from(
+                returnData(context: context).units,
+              )..sort();
 
-          return Container(
-            padding: const EdgeInsets.fromLTRB(
-              30,
-              15,
-              30,
-              45,
-            ),
-            child: Column(
-              children: [
-                Center(
-                  child: Container(
-                    height: 4,
-                    width: 70,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        5,
-                      ),
-                      color: Colors.grey.shade400,
-                    ),
-                  ),
+              final query =
+                  searchController.text
+                      .trim()
+                      .toLowerCase();
+              final filteredUnits =
+                  query.isEmpty
+                      ? units
+                      : units
+                          .where(
+                            (item) => item
+                                .toLowerCase()
+                                .contains(query),
+                          )
+                          .toList();
+
+              return Container(
+                padding: const EdgeInsets.fromLTRB(
+                  30,
+                  15,
+                  30,
+                  45,
                 ),
-                SizedBox(height: 30),
-                Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
+                child: Column(
                   children: [
-                    Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Units',
-                          style: TextStyle(
-                            fontSize:
-                                returnTheme(
-                                  context,
-                                ).mobileTexts.b1.fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
+                    Center(
+                      child: Container(
+                        height: 4,
+                        width: 70,
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(5),
+                          color: Colors.grey.shade400,
                         ),
-                        Text(
-                          'Select Item Unit',
-                          style: TextStyle(
-                            fontSize:
-                                returnTheme(
-                                  context,
-                                ).mobileTexts.b2.fontSize,
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Units',
+                              style: TextStyle(
+                                fontSize:
+                                    returnTheme(context)
+                                        .mobileTexts
+                                        .b1
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'Select Item Unit',
+                              style: TextStyle(
+                                fontSize:
+                                    returnTheme(context)
+                                        .mobileTexts
+                                        .b2
+                                        .fontSize,
+                              ),
+                            ),
+                          ],
+                        ),
+                        IconButton(
+                          mouseCursor:
+                              SystemMouseCursors.click,
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          icon: Icon(
+                            returnData(
+                                  context: context,
+                                ).unitValueSet
+                                ? Icons.check
+                                : Icons.clear_rounded,
                           ),
                         ),
                       ],
                     ),
-                    IconButton(
-                      mouseCursor: SystemMouseCursors.click,
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        FocusScope.of(context).unfocus();
-                      },
-                      icon: Icon(
-                        returnData(
-                              context: context,
-                            ).unitValueSet
-                            ? Icons.check
-                            : Icons.clear_rounded,
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      height: 38,
+                      child: TextField(
+                        controller: searchController,
+                        onChanged: (value) {
+                          setModalState(() {});
+                        },
+                        onTap: () {
+                          if (returnShopProvider()
+                              .isOnScreenKeyboardOn()) {
+                            showOnScreenKeyboard();
+                          }
+                        },
+                        style: TextStyle(
+                          fontSize:
+                              returnTheme(
+                                context,
+                                listen: false,
+                              ).mobileTexts.b3.fontSize,
+                        ),
+                        decoration: InputDecoration(
+                          isDense: true,
+                          hintText: 'Search units...',
+                          hintStyle: TextStyle(
+                            fontSize:
+                                returnTheme(
+                                  context,
+                                  listen: false,
+                                ).mobileTexts.b3.fontSize,
+                            color: Colors.grey.shade500,
+                          ),
+                          prefixIcon: Icon(
+                            Icons.search,
+                            size: 18,
+                            color: Colors.grey.shade600,
+                          ),
+                          suffixIcon:
+                              searchController
+                                      .text
+                                      .isNotEmpty
+                                  ? InkWell(
+                                    mouseCursor:
+                                        SystemMouseCursors
+                                            .click,
+                                    onTap: () {
+                                      searchController
+                                          .clear();
+                                      setModalState(() {});
+                                    },
+                                    child: Icon(
+                                      Icons.clear,
+                                      size: 16,
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade600,
+                                    ),
+                                  )
+                                  : null,
+                          contentPadding:
+                              const EdgeInsets.symmetric(
+                                vertical: 8,
+                                horizontal: 10,
+                              ),
+                          filled: true,
+                          fillColor: Colors.grey.shade100,
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.grey.shade300,
+                            ),
+                            borderRadius:
+                                BorderRadius.circular(8),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.grey.shade300,
+                            ),
+                            borderRadius:
+                                BorderRadius.circular(8),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color:
+                                  returnTheme(
+                                        context,
+                                        listen: false,
+                                      )
+                                      .lightModeColor
+                                      .prColor300,
+                            ),
+                            borderRadius:
+                                BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(10),
+                          border: Border.all(
+                            color: Colors.grey.shade300,
+                          ),
+                        ),
+                        child:
+                            filteredUnits.isEmpty
+                                ? Center(
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.all(
+                                          20.0,
+                                        ),
+                                    child: Text(
+                                      'No units found',
+                                      style: TextStyle(
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade500,
+                                        fontSize:
+                                            returnTheme(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                )
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                : ListView.builder(
+                                  controller:
+                                      scrollController,
+                                  itemCount:
+                                      filteredUnits.length,
+                                  itemBuilder: (
+                                    context,
+                                    index,
+                                  ) {
+                                    String unit =
+                                        filteredUnits[index];
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                        border: Border(
+                                          top: BorderSide(
+                                            color:
+                                                Colors
+                                                    .grey
+                                                    .shade300,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Material(
+                                        color: Colors.white,
+                                        child: ListTile(
+                                          title: Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  returnTheme(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).mobileTexts.b2.fontSize,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                            ),
+                                            unit,
+                                          ),
+                                          onTap: () {
+                                            returnData()
+                                                .selectUnit(
+                                                  unit,
+                                                );
+                                            setModalState(
+                                              () {},
+                                            );
+                                          },
+                                          trailing: Checkbox(
+                                            shape: const CircleBorder(
+                                              side:
+                                                  BorderSide(),
+                                            ),
+                                            side: BorderSide(
+                                              color:
+                                                  Colors
+                                                      .grey
+                                                      .shade400,
+                                              width: 1.2,
+                                            ),
+                                            activeColor:
+                                                returnTheme(
+                                                      context,
+                                                    )
+                                                    .lightModeColor
+                                                    .prColor250,
+                                            value:
+                                                returnData(
+                                                  context:
+                                                      context,
+                                                ).selectedUnit ==
+                                                unit,
+                                            onChanged: (
+                                              value,
+                                            ) {
+                                              returnData()
+                                                  .selectUnit(
+                                                    unit,
+                                                  );
+                                              setModalState(
+                                                () {},
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 10),
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        10,
-                      ),
-                      border: Border.all(
-                        color: Colors.grey.shade300,
-                      ),
-                    ),
-                    child: ListView.builder(
-                      controller: scrollController,
-                      itemCount: units.length,
-                      itemBuilder: (context, index) {
-                        String unit = units[index];
-                        return Container(
-                          decoration: BoxDecoration(
-                            border: Border(
-                              top: BorderSide(
-                                color: Colors.grey.shade300,
-                              ),
-                            ),
-                          ),
-                          child: Material(
-                            color: Colors.white,
-                            child: ListTile(
-                              title: Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      returnTheme(
-                                            context,
-                                            listen: false,
-                                          )
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                units[index],
-                              ),
-                              onTap: () {
-                                returnData().selectUnit(
-                                  unit,
-                                );
-                              },
-                              trailing: Checkbox(
-                                shape: CircleBorder(
-                                  side: BorderSide(),
-                                ),
-                                side: BorderSide(
-                                  color:
-                                      Colors.grey.shade400,
-                                  width: 1.2,
-                                ),
-                                activeColor:
-                                    returnTheme(context)
-                                        .lightModeColor
-                                        .prColor250,
-                                value:
-                                    returnData(
-                                      context: context,
-                                    ).selectedUnit ==
-                                    unit,
-                                onChanged: (value) {
-                                  returnData().selectUnit(
-                                    unit,
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              );
+            },
           );
         },
       );
     },
   );
-  action!();
+  searchController.dispose();
+  if (action != null) {
+    action();
+  }
 }
 
 void groupUnitsBottomSheet(
@@ -1638,45 +1812,42 @@ void selectProductSales({
   // read it, so they match the cart line.
   TempCartItem previewLine() {
     return cartItem.previewWith(
-          quantity: qqty,
-          unitUuid: unitUuid,
-          priceUuid: priceUuid,
-          units: tempUnitList,
-          prices: tempPriceList,
-          width: resolvedWidth(),
-          height: resolvedHeight(),
-          customPrice:
-              priceController.text.isNotEmpty
-                  ? double.tryParse(
-                    priceController.text.replaceAll(
-                      ',',
-                      '',
-                    ),
-                  )
-                  : null,
-          setTotalPrice:
-              returnSalesProvider().setTotalPrice,
-          wastageAmount:
-              showWastage()
-                  ? double.tryParse(
-                    wastageController.text
-                        .replaceAll(',', '')
-                        .trim(),
-                  )
-                  : cartItem.wastageAmount,
-          isPercentageWastage:
-              showWastage()
-                  ? isPercentageWastage
-                  : cartItem.isPercentageWastage,
-          wastageUnitUuid:
-              showWastage()
-                  ? selectedWastageUnit()
-                  : cartItem.wastageUnitUuid,
-        );
+      quantity: qqty,
+      unitUuid: unitUuid,
+      priceUuid: priceUuid,
+      units: tempUnitList,
+      prices: tempPriceList,
+      width: resolvedWidth(),
+      height: resolvedHeight(),
+      customPrice:
+          priceController.text.isNotEmpty
+              ? double.tryParse(
+                priceController.text.replaceAll(',', ''),
+              )
+              : null,
+      setTotalPrice: returnSalesProvider().setTotalPrice,
+      wastageAmount:
+          showWastage()
+              ? double.tryParse(
+                wastageController.text
+                    .replaceAll(',', '')
+                    .trim(),
+              )
+              : cartItem.wastageAmount,
+      isPercentageWastage:
+          showWastage()
+              ? isPercentageWastage
+              : cartItem.isPercentageWastage,
+      wastageUnitUuid:
+          showWastage()
+              ? selectedWastageUnit()
+              : cartItem.wastageUnitUuid,
+    );
   }
 
   // Quantity taken from stock and billed: area + wastage.
-  double billedQuantity() => previewLine().getStockQuantity();
+  double billedQuantity() =>
+      previewLine().getStockQuantity();
 
   // Priced by the same totalCost() the cart line will use.
   String formatSellingPrice(TempCartItem cartItem) {
@@ -2465,18 +2636,21 @@ void selectProductSales({
                                       'Wastage Unit:',
                                     ),
                                     UnitSelectionWidget(
-                                      unitList: tempUnitList,
+                                      unitList:
+                                          tempUnitList,
                                       product: null,
                                       storageProduct: null,
                                       productionItem: null,
                                       material: null,
                                       theme: theme,
-                                      showSelectUnitText: false,
+                                      showSelectUnitText:
+                                          false,
                                       unitUuid:
                                           selectedWastageUnit(),
                                       setUnitUuid: (d) {
                                         setState(() {
-                                          wastageUnitUuid = d;
+                                          wastageUnitUuid =
+                                              d;
                                         });
                                       },
                                     ),
@@ -3194,7 +3368,8 @@ void selectProductSales({
                                     action: (value) {
                                       // Wastage is only a target
                                       // while its field is shown.
-                                      if (currentFocus == 5 &&
+                                      if (currentFocus ==
+                                              5 &&
                                           !showWastage()) {
                                         currentFocus = 1;
                                       }

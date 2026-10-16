@@ -10,11 +10,10 @@ import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/main_dropdown.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/calculations.dart';
-import 'package:stockall/constants/functions.dart';
-import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/platforms/components/select_product_quantity_type_section.dart';
+import 'package:stockall/pages/products/add_product_one/platforms/components/use_multiple_toggle_add_item_page.dart';
 import 'package:stockall/pages/products/add_product_one/product_units_page/product_units_page.dart';
 import 'package:stockall/pages/products/storage_page/add_storage_item/components/storage_dimension_rules.dart';
 
@@ -103,7 +102,7 @@ class _AddStorageItemDesktopState extends State<AddStorageItemDesktop> {
 
               final dataProvider = returnStorageProductProvider();
               var product = TempStorageProducts(
-                unitsList: returnData().getTempUnitList(),
+                unitsList: returnData().getFinalUnitList(),
                 useGroupUnit: returnData().useGroupUnit,
                 shopId: shopId(),
                 name: widget.nameController.text.trim(),
@@ -113,7 +112,11 @@ class _AddStorageItemDesktopState extends State<AddStorageItemDesktop> {
                   widget.qttyPerGroupController.text.replaceAll(',', ''),
                 ),
                 quantity: null,
-                unit: returnData().selectedUnit,
+                unit:
+                    (returnData().useMultipleUnits
+                        ? returnData().selectedUnit
+                        : returnData().singleUnitName()) ??
+                    'Unit(s)',
                 updatedAt: DateTime.now(),
                 uuid: createdProductUuid,
                 costPrice: double.tryParse(
@@ -219,13 +222,17 @@ class _AddStorageItemDesktopState extends State<AddStorageItemDesktop> {
                 isQuantityUpdate: false,
                 quantityChange: null,
                 product: TempStorageProducts(
-                  unitsList: returnData().getTempUnitList(),
+                  unitsList: returnData().getFinalUnitList(),
                   useGroupUnit: returnData().useGroupUnit,
                   createdAt: widget.storageProduct?.createdAt,
                   updatedAt: DateTime.now(),
                   uuid: createdProductUuid,
                   name: widget.nameController.text.trim(),
-                  unit: dataProvider.selectedUnit ?? 'Unit(s)',
+                  unit:
+                      (dataProvider.useMultipleUnits
+                          ? dataProvider.selectedUnit
+                          : dataProvider.singleUnitName()) ??
+                      'Unit(s)',
                   groupUnit: dataProvider.selectedGroupUnit,
                   qttyPerGroup:
                       widget.qttyPerGroupController.text.isNotEmpty
@@ -288,16 +295,13 @@ class _AddStorageItemDesktopState extends State<AddStorageItemDesktop> {
   @override
   void initState() {
     super.initState();
-
+    if (widget.storageProduct == null) {
+      createdProductUuid = uuidGen();
+    } else {
+      createdProductUuid = widget.storageProduct?.uuid;
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       clearFields();
-      if (widget.storageProduct == null) {
-        setState(() {
-          createdProductUuid = uuidGen();
-        });
-      } else {
-        createdProductUuid = widget.storageProduct?.uuid;
-      }
     });
   }
 
@@ -309,6 +313,7 @@ class _AddStorageItemDesktopState extends State<AddStorageItemDesktop> {
         returnData().clearFields(setIsManaged: false);
       }
     });
+    returnData().manageWastage = false;
     if (widget.storageProduct != null) {
       widget.nameController.text = widget.storageProduct?.name ?? '';
       returnData().selectUnit(widget.storageProduct!.unit ?? 'Unit(s)');
@@ -318,6 +323,7 @@ class _AddStorageItemDesktopState extends State<AddStorageItemDesktop> {
         unitsListNew: widget.storageProduct?.getUnitsList() ?? [],
         productUuid: createdProductUuid,
       );
+      returnData().initPriceUnitModes();
       returnData().useGroupUnit = widget.storageProduct?.useGroupUnit ?? false;
       widget.qttyPerGroupController.text =
           widget.storageProduct!.qttyPerGroup != null
@@ -415,62 +421,127 @@ class _AddStorageItemDesktopState extends State<AddStorageItemDesktop> {
                                     },
                                     widthController:
                                         widget.widthController,
+                                    showManageSalesWastage: false,
                                   ),
                                   Visibility(
-                                    visible: authorization(
-                                      authorized:
-                                          Authorizations().manageMultipleUnits,
-                                    ),
+                                    visible: canSeeItemUnit(),
                                     child: Padding(
-                                      padding: const EdgeInsets.only(
-                                        bottom: 10.0,
-                                      ),
-                                      child: SubWrapper(
-                                        isVisible:
-                                            !ItemsAuthAction()
-                                                .applyVariationsAction(
-                                                  context: context,
+                                      padding:
+                                          const EdgeInsets.only(
+                                            bottom: 10.0,
+                                          ),
+                                      child: Column(
+                                        children: [
+                                          UseMultipleToggleAddItemPage(
+                                            theme: theme,
+                                            title:
+                                                'Use Multiple Units',
+                                            description:
+                                                'Turn on to sell or count this item in more than one unit (e.g. Bottle and Crate).',
+                                            value:
+                                                returnData(
+                                                  context:
+                                                      context,
+                                                ).useMultipleUnits,
+                                            onTap: () {
+                                              toggleMultipleUnitsAction(
+                                                context:
+                                                    context,
+                                              );
+                                            },
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          SubWrapper(
+                                            isVisible:
+                                                !itemUnitAuthAction(
+                                                  context:
+                                                      context,
                                                 ),
-                                        mainWidget: MainDropdown(
-                                          valueSet:
-                                              returnData()
-                                                  .tempUnitsList
-                                                  .isNotEmpty,
-                                          onTap: () {
-                                            ItemsAuthAction().applyVariationsAction(
-                                              context: context,
-                                              action: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) {
-                                                      return ProductUnitsPage(
-                                                        productUuid:
-                                                            createdProductUuid ??
-                                                            '',
-                                                        isDimensional:
-                                                            quantityType ==
-                                                            2,
-                                                      );
-                                                    },
-                                                  ),
-                                                );
-                                              },
-                                            );
-                                          },
-                                          isOpen:
-                                              returnData()
-                                                  .tempUnitsList
-                                                  .isNotEmpty,
-                                          title: 'Item Unit(s) (Optional)',
-                                          hint:
-                                              returnData(
-                                                    context: context,
-                                                  ).tempUnitsList.isEmpty
-                                                  ? 'Unit Not Set'
-                                                  : "${returnData(context: context).tempUnitsList.firstWhere((item) => item.isPrimary).name} and (${returnData(context: context).tempUnitsList.length - 1}) More",
-                                          theme: theme,
-                                        ),
+                                            mainWidget:
+                                                returnData(
+                                                      context:
+                                                          context,
+                                                    ).useMultipleUnits
+                                                    ? MainDropdown(
+                                                      valueSet:
+                                                          returnData()
+                                                              .tempUnitsList
+                                                              .isNotEmpty,
+                                                      onTap: () {
+                                                        itemUnitAuthAction(
+                                                          context:
+                                                              context,
+                                                          action: () {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder: (
+                                                                  context,
+                                                                ) {
+                                                                  return ProductUnitsPage(
+                                                                    productUuid:
+                                                                        createdProductUuid ??
+                                                                        '',
+                                                                    isDimensional:
+                                                                        quantityType ==
+                                                                        2,
+                                                                  );
+                                                                },
+                                                              ),
+                                                            );
+                                                          },
+                                                        );
+                                                      },
+                                                      isOpen:
+                                                          returnData()
+                                                              .tempUnitsList
+                                                              .isNotEmpty,
+                                                      title:
+                                                          'Item Unit(s) (Optional)',
+                                                      hint:
+                                                          returnData(
+                                                                context:
+                                                                    context,
+                                                              ).tempUnitsList.isEmpty
+                                                              ? 'Unit Not Set'
+                                                              : "${returnData(context: context).tempUnitsList.firstWhere((item) => item.isPrimary).name} and (${returnData(context: context).tempUnitsList.length - 1}) More",
+                                                      theme:
+                                                          theme,
+                                                    )
+                                                    : MainDropdown(
+                                                      valueSet:
+                                                          returnData()
+                                                              .tempUnitsList
+                                                              .isNotEmpty,
+                                                      onTap: () {
+                                                        selectSingleUnitAction(
+                                                          context:
+                                                              context,
+                                                          productUuid:
+                                                              createdProductUuid ??
+                                                              '',
+                                                          isDimensional:
+                                                              quantityType ==
+                                                              2,
+                                                        );
+                                                      },
+                                                      isOpen:
+                                                          false,
+                                                      title:
+                                                          'Item Unit (Optional)',
+                                                      hint:
+                                                          returnData(
+                                                            context:
+                                                                context,
+                                                          ).singleUnitName() ??
+                                                          'Unit Not Set',
+                                                      theme:
+                                                          theme,
+                                                    ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
