@@ -586,6 +586,22 @@ class OrdersProvider extends ChangeNotifier {
     );
   }
 
+  // The line's unit and price, added back from the order line's
+  // snapshot if they were removed from the item.
+  static TempProductClass editLineProduct({
+    required OrderItems record,
+    required TempProductClass product,
+    void Function(String message)? onMissing,
+  }) {
+    return product.withLineSnapshot(
+      unitUuids: [record.unitUuid],
+      snapshotUnits: record.unitsList,
+      priceUuid: record.priceUuid,
+      snapshotPrices: record.pricesList,
+      onMissing: onMissing ?? (message) => mainLocalLog(message),
+    );
+  }
+
   // EDIT Order
   TempCartItem saleRecordToCartItem({
     required OrderItems record,
@@ -650,7 +666,10 @@ class OrdersProvider extends ChangeNotifier {
         }
         final cartItem = saleRecordToCartItem(
           record: newRecord,
-          product: product.first,
+          product: editLineProduct(
+            record: newRecord,
+            product: product.first,
+          ),
         );
         cartItems.add(cartItem);
       } else {
