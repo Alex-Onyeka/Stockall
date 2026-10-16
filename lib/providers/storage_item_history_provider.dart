@@ -104,28 +104,15 @@ class StorageItemHistoryProvider with ChangeNotifier {
         (a, b) => b.createdAt!.compareTo(a.createdAt!),
       );
       return departmentStorageItemHistories();
-    } else if (dateSet != null) {
-      return departmentStorageItemHistories()
-          .where(
-            (itemHistory) =>
-                !itemHistory.createdAt!.isBefore(
-                  fourAm(dateSet!),
-                ) &&
-                !itemHistory.createdAt!.isAfter(
-                  fourAmNextDay(dateSet!),
-                ),
-          )
-          .toList();
     } else {
       return departmentStorageItemHistories()
           .where(
-            (update) =>
-                ((!update.createdAt!.isBefore(
-                      fourAm(rangeStartDate!),
-                    )) &&
-                    (!update.createdAt!.isAfter(
-                      fourAmNextDay(rangeEndDate!),
-                    ))),
+            (itemHistory) => isDateTimeInBusinessWindow(
+              dateTime: itemHistory.createdAt,
+              dateSet: dateSet,
+              rangeStartDate: rangeStartDate,
+              rangeEndDate: rangeEndDate,
+            ),
           )
           .toList();
     }

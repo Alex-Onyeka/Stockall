@@ -260,6 +260,8 @@ class ItemsReportFilters {
   double? sellingMax;
   double? costMin;
   double? costMax;
+  double? quantityMin;
+  double? quantityMax;
   StockLevelFilter stockLevel = StockLevelFilter.all;
 
   /// null = all, true = managed, false = un-managed.
@@ -270,6 +272,7 @@ class ItemsReportFilters {
       (departmentKey != null ? 1 : 0) +
       (sellingMin != null || sellingMax != null ? 1 : 0) +
       (costMin != null || costMax != null ? 1 : 0) +
+      (quantityMin != null || quantityMax != null ? 1 : 0) +
       (stockLevel != StockLevelFilter.all ? 1 : 0) +
       (managed != null ? 1 : 0);
 
@@ -288,6 +291,8 @@ class ItemsReportFilters {
     sellingMax = null;
     costMin = null;
     costMax = null;
+    quantityMin = null;
+    quantityMax = null;
     stockLevel = StockLevelFilter.all;
     managed = null;
   }
@@ -337,6 +342,15 @@ class ItemsReportFilters {
       if (costMax != null && r.costPrice > costMax!) {
         return false;
       }
+    }
+
+    if (quantityMin != null &&
+        (r.quantity == null || r.quantity! < quantityMin!)) {
+      return false;
+    }
+    if (quantityMax != null &&
+        (r.quantity == null || r.quantity! > quantityMax!)) {
+      return false;
     }
 
     if (stockLevel != StockLevelFilter.all) {
@@ -423,6 +437,31 @@ class StockMovementCalculator {
     return true;
   }
 
+  static DateTime _alignCutoff(DateTime dt, DateTime cutoff) {
+    if (dt.isUtc == cutoff.isUtc) return cutoff;
+    return dt.isUtc
+        ? DateTime.utc(
+            cutoff.year,
+            cutoff.month,
+            cutoff.day,
+            cutoff.hour,
+            cutoff.minute,
+            cutoff.second,
+            cutoff.millisecond,
+            cutoff.microsecond,
+          )
+        : DateTime(
+            cutoff.year,
+            cutoff.month,
+            cutoff.day,
+            cutoff.hour,
+            cutoff.minute,
+            cutoff.second,
+            cutoff.millisecond,
+            cutoff.microsecond,
+          );
+  }
+
   /// Calculates opening stock, closing stock, and stock change for [row] over
   /// the date or date range `[startCutoff, endCutoff]`.
   static ItemStockMovement calculate({
@@ -443,7 +482,8 @@ class StockMovementCalculator {
     double? opening;
     bool openingFound = false;
     for (final h in usable) {
-      if (!h.createdAt!.isBefore(startCutoff)) {
+      final start = _alignCutoff(h.createdAt!, startCutoff);
+      if (!h.createdAt!.isBefore(start)) {
         opening = _parse(h.oldValue);
         openingFound = true;
         break;
@@ -454,7 +494,8 @@ class StockMovementCalculator {
         opening = _parse(usable.last.newValue);
       } else {
         final created = row.createdAt;
-        if (created != null && !created.isBefore(startCutoff)) {
+        final start = created != null ? _alignCutoff(created, startCutoff) : startCutoff;
+        if (created != null && !created.isBefore(start)) {
           opening = 0;
         } else {
           opening = row.quantity;
@@ -464,9 +505,11 @@ class StockMovementCalculator {
 
     // 2) Closing Stock: newValue of the last item history recorded in [startCutoff, endCutoff]
     double? closing;
-    final inRange = usable.where((h) =>
-        !h.createdAt!.isBefore(startCutoff) &&
-        !h.createdAt!.isAfter(endCutoff)).toList();
+    final inRange = usable.where((h) {
+      final start = _alignCutoff(h.createdAt!, startCutoff);
+      final end = _alignCutoff(h.createdAt!, endCutoff);
+      return !h.createdAt!.isBefore(start) && !h.createdAt!.isAfter(end);
+    }).toList();
 
     if (inRange.isNotEmpty) {
       closing = _parse(inRange.last.newValue);

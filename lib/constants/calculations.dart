@@ -13,21 +13,37 @@ String randomCode({int? length}) {
   return "#${String.fromCharCodes(Iterable.generate(length ?? 4, (_) => chars.codeUnitAt(random.nextInt(chars.length))))}";
 }
 
-DateTime resolveBusinessDate(DateTime now) {
-  final shop = returnShopProvider().userShop();
+TimeOfDay? _getShopClosingTime(TimeOfDay? customClosingTime) {
+  if (customClosingTime != null) return customClosingTime;
+  try {
+    final shop = returnShopProvider().userShop();
+    if (shop?.closeSaleTimeString != null) {
+      return parseTimeOfDay(shop!.closeSaleTimeString!);
+    }
+  } catch (_) {
+    // Uninitialized provider / test environment: fallback to null (standard calendar day)
+  }
+  return null;
+}
 
-  final cTime =
-      shop?.closeSaleTimeString != null
-          ? parseTimeOfDay(shop!.closeSaleTimeString!)
-          : null;
+DateTime resolveBusinessDate(DateTime now, {TimeOfDay? customClosingTime}) {
+  final cTime = _getShopClosingTime(customClosingTime);
 
-  final closingToday = DateTime(
-    now.year,
-    now.month,
-    now.day,
-    cTime?.hour ?? 0,
-    cTime?.minute ?? 0,
-  );
+  final closingToday = now.isUtc
+      ? DateTime.utc(
+          now.year,
+          now.month,
+          now.day,
+          cTime?.hour ?? 0,
+          cTime?.minute ?? 0,
+        )
+      : DateTime(
+          now.year,
+          now.month,
+          now.day,
+          cTime?.hour ?? 0,
+          cTime?.minute ?? 0,
+        );
 
   if (now.isBefore(closingToday)) {
     return now.subtract(const Duration(days: 1));
@@ -36,13 +52,24 @@ DateTime resolveBusinessDate(DateTime now) {
   return now;
 }
 
-DateTime fourAm(DateTime date) {
-  final shop = returnShopProvider().userShop();
+DateTime fourAm(
+  DateTime date, {
+  bool? isUtc,
+  TimeOfDay? customClosingTime,
+}) {
+  final cTime = _getShopClosingTime(customClosingTime);
 
-  final cTime =
-      shop?.closeSaleTimeString != null
-          ? parseTimeOfDay(shop!.closeSaleTimeString!)
-          : null;
+  final useUtc = isUtc ?? date.isUtc;
+
+  if (useUtc) {
+    return DateTime.utc(
+      date.year,
+      date.month,
+      date.day,
+      cTime?.hour ?? 0,
+      cTime?.minute ?? 0,
+    );
+  }
 
   return DateTime(
     date.year,
@@ -53,8 +80,64 @@ DateTime fourAm(DateTime date) {
   );
 }
 
-DateTime fourAmNextDay(DateTime date) {
-  return fourAm(date).add(const Duration(days: 1));
+DateTime fourAmNextDay(
+  DateTime date, {
+  bool? isUtc,
+  TimeOfDay? customClosingTime,
+}) {
+  return fourAm(
+    date,
+    isUtc: isUtc,
+    customClosingTime: customClosingTime,
+  ).add(const Duration(days: 1));
+}
+
+/// Checks whether [dateTime] falls within the business-day boundaries
+/// defined by [dateSet] or [rangeStartDate]..[rangeEndDate].
+///
+/// Uses half-open interval `[start, end)` to prevent double-counting
+/// at exact boundaries. Respects custom closing time ([cTime]) and
+/// preserves timezone consistency so records are never shifted by
+/// cross-timezone conversion offsets.
+bool isDateTimeInBusinessWindow({
+  required DateTime? dateTime,
+  DateTime? dateSet,
+  DateTime? rangeStartDate,
+  DateTime? rangeEndDate,
+  TimeOfDay? customClosingTime,
+}) {
+  if (dateTime == null) return false;
+  if (dateSet == null && rangeStartDate == null && rangeEndDate == null) {
+    return true;
+  }
+
+  final isUtc = dateTime.isUtc;
+  if (dateSet != null) {
+    final start = fourAm(
+      dateSet,
+      isUtc: isUtc,
+      customClosingTime: customClosingTime,
+    );
+    final end = fourAmNextDay(
+      dateSet,
+      isUtc: isUtc,
+      customClosingTime: customClosingTime,
+    );
+    return !dateTime.isBefore(start) && dateTime.isBefore(end);
+  } else if (rangeStartDate != null) {
+    final start = fourAm(
+      rangeStartDate,
+      isUtc: isUtc,
+      customClosingTime: customClosingTime,
+    );
+    final end = fourAmNextDay(
+      rangeEndDate ?? rangeStartDate,
+      isUtc: isUtc,
+      customClosingTime: customClosingTime,
+    );
+    return !dateTime.isBefore(start) && dateTime.isBefore(end);
+  }
+  return true;
 }
 
 DateTime endOfDay(DateTime date) {

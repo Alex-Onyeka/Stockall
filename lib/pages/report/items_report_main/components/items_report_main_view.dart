@@ -57,6 +57,8 @@ class _ItemsReportMainViewState
   final _sellMaxCtrl = TextEditingController();
   final _costMinCtrl = TextEditingController();
   final _costMaxCtrl = TextEditingController();
+  final _qtyMinCtrl = TextEditingController();
+  final _qtyMaxCtrl = TextEditingController();
   final _hScroll = ScrollController();
   final _vScroll = ScrollController();
 
@@ -109,6 +111,8 @@ class _ItemsReportMainViewState
     _sellMaxCtrl.dispose();
     _costMinCtrl.dispose();
     _costMaxCtrl.dispose();
+    _qtyMinCtrl.dispose();
+    _qtyMaxCtrl.dispose();
     _hScroll.dispose();
     _vScroll.dispose();
     super.dispose();
@@ -309,6 +313,8 @@ class _ItemsReportMainViewState
     _sellMaxCtrl.clear();
     _costMinCtrl.clear();
     _costMaxCtrl.clear();
+    _qtyMinCtrl.clear();
+    _qtyMaxCtrl.clear();
     _apply(_filters.clearAll);
   }
 
@@ -1058,6 +1064,16 @@ class _ItemsReportMainViewState
                     _filters.costMax = b;
                   }),
             ),
+          _rangeFields(
+            label: 'Quantity range (primary unit)',
+            minC: _qtyMinCtrl,
+            maxC: _qtyMaxCtrl,
+            onChange:
+                (a, b) => _apply(() {
+                  _filters.quantityMin = a;
+                  _filters.quantityMax = b;
+                }),
+          ),
         ],
       ),
     );
@@ -1176,6 +1192,23 @@ class _ItemsReportMainViewState
             _apply(() {
               _filters.costMin = null;
               _filters.costMax = null;
+            });
+          },
+        ),
+      );
+    }
+    if (_filters.quantityMin != null ||
+        _filters.quantityMax != null) {
+      chips.add(
+        chip(
+          'Qty: ${_filters.quantityMin != null ? formatLargeNumberDouble(_filters.quantityMin!) : 'Any'}'
+          ' - ${_filters.quantityMax != null ? formatLargeNumberDouble(_filters.quantityMax!) : 'Any'}',
+          () {
+            _qtyMinCtrl.clear();
+            _qtyMaxCtrl.clear();
+            _apply(() {
+              _filters.quantityMin = null;
+              _filters.quantityMax = null;
             });
           },
         ),

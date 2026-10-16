@@ -113,11 +113,11 @@ class ItemHistoryReportFilters {
     if (staffId != null && h.staffId != staffId) return false;
 
     if (dateRange != null) {
-      if (h.createdAt == null) return false;
-      final startCutoff = fourAm(dateRange!.start);
-      final endCutoff = fourAmNextDay(dateRange!.end);
-      if (h.createdAt!.isBefore(startCutoff) ||
-          h.createdAt!.isAfter(endCutoff)) {
+      if (!isDateTimeInBusinessWindow(
+        dateTime: h.createdAt,
+        rangeStartDate: dateRange!.start,
+        rangeEndDate: dateRange!.end,
+      )) {
         return false;
       }
     }
