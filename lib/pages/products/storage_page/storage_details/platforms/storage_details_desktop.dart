@@ -175,6 +175,22 @@ class _StorageDetailsDesktopState extends State<StorageDetailsDesktop> {
                                           ),
                                           'Date Created:  ${formatDateTime(product.createdAt ?? DateTime.now())}',
                                         ),
+                                        if (product.quantityType ==
+                                            2)
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  widget
+                                                      .theme
+                                                      .mobileTexts
+                                                      .b3
+                                                      .fontSize,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                            ),
+                                            '2D Item. Sheet Size:${formatDimensionsLabel(product.widthDimension, product.heightDimension)}',
+                                          ),
                                       ],
                                     ),
                                     SizedBox(height: 20),
@@ -261,24 +277,43 @@ class _StorageDetailsDesktopState extends State<StorageDetailsDesktop> {
                                                     )
                                                     .toList()
                                                     .map(
-                                                      (pro) => ProductTileMain(
-                                                        product: pro,
-                                                        theme: widget.theme,
-                                                        action: () {
-                                                          Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder: (
+                                                      (
+                                                        pro,
+                                                      ) => Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          ProductTileMain(
+                                                            product:
+                                                                pro,
+                                                            theme:
+                                                                widget.theme,
+                                                            action: () {
+                                                              Navigator.push(
                                                                 context,
-                                                              ) {
-                                                                return ProductDetailsPage(
-                                                                  productUuid:
-                                                                      pro.uuid!,
-                                                                );
-                                                              },
-                                                            ),
-                                                          );
-                                                        },
+                                                                MaterialPageRoute(
+                                                                  builder: (
+                                                                    context,
+                                                                  ) {
+                                                                    return ProductDetailsPage(
+                                                                      productUuid:
+                                                                          pro.uuid!,
+                                                                    );
+                                                                  },
+                                                                ),
+                                                              );
+                                                            },
+                                                          ),
+                                                          DimensionMismatchLabel(
+                                                            storageProduct:
+                                                                product,
+                                                            product:
+                                                                pro,
+                                                            theme:
+                                                                widget.theme,
+                                                          ),
+                                                        ],
                                                       ),
                                                     )
                                                     .toList(),

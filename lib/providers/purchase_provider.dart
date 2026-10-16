@@ -571,11 +571,13 @@ class PurchaseProvider extends ChangeNotifier {
                     newPro,
                   );
               final primaryUnit = newPro.getPrimaryUnit();
-              final deltaQty = selectedUnit
-                  .getQuantityEquivMultiplied(
-                    index: 4,
-                    quantityTwo: (rec.quantity ?? 0),
-                  );
+              // Stored quantity (sheets for 2D storage items).
+              final deltaQty =
+                  newPro.actualFromUnit(
+                    selectedUnit,
+                    rec.quantity ?? 0,
+                  ) /
+                  newPro.dimensionArea();
               final oldQty = newPro.quantity ?? 0;
               final newQty = oldQty - deltaQty;
 
@@ -1048,11 +1050,13 @@ class PurchaseProvider extends ChangeNotifier {
               );
           final primaryUnit =
               storageProduct.getPrimaryUnit();
-          final deltaQty = selectedUnit
-              .getQuantityEquivMultiplied(
-                index: 4,
-                quantityTwo: (item.quantity ?? 0),
-              );
+          // Stored quantity (sheets for 2D storage items).
+          final deltaQty =
+              storageProduct.actualFromUnit(
+                selectedUnit,
+                item.quantity ?? 0,
+              ) /
+              storageProduct.dimensionArea();
           final oldQty = storageProduct.quantity ?? 0;
           final newQty = oldQty + deltaQty;
 

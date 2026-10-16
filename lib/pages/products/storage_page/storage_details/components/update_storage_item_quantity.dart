@@ -5,6 +5,7 @@ import 'package:stockall/classes/temp_item_history/item_history_event_class.dart
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_storage_item_history/storage_item_history.dart';
 import 'package:stockall/classes/temp_storage_item_history/storage_item_history_event_class.dart';
+import 'package:stockall/classes/temp_storage_product/storage_transfer.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -77,6 +78,28 @@ class _StorageQuantityUpdateWidgetState
   String? productUuid;
   String? staffUuid;
   String? unitUuid;
+
+  // Entered quantity in getActualQuantity units (area for 2D).
+  double storageActualFromEntered(double quantity) {
+    return widget.storageProduct.actualFromUnit(
+      widget.storageProduct.getProductUnit(unitUuid: unitUuid),
+      quantity,
+    );
+  }
+
+  double salesActualFromEntered(
+    TempProductClass product,
+    double quantity,
+  ) {
+    return product
+        .getProductUnit(unitUuid: unitUuid)
+        .getQuantityEquivMultiplied(
+          index: 1,
+          product: product,
+          newQuantity: quantity,
+        );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -184,34 +207,26 @@ class _StorageQuantityUpdateWidgetState
           theme: theme,
           showTitle: false,
           onChanged: (value) {
+            final entered =
+                double.tryParse(
+                  quantityController.text.replaceAll(',', ''),
+                ) ??
+                0;
             if (currentIndex == 0 && productUuid != null) {
               var tempProducts = returnData().productListMain.where(
                 (pro) => pro.uuid == productUuid,
               );
               if (tempProducts.isNotEmpty) {
                 var pro = tempProducts.first;
-                if (pro
-                        .getProductUnit(unitUuid: unitUuid)
-                        .getQuantityEquivMultiplied(
-                          index: 1,
-                          newQuantity: double.tryParse(
-                            quantityController.text.replaceAll(',', ''),
-                          ),
-                        ) >
+                if (salesActualFromEntered(pro, entered) >
                     (pro.getActualQuantity() ?? 0)) {
                   quantityController.text = '0';
                 }
               }
             } else if (currentIndex == 1) {
-              if (widget.storageProduct
-                      .getProductUnit(unitUuid: unitUuid)
-                      .getQuantityEquivMultiplied(
-                        index: 4,
-                        newQuantity: double.tryParse(
-                          quantityController.text.replaceAll(',', ''),
-                        ),
-                      ) >
-                  (widget.storageProduct.quantity ?? 0)) {
+              if (storageActualFromEntered(entered) >
+                  (widget.storageProduct.getActualQuantity() ??
+                      0)) {
                 quantityController.text = '0';
               }
             }
@@ -306,6 +321,18 @@ class _StorageQuantityUpdateWidgetState
                                                           SystemMouseCursors
                                                               .click,
                                                       onTap: () {
+                                                        if (!storageCanManage(
+                                                          widget.storageProduct,
+                                                          product,
+                                                        )) {
+                                                          showDimensionMismatchAlert(
+                                                            context:
+                                                                productContext,
+                                                            theme:
+                                                                theme,
+                                                          );
+                                                          return;
+                                                        }
                                                         setState(() {
                                                           if (productUuid ==
                                                               product.uuid) {
@@ -358,6 +385,14 @@ class _StorageQuantityUpdateWidgetState
                                                                   ),
                                                                 ],
                                                               ),
+                                                            ),
+                                                            DimensionMismatchLabel(
+                                                              storageProduct:
+                                                                  widget.storageProduct,
+                                                              product:
+                                                                  product,
+                                                              theme:
+                                                                  theme,
                                                             ),
                                                             Visibility(
                                                               visible:
@@ -673,15 +708,12 @@ class _StorageQuantityUpdateWidgetState
                             title:
                                 '${quantityController.text.isEmpty || quantityController.text == '0' ? 'Clear' : 'Update'} Stock',
                             action: () async {
-                              double? storageNewQuantity;
-                              TempStorageProducts newProduct =
-                                  widget.storageProduct.copyWith();
+                              TempStorageProducts
+                              newProduct =
+                                  widget.storageProduct
+                                      .copyWith();
 
                               Navigator.of(actionContext).pop();
-
-                              returnStorageProductProvider().toggleIsLoading(
-                                true,
-                              );
 
                               double enteredQuantity =
                                   (double.tryParse(
@@ -692,106 +724,96 @@ class _StorageQuantityUpdateWidgetState
                                       ) ??
                                       0);
 
-                              if (currentIndex == 0) {
-                                double equivQuantity() {
-                                  if (productUuid == null) {
-                                    return widget.storageProduct
-                                        .getProductUnit(unitUuid: unitUuid)
-                                        .getQuantityEquivMultiplied(
-                                          index: 4,
-                                          newQuantity: enteredQuantity,
-                                        );
-                                  } else {
-                                    return returnData().productListMain
-                                        .firstWhere(
-                                          (item) => item.uuid == productUuid,
-                                        )
-                                        .getProductUnit(unitUuid: unitUuid)
-                                        .getQuantityEquivMultiplied(
-                                          index: 1,
-                                          newQuantity: enteredQuantity,
-                                        );
-                                  }
-                                }
-
-                                storageNewQuantity =
-                                    ((widget.storageProduct.quantity ?? 0) +
-                                        equivQuantity());
-                              } else if (currentIndex == 1) {
-                                double equivQuantity = widget.storageProduct
-                                    .getProductUnit(unitUuid: unitUuid)
-                                    .getQuantityEquivMultiplied(
-                                      index: 4,
-                                      newQuantity: enteredQuantity,
-                                    );
-                                storageNewQuantity =
-                                    (widget.storageProduct.quantity ?? 0) -
-                                    equivQuantity;
-                              } else {
-                                double equivQuantity = widget.storageProduct
-                                    .getProductUnit(unitUuid: unitUuid)
-                                    .getQuantityEquivMultiplied(
-                                      index: 4,
-                                      newQuantity: enteredQuantity,
-                                    );
-                                storageNewQuantity = equivQuantity;
-                              }
-                              newProduct.quantity = storageNewQuantity;
-
-                              //
-                              //
-                              //
-
-                              var prs = returnData().productListMain.where((
-                                pr,
-                              ) {
-                                return pr.storageUuid ==
-                                        widget.storageProduct.uuid &&
-                                    pr.uuid == productUuid;
-                              });
+                              var prs = returnData()
+                                  .productListMain
+                                  .where((pr) {
+                                    return pr.storageUuid ==
+                                            widget
+                                                .storageProduct
+                                                .uuid &&
+                                        pr.uuid ==
+                                            productUuid;
+                                  });
                               final originalProduct =
                                   prs.isNotEmpty ? prs.first : null;
+
+                              // Amount in getActualQuantity units
+                              // (area for 2D items): in the sales
+                              // item's unit for Stock-In from an
+                              // item, otherwise in a storage unit.
+                              final actualAmount =
+                                  currentIndex == 0 &&
+                                          originalProduct !=
+                                              null
+                                      ? salesActualFromEntered(
+                                        originalProduct,
+                                        enteredQuantity,
+                                      )
+                                      : storageActualFromEntered(
+                                        enteredQuantity,
+                                      );
+
+                              final StorageTransferResult
+                              transfer;
+                              try {
+                                transfer = computeStorageTransfer(
+                                  mode:
+                                      currentIndex == 0
+                                          ? StorageTransferMode
+                                              .stockIn
+                                          : currentIndex == 1
+                                          ? StorageTransferMode
+                                              .stockOut
+                                          : StorageTransferMode
+                                              .update,
+                                  storage:
+                                      widget.storageProduct,
+                                  sales:
+                                      currentIndex == 2
+                                          ? null
+                                          : originalProduct,
+                                  actualAmount: actualAmount,
+                                );
+                              } on StorageTypeMismatch {
+                                showDimensionMismatchAlert(
+                                  context: context,
+                                  theme: theme,
+                                );
+                                return;
+                              }
+
+                              returnStorageProductProvider()
+                                  .toggleIsLoading(true);
+
+                              // Stored quantities are sheet counts
+                              // for 2D items.
+                              newProduct.quantity =
+                                  transfer.storageQuantity;
+                              final double qttyChange =
+                                  transfer.storageChange;
+
+                              // Old/new values in getActualQuantity
+                              // units, for the history texts.
+                              final storageOldQty =
+                                  widget.storageProduct
+                                      .getActualQuantity() ??
+                                  0;
+                              final double storageNewQuantity =
+                                  newProduct
+                                      .getActualQuantity() ??
+                                  0;
 
                               final salesOldQuantity =
                                   originalProduct?.getActualQuantity() ?? 0;
 
-                              final storageOldQty =
-                                  widget.storageProduct.quantity ?? 0;
-                              double qttyChange = widget.storageProduct
-                                  .getProductUnit(unitUuid: unitUuid)
-                                  .getQuantityEquivMultiplied(
-                                    index: 4,
-                                    newQuantity:
-                                        storageNewQuantity - storageOldQty,
-                                  );
-
-                              final newPr = originalProduct?.copyWith();
-
-                              double equivQuantityForProduct = 0;
-                              if (currentIndex == 0 && productUuid != null) {
-                                equivQuantityForProduct =
-                                    newPr
-                                        ?.getProductUnit(unitUuid: unitUuid)
-                                        .getQuantityEquivMultiplied(
-                                          index: 1,
-                                          newQuantity: enteredQuantity,
-                                        ) ??
-                                    0;
+                              final newPr =
+                                  originalProduct
+                                      ?.copyWith();
+                              if (transfer.salesQuantity !=
+                                  null) {
                                 newPr?.quantity =
-                                    (newPr.getActualQuantity() ?? 0) -
-                                    equivQuantityForProduct;
-                              } else if (currentIndex == 1) {
-                                equivQuantityForProduct = widget.storageProduct
-                                    .getProductUnit(unitUuid: unitUuid)
-                                    .getQuantityEquivMultiplied(
-                                      index: 4,
-                                      newQuantity: enteredQuantity,
-                                    );
-                                newPr?.quantity =
-                                    (newPr.getActualQuantity() ?? 0) +
-                                    equivQuantityForProduct;
+                                    transfer.salesQuantity;
                               }
-
                               final salesNewQuantity =
                                   newPr?.getActualQuantity() ?? 0;
 
@@ -868,16 +890,23 @@ class _StorageQuantityUpdateWidgetState
                                               )
                                               .name,
                                 );
-                                await returnData().updateProduct(
-                                  itemHistory: itemHistory,
-                                  includeQuantity: false,
-                                  isIncrement:
-                                      salesNewQuantity > salesOldQuantity,
-                                  isQuantityUpdate: true,
-                                  quantityChange:
-                                      salesNewQuantity - salesOldQuantity,
-                                  product: newPr,
-                                );
+                                await returnData()
+                                    .updateProduct(
+                                      itemHistory:
+                                          itemHistory,
+                                      includeQuantity:
+                                          false,
+                                      isIncrement:
+                                          salesNewQuantity >
+                                          salesOldQuantity,
+                                      isQuantityUpdate:
+                                          true,
+                                      // Stored units (sheets for 2D).
+                                      quantityChange:
+                                          transfer.salesChange ??
+                                          0,
+                                      product: newPr,
+                                    );
                               }
                               var depts = returnDepartmentProvider().departments
                                   .where(
@@ -933,7 +962,7 @@ class _StorageQuantityUpdateWidgetState
                                 } else if (currentIndex == 1) {
                                   return StorageItemHistoryEventClass.stockOut;
                                 } else {
-                                  return (storageNewQuantity ?? 0) >
+                                  return storageNewQuantity >
                                           storageOldQty
                                       ? StorageItemHistoryEventClass
                                           .quantityUpdatedIncrease
@@ -1069,7 +1098,7 @@ class _StorageQuantityUpdateWidgetState
                                     isQuantityUpdate: true,
                                     quantityChange: qttyChange,
                                     isIncrement:
-                                        (widget.storageProduct.quantity ?? 0) <
+                                        storageOldQty <
                                         storageNewQuantity,
                                     storageItemHistory: storageItemHistory,
                                   );
@@ -1351,12 +1380,8 @@ class _ManageProductsStorageState extends State<ManageProductsStorage> {
                             child: Column(
                               spacing: 5,
                               children:
-                                  returnData().productListMain
-                                      .where(
-                                        (item) =>
-                                            item.storageUuid == null ||
-                                            item.storageUuid ==
-                                                widget.productUuid,
+                                  manageableProductsFor(
+                                        widget.productUuid,
                                       )
                                       .map(
                                         (dept) => Material(
@@ -1461,6 +1486,15 @@ class _ManageProductsStorageState extends State<ManageProductsStorage> {
                                                               ],
                                                             ),
                                                           ),
+                                                          DimensionMismatchLabel(
+                                                            storageProduct: storageItemByUuid(
+                                                              widget.productUuid,
+                                                            ),
+                                                            product:
+                                                                dept,
+                                                            theme:
+                                                                widget.theme,
+                                                          ),
                                                         ],
                                                       ),
                                                     ),
@@ -1532,6 +1566,78 @@ class _ManageProductsStorageState extends State<ManageProductsStorage> {
           ),
         ),
       ],
+    );
+  }
+}
+
+//
+//
+// 1D / 2D: a storage item only manages sales items of its own
+// dimension type, and transfers between different types are
+// blocked (see storage_transfer.dart).
+
+TempStorageProducts? storageItemByUuid(String? uuid) {
+  return returnStorageProductProvider().storageProductListMain
+      .where((item) => item.uuid == uuid)
+      .firstOrNull;
+}
+
+List<TempProductClass> manageableProductsFor(String storageUuid) {
+  final storage = storageItemByUuid(storageUuid);
+  if (storage == null) {
+    return returnData().productListMain
+        .where((item) => item.storageUuid == storageUuid)
+        .toList();
+  }
+  return manageableProducts(
+    storage: storage,
+    products: returnData().productListMain,
+  );
+}
+
+void showDimensionMismatchAlert({
+  required BuildContext context,
+  required ThemeProvider theme,
+}) {
+  showDialog(
+    context: context,
+    builder: (alertContext) {
+      return InfoAlert(
+        theme: theme,
+        message:
+            'This item and the storage item have different dimension types (1D / 2D). Transfers between them are not allowed. Remove the item from this storage in Manage Products, or change the storage item\'s type in Edit.',
+        title: 'Dimension Type Does Not Match',
+      );
+    },
+  );
+}
+
+class DimensionMismatchLabel extends StatelessWidget {
+  final TempStorageProducts? storageProduct;
+  final TempProductClass product;
+  final ThemeProvider theme;
+  const DimensionMismatchLabel({
+    super.key,
+    required this.storageProduct,
+    required this.product,
+    required this.theme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (storageProduct == null ||
+        storageCanManage(storageProduct!, product)) {
+      return SizedBox.shrink();
+    }
+    return Text(
+      style: TextStyle(
+        fontSize: theme.mobileTexts.b5.fontSize,
+        fontWeight: FontWeight.bold,
+        color: Colors.red.shade400,
+      ),
+      product.quantityType == 2
+          ? '2D item: dimension type doesn\'t match'
+          : '1D item: dimension type doesn\'t match',
     );
   }
 }

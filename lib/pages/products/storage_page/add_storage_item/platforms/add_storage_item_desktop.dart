@@ -14,7 +14,9 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/add_product_one/platforms/components/select_product_quantity_type_section.dart';
 import 'package:stockall/pages/products/add_product_one/product_units_page/product_units_page.dart';
+import 'package:stockall/pages/products/storage_page/add_storage_item/components/storage_dimension_rules.dart';
 
 class AddStorageItemDesktop extends StatefulWidget {
   final TempStorageProducts? storageProduct;
@@ -22,6 +24,8 @@ class AddStorageItemDesktop extends StatefulWidget {
   final TextEditingController qttyPerGroupController;
   final TextEditingController costPriceController;
   final TextEditingController sellingPriceController;
+  final TextEditingController widthController;
+  final TextEditingController heightController;
 
   const AddStorageItemDesktop({
     super.key,
@@ -29,6 +33,8 @@ class AddStorageItemDesktop extends StatefulWidget {
     required this.qttyPerGroupController,
     required this.costPriceController,
     required this.sellingPriceController,
+    required this.widthController,
+    required this.heightController,
     this.storageProduct,
   });
 
@@ -40,8 +46,25 @@ class _AddStorageItemDesktopState extends State<AddStorageItemDesktop> {
   bool isLoading = false;
   bool showSuccess = false;
   bool isOpen = false;
+  int quantityType = 1;
+
+  void switchQuantityType(int index) {
+    setState(() {
+      quantityType = index;
+    });
+    widget.widthController.clear();
+    widget.heightController.clear();
+  }
 
   void checkFields() async {
+    if (!validStorageDimensions(
+      context: context,
+      quantityType: quantityType,
+      widthController: widget.widthController,
+      heightController: widget.heightController,
+    )) {
+      return;
+    }
     if (widget.nameController.text.isEmpty) {
       showDialog(
         context: context,
@@ -99,6 +122,13 @@ class _AddStorageItemDesktopState extends State<AddStorageItemDesktop> {
                 sellingPrice: double.tryParse(
                   widget.sellingPriceController.text.replaceAll(',', ''),
                 ),
+                quantityType: quantityType,
+                widthDimension: parseDimension(
+                  widget.widthController,
+                ),
+                heightDimension: parseDimension(
+                  widget.heightController,
+                ),
               );
 
               StorageItemHistory itemHistory = StorageItemHistory(
@@ -139,6 +169,19 @@ class _AddStorageItemDesktopState extends State<AddStorageItemDesktop> {
   }
 
   void updateStorageProduct() {
+    if (!validStorageDimensions(
+          context: context,
+          quantityType: quantityType,
+          widthController: widget.widthController,
+          heightController: widget.heightController,
+        ) ||
+        !storageTypeChangeAllowed(
+          context: context,
+          storageProduct: widget.storageProduct,
+          quantityType: quantityType,
+        )) {
+      return;
+    }
     if (widget.nameController.text.isEmpty) {
       showDialog(
         context: context,
@@ -210,6 +253,13 @@ class _AddStorageItemDesktopState extends State<AddStorageItemDesktop> {
                           )
                           : null,
                   shopId: shopId(),
+                  quantityType: quantityType,
+                  widthDimension: parseDimension(
+                    widget.widthController,
+                  ),
+                  heightDimension: parseDimension(
+                    widget.heightController,
+                  ),
                 ),
                 // oldProduct: widget.product!,
               );
@@ -282,6 +332,17 @@ class _AddStorageItemDesktopState extends State<AddStorageItemDesktop> {
           widget.storageProduct!.sellingPrice == null
               ? ''
               : widget.storageProduct!.sellingPrice.toString();
+      setState(() {
+        quantityType =
+            widget.storageProduct?.quantityType ?? 1;
+      });
+      widget.widthController.text =
+          widget.storageProduct?.widthDimension?.toString() ??
+          '';
+      widget.heightController.text =
+          widget.storageProduct?.heightDimension
+              ?.toString() ??
+          '';
     }
   }
 
@@ -345,6 +406,16 @@ class _AddStorageItemDesktopState extends State<AddStorageItemDesktop> {
                                     controller: widget.costPriceController,
                                   ),
                                   SizedBox(height: 15),
+                                  SelectProductQuantityTypeSection(
+                                    heightController:
+                                        widget.heightController,
+                                    quantityType: quantityType,
+                                    switchQuantityType: (index) {
+                                      switchQuantityType(index);
+                                    },
+                                    widthController:
+                                        widget.widthController,
+                                  ),
                                   Visibility(
                                     visible: authorization(
                                       authorized:
@@ -377,6 +448,9 @@ class _AddStorageItemDesktopState extends State<AddStorageItemDesktop> {
                                                         productUuid:
                                                             createdProductUuid ??
                                                             '',
+                                                        isDimensional:
+                                                            quantityType ==
+                                                            2,
                                                       );
                                                     },
                                                   ),

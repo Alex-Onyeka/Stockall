@@ -29,6 +29,7 @@ import 'package:stockall/pages/products/add_product_one/platforms/components/sel
 import 'package:stockall/pages/products/add_product_one/platforms/components/use_multiple_toggle_add_item_page.dart';
 import 'package:stockall/pages/products/add_product_one/product_prices_page/product_prices_page.dart';
 import 'package:stockall/pages/products/add_product_one/product_units_page/product_units_page.dart';
+import 'package:stockall/pages/products/storage_page/add_storage_item/components/storage_dimension_rules.dart';
 import 'package:stockall/providers/data_provider.dart';
 
 class AddProductDesktop extends StatefulWidget {
@@ -314,6 +315,13 @@ class _AddProductDesktopState
 
   void updateProduct() {
     final safeContext = context;
+    if (!salesTypeChangeAllowed(
+      context: context,
+      product: widget.product!,
+      quantityType: quantityType,
+    )) {
+      return;
+    }
     if (quantityType == 2 &&
         (widget.heightController.text.isEmpty ||
             widget.widthController.text.isEmpty)) {

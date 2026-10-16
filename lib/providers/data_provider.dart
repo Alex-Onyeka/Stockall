@@ -4242,6 +4242,11 @@ class DataProvider extends ChangeNotifier {
               qttyPerGroup: pr.qttyPerGroup,
               costPrice: pr.costPrice,
               sellingPrice: pr.getPrimaryPrice().priceValue,
+              // Same dimension type and sheet size as the
+              // sales item it will manage.
+              quantityType: pr.quantityType ?? 1,
+              widthDimension: pr.widthDimension,
+              heightDimension: pr.heightDimension,
             );
         List<ProductUnitsClass> tempItems =
             (pr.unitsList ?? [])
