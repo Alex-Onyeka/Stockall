@@ -103,28 +103,15 @@ class ItemHistoryProvider with ChangeNotifier {
         (a, b) => b.createdAt!.compareTo(a.createdAt!),
       );
       return departmentItemHistories();
-    } else if (dateSet != null) {
-      return departmentItemHistories()
-          .where(
-            (itemHistory) =>
-                !itemHistory.createdAt!.isBefore(
-                  fourAm(dateSet!),
-                ) &&
-                !itemHistory.createdAt!.isAfter(
-                  fourAmNextDay(dateSet!),
-                ),
-          )
-          .toList();
     } else {
       return departmentItemHistories()
           .where(
-            (update) =>
-                ((!update.createdAt!.isBefore(
-                      fourAm(rangeStartDate!),
-                    )) &&
-                    (!update.createdAt!.isAfter(
-                      fourAmNextDay(rangeEndDate!),
-                    ))),
+            (itemHistory) => isDateTimeInBusinessWindow(
+              dateTime: itemHistory.createdAt,
+              dateSet: dateSet,
+              rangeStartDate: rangeStartDate,
+              rangeEndDate: rangeEndDate,
+            ),
           )
           .toList();
     }
