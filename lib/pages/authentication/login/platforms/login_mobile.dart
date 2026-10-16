@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 // import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/components/buttons/google_sign_in_button.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
@@ -390,6 +391,10 @@ class _LoginMobileState extends State<LoginMobile> {
                           checkInputs();
                         },
                         text: General().login,
+                      ),
+                      SizedBox(height: 15),
+                      GoogleSignInButton(
+                        theme: widget.theme,
                       ),
                       SizedBox(height: 100),
                     ],

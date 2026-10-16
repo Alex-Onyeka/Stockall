@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/components/buttons/google_sign_in_button.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
@@ -430,6 +431,8 @@ class _SignupDesktopState extends State<SignupDesktop> {
                     },
                     text: 'Create Account',
                   ),
+                  SizedBox(height: 15),
+                  GoogleSignInButton(theme: widget.theme),
                   SizedBox(height: 10),
                   MainButtonTransparent(
                     themeProvider: widget.theme,

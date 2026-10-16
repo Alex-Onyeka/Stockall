@@ -12,7 +12,32 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/nav_provider.dart';
+import 'package:stockall/services/google_auth/auth_routing.dart';
+import 'package:stockall/services/google_auth/google_auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+/// Builds the `users` row for a newly created account from the details the
+/// user entered. [email] is the verified email (OTP or Google).
+TempUserClass buildUserProfileRow({
+  required TempUserClass details,
+  required String userId,
+  required String email,
+}) {
+  return TempUserClass(
+    userId: userId,
+    createdAt: details.createdAt,
+    name: details.name,
+    lastName: details.lastName,
+    email: email,
+    pin: details.pin,
+    phone: details.phone,
+    role: details.role,
+    authUserId: userId,
+    password: details.password,
+    departmentUuids: [],
+    access: details.access,
+  );
+}
 
 class AuthService extends ChangeNotifier {
   bool isLoading = false;
@@ -115,27 +140,13 @@ class AuthService extends ChangeNotifier {
         token: otp,
       );
 
-      // Build user row
-      final userRow = TempUserClass(
-        userId: userId,
-        createdAt: user.createdAt,
-        name: user.name,
-        lastName: user.lastName,
-        email: newEmail ?? user.email,
-        pin: user.pin,
-        phone: user.phone,
-        role: user.role,
-        authUserId: userId,
-        password: user.password,
-        departmentUuids: [],
-        access: user.access,
-      );
-
       if (newEmail == null) {
         // Insert into Supabase
-        await _client
-            .from('users')
-            .upsert(userRow.toJson());
+        await createUserProfile(
+          details: user,
+          userId: userId,
+          email: user.email,
+        );
       } else {
         await _client
             .from('users')
@@ -155,6 +166,113 @@ class AuthService extends ChangeNotifier {
     } catch (e) {
       await mainLocalLog('Error: ${e.toString()}');
       return 0;
+    }
+  }
+
+  /// Creates the user's profile row in `users`. Shared by OTP verification
+  /// and the Google "Complete your details" page.
+  Future<void> createUserProfile({
+    required TempUserClass details,
+    required String userId,
+    required String email,
+  }) async {
+    final userRow = buildUserProfileRow(
+      details: details,
+      userId: userId,
+      email: email,
+    );
+    await _client.from('users').upsert(userRow.toJson());
+  }
+
+  /// Saves a signed-in user's profile locally and marks them verified.
+  /// Shared by email/password and Google sign-in.
+  Future<void> _persistSignedInUser(
+    Map<String, dynamic> row, {
+    String? password,
+  }) async {
+    NavProvider navProvider = NavProvider();
+    final tempUser = TempUserClass.fromJson({
+      ...row,
+      if (password != null) 'password': password,
+    });
+
+    await LoggedInUserFunc().insertLoggedInUser(
+      LoggedInUser(loggedInUser: tempUser),
+    );
+    await mainLocalLog('Offline User Logged In');
+
+    await UserFunc().insertUser(tempUser);
+    await mainLocalLog('Offline User Insertted');
+
+    navProvider.verify();
+    navProvider.offLoading();
+
+    await mainLocalLog(
+      "✅ User signed in and saved locally: ${tempUser.email}",
+    );
+  }
+
+  /// After a sign-in that skips email/password (Google), decides where the
+  /// user goes next. An existing profile is saved locally exactly like
+  /// [signIn]. Throws [EmailInUseException] when the email belongs to a
+  /// different profile.
+  Future<AuthDestination> resolveSignedInUser() async {
+    final authUser = _client.auth.currentUser;
+    if (authUser == null) return AuthDestination.authScreens;
+
+    bool? profileExists;
+    try {
+      final row =
+          await _client
+              .from('users')
+              .select()
+              .eq('user_id', authUser.id)
+              .maybeSingle();
+      if (row != null) {
+        await _persistSignedInUser(row);
+        profileExists = true;
+      } else {
+        final email = authUser.email?.toLowerCase().trim();
+        if (email != null && email.isNotEmpty) {
+          final others = await _client
+              .from('users')
+              .select('user_id')
+              .eq('email', email)
+              .neq('user_id', authUser.id)
+              .limit(1);
+          if (others.isNotEmpty) {
+            await mainLocalLog(
+              'Google sign-in: email already used by another profile',
+            );
+            await signOutWithoutProfile();
+            throw EmailInUseException(email);
+          }
+        }
+        profileExists = false;
+      }
+    } on EmailInUseException {
+      rethrow;
+    } catch (e) {
+      await mainLocalLog(
+        'Could not check user profile: ${e.toString()}',
+      );
+      profileExists = null;
+    }
+
+    return resolveAuthDestination(
+      hasSession: true,
+      profileExists: profileExists,
+    );
+  }
+
+  /// Signs out a session that has no profile yet (a Google user who has not
+  /// completed their details). Nothing local needs clearing.
+  Future<void> signOutWithoutProfile() async {
+    await GoogleAuthService().signOut();
+    try {
+      await _client.auth.signOut();
+    } catch (e) {
+      await mainLocalLog('Error signing out: ${e.toString()}');
     }
   }
 
@@ -198,7 +316,6 @@ class AuthService extends ChangeNotifier {
     String password,
     // BuildContext context,
   ) async {
-    NavProvider navProvider = NavProvider();
     bool isOnline = ConnectivityProvider().isConnected;
     if (isOnline) {
       try {
@@ -222,24 +339,9 @@ class AuthService extends ChangeNotifier {
                 .eq('user_id', userId)
                 .single();
 
-        final tempUser = TempUserClass.fromJson({
-          ...response,
-          'password': password,
-        });
-
-        await LoggedInUserFunc().insertLoggedInUser(
-          LoggedInUser(loggedInUser: tempUser),
-        );
-        await mainLocalLog('Offline User Logged In');
-
-        await UserFunc().insertUser(tempUser);
-        await mainLocalLog('Offline User Insertted');
-
-        navProvider.verify();
-        navProvider.offLoading();
-
-        await mainLocalLog(
-          "✅ User signed in and saved locally: ${tempUser.email}",
+        await _persistSignedInUser(
+          response,
+          password: password,
         );
 
         return 1;
@@ -385,6 +487,8 @@ class AuthService extends ChangeNotifier {
         await CartFunc().clearMainCart();
         bool isOnline = ConnectivityProvider().isConnected;
 
+        // So the Google account picker shows again next time.
+        await GoogleAuthService().signOut();
         if (isOnline) {
           await _client.auth.signOut();
           await LoggedInUserFunc().logOut();

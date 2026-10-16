@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/components/buttons/google_sign_in_button.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
@@ -342,6 +343,8 @@ class _LoginDesktopState extends State<LoginDesktop> {
                   },
                   text: General().login,
                 ),
+                SizedBox(height: 15),
+                GoogleSignInButton(theme: widget.theme),
                 SizedBox(height: 10),
                 MainButtonTransparent(
                   themeProvider: widget.theme,

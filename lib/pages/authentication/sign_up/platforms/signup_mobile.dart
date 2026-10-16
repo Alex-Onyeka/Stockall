@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/components/buttons/google_sign_in_button.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/phone_number_text_field.dart';
@@ -475,6 +476,10 @@ class _SignupMobileState extends State<SignupMobile> {
                           checkInputs();
                         },
                         text: 'Create User Account',
+                      ),
+                      SizedBox(height: 15),
+                      GoogleSignInButton(
+                        theme: widget.theme,
                       ),
                       SizedBox(height: 15),
                     ],
