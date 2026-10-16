@@ -893,6 +893,71 @@ class TempProductClass {
     }
   }
 
+  // For a line reopened for editing (draft, order, invoice,
+  // receipt): units/prices the line uses that were removed from
+  // this item are added back from the line's snapshot, on a copy
+  // for that line only. Returns this item unchanged when nothing
+  // is missing. Items without stored lists are left as they are.
+  TempProductClass withLineSnapshot({
+    List<String?> unitUuids = const [],
+    List<ProductUnitsClass>? snapshotUnits,
+    String? priceUuid,
+    List<ProductPricesClass>? snapshotPrices,
+    void Function(String message)? onMissing,
+  }) {
+    List<ProductUnitsClass>? newUnits;
+    final liveUnits = unitsList;
+    if (liveUnits != null && liveUnits.isNotEmpty) {
+      for (final unitUuid in unitUuids.toSet()) {
+        if (unitUuid == null ||
+            liveUnits.any((item) => item.uuid == unitUuid)) {
+          continue;
+        }
+        final snapshot =
+            (snapshotUnits ?? [])
+                .where((item) => item.uuid == unitUuid)
+                .firstOrNull;
+        if (snapshot == null) {
+          onMissing?.call(
+            'Unit $unitUuid of item $uuid ($name) is not in the line snapshot. Using the primary unit.',
+          );
+          continue;
+        }
+        newUnits = [
+          ...(newUnits ?? liveUnits),
+          snapshot.copyWith(isPrimary: false),
+        ];
+      }
+    }
+
+    List<ProductPricesClass>? newPrices;
+    final livePrices = pricesList;
+    if (priceUuid != null &&
+        livePrices != null &&
+        livePrices.isNotEmpty &&
+        !livePrices.any((item) => item.uuid == priceUuid)) {
+      final snapshot =
+          (snapshotPrices ?? [])
+              .where((item) => item.uuid == priceUuid)
+              .firstOrNull;
+      if (snapshot == null) {
+        onMissing?.call(
+          'Price $priceUuid of item $uuid ($name) is not in the line snapshot. Using the primary price.',
+        );
+      } else {
+        newPrices = [
+          ...livePrices,
+          snapshot.copyWith(isPrimary: false),
+        ];
+      }
+    }
+
+    if (newUnits == null && newPrices == null) {
+      return this;
+    }
+    return copyWith(unitsList: newUnits, pricesList: newPrices);
+  }
+
   bool canSelectForCart() {
     if (!isManaged) {
       return true;
