@@ -51,6 +51,17 @@ class TempStorageProducts {
   @HiveField(13)
   List<ProductUnitsClass>? unitsList;
 
+  // 2D items, as on sales items: 1 or null = 1D, 2 = 2D. For 2D
+  // items quantity is a sheet count of width × height.
+  @HiveField(14)
+  int? quantityType;
+
+  @HiveField(15)
+  double? widthDimension;
+
+  @HiveField(16)
+  double? heightDimension;
+
   TempStorageProducts({
     this.uuid,
     this.createdAt,
@@ -66,6 +77,9 @@ class TempStorageProducts {
     required this.sellingPrice,
     required this.useGroupUnit,
     required this.unitsList,
+    this.quantityType = 1,
+    this.widthDimension,
+    this.heightDimension,
   });
 
   factory TempStorageProducts.fromJson(
@@ -111,6 +125,11 @@ class TempStorageProducts {
                 ),
               )
               .toList(),
+      quantityType: json['quantity_type'] as int? ?? 1,
+      widthDimension:
+          (json['width_dimension'] as num?)?.toDouble(),
+      heightDimension:
+          (json['height_dimension'] as num?)?.toDouble(),
     );
   }
 
@@ -132,7 +151,14 @@ class TempStorageProducts {
       'units_list': ProductUnitsClass.getUnitList(
         tempUnitList: unitsList,
         productUuid: uuid,
+        dimensionType:
+            quantityType == 2
+                ? ProductUnitsClass.sheetUnit
+                : null,
       ),
+      'quantity_type': quantityType ?? 1,
+      'width_dimension': widthDimension,
+      'height_dimension': heightDimension,
     };
   }
 
@@ -151,6 +177,9 @@ class TempStorageProducts {
     double? sellingPrice,
     bool? useGroupUnit,
     List<ProductUnitsClass>? unitsList,
+    int? quantityType,
+    double? widthDimension,
+    double? heightDimension,
   }) {
     return TempStorageProducts(
       uuid: uuid ?? this.uuid,
@@ -167,6 +196,10 @@ class TempStorageProducts {
       sellingPrice: sellingPrice ?? this.sellingPrice,
       useGroupUnit: useGroupUnit ?? this.useGroupUnit,
       unitsList: unitsList ?? this.unitsList,
+      quantityType: quantityType ?? this.quantityType,
+      widthDimension: widthDimension ?? this.widthDimension,
+      heightDimension:
+          heightDimension ?? this.heightDimension,
     );
   }
 
@@ -185,6 +218,62 @@ class TempStorageProducts {
     quantity = newItem.quantity;
     useGroupUnit = newItem.useGroupUnit;
     unitsList = newItem.unitsList;
+    quantityType = newItem.quantityType;
+    widthDimension = newItem.widthDimension;
+    heightDimension = newItem.heightDimension;
+  }
+
+  //
+  //
+  // 2D, mirroring TempProductClass (same names: the unit
+  // conversions with index 4 call these on storage items).
+
+  bool isDimensional() => quantityType == 2;
+
+  double? getActualQuantity() {
+    if (quantityType == 2) {
+      return (quantity ?? 0) * dimensionArea();
+    } else {
+      return quantity;
+    }
+  }
+
+  // Area of one stock unit (sheet) for 2D items, 1 otherwise.
+  // Converts area back to the stored sheet count.
+  double dimensionArea() {
+    if (quantityType == 2) {
+      final area =
+          (widthDimension ?? 1) * (heightDimension ?? 1);
+      return area > 0 ? area : 1;
+    } else {
+      return 1;
+    }
+  }
+
+  // Stored quantity left after removing [removedQuantity]
+  // (in getActualQuantity units, i.e. area for 2D items).
+  double quantityAfterRemoving(double removedQuantity) {
+    return ((getActualQuantity() ?? 0) - removedQuantity) /
+        dimensionArea();
+  }
+
+  // [quantity] of [unit] in getActualQuantity units: area for
+  // 2D items (area units as they are, sheet units × sheet area).
+  double actualFromUnit(ProductUnitsClass unit, double quantity) {
+    if (quantityType == 2 &&
+        unit.dimensionType != ProductUnitsClass.areaUnit) {
+      return quantity * unit.conversion * dimensionArea();
+    }
+    return quantity * unit.conversion;
+  }
+
+  // getActualQuantity units back to [unit].
+  double unitFromActual(ProductUnitsClass unit, double actual) {
+    final perUnit = actualFromUnit(unit, 1);
+    if (!perUnit.isFinite || perUnit <= 0) {
+      return 0;
+    }
+    return actual / perUnit;
   }
 
   List<ProductUnitsClass> getUnitListFinal() {
@@ -279,6 +368,10 @@ class TempStorageProducts {
                 : unit ?? 'Unit(s)',
         isPrimary: true,
         productUuid: uuid!,
+        dimensionType:
+            quantityType == 2
+                ? ProductUnitsClass.sheetUnit
+                : null,
       );
     } else {
       return getUnitsList()
@@ -303,6 +396,10 @@ class TempStorageProducts {
                     : unit ?? 'Unit(s)',
             isPrimary: true,
             productUuid: uuid!,
+            dimensionType:
+                quantityType == 2
+                    ? ProductUnitsClass.sheetUnit
+                    : null,
           ),
         ];
         if (useGroupUnit == true) {

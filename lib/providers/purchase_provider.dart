@@ -328,14 +328,13 @@ class PurchaseProvider extends ChangeNotifier {
             if (storageProducts.isNotEmpty) {
               var newPro = storageProducts.first.copyWith();
 
-              var quantity =
-                  (newPro.quantity ?? 0) -
-                  rec
-                      .getSelectedUnit()
-                      .getQuantityEquivMultiplied(
-                        index: 1,
-                        quantityTwo: (rec.quantity ?? 0),
-                      );
+              // Stored quantity (sheets for 2D storage items).
+              var quantity = newPro.quantityAfterRemoving(
+                newPro.actualFromUnit(
+                  rec.getSelectedUnit(),
+                  rec.quantity ?? 0,
+                ),
+              );
 
               try {
                 var product = newPro.copyWith();
@@ -793,14 +792,14 @@ class PurchaseProvider extends ChangeNotifier {
                   );
 
           var newPr = storageProduct.copyWith();
+          // Stored quantity (sheets for 2D storage items).
           newPr.quantity =
-              (newPr.quantity ?? 0) +
-              item
-                  .getSelectedUnit()
-                  .getQuantityEquivMultiplied(
-                    index: 1,
-                    quantityTwo: (item.quantity ?? 0),
-                  );
+              ((newPr.getActualQuantity() ?? 0) +
+                  newPr.actualFromUnit(
+                    item.getSelectedUnit(),
+                    item.quantity ?? 0,
+                  )) /
+              newPr.dimensionArea();
           newPr.updatedAt = DateTime.now();
 
           await returnStorageProductProvider()
