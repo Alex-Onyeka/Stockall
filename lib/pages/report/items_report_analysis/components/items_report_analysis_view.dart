@@ -42,7 +42,7 @@ class _ItemsReportAnalysisViewState
   // Filter & Metric States
   ItemPerformanceMetric _metric =
       ItemPerformanceMetric.salesRevenue;
-  ItemAnalysisPeriod _period = ItemAnalysisPeriod.allTime;
+  ItemAnalysisPeriod _period = ItemAnalysisPeriod.today;
   DateTimeRange? _customRange;
   int _distribTabIndex = 0; // 0 = Category, 1 = Department
 

@@ -11,7 +11,8 @@ enum ItemPerformanceMetric {
   realizedProfit,
 }
 
-extension ItemPerformanceMetricExt on ItemPerformanceMetric {
+extension ItemPerformanceMetricExt
+    on ItemPerformanceMetric {
   String get label {
     switch (this) {
       case ItemPerformanceMetric.salesRevenue:
@@ -25,24 +26,24 @@ extension ItemPerformanceMetricExt on ItemPerformanceMetric {
 }
 
 enum ItemAnalysisPeriod {
-  allTime,
   today,
   thisWeek,
   thisMonth,
+  allTime,
   custom,
 }
 
 extension ItemAnalysisPeriodExt on ItemAnalysisPeriod {
   String get label {
     switch (this) {
-      case ItemAnalysisPeriod.allTime:
-        return 'All Time';
       case ItemAnalysisPeriod.today:
         return 'Today';
       case ItemAnalysisPeriod.thisWeek:
         return 'This Week';
       case ItemAnalysisPeriod.thisMonth:
         return 'This Month';
+      case ItemAnalysisPeriod.allTime:
+        return 'All Time';
       case ItemAnalysisPeriod.custom:
         return 'Custom Range';
     }
@@ -82,7 +83,8 @@ class ItemsReportAnalysisSummary {
   });
 
   /// Check whether all managed in-stock items share the exact same primary unit.
-  bool get hasSingleCompatibleUnit => stockByPrimaryUnit.length <= 1;
+  bool get hasSingleCompatibleUnit =>
+      stockByPrimaryUnit.length <= 1;
 
   /// If single unit, returns formatted aggregate quantity; otherwise returns null.
   String? get singleUnitFormattedQuantity {
@@ -182,7 +184,9 @@ class CategoryDistributionItem {
     required this.percentage,
   });
 
-  bool get isOthers => categoryUuid == null || categoryUuid == itemsReportNoneKey;
+  bool get isOthers =>
+      categoryUuid == null ||
+      categoryUuid == itemsReportNoneKey;
 }
 
 /// Distribution entry for Department summary table.
@@ -201,13 +205,17 @@ class DepartmentDistributionItem {
     required this.percentage,
   });
 
-  bool get isOthers => departmentUuid == null || departmentUuid == itemsReportNoneKey;
+  bool get isOthers =>
+      departmentUuid == null ||
+      departmentUuid == itemsReportNoneKey;
 }
 
 /// Main computation engine for Items Report Analysis.
 class ItemsReportAnalysisBuilder {
   /// Builds the 4.2 Summary Statistics.
-  static ItemsReportAnalysisSummary buildSummary(List<ItemsReportRow> rows) {
+  static ItemsReportAnalysisSummary buildSummary(
+    List<ItemsReportRow> rows,
+  ) {
     double totalSelling = 0;
     double totalCost = 0;
     int inStock = 0;
@@ -223,7 +231,8 @@ class ItemsReportAnalysisBuilder {
         managed++;
         final qty = r.quantity ?? 0;
         if (qty > 0) {
-          unitMap[r.primaryUnit] = (unitMap[r.primaryUnit] ?? 0) + qty;
+          unitMap[r.primaryUnit] =
+              (unitMap[r.primaryUnit] ?? 0) + qty;
         }
         if (r.stockLevel != StockLevelFilter.outOfStock) {
           availableStockCount++;
@@ -256,7 +265,10 @@ class ItemsReportAnalysisBuilder {
     }
 
     final potentialProfit = totalSelling - totalCost;
-    final margin = totalSelling > 0 ? (potentialProfit / totalSelling) * 100 : 0.0;
+    final margin =
+        totalSelling > 0
+            ? (potentialProfit / totalSelling) * 100
+            : 0.0;
 
     return ItemsReportAnalysisSummary(
       totalStockSellingValue: totalSelling,
@@ -280,25 +292,42 @@ class ItemsReportAnalysisBuilder {
     required DateTime businessNow,
     DateTimeRange? customRange,
   }) {
-    final today = DateTime(businessNow.year, businessNow.month, businessNow.day);
+    final today = DateTime(
+      businessNow.year,
+      businessNow.month,
+      businessNow.day,
+    );
     switch (period) {
       case ItemAnalysisPeriod.today:
         return DateTimeRange(start: today, end: today);
       case ItemAnalysisPeriod.thisWeek:
         // Week starting Monday
         final weekday = today.weekday;
-        final startOfWeek = today.subtract(Duration(days: weekday - 1));
-        return DateTimeRange(start: startOfWeek, end: today);
+        final startOfWeek = today.subtract(
+          Duration(days: weekday - 1),
+        );
+        return DateTimeRange(
+          start: startOfWeek,
+          end: today,
+        );
       case ItemAnalysisPeriod.thisMonth:
-        final startOfMonth = DateTime(today.year, today.month, 1);
-        return DateTimeRange(start: startOfMonth, end: today);
+        final startOfMonth = DateTime(
+          today.year,
+          today.month,
+          1,
+        );
+        return DateTimeRange(
+          start: startOfMonth,
+          end: today,
+        );
       case ItemAnalysisPeriod.allTime:
         return DateTimeRange(
           start: DateTime(2000, 1, 1),
           end: DateTime(2100, 1, 1),
         );
       case ItemAnalysisPeriod.custom:
-        return customRange ?? DateTimeRange(start: today, end: today);
+        return customRange ??
+            DateTimeRange(start: today, end: today);
     }
   }
 
@@ -316,21 +345,26 @@ class ItemsReportAnalysisBuilder {
       customRange: customRange,
     );
 
-    final startCutoff = period == ItemAnalysisPeriod.allTime
-        ? DateTime(2000, 1, 1)
-        : fourAm(range.start);
-    final endCutoff = period == ItemAnalysisPeriod.allTime
-        ? DateTime(2100, 1, 1)
-        : fourAmNextDay(range.end);
+    final startCutoff =
+        period == ItemAnalysisPeriod.allTime
+            ? DateTime(2000, 1, 1)
+            : fourAm(range.start);
+    final endCutoff =
+        period == ItemAnalysisPeriod.allTime
+            ? DateTime(2100, 1, 1)
+            : fourAmNextDay(range.end);
 
     // Group sales records by item uuid (fallback to name lowercase)
-    final Map<String, List<TempProductSaleRecord>> salesByItemUuid = {};
-    final Map<String, List<TempProductSaleRecord>> salesByItemName = {};
+    final Map<String, List<TempProductSaleRecord>>
+    salesByItemUuid = {};
+    final Map<String, List<TempProductSaleRecord>>
+    salesByItemName = {};
 
     for (final s in salesRecords) {
       if (s.isVoid == true) continue;
       final created = s.createdAt.toLocal();
-      if (created.isBefore(startCutoff) || !created.isBefore(endCutoff)) {
+      if (created.isBefore(startCutoff) ||
+          !created.isBefore(endCutoff)) {
         continue;
       }
       final uuid = s.productUuid;
@@ -344,9 +378,11 @@ class ItemsReportAnalysisBuilder {
     final List<ItemPerformanceRecord> list = [];
 
     for (final r in rows) {
-      List<TempProductSaleRecord>? matches = salesByItemUuid[r.uuid];
+      List<TempProductSaleRecord>? matches =
+          salesByItemUuid[r.uuid];
       if (matches == null || matches.isEmpty) {
-        matches = salesByItemName[r.name.trim().toLowerCase()];
+        matches =
+            salesByItemName[r.name.trim().toLowerCase()];
       }
 
       double rev = 0;
@@ -395,7 +431,9 @@ class ItemsReportAnalysisBuilder {
       final valB = b.valueForMetric(metric);
       final cmp = valB.compareTo(valA);
       if (cmp != 0) return cmp;
-      return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+      return a.name.toLowerCase().compareTo(
+        b.name.toLowerCase(),
+      );
     });
     return copy.take(3).toList();
   }
@@ -412,20 +450,27 @@ class ItemsReportAnalysisBuilder {
       final valB = b.valueForMetric(metric);
       final cmp = valA.compareTo(valB);
       if (cmp != 0) return cmp;
-      return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+      return a.name.toLowerCase().compareTo(
+        b.name.toLowerCase(),
+      );
     });
     return copy.take(3).toList();
   }
 
   /// Profit margin items: Top 3 Highest and Least 3 (Sections 4.5 & 4.6).
-  static ({List<ItemProfitMarginRecord> top3, List<ItemProfitMarginRecord> least3}) computeProfitMargins(
-    List<ItemsReportRow> rows,
-  ) {
+  static ({
+    List<ItemProfitMarginRecord> top3,
+    List<ItemProfitMarginRecord> least3,
+  })
+  computeProfitMargins(List<ItemsReportRow> rows) {
     final valid = <ItemProfitMarginRecord>[];
 
     for (final r in rows) {
       // Items with zero or invalid selling prices must be excluded from percentage ranking
-      if (r.sellingPrice > 0 && r.costPrice >= 0 && r.margin != null && r.margin!.isFinite) {
+      if (r.sellingPrice > 0 &&
+          r.costPrice >= 0 &&
+          r.margin != null &&
+          r.margin!.isFinite) {
         valid.add(
           ItemProfitMarginRecord(
             uuid: r.uuid,
@@ -440,21 +485,28 @@ class ItemsReportAnalysisBuilder {
     }
 
     if (valid.isEmpty) {
-      return (top3: <ItemProfitMarginRecord>[], least3: <ItemProfitMarginRecord>[]);
+      return (
+        top3: <ItemProfitMarginRecord>[],
+        least3: <ItemProfitMarginRecord>[],
+      );
     }
 
     final desc = List<ItemProfitMarginRecord>.from(valid)
       ..sort((a, b) {
         final cmp = b.margin.compareTo(a.margin);
         if (cmp != 0) return cmp;
-        return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+        return a.name.toLowerCase().compareTo(
+          b.name.toLowerCase(),
+        );
       });
 
     final asc = List<ItemProfitMarginRecord>.from(valid)
       ..sort((a, b) {
         final cmp = a.margin.compareTo(b.margin);
         if (cmp != 0) return cmp;
-        return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+        return a.name.toLowerCase().compareTo(
+          b.name.toLowerCase(),
+        );
       });
 
     return (
@@ -464,11 +516,14 @@ class ItemsReportAnalysisBuilder {
   }
 
   /// Category summary table (Section 4.7).
-  static List<CategoryDistributionItem> computeCategoryDistribution({
+  static List<CategoryDistributionItem>
+  computeCategoryDistribution({
     required List<ItemsReportRow> rows,
     required List<CategoryClass> categories,
   }) {
-    final nameByUuid = {for (final c in categories) c.uuid: c.name};
+    final nameByUuid = {
+      for (final c in categories) c.uuid: c.name,
+    };
     final Map<String?, int> counts = {};
 
     for (final r in rows) {
@@ -486,8 +541,9 @@ class ItemsReportAnalysisBuilder {
     final List<CategoryDistributionItem> list = [];
 
     // Distinct assigned categories
-    final knownCategories = counts.entries.where((e) => e.key != null).toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
+    final knownCategories =
+        counts.entries.where((e) => e.key != null).toList()
+          ..sort((a, b) => b.value.compareTo(a.value));
 
     int idx = 1;
     for (final e in knownCategories) {
@@ -507,7 +563,8 @@ class ItemsReportAnalysisBuilder {
     // Unassigned items grouped under 'Others'
     final unassigned = counts[null] ?? 0;
     if (unassigned > 0 || list.isEmpty) {
-      final pct = total > 0 ? (unassigned / total) * 100 : 0.0;
+      final pct =
+          total > 0 ? (unassigned / total) * 100 : 0.0;
       list.add(
         CategoryDistributionItem(
           index: idx++,
@@ -523,11 +580,14 @@ class ItemsReportAnalysisBuilder {
   }
 
   /// Department summary table (Section 4.8).
-  static List<DepartmentDistributionItem> computeDepartmentDistribution({
+  static List<DepartmentDistributionItem>
+  computeDepartmentDistribution({
     required List<ItemsReportRow> rows,
     required List<DepartmentClass> departments,
   }) {
-    final nameByUuid = {for (final d in departments) d.uuid: d.name};
+    final nameByUuid = {
+      for (final d in departments) d.uuid: d.name,
+    };
     final Map<String?, int> counts = {};
 
     for (final r in rows) {
@@ -542,8 +602,9 @@ class ItemsReportAnalysisBuilder {
     final total = rows.length;
     final List<DepartmentDistributionItem> list = [];
 
-    final knownDepts = counts.entries.where((e) => e.key != null).toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
+    final knownDepts =
+        counts.entries.where((e) => e.key != null).toList()
+          ..sort((a, b) => b.value.compareTo(a.value));
 
     int idx = 1;
     for (final e in knownDepts) {
@@ -562,7 +623,8 @@ class ItemsReportAnalysisBuilder {
 
     final unassigned = counts[null] ?? 0;
     if (unassigned > 0 || list.isEmpty) {
-      final pct = total > 0 ? (unassigned / total) * 100 : 0.0;
+      final pct =
+          total > 0 ? (unassigned / total) * 100 : 0.0;
       list.add(
         DepartmentDistributionItem(
           index: idx++,
@@ -584,11 +646,14 @@ class ItemsReportAnalysisBuilder {
   }) {
     final copy = List<ItemsReportRow>.from(rows);
     copy.sort((a, b) {
-      final dateA = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-      final dateB = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final dateA =
+          a.createdAt ??
+          DateTime.fromMillisecondsSinceEpoch(0);
+      final dateB =
+          b.createdAt ??
+          DateTime.fromMillisecondsSinceEpoch(0);
       return dateB.compareTo(dateA);
     });
     return copy.take(limit).toList();
   }
 }
-

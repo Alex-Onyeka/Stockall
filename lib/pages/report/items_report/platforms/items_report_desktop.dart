@@ -6,6 +6,7 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/components/report_list_tile.dart';
 import 'package:stockall/pages/report/item_history_report/item_history_report_page.dart';
+import 'package:stockall/pages/report/item_history_summary/item_history_summary_page.dart';
 import 'package:stockall/pages/report/items_report_analysis/items_report_analysis_page.dart';
 import 'package:stockall/pages/report/items_report_main/items_report_main_page.dart';
 
@@ -129,6 +130,31 @@ class ItemsReportDesktop extends StatelessWidget {
                               subText:
                                   'Search, filter and sort a detailed table of your inventory history records',
                               title: 'Item History Report',
+                            ),
+                          ),
+                          Visibility(
+                            visible: authorization(
+                              authorized:
+                                  Authorizations()
+                                      .viewItemsReport,
+                            ),
+                            child: ReportListTile(
+                              isActive: true,
+                              theme: theme,
+                              action: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) =>
+                                            const ItemHistorySummaryPage(),
+                                  ),
+                                );
+                              },
+                              subText:
+                                  'Aggregated view of stock movements and changes over a selected reporting period',
+                              title:
+                                  'Item History Summary and Analysis',
                             ),
                           ),
                           const SizedBox(height: 30),

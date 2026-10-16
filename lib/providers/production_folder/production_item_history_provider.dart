@@ -110,37 +110,21 @@ class ProductionItemHistoryProvider with ChangeNotifier {
         rangeStartDate == null) {
       return departmentProductionItemHistories()
           .where(
-            (productionItemHistory) =>
-                !productionItemHistory.createdAt!.isBefore(
-                  fourAm(dateSet ?? DateTime.now()),
-                ) &&
-                !productionItemHistory.createdAt!.isAfter(
-                  fourAmNextDay(dateSet ?? DateTime.now()),
-                ),
-          )
-          .toList();
-    } else if (dateSet != null) {
-      return departmentProductionItemHistories()
-          .where(
-            (productionItemHistory) =>
-                !productionItemHistory.createdAt!.isBefore(
-                  fourAm(dateSet!),
-                ) &&
-                !productionItemHistory.createdAt!.isAfter(
-                  fourAmNextDay(dateSet!),
-                ),
+            (productionItemHistory) => isDateTimeInBusinessWindow(
+              dateTime: productionItemHistory.createdAt,
+              dateSet: dateSet ?? DateTime.now(),
+            ),
           )
           .toList();
     } else {
       return departmentProductionItemHistories()
           .where(
-            (update) =>
-                ((!update.createdAt!.isBefore(
-                      fourAm(rangeStartDate!),
-                    )) &&
-                    (!update.createdAt!.isAfter(
-                      fourAmNextDay(rangeEndDate!),
-                    ))),
+            (productionItemHistory) => isDateTimeInBusinessWindow(
+              dateTime: productionItemHistory.createdAt,
+              dateSet: dateSet,
+              rangeStartDate: rangeStartDate,
+              rangeEndDate: rangeEndDate,
+            ),
           )
           .toList();
     }
