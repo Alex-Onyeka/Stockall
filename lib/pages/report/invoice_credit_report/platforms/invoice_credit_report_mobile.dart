@@ -6,6 +6,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/components/report_list_tile.dart';
 import 'package:stockall/pages/report/invoice_report_table/invoice_report_table_page.dart';
 import 'package:stockall/pages/report/invoice_sales_report/invoice_sales_report.dart';
+import 'package:stockall/pages/report/invoice_summary/invoice_summary_page.dart';
 
 class InvoiceCreditReportMobile extends StatelessWidget {
   const InvoiceCreditReportMobile({super.key});
@@ -18,7 +19,8 @@ class InvoiceCreditReportMobile extends StatelessWidget {
         children: [
           TopBanner(
             turnOnBackNavButton: true,
-            subTitle: 'View a breakdown of your invoice and credit reports',
+            subTitle:
+                'View a breakdown of your invoice and credit reports',
             title: 'Invoice/Credit Report',
             theme: theme,
             bottomSpace: 40,
@@ -29,7 +31,9 @@ class InvoiceCreditReportMobile extends StatelessWidget {
           const SizedBox(height: 20),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+              ),
               child: SingleChildScrollView(
                 child: Column(
                   children: [
@@ -38,7 +42,11 @@ class InvoiceCreditReportMobile extends StatelessWidget {
                         Text(
                           'Reports List:',
                           style: TextStyle(
-                            fontSize: theme.mobileTexts.b1.fontSize,
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b1
+                                    .fontSize,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -48,10 +56,12 @@ class InvoiceCreditReportMobile extends StatelessWidget {
                     Column(
                       children: [
                         Visibility(
-                          visible: !isStoreKeeper() &&
+                          visible:
+                              !isStoreKeeper() &&
                               authorization(
-                                authorized: Authorizations()
-                                    .viewInvoiceSalesReport,
+                                authorized:
+                                    Authorizations()
+                                        .viewInvoiceSalesReport,
                               ),
                           child: ReportListTile(
                             isActive: true,
@@ -60,8 +70,9 @@ class InvoiceCreditReportMobile extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      const InvoiceReportTablePage(),
+                                  builder:
+                                      (context) =>
+                                          const InvoiceReportTablePage(),
                                 ),
                               );
                             },
@@ -71,10 +82,12 @@ class InvoiceCreditReportMobile extends StatelessWidget {
                           ),
                         ),
                         Visibility(
-                          visible: !isStoreKeeper() &&
+                          visible:
+                              !isStoreKeeper() &&
                               authorization(
-                                authorized: Authorizations()
-                                    .viewInvoiceSalesReport,
+                                authorized:
+                                    Authorizations()
+                                        .viewInvoiceSalesReport,
                               ),
                           child: ReportListTile(
                             isActive: true,
@@ -83,8 +96,36 @@ class InvoiceCreditReportMobile extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      InvoiceSalesReport(),
+                                  builder:
+                                      (context) =>
+                                          const InvoiceSummaryPage(),
+                                ),
+                              );
+                            },
+                            subText:
+                                'Aggregated overview of invoice sales, collections, balances, profits, and performance',
+                            title:
+                                'Invoice Summary and Analysis',
+                          ),
+                        ),
+                        Visibility(
+                          visible:
+                              !isStoreKeeper() &&
+                              authorization(
+                                authorized:
+                                    Authorizations()
+                                        .viewInvoiceSalesReport,
+                              ),
+                          child: ReportListTile(
+                            isActive: true,
+                            theme: theme,
+                            action: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) =>
+                                          InvoiceSalesReport(),
                                 ),
                               );
                             },
@@ -106,4 +147,3 @@ class InvoiceCreditReportMobile extends StatelessWidget {
     );
   }
 }
-

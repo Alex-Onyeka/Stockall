@@ -4,7 +4,6 @@ import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/constants/calculations.dart';
-import 'package:stockall/constants/functions.dart';
 
 /// Page size required by report table specification.
 const int invoiceReportPageSize = 100;
@@ -497,6 +496,44 @@ class InvoiceReportFilters {
   double? balanceMax;
   double? profitMin;
   double? profitMax;
+
+  InvoiceReportFilters({
+    this.search = '',
+    this.dateRange,
+    this.staffId,
+    this.customerUuid,
+    this.paymentChannel = InvoicePaymentChannelFilter.all,
+    this.paymentStatus = InvoicePaymentStatusFilter.all,
+    this.subStaffUuid,
+    this.departmentKey,
+    this.totalMin,
+    this.totalMax,
+    this.paidMin,
+    this.paidMax,
+    this.balanceMin,
+    this.balanceMax,
+    this.profitMin,
+    this.profitMax,
+  });
+
+  void copyFrom(InvoiceReportFilters other) {
+    search = other.search;
+    dateRange = other.dateRange;
+    staffId = other.staffId;
+    customerUuid = other.customerUuid;
+    paymentChannel = other.paymentChannel;
+    paymentStatus = other.paymentStatus;
+    subStaffUuid = other.subStaffUuid;
+    departmentKey = other.departmentKey;
+    totalMin = other.totalMin;
+    totalMax = other.totalMax;
+    paidMin = other.paidMin;
+    paidMax = other.paidMax;
+    balanceMin = other.balanceMin;
+    balanceMax = other.balanceMax;
+    profitMin = other.profitMin;
+    profitMax = other.profitMax;
+  }
 
   bool get hasAnything =>
       search.trim().isNotEmpty ||

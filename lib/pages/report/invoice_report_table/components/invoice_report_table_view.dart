@@ -34,10 +34,12 @@ class _TableCol {
 
 class InvoiceReportTableView extends StatefulWidget {
   final bool isDesktop;
+  final InvoiceReportFilters? initialFilters;
 
   const InvoiceReportTableView({
     super.key,
     required this.isDesktop,
+    this.initialFilters,
   });
 
   @override
@@ -88,8 +90,19 @@ class _InvoiceReportTableViewState
   @override
   void initState() {
     super.initState();
-    _range = null;
-    _filters.dateRange = null;
+    if (widget.initialFilters != null) {
+      _filters.copyFrom(widget.initialFilters!);
+      _range = _filters.dateRange;
+      if (_filters.search.isNotEmpty) {
+        _searchCtrl.text = _filters.search;
+      }
+      if (_filters.hasAnything) {
+        _showFilters = true;
+      }
+    } else {
+      _range = null;
+      _filters.dateRange = null;
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _load(refreshFromStore: false);
