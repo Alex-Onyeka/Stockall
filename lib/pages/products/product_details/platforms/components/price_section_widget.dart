@@ -53,6 +53,8 @@ Widget priceSectionWidget(
                     costController.text =
                         product.costPrice.toString().toString();
                     bool isEditPriceLoading = false;
+                    // Shown under the single Selling Price field.
+                    String? sellingPriceError;
                     returnData().initPricesList(
                       productUuid: product.uuid,
                       pricesListNew: product.getPricesList(),
@@ -216,6 +218,10 @@ Widget priceSectionWidget(
                                                                 context,
                                                           ).useMultiplePrices,
                                                       onTap: () {
+                                                        setState(() {
+                                                          sellingPriceError =
+                                                              null;
+                                                        });
                                                         toggleMultiplePricesAction(
                                                           context:
                                                               context,
@@ -242,15 +248,49 @@ Widget priceSectionWidget(
                                                           bottom:
                                                               10.0,
                                                         ),
-                                                        child: MoneyTextfield(
-                                                          title:
-                                                              'Selling Price',
-                                                          hint:
-                                                              'Enter Selling Price',
-                                                          controller:
-                                                              sellingController,
-                                                          theme:
-                                                              theme,
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment.start,
+                                                          children: [
+                                                            MoneyTextfield(
+                                                              title:
+                                                                  'Selling Price',
+                                                              hint:
+                                                                  'Enter Selling Price',
+                                                              controller:
+                                                                  sellingController,
+                                                              theme:
+                                                                  theme,
+                                                              onChanged: (
+                                                                _,
+                                                              ) {
+                                                                if (sellingPriceError !=
+                                                                    null) {
+                                                                  setState(() {
+                                                                    sellingPriceError =
+                                                                        null;
+                                                                  });
+                                                                }
+                                                              },
+                                                            ),
+                                                            if (sellingPriceError !=
+                                                                null)
+                                                              Padding(
+                                                                padding: const EdgeInsets.only(
+                                                                  top:
+                                                                      5,
+                                                                ),
+                                                                child: Text(
+                                                                  sellingPriceError!,
+                                                                  style: TextStyle(
+                                                                    color:
+                                                                        Colors.red.shade700,
+                                                                    fontSize:
+                                                                        theme.mobileTexts.b3.fontSize,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                          ],
                                                         ),
                                                       ),
                                                     ),
@@ -307,6 +347,28 @@ Widget priceSectionWidget(
                                                   themeProvider: theme,
                                                   action: () {
                                                     final safeContext = context;
+                                                    // Single price: don't save an empty or
+                                                    // invalid price (it would become 0).
+                                                    if (!returnData()
+                                                        .useMultiplePrices) {
+                                                      final sellingPrice =
+                                                          double.tryParse(
+                                                            sellingController.text
+                                                                .replaceAll(
+                                                                  ',',
+                                                                  '',
+                                                                )
+                                                                .trim(),
+                                                          );
+                                                      if (sellingPrice == null ||
+                                                          sellingPrice < 0) {
+                                                        setState(() {
+                                                          sellingPriceError =
+                                                              'Enter a valid selling price.';
+                                                        });
+                                                        return;
+                                                      }
+                                                    }
                                                     if (isEditPriceLoading ==
                                                         false) {
                                                       showDialog(
