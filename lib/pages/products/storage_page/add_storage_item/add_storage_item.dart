@@ -20,6 +20,8 @@ class _AddStorageItemState extends State<AddStorageItem> {
   TextEditingController qttyPerGroupController = TextEditingController();
   TextEditingController costPriceController = TextEditingController();
   TextEditingController sellingPriceController = TextEditingController();
+  TextEditingController widthController = TextEditingController();
+  TextEditingController heightController = TextEditingController();
 
   @override
   void dispose() {
@@ -27,6 +29,8 @@ class _AddStorageItemState extends State<AddStorageItem> {
     nameController.dispose();
     quantityController.dispose();
     qttyPerGroupController.dispose();
+    widthController.dispose();
+    heightController.dispose();
   }
 
   @override
@@ -53,6 +57,8 @@ class _AddStorageItemState extends State<AddStorageItem> {
                 storageProduct: widget.productStorage,
                 costPriceController: costPriceController,
                 sellingPriceController: sellingPriceController,
+                widthController: widthController,
+                heightController: heightController,
               );
             } else {
               return AddStorageItemDesktop(
@@ -61,6 +67,8 @@ class _AddStorageItemState extends State<AddStorageItem> {
                 storageProduct: widget.productStorage,
                 costPriceController: costPriceController,
                 sellingPriceController: sellingPriceController,
+                widthController: widthController,
+                heightController: heightController,
               );
             }
           },

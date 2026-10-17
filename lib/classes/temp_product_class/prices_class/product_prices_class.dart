@@ -135,4 +135,67 @@ class ProductPricesClass extends HiveObject {
   String getPricesName() {
     return name?.toUpperCase() ?? 'Price';
   }
+
+  // Single / multiple prices mode. The mode is not stored:
+  // an item with more than one price is in multiple mode.
+  static bool hasMultiple(List<ProductPricesClass>? prices) {
+    return (prices?.length ?? 0) > 1;
+  }
+
+  static ProductPricesClass? primaryOf(
+    List<ProductPricesClass>? prices,
+  ) {
+    if (prices == null || prices.isEmpty) {
+      return null;
+    }
+    var items = prices.where((item) => item.isPrimary);
+    return items.isNotEmpty ? items.first : prices.first;
+  }
+
+  // Sets the primary price's value and keeps the other prices.
+  static List<ProductPricesClass> withPrimaryValue({
+    required List<ProductPricesClass> prices,
+    required double priceValue,
+    required ProductPricesClass Function() newPrice,
+  }) {
+    var primary = primaryOf(prices);
+    if (primary == null) {
+      return [
+        newPrice().copyWith(
+          priceValue: priceValue,
+          isPrimary: true,
+        ),
+      ];
+    }
+    return prices.map((item) {
+      if (item.uuid == primary.uuid) {
+        return item.copyWith(
+          priceValue: priceValue,
+          isPrimary: true,
+        );
+      } else {
+        return item.copyWith();
+      }
+    }).toList();
+  }
+
+  // Keeps only the primary price (same uuid), for single
+  // price mode. Empty with no value stays empty so the
+  // default price from getPricesList is used.
+  static List<ProductPricesClass> singlePriceList({
+    required List<ProductPricesClass> prices,
+    required double? priceValue,
+    required ProductPricesClass Function() newPrice,
+  }) {
+    var primary = primaryOf(prices);
+    if (primary == null && priceValue == null) {
+      return [];
+    }
+    return [
+      (primary ?? newPrice()).copyWith(
+        priceValue: priceValue ?? 0,
+        isPrimary: true,
+      ),
+    ];
+  }
 }

@@ -287,6 +287,22 @@ class DraftsProvider extends ChangeNotifier {
     }).toList();
   }
 
+  // The line's unit, wastage unit and price, added back from the
+  // draft line's snapshot if they were removed from the item.
+  static TempProductClass editLineProduct({
+    required DraftItems record,
+    required TempProductClass product,
+    void Function(String message)? onMissing,
+  }) {
+    return product.withLineSnapshot(
+      unitUuids: [record.unitUuid, record.wastageUnitUuid],
+      snapshotUnits: record.unitsList,
+      priceUuid: record.priceUuid,
+      snapshotPrices: record.pricesList,
+      onMissing: onMissing ?? (message) => mainLocalLog(message),
+    );
+  }
+
   TempCartItem draftItemToCartItem({
     required DraftItems record,
     required TempProductClass product,
@@ -328,7 +344,13 @@ class DraftsProvider extends ChangeNotifier {
 
       if (products.isNotEmpty) {
         cartItems.add(
-          draftItemToCartItem(record: record, product: products.first),
+          draftItemToCartItem(
+            record: record,
+            product: editLineProduct(
+              record: record,
+              product: products.first,
+            ),
+          ),
         );
       } else {
         // Custom item, or the product was deleted since the

@@ -135,6 +135,54 @@ class ProductUnitsClass extends HiveObject {
     return name.toUpperCase();
   }
 
+  // Single / multiple units mode. The mode is not stored:
+  // an item with more than one unit is in multiple mode.
+  static bool hasMultiple(List<ProductUnitsClass>? units) {
+    return (units?.length ?? 0) > 1;
+  }
+
+  static ProductUnitsClass? primaryOf(
+    List<ProductUnitsClass>? units,
+  ) {
+    if (units == null || units.isEmpty) {
+      return null;
+    }
+    var items = units.where((item) => item.isPrimary);
+    return items.isNotEmpty ? items.first : units.first;
+  }
+
+  // Renames the primary unit (same uuid) and keeps the other
+  // units, so single mode never adds a second unit.
+  static List<ProductUnitsClass> withPrimaryName({
+    required List<ProductUnitsClass> units,
+    required String name,
+    required ProductUnitsClass Function() newUnit,
+  }) {
+    var primary = primaryOf(units);
+    if (primary == null) {
+      return [newUnit().copyWith(name: name, isPrimary: true)];
+    }
+    return units.map((item) {
+      if (item.uuid == primary.uuid) {
+        return item.copyWith(name: name, isPrimary: true);
+      } else {
+        return item.copyWith();
+      }
+    }).toList();
+  }
+
+  // Keeps only the primary unit (same uuid, conversion and
+  // dimension type), for single unit mode.
+  static List<ProductUnitsClass> singleUnitList(
+    List<ProductUnitsClass> units,
+  ) {
+    var primary = primaryOf(units);
+    if (primary == null) {
+      return [];
+    }
+    return [primary.copyWith(isPrimary: true)];
+  }
+
   double getQuantityEquivDivided({
     BuildContext? context,
     double? newQuantity,

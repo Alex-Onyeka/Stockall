@@ -687,6 +687,26 @@ class InvoicesProvider extends ChangeNotifier {
     );
   }
 
+  // The line's unit, wastage unit and price, added back from the
+  // invoice line's snapshot if they were removed from the item.
+  static TempProductClass editLineProduct({
+    required TempProductSaleRecord record,
+    required TempProductClass product,
+    void Function(String message)? onMissing,
+  }) {
+    return product.withLineSnapshot(
+      unitUuids: [
+        record.unitUuid,
+        if (record.manageSalesWastage == true)
+          record.wastageUnitUuid,
+      ],
+      snapshotUnits: record.unitsList,
+      priceUuid: record.priceUuid,
+      snapshotPrices: record.pricesList,
+      onMissing: onMissing ?? (message) => mainLocalLog(message),
+    );
+  }
+
   // EDIT Invoice
   TempCartItem saleRecordToCartItem({
     required TempProductSaleRecord record,
@@ -753,7 +773,10 @@ class InvoicesProvider extends ChangeNotifier {
         }
         final cartItem = saleRecordToCartItem(
           record: newRecord,
-          product: product.first,
+          product: editLineProduct(
+            record: newRecord,
+            product: product.first,
+          ),
         );
         cartItems.add(cartItem);
       } else {

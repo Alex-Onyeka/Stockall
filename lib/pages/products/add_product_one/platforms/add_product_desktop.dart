@@ -26,8 +26,10 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/platforms/components/allow_to_manage_item_quantity_add_item_page.dart';
 import 'package:stockall/pages/products/add_product_one/platforms/components/allow_to_set_custom_price_add_item_page.dart';
 import 'package:stockall/pages/products/add_product_one/platforms/components/select_product_quantity_type_section.dart';
+import 'package:stockall/pages/products/add_product_one/platforms/components/use_multiple_toggle_add_item_page.dart';
 import 'package:stockall/pages/products/add_product_one/product_prices_page/product_prices_page.dart';
 import 'package:stockall/pages/products/add_product_one/product_units_page/product_units_page.dart';
+import 'package:stockall/pages/products/storage_page/add_storage_item/components/storage_dimension_rules.dart';
 import 'package:stockall/providers/data_provider.dart';
 
 class AddProductDesktop extends StatefulWidget {
@@ -192,9 +194,11 @@ class _AddProductDesktopState
                       '',
                     ),
                   ),
-                  unitsList: dataProvider.getTempUnitList(),
-                  pricesList:
-                      dataProvider.getTempPriceList(),
+                  unitsList: dataProvider.getFinalUnitList(),
+                  pricesList: dataProvider.getFinalPriceList(
+                    productUuid: createdProductUuid ?? '',
+                    sellingText: widget.sellingController.text,
+                  ),
                   useGroupUnit: dataProvider.useGroupUnit,
                   categories:
                       dataProvider.selectedCategories
@@ -203,7 +207,9 @@ class _AddProductDesktopState
                   isManaged: dataProvider.isManaged,
                   name: widget.nameController.text.trim(),
                   unit:
-                      dataProvider.selectedUnit ??
+                      (dataProvider.useMultipleUnits
+                          ? dataProvider.selectedUnit
+                          : dataProvider.singleUnitName()) ??
                       'Unit(s)',
                   groupUnit:
                       dataProvider.selectedGroupUnit ??
@@ -309,6 +315,13 @@ class _AddProductDesktopState
 
   void updateProduct() {
     final safeContext = context;
+    if (!salesTypeChangeAllowed(
+      context: context,
+      product: widget.product!,
+      quantityType: quantityType,
+    )) {
+      return;
+    }
     if (quantityType == 2 &&
         (widget.heightController.text.isEmpty ||
             widget.widthController.text.isEmpty)) {
@@ -364,8 +377,11 @@ class _AddProductDesktopState
                       '',
                     ),
                   ),
-                  unitsList: provider.getTempUnitList(),
-                  pricesList: provider.getTempPriceList(),
+                  unitsList: provider.getFinalUnitList(),
+                  pricesList: provider.getFinalPriceList(
+                    productUuid: createdProductUuid ?? '',
+                    sellingText: widget.sellingController.text,
+                  ),
                   useGroupUnit: provider.useGroupUnit,
                   categories:
                       provider.selectedCategories.toList(),
@@ -393,7 +409,11 @@ class _AddProductDesktopState
                   totalQttyInStorageDouble: null,
                   uuid: widget.product?.uuid,
                   name: widget.nameController.text,
-                  unit: provider.selectedUnit ?? 'Unit(s)',
+                  unit:
+                      (provider.useMultipleUnits
+                          ? provider.selectedUnit
+                          : provider.singleUnitName()) ??
+                      'Unit(s)',
                   groupUnit: provider.selectedGroupUnit,
                   qttyPerGroup:
                       widget
@@ -568,6 +588,13 @@ class _AddProductDesktopState
         pricesListNew:
             widget.product?.getPricesList() ?? [],
       );
+      returnData().initPriceUnitModes();
+      if (!returnData().useMultiplePrices) {
+        final primaryValue =
+            widget.product!.getPrimaryPrice().priceValue;
+        widget.sellingController.text =
+            primaryValue != 0 ? primaryValue.toString() : '';
+      }
       returnData().selectGroupUnit(
         unit: widget.product!.groupUnit,
       );
@@ -816,47 +843,100 @@ class _AddProductDesktopState
                                       //     ],
                                       //   ),
                                       // ),
+                                      SizedBox(height: 15),
+                                      UseMultipleToggleAddItemPage(
+                                        theme: theme,
+                                        title:
+                                            'Manage Multiple Prices',
+                                        description:
+                                            'Turn on to set more than one selling price for this item.',
+                                        value:
+                                            returnData(
+                                              context: context,
+                                            ).useMultiplePrices,
+                                        onTap: () {
+                                          toggleMultiplePricesAction(
+                                            context: context,
+                                            sellingController:
+                                                widget
+                                                    .sellingController,
+                                            productUuid:
+                                                createdProductUuid ??
+                                                '',
+                                          );
+                                        },
+                                      ),
                                       SizedBox(height: 10),
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(
-                                              bottom: 10.0,
-                                            ),
-                                        child: MainDropdown(
-                                          valueSet:
-                                              returnData()
-                                                  .tempPricesList
-                                                  .isNotEmpty,
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (
-                                                  context,
-                                                ) {
-                                                  return ProductPricesPage(
-                                                    productUuid:
-                                                        createdProductUuid ??
-                                                        '',
-                                                  );
-                                                },
+                                      Visibility(
+                                        visible:
+                                            !returnData(
+                                              context: context,
+                                            ).useMultiplePrices,
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(
+                                                bottom: 10.0,
                                               ),
-                                            );
-                                          },
-                                          isOpen:
-                                              returnData()
-                                                  .tempPricesList
-                                                  .isNotEmpty,
-                                          title:
-                                              'Selling Price(s)',
-                                          hint:
-                                              returnData(
-                                                    context:
-                                                        context,
-                                                  ).tempPricesList.isEmpty
-                                                  ? 'Price Not Set'
-                                                  : "${returnData(context: context).tempPricesList.firstWhere((item) => item.isPrimary).priceValue} and (${returnData(context: context).tempPricesList.length - 1}) More",
-                                          theme: theme,
+                                          child: MoneyTextfield(
+                                            focusNode:
+                                                sellingFieldNode,
+                                            theme: theme,
+                                            hint:
+                                                'Enter Selling Price',
+                                            title:
+                                                'Selling Price',
+                                            controller:
+                                                widget
+                                                    .sellingController,
+                                          ),
+                                        ),
+                                      ),
+                                      Visibility(
+                                        visible:
+                                            returnData(
+                                              context: context,
+                                            ).useMultiplePrices,
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(
+                                                bottom: 10.0,
+                                              ),
+                                          child: MainDropdown(
+                                            valueSet:
+                                                returnData()
+                                                    .tempPricesList
+                                                    .isNotEmpty,
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    return ProductPricesPage(
+                                                      productUuid:
+                                                          createdProductUuid ??
+                                                          '',
+                                                    );
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                            isOpen:
+                                                returnData()
+                                                    .tempPricesList
+                                                    .isNotEmpty,
+                                            title:
+                                                'Selling Price(s)',
+                                            hint:
+                                                returnData(
+                                                      context:
+                                                          context,
+                                                    ).tempPricesList.isEmpty
+                                                    ? 'Price Not Set'
+                                                    : "${returnData(context: context).tempPricesList.firstWhere((item) => item.isPrimary).priceValue} and (${returnData(context: context).tempPricesList.length - 1}) More",
+                                            theme: theme,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -1844,69 +1924,126 @@ class _AddProductDesktopState
                                                   .widthController,
                                         ),
                                         Visibility(
-                                          visible: authorization(
-                                            authorized:
-                                                Authorizations()
-                                                    .manageMultipleUnits,
-                                          ),
+                                          visible:
+                                              canSeeItemUnit(),
                                           child: Padding(
                                             padding:
                                                 const EdgeInsets.only(
                                                   bottom:
                                                       10.0,
                                                 ),
-                                            child: SubWrapper(
-                                              isVisible:
-                                                  !ItemsAuthAction().applyVariationsAction(
-                                                    context:
-                                                        context,
-                                                  ),
-                                              mainWidget: MainDropdown(
-                                                valueSet:
-                                                    returnData()
-                                                        .tempUnitsList
-                                                        .isNotEmpty,
-                                                onTap: () {
-                                                  ItemsAuthAction().applyVariationsAction(
-                                                    context:
-                                                        context,
-                                                    action: () {
-                                                      Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (
+                                            child: Column(
+                                              children: [
+                                                UseMultipleToggleAddItemPage(
+                                                  theme: theme,
+                                                  title:
+                                                      'Use Multiple Units',
+                                                  description:
+                                                      'Turn on to sell or count this item in more than one unit (e.g. Bottle and Crate).',
+                                                  value:
+                                                      returnData(
+                                                        context:
                                                             context,
-                                                          ) {
-                                                            return ProductUnitsPage(
-                                                              productUuid:
-                                                                  createdProductUuid ??
-                                                                  '',
-                                                              isDimensional:
-                                                                  quantityType ==
-                                                                  2,
-                                                            );
-                                                          },
-                                                        ),
-                                                      );
-                                                    },
-                                                  );
-                                                },
-                                                isOpen:
-                                                    returnData()
-                                                        .tempUnitsList
-                                                        .isNotEmpty,
-                                                title:
-                                                    'Item Unit(s) (Optional)',
-                                                hint:
-                                                    returnData(
-                                                          context:
-                                                              context,
-                                                        ).tempUnitsList.isEmpty
-                                                        ? 'Unit Not Set'
-                                                        : "${returnData(context: context).tempUnitsList.firstWhere((item) => item.isPrimary).name} and (${returnData(context: context).tempUnitsList.length - 1}) More",
-                                                theme:
-                                                    theme,
-                                              ),
+                                                      ).useMultipleUnits,
+                                                  onTap: () {
+                                                    toggleMultipleUnitsAction(
+                                                      context:
+                                                          context,
+                                                    );
+                                                  },
+                                                ),
+                                                SizedBox(
+                                                  height: 10,
+                                                ),
+                                                SubWrapper(
+                                                  isVisible:
+                                                      !itemUnitAuthAction(
+                                                        context:
+                                                            context,
+                                                      ),
+                                                  mainWidget:
+                                                      returnData(
+                                                            context:
+                                                                context,
+                                                          ).useMultipleUnits
+                                                          ? MainDropdown(
+                                                            valueSet:
+                                                                returnData()
+                                                                    .tempUnitsList
+                                                                    .isNotEmpty,
+                                                            onTap: () {
+                                                              itemUnitAuthAction(
+                                                                context:
+                                                                    context,
+                                                                action: () {
+                                                                  Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                      builder: (
+                                                                        context,
+                                                                      ) {
+                                                                        return ProductUnitsPage(
+                                                                          productUuid:
+                                                                              createdProductUuid ??
+                                                                              '',
+                                                                          isDimensional:
+                                                                              quantityType ==
+                                                                              2,
+                                                                        );
+                                                                      },
+                                                                    ),
+                                                                  );
+                                                                },
+                                                              );
+                                                            },
+                                                            isOpen:
+                                                                returnData()
+                                                                    .tempUnitsList
+                                                                    .isNotEmpty,
+                                                            title:
+                                                                'Item Unit(s) (Optional)',
+                                                            hint:
+                                                                returnData(
+                                                                      context:
+                                                                          context,
+                                                                    ).tempUnitsList.isEmpty
+                                                                    ? 'Unit Not Set'
+                                                                    : "${returnData(context: context).tempUnitsList.firstWhere((item) => item.isPrimary).name} and (${returnData(context: context).tempUnitsList.length - 1}) More",
+                                                            theme:
+                                                                theme,
+                                                          )
+                                                          : MainDropdown(
+                                                            valueSet:
+                                                                returnData()
+                                                                    .tempUnitsList
+                                                                    .isNotEmpty,
+                                                            onTap: () {
+                                                              selectSingleUnitAction(
+                                                                context:
+                                                                    context,
+                                                                productUuid:
+                                                                    createdProductUuid ??
+                                                                    '',
+                                                                isDimensional:
+                                                                    quantityType ==
+                                                                    2,
+                                                              );
+                                                            },
+                                                            isOpen:
+                                                                false,
+                                                            title:
+                                                                'Item Unit (Optional)',
+                                                            hint:
+                                                                returnData(
+                                                                  context:
+                                                                      context,
+                                                                ).singleUnitName() ??
+                                                                'Unit Not Set',
+                                                            theme:
+                                                                theme,
+                                                          ),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ),
