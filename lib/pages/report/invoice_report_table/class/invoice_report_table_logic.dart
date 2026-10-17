@@ -497,6 +497,44 @@ class InvoiceReportFilters {
   double? profitMin;
   double? profitMax;
 
+  InvoiceReportFilters({
+    this.search = '',
+    this.dateRange,
+    this.staffId,
+    this.customerUuid,
+    this.paymentChannel = InvoicePaymentChannelFilter.all,
+    this.paymentStatus = InvoicePaymentStatusFilter.all,
+    this.subStaffUuid,
+    this.departmentKey,
+    this.totalMin,
+    this.totalMax,
+    this.paidMin,
+    this.paidMax,
+    this.balanceMin,
+    this.balanceMax,
+    this.profitMin,
+    this.profitMax,
+  });
+
+  void copyFrom(InvoiceReportFilters other) {
+    search = other.search;
+    dateRange = other.dateRange;
+    staffId = other.staffId;
+    customerUuid = other.customerUuid;
+    paymentChannel = other.paymentChannel;
+    paymentStatus = other.paymentStatus;
+    subStaffUuid = other.subStaffUuid;
+    departmentKey = other.departmentKey;
+    totalMin = other.totalMin;
+    totalMax = other.totalMax;
+    paidMin = other.paidMin;
+    paidMax = other.paidMax;
+    balanceMin = other.balanceMin;
+    balanceMax = other.balanceMax;
+    profitMin = other.profitMin;
+    profitMax = other.profitMax;
+  }
+
   bool get hasAnything =>
       search.trim().isNotEmpty ||
       dateRange != null ||

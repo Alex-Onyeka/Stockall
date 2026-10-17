@@ -7,6 +7,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/components/report_list_tile.dart';
 import 'package:stockall/pages/report/invoice_report_table/invoice_report_table_page.dart';
 import 'package:stockall/pages/report/invoice_sales_report/invoice_sales_report.dart';
+import 'package:stockall/pages/report/invoice_summary/invoice_summary_page.dart';
 
 class InvoiceCreditReportDesktop extends StatelessWidget {
   const InvoiceCreditReportDesktop({super.key});
@@ -71,6 +72,29 @@ class InvoiceCreditReportDesktop extends StatelessWidget {
                               subText:
                                   'View a complete tabular report of all invoices, payments, balances, and profits',
                               title: 'Invoice Report Table',
+                            ),
+                          ),
+                          Visibility(
+                            visible: !isStoreKeeper() &&
+                                authorization(
+                                  authorized: Authorizations()
+                                      .viewInvoiceSalesReport,
+                                ),
+                            child: ReportListTile(
+                              isActive: true,
+                              theme: theme,
+                              action: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const InvoiceSummaryPage(),
+                                  ),
+                                );
+                              },
+                              subText:
+                                  'Aggregated overview of invoice sales, collections, balances, profits, and performance',
+                              title: 'Invoice Summary and Analysis',
                             ),
                           ),
                           Visibility(
