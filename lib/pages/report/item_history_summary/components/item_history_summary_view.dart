@@ -14,6 +14,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
 import 'package:stockall/pages/report/item_history_report/item_history_report_page.dart';
 import 'package:stockall/pages/report/item_history_summary/class/item_history_summary_logic.dart';
+import 'package:stockall/pages/report/item_level_stock_movements/item_level_stock_movements_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class ItemHistorySummaryView extends StatefulWidget {
@@ -51,13 +52,11 @@ class _ItemHistorySummaryViewState
   ItemHistorySummarySortField _sortField =
       ItemHistorySummarySortField.rowIndex;
   bool _ascending = true;
-  int _page = 1;
 
   ItemHistorySummaryStats _stats =
       ItemHistorySummaryStats.empty;
   List<ItemHistorySummaryRow> _allRows = [];
   List<ItemHistorySummaryRow> _filteredSortedRows = [];
-  ItemHistorySummaryPageResult? _pageResult;
 
   @override
   void initState() {
@@ -181,11 +180,6 @@ class _ItemHistorySummaryViewState
     for (int i = 0; i < _filteredSortedRows.length; i++) {
       _filteredSortedRows[i].index = i + 1;
     }
-
-    _pageResult = ItemHistorySummaryBuilder.paginate(
-      _filteredSortedRows,
-      _page,
-    );
   }
 
   void _onSort(ItemHistorySummarySortField field) {
@@ -244,6 +238,26 @@ class _ItemHistorySummaryViewState
         builder:
             (context) =>
                 ProductDetailsPage(productUuid: uuid),
+      ),
+    ).then((_) {
+      if (mounted) _load(refreshFromStore: false);
+    });
+  }
+
+  void _openFullMovementsPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => ItemLevelStockMovementsPage(
+              initialPeriod: _period,
+              initialCustomRange: _customRange,
+              initialSearch: _filters.search,
+              initialCategoryKey: _filters.categoryKey,
+              initialDepartmentKey: _filters.departmentKey,
+              initialMovementFilter:
+                  _filters.movementFilter,
+            ),
       ),
     ).then((_) {
       if (mounted) _load(refreshFromStore: false);
@@ -669,17 +683,17 @@ class _ItemHistorySummaryViewState
       _buildMiniStatPill(
         theme: theme,
         label: 'Total In (Updated)',
-        value: _formatQty(_stats.totalStockAdditions),
+        value: _formatQty(_stats.totalQuantityIncreased),
         icon: Icons.create_new_folder_rounded,
         color: const Color(0xFF10B981),
       ),
-      // _buildMiniStatPill(
-      //   theme: theme,
-      //   label: 'Total Deleted',
-      //   value: _formatQty(_stats.totalDeleted),
-      //   icon: Icons.delete_outline_rounded,
-      //   color: const Color(0xFF6B7280),
-      // ),
+      _buildMiniStatPill(
+        theme: theme,
+        label: 'Total Out (Updated)',
+        value: _formatQty(_stats.totalQuantityDecreased),
+        icon: Icons.delete_outline_rounded,
+        color: const Color(0xFF6B7280),
+      ),
       if (_manageProductions) ...[
         _buildMiniStatPill(
           theme: theme,
@@ -1541,8 +1555,8 @@ class _ItemHistorySummaryViewState
                           const SizedBox(width: 6),
                           Text(
                             isInflow
-                                ? '+${_formatQty(it.totalAdditions)}'
-                                : '-${_formatQty(it.totalReductions)}',
+                                ? it.totalAdditionsText
+                                : it.totalReductionsText,
                             style: TextStyle(
                               fontSize:
                                   theme
@@ -1582,7 +1596,7 @@ class _ItemHistorySummaryViewState
   // Section 6.4 Item-Level History Summary Table Card
   // ---------------------------------------------------------------------------
   Widget _buildItemSummaryTableCard(ThemeProvider theme) {
-    final res = _pageResult;
+    final top10Rows = _filteredSortedRows.take(10).toList();
 
     return Container(
       decoration: BoxDecoration(
@@ -1612,17 +1626,56 @@ class _ItemHistorySummaryViewState
                   crossAxisAlignment:
                       CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Item-Level Stock Movements',
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b1.fontSize,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Item Stock Movements',
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b1
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding:
+                              const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                          decoration: BoxDecoration(
+                            color: theme
+                                .lightModeColor
+                                .prColor300
+                                .withAlpha(20),
+                            borderRadius:
+                                BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            'Top 10',
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b5
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  theme
+                                      .lightModeColor
+                                      .prColor300,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     Text(
-                      'Reconciliation: Closing Stock = Opening Stock + Net Quantity Change',
+                      'Reconciliation: Closing Stock = Opening Stock + Net Quantity Change • All units in their primary units',
                       style: TextStyle(
                         fontSize:
                             theme.mobileTexts.b4.fontSize,
@@ -1631,12 +1684,51 @@ class _ItemHistorySummaryViewState
                     ),
                   ],
                 ),
-                _buildTableFilters(theme),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 6,
+                  crossAxisAlignment:
+                      WrapCrossAlignment.center,
+                  children: [
+                    _buildTableFilters(theme),
+                    TextButton.icon(
+                      style: TextButton.styleFrom(
+                        backgroundColor: theme
+                            .lightModeColor
+                            .prColor300
+                            .withAlpha(20),
+                        foregroundColor:
+                            theme.lightModeColor.prColor300,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(6),
+                        ),
+                      ),
+                      onPressed: _openFullMovementsPage,
+                      icon: const Icon(
+                        Icons.arrow_forward_rounded,
+                        size: 15,
+                      ),
+                      label: Text(
+                        'See All',
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b4.fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
           const Divider(height: 1),
-          if (res == null || res.rows.isEmpty)
+          if (_filteredSortedRows.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(
                 vertical: 40,
@@ -1670,11 +1762,53 @@ class _ItemHistorySummaryViewState
               child: SingleChildScrollView(
                 controller: _hScroll,
                 scrollDirection: Axis.horizontal,
-                child: _buildDataTable(theme, res.rows),
+                child: _buildDataTable(theme, top10Rows),
               ),
             ),
             const Divider(height: 1),
-            _buildPaginationBar(theme, res),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 8,
+              ),
+              child: Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Top ${top10Rows.length} of ${_filteredSortedRows.length} items',
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b4.fontSize,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                  TextButton.icon(
+                    style: TextButton.styleFrom(
+                      foregroundColor:
+                          theme.lightModeColor.prColor300,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 4,
+                      ),
+                    ),
+                    onPressed: _openFullMovementsPage,
+                    icon: const Icon(
+                      Icons.arrow_forward_rounded,
+                      size: 15,
+                    ),
+                    label: Text(
+                      'See All (${_filteredSortedRows.length} Items)',
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ],
       ),
@@ -1682,269 +1816,366 @@ class _ItemHistorySummaryViewState
   }
 
   Widget _buildTableFilters(ThemeProvider theme) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 6,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: [
-        // Search
-        SizedBox(
-          width: 170,
-          height: 32,
-          child: TextField(
-            controller: _searchCtrl,
-            onChanged: (val) {
-              setState(() {
-                _filters.search = val;
-                _page = 1;
-                _applyFilterAndSort();
-              });
-            },
-            style: TextStyle(
-              fontSize: theme.mobileTexts.b4.fontSize,
-            ),
-            decoration: InputDecoration(
-              hintText: 'Search items...',
-              prefixIcon: const Icon(
-                Icons.search,
-                size: 14,
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                vertical: 0,
-                horizontal: 8,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(6),
-                borderSide: BorderSide(
-                  color: Colors.grey.shade300,
-                ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(6),
-                borderSide: BorderSide(
-                  color: Colors.grey.shade200,
-                ),
-              ),
-            ),
-          ),
-        ),
-
-        // Movement Filter
-        Container(
-          height: 32,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 8,
-          ),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade50,
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: Colors.grey.shade200),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<
-              ItemHistoryMovementFilter
-            >(
-              value: _filters.movementFilter,
-              icon: const Icon(
-                Icons.keyboard_arrow_down,
-                size: 14,
-              ),
-              style: TextStyle(
-                fontSize: theme.mobileTexts.b4.fontSize,
-                color: Colors.black87,
-              ),
-              items:
-                  ItemHistoryMovementFilter.values.map((f) {
-                    return DropdownMenuItem(
-                      value: f,
-                      child: Text(
-                        f.label,
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b4.fontSize,
+    bool isOpen = false;
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return Wrap(
+          spacing: 8,
+          runSpacing: 6,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            // Search
+            SizedBox(
+              width:
+                  screenWidth(context) < mobileScreen
+                      ? double.infinity
+                      : 280,
+              height: 32,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _searchCtrl,
+                      onChanged: (val) {
+                        setState(() {
+                          _filters.search = val;
+                          _applyFilterAndSort();
+                        });
+                      },
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'Search items...',
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          size: 14,
+                        ),
+                        contentPadding:
+                            const EdgeInsets.symmetric(
+                              vertical: 0,
+                              horizontal: 8,
+                            ),
+                        border: OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(6),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(6),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade200,
+                          ),
                         ),
                       ),
-                    );
-                  }).toList(),
-              onChanged: (val) {
-                if (val == null) return;
-                setState(() {
-                  _filters.movementFilter = val;
-                  _page = 1;
-                  _applyFilterAndSort();
-                });
-              },
-            ),
-          ),
-        ),
-
-        // Category Filter
-        Container(
-          height: 32,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 8,
-          ),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade50,
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: Colors.grey.shade200),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String?>(
-              value: _filters.categoryKey,
-              hint: Text(
-                'Category',
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.b4.fontSize,
-                ),
-              ),
-              icon: const Icon(
-                Icons.keyboard_arrow_down,
-                size: 14,
-              ),
-              style: TextStyle(
-                fontSize: theme.mobileTexts.b4.fontSize,
-                color: Colors.black87,
-              ),
-              items: [
-                DropdownMenuItem<String?>(
-                  value: null,
-                  child: Text(
-                    'All Categories',
-                    style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b4.fontSize,
                     ),
                   ),
-                ),
-                ..._categories.map((c) {
-                  return DropdownMenuItem<String?>(
-                    value: c.uuid,
-                    child: Text(
-                      c.name,
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b4.fontSize,
+                  if (screenWidth(context) < mobileScreen)
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 10.0,
                       ),
-                    ),
-                  );
-                }),
-                DropdownMenuItem<String?>(
-                  value: itemHistorySummaryNoneKey,
-                  child: Text(
-                    'Unassigned',
-                    style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b4.fontSize,
-                    ),
-                  ),
-                ),
-              ],
-              onChanged: (val) {
-                setState(() {
-                  _filters.categoryKey = val;
-                  _page = 1;
-                  _applyFilterAndSort();
-                });
-              },
-            ),
-          ),
-        ),
-
-        // Department Filter
-        if (_departmentsEnabled)
-          Container(
-            height: 32,
-            padding: const EdgeInsets.symmetric(
-              horizontal: 8,
-            ),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade50,
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(
-                color: Colors.grey.shade200,
-              ),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String?>(
-                value: _filters.departmentKey,
-                hint: Text(
-                  'Department',
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.b4.fontSize,
-                  ),
-                ),
-                icon: const Icon(
-                  Icons.keyboard_arrow_down,
-                  size: 14,
-                ),
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.b4.fontSize,
-                  color: Colors.black87,
-                ),
-                items: [
-                  DropdownMenuItem<String?>(
-                    value: null,
-                    child: Text(
-                      'All Departments',
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b4.fontSize,
-                      ),
-                    ),
-                  ),
-                  ..._departments.map((d) {
-                    return DropdownMenuItem<String?>(
-                      value: d.uuid,
-                      child: Text(
-                        d.name,
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b4.fontSize,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius:
+                              BorderRadius.circular(5),
+                          onTap: () {
+                            setState(() {
+                              isOpen = !isOpen;
+                            });
+                          },
+                          mouseCursor:
+                              SystemMouseCursors.click,
+                          child: Padding(
+                            padding: EdgeInsets.all(5),
+                            child: Row(
+                              mainAxisSize:
+                                  MainAxisSize.min,
+                              spacing: 3,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b4
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                  'Filter',
+                                ),
+                                Icon(
+                                  isOpen
+                                      ? Icons
+                                          .keyboard_arrow_up
+                                      : Icons
+                                          .keyboard_arrow_down,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
-                    );
-                  }),
-                  DropdownMenuItem<String?>(
-                    value: itemHistorySummaryNoneKey,
-                    child: Text(
-                      'Unassigned',
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b4.fontSize,
-                      ),
                     ),
-                  ),
                 ],
-                onChanged: (val) {
+              ),
+            ),
+
+            // Movement Filter
+            if (isOpen ||
+                screenWidth(context) > mobileScreen) ...[
+              Container(
+                height: 32,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(
+                    color: Colors.grey.shade200,
+                  ),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<
+                    ItemHistoryMovementFilter
+                  >(
+                    value: _filters.movementFilter,
+                    icon: const Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 14,
+                    ),
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b4.fontSize,
+                      color: Colors.black87,
+                    ),
+                    items:
+                        ItemHistoryMovementFilter.values
+                            .map((f) {
+                              return DropdownMenuItem(
+                                value: f,
+                                child: Text(
+                                  f.label,
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b4
+                                            .fontSize,
+                                  ),
+                                ),
+                              );
+                            })
+                            .toList(),
+                    onChanged: (val) {
+                      if (val == null) return;
+                      setState(() {
+                        _filters.movementFilter = val;
+                        _applyFilterAndSort();
+                      });
+                    },
+                  ),
+                ),
+              ),
+
+              // Category Filter
+              Container(
+                height: 32,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(
+                    color: Colors.grey.shade200,
+                  ),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String?>(
+                    value: _filters.categoryKey,
+                    hint: Text(
+                      'Category',
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
+                      ),
+                    ),
+                    icon: const Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 14,
+                    ),
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b4.fontSize,
+                      color: Colors.black87,
+                    ),
+                    items: [
+                      DropdownMenuItem<String?>(
+                        value: null,
+                        child: Text(
+                          'All Categories',
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b4
+                                    .fontSize,
+                          ),
+                        ),
+                      ),
+                      ..._categories.map((c) {
+                        return DropdownMenuItem<String?>(
+                          value: c.uuid,
+                          child: Text(
+                            c.name,
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b4
+                                      .fontSize,
+                            ),
+                          ),
+                        );
+                      }),
+                      DropdownMenuItem<String?>(
+                        value: itemHistorySummaryNoneKey,
+                        child: Text(
+                          'Unassigned',
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b4
+                                    .fontSize,
+                          ),
+                        ),
+                      ),
+                    ],
+                    onChanged: (val) {
+                      setState(() {
+                        _filters.categoryKey = val;
+                        _applyFilterAndSort();
+                      });
+                    },
+                  ),
+                ),
+              ),
+
+              // Department Filter
+              if (_departmentsEnabled)
+                Container(
+                  height: 32,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color: Colors.grey.shade200,
+                    ),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String?>(
+                      value: _filters.departmentKey,
+                      hint: Text(
+                        'Department',
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b4.fontSize,
+                        ),
+                      ),
+                      icon: const Icon(
+                        Icons.keyboard_arrow_down,
+                        size: 14,
+                      ),
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
+                        color: Colors.black87,
+                      ),
+                      items: [
+                        DropdownMenuItem<String?>(
+                          value: null,
+                          child: Text(
+                            'All Departments',
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b4
+                                      .fontSize,
+                            ),
+                          ),
+                        ),
+                        ..._departments.map((d) {
+                          return DropdownMenuItem<String?>(
+                            value: d.uuid,
+                            child: Text(
+                              d.name,
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b4
+                                        .fontSize,
+                              ),
+                            ),
+                          );
+                        }),
+                        DropdownMenuItem<String?>(
+                          value: itemHistorySummaryNoneKey,
+                          child: Text(
+                            'Unassigned',
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b4
+                                      .fontSize,
+                            ),
+                          ),
+                        ),
+                      ],
+                      onChanged: (val) {
+                        setState(() {
+                          _filters.departmentKey = val;
+                          _applyFilterAndSort();
+                        });
+                      },
+                    ),
+                  ),
+                ),
+            ],
+
+            if (_filters.hasAnything)
+              IconButton(
+                tooltip: 'Clear Filters',
+                mouseCursor: SystemMouseCursors.click,
+                icon: const Icon(
+                  Icons.clear_all_rounded,
+                  size: 18,
+                ),
+                onPressed: () {
                   setState(() {
-                    _filters.departmentKey = val;
-                    _page = 1;
+                    _searchCtrl.clear();
+                    _filters.clearAll();
                     _applyFilterAndSort();
                   });
                 },
               ),
-            ),
-          ),
-
-        if (_filters.hasAnything)
-          IconButton(
-            tooltip: 'Clear Filters',
-            mouseCursor: SystemMouseCursors.click,
-            icon: const Icon(
-              Icons.clear_all_rounded,
-              size: 18,
-            ),
-            onPressed: () {
-              setState(() {
-                _searchCtrl.clear();
-                _filters.clearAll();
-                _page = 1;
-                _applyFilterAndSort();
-              });
-            },
-          ),
-      ],
+          ],
+        );
+      },
     );
   }
 
@@ -1981,28 +2212,58 @@ class _ItemHistorySummaryViewState
           ItemHistorySummarySortField.openingStock,
           theme,
           tooltip:
-              'Stock balance immediately before the period',
+              'Stock balance immediately before the period (Primary Unit)',
         ),
         _dataCol(
           'Closing Stock',
           ItemHistorySummarySortField.closingStock,
           theme,
           tooltip:
-              'Stock balance immediately after the period',
+              'Stock balance immediately after the period (Primary Unit)',
         ),
         _dataCol(
           'Current Quantity',
           ItemHistorySummarySortField.currentQuantity,
           theme,
-          tooltip: 'Live current inventory balance',
+          tooltip:
+              'Live current inventory balance (Primary Unit)',
         ),
         _dataCol(
-          'Transferred In',
+          'Net Change',
+          ItemHistorySummarySortField.netQuantityChange,
+          theme,
+          tooltip: 'Net Stock Additions - Reductions',
+        ),
+        _dataCol(
+          'Sold',
+          ItemHistorySummarySortField.sold,
+          theme,
+        ),
+        _dataCol(
+          'Return (Receipt)',
+          ItemHistorySummarySortField.returnedReceipt,
+          theme,
+          tooltip: 'Customer returns from receipt/invoice',
+        ),
+        _dataCol(
+          'Purchased',
+          ItemHistorySummarySortField.purchased,
+          theme,
+        ),
+        _dataCol(
+          'Returned (Purchase)',
+          ItemHistorySummarySortField.returnedPurchase,
+          theme,
+          tooltip:
+              'Stock returned to supplier from purchase',
+        ),
+        _dataCol(
+          'Transfered In',
           ItemHistorySummarySortField.transferredIn,
           theme,
         ),
         _dataCol(
-          'Transferred Out',
+          'Transfered Out',
           ItemHistorySummarySortField.transferredOut,
           theme,
         ),
@@ -2013,47 +2274,16 @@ class _ItemHistorySummaryViewState
             theme,
           ),
           _dataCol(
-            'Production Del.',
+            'Production Del',
             ItemHistorySummarySortField.productionDeleted,
             theme,
           ),
         ],
         _dataCol(
-          'Sold',
-          ItemHistorySummarySortField.sold,
-          theme,
-        ),
-        _dataCol(
-          'Returned',
-          ItemHistorySummarySortField.returned,
-          theme,
-        ),
-        _dataCol(
-          'Purchased',
-          ItemHistorySummarySortField.purchased,
-          theme,
-        ),
-        _dataCol(
           'Delivered',
           ItemHistorySummarySortField.delivered,
           theme,
           tooltip: 'Delivered from Order',
-        ),
-        _dataCol(
-          'Created',
-          ItemHistorySummarySortField.created,
-          theme,
-        ),
-        _dataCol(
-          'Deleted',
-          ItemHistorySummarySortField.deleted,
-          theme,
-        ),
-        _dataCol(
-          'Net Change',
-          ItemHistorySummarySortField.netQuantityChange,
-          theme,
-          tooltip: 'Net Stock Additions - Reductions',
         ),
       ],
       rows:
@@ -2063,6 +2293,7 @@ class _ItemHistorySummaryViewState
 
             return DataRow(
               cells: [
+                // 1. No.
                 DataCell(
                   Center(
                     child: Text(
@@ -2075,6 +2306,7 @@ class _ItemHistorySummaryViewState
                     ),
                   ),
                 ),
+                // 2. Item Name
                 DataCell(
                   InkWell(
                     onTap: () => _openItemDetails(r.uuid),
@@ -2117,12 +2349,11 @@ class _ItemHistorySummaryViewState
                     ),
                   ),
                 ),
+                // 3. Opening Stock
                 DataCell(
                   Center(
                     child: Text(
-                      r.openingStock != null
-                          ? _formatQty(r.openingStock!)
-                          : '—',
+                      r.openingStockText,
                       style: TextStyle(
                         fontSize:
                             theme.mobileTexts.b4.fontSize,
@@ -2132,12 +2363,11 @@ class _ItemHistorySummaryViewState
                     ),
                   ),
                 ),
+                // 4. Closing Stock
                 DataCell(
                   Center(
                     child: Text(
-                      r.closingStock != null
-                          ? _formatQty(r.closingStock!)
-                          : '—',
+                      r.closingStockText,
                       style: TextStyle(
                         fontSize:
                             theme.mobileTexts.b4.fontSize,
@@ -2147,10 +2377,11 @@ class _ItemHistorySummaryViewState
                     ),
                   ),
                 ),
+                // 5. Current Quantity
                 DataCell(
                   Center(
                     child: Text(
-                      _formatQty(r.currentQuantity),
+                      r.currentQuantityText,
                       style: TextStyle(
                         fontSize:
                             theme.mobileTexts.b4.fontSize,
@@ -2160,218 +2391,7 @@ class _ItemHistorySummaryViewState
                     ),
                   ),
                 ),
-                DataCell(
-                  Center(
-                    child: Text(
-                      r.transferredIn > 0
-                          ? '+${_formatQty(r.transferredIn)}'
-                          : '—',
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b4.fontSize,
-                        color:
-                            r.transferredIn > 0
-                                ? const Color(0xFF0284C7)
-                                : Colors.grey.shade400,
-                        fontWeight:
-                            r.transferredIn > 0
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                ),
-                DataCell(
-                  Center(
-                    child: Text(
-                      r.transferredOut > 0
-                          ? '-${_formatQty(r.transferredOut)}'
-                          : '—',
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b4.fontSize,
-                        color:
-                            r.transferredOut > 0
-                                ? const Color(0xFFE11D48)
-                                : Colors.grey.shade400,
-                        fontWeight:
-                            r.transferredOut > 0
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                ),
-                if (showProd) ...[
-                  DataCell(
-                    Center(
-                      child: Text(
-                        r.produced > 0
-                            ? '+${_formatQty(r.produced)}'
-                            : '—',
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b4.fontSize,
-                          color:
-                              r.produced > 0
-                                  ? const Color(0xFF8B5CF6)
-                                  : Colors.grey.shade400,
-                          fontWeight:
-                              r.produced > 0
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                        ),
-                      ),
-                    ),
-                  ),
-                  DataCell(
-                    Center(
-                      child: Text(
-                        r.productionDeleted > 0
-                            ? '-${_formatQty(r.productionDeleted)}'
-                            : '—',
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b4.fontSize,
-                          color:
-                              r.productionDeleted > 0
-                                  ? const Color(0xFFF43F5E)
-                                  : Colors.grey.shade400,
-                          fontWeight:
-                              r.productionDeleted > 0
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-                DataCell(
-                  Center(
-                    child: Text(
-                      r.sold > 0
-                          ? '-${_formatQty(r.sold)}'
-                          : '—',
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b4.fontSize,
-                        color:
-                            r.sold > 0
-                                ? const Color(0xFFEA580C)
-                                : Colors.grey.shade400,
-                        fontWeight:
-                            r.sold > 0
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                ),
-                DataCell(
-                  Center(
-                    child: Text(
-                      r.returned > 0
-                          ? '+${_formatQty(r.returned)}'
-                          : '—',
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b4.fontSize,
-                        color:
-                            r.returned > 0
-                                ? const Color(0xFF16A34A)
-                                : Colors.grey.shade400,
-                        fontWeight:
-                            r.returned > 0
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                ),
-                DataCell(
-                  Center(
-                    child: Text(
-                      r.purchased > 0
-                          ? '+${_formatQty(r.purchased)}'
-                          : '—',
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b4.fontSize,
-                        color:
-                            r.purchased > 0
-                                ? const Color(0xFF3B82F6)
-                                : Colors.grey.shade400,
-                        fontWeight:
-                            r.purchased > 0
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                ),
-                DataCell(
-                  Center(
-                    child: Text(
-                      r.delivered > 0
-                          ? '-${_formatQty(r.delivered)}'
-                          : '—',
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b4.fontSize,
-                        color:
-                            r.delivered > 0
-                                ? const Color(0xFF9333EA)
-                                : Colors.grey.shade400,
-                        fontWeight:
-                            r.delivered > 0
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                ),
-                DataCell(
-                  Center(
-                    child: Text(
-                      r.created > 0
-                          ? '+${_formatQty(r.created)}'
-                          : '—',
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b4.fontSize,
-                        color:
-                            r.created > 0
-                                ? const Color(0xFF10B981)
-                                : Colors.grey.shade400,
-                        fontWeight:
-                            r.created > 0
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                ),
-                DataCell(
-                  Center(
-                    child: Text(
-                      r.deleted > 0
-                          ? '-${_formatQty(r.deleted)}'
-                          : '—',
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b4.fontSize,
-                        color:
-                            r.deleted > 0
-                                ? const Color(0xFF6B7280)
-                                : Colors.grey.shade400,
-                        fontWeight:
-                            r.deleted > 0
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                ),
+                // 6. Net Change
                 DataCell(
                   Center(
                     child: Container(
@@ -2395,9 +2415,7 @@ class _ItemHistorySummaryViewState
                         ),
                       ),
                       child: Text(
-                        r.netQuantityChange == 0
-                            ? '0'
-                            : '${netPositive ? "+" : ""}${_formatQty(r.netQuantityChange)}',
+                        r.netQuantityChangeText,
                         style: TextStyle(
                           fontSize:
                               theme.mobileTexts.b4.fontSize,
@@ -2409,6 +2427,187 @@ class _ItemHistorySummaryViewState
                                   ? const Color(0xFFDC2626)
                                   : Colors.grey.shade600,
                         ),
+                      ),
+                    ),
+                  ),
+                ),
+                // 7. Sold
+                DataCell(
+                  Center(
+                    child: Text(
+                      r.soldText,
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
+                        color:
+                            r.sold > 0
+                                ? const Color(0xFFEA580C)
+                                : Colors.grey.shade400,
+                        fontWeight:
+                            r.sold > 0
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                ),
+                // 8. Return (Receipt)
+                DataCell(
+                  Center(
+                    child: Text(
+                      r.returnedReceiptText,
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
+                        color:
+                            r.returnedReceipt > 0
+                                ? const Color(0xFF16A34A)
+                                : Colors.grey.shade400,
+                        fontWeight:
+                            r.returnedReceipt > 0
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                ),
+                // 9. Purchased
+                DataCell(
+                  Center(
+                    child: Text(
+                      r.purchasedText,
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
+                        color:
+                            r.purchased > 0
+                                ? const Color(0xFF3B82F6)
+                                : Colors.grey.shade400,
+                        fontWeight:
+                            r.purchased > 0
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                ),
+                // 10. Returned (Purchase)
+                DataCell(
+                  Center(
+                    child: Text(
+                      r.returnedPurchaseText,
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
+                        color:
+                            r.returnedPurchase > 0
+                                ? const Color(0xFFDC2626)
+                                : Colors.grey.shade400,
+                        fontWeight:
+                            r.returnedPurchase > 0
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                ),
+                // 11. Transfered In
+                DataCell(
+                  Center(
+                    child: Text(
+                      r.transferredInText,
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
+                        color:
+                            r.transferredIn > 0
+                                ? const Color(0xFF0284C7)
+                                : Colors.grey.shade400,
+                        fontWeight:
+                            r.transferredIn > 0
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                ),
+                // 12. Transfered Out
+                DataCell(
+                  Center(
+                    child: Text(
+                      r.transferredOutText,
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
+                        color:
+                            r.transferredOut > 0
+                                ? const Color(0xFFE11D48)
+                                : Colors.grey.shade400,
+                        fontWeight:
+                            r.transferredOut > 0
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                ),
+                // 13 & 14. Produced & Production Del (if showProd)
+                if (showProd) ...[
+                  DataCell(
+                    Center(
+                      child: Text(
+                        r.producedText,
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b4.fontSize,
+                          color:
+                              r.produced > 0
+                                  ? const Color(0xFF8B5CF6)
+                                  : Colors.grey.shade400,
+                          fontWeight:
+                              r.produced > 0
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                        ),
+                      ),
+                    ),
+                  ),
+                  DataCell(
+                    Center(
+                      child: Text(
+                        r.productionDeletedText,
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b4.fontSize,
+                          color:
+                              r.productionDeleted > 0
+                                  ? const Color(0xFFF43F5E)
+                                  : Colors.grey.shade400,
+                          fontWeight:
+                              r.productionDeleted > 0
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+                // 15. Delivered
+                DataCell(
+                  Center(
+                    child: Text(
+                      r.deliveredText,
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
+                        color:
+                            r.delivered > 0
+                                ? const Color(0xFF9333EA)
+                                : Colors.grey.shade400,
+                        fontWeight:
+                            r.delivered > 0
+                                ? FontWeight.bold
+                                : FontWeight.normal,
                       ),
                     ),
                   ),
@@ -2458,70 +2657,6 @@ class _ItemHistorySummaryViewState
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildPaginationBar(
-    ThemeProvider theme,
-    ItemHistorySummaryPageResult res,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 8,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            '${res.firstIndex} to ${res.lastIndex} of ${res.totalCount} items',
-            style: TextStyle(
-              fontSize: theme.mobileTexts.b4.fontSize,
-              color: Colors.grey.shade600,
-            ),
-          ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: const Icon(
-                  Icons.chevron_left_rounded,
-                ),
-                iconSize: 20,
-                mouseCursor: SystemMouseCursors.click,
-                onPressed:
-                    res.page > 1
-                        ? () => setState(() {
-                          _page--;
-                          _applyFilterAndSort();
-                        })
-                        : null,
-              ),
-              Text(
-                'Page ${res.page} of ${res.totalPages}',
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.b4.fontSize,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              IconButton(
-                icon: const Icon(
-                  Icons.chevron_right_rounded,
-                ),
-                iconSize: 20,
-                mouseCursor: SystemMouseCursors.click,
-                onPressed:
-                    res.page < res.totalPages
-                        ? () => setState(() {
-                          _page++;
-                          _applyFilterAndSort();
-                        })
-                        : null,
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }

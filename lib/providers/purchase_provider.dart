@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_item_purchase_record/temp_item_purchase_record.dart';
-import 'package:stockall/classes/temp_item_purchase_record/unsynced/deleted_item_records/deleted_item_records.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/classes/temp_purchase/temp_purchase.dart';
 import 'package:stockall/classes/temp_purchase/unsynced/created_purchases/created_purchases.dart';
 import 'package:stockall/classes/temp_purchase/unsynced/deleted_purchase/deleted_purchases.dart';
@@ -14,25 +14,27 @@ import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
-import 'package:stockall/local_database/item_purchase_func.dart%20copy/item_purchase_func.dart';
-import 'package:stockall/local_database/item_purchase_func.dart%20copy/unsync_funcs/created/created_item_purchase_func.dart';
-import 'package:stockall/local_database/item_purchase_func.dart%20copy/unsync_funcs/deleted/deleted_item_purchase_func.dart';
+import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/local_database/purchases/purchase_func.dart';
 import 'package:stockall/local_database/purchases/unsync_funcs/created/created_purchases_func.dart';
 import 'package:stockall/local_database/purchases/unsync_funcs/deleted/deleted_purchases_func.dart';
 import 'package:stockall/local_database/purchases/unsync_funcs/updated/updated_purchases_func.dart';
+import 'package:stockall/local_database/storage_product/storage_products_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PurchaseProvider extends ChangeNotifier {
-  static final PurchaseProvider _instance = PurchaseProvider._internal();
+  static final PurchaseProvider _instance =
+      PurchaseProvider._internal();
   factory PurchaseProvider() => _instance;
   PurchaseProvider._internal();
   bool isLoading = false;
   void toggleIsLoading(bool value) {
     isLoading = value;
-    mainLocalLog('Purchase is ${value ? 'Loading on' : 'Loading Off'}');
+    mainLocalLog(
+      'Purchase is ${value ? 'Loading on' : 'Loading Off'}',
+    );
     notifyListeners();
   }
   //
@@ -40,39 +42,56 @@ class PurchaseProvider extends ChangeNotifier {
   //
 
   final SupabaseClient supabase = Supabase.instance.client;
-  final ConnectivityProvider connectivity = ConnectivityProvider();
+  final ConnectivityProvider connectivity =
+      ConnectivityProvider();
   List<TempPurchase> _purchases = [];
   List<TempPurchase> get purchases => _purchases;
+  final Set<String> _reversedPurchaseIds = {};
 
   final String tableName = 'purchases';
-  final String itemPurchaseTableName = 'item_purchase_records';
+  final String itemPurchaseTableName =
+      'item_purchase_records';
 
   void clearPurchases() {
     _purchases.clear();
+    _reversedPurchaseIds.clear();
     // clearRecords();
     mainLocalLog('Purchases Cleared');
     notifyListeners();
   }
 
   // CREATE a new Purchase
-  Future<TempPurchase?> createPurchase(TempPurchase purchase) async {
+  Future<TempPurchase?> createPurchase(
+    TempPurchase purchase,
+  ) async {
     await mainLocalLog('Inner Purchase Creation Started');
+    if (purchase.uuid != null) {
+      _reversedPurchaseIds.remove(purchase.uuid!);
+    }
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
-      purchase.createdAt = DateTime.now().subtract(Duration(hours: 1));
+      purchase.createdAt = DateTime.now().subtract(
+        Duration(hours: 1),
+      );
       try {
         final res =
             await supabase
                 .from(tableName)
-                .upsert(purchase.toJson(), onConflict: 'uuid')
+                .upsert(
+                  purchase.toJson(),
+                  onConflict: 'uuid',
+                )
                 .select()
                 .single();
         final newPurchase = TempPurchase.fromJson(res);
+        await PurchaseFunc().createPurchase(newPurchase);
         notifyListeners();
         // await loadPurchases(shopId());
         return newPurchase;
       } catch (e) {
-        await mainLocalLog('❌❌ Create Purchase Error Online: ${e.toString()}');
+        await mainLocalLog(
+          '❌❌ Create Purchase Error Online: ${e.toString()}',
+        );
         return null;
       }
     } else {
@@ -86,15 +105,22 @@ class PurchaseProvider extends ChangeNotifier {
         // await loadPurchases(shopId());
         return purchase;
       } catch (e) {
-        await mainLocalLog('❌❌ Create Purchase Error Offline: ${e.toString()}');
+        await mainLocalLog(
+          '❌❌ Create Purchase Error Offline: ${e.toString()}',
+        );
         return null;
       }
     }
   }
 
   // CREATE a new Purchase
-  Future<TempPurchase?> updatePurchase(TempPurchase purchase) async {
+  Future<TempPurchase?> updatePurchase(
+    TempPurchase purchase,
+  ) async {
     await mainLocalLog('Inner Purchase Update Started');
+    if (purchase.uuid != null) {
+      _reversedPurchaseIds.remove(purchase.uuid!);
+    }
     bool isOnline = await connectivity.isOnline();
     purchase.updatedAt = DateTime.now();
     if (isOnline) {
@@ -102,34 +128,46 @@ class PurchaseProvider extends ChangeNotifier {
         final res =
             await supabase
                 .from(tableName)
-                .upsert(purchase.toJson(), onConflict: 'uuid')
+                .upsert(
+                  purchase.toJson(),
+                  onConflict: 'uuid',
+                )
                 .select()
                 .single();
         final newPurchase = TempPurchase.fromJson(res);
+        await PurchaseFunc().createPurchase(newPurchase);
         notifyListeners();
         await loadPurchases(shopId());
         return newPurchase;
       } catch (e) {
-        await mainLocalLog('❌❌ Update Purchase Error Online: ${e.toString()}');
+        await mainLocalLog(
+          '❌❌ Update Purchase Error Online: ${e.toString()}',
+        );
         return null;
       }
     } else {
-      purchase.updatedAt = DateTime.now().add(Duration(days: 1));
+      purchase.updatedAt = DateTime.now().add(
+        Duration(days: 1),
+      );
       try {
-        var res = await PurchaseFunc().createPurchase(purchase);
+        var res = await PurchaseFunc().createPurchase(
+          purchase,
+        );
         if (res == 1) {
           var containsCreated =
               CreatedPurchasesFunc()
                   .getPurchases()
                   .where(
                     (createdProduct) =>
-                        createdProduct.purchase.uuid == purchase.uuid,
+                        createdProduct.purchase.uuid ==
+                        purchase.uuid,
                   )
                   .toList();
           if (containsCreated.isEmpty) {
-            await UpdatedPurchasesFunc().createUpdatedPurchase(
-              UpdatedPurchases(purchase: purchase),
-            );
+            await UpdatedPurchasesFunc()
+                .createUpdatedPurchase(
+                  UpdatedPurchases(purchase: purchase),
+                );
           } else {
             await CreatedPurchasesFunc().createPurchases(
               CreatedPurchases(purchase: purchase),
@@ -143,14 +181,18 @@ class PurchaseProvider extends ChangeNotifier {
         syncData();
         return purchase;
       } catch (e) {
-        await mainLocalLog('❌❌ Create Purchase Error Offline: ${e.toString()}');
+        await mainLocalLog(
+          '❌❌ Create Purchase Error Offline: ${e.toString()}',
+        );
         return null;
       }
     }
   }
 
   // READ all Purchases for a shop
-  Future<List<TempPurchase>> loadPurchases(int shopId) async {
+  Future<List<TempPurchase>> loadPurchases(
+    int shopId,
+  ) async {
     bool isOnline = await connectivity.isOnline();
     if (isOnline && PurchaseFunc().isSynced()) {
       await PurchaseFunc().clearPurchases();
@@ -161,16 +203,22 @@ class PurchaseProvider extends ChangeNotifier {
             .eq('shop_id', shopId)
             .order('created_at', ascending: false);
         if (data.isNotEmpty) {
-          await mainLocalLog('Purchases Gotten ${data.length}');
+          await mainLocalLog(
+            'Purchases Gotten ${data.length}',
+          );
         }
 
         _purchases =
-            (data as List).map((json) => TempPurchase.fromJson(json)).toList();
+            (data as List)
+                .map((json) => TempPurchase.fromJson(json))
+                .toList();
         await PurchaseFunc().insertAllPurchases(_purchases);
         await mainLocalLog('Loaded');
         notifyListeners();
       } catch (e) {
-        await mainLocalLog('❌ Error Getting Purchases: ${e.toString()}');
+        await mainLocalLog(
+          '❌ Error Getting Purchases: ${e.toString()}',
+        );
         return [];
       }
     } else {
@@ -178,7 +226,7 @@ class PurchaseProvider extends ChangeNotifier {
       await mainLocalLog('Offline Purchases Gotten');
       notifyListeners();
     }
-    await loadItemPurchaseRecords(shopId);
+    // await loadItemPurchaseRecords(shopId);
     notifyListeners();
     return _purchases;
   }
@@ -187,7 +235,7 @@ class PurchaseProvider extends ChangeNotifier {
   Future<List<TempPurchase>> loadPurchasesOffline() async {
     _purchases = PurchaseFunc().getPurchases();
     await mainLocalLog('Offline Purchases Gotten');
-    await loadItemPurchaseRecordsOffline();
+    // await loadItemPurchaseRecordsOffline();
     notifyListeners();
     return _purchases;
   }
@@ -220,9 +268,216 @@ class PurchaseProvider extends ChangeNotifier {
   void setRange(DateTime rangeStart, DateTime endOfrange) {
     rangeStartDate = rangeStart;
     rangeEndDate = endOfrange;
-    mainLocalLog('Date Range set: Start: $rangeStart End: $endOfrange ');
+    mainLocalLog(
+      'Date Range set: Start: $rangeStart End: $endOfrange ',
+    );
     dateSet = null;
     notifyListeners();
+  }
+
+  TempProductClass? _findProduct(String? uuid) {
+    if (uuid == null || uuid.isEmpty) return null;
+    final inMemory = returnData().productListMain.where(
+      (prod) => prod.uuid == uuid,
+    );
+    if (inMemory.isNotEmpty) return inMemory.first;
+    try {
+      final inHive = ProductsFunc().getProducts().where(
+        (prod) => prod.uuid == uuid,
+      );
+      if (inHive.isNotEmpty) return inHive.first;
+    } catch (_) {}
+    return null;
+  }
+
+  TempStorageProducts? _findStorageProduct(String? uuid) {
+    if (uuid == null || uuid.isEmpty) return null;
+    final inMemory = returnStorageProductProvider()
+        .storageProductListMain
+        .where((prod) => prod.uuid == uuid);
+    if (inMemory.isNotEmpty) return inMemory.first;
+    try {
+      final inHive = StorageProductsFunc()
+          .getStorageProducts()
+          .where((prod) => prod.uuid == uuid);
+      if (inHive.isNotEmpty) return inHive.first;
+    } catch (_) {}
+    return null;
+  }
+
+  ProductUnitsClass _resolveSelectedUnitForProduct(
+    TempItemPurchaseRecord item,
+    TempProductClass product,
+  ) {
+    final productUnits = product.getUnitsList();
+    final itemUnits =
+        (item.unitsList != null &&
+                item.unitsList!.isNotEmpty)
+            ? item.getUnitsList()
+            : <ProductUnitsClass>[];
+    final combinedUnits = [...itemUnits, ...productUnits];
+
+    if (item.unitUuid != null &&
+        item.unitUuid!.isNotEmpty) {
+      final matched = combinedUnits.where(
+        (u) => u.uuid == item.unitUuid,
+      );
+      if (matched.isNotEmpty) {
+        final unit = matched.first;
+        if (product.quantityType == 2 &&
+            unit.dimensionType == null) {
+          final prodMatch = productUnits.where(
+            (u) =>
+                u.uuid == unit.uuid ||
+                u.name.toLowerCase() ==
+                    unit.name.toLowerCase(),
+          );
+          return unit.copyWith(
+            dimensionType:
+                prodMatch.isNotEmpty
+                    ? prodMatch.first.dimensionType
+                    : ProductUnitsClass.sheetUnit,
+          );
+        }
+        return unit;
+      }
+    }
+
+    if (item.isGroup == true) {
+      final groupMatched = combinedUnits.where(
+        (u) => !u.isPrimary,
+      );
+      if (groupMatched.isNotEmpty) {
+        final unit = groupMatched.first;
+        final conv =
+            (item.qttyPerGroup != null &&
+                    item.qttyPerGroup! > 0)
+                ? item.qttyPerGroup!
+                : unit.conversion;
+        return unit.copyWith(
+          conversion: conv,
+          dimensionType:
+              unit.dimensionType ??
+              (product.quantityType == 2
+                  ? ProductUnitsClass.sheetUnit
+                  : null),
+        );
+      }
+      final fallbackConv =
+          (item.qttyPerGroup != null &&
+                  item.qttyPerGroup! > 0)
+              ? item.qttyPerGroup!
+              : (product.qttyPerGroup != null &&
+                  product.qttyPerGroup! > 0)
+              ? product.qttyPerGroup!
+              : 1.0;
+      return ProductUnitsClass(
+        uuid: '${product.uuid ?? ''}_group_unit',
+        staffUuid: currentUser().userId,
+        createdAt: DateTime.now(),
+        staffName: currentUser().name,
+        conversion: fallbackConv,
+        name: item.unit ?? product.groupUnit ?? 'Group(s)',
+        isPrimary: false,
+        productUuid: product.uuid ?? '',
+        dimensionType:
+            product.quantityType == 2
+                ? ProductUnitsClass.sheetUnit
+                : null,
+      );
+    }
+
+    if (item.unit != null && item.unit!.isNotEmpty) {
+      final byName = combinedUnits.where(
+        (u) =>
+            u.name.toLowerCase() ==
+            item.unit!.toLowerCase(),
+      );
+      if (byName.isNotEmpty) {
+        final unit = byName.first;
+        if (product.quantityType == 2 &&
+            unit.dimensionType == null) {
+          return unit.copyWith(
+            dimensionType: ProductUnitsClass.sheetUnit,
+          );
+        }
+        return unit;
+      }
+    }
+
+    return product.getPrimaryUnit();
+  }
+
+  ProductUnitsClass _resolveSelectedUnitForStorage(
+    TempItemPurchaseRecord item,
+    TempStorageProducts storageProduct,
+  ) {
+    final storageUnits = storageProduct.getUnitsList();
+    final itemUnits =
+        (item.unitsList != null &&
+                item.unitsList!.isNotEmpty)
+            ? item.getUnitsList()
+            : <ProductUnitsClass>[];
+    final combinedUnits = [...itemUnits, ...storageUnits];
+
+    if (item.unitUuid != null &&
+        item.unitUuid!.isNotEmpty) {
+      final matched = combinedUnits.where(
+        (u) => u.uuid == item.unitUuid,
+      );
+      if (matched.isNotEmpty) {
+        return matched.first;
+      }
+    }
+
+    if (item.isGroup == true) {
+      final groupMatched = combinedUnits.where(
+        (u) => !u.isPrimary,
+      );
+      if (groupMatched.isNotEmpty) {
+        final unit = groupMatched.first;
+        final conv =
+            (item.qttyPerGroup != null &&
+                    item.qttyPerGroup! > 0)
+                ? item.qttyPerGroup!
+                : unit.conversion;
+        return unit.copyWith(conversion: conv);
+      }
+      final fallbackConv =
+          (item.qttyPerGroup != null &&
+                  item.qttyPerGroup! > 0)
+              ? item.qttyPerGroup!
+              : (storageProduct.qttyPerGroup != null &&
+                  storageProduct.qttyPerGroup! > 0)
+              ? storageProduct.qttyPerGroup!
+              : 1.0;
+      return ProductUnitsClass(
+        uuid: '${storageProduct.uuid ?? ''}_group_unit',
+        staffUuid: currentUser().userId,
+        createdAt: DateTime.now(),
+        staffName: currentUser().name,
+        conversion: fallbackConv,
+        name:
+            item.unit ??
+            storageProduct.groupUnit ??
+            'Group(s)',
+        isPrimary: false,
+        productUuid: storageProduct.uuid ?? '',
+      );
+    }
+
+    if (item.unit != null && item.unit!.isNotEmpty) {
+      final byName = combinedUnits.where(
+        (u) =>
+            u.name.toLowerCase() ==
+            item.unit!.toLowerCase(),
+      );
+      if (byName.isNotEmpty) {
+        return byName.first;
+      }
+    }
+
+    return storageProduct.getPrimaryUnit();
   }
 
   // DELETE a Purchase
@@ -233,112 +488,167 @@ class PurchaseProvider extends ChangeNotifier {
   ) async {
     await mainLocalLog('Deleting Purchase');
     try {
+      final purchaseUuid = purchase.uuid;
+      if (purchaseUuid == null || purchaseUuid.isEmpty) {
+        return 0;
+      }
+      final recordsToDelete =
+          List<TempItemPurchaseRecord>.from(
+            purchase.getItems(),
+          );
+      final shouldReverseInventory =
+          updateInventory == true &&
+          !_reversedPurchaseIds.contains(purchaseUuid);
+      if (shouldReverseInventory) {
+        _reversedPurchaseIds.add(purchaseUuid);
+      }
+
       await mainLocalLog('Deleting Purchase Offline');
-      await PurchaseFunc().deletePurchase(purchase.uuid!);
+      await PurchaseFunc().deletePurchase(purchaseUuid);
+      _purchases.removeWhere((p) => p.uuid == purchaseUuid);
       var containsCreated =
           CreatedPurchasesFunc()
               .getPurchases()
-              .where((purch) => purch.purchase.uuid == purchase.uuid)
+              .where(
+                (purch) =>
+                    purch.purchase.uuid == purchaseUuid,
+              )
               .toList();
-      var containsUpdate = UpdatedPurchasesFunc().getPurchaseIds().where(
-        (purch) => purch.purchase.uuid == purchase.uuid!,
-      );
+      var containsUpdate = UpdatedPurchasesFunc()
+          .getPurchaseIds()
+          .where(
+            (purch) => purch.purchase.uuid == purchaseUuid,
+          );
       if (containsCreated.isNotEmpty) {
-        await CreatedPurchasesFunc().deletePurchase(purchase.uuid!);
-      } else {
-        await DeletedPurchasesFunc().createDeletedPurchase(
-          DeletedPurchases(purchaseUuid: purchase.uuid!),
+        await CreatedPurchasesFunc().deletePurchase(
+          purchaseUuid,
         );
+      } else {
+        final alreadyMarkedDeleted = DeletedPurchasesFunc()
+            .getPurchaseIds()
+            .any((d) => d.purchaseUuid == purchaseUuid);
+        if (!alreadyMarkedDeleted) {
+          await DeletedPurchasesFunc()
+              .createDeletedPurchase(
+                DeletedPurchases(
+                  purchaseUuid: purchaseUuid,
+                ),
+              );
+        }
       }
       if (containsUpdate.isNotEmpty) {
-        await UpdatedPurchasesFunc().deleteUpdatedPurchase(purchase.uuid!);
+        await UpdatedPurchasesFunc().deleteUpdatedPurchase(
+          purchaseUuid,
+        );
       }
-      await ItemPurchaseFunc().deleteRecordsInPurchase(purchase.uuid!);
-      // }
+      // await ItemPurchaseFunc().deleteRecordsInPurchase(
+      //   purchaseUuid,
+      // );
 
-      for (var rec in purchase.items ?? []) {
-        await deleteItemPurchaseRecord(rec.uuid!);
+      final isManageStorage =
+          returnShopProvider()
+              .userShop()
+              ?.manageInventoryStorage ==
+          true;
 
-        if (updateInventory == true) {
-          if (returnShopProvider().userShop()?.manageInventoryStorage == true) {
-            List<TempStorageProducts> storageProducts =
-                returnStorageProductProvider().storageProductListMain
-                    .where((pro) => pro.uuid == rec.storageItemId)
-                    .toList();
-            if (storageProducts.isNotEmpty) {
-              var newPro = storageProducts.first.copyWith();
+      for (var rec in recordsToDelete) {
+        // if (rec.uuid != null) {
+        //   await deleteItemPurchaseRecord(rec.uuid!);
+        // }
 
-              var quantity =
-                  (newPro.quantity ?? 0) -
-                  rec.getSelectedUnit().getQuantityEquivMultiplied(
-                    index: 1,
+        if (shouldReverseInventory) {
+          if (isManageStorage) {
+            final targetStorageId =
+                rec.storageItemId ?? rec.itemId;
+            final storageProd = _findStorageProduct(
+              targetStorageId,
+            );
+            if (storageProd != null) {
+              var newPro = storageProd.copyWith();
+              final selectedUnit =
+                  _resolveSelectedUnitForStorage(
+                    rec,
+                    newPro,
+                  );
+              final primaryUnit = newPro.getPrimaryUnit();
+              final deltaQty = selectedUnit
+                  .getQuantityEquivMultiplied(
+                    index: 4,
                     quantityTwo: (rec.quantity ?? 0),
                   );
+              final oldQty = newPro.quantity ?? 0;
+              final newQty = oldQty - deltaQty;
 
               try {
                 var product = newPro.copyWith();
                 product.updatedAt = DateTime.now();
-                product.quantity = quantity;
+                product.quantity = newQty;
 
-                await returnStorageProductProvider().updateProduct(
-                  product: product,
-                  isQuantityUpdate: true,
-                  quantityChange: rec
-                      .getSelectedUnit()
-                      .getQuantityEquivMultiplied(
-                        index: 1,
-                        quantityTwo: (rec.quantity ?? 0),
-                      ),
-                  isIncrement: false,
-                );
-                try {
-                  if (createUpdate) {
-                    var newUpdate = StorageItemHistory(
-                      event: StorageItemHistoryEventClass.purchaseDeleted,
-                      source: StorageItemHistoryEventClass.storageSource,
-                      destination:
-                          StorageItemHistoryEventClass.purchaseDestination,
-                      shopId: shopId(),
-                      title: 'Purchase Deleted',
-                      createdAt: DateTime.now(),
-                      storageDepartmentName:
-                          returnDepartmentProvider().currentDepartment()?.name,
-                      storageDepartmentUuid:
-                          returnDepartmentProvider().currentDepartment()?.uuid,
-                      storageItemName: rec.itemName,
-                      storageItemUuid: rec.storageItemId,
-                      storageStaffId: currentUser().userId,
-                      storageStaffName: currentUser().name,
-                      storageItemOldValue: formatLargeNumberDouble(
-                        (newPro.getPrimaryUnit().getQuantityEquivDivided(
-                          index: 1,
-                          quantityTwo: (newPro.quantity ?? 0),
-                        )),
-                      ),
-                      storageItemNewValue: formatLargeNumberDouble(
-                        product.getPrimaryUnit().getQuantityEquivDivided(
-                          index: 1,
-                          quantityTwo: (product.quantity ?? 0),
+                StorageItemHistory? newUpdate;
+                if (createUpdate) {
+                  newUpdate = StorageItemHistory(
+                    event:
+                        StorageItemHistoryEventClass
+                            .purchaseDeleted,
+                    source:
+                        StorageItemHistoryEventClass
+                            .storageSource,
+                    destination:
+                        StorageItemHistoryEventClass
+                            .purchaseDestination,
+                    shopId:
+                        purchase.shopId != 0
+                            ? purchase.shopId
+                            : shopId(),
+                    title: 'Purchase Deleted',
+                    createdAt: DateTime.now(),
+                    storageDepartmentName:
+                        returnDepartmentProvider()
+                            .currentDepartment()
+                            ?.name,
+                    storageDepartmentUuid:
+                        returnDepartmentProvider()
+                            .currentDepartment()
+                            ?.uuid,
+                    storageItemName: product.name,
+                    storageItemUuid: product.uuid,
+                    storageStaffId: currentUser().userId,
+                    storageStaffName: currentUser().name,
+                    storageItemOldValue:
+                        formatLargeNumberDouble(
+                          primaryUnit
+                              .getQuantityEquivDivided(
+                                index: 4,
+                                quantityTwo: oldQty,
+                              ),
                         ),
-                      ),
-                      uuid: uuidGen(),
-                      desc:
-                          '${rec.quantity ?? 0} ${rec.unit} of This Item Return From Purchase Purchased. Purchase Id: #${returnOnlyDigits(rec.purchaseId ?? '')}',
-                      isIncreased: false,
-                      quantityChange: rec.quantity,
-                      storagePrimaryUnit: rec.getPrimaryUnit().name,
-                      storageUnit: rec.unit,
-                    );
-
-                    await returnStorageItemHistoryProvider()
-                        .createStorageItemHistory(newUpdate);
-                    await returnData().getProducts(shopId());
-                  }
-                } catch (e) {
-                  await mainLocalLog(
-                    '❌❌Error Creating Inventory Update: ${e.toString()}',
+                    storageItemNewValue:
+                        formatLargeNumberDouble(
+                          product
+                              .getPrimaryUnit()
+                              .getQuantityEquivDivided(
+                                index: 4,
+                                quantityTwo: newQty,
+                              ),
+                        ),
+                    uuid: uuidGen(),
+                    desc:
+                        '${rec.quantity ?? 0} ${selectedUnit.name} of This Item Return From Purchase Purchased. Purchase Id: #${returnOnlyDigits(rec.purchaseId ?? purchaseUuid)}',
+                    isIncreased: false,
+                    quantityChange: rec.quantity,
+                    storagePrimaryUnit: primaryUnit.name,
+                    storageUnit: selectedUnit.name,
                   );
                 }
+
+                await returnStorageProductProvider()
+                    .updateProduct(
+                      product: product,
+                      storageItemHistory: newUpdate,
+                      isQuantityUpdate: true,
+                      quantityChange: deltaQty,
+                      isIncrement: false,
+                    );
               } catch (e) {
                 await mainLocalLog(
                   '❌❌Error Updating Storage Product Quantity: ${e.toString()}',
@@ -346,64 +656,113 @@ class PurchaseProvider extends ChangeNotifier {
               }
             }
           } else {
-            List<TempProductClass> products =
-                returnData().productListMain
-                    .where((pro) => pro.uuid == rec.itemId)
-                    .toList();
-            if (products.isNotEmpty) {
-              var oldPro = products.first.copyWith();
+            final targetProductId =
+                rec.itemId ?? rec.storageItemId;
+            final foundProduct = _findProduct(
+              targetProductId,
+            );
+            if (foundProduct != null) {
+              var oldPro = foundProduct.copyWith();
               var newPro = oldPro.copyWith();
-              newPro.quantity =
-                  (newPro.getActualQuantity() ?? 0) -
-                  rec.getSelectedUnit().getQuantityEquivMultiplied(
-                    index: 1,
-                    quantityTwo: rec.quantity ?? 0,
+              final selectedUnit =
+                  _resolveSelectedUnitForProduct(
+                    rec,
+                    oldPro,
                   );
+              final primaryUnit = oldPro.getPrimaryUnit();
+              final oldArea =
+                  oldPro.getActualQuantity() ?? 0;
+              final isDimensionalSheet =
+                  oldPro.quantityType == 2 &&
+                  selectedUnit.dimensionType !=
+                      ProductUnitsClass.areaUnit;
+              final deltaArea = selectedUnit
+                  .getQuantityEquivMultiplied(
+                    index: 1,
+                    product: oldPro,
+                    newQuantity: rec.quantity ?? 0,
+                    customWidth:
+                        isDimensionalSheet
+                            ? oldPro.widthDimension
+                            : null,
+                    customHeight:
+                        isDimensionalSheet
+                            ? oldPro.heightDimension
+                            : null,
+                  );
+              final newArea = oldArea - deltaArea;
+              final areaPerSheet = oldPro.dimensionArea();
+              newPro.quantity =
+                  (oldPro.quantityType == 2 &&
+                          areaPerSheet > 0)
+                      ? (newArea / areaPerSheet)
+                      : newArea;
+              newPro.updatedAt = DateTime.now();
 
-              ItemHistory itemHistory = ItemHistory(
-                event: ItemHistoryEventClass.returnEvent,
-                isManaged: true,
-                source: ItemHistoryEventClass.productSource,
-                destination: ItemHistoryEventClass.purchaseDestination,
-                desc:
-                    '${rec.quantity} ${rec.unit} of this Item Was Returned From Purchase. Purchase Id: #${returnOnlyDigits(rec.purchaseId ?? '')}',
-                shopId: shopId(),
-                isIncreased: false,
-                oldValue: formatLargeNumberDouble(
-                  (oldPro.getPrimaryUnit().getQuantityEquivDivided(
-                    index: 1,
-                    quantityTwo: (oldPro.getActualQuantity() ?? 0),
-                  )),
-                ),
-                newValue: formatLargeNumberDouble(
-                  newPro.getPrimaryUnit().getQuantityEquivDivided(
-                    index: 1,
-                    quantityTwo: (newPro.getActualQuantity() ?? 0),
+              final rpcQuantityChange =
+                  (oldPro.quantityType == 2 &&
+                          areaPerSheet > 0)
+                      ? (deltaArea / areaPerSheet)
+                      : deltaArea;
+
+              ItemHistory? itemHistory;
+              if (createUpdate) {
+                itemHistory = ItemHistory(
+                  event: ItemHistoryEventClass.returnEvent,
+                  isManaged: true,
+                  source:
+                      ItemHistoryEventClass.productSource,
+                  destination:
+                      ItemHistoryEventClass
+                          .purchaseDestination,
+                  desc:
+                      '${rec.quantity} ${selectedUnit.name} of this Item Was Returned From Purchase. Purchase Id: #${returnOnlyDigits(rec.purchaseId ?? purchaseUuid)}',
+                  shopId:
+                      purchase.shopId != 0
+                          ? purchase.shopId
+                          : shopId(),
+                  isIncreased: false,
+                  oldValue: formatLargeNumberDouble(
+                    primaryUnit.getQuantityEquivDivided(
+                      index: 1,
+                      newQuantity: oldArea,
+                      product: oldPro,
+                    ),
                   ),
-                ),
-                title: 'Purchased Deleted',
-                quantityChange: rec.quantity,
-                departmentName:
-                    returnDepartmentProvider().currentDepartment()?.name,
-                departmentUuid:
-                    returnDepartmentProvider().currentDepartment()?.uuid,
-                itemName: rec.itemName,
-                itemUuid: rec.itemId,
-                primaryUnit: rec.getPrimaryUnit().name,
-                unit: rec.getSelectedUnit().name,
-              );
+                  newValue: formatLargeNumberDouble(
+                    newPro
+                        .getPrimaryUnit()
+                        .getQuantityEquivDivided(
+                          index: 1,
+                          newQuantity:
+                              newPro.getActualQuantity() ??
+                              0,
+                          product: newPro,
+                        ),
+                  ),
+                  title: 'Purchased Deleted',
+                  quantityChange: rec.quantity,
+                  departmentName:
+                      returnDepartmentProvider()
+                          .currentDepartment()
+                          ?.name,
+                  departmentUuid:
+                      returnDepartmentProvider()
+                          .currentDepartment()
+                          ?.uuid,
+                  itemName: newPro.name,
+                  itemUuid: newPro.uuid,
+                  primaryUnit: primaryUnit.name,
+                  unit: selectedUnit.name,
+                );
+              }
 
               await returnData().updateProduct(
                 itemHistory: itemHistory,
                 includeQuantity: false,
                 product: newPro,
                 isQuantityUpdate: true,
-                quantityChange: rec
-                    .getSelectedUnit()
-                    .getQuantityEquivMultiplied(
-                      index: 1,
-                      quantityTwo: rec.quantity ?? 0,
-                    ),
+                quantityChange: rpcQuantityChange,
                 isIncrement: false,
               );
             }
@@ -416,7 +775,9 @@ class PurchaseProvider extends ChangeNotifier {
       notifyListeners();
       return 1;
     } catch (e) {
-      await mainLocalLog('Error Deleting Purchase: ${e.toString()}');
+      await mainLocalLog(
+        'Error Deleting Purchase: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -430,25 +791,44 @@ class PurchaseProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
-      if (CreatedPurchasesFunc().getPurchases().isNotEmpty && isOnline) {
-        final tempPurchases = CreatedPurchasesFunc().getPurchases().toList();
+      if (CreatedPurchasesFunc()
+              .getPurchases()
+              .isNotEmpty &&
+          isOnline) {
+        final tempPurchases =
+            CreatedPurchasesFunc().getPurchases().toList();
         // createdAt is serialized to UTC in toJson(); don't mutate the
         // shared in-memory purchase.
         var newPurchases = tempPurchases;
-        final payload = newPurchases.map((p) => p.purchase.toJson()).toList();
+        final payload =
+            newPurchases
+                .map((p) => p.purchase.toJson())
+                .toList();
 
         // Insert all at once
-        final data = await supabase.from(tableName).insert(payload).select();
+        final data =
+            await supabase
+                .from(tableName)
+                .insert(payload)
+                .select();
 
-        await mainLocalLog('${data.length} items added successfully ✅');
+        await mainLocalLog(
+          '${data.length} items added successfully ✅',
+        );
         await CreatedPurchasesFunc().clearPurchases();
         await mainLocalLog('Unsynced Purchases Cleared');
 
-        await mainLocalLog('Mounted, refreshing Purchases ✅');
-        await loadPurchases(returnShopProvider().userShop()!.shopId!);
+        await mainLocalLog(
+          'Mounted, refreshing Purchases ✅',
+        );
+        await loadPurchases(
+          returnShopProvider().userShop()!.shopId!,
+        );
       }
     } catch (e) {
-      await mainLocalLog('Batch Purchases insert failed ❌: $e');
+      await mainLocalLog(
+        'Batch Purchases insert failed ❌: $e',
+      );
     }
   }
 
@@ -468,11 +848,20 @@ class PurchaseProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
-      if (DeletedPurchasesFunc().getPurchaseIds().isNotEmpty && isOnline) {
-        final tempPurchases = DeletedPurchasesFunc().getPurchaseIds().toList();
+      if (DeletedPurchasesFunc()
+              .getPurchaseIds()
+              .isNotEmpty &&
+          isOnline) {
+        final tempPurchases =
+            DeletedPurchasesFunc()
+                .getPurchaseIds()
+                .toList();
 
         for (var rec in tempPurchases) {
-          await supabase.from(tableName).delete().eq('uuid', rec.purchaseUuid);
+          await supabase
+              .from(tableName)
+              .delete()
+              .eq('uuid', rec.purchaseUuid);
           // await DeletedPurchasesFunc()
           //     .deletedDeletedPurchases(rec.purchaseUuid);
         }
@@ -480,14 +869,23 @@ class PurchaseProvider extends ChangeNotifier {
         await mainLocalLog(
           '${tempPurchases.length} Purchases Created successfully ✅',
         );
-        await DeletedPurchasesFunc().clearDeletedPurchases();
-        await mainLocalLog('Unsynced Deleted Purchases Cleared');
+        await DeletedPurchasesFunc()
+            .clearDeletedPurchases();
+        await mainLocalLog(
+          'Unsynced Deleted Purchases Cleared',
+        );
 
-        await mainLocalLog('Mounted, refreshing Purchases ✅');
-        await loadPurchases(returnShopProvider().userShop()!.shopId!);
+        await mainLocalLog(
+          'Mounted, refreshing Purchases ✅',
+        );
+        await loadPurchases(
+          returnShopProvider().userShop()!.shopId!,
+        );
       }
     } catch (e) {
-      await mainLocalLog('Batch Purchases Deleted failed ❌: $e');
+      await mainLocalLog(
+        'Batch Purchases Deleted failed ❌: $e',
+      );
     }
   }
 
@@ -500,19 +898,29 @@ class PurchaseProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       await mainLocalLog(
-        UpdatedPurchasesFunc().getPurchaseIds().length.toString(),
+        UpdatedPurchasesFunc()
+            .getPurchaseIds()
+            .length
+            .toString(),
       );
 
-      if (UpdatedPurchasesFunc().getPurchaseIds().isNotEmpty && isOnline) {
-        final updatedPurchases = UpdatedPurchasesFunc().getPurchaseIds();
+      if (UpdatedPurchasesFunc()
+              .getPurchaseIds()
+              .isNotEmpty &&
+          isOnline) {
+        final updatedPurchases =
+            UpdatedPurchasesFunc().getPurchaseIds();
 
         for (final updated in updatedPurchases) {
           final localPurchases = updated.purchase;
 
-          localPurchases.updatedAt ??= DateTime.now().toLocal();
+          localPurchases.updatedAt ??=
+              DateTime.now().toLocal();
 
           if (localPurchases.uuid == null) {
-            await mainLocalLog('Local Purchases Uuid is Null');
+            await mainLocalLog(
+              'Local Purchases Uuid is Null',
+            );
           }
           final remoteData =
               await supabase
@@ -522,28 +930,40 @@ class PurchaseProvider extends ChangeNotifier {
                   .maybeSingle();
 
           if (remoteData == null) {
-            await supabase.from(tableName).insert(localPurchases.toJson());
+            await supabase
+                .from(tableName)
+                .insert(localPurchases.toJson());
             await mainLocalLog(
               'Inserted product with uuid ${localPurchases.uuid}',
             );
-            await UpdatedPurchasesFunc().deleteUpdatedPurchase(
-              localPurchases.uuid ?? '',
-            );
+            await UpdatedPurchasesFunc()
+                .deleteUpdatedPurchase(
+                  localPurchases.uuid ?? '',
+                );
           } else {
-            final remoteUpdatedAtRaw = remoteData['updated_at'];
+            final remoteUpdatedAtRaw =
+                remoteData['updated_at'];
             final remoteUpdatedAt =
                 remoteUpdatedAtRaw == null
                     ? null
-                    : DateTime.parse(remoteUpdatedAtRaw).toUtc();
+                    : DateTime.parse(
+                      remoteUpdatedAtRaw,
+                    ).toUtc();
 
             localPurchases.updatedAt =
                 (localPurchases.updatedAt ?? DateTime.now())
                     .toUtc(); // ✅ keep both UTC
-            await mainLocalLog("Local updatedAt: ${localPurchases.updatedAt}");
-            await mainLocalLog("Remote updatedAt: $remoteUpdatedAt");
+            await mainLocalLog(
+              "Local updatedAt: ${localPurchases.updatedAt}",
+            );
+            await mainLocalLog(
+              "Remote updatedAt: $remoteUpdatedAt",
+            );
 
             if (remoteUpdatedAt == null ||
-                localPurchases.updatedAt!.isAfter(remoteUpdatedAt)) {
+                localPurchases.updatedAt!.isAfter(
+                  remoteUpdatedAt,
+                )) {
               await supabase
                   .from(tableName)
                   .update(localPurchases.toJson())
@@ -551,9 +971,10 @@ class PurchaseProvider extends ChangeNotifier {
               await mainLocalLog(
                 'Updated Purchase with uuid ${localPurchases.uuid}',
               );
-              await UpdatedPurchasesFunc().deleteUpdatedPurchase(
-                localPurchases.uuid ?? '',
-              );
+              await UpdatedPurchasesFunc()
+                  .deleteUpdatedPurchase(
+                    localPurchases.uuid ?? '',
+                  );
             } else {
               await mainLocalLog(
                 'Skipped Purchase ${localPurchases.uuid}, remote is newer ✅',
@@ -562,19 +983,30 @@ class PurchaseProvider extends ChangeNotifier {
           }
         }
 
-        await UpdatedPurchasesFunc().clearUpdatedPurchases();
-        await mainLocalLog('Unsynced Purchase products cleared');
-        await mainLocalLog('Mounted, refreshing products ✅');
-        await loadPurchases(returnShopProvider().userShop()!.shopId!);
+        await UpdatedPurchasesFunc()
+            .clearUpdatedPurchases();
+        await mainLocalLog(
+          'Unsynced Purchase products cleared',
+        );
+        await mainLocalLog(
+          'Mounted, refreshing products ✅',
+        );
+        await loadPurchases(
+          returnShopProvider().userShop()!.shopId!,
+        );
       }
     } catch (e) {
-      await mainLocalLog('Batch Purchases update failed ❌: $e');
+      await mainLocalLog(
+        'Batch Purchases update failed ❌: $e',
+      );
     }
   }
   //
   //
 
-  List<TempItemPurchaseRecord> itemPurchaseRecords({BuildContext? context}) {
+  List<TempItemPurchaseRecord> itemPurchaseRecords({
+    BuildContext? context,
+  }) {
     return purchases
         .expand((item) => (item.getItems(context: context)))
         .toList();
@@ -582,142 +1014,196 @@ class PurchaseProvider extends ChangeNotifier {
 
   List<TempItemPurchaseRecord> _itemPurchaseRecords = [];
 
-  List<TempItemPurchaseRecord> get getItemPurchaseReceipts =>
-      _itemPurchaseRecords;
+  List<TempItemPurchaseRecord>
+  get getItemPurchaseReceipts => _itemPurchaseRecords;
 
   // CREATE a new product sale record
   Future<void> createItemPurchaseRecord(
     List<TempItemPurchaseRecord> records,
   ) async {
     try {
-      // var newRecords =
-      //     records.map((rec) {
-      //       rec.createdAt = DateTime.now();
-
-      //       return rec;
-      //     }).toList();
-      // await ItemPurchaseFunc()
-      //     .insertSalesItemPurchaseRecords(newRecords);
-      // List<CreatedItemRecords> cRecords =
-      //     newRecords.map((r) {
-      //       return CreatedItemRecords(record: r);
-      //     }).toList();
-      // await CreatedItemPurchaseFunc().insertAllRecords(
-      //   cRecords,
-      // );
+      final isManageStorage =
+          returnShopProvider()
+              .userShop()
+              ?.manageInventoryStorage ==
+          true;
       for (var item in records) {
-        if (returnShopProvider().userShop()?.manageInventoryStorage == true) {
-          var storageProduct = returnStorageProductProvider()
-              .storageProductListMain
-              .firstWhere((prod) => prod.uuid == item.storageItemId);
+        if (isManageStorage) {
+          final targetStorageId =
+              item.storageItemId ?? item.itemId;
+          final storageProduct = _findStorageProduct(
+            targetStorageId,
+          );
+          if (storageProduct == null) {
+            await mainLocalLog(
+              '❌ Storage Product not found for purchase item: $targetStorageId',
+            );
+            continue;
+          }
 
-          var newPr = storageProduct.copyWith();
-          newPr.quantity =
-              (newPr.quantity ?? 0) +
-              item.getSelectedUnit().getQuantityEquivMultiplied(
-                index: 1,
+          final selectedUnit =
+              _resolveSelectedUnitForStorage(
+                item,
+                storageProduct,
+              );
+          final primaryUnit =
+              storageProduct.getPrimaryUnit();
+          final deltaQty = selectedUnit
+              .getQuantityEquivMultiplied(
+                index: 4,
                 quantityTwo: (item.quantity ?? 0),
               );
+          final oldQty = storageProduct.quantity ?? 0;
+          final newQty = oldQty + deltaQty;
+
+          var newPr = storageProduct.copyWith();
+          newPr.quantity = newQty;
           newPr.updatedAt = DateTime.now();
 
-          await returnStorageProductProvider().updateProduct(
-            product: newPr,
-            isQuantityUpdate: true,
-            quantityChange: item.getSelectedUnit().getQuantityEquivMultiplied(
-              index: 1,
-              quantityTwo: (item.quantity ?? 0),
+          var newUpdate = StorageItemHistory(
+            event: StorageItemHistoryEventClass.purchase,
+            source:
+                StorageItemHistoryEventClass.purchaseSource,
+            destination:
+                StorageItemHistoryEventClass
+                    .storageDestination,
+            shopId:
+                item.shopId != 0 ? item.shopId : shopId(),
+            title: 'Stock In From Purchase',
+            createdAt: DateTime.now(),
+            storageDepartmentName:
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.name,
+            storageDepartmentUuid:
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid,
+            storageItemName: newPr.name,
+            storageItemUuid: newPr.uuid,
+            storageStaffId: currentUser().userId,
+            storageStaffName: currentUser().name,
+            storageItemOldValue: formatLargeNumberDouble(
+              primaryUnit.getQuantityEquivDivided(
+                index: 4,
+                quantityTwo: oldQty,
+              ),
             ),
-            isIncrement: true,
+            storageItemNewValue: formatLargeNumberDouble(
+              primaryUnit.getQuantityEquivDivided(
+                index: 4,
+                quantityTwo: newQty,
+              ),
+            ),
+            uuid: uuidGen(),
+            desc:
+                '${item.quantity ?? 0} ${selectedUnit.name} of This Item Purchased. Purchase Id: #${returnOnlyDigits(item.purchaseId ?? '')}',
+            isIncreased: true,
+            quantityChange: item.quantity,
+            storagePrimaryUnit: primaryUnit.name,
+            storageUnit: selectedUnit.name,
           );
-          try {
-            var newUpdate = StorageItemHistory(
-              event: StorageItemHistoryEventClass.purchase,
-              source: StorageItemHistoryEventClass.purchaseSource,
-              destination: StorageItemHistoryEventClass.storageDestination,
-              shopId: shopId(),
-              title: 'Stock In From Purchase',
-              createdAt: DateTime.now(),
-              storageDepartmentName:
-                  returnDepartmentProvider().currentDepartment()?.name,
-              storageDepartmentUuid:
-                  returnDepartmentProvider().currentDepartment()?.uuid,
-              storageItemName: newPr.name,
-              storageItemUuid: newPr.uuid,
-              storageStaffId: currentUser().userId,
-              storageStaffName: currentUser().name,
-              storageItemOldValue: formatLargeNumberDouble(
-                (storageProduct.getPrimaryUnit().getQuantityEquivDivided(
-                  index: 1,
-                  quantityTwo: (storageProduct.quantity ?? 0),
-                )),
-              ),
-              storageItemNewValue: formatLargeNumberDouble(
-                storageProduct.getPrimaryUnit().getQuantityEquivDivided(
-                  index: 1,
-                  quantityTwo: (newPr.quantity ?? 0),
-                ),
-              ),
-              uuid: uuidGen(),
-              desc:
-                  '${item.quantity ?? 0} ${item.unit} of This Item Purchased. Purchase Id: #${returnOnlyDigits(item.purchaseId ?? '')}',
-              isIncreased: true,
-              quantityChange: item.quantity,
-              storagePrimaryUnit: item.getPrimaryUnit().name,
-              storageUnit: item.unit,
-            );
 
-            await returnStorageItemHistoryProvider().createStorageItemHistory(
-              newUpdate,
-            );
-          } catch (e) {
-            await mainLocalLog(
-              '❌❌Error Creating Inventory Update: ${e.toString()}',
-            );
-          }
+          await returnStorageProductProvider()
+              .updateProduct(
+                product: newPr,
+                storageItemHistory: newUpdate,
+                isQuantityUpdate: true,
+                quantityChange: deltaQty,
+                isIncrement: true,
+              );
         } else {
-          var product = returnData().productListMain.firstWhere(
-            (prod) => prod.uuid == item.itemId,
-          );
+          final targetProductId =
+              item.itemId ?? item.storageItemId;
+          final product = _findProduct(targetProductId);
+          if (product == null) {
+            await mainLocalLog(
+              '❌ Product not found for purchase item: $targetProductId',
+            );
+            continue;
+          }
+
+          final selectedUnit =
+              _resolveSelectedUnitForProduct(item, product);
+          final primaryUnit = product.getPrimaryUnit();
+          final oldArea = product.getActualQuantity() ?? 0;
+          final isDimensionalSheet =
+              product.quantityType == 2 &&
+              selectedUnit.dimensionType !=
+                  ProductUnitsClass.areaUnit;
+          final deltaArea = selectedUnit
+              .getQuantityEquivMultiplied(
+                index: 1,
+                product: product,
+                newQuantity: item.quantity ?? 0,
+                customWidth:
+                    isDimensionalSheet
+                        ? product.widthDimension
+                        : null,
+                customHeight:
+                    isDimensionalSheet
+                        ? product.heightDimension
+                        : null,
+              );
+          final newArea = oldArea + deltaArea;
+          final areaPerSheet = product.dimensionArea();
 
           var newPr = product.copyWith();
           newPr.quantity =
-              (newPr.quantity ?? 0) +
-              item.getSelectedUnit().getQuantityEquivMultiplied(
-                index: 1,
-                quantityTwo: (item.quantity ?? 0),
-              );
+              (product.quantityType == 2 &&
+                      areaPerSheet > 0)
+                  ? (newArea / areaPerSheet)
+                  : newArea;
           newPr.updatedAt = DateTime.now();
+
+          final rpcQuantityChange =
+              (product.quantityType == 2 &&
+                      areaPerSheet > 0)
+                  ? (deltaArea / areaPerSheet)
+                  : deltaArea;
+
           ItemHistory itemHistory = ItemHistory(
             event: ItemHistoryEventClass.purchase,
             isManaged: true,
             source: ItemHistoryEventClass.purchaseSource,
-            destination: ItemHistoryEventClass.productDestination,
+            destination:
+                ItemHistoryEventClass.productDestination,
             desc:
-                '${item.quantity} ${item.unit} of this Item Purchased. Purchase Id: #${returnOnlyDigits(item.purchaseId ?? '')}',
-            shopId: shopId(),
+                '${item.quantity} ${selectedUnit.name} of this Item Purchased. Purchase Id: #${returnOnlyDigits(item.purchaseId ?? '')}',
+            shopId:
+                item.shopId != 0 ? item.shopId : shopId(),
             isIncreased: true,
             oldValue: formatLargeNumberDouble(
-              (product.getPrimaryUnit().getQuantityEquivDivided(
+              primaryUnit.getQuantityEquivDivided(
                 index: 1,
-                quantityTwo: (product.quantity ?? 0),
-              )),
+                newQuantity: oldArea,
+                product: product,
+              ),
             ),
             newValue: formatLargeNumberDouble(
-              product.getPrimaryUnit().getQuantityEquivDivided(
-                index: 1,
-                quantityTwo: (newPr.quantity ?? 0),
-              ),
+              newPr
+                  .getPrimaryUnit()
+                  .getQuantityEquivDivided(
+                    index: 1,
+                    newQuantity:
+                        newPr.getActualQuantity() ?? 0,
+                    product: newPr,
+                  ),
             ),
             title: 'Item Purchased',
             quantityChange: item.quantity,
             departmentName:
-                returnDepartmentProvider().currentDepartment()?.name,
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.name,
             departmentUuid:
-                returnDepartmentProvider().currentDepartment()?.uuid,
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid,
             itemName: newPr.name,
             itemUuid: newPr.uuid,
-            primaryUnit: item.getPrimaryUnit().name,
-            unit: item.getSelectedUnit().name,
+            primaryUnit: primaryUnit.name,
+            unit: selectedUnit.name,
           );
 
           await returnData().updateProduct(
@@ -725,15 +1211,11 @@ class PurchaseProvider extends ChangeNotifier {
             includeQuantity: false,
             isIncrement: true,
             isQuantityUpdate: true,
-            quantityChange: item.getSelectedUnit().getQuantityEquivMultiplied(
-              index: 1,
-              quantityTwo: (item.quantity ?? 0),
-            ),
+            quantityChange: rpcQuantityChange,
             product: newPr,
           );
         }
       }
-      // }
     } catch (e) {
       await mainLocalLog('Error ${e.toString()}');
     }
@@ -741,88 +1223,100 @@ class PurchaseProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // READ sales for a shop
-  Future<List<TempItemPurchaseRecord>> loadItemPurchaseRecords(
-    int shopId,
-  ) async {
-    bool isOnline = await connectivity.isOnline();
-    try {
-      if (isOnline && ItemPurchaseFunc().isSynced()) {
-        final data = await supabase
-            .from(itemPurchaseTableName)
-            .select()
-            .eq('shop_id', shopId)
-            .order('created_at', ascending: false);
+  // // READ sales for a shop
+  // Future<List<TempItemPurchaseRecord>>
+  // loadItemPurchaseRecords(int shopId) async {
+  //   bool isOnline = await connectivity.isOnline();
+  //   try {
+  //     if (isOnline && ItemPurchaseFunc().isSynced()) {
+  //       final data = await supabase
+  //           .from(itemPurchaseTableName)
+  //           .select()
+  //           .eq('shop_id', shopId)
+  //           .order('created_at', ascending: false);
 
-        await mainLocalLog('✅Items Records gotten: ${data.length}');
-        _itemPurchaseRecords =
-            (data as List)
-                .map((json) => TempItemPurchaseRecord.fromJson(json))
-                .toList();
-        await ItemPurchaseFunc().insertAllItemPurchaseRecords(
-          _itemPurchaseRecords,
-        );
-      } else {
-        _itemPurchaseRecords = ItemPurchaseFunc().getItemPurchaseRecords();
-      }
+  //       await mainLocalLog(
+  //         '✅Items Records gotten: ${data.length}',
+  //       );
+  //       _itemPurchaseRecords =
+  //           (data as List)
+  //               .map(
+  //                 (json) =>
+  //                     TempItemPurchaseRecord.fromJson(json),
+  //               )
+  //               .toList();
+  //       await ItemPurchaseFunc()
+  //           .insertAllItemPurchaseRecords(
+  //             _itemPurchaseRecords,
+  //           );
+  //     } else {
+  //       _itemPurchaseRecords =
+  //           ItemPurchaseFunc().getItemPurchaseRecords();
+  //     }
 
-      notifyListeners();
-      return _itemPurchaseRecords;
-    } catch (e) {
-      await mainLocalLog(
-        '❌Error Getting Item Purchase Records: ${e.toString()}',
-      );
-      return [];
-    }
-  }
+  //     notifyListeners();
+  //     return _itemPurchaseRecords;
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       '❌Error Getting Item Purchase Records: ${e.toString()}',
+  //     );
+  //     return [];
+  //   }
+  // }
 
-  // READ sales for a shop
-  Future<List<TempItemPurchaseRecord>> loadItemPurchaseRecordsOffline() async {
-    try {
-      _itemPurchaseRecords = ItemPurchaseFunc().getItemPurchaseRecords();
+  // // READ sales for a shop
+  // Future<List<TempItemPurchaseRecord>>
+  // loadItemPurchaseRecordsOffline() async {
+  //   try {
+  //     _itemPurchaseRecords =
+  //         ItemPurchaseFunc().getItemPurchaseRecords();
 
-      notifyListeners();
-      return _itemPurchaseRecords;
-    } catch (e) {
-      await mainLocalLog(
-        '❌Error Getting Item Purchase Records Offline: ${e.toString()}',
-      );
-      return [];
-    }
-  }
+  //     notifyListeners();
+  //     return _itemPurchaseRecords;
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       '❌Error Getting Item Purchase Records Offline: ${e.toString()}',
+  //     );
+  //     return [];
+  //   }
+  // }
 
-  // DELETE a sale record
-  Future<void> deleteItemPurchaseRecord(String recordUuid) async {
-    try {
-      // if (isOnline) {
-      //   await supabase
-      //       .from(itemPurchaseTableName)
-      //       .delete()
-      //       .eq('uuid', recordUuid);
+  // // DELETE a sale record
+  // Future<void> deleteItemPurchaseRecord(
+  //   String recordUuid,
+  // ) async {
+  //   try {
+  //     // if (isOnline) {
+  //     //   await supabase
+  //     //       .from(itemPurchaseTableName)
+  //     //       .delete()
+  //     //       .eq('uuid', recordUuid);
 
-      //   notifyListeners();
-      // } else {
-      await ItemPurchaseFunc().deleteRecord(recordUuid);
+  //     //   notifyListeners();
+  //     // } else {
+  //     await ItemPurchaseFunc().deleteRecord(recordUuid);
 
-      if (CreatedItemPurchaseFunc()
-          .getRecords()
-          .where((rec) => rec.record.uuid == recordUuid)
-          .isNotEmpty) {
-        await CreatedItemPurchaseFunc().deleteRecords(recordUuid);
-      } else {
-        DeletedItemPurchaseFunc().createDeletedPurchase(
-          DeletedItemRecords(recordUuid: recordUuid),
-        );
-      }
-      // }
+  //     if (CreatedItemPurchaseFunc()
+  //         .getRecords()
+  //         .where((rec) => rec.record.uuid == recordUuid)
+  //         .isNotEmpty) {
+  //       await CreatedItemPurchaseFunc().deleteRecords(
+  //         recordUuid,
+  //       );
+  //     } else {
+  //       DeletedItemPurchaseFunc().createDeletedPurchase(
+  //         DeletedItemRecords(recordUuid: recordUuid),
+  //       );
+  //     }
+  //     // }
 
-      loadItemPurchaseRecordsOffline();
-    } catch (e) {
-      await mainLocalLog(
-        'Error Deleting Item Purchase Record: ${e.toString()}',
-      );
-    }
-  }
+  //     loadItemPurchaseRecordsOffline();
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       'Error Deleting Item Purchase Record: ${e.toString()}',
+  //     );
+  //   }
+  // }
 
   //
   //
@@ -937,19 +1431,31 @@ class PurchaseProvider extends ChangeNotifier {
   //
 
   List<TempPurchase> departmentPurchases() {
-    if (returnShopProvider().userShop()?.manageDepartments == true) {
-      if (!authorization(authorized: Authorizations().viewAllDepartments)) {
+    if (returnShopProvider()
+            .userShop()
+            ?.manageDepartments ==
+        true) {
+      if (!authorization(
+        authorized: Authorizations().viewAllDepartments,
+      )) {
         return purchases.where((cat) {
           return cat.departmentUuid ==
-              returnDepartmentProvider().currentDepartment()?.uuid;
+              returnDepartmentProvider()
+                  .currentDepartment()
+                  ?.uuid;
         }).toList();
       } else {
-        if (returnDepartmentProvider().currentDepartment()?.uuid == null) {
+        if (returnDepartmentProvider()
+                .currentDepartment()
+                ?.uuid ==
+            null) {
           return purchases;
         } else {
           return purchases.where((cat) {
             return cat.departmentUuid ==
-                returnDepartmentProvider().currentDepartment()?.uuid;
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid;
             // }
           }).toList();
         }
@@ -960,50 +1466,68 @@ class PurchaseProvider extends ChangeNotifier {
   }
 
   List<TempPurchase> returnPurchasesByDateForIndex() {
-    if (returnShopProvider().userShop()?.manageDepartments == true) {
+    if (returnShopProvider()
+            .userShop()
+            ?.manageDepartments ==
+        true) {
       if (rangeStartDate != null) {
         return departmentPurchases().where((purchase) {
           final created = purchase.createdAt.toLocal();
-          return !created.isBefore(fourAm(rangeStartDate!)) &&
+          return !created.isBefore(
+                fourAm(rangeStartDate!),
+              ) &&
               created.isBefore(
                 fourAmNextDay(
-                  rangeEndDate ?? resolveBusinessDate(DateTime.now()),
+                  rangeEndDate ??
+                      resolveBusinessDate(DateTime.now()),
                 ),
               );
         }).toList();
       } else {
         // final currentDate = dateSet ?? DateTime.now();
-        final currentDate = dateSet ?? resolveBusinessDate(DateTime.now());
+        final currentDate =
+            dateSet ?? resolveBusinessDate(DateTime.now());
 
         return departmentPurchases()
             .where(
               (purchase) =>
-                  !purchase.createdAt.isBefore(fourAm(currentDate)) &&
-                  purchase.createdAt.isBefore(fourAmNextDay(currentDate)),
+                  !purchase.createdAt.isBefore(
+                    fourAm(currentDate),
+                  ) &&
+                  purchase.createdAt.isBefore(
+                    fourAmNextDay(currentDate),
+                  ),
             )
             .toList();
       }
     } else {
       if (rangeStartDate != null) {
         if (authorization(
-          authorized: Authorizations().viewAllTransactionRecords,
+          authorized:
+              Authorizations().viewAllTransactionRecords,
         )) {
           return purchases.where((purchase) {
             final created = purchase.createdAt.toLocal();
-            return !created.isBefore(fourAm(rangeStartDate!)) &&
+            return !created.isBefore(
+                  fourAm(rangeStartDate!),
+                ) &&
                 created.isBefore(
                   fourAmNextDay(
-                    rangeEndDate ?? resolveBusinessDate(DateTime.now()),
+                    rangeEndDate ??
+                        resolveBusinessDate(DateTime.now()),
                   ),
                 );
           }).toList();
         } else {
           return purchases.where((purchase) {
             final created = purchase.createdAt.toLocal();
-            return !created.isBefore(fourAm(rangeStartDate!)) &&
+            return !created.isBefore(
+                  fourAm(rangeStartDate!),
+                ) &&
                 created.isBefore(
                   fourAmNextDay(
-                    rangeEndDate ?? resolveBusinessDate(DateTime.now()),
+                    rangeEndDate ??
+                        resolveBusinessDate(DateTime.now()),
                   ),
                 ) &&
                 purchase.staffId == currentUser().userId;
@@ -1013,22 +1537,32 @@ class PurchaseProvider extends ChangeNotifier {
         final currentDate = dateSet ?? DateTime.now();
 
         if (authorization(
-          authorized: Authorizations().viewAllTransactionRecords,
+          authorized:
+              Authorizations().viewAllTransactionRecords,
         )) {
           return purchases
               .where(
                 (purchase) =>
-                    !purchase.createdAt.isBefore(fourAm(currentDate)) &&
-                    !purchase.createdAt.isAfter(fourAmNextDay(currentDate)),
+                    !purchase.createdAt.isBefore(
+                      fourAm(currentDate),
+                    ) &&
+                    !purchase.createdAt.isAfter(
+                      fourAmNextDay(currentDate),
+                    ),
               )
               .toList();
         } else {
           return purchases
               .where(
                 (purchase) =>
-                    !purchase.createdAt.isBefore(fourAm(currentDate)) &&
-                    !purchase.createdAt.isAfter(fourAmNextDay(currentDate)) &&
-                    purchase.staffId == currentUser().userId,
+                    !purchase.createdAt.isBefore(
+                      fourAm(currentDate),
+                    ) &&
+                    !purchase.createdAt.isAfter(
+                      fourAmNextDay(currentDate),
+                    ) &&
+                    purchase.staffId ==
+                        currentUser().userId,
               )
               .toList();
         }
@@ -1036,7 +1570,9 @@ class PurchaseProvider extends ChangeNotifier {
     }
   }
 
-  List<TempPurchase> returnOwnPurchasesByDayOrWeek({required int index}) {
+  List<TempPurchase> returnOwnPurchasesByDayOrWeek({
+    required int index,
+  }) {
     if (index == 1) {
       return returnPurchasesByDateForIndex();
     } else if (index == 2) {
@@ -1058,7 +1594,8 @@ class PurchaseProvider extends ChangeNotifier {
     }
   }
 
-  List<TempItemPurchaseRecord> returnItemPurchaseRecordByDayOrWeek() {
+  List<TempItemPurchaseRecord>
+  returnItemPurchaseRecordByDayOrWeek() {
     List<TempItemPurchaseRecord> recordss = [];
 
     for (var rec in itemPurchaseRecords()) {
@@ -1079,24 +1616,31 @@ class PurchaseProvider extends ChangeNotifier {
 
     if (rangeStartDate != null) {
       if (authorization(
-        authorized: Authorizations().viewAllTransactionRecords,
+        authorized:
+            Authorizations().viewAllTransactionRecords,
       )) {
         return recordss.where((record) {
           final created = record.createdAt.toLocal();
-          return !created.isBefore(fourAm(rangeStartDate!)) &&
+          return !created.isBefore(
+                fourAm(rangeStartDate!),
+              ) &&
               created.isBefore(
                 fourAmNextDay(
-                  rangeEndDate ?? resolveBusinessDate(DateTime.now()),
+                  rangeEndDate ??
+                      resolveBusinessDate(DateTime.now()),
                 ),
               );
         }).toList();
       } else {
         return recordss.where((record) {
           final created = record.createdAt.toLocal();
-          return !created.isBefore(fourAm(rangeStartDate!)) &&
+          return !created.isBefore(
+                fourAm(rangeStartDate!),
+              ) &&
               created.isBefore(
                 fourAmNextDay(
-                  rangeEndDate ?? resolveBusinessDate(DateTime.now()),
+                  rangeEndDate ??
+                      resolveBusinessDate(DateTime.now()),
                 ),
               ) &&
               record.staffId == currentUser().userId;
@@ -1105,20 +1649,31 @@ class PurchaseProvider extends ChangeNotifier {
     }
 
     var currentDate = dateSet ?? DateTime.now();
-    if (authorization(authorized: Authorizations().viewAllTransactionRecords)) {
+    if (authorization(
+      authorized:
+          Authorizations().viewAllTransactionRecords,
+    )) {
       return recordss
           .where(
             (record) =>
-                !record.createdAt.isBefore(fourAm(currentDate)) &&
-                !record.createdAt.isAfter(fourAmNextDay(currentDate)),
+                !record.createdAt.isBefore(
+                  fourAm(currentDate),
+                ) &&
+                !record.createdAt.isAfter(
+                  fourAmNextDay(currentDate),
+                ),
           )
           .toList();
     } else {
       return recordss
           .where(
             (record) =>
-                !record.createdAt.isBefore(fourAm(currentDate)) &&
-                !record.createdAt.isAfter(fourAmNextDay(currentDate)) &&
+                !record.createdAt.isBefore(
+                  fourAm(currentDate),
+                ) &&
+                !record.createdAt.isAfter(
+                  fourAmNextDay(currentDate),
+                ) &&
                 record.staffId == currentUser().userId,
           )
           .toList();
@@ -1141,8 +1696,12 @@ class PurchaseProvider extends ChangeNotifier {
             ? returnOwnPurchasesByDayOrWeek(
               index: index,
             ).where((rec) => rec.supplierId == supplierUuid)
-            : returnOwnPurchasesByDayOrWeek(index: index))) {
-      tempTotalRevenue += getTotalMainRevenuePurchase(purchase);
+            : returnOwnPurchasesByDayOrWeek(
+              index: index,
+            ))) {
+      tempTotalRevenue += getTotalMainRevenuePurchase(
+        purchase,
+      );
     }
 
     return tempTotalRevenue;
@@ -1174,7 +1733,9 @@ class PurchaseProvider extends ChangeNotifier {
         getTotalPurchasePayments(purchase);
   }
 
-  double getTotalMainRevenuePurchase(TempPurchase purchase) {
+  double getTotalMainRevenuePurchase(
+    TempPurchase purchase,
+  ) {
     var total = ((purchase.total ?? 0));
 
     return total;

@@ -2,7 +2,6 @@ import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_item_purchase_record/temp_item_purchase_record.dart';
 import 'package:stockall/local_database/item_purchase_func.dart%20copy/unsync_funcs/created/created_item_purchase_func.dart';
 import 'package:stockall/local_database/item_purchase_func.dart%20copy/unsync_funcs/deleted/deleted_item_purchase_func.dart';
-import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/created/created_records_func.dart';
 import 'package:stockall/main.dart';
 
 class ItemPurchaseFunc {
@@ -26,157 +25,157 @@ class ItemPurchaseFunc {
     );
   }
 
-  List<TempItemPurchaseRecord> getItemPurchaseRecords() {
-    List<TempItemPurchaseRecord> records =
-        itemPurchaseRecordsBox.values.toList();
-    records.sort(
-      (a, b) => a.createdAt.compareTo(b.createdAt),
-    );
-    return records;
-  }
+  // List<TempItemPurchaseRecord> getItemPurchaseRecords() {
+  //   List<TempItemPurchaseRecord> records =
+  //       itemPurchaseRecordsBox.values.toList();
+  //   records.sort(
+  //     (a, b) => a.createdAt.compareTo(b.createdAt),
+  //   );
+  //   return records;
+  // }
 
-  Future<int> insertAllItemPurchaseRecords(
-    List<TempItemPurchaseRecord> records,
-  ) async {
-    await clearRecords();
-    try {
-      for (var record in records) {
-        await itemPurchaseRecordsBox.put(
-          record.uuid,
-          record,
-        );
-      }
-      await mainLocalLog(
-        'Offline Record insert Successful',
-      );
-      return 1;
-    } catch (e) {
-      await mainLocalLog(
-        '❌❌ Record Insert Error: ${e.toString()}',
-      );
-      return 0;
-    }
-  }
+  // Future<int> insertAllItemPurchaseRecords(
+  //   List<TempItemPurchaseRecord> records,
+  // ) async {
+  //   await clearRecords();
+  //   try {
+  //     for (var record in records) {
+  //       await itemPurchaseRecordsBox.put(
+  //         record.uuid,
+  //         record,
+  //       );
+  //     }
+  //     await mainLocalLog(
+  //       'Offline Record insert Successful',
+  //     );
+  //     return 1;
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       '❌❌ Record Insert Error: ${e.toString()}',
+  //     );
+  //     return 0;
+  //   }
+  // }
 
-  Future<int> insertSalesItemPurchaseRecords(
-    List<TempItemPurchaseRecord> records,
-  ) async {
-    try {
-      for (var record in records) {
-        await itemPurchaseRecordsBox.put(
-          record.uuid,
-          record,
-        );
-      }
-      await mainLocalLog(
-        'Offline Record insert Successful',
-      );
-      return 1;
-    } catch (e) {
-      await mainLocalLog(
-        '❌❌ Record Insert Error: ${e.toString()}',
-      );
-      return 0;
-    }
-  }
+  // Future<int> insertSalesItemPurchaseRecords(
+  //   List<TempItemPurchaseRecord> records,
+  // ) async {
+  //   try {
+  //     for (var record in records) {
+  //       await itemPurchaseRecordsBox.put(
+  //         record.uuid,
+  //         record,
+  //       );
+  //     }
+  //     await mainLocalLog(
+  //       'Offline Record insert Successful',
+  //     );
+  //     return 1;
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       '❌❌ Record Insert Error: ${e.toString()}',
+  //     );
+  //     return 0;
+  //   }
+  // }
 
-  Future<int> createRecord(
-    TempItemPurchaseRecord record,
-  ) async {
-    try {
-      await itemPurchaseRecordsBox.put(record.uuid, record);
-      await mainLocalLog(
-        'Offline Record insert Successful',
-      );
-      return 1;
-    } catch (e) {
-      await mainLocalLog(
-        '❌❌ Record Insert Error: ${e.toString()}',
-      );
-      return 0;
-    }
-  }
+  // Future<int> createRecord(
+  //   TempItemPurchaseRecord record,
+  // ) async {
+  //   try {
+  //     await itemPurchaseRecordsBox.put(record.uuid, record);
+  //     await mainLocalLog(
+  //       'Offline Record insert Successful',
+  //     );
+  //     return 1;
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       '❌❌ Record Insert Error: ${e.toString()}',
+  //     );
+  //     return 0;
+  //   }
+  // }
 
-  Future<int> deleteRecord(String uuid) async {
-    try {
-      await itemPurchaseRecordsBox.delete(uuid);
-      await mainLocalLog(
-        'Offline Record Deleted Successful',
-      );
-      return 1;
-    } catch (e) {
-      await mainLocalLog(
-        '❌❌ Record Delete Error: ${e.toString()}',
-      );
-      return 0;
-    }
-  }
+  // Future<int> deleteRecord(String uuid) async {
+  //   try {
+  //     await itemPurchaseRecordsBox.delete(uuid);
+  //     await mainLocalLog(
+  //       'Offline Record Deleted Successful',
+  //     );
+  //     return 1;
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       '❌❌ Record Delete Error: ${e.toString()}',
+  //     );
+  //     return 0;
+  //   }
+  // }
 
-  Future<int> deleteRecordsInPurchase(
-    String purchaseUuid,
-  ) async {
-    await mainLocalLog('Deleting Records in Purchase');
-    try {
-      List<TempItemPurchaseRecord> records =
-          getItemPurchaseRecords()
-              .where(
-                (record) =>
-                    record.purchaseId == purchaseUuid,
-              )
-              .toList();
-      await mainLocalLog(
-        'Records Gotten: ${records.length}',
-      );
-      for (var record in records) {
-        await itemPurchaseRecordsBox.delete(record.uuid);
-        var containsCreated = CreatedRecordsFunc()
-            .getRecords()
-            .where(
-              (sales) => sales.record.uuid == record.uuid,
-            );
-        if (containsCreated.isNotEmpty) {
-          await CreatedRecordsFunc().deleteRecords(
-            record.uuid!,
-          );
-        }
-        await mainLocalLog('Records Deleted');
-      }
-      await mainLocalLog(
-        '${records.length}} Offline Records Deleted Successful',
-      );
-      return 1;
-    } catch (e) {
-      await mainLocalLog(
-        '❌❌ Record Delete Error: ${e.toString()}',
-      );
-      return 0;
-    }
-  }
+  // Future<int> deleteRecordsInPurchase(
+  //   String purchaseUuid,
+  // ) async {
+  //   await mainLocalLog('Deleting Records in Purchase');
+  //   try {
+  //     List<TempItemPurchaseRecord> records =
+  //         getItemPurchaseRecords()
+  //             .where(
+  //               (record) =>
+  //                   record.purchaseId == purchaseUuid,
+  //             )
+  //             .toList();
+  //     await mainLocalLog(
+  //       'Records Gotten: ${records.length}',
+  //     );
+  //     for (var record in records) {
+  //       await itemPurchaseRecordsBox.delete(record.uuid);
+  //       var containsCreated = CreatedItemPurchaseFunc()
+  //           .getRecords()
+  //           .where(
+  //             (sales) => sales.record.uuid == record.uuid,
+  //           );
+  //       if (containsCreated.isNotEmpty) {
+  //         await CreatedItemPurchaseFunc().deleteRecords(
+  //           record.uuid!,
+  //         );
+  //       }
+  //       await mainLocalLog('Records Deleted');
+  //     }
+  //     await mainLocalLog(
+  //       '${records.length}} Offline Records Deleted Successful',
+  //     );
+  //     return 1;
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       '❌❌ Record Delete Error: ${e.toString()}',
+  //     );
+  //     return 0;
+  //   }
+  // }
 
-  Future<int> clearRecords() async {
-    try {
-      await itemPurchaseRecordsBox.clear();
-      await mainLocalLog(
-        'Offline Record Cleared Successful',
-      );
-      return 1;
-    } catch (e) {
-      await mainLocalLog(
-        '❌❌ Record Clear Error: ${e.toString()}',
-      );
-      return 0;
-    }
-  }
+  // Future<int> clearRecords() async {
+  //   try {
+  //     await itemPurchaseRecordsBox.clear();
+  //     await mainLocalLog(
+  //       'Offline Record Cleared Successful',
+  //     );
+  //     return 1;
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       '❌❌ Record Clear Error: ${e.toString()}',
+  //     );
+  //     return 0;
+  //   }
+  // }
 
-  bool isSynced() {
-    if (CreatedItemPurchaseFunc().getRecords().isEmpty &&
-        DeletedItemPurchaseFunc()
-            .getItemPurchaseIds()
-            .isEmpty &&
-        returnData().isSyncing == false) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+  // bool isSynced() {
+  //   if (CreatedItemPurchaseFunc().getRecords().isEmpty &&
+  //       DeletedItemPurchaseFunc()
+  //           .getItemPurchaseIds()
+  //           .isEmpty &&
+  //       returnData().isSyncing == false) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // }
 }

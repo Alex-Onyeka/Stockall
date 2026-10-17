@@ -263,12 +263,13 @@ class TempStorageProducts {
   }
 
   ProductUnitsClass getPrimaryUnit() {
-    if (getUnitsList().isEmpty == true ||
-        getUnitsList()
-            .where((item) => item.isPrimary == true)
-            .isEmpty) {
+    final list = getUnitsList();
+    final primaries = list.where(
+      (item) => item.isPrimary == true,
+    );
+    if (list.isEmpty || primaries.isEmpty) {
       return ProductUnitsClass(
-        uuid: uuidGen(),
+        uuid: '${uuid ?? ''}_primary_unit',
         staffUuid: currentUser().userId,
         createdAt: DateTime.now(),
         staffName: currentUser().name,
@@ -278,21 +279,19 @@ class TempStorageProducts {
                 ? 'Unit(s)'
                 : unit ?? 'Unit(s)',
         isPrimary: true,
-        productUuid: uuid!,
+        productUuid: uuid ?? '',
       );
     } else {
-      return getUnitsList()
-          .where((item) => item.isPrimary == true)
-          .first;
+      return primaries.first;
     }
   }
 
   List<ProductUnitsClass> getUnitsList() {
-    List<ProductUnitsClass> tempList() {
+    List<ProductUnitsClass> buildList() {
       if (unitsList == null || unitsList?.isEmpty == true) {
         List<ProductUnitsClass> tempList = [
           ProductUnitsClass(
-            uuid: uuidGen(),
+            uuid: '${uuid ?? ''}_primary_unit',
             staffUuid: currentUser().userId,
             createdAt: DateTime.now(),
             staffName: currentUser().name,
@@ -302,12 +301,13 @@ class TempStorageProducts {
                     ? 'Unit(s)'
                     : unit ?? 'Unit(s)',
             isPrimary: true,
-            productUuid: uuid!,
+            productUuid: uuid ?? '',
           ),
         ];
-        if (useGroupUnit == true) {
+        if (useGroupUnit == true &&
+            (qttyPerGroup ?? 0) > 0) {
           ProductUnitsClass newItem = ProductUnitsClass(
-            uuid: uuidGen(),
+            uuid: '${uuid ?? ''}_group_unit',
             staffUuid: currentUser().userId,
             createdAt: DateTime.now(),
             staffName: currentUser().name,
@@ -317,22 +317,48 @@ class TempStorageProducts {
                     ? 'Group(s)'
                     : groupUnit ?? '',
             isPrimary: false,
-            productUuid: uuid!,
+            productUuid: uuid ?? '',
           );
           tempList.add(newItem);
         }
         return tempList;
       } else {
-        return unitsList ?? [];
+        List<ProductUnitsClass> tempList = [
+          ...(unitsList ?? []),
+        ];
+        if (useGroupUnit == true &&
+            (qttyPerGroup ?? 0) > 0 &&
+            tempList.every((item) => item.isPrimary)) {
+          tempList.add(
+            ProductUnitsClass(
+              uuid: '${uuid ?? ''}_group_unit',
+              staffUuid: currentUser().userId,
+              createdAt: DateTime.now(),
+              staffName: currentUser().name,
+              conversion: qttyPerGroup ?? 1,
+              name:
+                  groupUnit == 'Others' || groupUnit == null
+                      ? 'Group(s)'
+                      : groupUnit ?? '',
+              isPrimary: false,
+              productUuid: uuid ?? '',
+            ),
+          );
+        }
+        return tempList;
       }
     }
 
-    if (tempList().length < 2) {
-      return tempList();
+    final resolved = buildList();
+    if (resolved.length < 2) {
+      return resolved;
     } else {
+      final primaries = resolved.where(
+        (item) => item.isPrimary,
+      );
       return [
-        tempList().firstWhere((item) => item.isPrimary),
-        ...tempList().where((item) => !item.isPrimary),
+        if (primaries.isNotEmpty) primaries.first,
+        ...resolved.where((item) => !item.isPrimary),
       ];
     }
   }

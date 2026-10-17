@@ -67,65 +67,65 @@ class CreatedItemPurchaseFunc {
     return records;
   }
 
-  Future<int> insertAllRecords(
-    List<CreatedItemRecords> createdItemRecords,
-  ) async {
-    try {
-      for (var records in createdItemRecords) {
-        await createdItemPurchaseRecordsBox.put(
-          records.record.uuid,
-          records,
-        );
-      }
-      await mainLocalLog(
-        "Offline Created Item Purchase Records inserted ✅",
-      );
-      return 1;
-    } catch (e) {
-      await mainLocalLog(
-        'Offline Created Item Purchase Records insertion failed ❌: $e',
-      );
-      return 0;
-    }
-  }
+  // Future<int> insertAllRecords(
+  //   List<CreatedItemRecords> createdItemRecords,
+  // ) async {
+  //   try {
+  //     for (var records in createdItemRecords) {
+  //       await createdItemPurchaseRecordsBox.put(
+  //         records.record.uuid,
+  //         records,
+  //       );
+  //     }
+  //     await mainLocalLog(
+  //       "Offline Created Item Purchase Records inserted ✅",
+  //     );
+  //     return 1;
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       'Offline Created Item Purchase Records insertion failed ❌: $e',
+  //     );
+  //     return 0;
+  //   }
+  // }
 
-  Future<int> createRecords(
-    CreatedItemRecords createdItemRecords,
-  ) async {
-    try {
-      await createdItemPurchaseRecordsBox.put(
-        createdItemRecords.record.uuid,
-        createdItemRecords,
-      );
-      await mainLocalLog(
-        'Offline Created Item Purchase Records inserted successfully ✅',
-      );
-      return 1;
-    } catch (e) {
-      await mainLocalLog(
-        'Offline Created Item Purchase Records insertion failed ❌: $e',
-      );
-      return 0;
-    }
-  }
+  // Future<int> createRecords(
+  //   CreatedItemRecords createdItemRecords,
+  // ) async {
+  //   try {
+  //     await createdItemPurchaseRecordsBox.put(
+  //       createdItemRecords.record.uuid,
+  //       createdItemRecords,
+  //     );
+  //     await mainLocalLog(
+  //       'Offline Created Item Purchase Records inserted successfully ✅',
+  //     );
+  //     return 1;
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       'Offline Created Item Purchase Records insertion failed ❌: $e',
+  //     );
+  //     return 0;
+  //   }
+  // }
 
-  Future<int> deleteRecords(String uuid) async {
-    try {
-      await mainLocalLog(
-        createdItemPurchaseRecordsBox
-            .containsKey(uuid)
-            .toString(),
-      );
-      await createdItemPurchaseRecordsBox.delete(uuid);
-      await mainLocalLog('Records Deleted');
-      return 1;
-    } catch (e) {
-      await mainLocalLog(
-        'Records Delete Failed: ${e.toString()}',
-      );
-      return 0;
-    }
-  }
+  // Future<int> deleteRecords(String uuid) async {
+  //   try {
+  //     await mainLocalLog(
+  //       createdItemPurchaseRecordsBox
+  //           .containsKey(uuid)
+  //           .toString(),
+  //     );
+  //     await createdItemPurchaseRecordsBox.delete(uuid);
+  //     await mainLocalLog('Records Deleted');
+  //     return 1;
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       'Records Delete Failed: ${e.toString()}',
+  //     );
+  //     return 0;
+  //   }
+  // }
 
   Future<int> clearRecords() async {
     try {

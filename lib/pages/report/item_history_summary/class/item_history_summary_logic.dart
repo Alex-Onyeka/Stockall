@@ -40,7 +40,8 @@ enum ItemHistoryMovementFilter {
   noChange,
 }
 
-extension ItemHistoryMovementFilterExt on ItemHistoryMovementFilter {
+extension ItemHistoryMovementFilterExt
+    on ItemHistoryMovementFilter {
   String get label {
     switch (this) {
       case ItemHistoryMovementFilter.all:
@@ -63,17 +64,19 @@ enum ItemHistorySummarySortField {
   openingStock,
   closingStock,
   currentQuantity,
+  netQuantityChange,
+  sold,
+  returnedReceipt,
+  purchased,
+  returnedPurchase,
   transferredIn,
   transferredOut,
   produced,
   productionDeleted,
-  sold,
-  returned,
-  purchased,
   delivered,
   created,
   deleted,
-  netQuantityChange,
+  returned,
 }
 
 /// Aggregated movement statistics according to Section 6.3.
@@ -85,7 +88,8 @@ class ItemHistorySummaryStats {
   final double totalProduced;
   final double totalProductionDeleted;
   final double totalSold;
-  final double totalReturned;
+  final double totalReturnedReceipt;
+  final double totalReturnedPurchase;
   final double totalPurchased;
   final double totalDelivered;
   final double totalQuantityIncreased;
@@ -99,6 +103,8 @@ class ItemHistorySummaryStats {
   final int itemsWithMovementCount;
   final int totalDistinctItems;
 
+  double get totalReturned => totalReturnedReceipt;
+
   /// Quantity additions grouped by primary unit (e.g. {'Pcs': 120, 'Kg': 45}).
   final Map<String, double> additionsByPrimaryUnit;
   final Map<String, double> reductionsByPrimaryUnit;
@@ -111,7 +117,8 @@ class ItemHistorySummaryStats {
     required this.totalProduced,
     required this.totalProductionDeleted,
     required this.totalSold,
-    required this.totalReturned,
+    required this.totalReturnedReceipt,
+    this.totalReturnedPurchase = 0,
     required this.totalPurchased,
     required this.totalDelivered,
     required this.totalQuantityIncreased,
@@ -134,7 +141,8 @@ class ItemHistorySummaryStats {
     totalProduced: 0,
     totalProductionDeleted: 0,
     totalSold: 0,
-    totalReturned: 0,
+    totalReturnedReceipt: 0,
+    totalReturnedPurchase: 0,
     totalPurchased: 0,
     totalDelivered: 0,
     totalQuantityIncreased: 0,
@@ -164,8 +172,9 @@ class ItemHistorySummaryRow {
   final double produced;
   final double productionDeleted;
   final double sold;
-  final double returned;
+  final double returnedReceipt;
   final double purchased;
+  final double returnedPurchase;
   final double delivered;
   final double created;
   final double deleted;
@@ -178,6 +187,8 @@ class ItemHistorySummaryRow {
   final List<String> categoryUuids;
   final String? departmentUuid;
   final DateTime? createdAt;
+
+  double get returned => returnedReceipt;
 
   ItemHistorySummaryRow({
     required this.index,
@@ -192,8 +203,9 @@ class ItemHistorySummaryRow {
     required this.produced,
     required this.productionDeleted,
     required this.sold,
-    required this.returned,
+    required this.returnedReceipt,
     required this.purchased,
+    this.returnedPurchase = 0,
     required this.delivered,
     required this.created,
     required this.deleted,
@@ -214,20 +226,149 @@ class ItemHistorySummaryRow {
       produced != 0 ||
       productionDeleted != 0 ||
       sold != 0 ||
-      returned != 0 ||
+      returnedReceipt != 0 ||
       purchased != 0 ||
+      returnedPurchase != 0 ||
       delivered != 0 ||
       created != 0 ||
       deleted != 0 ||
       quantityIncreased != 0 ||
       quantityDecreased != 0;
+
+  String get unitSuffix =>
+      primaryUnit.trim().isNotEmpty ? ' $primaryUnit' : '';
+
+  String formatQuantity(
+    double? value, {
+    bool showSign = false,
+    bool isNegative = false,
+  }) {
+    if (value == null) return '—';
+    final formatted = formatLargeNumberDouble(value.abs());
+    if (showSign) {
+      if (isNegative && value > 0) {
+        return '-$formatted$unitSuffix';
+      } else if (!isNegative && value > 0) {
+        return '+$formatted$unitSuffix';
+      }
+    }
+    return '$formatted$unitSuffix';
+  }
+
+  String get openingStockText =>
+      openingStock != null
+          ? '${formatLargeNumberDouble(openingStock!)}$unitSuffix'
+          : '—';
+  String get openingStockDisplay => openingStockText;
+
+  String get closingStockText =>
+      closingStock != null
+          ? '${formatLargeNumberDouble(closingStock!)}$unitSuffix'
+          : '—';
+  String get closingStockDisplay => closingStockText;
+
+  String get currentQuantityText =>
+      '${formatLargeNumberDouble(currentQuantity)}$unitSuffix';
+  String get currentQuantityDisplay => currentQuantityText;
+
+  String get netQuantityChangeText {
+    if (netQuantityChange == 0) return '0$unitSuffix';
+    final sign = netQuantityChange > 0 ? '+' : '-';
+    return '$sign${formatLargeNumberDouble(netQuantityChange.abs())}$unitSuffix';
+  }
+  String get netQuantityChangeDisplay => netQuantityChangeText;
+
+  String get soldText =>
+      sold > 0 ? '-${formatLargeNumberDouble(sold)}$unitSuffix' : '—';
+  String get soldDisplay => soldText;
+
+  String get returnedReceiptText =>
+      returnedReceipt > 0
+          ? '+${formatLargeNumberDouble(returnedReceipt)}$unitSuffix'
+          : '—';
+  String get returnedReceiptDisplay => returnedReceiptText;
+
+  String get purchasedText =>
+      purchased > 0
+          ? '+${formatLargeNumberDouble(purchased)}$unitSuffix'
+          : '—';
+  String get purchasedDisplay => purchasedText;
+
+  String get returnedPurchaseText =>
+      returnedPurchase > 0
+          ? '-${formatLargeNumberDouble(returnedPurchase)}$unitSuffix'
+          : '—';
+  String get returnedPurchaseDisplay => returnedPurchaseText;
+
+  String get transferredInText =>
+      transferredIn > 0
+          ? '+${formatLargeNumberDouble(transferredIn)}$unitSuffix'
+          : '—';
+  String get transferredInDisplay => transferredInText;
+
+  String get transferredOutText =>
+      transferredOut > 0
+          ? '-${formatLargeNumberDouble(transferredOut)}$unitSuffix'
+          : '—';
+  String get transferredOutDisplay => transferredOutText;
+
+  String get producedText =>
+      produced > 0
+          ? '+${formatLargeNumberDouble(produced)}$unitSuffix'
+          : '—';
+  String get producedDisplay => producedText;
+
+  String get productionDeletedText =>
+      productionDeleted > 0
+          ? '-${formatLargeNumberDouble(productionDeleted)}$unitSuffix'
+          : '—';
+  String get productionDeletedDisplay => productionDeletedText;
+
+  String get deliveredText =>
+      delivered > 0
+          ? '-${formatLargeNumberDouble(delivered)}$unitSuffix'
+          : '—';
+  String get deliveredDisplay => deliveredText;
+
+  String get createdText =>
+      created > 0
+          ? '+${formatLargeNumberDouble(created)}$unitSuffix'
+          : '—';
+  String get createdDisplay => createdText;
+
+  String get deletedText =>
+      deleted > 0
+          ? '-${formatLargeNumberDouble(deleted)}$unitSuffix'
+          : '—';
+  String get deletedDisplay => deletedText;
+
+  String get quantityIncreasedText =>
+      quantityIncreased > 0
+          ? '+${formatLargeNumberDouble(quantityIncreased)}$unitSuffix'
+          : '—';
+  String get quantityIncreasedDisplay => quantityIncreasedText;
+
+  String get quantityDecreasedText =>
+      quantityDecreased > 0
+          ? '-${formatLargeNumberDouble(quantityDecreased)}$unitSuffix'
+          : '—';
+  String get quantityDecreasedDisplay => quantityDecreasedText;
+
+  String get totalAdditionsText =>
+      '+${formatLargeNumberDouble(totalAdditions)}$unitSuffix';
+  String get totalAdditionsDisplay => totalAdditionsText;
+
+  String get totalReductionsText =>
+      '-${formatLargeNumberDouble(totalReductions)}$unitSuffix';
+  String get totalReductionsDisplay => totalReductionsText;
 }
 
 class ItemHistorySummaryFilters {
   String search = '';
   String? categoryKey;
   String? departmentKey;
-  ItemHistoryMovementFilter movementFilter = ItemHistoryMovementFilter.all;
+  ItemHistoryMovementFilter movementFilter =
+      ItemHistoryMovementFilter.all;
 
   bool get hasAnything =>
       search.trim().isNotEmpty ||
@@ -313,16 +454,18 @@ class ItemHistorySummaryPageResult {
   final int totalCount;
   final int page;
   final int totalPages;
+  final int pageSize;
 
   const ItemHistorySummaryPageResult({
     required this.rows,
     required this.totalCount,
     required this.page,
     required this.totalPages,
+    this.pageSize = itemHistorySummaryPageSize,
   });
 
   int get firstIndex =>
-      totalCount == 0 ? 0 : (page - 1) * itemHistorySummaryPageSize + 1;
+      totalCount == 0 ? 0 : (page - 1) * pageSize + 1;
   int get lastIndex =>
       firstIndex == 0 ? 0 : firstIndex + rows.length - 1;
 }
@@ -350,29 +493,32 @@ class ItemHistorySummaryBuilder {
     return double.tryParse(v.replaceAll(',', '').trim());
   }
 
-  static DateTime _alignCutoff(DateTime dt, DateTime cutoff) {
+  static DateTime _alignCutoff(
+    DateTime dt,
+    DateTime cutoff,
+  ) {
     if (dt.isUtc == cutoff.isUtc) return cutoff;
     return dt.isUtc
         ? DateTime.utc(
-            cutoff.year,
-            cutoff.month,
-            cutoff.day,
-            cutoff.hour,
-            cutoff.minute,
-            cutoff.second,
-            cutoff.millisecond,
-            cutoff.microsecond,
-          )
+          cutoff.year,
+          cutoff.month,
+          cutoff.day,
+          cutoff.hour,
+          cutoff.minute,
+          cutoff.second,
+          cutoff.millisecond,
+          cutoff.microsecond,
+        )
         : DateTime(
-            cutoff.year,
-            cutoff.month,
-            cutoff.day,
-            cutoff.hour,
-            cutoff.minute,
-            cutoff.second,
-            cutoff.millisecond,
-            cutoff.microsecond,
-          );
+          cutoff.year,
+          cutoff.month,
+          cutoff.day,
+          cutoff.hour,
+          cutoff.minute,
+          cutoff.second,
+          cutoff.millisecond,
+          cutoff.microsecond,
+        );
   }
 
   /// Date cutoff resolver for the specified period.
@@ -381,24 +527,41 @@ class ItemHistorySummaryBuilder {
     required DateTime businessNow,
     DateTimeRange? customRange,
   }) {
-    final today = DateTime(businessNow.year, businessNow.month, businessNow.day);
+    final today = DateTime(
+      businessNow.year,
+      businessNow.month,
+      businessNow.day,
+    );
     switch (period) {
       case ItemHistoryPeriod.today:
         return DateTimeRange(start: today, end: today);
       case ItemHistoryPeriod.thisWeek:
         final weekday = today.weekday;
-        final startOfWeek = today.subtract(Duration(days: weekday - 1));
-        return DateTimeRange(start: startOfWeek, end: today);
+        final startOfWeek = today.subtract(
+          Duration(days: weekday - 1),
+        );
+        return DateTimeRange(
+          start: startOfWeek,
+          end: today,
+        );
       case ItemHistoryPeriod.thisMonth:
-        final startOfMonth = DateTime(today.year, today.month, 1);
-        return DateTimeRange(start: startOfMonth, end: today);
+        final startOfMonth = DateTime(
+          today.year,
+          today.month,
+          1,
+        );
+        return DateTimeRange(
+          start: startOfMonth,
+          end: today,
+        );
       case ItemHistoryPeriod.allTime:
         return DateTimeRange(
           start: DateTime(2000, 1, 1),
           end: DateTime(2100, 1, 1),
         );
       case ItemHistoryPeriod.custom:
-        return customRange ?? DateTimeRange(start: today, end: today);
+        return customRange ??
+            DateTimeRange(start: today, end: today);
     }
   }
 
@@ -408,39 +571,73 @@ class ItemHistorySummaryBuilder {
     required TempProductClass product,
     required bool isAddition,
   }) {
+    // 1) First check: if oldValue and newValue are present, their difference
+    // represents the change in the recorded unit balance.
     final oldV = _parseNum(h.oldValue);
     final newV = _parseNum(h.newValue);
 
-    // In Stockall, oldValue and newValue are already formatted in the item's primary unit
     if (oldV != null && newV != null) {
       if (h.event == ItemHistoryEventClass.itemDeleted) {
         return oldV.abs();
       }
       final diff = (newV - oldV).abs();
       if (diff > 0.00001) {
-        return diff;
+        // If history has primaryUnit matching product's primary unit, diff is already in primary unit.
+        final pu = h.primaryUnit;
+        final productPrimary =
+            product
+                .getPrimaryUnit()
+                .name
+                .trim()
+                .toLowerCase();
+        if (pu == null ||
+            pu.trim().isEmpty ||
+            pu.trim().toLowerCase() == productPrimary) {
+          return diff;
+        }
       }
     }
 
-    // Fallback: use quantityChange normalized via product unit conversion if available
+    // 2) Fallback or explicit conversion via quantityChange and unit
     if (h.quantityChange != null && h.quantityChange != 0) {
       final rawQty = h.quantityChange!.abs();
-      if (h.unit != null && h.unit!.isNotEmpty) {
+      final unitName = h.unit?.trim();
+      if (unitName != null && unitName.isNotEmpty) {
         try {
-          final unitObj = product.getUnitsList().firstWhere(
-            (u) => u.name.trim().toLowerCase() == h.unit!.trim().toLowerCase(),
+          final unitList = product.getUnitsList();
+          final matchingUnit = unitList.firstWhere(
+            (u) =>
+                u.name.trim().toLowerCase() ==
+                    unitName.toLowerCase() ||
+                unitName.toLowerCase().startsWith(
+                  u.name.trim().toLowerCase(),
+                ),
             orElse: () => product.getPrimaryUnit(),
           );
-          return unitObj.getQuantityEquivDivided(
-            index: 1,
-            newQuantity: rawQty,
-            product: product,
-          );
-        } catch (_) {
-          return rawQty;
-        }
+
+          if (matchingUnit.isPrimary) {
+            return rawQty;
+          }
+
+          // Convert to primary unit:
+          // For dimensional sheets (2D): getQuantityEquivMultiplied converts sheets to area
+          // For standard items: getQuantityEquivMultiplied converts secondary unit count to primary base count
+          final converted = matchingUnit
+              .getQuantityEquivMultiplied(
+                index: 1,
+                newQuantity: rawQty,
+                product: product,
+              );
+          if (converted > 0) return converted;
+        } catch (_) {}
       }
       return rawQty;
+    }
+
+    // 3) Fallback to diff between oldV and newV even if unit tag differs
+    if (oldV != null && newV != null) {
+      final diff = (newV - oldV).abs();
+      if (diff > 0.00001) return diff;
     }
 
     return 0.0;
@@ -450,7 +647,8 @@ class ItemHistorySummaryBuilder {
   static ({
     ItemHistorySummaryStats stats,
     List<ItemHistorySummaryRow> rows,
-  }) buildSummaryAndRows({
+  })
+  buildSummaryAndRows({
     required List<TempProductClass> products,
     required List<ItemHistory> histories,
     required ItemHistoryPeriod period,
@@ -464,16 +662,20 @@ class ItemHistorySummaryBuilder {
       customRange: customRange,
     );
 
-    final startCutoff = period == ItemHistoryPeriod.allTime
-        ? DateTime(2000, 1, 1)
-        : fourAm(range.start);
-    final endCutoff = period == ItemHistoryPeriod.allTime
-        ? DateTime(2100, 1, 1)
-        : fourAmNextDay(range.end);
+    final startCutoff =
+        period == ItemHistoryPeriod.allTime
+            ? DateTime(2000, 1, 1)
+            : fourAm(range.start);
+    final endCutoff =
+        period == ItemHistoryPeriod.allTime
+            ? DateTime(2100, 1, 1)
+            : fourAmNextDay(range.end);
 
     // Group history records by product uuid (and name fallback)
-    final Map<String, List<ItemHistory>> historyByProductUuid = {};
-    final Map<String, List<ItemHistory>> historyByProductName = {};
+    final Map<String, List<ItemHistory>>
+    historyByProductUuid = {};
+    final Map<String, List<ItemHistory>>
+    historyByProductName = {};
 
     for (final h in histories) {
       if (h.createdAt == null) {
@@ -483,7 +685,8 @@ class ItemHistorySummaryBuilder {
       if (u != null && u.isNotEmpty) {
         (historyByProductUuid[u] ??= []).add(h);
       }
-      final nameKey = (h.itemName ?? '').trim().toLowerCase();
+      final nameKey =
+          (h.itemName ?? '').trim().toLowerCase();
       if (nameKey.isNotEmpty) {
         (historyByProductName[nameKey] ??= []).add(h);
       }
@@ -496,7 +699,8 @@ class ItemHistorySummaryBuilder {
     double totalProduced = 0;
     double totalProductionDeleted = 0;
     double totalSold = 0;
-    double totalReturned = 0;
+    double totalReturnedReceipt = 0;
+    double totalReturnedPurchase = 0;
     double totalPurchased = 0;
     double totalDelivered = 0;
     double totalQuantityIncreased = 0;
@@ -516,34 +720,54 @@ class ItemHistorySummaryBuilder {
       final pName = product.name;
       final primaryUnit = product.getPrimaryUnit().name;
 
-      List<ItemHistory> itemEvents =
-          historyByProductUuid[pUuid] ??
-          historyByProductName[pName.trim().toLowerCase()] ??
+      final byUuid =
+          pUuid.isNotEmpty
+              ? (historyByProductUuid[pUuid] ?? [])
+              : <ItemHistory>[];
+      final byName =
+          historyByProductName[pName
+              .trim()
+              .toLowerCase()] ??
           [];
 
-      // Filter to stock events with compatible primary unit
-      final usable = itemEvents.where((h) {
-        if (h.createdAt == null) {
-          return false;
+      // Combine by uuid and name without duplicate histories
+      final seenUuids = <String>{};
+      final List<ItemHistory> combinedEvents = [];
+      for (final h in [...byUuid, ...byName]) {
+        final key =
+            h.uuid ??
+            '${h.createdAt?.millisecondsSinceEpoch}_${h.event}_${h.oldValue}_${h.newValue}';
+        if (seenUuids.add(key)) {
+          combinedEvents.add(h);
         }
-        if (h.event == null || !_stockEvents.contains(h.event)) {
-          return false;
-        }
-        final pu = h.primaryUnit;
-        if (pu != null &&
-            pu.trim().isNotEmpty &&
-            pu.trim().toLowerCase() != primaryUnit.trim().toLowerCase()) {
-          return false;
-        }
-        return true;
-      }).toList()..sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
+      }
+
+      // Filter to valid stock events
+      final usable =
+          combinedEvents.where((h) {
+              if (h.createdAt == null) {
+                return false;
+              }
+              if (h.event == null ||
+                  !_stockEvents.contains(h.event)) {
+                return false;
+              }
+              return true;
+            }).toList()
+            ..sort(
+              (a, b) =>
+                  a.createdAt!.compareTo(b.createdAt!),
+            );
 
       // 1) Opening Stock: balance immediately before startCutoff
       double? openingStock;
       bool openingFound = false;
 
       for (final h in usable) {
-        final start = _alignCutoff(h.createdAt!, startCutoff);
+        final start = _alignCutoff(
+          h.createdAt!,
+          startCutoff,
+        );
         if (!h.createdAt!.isBefore(start)) {
           openingStock = _parseNum(h.oldValue);
           openingFound = true;
@@ -558,13 +782,20 @@ class ItemHistorySummaryBuilder {
         } else {
           // No history events at all
           final created = product.createdAt;
-          final start = created != null
-              ? _alignCutoff(created, startCutoff)
-              : startCutoff;
+          final start =
+              created != null
+                  ? _alignCutoff(created, startCutoff)
+                  : startCutoff;
           if (created != null && !created.isBefore(start)) {
             openingStock = 0;
           } else {
-            openingStock = product.getActualQuantity() ?? product.quantity?.toDouble() ?? 0;
+            final qtyDivided = product
+                .getPrimaryUnit()
+                .getQuantityEquivDivided(
+                  index: 1,
+                  product: product,
+                );
+            openingStock = qtyDivided.isFinite ? qtyDivided : 0.0;
           }
         }
       }
@@ -575,82 +806,181 @@ class ItemHistorySummaryBuilder {
       double produced = 0;
       double productionDeleted = 0;
       double sold = 0;
-      double returned = 0;
+      double returnedReceipt = 0;
       double purchased = 0;
+      double returnedPurchase = 0;
       double delivered = 0;
       double created = 0;
       double deleted = 0;
       double quantityIncreased = 0;
       double quantityDecreased = 0;
 
-      final inRangeEvents = usable.where((h) {
-        final start = _alignCutoff(h.createdAt!, startCutoff);
-        final end = _alignCutoff(h.createdAt!, endCutoff);
-        return !h.createdAt!.isBefore(start) && !h.createdAt!.isAfter(end);
-      }).toList();
+      final inRangeEvents =
+          usable.where((h) {
+            final start = _alignCutoff(
+              h.createdAt!,
+              startCutoff,
+            );
+            final end = _alignCutoff(
+              h.createdAt!,
+              endCutoff,
+            );
+            return !h.createdAt!.isBefore(start) &&
+                !h.createdAt!.isAfter(end);
+          }).toList();
 
       for (final h in inRangeEvents) {
         final ev = h.event;
         totalEventsInPeriod++;
 
         if (ev == ItemHistoryEventClass.transferedIn) {
-          final delta = getDeltaQuantity(h, product: product, isAddition: true);
+          final delta = getDeltaQuantity(
+            h,
+            product: product,
+            isAddition: true,
+          );
           transferredIn += delta;
-        } else if (ev == ItemHistoryEventClass.transferedOut) {
-          final delta = getDeltaQuantity(h, product: product, isAddition: false);
+        } else if (ev ==
+            ItemHistoryEventClass.transferedOut) {
+          final delta = getDeltaQuantity(
+            h,
+            product: product,
+            isAddition: false,
+          );
           transferredOut += delta;
-        } else if (ev == ItemHistoryEventClass.itemCreated ||
+        } else if (ev ==
+                ItemHistoryEventClass.itemCreated ||
             ev == ItemHistoryEventClass.itemDuplicated) {
           // Section 6.3.2: Only establish stock addition if initial stock was given
-          final delta = getDeltaQuantity(h, product: product, isAddition: true);
+          final delta = getDeltaQuantity(
+            h,
+            product: product,
+            isAddition: true,
+          );
           if (delta > 0) {
             created += delta;
           }
-        } else if (ev == ItemHistoryEventClass.itemDeleted) {
-          final delta = getDeltaQuantity(h, product: product, isAddition: false);
+        } else if (ev ==
+            ItemHistoryEventClass.itemDeleted) {
+          final delta = getDeltaQuantity(
+            h,
+            product: product,
+            isAddition: false,
+          );
           deleted += delta;
         } else if (ev == ItemHistoryEventClass.produced) {
           if (manageProductions) {
-            final delta = getDeltaQuantity(h, product: product, isAddition: true);
+            final delta = getDeltaQuantity(
+              h,
+              product: product,
+              isAddition: true,
+            );
             produced += delta;
           }
-        } else if (ev == ItemHistoryEventClass.productionDeleted) {
+        } else if (ev ==
+            ItemHistoryEventClass.productionDeleted) {
           if (manageProductions) {
-            final delta = getDeltaQuantity(h, product: product, isAddition: false);
+            final delta = getDeltaQuantity(
+              h,
+              product: product,
+              isAddition: false,
+            );
             productionDeleted += delta;
           }
         } else if (ev == ItemHistoryEventClass.sold) {
-          final delta = getDeltaQuantity(h, product: product, isAddition: false);
+          final delta = getDeltaQuantity(
+            h,
+            product: product,
+            isAddition: false,
+          );
           sold += delta;
-        } else if (ev == ItemHistoryEventClass.returnEvent) {
-          final delta = getDeltaQuantity(h, product: product, isAddition: true);
-          returned += delta;
+        } else if (ev ==
+            ItemHistoryEventClass.returnEvent) {
+          final isPurchaseReturn =
+              (h.destination ==
+                  ItemHistoryEventClass
+                      .purchaseDestination) ||
+              (h.source ==
+                  ItemHistoryEventClass.purchaseSource) ||
+              (h.isIncreased == false) ||
+              ((h.desc?.toLowerCase().contains(
+                    'purchase',
+                  )) ??
+                  false) ||
+              h.title.toLowerCase().contains('purchase');
+
+          if (isPurchaseReturn) {
+            final delta = getDeltaQuantity(
+              h,
+              product: product,
+              isAddition: false,
+            );
+            returnedPurchase += delta;
+          } else {
+            final delta = getDeltaQuantity(
+              h,
+              product: product,
+              isAddition: true,
+            );
+            returnedReceipt += delta;
+          }
         } else if (ev == ItemHistoryEventClass.purchase) {
-          final delta = getDeltaQuantity(h, product: product, isAddition: true);
+          final delta = getDeltaQuantity(
+            h,
+            product: product,
+            isAddition: true,
+          );
           purchased += delta;
         } else if (ev == ItemHistoryEventClass.delivered) {
-          final delta = getDeltaQuantity(h, product: product, isAddition: false);
+          final delta = getDeltaQuantity(
+            h,
+            product: product,
+            isAddition: false,
+          );
           delivered += delta;
-        } else if (ev == ItemHistoryEventClass.quantityUpdatedIncrease) {
-          final delta = getDeltaQuantity(h, product: product, isAddition: true);
+        } else if (ev ==
+                ItemHistoryEventClass
+                    .quantityUpdatedIncrease ||
+            (h.isIncreased == true &&
+                h.title.toLowerCase().contains(
+                  'quantity increased',
+                ))) {
+          final delta = getDeltaQuantity(
+            h,
+            product: product,
+            isAddition: true,
+          );
           quantityIncreased += delta;
-        } else if (ev == ItemHistoryEventClass.quantityUpdatedDecrease) {
-          final delta = getDeltaQuantity(h, product: product, isAddition: false);
+        } else if (ev ==
+                ItemHistoryEventClass
+                    .quantityUpdatedDecrease ||
+            (h.isIncreased == false &&
+                h.title.toLowerCase().contains(
+                  'quantity reduced',
+                ))) {
+          final delta = getDeltaQuantity(
+            h,
+            product: product,
+            isAddition: false,
+          );
           quantityDecreased += delta;
         }
       }
 
-      final itemAdditions = transferredIn +
+      final itemAdditions =
+          transferredIn +
           created +
           produced +
-          returned +
+          returnedReceipt +
           purchased +
           quantityIncreased;
 
-      final itemReductions = transferredOut +
+      final itemReductions =
+          transferredOut +
           deleted +
           productionDeleted +
           sold +
+          returnedPurchase +
           delivered +
           quantityDecreased;
 
@@ -661,15 +991,23 @@ class ItemHistorySummaryBuilder {
       // Otherwise, it reconciles as openingStock + netChange (= openingStock).
       double? closingStock;
       if (inRangeEvents.isNotEmpty) {
-        closingStock = _parseNum(inRangeEvents.last.newValue);
+        closingStock = _parseNum(
+          inRangeEvents.last.newValue,
+        );
       } else {
         closingStock = openingStock;
       }
 
-      // Current quantity is the live authoritative inventory quantity
-      final currentQuantity = product.getActualQuantity() ??
-          product.quantity?.toDouble() ??
-          0.0;
+      // Current quantity is gotten from the actual product primary quantity divided,
+      // reflecting the live current stock level in the item's primary unit.
+      final primaryUnitObj = product.getPrimaryUnit();
+      double currentQuantity = primaryUnitObj.getQuantityEquivDivided(
+        index: 1,
+        product: product,
+      );
+      if (!currentQuantity.isFinite) {
+        currentQuantity = 0.0;
+      }
 
       final row = ItemHistorySummaryRow(
         index: rowIndex++,
@@ -684,8 +1022,9 @@ class ItemHistorySummaryBuilder {
         produced: produced,
         productionDeleted: productionDeleted,
         sold: sold,
-        returned: returned,
+        returnedReceipt: returnedReceipt,
         purchased: purchased,
+        returnedPurchase: returnedPurchase,
         delivered: delivered,
         created: created,
         deleted: deleted,
@@ -695,10 +1034,12 @@ class ItemHistorySummaryBuilder {
         totalReductions: itemReductions,
         netQuantityChange: netChange,
         isManaged: product.isManaged,
-        categoryUuids: <String>{
-          ...?product.categories,
-          if (product.categoryUuid != null) product.categoryUuid!,
-        }.toList(),
+        categoryUuids:
+            <String>{
+              ...?product.categories,
+              if (product.categoryUuid != null)
+                product.categoryUuid!,
+            }.toList(),
         departmentUuid: product.departmentUuid,
         createdAt: product.createdAt,
       );
@@ -715,7 +1056,8 @@ class ItemHistorySummaryBuilder {
       totalProduced += produced;
       totalProductionDeleted += productionDeleted;
       totalSold += sold;
-      totalReturned += returned;
+      totalReturnedReceipt += returnedReceipt;
+      totalReturnedPurchase += returnedPurchase;
       totalPurchased += purchased;
       totalDelivered += delivered;
       totalQuantityIncreased += quantityIncreased;
@@ -723,31 +1065,37 @@ class ItemHistorySummaryBuilder {
 
       if (itemAdditions > 0) {
         additionsByUnit[primaryUnit] =
-            (additionsByUnit[primaryUnit] ?? 0) + itemAdditions;
+            (additionsByUnit[primaryUnit] ?? 0) +
+            itemAdditions;
       }
       if (itemReductions > 0) {
         reductionsByUnit[primaryUnit] =
-            (reductionsByUnit[primaryUnit] ?? 0) + itemReductions;
+            (reductionsByUnit[primaryUnit] ?? 0) +
+            itemReductions;
       }
 
       rows.add(row);
     }
 
-    final globalAdditions = totalTransferredIn +
+    final globalAdditions =
+        totalTransferredIn +
         totalCreated +
         totalProduced +
-        totalReturned +
+        totalReturnedReceipt +
         totalPurchased +
         totalQuantityIncreased;
 
-    final globalReductions = totalTransferredOut +
+    final globalReductions =
+        totalTransferredOut +
         totalDeleted +
         totalProductionDeleted +
         totalSold +
+        totalReturnedPurchase +
         totalDelivered +
         totalQuantityDecreased;
 
-    final globalNetChange = globalAdditions - globalReductions;
+    final globalNetChange =
+        globalAdditions - globalReductions;
 
     final stats = ItemHistorySummaryStats(
       totalTransferredIn: totalTransferredIn,
@@ -757,7 +1105,8 @@ class ItemHistorySummaryBuilder {
       totalProduced: totalProduced,
       totalProductionDeleted: totalProductionDeleted,
       totalSold: totalSold,
-      totalReturned: totalReturned,
+      totalReturnedReceipt: totalReturnedReceipt,
+      totalReturnedPurchase: totalReturnedPurchase,
       totalPurchased: totalPurchased,
       totalDelivered: totalDelivered,
       totalQuantityIncreased: totalQuantityIncreased,
@@ -783,9 +1132,15 @@ class ItemHistorySummaryBuilder {
     required bool ascending,
     required bool departmentsEnabled,
   }) {
-    final filtered = rows
-        .where((r) => filters.matches(r, departmentsEnabled: departmentsEnabled))
-        .toList();
+    final filtered =
+        rows
+            .where(
+              (r) => filters.matches(
+                r,
+                departmentsEnabled: departmentsEnabled,
+              ),
+            )
+            .toList();
 
     int cmp<T extends Comparable>(T? a, T? b, bool asc) {
       if (a == null && b == null) return 0;
@@ -802,37 +1157,77 @@ class ItemHistorySummaryBuilder {
           c = cmp(a.index, b.index, ascending);
           break;
         case ItemHistorySummarySortField.itemName:
-          c = cmp(a.name.toLowerCase(), b.name.toLowerCase(), ascending);
+          c = cmp(
+            a.name.toLowerCase(),
+            b.name.toLowerCase(),
+            ascending,
+          );
           break;
         case ItemHistorySummarySortField.openingStock:
-          c = cmp(a.openingStock, b.openingStock, ascending);
+          c = cmp(
+            a.openingStock,
+            b.openingStock,
+            ascending,
+          );
           break;
         case ItemHistorySummarySortField.closingStock:
-          c = cmp(a.closingStock, b.closingStock, ascending);
+          c = cmp(
+            a.closingStock,
+            b.closingStock,
+            ascending,
+          );
           break;
         case ItemHistorySummarySortField.currentQuantity:
-          c = cmp(a.currentQuantity, b.currentQuantity, ascending);
+          c = cmp(
+            a.currentQuantity,
+            b.currentQuantity,
+            ascending,
+          );
           break;
         case ItemHistorySummarySortField.transferredIn:
-          c = cmp(a.transferredIn, b.transferredIn, ascending);
+          c = cmp(
+            a.transferredIn,
+            b.transferredIn,
+            ascending,
+          );
           break;
         case ItemHistorySummarySortField.transferredOut:
-          c = cmp(a.transferredOut, b.transferredOut, ascending);
+          c = cmp(
+            a.transferredOut,
+            b.transferredOut,
+            ascending,
+          );
           break;
         case ItemHistorySummarySortField.produced:
           c = cmp(a.produced, b.produced, ascending);
           break;
         case ItemHistorySummarySortField.productionDeleted:
-          c = cmp(a.productionDeleted, b.productionDeleted, ascending);
+          c = cmp(
+            a.productionDeleted,
+            b.productionDeleted,
+            ascending,
+          );
           break;
         case ItemHistorySummarySortField.sold:
           c = cmp(a.sold, b.sold, ascending);
           break;
+        case ItemHistorySummarySortField.returnedReceipt:
         case ItemHistorySummarySortField.returned:
-          c = cmp(a.returned, b.returned, ascending);
+          c = cmp(
+            a.returnedReceipt,
+            b.returnedReceipt,
+            ascending,
+          );
           break;
         case ItemHistorySummarySortField.purchased:
           c = cmp(a.purchased, b.purchased, ascending);
+          break;
+        case ItemHistorySummarySortField.returnedPurchase:
+          c = cmp(
+            a.returnedPurchase,
+            b.returnedPurchase,
+            ascending,
+          );
           break;
         case ItemHistorySummarySortField.delivered:
           c = cmp(a.delivered, b.delivered, ascending);
@@ -844,11 +1239,17 @@ class ItemHistorySummaryBuilder {
           c = cmp(a.deleted, b.deleted, ascending);
           break;
         case ItemHistorySummarySortField.netQuantityChange:
-          c = cmp(a.netQuantityChange, b.netQuantityChange, ascending);
+          c = cmp(
+            a.netQuantityChange,
+            b.netQuantityChange,
+            ascending,
+          );
           break;
       }
       if (c != 0) return c;
-      return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+      return a.name.toLowerCase().compareTo(
+        b.name.toLowerCase(),
+      );
     });
 
     return filtered;
@@ -857,22 +1258,28 @@ class ItemHistorySummaryBuilder {
   /// Paginates rows.
   static ItemHistorySummaryPageResult paginate(
     List<ItemHistorySummaryRow> sorted,
-    int requestedPage,
-  ) {
+    int requestedPage, {
+    int pageSize = itemHistorySummaryPageSize,
+  }) {
     final total = sorted.length;
     final pages =
-        total == 0 ? 1 : (total / itemHistorySummaryPageSize).ceil();
+        total == 0 ? 1 : (total / pageSize).ceil();
     final page = requestedPage.clamp(1, pages);
-    final start = (page - 1) * itemHistorySummaryPageSize;
-    final end = (start + itemHistorySummaryPageSize) > total
-        ? total
-        : start + itemHistorySummaryPageSize;
+    final start = (page - 1) * pageSize;
+    final end =
+        (start + pageSize) > total
+            ? total
+            : start + pageSize;
 
     return ItemHistorySummaryPageResult(
-      rows: total == 0 ? const [] : sorted.sublist(start, end),
+      rows:
+          total == 0
+              ? const []
+              : sorted.sublist(start, end),
       totalCount: total,
       page: page,
       totalPages: pages,
+      pageSize: pageSize,
     );
   }
 
@@ -880,8 +1287,12 @@ class ItemHistorySummaryBuilder {
   static List<ItemHistorySummaryRow> getTopInflowItems(
     List<ItemHistorySummaryRow> rows,
   ) {
-    final withInflow = rows.where((r) => r.totalAdditions > 0).toList();
-    withInflow.sort((a, b) => b.totalAdditions.compareTo(a.totalAdditions));
+    final withInflow =
+        rows.where((r) => r.totalAdditions > 0).toList();
+    withInflow.sort(
+      (a, b) =>
+          b.totalAdditions.compareTo(a.totalAdditions),
+    );
     return withInflow.take(3).toList();
   }
 
@@ -889,8 +1300,12 @@ class ItemHistorySummaryBuilder {
   static List<ItemHistorySummaryRow> getTopOutflowItems(
     List<ItemHistorySummaryRow> rows,
   ) {
-    final withOutflow = rows.where((r) => r.totalReductions > 0).toList();
-    withOutflow.sort((a, b) => b.totalReductions.compareTo(a.totalReductions));
+    final withOutflow =
+        rows.where((r) => r.totalReductions > 0).toList();
+    withOutflow.sort(
+      (a, b) =>
+          b.totalReductions.compareTo(a.totalReductions),
+    );
     return withOutflow.take(3).toList();
   }
 }

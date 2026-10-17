@@ -29,9 +29,17 @@ class PurchaseActionProvider extends ChangeNotifier {
   }
 
   String itemUnit({required PurchaseListItem purchaseItem}) {
+    final selectedUnitName = purchaseItem.getSelectedUnit().name;
+    if (selectedUnitName.isNotEmpty) {
+      return selectedUnitName;
+    }
     List<TempProductClass> products =
         returnData().productListMain
-            .where((item) => item.uuid == purchaseItem.itemUuid)
+            .where(
+              (item) =>
+                  item.uuid ==
+                  (purchaseItem.itemUuid ?? purchaseItem.storageItemUuid),
+            )
             .toList();
     if (products.isNotEmpty) {
       var product = products.first;
@@ -65,6 +73,10 @@ class PurchaseActionProvider extends ChangeNotifier {
       temp.first.totalPrice = item.totalPrice;
       temp.first.customPrice = item.customPrice;
       temp.first.isGroup = item.isGroup;
+      temp.first.unitUuid = item.unitUuid;
+      temp.first.unit = item.unit;
+      temp.first.unitsList = item.unitsList;
+      temp.first.qttyPerGroup = item.qttyPerGroup;
     }
     notifyListeners();
   }
@@ -138,6 +150,8 @@ class PurchaseActionProvider extends ChangeNotifier {
                   ),
                 ],
       );
+      final isManageStorage =
+          returnShopProvider().userShop()?.manageInventoryStorage == true;
       // Built before the purchase is saved so the same lines are
       // stored in purchase.items and in item_purchase_records.
       List<TempItemPurchaseRecord> purchaseRecords =
@@ -146,14 +160,20 @@ class PurchaseActionProvider extends ChangeNotifier {
                 (item) => TempItemPurchaseRecord(
                   unitUuid: item.unitUuid,
                   unitsList: item.getUnitListFinal(),
-                  unit: item.unit,
+                  unit: item.getSelectedUnit().name,
                   customPrice: item.customPrice,
                   originalPrice: item.originalPrice,
                   createdAt: purchase?.createdAt ?? DateTime.now(),
                   shopId: purchase?.shopId ?? shopId(),
                   staffId: purchase?.staffId ?? currentUser().userId,
-                  itemId: item.itemUuid,
-                  storageItemId: item.storageItemUuid,
+                  itemId:
+                      isManageStorage
+                          ? null
+                          : (item.itemUuid ?? item.storageItemUuid),
+                  storageItemId:
+                      isManageStorage
+                          ? (item.storageItemUuid ?? item.itemUuid)
+                          : null,
                   itemName: item.itemName,
                   purchaseId: purchase?.uuid ?? tempUuid,
                   quantity: item.quantity,
@@ -176,14 +196,22 @@ class PurchaseActionProvider extends ChangeNotifier {
       }
 
       if (purchase != null) {
-        await returnData().getProducts(shopId());
+        if (isManageStorage) {
+          await returnStorageProductProvider().getStorageProductsOffline(
+            shopId(),
+          );
+        } else {
+          await returnData().getProductsOffline(shopId());
+        }
       }
       await returnPurchaseProvider().createItemPurchaseRecord(purchaseRecords);
       clearAll();
-      if (returnShopProvider().userShop()?.manageInventoryStorage == true) {
-        await returnStorageProductProvider().getStorageProducts(shopId());
+      if (isManageStorage) {
+        await returnStorageProductProvider().getStorageProductsOffline(
+          shopId(),
+        );
       } else {
-        await returnData().getProducts(shopId());
+        await returnData().getProductsOffline(shopId());
       }
       syncData();
       await returnPurchaseProvider().loadPurchases(shopId());
