@@ -195,48 +195,38 @@ class StorageItemHistoryProvider with ChangeNotifier {
   Future<int> createStorageItemHistory(
     StorageItemHistory itemHistory,
   ) async {
-    if (ItemsAuthAction().trackItemHistoryAction(
-      context: null,
-    )) {
-      itemHistory.uuid = uuidGen();
-      itemHistory.createdAt ??= DateTime.now();
-      itemHistory.storageStaffId = currentUser().userId;
-      itemHistory.storageStaffName = currentUser().name;
-      itemHistory.destination ??=
-          StorageItemHistoryEventClass.unKnownDestination;
-      itemHistory.source ??=
-          StorageItemHistoryEventClass.unKnownSource;
-      itemHistory.destination ??=
-          StorageItemHistoryEventClass.unKnownDestination;
-      itemHistory.source ??=
-          StorageItemHistoryEventClass.unKnownSource;
-      itemHistory.storageDepartmentName ??=
-          returnDepartmentProvider()
-              .currentDepartment()
-              ?.name;
-      itemHistory.storageDepartmentUuid ??=
-          returnDepartmentProvider()
-              .currentDepartment()
-              ?.uuid;
-      try {
-        await StorageItemHistoriesFunc()
-            .createStorageItemHistories(itemHistory);
-        await CreatedStorageItemHistoriesFunc()
-            .createStorageItemHistory(
-              CreatedStorageItemHistory(
-                storageItemHistory: itemHistory,
-              ),
-            );
-        await getItemHistoriesOffline();
-        // syncData();
-        return 1;
-      } catch (e) {
-        await mainLocalLog(
-          'Offline Creating Failed: ${e.toString()}',
-        );
-        return 0;
-      }
-    } else {
+    itemHistory.uuid = uuidGen();
+    itemHistory.createdAt ??= DateTime.now();
+    itemHistory.storageStaffId = currentUser().userId;
+    itemHistory.storageStaffName = currentUser().name;
+    itemHistory.destination ??=
+        StorageItemHistoryEventClass.unKnownDestination;
+    itemHistory.source ??=
+        StorageItemHistoryEventClass.unKnownSource;
+    itemHistory.storageDepartmentName ??=
+        returnDepartmentProvider()
+            .currentDepartment()
+            ?.name;
+    itemHistory.storageDepartmentUuid ??=
+        returnDepartmentProvider()
+            .currentDepartment()
+            ?.uuid;
+    try {
+      await StorageItemHistoriesFunc()
+          .createStorageItemHistories(itemHistory);
+      await CreatedStorageItemHistoriesFunc()
+          .createStorageItemHistory(
+            CreatedStorageItemHistory(
+              storageItemHistory: itemHistory,
+            ),
+          );
+      await getItemHistoriesOffline();
+      // syncData();
+      return 1;
+    } catch (e) {
+      await mainLocalLog(
+        'Offline Creating Failed: ${e.toString()}',
+      );
       return 0;
     }
   }

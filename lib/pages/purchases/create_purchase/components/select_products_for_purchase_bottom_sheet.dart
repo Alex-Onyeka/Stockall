@@ -43,7 +43,9 @@ void selectProductsForPurchaseBottomSheet({
                       .purchaseListItems
                       .where(
                         (purch) =>
-                            purch.itemUuid == item.uuid,
+                            (purch.itemUuid ??
+                                purch.storageItemUuid) ==
+                            item.uuid,
                       )
                       .isEmpty) {
                     return true;
@@ -65,7 +67,8 @@ void selectProductsForPurchaseBottomSheet({
                           .purchaseListItems
                           .where(
                             (purch) =>
-                                purch.storageItemUuid ==
+                                (purch.storageItemUuid ??
+                                    purch.itemUuid) ==
                                 item.uuid,
                           )
                           .isEmpty) {
@@ -227,6 +230,24 @@ void selectProductsForPurchaseBottomSheet({
                                                   pro.name,
                                                 ),
                                                 onTap: () {
+                                                  final units =
+                                                      pro.getUnitListFinal();
+                                                  final primaryUnitUuid =
+                                                      units
+                                                          .where(
+                                                            (
+                                                              u,
+                                                            ) =>
+                                                                u.isPrimary,
+                                                          )
+                                                          .firstOrNull
+                                                          ?.uuid ??
+                                                      units
+                                                          .firstOrNull
+                                                          ?.uuid ??
+                                                      pro
+                                                          .getPrimaryUnit()
+                                                          .uuid;
                                                   selectProductPurchase(
                                                     // storageProduct:
                                                     //     pro,
@@ -250,14 +271,13 @@ void selectProductsForPurchaseBottomSheet({
                                                       storageItemUuid:
                                                           pro.uuid,
                                                       isGroup:
-                                                          pro.useGroupUnit ??
                                                           false,
                                                       qttyPerGroup:
                                                           pro.qttyPerGroup,
                                                       unitsList:
-                                                          pro.getUnitListFinal(),
+                                                          units,
                                                       unitUuid:
-                                                          pro.getPrimaryUnit().uuid,
+                                                          primaryUnitUuid,
                                                     ),
                                                     closeAction:
                                                         () {},
@@ -322,6 +342,24 @@ void selectProductsForPurchaseBottomSheet({
                                                   pro.name,
                                                 ),
                                                 onTap: () {
+                                                  final units =
+                                                      pro.getUnitListFinal();
+                                                  final primaryUnitUuid =
+                                                      units
+                                                          .where(
+                                                            (
+                                                              u,
+                                                            ) =>
+                                                                u.isPrimary,
+                                                          )
+                                                          .firstOrNull
+                                                          ?.uuid ??
+                                                      units
+                                                          .firstOrNull
+                                                          ?.uuid ??
+                                                      pro
+                                                          .getPrimaryUnit()
+                                                          .uuid;
                                                   selectProductPurchase(
                                                     // product:
                                                     //     pro,
@@ -331,7 +369,7 @@ void selectProductsForPurchaseBottomSheet({
                                                       itemName:
                                                           pro.name,
                                                       itemUuid:
-                                                          null,
+                                                          pro.uuid,
                                                       totalPrice:
                                                           null,
                                                       quantity:
@@ -343,16 +381,15 @@ void selectProductsForPurchaseBottomSheet({
                                                       originalPrice:
                                                           pro.costPrice,
                                                       storageItemUuid:
-                                                          pro.uuid,
+                                                          null,
                                                       isGroup:
-                                                          pro.useGroupUnit ??
                                                           false,
                                                       qttyPerGroup:
                                                           pro.qttyPerGroup,
                                                       unitsList:
-                                                          pro.getUnitListFinal(),
+                                                          units,
                                                       unitUuid:
-                                                          pro.getPrimaryUnit().uuid,
+                                                          primaryUnitUuid,
                                                     ),
                                                     closeAction:
                                                         () {},

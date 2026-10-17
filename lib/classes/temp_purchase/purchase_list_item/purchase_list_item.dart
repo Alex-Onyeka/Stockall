@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
-import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
 
 class PurchaseListItem {
@@ -112,25 +111,46 @@ class PurchaseListItem {
   }
 
   ProductUnitsClass getSelectedUnit({String? unitUuidNew}) {
-    var items = getUnitsList().where(
-      (item) => item.uuid == (unitUuidNew ?? unitUuid),
-    );
-    if (items.isEmpty) {
-      return getPrimaryUnit();
-    } else {
-      return getUnitsList().firstWhere(
-        (item) => item.uuid == (unitUuidNew ?? unitUuid),
+    final list = getUnitsList();
+    final targetUnitUuid = unitUuidNew ?? unitUuid;
+    if (targetUnitUuid != null) {
+      final items = list.where(
+        (item) => item.uuid == targetUnitUuid,
       );
+      if (items.isNotEmpty) {
+        return items.first;
+      }
     }
+    if (isGroup == true) {
+      final groupItems = list.where(
+        (item) => !item.isPrimary,
+      );
+      if (groupItems.isNotEmpty) {
+        return groupItems.first;
+      }
+    }
+    if (unit != null && unit!.isNotEmpty) {
+      final byName = list.where(
+        (item) =>
+            item.name.toLowerCase() == unit!.toLowerCase(),
+      );
+      if (byName.isNotEmpty) {
+        return byName.first;
+      }
+    }
+    return getPrimaryUnit();
   }
 
   ProductUnitsClass getPrimaryUnit() {
-    if (getUnitsList().isEmpty == true ||
-        getUnitsList()
-            .where((item) => item.isPrimary == true)
-            .isEmpty) {
+    final targetProductUuid =
+        itemUuid ?? storageItemUuid ?? '';
+    final list = getUnitsList();
+    final primaries = list.where(
+      (item) => item.isPrimary == true,
+    );
+    if (list.isEmpty || primaries.isEmpty) {
       return ProductUnitsClass(
-        uuid: uuidGen(),
+        uuid: '${targetProductUuid}_primary_unit',
         staffUuid: currentUser().userId,
         createdAt: DateTime.now(),
         staffName: currentUser().name,
@@ -140,21 +160,21 @@ class PurchaseListItem {
                 ? 'Unit(s)'
                 : unit ?? 'Unit(s)',
         isPrimary: true,
-        productUuid: itemUuid!,
+        productUuid: targetProductUuid,
       );
     } else {
-      return getUnitsList()
-          .where((item) => item.isPrimary == true)
-          .first;
+      return primaries.first;
     }
   }
 
   List<ProductUnitsClass> getUnitsList() {
-    List<ProductUnitsClass> tempList() {
+    final targetProductUuid =
+        itemUuid ?? storageItemUuid ?? '';
+    List<ProductUnitsClass> buildList() {
       if (unitsList == null || unitsList?.isEmpty == true) {
         List<ProductUnitsClass> tempList = [
           ProductUnitsClass(
-            uuid: uuidGen(),
+            uuid: '${targetProductUuid}_primary_unit',
             staffUuid: currentUser().userId,
             createdAt: DateTime.now(),
             staffName: currentUser().name,
@@ -164,34 +184,63 @@ class PurchaseListItem {
                     ? 'Unit(s)'
                     : unit ?? 'Unit(s)',
             isPrimary: true,
-            productUuid: itemUuid!,
+            productUuid: targetProductUuid,
           ),
         ];
         if (isGroup == true) {
           var newItem = ProductUnitsClass(
-            uuid: uuidGen(),
+            uuid: '${targetProductUuid}_group_unit',
             staffUuid: currentUser().userId,
             createdAt: DateTime.now(),
             staffName: currentUser().name,
             conversion: qttyPerGroup ?? 1,
-            name: 'Group(s)',
+            name:
+                unit == 'Others' || unit == null
+                    ? 'Group(s)'
+                    : unit!,
             isPrimary: false,
-            productUuid: itemUuid!,
+            productUuid: targetProductUuid,
           );
           tempList.add(newItem);
         }
         return tempList;
       } else {
-        return unitsList ?? [];
+        List<ProductUnitsClass> tempList = [
+          ...(unitsList ?? []),
+        ];
+        if (isGroup == true &&
+            (qttyPerGroup ?? 0) > 0 &&
+            tempList.every((item) => item.isPrimary)) {
+          tempList.add(
+            ProductUnitsClass(
+              uuid: '${targetProductUuid}_group_unit',
+              staffUuid: currentUser().userId,
+              createdAt: DateTime.now(),
+              staffName: currentUser().name,
+              conversion: qttyPerGroup ?? 1,
+              name:
+                  unit == 'Others' || unit == null
+                      ? 'Group(s)'
+                      : unit!,
+              isPrimary: false,
+              productUuid: targetProductUuid,
+            ),
+          );
+        }
+        return tempList;
       }
     }
 
-    if (tempList().length < 2) {
-      return tempList();
+    final resolved = buildList();
+    if (resolved.length < 2) {
+      return resolved;
     } else {
+      final primaries = resolved.where(
+        (item) => item.isPrimary,
+      );
       return [
-        tempList().firstWhere((item) => item.isPrimary),
-        ...tempList().where((item) => !item.isPrimary),
+        if (primaries.isNotEmpty) primaries.first,
+        ...resolved.where((item) => !item.isPrimary),
       ];
     }
   }

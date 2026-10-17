@@ -30,13 +30,16 @@ void selectProductPurchase({
   List<ProductUnitsClass> tempUnitList = [];
   String unitName = 'Unit(s)';
   String productUuid = '';
-  unitName =
-      purchaseItem
-          .getSelectedUnit(unitUuidNew: unitUuid)
-          .name;
   tempUnitList = purchaseItem.getUnitListFinal();
-  unitUuid = purchaseItem.getSelectedUnit().uuid;
-  productUuid = purchaseItem.itemUuid ?? '';
+  final initialSelectedUnit = purchaseItem.getSelectedUnit(
+    unitUuidNew: unitUuid,
+  );
+  unitName = initialSelectedUnit.name;
+  unitUuid = initialSelectedUnit.uuid;
+  productUuid =
+      purchaseItem.itemUuid ??
+      purchaseItem.storageItemUuid ??
+      '';
   List<ProductUnitsClass> getUnitListFinal() {
     return tempUnitList
         .map((item) => item.copyWith())
@@ -55,7 +58,7 @@ void selectProductPurchase({
         return items.first;
       } else {
         return ProductUnitsClass(
-          uuid: uuidGen(),
+          uuid: '${productUuid}_primary_unit',
           staffUuid: currentUser().userId,
           createdAt: DateTime.now(),
           staffName: currentUser().name,

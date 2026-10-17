@@ -58,56 +58,56 @@ class DeletedItemPurchaseFunc {
     return deletedItemPurchaseBox.values.toList();
   }
 
-  Future<int> insertAllDeletedItemRecords(
-    List<DeletedItemRecords> deletedItemRecords,
-  ) async {
-    try {
-      for (var purchase in deletedItemRecords) {
-        await deletedItemPurchaseBox.add(purchase);
-      }
-      await mainLocalLog(
-        "Offline Deleted Item Purchase inserted ✅",
-      );
-      return 1;
-    } catch (e) {
-      await mainLocalLog(
-        'Offline Deleted Item Purchase insertion failed ❌: $e',
-      );
-      return 0;
-    }
-  }
+  // Future<int> insertAllDeletedItemRecords(
+  //   List<DeletedItemRecords> deletedItemRecords,
+  // ) async {
+  //   try {
+  //     for (var purchase in deletedItemRecords) {
+  //       await deletedItemPurchaseBox.add(purchase);
+  //     }
+  //     await mainLocalLog(
+  //       "Offline Deleted Item Purchase inserted ✅",
+  //     );
+  //     return 1;
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       'Offline Deleted Item Purchase insertion failed ❌: $e',
+  //     );
+  //     return 0;
+  //   }
+  // }
 
-  Future<int> createDeletedPurchase(
-    DeletedItemRecords deletedPurchase,
-  ) async {
-    try {
-      await deletedItemPurchaseBox.add(deletedPurchase);
-      await mainLocalLog(
-        'Offline Deleted Item Purchase Record inserted successfully ✅',
-      );
-      return 1;
-    } catch (e) {
-      await mainLocalLog(
-        'Offline Deleted Item Purchase Record insertion failed ❌: $e',
-      );
-      return 0;
-    }
-  }
+  // Future<int> createDeletedPurchase(
+  //   DeletedItemRecords deletedPurchase,
+  // ) async {
+  //   try {
+  //     await deletedItemPurchaseBox.add(deletedPurchase);
+  //     await mainLocalLog(
+  //       'Offline Deleted Item Purchase Record inserted successfully ✅',
+  //     );
+  //     return 1;
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       'Offline Deleted Item Purchase Record insertion failed ❌: $e',
+  //     );
+  //     return 0;
+  //   }
+  // }
 
-  Future<int> deletedDeletedItemRecords(String uuid) async {
-    try {
-      await deletedItemPurchaseBox.delete(uuid);
-      await mainLocalLog(
-        'Delete Item Purchase Purchase cleared ✅',
-      );
-      return 1;
-    } catch (e) {
-      await mainLocalLog(
-        'Error while Deleting Deleted Item Purchase Record ❌: $e',
-      );
-      return 0;
-    }
-  }
+  // Future<int> deletedDeletedItemRecords(String uuid) async {
+  //   try {
+  //     await deletedItemPurchaseBox.delete(uuid);
+  //     await mainLocalLog(
+  //       'Delete Item Purchase Purchase cleared ✅',
+  //     );
+  //     return 1;
+  //   } catch (e) {
+  //     await mainLocalLog(
+  //       'Error while Deleting Deleted Item Purchase Record ❌: $e',
+  //     );
+  //     return 0;
+  //   }
+  // }
 
   Future<int> clearDeletedItemRecords() async {
     try {

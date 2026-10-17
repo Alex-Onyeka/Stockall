@@ -186,46 +186,36 @@ class ItemHistoryProvider with ChangeNotifier {
   Future<int> createItemHistory(
     ItemHistory itemHistory,
   ) async {
-    if (ItemsAuthAction().trackItemHistoryAction(
-      context: null,
-    )) {
-      itemHistory.uuid = uuidGen();
-      itemHistory.createdAt ??= DateTime.now();
-      itemHistory.staffId = currentUser().userId;
-      itemHistory.staffName = currentUser().name;
-      itemHistory.destination ??=
-          ItemHistoryEventClass.unKnownDestination;
-      itemHistory.source ??=
-          ItemHistoryEventClass.unKnownSource;
-      itemHistory.destination ??=
-          ItemHistoryEventClass.unKnownDestination;
-      itemHistory.source ??=
-          ItemHistoryEventClass.unKnownSource;
-      itemHistory.departmentName ??=
-          returnDepartmentProvider()
-              .currentDepartment()
-              ?.name;
-      itemHistory.departmentUuid ??=
-          returnDepartmentProvider()
-              .currentDepartment()
-              ?.uuid;
-      try {
-        await ItemHistoriesFunc().createItemHistories(
-          itemHistory,
-        );
-        await CreatedItemHistoriesFunc().createItemHistory(
-          CreatedItemHistory(itemHistory: itemHistory),
-        );
-        await getItemHistoriesOffline();
-        // syncData();
-        return 1;
-      } catch (e) {
-        await mainLocalLog(
-          'Offline Creating Failed: ${e.toString()}',
-        );
-        return 0;
-      }
-    } else {
+    itemHistory.uuid = uuidGen();
+    itemHistory.createdAt ??= DateTime.now();
+    itemHistory.staffId = currentUser().userId;
+    itemHistory.staffName = currentUser().name;
+    itemHistory.destination ??=
+        ItemHistoryEventClass.unKnownDestination;
+    itemHistory.source ??=
+        ItemHistoryEventClass.unKnownSource;
+    itemHistory.departmentName ??=
+        returnDepartmentProvider()
+            .currentDepartment()
+            ?.name;
+    itemHistory.departmentUuid ??=
+        returnDepartmentProvider()
+            .currentDepartment()
+            ?.uuid;
+    try {
+      await ItemHistoriesFunc().createItemHistories(
+        itemHistory,
+      );
+      await CreatedItemHistoriesFunc().createItemHistory(
+        CreatedItemHistory(itemHistory: itemHistory),
+      );
+      await getItemHistoriesOffline();
+      // syncData();
+      return 1;
+    } catch (e) {
+      await mainLocalLog(
+        'Offline Creating Failed: ${e.toString()}',
+      );
       return 0;
     }
   }
