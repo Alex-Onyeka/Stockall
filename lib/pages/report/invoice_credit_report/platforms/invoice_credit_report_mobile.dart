@@ -5,7 +5,6 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/components/report_list_tile.dart';
 import 'package:stockall/pages/report/invoice_report_table/invoice_report_table_page.dart';
-import 'package:stockall/pages/report/invoice_sales_report/invoice_sales_report.dart';
 import 'package:stockall/pages/report/invoice_summary/invoice_summary_page.dart';
 
 class InvoiceCreditReportMobile extends StatelessWidget {
@@ -108,32 +107,32 @@ class InvoiceCreditReportMobile extends StatelessWidget {
                                 'Invoice Summary and Analysis',
                           ),
                         ),
-                        Visibility(
-                          visible:
-                              !isStoreKeeper() &&
-                              authorization(
-                                authorized:
-                                    Authorizations()
-                                        .viewInvoiceSalesReport,
-                              ),
-                          child: ReportListTile(
-                            isActive: true,
-                            theme: theme,
-                            action: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) =>
-                                          InvoiceSalesReport(),
-                                ),
-                              );
-                            },
-                            subText:
-                                'View a breakdown of your Invoice Sales, revenue and Profit',
-                            title: 'Invoice Sales Report',
-                          ),
-                        ),
+                        // Visibility(
+                        //   visible:
+                        //       !isStoreKeeper() &&
+                        //       authorization(
+                        //         authorized:
+                        //             Authorizations()
+                        //                 .viewInvoiceSalesReport,
+                        //       ),
+                        //   child: ReportListTile(
+                        //     isActive: true,
+                        //     theme: theme,
+                        //     action: () {
+                        //       Navigator.push(
+                        //         context,
+                        //         MaterialPageRoute(
+                        //           builder:
+                        //               (context) =>
+                        //                   InvoiceSalesReport(),
+                        //         ),
+                        //       );
+                        //     },
+                        //     subText:
+                        //         'View a breakdown of your Invoice Sales, revenue and Profit',
+                        //     title: 'Invoice Sales Report',
+                        //   ),
+                        // ),
                         const SizedBox(height: 30),
                       ],
                     ),
