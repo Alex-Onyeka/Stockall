@@ -362,7 +362,10 @@ class PurchaseProvider extends ChangeNotifier {
                               .purchaseDeleted,
                       source:
                           StorageItemHistoryEventClass
-                              .purchaseSource,
+                              .storageSource,
+                      destination:
+                          StorageItemHistoryEventClass
+                              .purchaseDestination,
                       shopId: shopId(),
                       title: 'Purchase Deleted',
                       createdAt: DateTime.now(),
@@ -449,8 +452,10 @@ class PurchaseProvider extends ChangeNotifier {
               ItemHistory itemHistory = ItemHistory(
                 event: ItemHistoryEventClass.returnEvent,
                 isManaged: true,
-                source:
-                    ItemHistoryEventClass.purchaseSource,
+                source: ItemHistoryEventClass.productSource,
+                destination:
+                    ItemHistoryEventClass
+                        .purchaseDestination,
                 desc:
                     '${rec.quantity} ${rec.unit} of this Item Was Returned From Purchase. Purchase Id: #${returnOnlyDigits(rec.purchaseId ?? '')}',
                 shopId: shopId(),
@@ -536,11 +541,9 @@ class PurchaseProvider extends ChangeNotifier {
           isOnline) {
         final tempPurchases =
             CreatedPurchasesFunc().getPurchases().toList();
-        var newPurchases = tempPurchases.map((rec) {
-          rec.purchase.createdAt =
-              rec.purchase.createdAt.toUtc();
-          return rec;
-        });
+        // createdAt is serialized to UTC in toJson(); don't mutate the
+        // shared in-memory purchase.
+        var newPurchases = tempPurchases;
         final payload =
             newPurchases
                 .map((p) => p.purchase.toJson())
@@ -820,6 +823,9 @@ class PurchaseProvider extends ChangeNotifier {
               source:
                   StorageItemHistoryEventClass
                       .purchaseSource,
+              destination:
+                  StorageItemHistoryEventClass
+                      .storageDestination,
               shopId: shopId(),
               title: 'Stock In From Purchase',
               createdAt: DateTime.now(),
@@ -889,6 +895,8 @@ class PurchaseProvider extends ChangeNotifier {
             event: ItemHistoryEventClass.purchase,
             isManaged: true,
             source: ItemHistoryEventClass.purchaseSource,
+            destination:
+                ItemHistoryEventClass.productDestination,
             desc:
                 '${item.quantity} ${item.unit} of this Item Purchased. Purchase Id: #${returnOnlyDigits(item.purchaseId ?? '')}',
             shopId: shopId(),

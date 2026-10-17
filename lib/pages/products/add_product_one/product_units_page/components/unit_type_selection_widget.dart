@@ -20,8 +20,7 @@ class UnitTypeSelectionWidget extends StatefulWidget {
       _UnitTypeSelectionWidgetState();
 }
 
-class _UnitTypeSelectionWidgetState
-    extends State<UnitTypeSelectionWidget> {
+class _UnitTypeSelectionWidgetState extends State<UnitTypeSelectionWidget> {
   List<UnitTypeClass> priceList = [
     UnitTypeClass(index: 1, name: 'Area (l x b)'),
     UnitTypeClass(index: 2, name: 'Whole Unit (e.g Sheet)'),
@@ -35,8 +34,7 @@ class _UnitTypeSelectionWidgetState
           visible: widget.showSelectUnitText != false,
           child: Text(
             style: TextStyle(
-              fontSize:
-                  widget.theme.mobileTexts.b4.fontSize,
+              fontSize: widget.theme.mobileTexts.b4.fontSize,
               fontWeight: FontWeight.bold,
             ),
             'Select Unit Type:',
@@ -51,45 +49,32 @@ class _UnitTypeSelectionWidgetState
                 (context) =>
                     priceList
                         .map(
-                          (item) =>
-                              myPopUpMenuItemUnitSelection(
-                                item: item,
-                                setUnitIndex:
-                                    widget.setUnitType,
-                                theme: widget.theme,
-                                currentSelection:
-                                    widget.currentSelection,
-                                context: context,
-                              ),
+                          (item) => myPopUpMenuItemUnitSelection(
+                            item: item,
+                            setUnitIndex: widget.setUnitType,
+                            theme: widget.theme,
+                            currentSelection: widget.currentSelection,
+                            context: context,
+                          ),
                         )
                         .toList(),
             child: Container(
               padding: EdgeInsets.fromLTRB(10, 5, 5, 5),
               decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.grey.shade500,
-                ),
+                border: Border.all(color: Colors.grey.shade500),
                 borderRadius: BorderRadius.circular(3),
               ),
               child: Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     style: TextStyle(
-                      fontSize:
-                          widget
-                              .theme
-                              .mobileTexts
-                              .b3
-                              .fontSize,
+                      fontSize: widget.theme.mobileTexts.b3.fontSize,
                       fontWeight: FontWeight.bold,
                     ),
                     priceList
                         .firstWhere(
-                          (item) =>
-                              item.index ==
-                              widget.currentSelection,
+                          (item) => item.index == widget.currentSelection,
                         )
                         .name,
                   ),
@@ -103,16 +88,10 @@ class _UnitTypeSelectionWidgetState
           children: [
             Expanded(
               child: Text(
-                widget.currentSelection ==
-                        ProductUnitsClass.areaUnit
+                widget.currentSelection == ProductUnitsClass.areaUnit
                     ? 'Conversion is the area represented by one of this unit.'
                     : 'Conversion is the number of original slabs / sheets represented by one of this unit.',
-                style:
-                    widget
-                        .theme
-                        .mobileTexts
-                        .b4
-                        .textStyleNormal,
+                style: widget.theme.mobileTexts.b4.textStyleNormal,
               ),
             ),
           ],
@@ -158,14 +137,9 @@ PopupMenuItem myPopUpMenuItemUnitSelection({
       setUnitIndex != null ? setUnitIndex(item.index) : {};
     },
     child: ConstrainedBox(
-      constraints: BoxConstraints(
-        maxWidth: 500,
-        minWidth: 300,
-      ),
+      constraints: BoxConstraints(maxWidth: 500, minWidth: 300),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 10.0,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -173,19 +147,14 @@ PopupMenuItem myPopUpMenuItemUnitSelection({
               child: Text(
                 style: TextStyle(
                   fontSize: theme.mobileTexts.b3.fontSize,
-                  fontWeight:
-                      getBold() ? FontWeight.bold : null,
+                  fontWeight: getBold() ? FontWeight.bold : null,
                 ),
                 item.name,
               ),
             ),
             Visibility(
               visible: getVisibility(),
-              child: Icon(
-                size: 17,
-                color: Colors.grey.shade700,
-                Icons.check,
-              ),
+              child: Icon(size: 17, color: Colors.grey.shade700, Icons.check),
             ),
           ],
         ),

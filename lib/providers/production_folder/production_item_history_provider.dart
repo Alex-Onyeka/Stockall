@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_item_history/production_item_history.dart';
+import 'package:stockall/classes/temp_production_folder/temp_production_item_history/production_item_history_event_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_item_history/unsynced/created_production_item_history.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
@@ -109,37 +110,21 @@ class ProductionItemHistoryProvider with ChangeNotifier {
         rangeStartDate == null) {
       return departmentProductionItemHistories()
           .where(
-            (productionItemHistory) =>
-                !productionItemHistory.createdAt!.isBefore(
-                  fourAm(dateSet ?? DateTime.now()),
-                ) &&
-                !productionItemHistory.createdAt!.isAfter(
-                  fourAmNextDay(dateSet ?? DateTime.now()),
-                ),
-          )
-          .toList();
-    } else if (dateSet != null) {
-      return departmentProductionItemHistories()
-          .where(
-            (productionItemHistory) =>
-                !productionItemHistory.createdAt!.isBefore(
-                  fourAm(dateSet!),
-                ) &&
-                !productionItemHistory.createdAt!.isAfter(
-                  fourAmNextDay(dateSet!),
-                ),
+            (productionItemHistory) => isDateTimeInBusinessWindow(
+              dateTime: productionItemHistory.createdAt,
+              dateSet: dateSet ?? DateTime.now(),
+            ),
           )
           .toList();
     } else {
       return departmentProductionItemHistories()
           .where(
-            (update) =>
-                ((!update.createdAt!.isBefore(
-                      fourAm(rangeStartDate!),
-                    )) &&
-                    (!update.createdAt!.isAfter(
-                      fourAmNextDay(rangeEndDate!),
-                    ))),
+            (productionItemHistory) => isDateTimeInBusinessWindow(
+              dateTime: productionItemHistory.createdAt,
+              dateSet: dateSet,
+              rangeStartDate: rangeStartDate,
+              rangeEndDate: rangeEndDate,
+            ),
           )
           .toList();
     }
@@ -250,6 +235,11 @@ class ProductionItemHistoryProvider with ChangeNotifier {
       productionItemHistory.createdAt ??= DateTime.now();
       productionItemHistory.staffId = currentUser().userId;
       productionItemHistory.staffName = currentUser().name;
+      productionItemHistory.destination ??=
+          ProductionItemHistoryEventClass
+              .unKnownDestination;
+      productionItemHistory.source ??=
+          ProductionItemHistoryEventClass.unKnownSource;
       productionItemHistory.departmentName ??=
           returnDepartmentProvider()
               .currentDepartment()

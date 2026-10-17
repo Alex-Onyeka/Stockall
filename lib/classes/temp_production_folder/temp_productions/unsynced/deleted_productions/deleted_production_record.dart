@@ -6,7 +6,5 @@ class DeletedProductionRecord extends HiveObject {
   @HiveField(0)
   final String productionRecordUuid;
 
-  DeletedProductionRecord({
-    required this.productionRecordUuid,
-  });
+  DeletedProductionRecord({required this.productionRecordUuid});
 }

@@ -28,8 +28,7 @@ class ProductionRecordsListDesktop extends StatefulWidget {
 
 class _ProductionRecordsListDesktopState
     extends State<ProductionRecordsListDesktop> {
-  final GlobalKey<ScaffoldState> _scaffoldKey =
-      GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +36,9 @@ class _ProductionRecordsListDesktopState
     var records =
         returnProductionRecordsProvider(
           context: context,
-        ).returnProductionRecordsByDayOrWeek().where((
-          item,
-        ) {
+        ).returnProductionRecordsByDayOrWeek().where((item) {
           if (widget.productionItemUuid != null) {
-            return item.itemUuid ==
-                widget.productionItemUuid;
+            return item.itemUuid == widget.productionItemUuid;
           } else if (widget.productUuid != null) {
             return item.salesItemUuid == widget.productUuid;
           } else {
@@ -59,10 +55,8 @@ class _ProductionRecordsListDesktopState
             width:
                 screenWidth(context) < tabletScreenSmall
                     ? 50
-                    : (screenWidth(context) >
-                            tabletScreenSmall &&
-                        screenWidth(context) <
-                            tabletScreen + 100)
+                    : (screenWidth(context) > tabletScreenSmall &&
+                        screenWidth(context) < tabletScreen + 100)
                     ? 100
                     : 230,
           ),
@@ -75,46 +69,31 @@ class _ProductionRecordsListDesktopState
                   widget: Row(
                     spacing: 15,
                     mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment:
-                        MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Visibility(
-                        visible:
-                            screenWidth(context) >
-                            mobileScreen,
+                        visible: screenWidth(context) > mobileScreen,
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            mouseCursor:
-                                SystemMouseCursors.click,
-                            borderRadius:
-                                BorderRadius.circular(10),
+                            mouseCursor: SystemMouseCursors.click,
+                            borderRadius: BorderRadius.circular(10),
                             onTap: () async {
                               getProductionRecords();
                             },
                             child: Padding(
-                              padding: const EdgeInsets.all(
-                                10,
-                              ),
+                              padding: const EdgeInsets.all(10),
                               child: Row(
                                 spacing: 5,
                                 children: [
                                   Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
+                                      fontSize: theme.mobileTexts.b3.fontSize,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                     'Refresh',
                                   ),
-                                  Icon(
-                                    size: 18,
-                                    Icons.refresh_rounded,
-                                  ),
+                                  Icon(size: 18, Icons.refresh_rounded),
                                 ],
                               ),
                             ),
@@ -122,50 +101,35 @@ class _ProductionRecordsListDesktopState
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(
-                          right: 15.0,
-                        ),
+                        padding: const EdgeInsets.only(right: 15.0),
                         child: Visibility(
                           visible: authorization(
-                            authorized:
-                                Authorizations().viewDate,
+                            authorized: Authorizations().viewDate,
                           ),
                           child: InkWell(
-                            mouseCursor:
-                                SystemMouseCursors.click,
+                            mouseCursor: SystemMouseCursors.click,
                             onTap: () {
-                              if (productionProv.dateSet !=
-                                      null ||
-                                  productionProv
-                                          .rangeStartDate !=
-                                      null) {
+                              if (productionProv.dateSet != null ||
+                                  productionProv.rangeStartDate != null) {
                                 productionProv.clearDate();
                               } else {
                                 mainDatePicker(
                                   context: context,
                                   theme: theme,
                                   singleDate: (date) {
-                                    productionProv.setDate(
-                                      date!,
-                                    );
+                                    productionProv.setDate(date!);
                                   },
-                                  rangeDate: (
-                                    firstDate,
-                                    lastDate,
-                                  ) {
+                                  rangeDate: (firstDate, lastDate) {
                                     productionProv.setRange(
                                       firstDate!,
-                                      lastDate ??
-                                          DateTime.now(),
+                                      lastDate ?? DateTime.now(),
                                     );
                                   },
                                 );
                               }
                             },
                             child: Container(
-                              margin: EdgeInsets.only(
-                                right: 5,
-                              ),
+                              margin: EdgeInsets.only(right: 5),
                               padding: EdgeInsets.only(
                                 right: 10,
                                 left: 10,
@@ -178,22 +142,15 @@ class _ProductionRecordsListDesktopState
                                 children: [
                                   Text(
                                     style: TextStyle(
-                                      fontWeight:
-                                          FontWeight.bold,
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: theme.mobileTexts.b3.fontSize,
                                     ),
                                     returnProductionRecordsProvider(
-                                                  context:
-                                                      context,
+                                                  context: context,
                                                 ).dateSet !=
                                                 null ||
                                             returnProductionRecordsProvider(
-                                                  context:
-                                                      context,
+                                                  context: context,
                                                 ).rangeStartDate !=
                                                 null
                                         ? 'Clear'
@@ -202,18 +159,15 @@ class _ProductionRecordsListDesktopState
                                   Icon(
                                     size: 16,
                                     returnProductionRecordsProvider(
-                                                  context:
-                                                      context,
+                                                  context: context,
                                                 ).dateSet !=
                                                 null ||
                                             returnProductionRecordsProvider(
-                                                  context:
-                                                      context,
+                                                  context: context,
                                                 ).rangeStartDate !=
                                                 null
                                         ? Icons.clear
-                                        : Icons
-                                            .date_range_outlined,
+                                        : Icons.date_range_outlined,
                                   ),
                                 ],
                               ),
@@ -227,27 +181,24 @@ class _ProductionRecordsListDesktopState
                 floatingActionButton: Visibility(
                   visible:
                       authorization(
-                        authorized:
-                            Authorizations()
-                                .addProductionRecords,
+                        authorized: Authorizations().addProductionRecords,
                       ) &&
                       widget.productionItemUuid == null,
                   child: FloatingActionButtonMain(
                     action: () {
-                      GeneralSettingsAuthAction()
-                          .manageProductions(
-                            context: context,
-                            action: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return CreateProduction();
-                                  },
-                                ),
-                              );
-                            },
+                      GeneralSettingsAuthAction().manageProductions(
+                        context: context,
+                        action: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return CreateProduction();
+                              },
+                            ),
                           );
+                        },
+                      );
                     },
                     color: theme.lightModeColor.secColor100,
                     text: 'Record Production',
@@ -255,9 +206,7 @@ class _ProductionRecordsListDesktopState
                   ),
                 ),
                 body: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Column(
                     children: [
                       Material(
@@ -277,9 +226,7 @@ class _ProductionRecordsListDesktopState
                                       ),
                                 ),
                                 ValueSummaryTabSmall(
-                                  value:
-                                      records.length
-                                          .toDouble(),
+                                  value: records.length.toDouble(),
                                   title: 'Entries',
                                   color: Colors.green,
                                   isMoney: false,
@@ -308,24 +255,16 @@ class _ProductionRecordsListDesktopState
                               );
                             } else {
                               return RefreshIndicator(
-                                onRefresh:
-                                    getProductionRecords,
-                                backgroundColor:
-                                    Colors.white,
-                                color:
-                                    theme
-                                        .lightModeColor
-                                        .prColor300,
+                                onRefresh: getProductionRecords,
+                                backgroundColor: Colors.white,
+                                color: theme.lightModeColor.prColor300,
                                 displacement: 10,
                                 child: ListView(
                                   children:
                                       records
                                           .map(
-                                            (
-                                              item,
-                                            ) => ProductionsRecordTile(
-                                              productionRecord:
-                                                  item,
+                                            (item) => ProductionsRecordTile(
+                                              productionRecord: item,
                                             ),
                                           )
                                           .toList(),
@@ -345,10 +284,8 @@ class _ProductionRecordsListDesktopState
             width:
                 screenWidth(context) < tabletScreenSmall
                     ? 50
-                    : (screenWidth(context) >
-                            tabletScreenSmall &&
-                        screenWidth(context) <
-                            tabletScreen + 100)
+                    : (screenWidth(context) > tabletScreenSmall &&
+                        screenWidth(context) < tabletScreen + 100)
                     ? 100
                     : 230,
           ),
@@ -359,7 +296,5 @@ class _ProductionRecordsListDesktopState
 }
 
 Future<void> getProductionRecords() async {
-  returnProductionRecordsProvider().getProductionRecords(
-    shopId(),
-  );
+  returnProductionRecordsProvider().getProductionRecords(shopId());
 }

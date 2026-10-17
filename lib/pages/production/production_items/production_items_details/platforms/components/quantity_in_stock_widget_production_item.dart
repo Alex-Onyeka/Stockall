@@ -34,9 +34,7 @@ Widget quantityInStockWidgetProductItem(
             ),
           ],
         ),
-        UnitsGridSectionWidgetProductionItem(
-          product: product,
-        ),
+        UnitsGridSectionWidgetProductionItem(product: product),
         Visibility(
           visible: product.canUpdateQuantity(),
           child: Row(
@@ -46,10 +44,7 @@ Widget quantityInStockWidgetProductItem(
                   child: EditButton(
                     theme: theme,
                     action: () {
-                      updateProductionItemQuantity(
-                        context,
-                        product,
-                      );
+                      updateProductionItemQuantity(context, product);
                     },
                     text: 'Edit Qtty',
                   ),
@@ -63,8 +58,7 @@ Widget quantityInStockWidgetProductItem(
   );
 }
 
-class UnitsGridSectionWidgetProductionItem
-    extends StatefulWidget {
+class UnitsGridSectionWidgetProductionItem extends StatefulWidget {
   final ProductionItem product;
   const UnitsGridSectionWidgetProductionItem({
     super.key,
@@ -72,8 +66,7 @@ class UnitsGridSectionWidgetProductionItem
   });
 
   @override
-  State<UnitsGridSectionWidgetProductionItem>
-  createState() =>
+  State<UnitsGridSectionWidgetProductionItem> createState() =>
       _UnitsGridSectionWidgetProductionItemState();
 }
 
@@ -96,16 +89,12 @@ class _UnitsGridSectionWidgetProductionItemState
     final units = widget.product.getUnitsList();
 
     return Column(
-      children: List.generate((units.length / 2).ceil(), (
-        rowIndex,
-      ) {
+      children: List.generate((units.length / 2).ceil(), (rowIndex) {
         final start = rowIndex * 2;
         final end = (start + 2).clamp(0, units.length);
 
         return Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: 3.0,
-          ),
+          padding: const EdgeInsets.symmetric(vertical: 3.0),
           child: Row(
             spacing: 5,
             children:
@@ -113,10 +102,7 @@ class _UnitsGridSectionWidgetProductionItemState
                     .sublist(start, end)
                     .map(
                       (item) => Expanded(
-                        child:
-                            QuantityWidgetProductionItemDetails(
-                              unit: item,
-                            ),
+                        child: QuantityWidgetProductionItemDetails(unit: item),
                       ),
                     )
                     .toList(),
@@ -127,13 +113,9 @@ class _UnitsGridSectionWidgetProductionItemState
   }
 }
 
-class QuantityWidgetProductionItemDetails
-    extends StatelessWidget {
+class QuantityWidgetProductionItemDetails extends StatelessWidget {
   final ProductUnitsClass unit;
-  const QuantityWidgetProductionItemDetails({
-    super.key,
-    required this.unit,
-  });
+  const QuantityWidgetProductionItemDetails({super.key, required this.unit});
 
   @override
   Widget build(BuildContext context) {
@@ -141,10 +123,7 @@ class QuantityWidgetProductionItemDetails
     return Stack(
       children: [
         Container(
-          padding: EdgeInsets.symmetric(
-            vertical: 5,
-            horizontal: 8,
-          ),
+          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(3),
             border: Border.all(
@@ -164,10 +143,7 @@ class QuantityWidgetProductionItemDetails
               Text(
                 style: TextStyle(
                   fontSize: theme.mobileTexts.b4.fontSize,
-                  color:
-                      unit.isPrimary
-                          ? Colors.grey.shade200
-                          : null,
+                  color: unit.isPrimary ? Colors.grey.shade200 : null,
                 ),
                 "${unit.name}:",
               ),
@@ -175,16 +151,10 @@ class QuantityWidgetProductionItemDetails
                 style: TextStyle(
                   fontSize: theme.mobileTexts.b4.fontSize,
                   fontWeight: FontWeight.bold,
-                  color:
-                      unit.isPrimary
-                          ? Colors.grey.shade200
-                          : null,
+                  color: unit.isPrimary ? Colors.grey.shade200 : null,
                 ),
                 formatLargeNumberDouble(
-                  unit.getQuantityEquivDivided(
-                    context: context,
-                    index: 2,
-                  ),
+                  unit.getQuantityEquivDivided(context: context, index: 2),
                 ),
               ),
             ],
@@ -194,11 +164,7 @@ class QuantityWidgetProductionItemDetails
           visible: unit.isPrimary,
           child: Align(
             alignment: AlignmentGeometry.xy(1, 1),
-            child: Icon(
-              size: 13,
-              color: Colors.white,
-              Icons.check,
-            ),
+            child: Icon(size: 13, color: Colors.white, Icons.check),
           ),
         ),
       ],

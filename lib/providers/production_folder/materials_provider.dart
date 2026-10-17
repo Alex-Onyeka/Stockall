@@ -21,14 +21,12 @@ import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MaterialsProvider extends ChangeNotifier {
-  static final MaterialsProvider _instance =
-      MaterialsProvider._internal();
+  static final MaterialsProvider _instance = MaterialsProvider._internal();
   factory MaterialsProvider() => _instance;
   MaterialsProvider._internal();
 
   bool isLoading = false;
-  ConnectivityProvider connectivity =
-      ConnectivityProvider();
+  ConnectivityProvider connectivity = ConnectivityProvider();
 
   void toggleIsLoading(bool value) {
     isLoading = value;
@@ -37,9 +35,7 @@ class MaterialsProvider extends ChangeNotifier {
   }
 
   String unitText({required MaterialClass material}) {
-    return isGroupUnit
-        ? material.groupUnit ?? 'Group'
-        : material.unit;
+    return isGroupUnit ? material.groupUnit ?? 'Group' : material.unit;
   }
 
   bool isGroupUnit = false;
@@ -70,22 +66,16 @@ class MaterialsProvider extends ChangeNotifier {
 
     await MaterialsFunc().createMaterial(material);
     await CreatedMaterialsFunc().createMaterial(
-      CreatedMaterial(
-        material: material,
-        includeQuantity: true,
-      ),
+      CreatedMaterial(material: material, includeQuantity: true),
     );
-    await mainLocalLog(
-      'Offline Material inserted Successfully',
-    );
-    await getMaterialsOffline(
-      returnShopProvider().userShop()!.shopId!,
-    );
+    await mainLocalLog('Offline Material inserted Successfully');
+    await getMaterialsOffline(returnShopProvider().userShop()!.shopId!);
     if (materialsItemHistoy != null) {
       materialsItemHistoy.itemName = material.name;
       materialsItemHistoy.itemUuid = material.uuid;
-      await returnMaterialsItemHistoryProvider()
-          .createMaterialsItemHistory(materialsItemHistoy);
+      await returnMaterialsItemHistoryProvider().createMaterialsItemHistory(
+        materialsItemHistoy,
+      );
     }
 
     if (!isMultiple) {
@@ -99,12 +89,8 @@ class MaterialsProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
-      if (CreatedMaterialsFunc()
-              .getMaterials()
-              .isNotEmpty &&
-          isOnline) {
-        final tempMaterials =
-            CreatedMaterialsFunc().getMaterials().toList();
+      if (CreatedMaterialsFunc().getMaterials().isNotEmpty && isOnline) {
+        final tempMaterials = CreatedMaterialsFunc().getMaterials().toList();
         int count = 0;
         for (var item in tempMaterials) {
           try {
@@ -113,40 +99,29 @@ class MaterialsProvider extends ChangeNotifier {
                 .from(tableName)
                 .insert(
                   item.material.toJson(
-                    isIncludeQuantity:
-                        item.includeQuantity ?? true,
+                    isIncludeQuantity: item.includeQuantity ?? true,
                   ),
                 )
                 .select();
             count++;
-            await CreatedMaterialsFunc().deleteMaterial(
-              item.material.uuid!,
-            );
+            await CreatedMaterialsFunc().deleteMaterial(item.material.uuid!);
           } on PostgrestException catch (e) {
             if (e.code == '23505') {
-              await CreatedMaterialsFunc().deleteMaterial(
-                item.material.uuid!,
-              );
+              await CreatedMaterialsFunc().deleteMaterial(item.material.uuid!);
             }
           }
         }
 
-        await mainLocalLog(
-          '$count materials added successfully ✅',
-        );
+        await mainLocalLog('$count materials added successfully ✅');
         // await CreatedMaterialsFunc().clearMaterials();
-        await mainLocalLog(
-          'Mounted, refreshing materials ✅',
-        );
+        await mainLocalLog('Mounted, refreshing materials ✅');
         await getMaterials();
 
         // returnData().clearFields();
         await mainLocalLog('Unsynced Materials Cleared');
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Materials insert failed ❌: $e',
-      );
+      await mainLocalLog('Batch Materials insert failed ❌: $e');
     }
   }
 
@@ -154,10 +129,7 @@ class MaterialsProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
 
-      if (DeletedMaterialsFunc()
-              .getMaterialIds()
-              .isNotEmpty &&
-          isOnline) {
+      if (DeletedMaterialsFunc().getMaterialIds().isNotEmpty && isOnline) {
         final uuids =
             DeletedMaterialsFunc()
                 .getMaterialIds()
@@ -171,26 +143,18 @@ class MaterialsProvider extends ChangeNotifier {
                 .inFilter('uuid', uuids)
                 .select();
 
-        await mainLocalLog(
-          '${data.length} materials deleted successfully ✅',
-        );
+        await mainLocalLog('${data.length} materials deleted successfully ✅');
 
         await DeletedMaterialsFunc().clearDeletedMaterial();
 
-        await mainLocalLog(
-          'Mounted, refreshing materials ✅',
-        );
+        await mainLocalLog('Mounted, refreshing materials ✅');
         await getMaterials();
 
         // returnData().clearFields();
-        await mainLocalLog(
-          'Unsynced deleted materials cleared',
-        );
+        await mainLocalLog('Unsynced deleted materials cleared');
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Materials delete failed ❌: $e',
-      );
+      await mainLocalLog('Batch Materials delete failed ❌: $e');
     }
   }
 
@@ -198,29 +162,19 @@ class MaterialsProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       await mainLocalLog(
-        UpdatedMaterialsFunc()
-            .getMaterials()
-            .length
-            .toString(),
+        UpdatedMaterialsFunc().getMaterials().length.toString(),
       );
 
-      if (UpdatedMaterialsFunc()
-              .getMaterials()
-              .isNotEmpty &&
-          isOnline) {
-        final updatedMaterials =
-            UpdatedMaterialsFunc().getMaterials();
+      if (UpdatedMaterialsFunc().getMaterials().isNotEmpty && isOnline) {
+        final updatedMaterials = UpdatedMaterialsFunc().getMaterials();
 
         for (final updated in updatedMaterials) {
           final localMaterial = updated.material;
 
-          localMaterial.updatedAt ??=
-              DateTime.now().toLocal();
+          localMaterial.updatedAt ??= DateTime.now().toLocal();
 
           if (localMaterial.uuid == null) {
-            await mainLocalLog(
-              'Local Material Uuid is Null',
-            );
+            await mainLocalLog('Local Material Uuid is Null');
           }
           final remoteData =
               await supabase
@@ -235,72 +189,57 @@ class MaterialsProvider extends ChangeNotifier {
                   .from(tableName)
                   .insert(
                     localMaterial.toJson(
-                      isIncludeQuantity:
-                          updated.includeQuantity,
+                      isIncludeQuantity: updated.includeQuantity,
                     ),
                   );
               await mainLocalLog(
                 'Inserted material with uuid ${localMaterial.uuid}',
               );
-              await UpdatedMaterialsFunc()
-                  .deleteUpdatedMaterial(
-                    localMaterial.uuid ?? '',
-                  );
+              await UpdatedMaterialsFunc().deleteUpdatedMaterial(
+                localMaterial.uuid ?? '',
+              );
             } on PostgrestException catch (e) {
               if (e.code == '23505') {
-                await UpdatedMaterialsFunc()
-                    .deleteUpdatedMaterial(
-                      localMaterial.uuid ?? '',
-                    );
+                await UpdatedMaterialsFunc().deleteUpdatedMaterial(
+                  localMaterial.uuid ?? '',
+                );
               }
             }
           } else {
-            final remoteUpdatedAtRaw =
-                remoteData['updated_at'];
+            final remoteUpdatedAtRaw = remoteData['updated_at'];
             final remoteUpdatedAt =
                 remoteUpdatedAtRaw == null
                     ? null
-                    : DateTime.parse(
-                      remoteUpdatedAtRaw,
-                    ).toUtc();
+                    : DateTime.parse(remoteUpdatedAtRaw).toUtc();
 
             localMaterial.updatedAt =
                 (localMaterial.updatedAt ?? DateTime.now())
                     .toUtc(); // ✅ keep both UTC
-            await mainLocalLog(
-              "Local updatedAt: ${localMaterial.updatedAt}",
-            );
-            await mainLocalLog(
-              "Remote updatedAt: $remoteUpdatedAt",
-            );
+            await mainLocalLog("Local updatedAt: ${localMaterial.updatedAt}");
+            await mainLocalLog("Remote updatedAt: $remoteUpdatedAt");
 
             if (remoteUpdatedAt == null ||
-                localMaterial.updatedAt!.isAfter(
-                  remoteUpdatedAt,
-                )) {
+                localMaterial.updatedAt!.isAfter(remoteUpdatedAt)) {
               try {
                 await supabase
                     .from(tableName)
                     .update(
                       localMaterial.toJson(
-                        isIncludeQuantity:
-                            updated.includeQuantity,
+                        isIncludeQuantity: updated.includeQuantity,
                       ),
                     )
                     .eq('uuid', localMaterial.uuid!);
                 await mainLocalLog(
                   'Updated material with uuid ${localMaterial.uuid}',
                 );
-                await UpdatedMaterialsFunc()
-                    .deleteUpdatedMaterial(
-                      localMaterial.uuid ?? '',
-                    );
+                await UpdatedMaterialsFunc().deleteUpdatedMaterial(
+                  localMaterial.uuid ?? '',
+                );
               } on PostgrestException catch (e) {
                 if (e.code == '23505') {
-                  await UpdatedMaterialsFunc()
-                      .deleteUpdatedMaterial(
-                        localMaterial.uuid ?? '',
-                      );
+                  await UpdatedMaterialsFunc().deleteUpdatedMaterial(
+                    localMaterial.uuid ?? '',
+                  );
                 }
               }
             } else {
@@ -312,19 +251,13 @@ class MaterialsProvider extends ChangeNotifier {
         }
 
         // await UpdatedMaterialsFunc().clearupdatedMaterials();
-        await mainLocalLog(
-          'Unsynced updated materials cleared',
-        );
-        await mainLocalLog(
-          'Mounted, refreshing materials ✅',
-        );
+        await mainLocalLog('Unsynced updated materials cleared');
+        await mainLocalLog('Mounted, refreshing materials ✅');
         await getMaterials();
         // returnData().clearFields();
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Materials update failed ❌: $e',
-      );
+      await mainLocalLog('Batch Materials update failed ❌: $e');
     }
   }
 
@@ -337,12 +270,8 @@ class MaterialsProvider extends ChangeNotifier {
 
   List<MaterialClass> materialListMain = [];
 
-  void insertSingleItemIntoCache({
-    required MaterialClass newItem,
-  }) {
-    var items = materialListMain.where(
-      (item) => item.uuid == newItem.uuid,
-    );
+  void insertSingleItemIntoCache({required MaterialClass newItem}) {
+    var items = materialListMain.where((item) => item.uuid == newItem.uuid);
     if (items.isNotEmpty) {
       var itemTemp = items.first;
       itemTemp.replaceWith(newItem: newItem);
@@ -353,28 +282,18 @@ class MaterialsProvider extends ChangeNotifier {
   }
 
   List<MaterialClass> materialList() {
-    if (returnShopProvider()
-            .userShop()
-            ?.manageDepartments ==
-        true) {
-      if (!authorization(
-        authorized: Authorizations().viewAllDepartments,
-      )) {
+    if (returnShopProvider().userShop()?.manageDepartments == true) {
+      if (!authorization(authorized: Authorizations().viewAllDepartments)) {
         return materialListMain.where((cat) {
           if (cat.departmentUuid == null) {
             return true;
           } else {
             return cat.departmentUuid ==
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid;
+                returnDepartmentProvider().currentDepartment()?.uuid;
           }
         }).toList();
       } else {
-        if (returnDepartmentProvider()
-                .currentDepartment()
-                ?.uuid ==
-            null) {
+        if (returnDepartmentProvider().currentDepartment()?.uuid == null) {
           return materialListMain;
         } else {
           return materialListMain.where((cat) {
@@ -382,9 +301,7 @@ class MaterialsProvider extends ChangeNotifier {
               return true;
             } else {
               return cat.departmentUuid ==
-                  returnDepartmentProvider()
-                      .currentDepartment()
-                      ?.uuid;
+                  returnDepartmentProvider().currentDepartment()?.uuid;
             }
           }).toList();
         }
@@ -408,16 +325,9 @@ class MaterialsProvider extends ChangeNotifier {
       await mainLocalLog('✅✅ Materials List Cleared');
       if (isOnline &&
           MaterialsFunc().isSynced() &&
-          returnShopProvider()
-                  .userShop()
-                  ?.manageProductions ==
-              true &&
-          authorization(
-            authorized: Authorizations().viewProductions,
-          ) &&
-          GeneralSettingsAuthAction().manageProductions(
-            context: null,
-          )) {
+          returnShopProvider().userShop()?.manageProductions == true &&
+          authorization(authorized: Authorizations().viewProductions) &&
+          GeneralSettingsAuthAction().manageProductions(context: null)) {
         final data = await supabase
             .from(tableName)
             .select()
@@ -430,22 +340,14 @@ class MaterialsProvider extends ChangeNotifier {
                   : 1000,
             );
 
-        await mainLocalLog(
-          'Materials gotten: ${data.length}',
-        );
+        await mainLocalLog('Materials gotten: ${data.length}');
 
         materialListMain =
-            (data as List)
-                .map((json) => MaterialClass.fromJson(json))
-                .toList();
+            (data as List).map((json) => MaterialClass.fromJson(json)).toList();
         materialListMain.sort(
-          (a, b) => a.name.toLowerCase().compareTo(
-            b.name.toLowerCase(),
-          ),
+          (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
         );
-        await mainLocalLog(
-          'Material List Set: ${materialListMain.length}',
-        );
+        await mainLocalLog('Material List Set: ${materialListMain.length}');
         if (data.length > 999) {
           final data2 = await supabase
               .from(tableName)
@@ -458,24 +360,16 @@ class MaterialsProvider extends ChangeNotifier {
                     ? (allowedRangeMaterials ?? 0) - 1
                     : 2000,
               );
-          await mainLocalLog(
-            'Materials 2 gotten: ${data2.length}',
-          );
+          await mainLocalLog('Materials 2 gotten: ${data2.length}');
           materialListMain.addAll(
             (data2 as List)
-                .map(
-                  (stuff) => MaterialClass.fromJson(stuff),
-                )
+                .map((stuff) => MaterialClass.fromJson(stuff))
                 .toList(),
           );
           materialListMain.sort(
-            (a, b) => a.name.toLowerCase().compareTo(
-              b.name.toLowerCase(),
-            ),
+            (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
           );
-          await mainLocalLog(
-            'Material List 2 Set: ${materialListMain.length}',
-          );
+          await mainLocalLog('Material List 2 Set: ${materialListMain.length}');
 
           if (materialListMain.length > 1999) {
             final data3 = await supabase
@@ -484,21 +378,14 @@ class MaterialsProvider extends ChangeNotifier {
                 .eq('shop_id', shopId())
                 .order('name', ascending: true)
                 .range(2001, allowedRangeMaterials ?? 3000);
-            await mainLocalLog(
-              'Materials 3 gotten: ${data3.length}',
-            );
+            await mainLocalLog('Materials 3 gotten: ${data3.length}');
             materialListMain.addAll(
               (data3 as List)
-                  .map(
-                    (stuff) =>
-                        MaterialClass.fromJson(stuff),
-                  )
+                  .map((stuff) => MaterialClass.fromJson(stuff))
                   .toList(),
             );
             materialListMain.sort(
-              (a, b) => a.name.toLowerCase().compareTo(
-                b.name.toLowerCase(),
-              ),
+              (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
             );
             await mainLocalLog(
               'Material List 3 Set: ${materialListMain.length}',
@@ -508,9 +395,7 @@ class MaterialsProvider extends ChangeNotifier {
         }
         notifyListeners();
 
-        await MaterialsFunc().insertAllMaterials(
-          materialListMain,
-        );
+        await MaterialsFunc().insertAllMaterials(materialListMain);
       } else {
         returnData().syncData();
         await mainLocalLog(
@@ -523,9 +408,7 @@ class MaterialsProvider extends ChangeNotifier {
       notifyListeners();
       return materialListMain;
     } catch (e) {
-      await mainLocalLog(
-        "Error Getting Materials Online: ${e.toString()}",
-      );
+      await mainLocalLog("Error Getting Materials Online: ${e.toString()}");
       return [];
     }
   }
@@ -538,16 +421,9 @@ class MaterialsProvider extends ChangeNotifier {
       await mainLocalLog('✅✅ Getting Single Material Item');
       if (isOnline &&
           MaterialsFunc().isSynced() &&
-          returnShopProvider()
-                  .userShop()
-                  ?.manageProductions ==
-              true &&
-          authorization(
-            authorized: Authorizations().viewProductions,
-          ) &&
-          GeneralSettingsAuthAction().manageProductions(
-            context: null,
-          )) {
+          returnShopProvider().userShop()?.manageProductions == true &&
+          authorization(authorized: Authorizations().viewProductions) &&
+          GeneralSettingsAuthAction().manageProductions(context: null)) {
         final data =
             await supabase
                 .from(tableName)
@@ -556,16 +432,12 @@ class MaterialsProvider extends ChangeNotifier {
                 .maybeSingle();
 
         if (data == null) {
-          mainLocalLog(
-            'Error Getting Single Material item',
-          );
+          mainLocalLog('Error Getting Single Material item');
           return null;
         }
         notifyListeners();
 
-        MaterialClass tempItem = MaterialClass.fromJson(
-          data,
-        );
+        MaterialClass tempItem = MaterialClass.fromJson(data);
         mainLocalLog(
           'Single Material item Gotten Successfully: ${tempItem.name}',
         );
@@ -584,38 +456,29 @@ class MaterialsProvider extends ChangeNotifier {
       notifyListeners();
       return null;
     } catch (e) {
-      await mainLocalLog(
-        "Error Getting MaterialItems Online: ${e.toString()}",
-      );
+      await mainLocalLog("Error Getting MaterialItems Online: ${e.toString()}");
       return null;
     }
   }
 
-  Future<List<MaterialClass>> getMaterialsOffline(
-    int shopId,
-  ) async {
+  Future<List<MaterialClass>> getMaterialsOffline(int shopId) async {
     try {
       await mainLocalLog(
         "Offline Data Gotten: ${MaterialsFunc().getMaterials().length}",
       );
       materialListMain = MaterialsFunc().getMaterials();
       notifyListeners();
-      await returnInventoryUpdatesProvider()
-          .getInventoryUpdatesOffline();
+      await returnInventoryUpdatesProvider().getInventoryUpdatesOffline();
 
       notifyListeners();
       return materialListMain;
     } catch (e) {
-      await mainLocalLog(
-        "Error Getting Materials Offline: ${e.toString()}",
-      );
+      await mainLocalLog("Error Getting Materials Offline: ${e.toString()}");
       return [];
     }
   }
 
-  Future<List<MaterialClass>> getMaterialsForOtherShops(
-    int shopId,
-  ) async {
+  Future<List<MaterialClass>> getMaterialsForOtherShops(int shopId) async {
     List<MaterialClass> tempMaterials = [];
     final data = await supabase
         .from(tableName)
@@ -627,17 +490,11 @@ class MaterialsProvider extends ChangeNotifier {
     await mainLocalLog('Items gotten: ${data.length}');
 
     tempMaterials =
-        (data as List)
-            .map((json) => MaterialClass.fromJson(json))
-            .toList();
+        (data as List).map((json) => MaterialClass.fromJson(json)).toList();
     tempMaterials.sort(
-      (a, b) => a.name.toLowerCase().compareTo(
-        b.name.toLowerCase(),
-      ),
+      (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
     );
-    await mainLocalLog(
-      'Materials List Set: ${tempMaterials.length}',
-    );
+    await mainLocalLog('Materials List Set: ${tempMaterials.length}');
     if (data.length > 999) {
       final data2 = await supabase
           .from(tableName)
@@ -647,18 +504,12 @@ class MaterialsProvider extends ChangeNotifier {
           .range(1001, 2000);
       await mainLocalLog('Items 2 gotten: ${data2.length}');
       tempMaterials.addAll(
-        (data2 as List)
-            .map((stuff) => MaterialClass.fromJson(stuff))
-            .toList(),
+        (data2 as List).map((stuff) => MaterialClass.fromJson(stuff)).toList(),
       );
       tempMaterials.sort(
-        (a, b) => a.name.toLowerCase().compareTo(
-          b.name.toLowerCase(),
-        ),
+        (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
       );
-      await mainLocalLog(
-        'Materials List 2 Set: ${tempMaterials.length}',
-      );
+      await mainLocalLog('Materials List 2 Set: ${tempMaterials.length}');
 
       if (tempMaterials.length > 1999) {
         final data3 = await supabase
@@ -667,22 +518,16 @@ class MaterialsProvider extends ChangeNotifier {
             .eq('shop_id', shopId)
             .order('name', ascending: true)
             .range(2001, 3000);
-        await mainLocalLog(
-          'Items 3 gotten: ${data3.length}',
-        );
+        await mainLocalLog('Items 3 gotten: ${data3.length}');
         tempMaterials.addAll(
           (data3 as List)
               .map((stuff) => MaterialClass.fromJson(stuff))
               .toList(),
         );
         tempMaterials.sort(
-          (a, b) => a.name.toLowerCase().compareTo(
-            b.name.toLowerCase(),
-          ),
+          (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
         );
-        await mainLocalLog(
-          'Materials List 3 Set: ${tempMaterials.length}',
-        );
+        await mainLocalLog('Materials List 3 Set: ${tempMaterials.length}');
       }
       notifyListeners();
     }
@@ -701,9 +546,7 @@ class MaterialsProvider extends ChangeNotifier {
   }) async {
     try {
       await mainLocalLog(material.isManaged.toString());
-      var res = await MaterialsFunc().updateMaterial(
-        material,
-      );
+      var res = await MaterialsFunc().updateMaterial(material);
       if (res == 1) {
         if (isQuantityUpdate == false) {
           var containsCreated =
@@ -711,18 +554,16 @@ class MaterialsProvider extends ChangeNotifier {
                   .getMaterials()
                   .where(
                     (createdMaterial) =>
-                        createdMaterial.material.uuid ==
-                        material.uuid,
+                        createdMaterial.material.uuid == material.uuid,
                   )
                   .toList();
           if (containsCreated.isEmpty) {
-            await UpdatedMaterialsFunc()
-                .createUpdatedMaterial(
-                  UpdatedMaterial(
-                    material: material,
-                    includeQuantity: includeQuantity,
-                  ),
-                );
+            await UpdatedMaterialsFunc().createUpdatedMaterial(
+              UpdatedMaterial(
+                material: material,
+                includeQuantity: includeQuantity,
+              ),
+            );
           } else {
             await CreatedMaterialsFunc().updateMaterial(
               CreatedMaterial(
@@ -740,38 +581,30 @@ class MaterialsProvider extends ChangeNotifier {
               );
           await returnMaterialsQuantityUpdateProvider()
               .createMaterialQuantityUpdate(
-                materialsQuantityUpdate:
-                    materialsQuantityUpdate,
+                materialsQuantityUpdate: materialsQuantityUpdate,
               );
         }
         if ((isQuantityUpdate || includeQuantity) &&
             materialsItemHistory != null) {
           materialsItemHistory.itemName = material.name;
           materialsItemHistory.itemUuid = material.uuid;
-          await returnMaterialsItemHistoryProvider()
-              .createMaterialsItemHistory(
-                materialsItemHistory,
-              );
+          await returnMaterialsItemHistoryProvider().createMaterialsItemHistory(
+            materialsItemHistory,
+          );
         }
-        await getMaterialsOffline(
-          returnShopProvider().userShop()!.shopId!,
-        );
+        await getMaterialsOffline(returnShopProvider().userShop()!.shopId!);
         notifyListeners();
         if (isMultipleUpdate != true) {
           syncData();
         }
-        return MaterialsFunc().getSingleMaterial(
-          uuid: material.uuid!,
-        );
+        return MaterialsFunc().getSingleMaterial(uuid: material.uuid!);
       } else {
         notifyListeners();
         return null;
       }
     } catch (e) {
       notifyListeners();
-      await mainLocalLog(
-        "Error Updating Material: ${e.toString()}",
-      );
+      await mainLocalLog("Error Updating Material: ${e.toString()}");
       return null;
     }
   }
@@ -786,23 +619,18 @@ class MaterialsProvider extends ChangeNotifier {
       var res =
           await supabase
               .from(tableName)
-              .update(
-                material.toJson(isIncludeQuantity: true),
-              )
+              .update(material.toJson(isIncludeQuantity: true))
               .eq('uuid', material.uuid!)
               .select()
               .maybeSingle();
       if (res != null) {
-        MaterialClass? resMaterial = MaterialClass.fromJson(
-          res,
-        );
+        MaterialClass? resMaterial = MaterialClass.fromJson(res);
         if (materialsItemHistory != null) {
           materialsItemHistory.itemName = material.name;
           materialsItemHistory.itemUuid = material.uuid;
-          await returnMaterialsItemHistoryProvider()
-              .createMaterialsItemHistory(
-                materialsItemHistory,
-              );
+          await returnMaterialsItemHistoryProvider().createMaterialsItemHistory(
+            materialsItemHistory,
+          );
         }
         return resMaterial;
       } else {
@@ -810,9 +638,7 @@ class MaterialsProvider extends ChangeNotifier {
       }
     } catch (e) {
       notifyListeners();
-      await mainLocalLog(
-        "Error Updating Material: ${e.toString()}",
-      );
+      await mainLocalLog("Error Updating Material: ${e.toString()}");
       return null;
     }
   }
@@ -826,21 +652,16 @@ class MaterialsProvider extends ChangeNotifier {
     var containsCreated =
         CreatedMaterialsFunc()
             .getMaterials()
-            .where(
-              (pr) => pr.material.uuid == material.uuid,
-            )
+            .where((pr) => pr.material.uuid == material.uuid)
             .toList();
 
     var containsUpdated =
         UpdatedMaterialsFunc()
             .getMaterials()
-            .where(
-              (pr) => pr.material.uuid == material.uuid,
-            )
+            .where((pr) => pr.material.uuid == material.uuid)
             .toList();
     if (containsCreated.isNotEmpty) {
-      await CreatedMaterialsFunc().createdMaterialsBox
-          .delete(material.uuid);
+      await CreatedMaterialsFunc().createdMaterialsBox.delete(material.uuid);
     } else {
       await DeletedMaterialsFunc().createDeletedMaterial(
         DeletedMaterial(materialUuid: material.uuid!),
@@ -855,12 +676,11 @@ class MaterialsProvider extends ChangeNotifier {
     if (materialsItemHistory != null) {
       materialsItemHistory.itemName = material.name;
       materialsItemHistory.itemUuid = null;
-      await returnMaterialsItemHistoryProvider()
-          .createMaterialsItemHistory(materialsItemHistory);
+      await returnMaterialsItemHistoryProvider().createMaterialsItemHistory(
+        materialsItemHistory,
+      );
     }
-    await getMaterialsOffline(
-      returnShopProvider().userShop()!.shopId!,
-    );
+    await getMaterialsOffline(returnShopProvider().userShop()!.shopId!);
     notifyListeners();
     if (isMultipleDelete != true) {
       syncData();
@@ -874,10 +694,8 @@ class MaterialsProvider extends ChangeNotifier {
   //
   //
   double returnGroupQuantityValue(MaterialClass material) {
-    return material.quantity != null &&
-            material.qttyPerGroup != null
-        ? (material.quantity ?? 0) /
-            (material.qttyPerGroup ?? 0)
+    return material.quantity != null && material.qttyPerGroup != null
+        ? (material.quantity ?? 0) / (material.qttyPerGroup ?? 0)
         : 0;
   }
 
@@ -921,26 +739,21 @@ class MaterialsProvider extends ChangeNotifier {
       for (var pr in MaterialsFunc().getMaterials().where(
         (prr) => selectedMaterials.contains(prr),
       )) {
-        MaterialsItemHistory
-        materialsItemHistory = MaterialsItemHistory(
+        MaterialsItemHistory materialsItemHistory = MaterialsItemHistory(
           event: MaterialItemHistoryEventClass.itemDeleted,
           isManaged: pr.isManaged,
-          source:
-              MaterialItemHistoryEventClass.unKnownSource,
+          source: MaterialItemHistoryEventClass.materialSource,
+          destination: MaterialItemHistoryEventClass.deletedDestination,
           shopId: shopId(),
           title: 'Item Deleted',
           quantityChange: 0,
           desc: 'Materials Item Deleted Now',
           isIncreased: false,
           oldValue: formatLargeNumberDouble(
-            pr.getProductUnit().getQuantityEquivDivided(
-              index: 3,
-            ),
+            pr.getProductUnit().getQuantityEquivDivided(index: 3),
           ),
           newValue: formatLargeNumberDouble(
-            pr.getProductUnit().getQuantityEquivDivided(
-              index: 3,
-            ),
+            pr.getProductUnit().getQuantityEquivDivided(index: 3),
           ),
           unit: pr.getProductUnit().name,
           primaryUnit: pr.getProductUnit().name,
@@ -955,9 +768,7 @@ class MaterialsProvider extends ChangeNotifier {
       syncData();
       return 1;
     } catch (e) {
-      await mainLocalLog(
-        "Error Deleting Multiple Materials: ${e.toString()}",
-      );
+      await mainLocalLog("Error Deleting Multiple Materials: ${e.toString()}");
       return 0;
     }
   }
@@ -985,26 +796,21 @@ class MaterialsProvider extends ChangeNotifier {
 
         newMaterial.unitsList = tempItems;
 
-        MaterialsItemHistory
-        materialsItemHistory = MaterialsItemHistory(
+        MaterialsItemHistory materialsItemHistory = MaterialsItemHistory(
           event: MaterialItemHistoryEventClass.itemCreated,
           isManaged: newMaterial.isManaged,
-          source:
-              MaterialItemHistoryEventClass.unKnownSource,
+          source: MaterialItemHistoryEventClass.materialSource,
+          destination: MaterialItemHistoryEventClass.materialDestination,
           shopId: shopId(),
           title: 'Item Created',
           quantityChange: 0,
           desc: 'Item Created From Duplicate (${pr.name})',
           isIncreased: false,
           oldValue: formatLargeNumberDouble(
-            pr.getProductUnit().getQuantityEquivDivided(
-              index: 3,
-            ),
+            pr.getProductUnit().getQuantityEquivDivided(index: 3),
           ),
           newValue: formatLargeNumberDouble(
-            pr.getProductUnit().getQuantityEquivDivided(
-              index: 3,
-            ),
+            pr.getProductUnit().getQuantityEquivDivided(index: 3),
           ),
           unit: pr.getPrimaryUnit().name,
           primaryUnit: pr.getPrimaryUnit().name,
@@ -1031,8 +837,7 @@ class MaterialsProvider extends ChangeNotifier {
   Future<int> duplicateSelectedMaterialsForShops() async {
     try {
       for (var pr in selectedMaterials) {
-        for (var shop
-            in returnShopProvider().multipleSelectedShops) {
+        for (var shop in returnShopProvider().multipleSelectedShops) {
           String newUuid = uuidGen();
           final newMaterial = pr.copyWith(
             uuid: newUuid,
@@ -1060,9 +865,7 @@ class MaterialsProvider extends ChangeNotifier {
 
           await supabase
               .from(tableName)
-              .insert(
-                newMaterial.toJson(isIncludeQuantity: true),
-              );
+              .insert(newMaterial.toJson(isIncludeQuantity: true));
         }
       }
       await getMaterialsOffline(shopId());
@@ -1078,13 +881,11 @@ class MaterialsProvider extends ChangeNotifier {
     }
   }
 
-  Future<int>
-  duplicateSelectedMaterialsForDepartments() async {
+  Future<int> duplicateSelectedMaterialsForDepartments() async {
     try {
       for (var pr in selectedMaterials) {
         for (var depart
-            in returnDepartmentProvider()
-                .multipleSelectedDepartments) {
+            in returnDepartmentProvider().multipleSelectedDepartments) {
           String newUuid = uuidGen();
           final newMaterial = pr.copyWith(
             uuid: newUuid,
@@ -1107,14 +908,11 @@ class MaterialsProvider extends ChangeNotifier {
 
           newMaterial.unitsList = tempItems;
 
-          MaterialsItemHistory
-          materialsItemHistory = MaterialsItemHistory(
-            event:
-                MaterialItemHistoryEventClass
-                    .itemDuplicated,
+          MaterialsItemHistory materialsItemHistory = MaterialsItemHistory(
+            event: MaterialItemHistoryEventClass.itemDuplicated,
             isManaged: newMaterial.isManaged,
-            source:
-                MaterialItemHistoryEventClass.unKnownSource,
+            source: MaterialItemHistoryEventClass.materialSource,
+            destination: MaterialItemHistoryEventClass.departmentDestination,
             shopId: shopId(),
             title: 'Item Created',
             quantityChange: 0,
@@ -1126,14 +924,10 @@ class MaterialsProvider extends ChangeNotifier {
             unit: pr.getPrimaryUnit().name,
             primaryUnit: pr.getPrimaryUnit().name,
             oldValue: formatLargeNumberDouble(
-              pr.getProductUnit().getQuantityEquivDivided(
-                index: 3,
-              ),
+              pr.getProductUnit().getQuantityEquivDivided(index: 3),
             ),
             newValue: formatLargeNumberDouble(
-              pr.getProductUnit().getQuantityEquivDivided(
-                index: 3,
-              ),
+              pr.getProductUnit().getQuantityEquivDivided(index: 3),
             ),
           );
           await createMaterial(
@@ -1144,8 +938,7 @@ class MaterialsProvider extends ChangeNotifier {
         }
       }
       toggleIsSelectMaterial(false);
-      returnDepartmentProvider()
-          .clearMulitpleSelectedDepartments();
+      returnDepartmentProvider().clearMulitpleSelectedDepartments();
       syncData();
       return 1;
     } catch (e) {

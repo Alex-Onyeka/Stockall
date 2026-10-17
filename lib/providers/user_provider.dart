@@ -17,8 +17,7 @@ class UserProvider extends ChangeNotifier {
   // final SupabaseClient _supabase = Supabase.instance.client;
   final AuthService _supabase = AuthService();
 
-  static final UserProvider _instance =
-      UserProvider._internal();
+  static final UserProvider _instance = UserProvider._internal();
   factory UserProvider() => _instance;
   UserProvider._internal();
 
@@ -40,28 +39,21 @@ class UserProvider extends ChangeNotifier {
       // final authUser = _supabase.currentUser;
 
       isLoading = true;
-      bool isOnline =
-          await ConnectivityProvider().isOnline();
+      bool isOnline = await ConnectivityProvider().isOnline();
       _users = UserFunc().getUsers();
       notifyListeners();
       if (isOnline) {
         await returnShopProvider().getUserShops();
-        var employees =
-            returnShopProvider().userShop()!.employees ??
-            [];
+        var employees = returnShopProvider().userShop()!.employees ?? [];
         final data = await _supabase.client
             .from('users')
             .select()
             .inFilter('user_id', employees);
-        await mainLocalLog(
-          'Users Gotten from Supabase: ${data.length}',
-        );
+        await mainLocalLog('Users Gotten from Supabase: ${data.length}');
 
         _users =
             data
-                .map<TempUserClass>(
-                  (json) => TempUserClass.fromJson(json),
-                )
+                .map<TempUserClass>((json) => TempUserClass.fromJson(json))
                 .toList();
         notifyListeners();
         await UserFunc().insertAllUsers(_users);
@@ -71,17 +63,13 @@ class UserProvider extends ChangeNotifier {
       }
 
       _users.sort(
-        (a, b) => a.name.toLowerCase().compareTo(
-          b.name.toLowerCase(),
-        ),
+        (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
       );
       notifyListeners();
       isLoading = false;
       return _users;
     } catch (e) {
-      await mainLocalLog(
-        'Error Fetching Users: ${e.toString()}',
-      );
+      await mainLocalLog('Error Fetching Users: ${e.toString()}');
       return [];
     }
   }
@@ -94,17 +82,13 @@ class UserProvider extends ChangeNotifier {
       notifyListeners();
 
       _users.sort(
-        (a, b) => a.name.toLowerCase().compareTo(
-          b.name.toLowerCase(),
-        ),
+        (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
       );
       notifyListeners();
       isLoading = false;
       return _users;
     } catch (e) {
-      await mainLocalLog(
-        'Error Fetching Users Offline: ${e.toString()}',
-      );
+      await mainLocalLog('Error Fetching Users Offline: ${e.toString()}');
       return [];
     }
   }
@@ -112,11 +96,8 @@ class UserProvider extends ChangeNotifier {
   TempUserClass? _currentUser;
   TempUserClass? get currentUserMain => _currentUser;
 
-  Future<TempUserClass?> fetchCurrentUser(
-    BuildContext context,
-  ) async {
-    _currentUser =
-        LoggedInUserFunc().getLoggedInUser()?.loggedInUser;
+  Future<TempUserClass?> fetchCurrentUser(BuildContext context) async {
+    _currentUser = LoggedInUserFunc().getLoggedInUser()?.loggedInUser;
     bool isOnline = await ConnectivityProvider().isOnline();
     if (isOnline) {
       if (returnData().isSynced() == 0) {
@@ -138,9 +119,7 @@ class UserProvider extends ChangeNotifier {
 
         _currentUser = TempUserClass.fromJson(data);
         // notifyListeners();
-        await mainLocalLog(
-          'User Found: ${_currentUser?.name}',
-        );
+        await mainLocalLog('User Found: ${_currentUser?.name}');
         await UserFunc().insertUser(_currentUser!);
         await LoggedInUserFunc().insertLoggedInUser(
           LoggedInUser(loggedInUser: _currentUser),
@@ -159,22 +138,15 @@ class UserProvider extends ChangeNotifier {
                 .eq('user_id', authUser)
                 .single();
         _currentUser = TempUserClass.fromJson(data);
-        await mainLocalLog(
-          'User Found: ${_currentUser?.name}',
-        );
+        await mainLocalLog('User Found: ${_currentUser?.name}');
         await UserFunc().insertUser(_currentUser!);
         await LoggedInUserFunc().insertLoggedInUser(
           LoggedInUser(loggedInUser: _currentUser),
         );
       }
     } else {
-      _currentUser =
-          LoggedInUserFunc()
-              .getLoggedInUser()
-              ?.loggedInUser;
-      await mainLocalLog(
-        'Current Logged In User: ${_currentUser?.name}',
-      );
+      _currentUser = LoggedInUserFunc().getLoggedInUser()?.loggedInUser;
+      await mainLocalLog('Current Logged In User: ${_currentUser?.name}');
     }
 
     notifyListeners();
@@ -182,11 +154,8 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<TempUserClass?> fetchCurrentUserOffline() async {
-    _currentUser =
-        LoggedInUserFunc().getLoggedInUser()?.loggedInUser;
-    await mainLocalLog(
-      'Current Logged In User: ${_currentUser?.name}',
-    );
+    _currentUser = LoggedInUserFunc().getLoggedInUser()?.loggedInUser;
+    await mainLocalLog('Current Logged In User: ${_currentUser?.name}');
 
     notifyListeners();
     return _currentUser;
@@ -270,10 +239,7 @@ class UserProvider extends ChangeNotifier {
         return null;
       }
     } else {
-      return UserFunc().getUserByEmailandPassword(
-        userId,
-        email,
-      );
+      return UserFunc().getUserByEmailandPassword(userId, email);
     }
   }
 
@@ -319,9 +285,7 @@ class UserProvider extends ChangeNotifier {
       await fetchUsersByShop();
       return 1;
     } catch (e) {
-      await mainLocalLog(
-        'Failed to update user access: ${e.toString()}',
-      );
+      await mainLocalLog('Failed to update user access: ${e.toString()}');
       return 0;
     }
   }
@@ -331,8 +295,7 @@ class UserProvider extends ChangeNotifier {
     required List<String> newDepartments,
   }) async {
     try {
-      final updatedDepartments =
-          newDepartments.toSet().toList();
+      final updatedDepartments = newDepartments.toSet().toList();
 
       await _supabase.client
           .from('users')
@@ -341,9 +304,7 @@ class UserProvider extends ChangeNotifier {
       await fetchUsersByShop();
       return 1;
     } catch (e) {
-      await mainLocalLog(
-        'Failed to update user Departments: ${e.toString()}',
-      );
+      await mainLocalLog('Failed to update user Departments: ${e.toString()}');
       return 0;
     }
   }
@@ -376,15 +337,10 @@ class UserProvider extends ChangeNotifier {
       // Proceed with updating the role
       await _supabase.client
           .from('users')
-          .update({
-            'role': newRole,
-            'auth_user_id': authUserId,
-          })
+          .update({'role': newRole, 'auth_user_id': authUserId})
           .eq('user_id', userId);
 
-      var user = usersMain.where(
-        (user) => user.userId == userId,
-      );
+      var user = usersMain.where((user) => user.userId == userId);
       if (user.isEmpty) {
         await mainLocalLog('User Not Found');
       } else {
@@ -396,13 +352,7 @@ class UserProvider extends ChangeNotifier {
             await _supabase.client
                 .from('shops')
                 .select('employees')
-                .eq(
-                  'shop_id',
-                  returnShopProvider()
-                          .userShop()
-                          ?.shopId! ??
-                      0,
-                )
+                .eq('shop_id', returnShopProvider().userShop()?.shopId! ?? 0)
                 .maybeSingle();
 
         if (response == null) {
@@ -413,32 +363,23 @@ class UserProvider extends ChangeNotifier {
         List<String> currentEmployees = [];
 
         if (response!['employees'] != null) {
-          currentEmployees = List<String>.from(
-            response['employees'],
-          );
+          currentEmployees = List<String>.from(response['employees']);
         }
 
         if (currentEmployees.contains(userId)) {
           currentEmployees.remove(userId);
         } else {
-          await mainLocalLog(
-            'Error Removing User Id From Shop Employees',
-          );
+          await mainLocalLog('Error Removing User Id From Shop Employees');
         }
 
         // Step 3: Update the shop's employees field
         final updateResponse = await _supabase.client
             .from('shops')
             .update({'employees': currentEmployees})
-            .eq(
-              'shop_id',
-              returnShopProvider().userShop()?.shopId! ?? 0,
-            );
+            .eq('shop_id', returnShopProvider().userShop()?.shopId! ?? 0);
 
         if (updateResponse != null) {
-          await mainLocalLog(
-            'Failed to update shop: $updateResponse',
-          );
+          await mainLocalLog('Failed to update shop: $updateResponse');
         } else {
           await mainLocalLog('Staff added successfully.');
         }
@@ -447,24 +388,17 @@ class UserProvider extends ChangeNotifier {
       await fetchUsersByShop();
       return null; // success
     } catch (e) {
-      await mainLocalLog(
-        '❌❌ Error updating Staff role: $e',
-      );
+      await mainLocalLog('❌❌ Error updating Staff role: $e');
       return 'Error: ${e.toString()}';
     }
   }
 
   Future<void> deleteUser(String userId) async {
     try {
-      await _supabase.client
-          .from('users')
-          .delete()
-          .eq('user_id', userId);
+      await _supabase.client.from('users').delete().eq('user_id', userId);
       await mainLocalLog('User Row Deleted Successfully');
     } catch (e) {
-      await mainLocalLog(
-        "User Row Deletiong Failed: ${e.toString()}",
-      );
+      await mainLocalLog("User Row Deletiong Failed: ${e.toString()}");
     }
   }
 

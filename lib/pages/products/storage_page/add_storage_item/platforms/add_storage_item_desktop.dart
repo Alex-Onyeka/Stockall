@@ -244,7 +244,8 @@ class _AddStorageItemDesktopState
                 isQuantityUpdate: false,
                 quantityChange: null,
                 product: TempStorageProducts(
-                  unitsList: returnData().getFinalUnitList(),
+                  unitsList:
+                      returnData().getFinalUnitList(),
                   useGroupUnit: returnData().useGroupUnit,
                   createdAt:
                       widget.storageProduct?.createdAt,
@@ -254,7 +255,8 @@ class _AddStorageItemDesktopState
                   unit:
                       (dataProvider.useMultipleUnits
                           ? dataProvider.selectedUnit
-                          : dataProvider.singleUnitName()) ??
+                          : dataProvider
+                              .singleUnitName()) ??
                       'Unit(s)',
                   groupUnit: dataProvider.selectedGroupUnit,
                   qttyPerGroup:
@@ -385,7 +387,8 @@ class _AddStorageItemDesktopState
             widget.storageProduct?.quantityType ?? 1;
       });
       widget.widthController.text =
-          widget.storageProduct?.widthDimension?.toString() ??
+          widget.storageProduct?.widthDimension
+              ?.toString() ??
           '';
       widget.heightController.text =
           widget.storageProduct?.heightDimension
@@ -475,17 +478,26 @@ class _AddStorageItemDesktopState
                                   SizedBox(height: 15),
                                   SelectProductQuantityTypeSection(
                                     heightController:
-                                        widget.heightController,
-                                    quantityType: quantityType,
-                                    switchQuantityType: (index) {
-                                      switchQuantityType(index);
+                                        widget
+                                            .heightController,
+                                    quantityType:
+                                        quantityType,
+                                    switchQuantityType: (
+                                      index,
+                                    ) {
+                                      switchQuantityType(
+                                        index,
+                                      );
                                     },
                                     widthController:
-                                        widget.widthController,
-                                    showManageSalesWastage: false,
+                                        widget
+                                            .widthController,
+                                    showManageSalesWastage:
+                                        false,
                                   ),
                                   Visibility(
-                                    visible: canSeeItemUnit(),
+                                    visible:
+                                        canSeeItemUnit(),
                                     child: Padding(
                                       padding:
                                           const EdgeInsets.only(
@@ -527,9 +539,7 @@ class _AddStorageItemDesktopState
                                                     ).useMultipleUnits
                                                     ? MainDropdown(
                                                       valueSet:
-                                                          returnData()
-                                                              .tempUnitsList
-                                                              .isNotEmpty,
+                                                          returnData().tempUnitsList.isNotEmpty,
                                                       onTap: () {
                                                         itemUnitAuthAction(
                                                           context:
@@ -556,9 +566,7 @@ class _AddStorageItemDesktopState
                                                         );
                                                       },
                                                       isOpen:
-                                                          returnData()
-                                                              .tempUnitsList
-                                                              .isNotEmpty,
+                                                          returnData().tempUnitsList.isNotEmpty,
                                                       title:
                                                           'Item Unit(s) (Optional)',
                                                       hint:
@@ -573,9 +581,7 @@ class _AddStorageItemDesktopState
                                                     )
                                                     : MainDropdown(
                                                       valueSet:
-                                                          returnData()
-                                                              .tempUnitsList
-                                                              .isNotEmpty,
+                                                          returnData().tempUnitsList.isNotEmpty,
                                                       onTap: () {
                                                         selectSingleUnitAction(
                                                           context:

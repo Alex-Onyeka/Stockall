@@ -54,11 +54,15 @@ void openWhatsApp() async {
   await launchUrlMain(url);
 }
 
-Future<void> launchUrlMain(url) async {
+Future<void> launchUrlMain(url, {bool sameTab = false}) async {
   if (await canLaunchUrl(Uri.parse(url))) {
     await launchUrl(
       Uri.parse(url),
       mode: LaunchMode.externalApplication,
+      // On web, '_self' navigates the current tab instead of
+      // opening a new one (new tabs opened after an async gap
+      // are blocked as popups by iOS Safari).
+      webOnlyWindowName: sameTab ? '_self' : null,
     );
   } else {
     await mainLocalLog('Could not launch $url');

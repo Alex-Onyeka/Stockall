@@ -30,9 +30,7 @@ class _ProductionSettingsPageMobileState
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 25.0,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 25.0),
           child: Column(
             children: [
               Expanded(
@@ -43,9 +41,7 @@ class _ProductionSettingsPageMobileState
                     ToggleManageProductionItems(),
                     Visibility(
                       visible: authorization(
-                        authorized:
-                            Authorizations()
-                                .contactStockall,
+                        authorized: Authorizations().contactStockall,
                       ),
                       child: NavListTileDesktopAlt(
                         height: 18,
@@ -59,9 +55,7 @@ class _ProductionSettingsPageMobileState
                     ),
                     Visibility(
                       visible: authorization(
-                        authorized:
-                            Authorizations()
-                                .contactStockall,
+                        authorized: Authorizations().contactStockall,
                       ),
                       child: NavListTileDesktopAlt(
                         height: 14,
@@ -95,9 +89,7 @@ class _ProductionSettingsPageMobileState
                     NavListTileDesktopAlt(
                       height: 18,
                       action: () async {
-                        await launchUrlMain(
-                          "https://stockallsolution.com",
-                        );
+                        await launchUrlMain("https://stockallsolution.com");
                       },
                       title: 'Go to Website.',
                       icon: Icons.language_rounded,
@@ -110,18 +102,14 @@ class _ProductionSettingsPageMobileState
                 color: Colors.transparent,
                 height: 20,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10.0,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Row(
                     spacing: 10,
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Row(
                         spacing: 10,
-                        mainAxisAlignment:
-                            MainAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           // SizedBox(
                           //   width: 20,
@@ -130,11 +118,7 @@ class _ProductionSettingsPageMobileState
                           Text(
                             style: TextStyle(
                               color: Colors.grey.shade900,
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b4
-                                      .fontSize,
+                              fontSize: theme.mobileTexts.b4.fontSize,
                               fontStyle: FontStyle.italic,
                             ),
                             'Current Version:',
@@ -143,8 +127,7 @@ class _ProductionSettingsPageMobileState
                       ),
                       Text(
                         style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b4.fontSize,
+                          fontSize: theme.mobileTexts.b4.fontSize,
                           fontStyle: FontStyle.italic,
                           color: Colors.grey.shade500,
                           fontWeight: FontWeight.bold,

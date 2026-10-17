@@ -13,14 +13,11 @@ String? legacyProductionUnitUuid({
 }) {
   final units = unitsList ?? [];
   if (useGroupQuantity == true) {
-    final nonPrimary =
-        units.where((unit) => !unit.isPrimary).toList();
+    final nonPrimary = units.where((unit) => !unit.isPrimary).toList();
     final matchingGroup =
         groupUnit == null
             ? <ProductUnitsClass>[]
-            : nonPrimary
-                .where((unit) => unit.name == groupUnit)
-                .toList();
+            : nonPrimary.where((unit) => unit.name == groupUnit).toList();
     if (matchingGroup.isNotEmpty) {
       return matchingGroup.first.uuid;
     }
@@ -53,10 +50,7 @@ double productionUnitConversion({
 
   if (useGroupQuantity == true) {
     final nonPrimaryUnits =
-        unitsList
-            ?.where((unit) => !unit.isPrimary)
-            .toList() ??
-        [];
+        unitsList?.where((unit) => !unit.isPrimary).toList() ?? [];
     final matchingGroupUnits =
         groupUnitName == null
             ? <ProductUnitsClass>[]
@@ -75,9 +69,7 @@ double productionUnitConversion({
         return conversion;
       }
     }
-    if (qttyPerGroup != null &&
-        qttyPerGroup.isFinite &&
-        qttyPerGroup > 0) {
+    if (qttyPerGroup != null && qttyPerGroup.isFinite && qttyPerGroup > 0) {
       return qttyPerGroup;
     }
   }
@@ -102,20 +94,13 @@ String productionUnitName({
   }
   if (useGroupQuantity == true) {
     final groupUnits =
-        unitsList
-            ?.where(
-              (selectedUnit) => !selectedUnit.isPrimary,
-            )
-            .toList() ??
+        unitsList?.where((selectedUnit) => !selectedUnit.isPrimary).toList() ??
         [];
     final matchingGroupUnits =
         groupUnit == null
             ? <ProductUnitsClass>[]
             : groupUnits
-                .where(
-                  (selectedUnit) =>
-                      selectedUnit.name == groupUnit,
-                )
+                .where((selectedUnit) => selectedUnit.name == groupUnit)
                 .toList();
     if (matchingGroupUnits.isNotEmpty) {
       return matchingGroupUnits.first.name;
@@ -123,13 +108,9 @@ String productionUnitName({
     if (groupUnits.isNotEmpty) {
       return groupUnits.first.name;
     }
-    return groupUnit == null || groupUnit == 'Others'
-        ? 'Group(s)'
-        : groupUnit;
+    return groupUnit == null || groupUnit == 'Others' ? 'Group(s)' : groupUnit;
   }
-  return unit == null || unit == 'Others'
-      ? 'Unit(s)'
-      : unit;
+  return unit == null || unit == 'Others' ? 'Unit(s)' : unit;
 }
 
 String productionPrimaryUnitName(
@@ -137,11 +118,8 @@ String productionPrimaryUnitName(
   required String fallback,
 }) {
   final primaryUnits =
-      unitsList?.where((unit) => unit.isPrimary).toList() ??
-      [];
-  return primaryUnits.isEmpty
-      ? fallback
-      : primaryUnits.first.name;
+      unitsList?.where((unit) => unit.isPrimary).toList() ?? [];
+  return primaryUnits.isEmpty ? fallback : primaryUnits.first.name;
 }
 
 double productionPrimaryUnitConversion(
@@ -149,11 +127,8 @@ double productionPrimaryUnitConversion(
   double fallback = 1,
 }) {
   final primaryUnits =
-      unitsList?.where((unit) => unit.isPrimary).toList() ??
-      [];
+      unitsList?.where((unit) => unit.isPrimary).toList() ?? [];
   if (primaryUnits.isEmpty) return fallback;
   final conversion = primaryUnits.first.conversion;
-  return conversion.isFinite && conversion > 0
-      ? conversion
-      : fallback;
+  return conversion.isFinite && conversion > 0 ? conversion : fallback;
 }

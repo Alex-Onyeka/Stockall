@@ -28,10 +28,7 @@ class TabContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(
-        vertical: 7,
-        horizontal: 2,
-      ),
+      padding: EdgeInsets.symmetric(vertical: 7, horizontal: 2),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
         color: backGround,
@@ -53,9 +50,7 @@ class TabContainer extends StatelessWidget {
               Text(
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize:
-                      priceTextSize ??
-                      theme.mobileTexts.b2.fontSize,
+                  fontSize: priceTextSize ?? theme.mobileTexts.b2.fontSize,
                   fontWeight: FontWeight.bold,
                 ),
                 '${isMoney ? currencySymbol(context: context) : ''}${isMoney

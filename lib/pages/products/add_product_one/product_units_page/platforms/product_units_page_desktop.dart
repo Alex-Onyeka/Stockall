@@ -23,8 +23,7 @@ class ProductUnitsPageDesktop extends StatefulWidget {
       _ProductUnitsPageDesktopState();
 }
 
-class _ProductUnitsPageDesktopState
-    extends State<ProductUnitsPageDesktop> {
+class _ProductUnitsPageDesktopState extends State<ProductUnitsPageDesktop> {
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -34,8 +33,7 @@ class _ProductUnitsPageDesktopState
         children: [
           SizedBox(height: 5),
           Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Material(
                 color: Colors.transparent,
@@ -45,10 +43,7 @@ class _ProductUnitsPageDesktopState
                     Navigator.of(context).pop();
                   },
                   child: Container(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 6,
-                      horizontal: 20,
-                    ),
+                    padding: EdgeInsets.symmetric(vertical: 6, horizontal: 20),
                     child: Icon(
                       color: Colors.grey,
                       size: 20,
@@ -74,11 +69,7 @@ class _ProductUnitsPageDesktopState
                       child: Row(
                         spacing: 5,
                         children: [
-                          Icon(
-                            color: Colors.grey,
-                            size: 18,
-                            Icons.refresh,
-                          ),
+                          Icon(color: Colors.grey, size: 18, Icons.refresh),
                         ],
                       ),
                     ),
@@ -91,26 +82,14 @@ class _ProductUnitsPageDesktopState
                   children: [
                     Text(
                       style: TextStyle(
-                        color:
-                            theme
-                                .lightModeColor
-                                .shadesColorBlack,
-                        fontSize:
-                            theme.mobileTexts.h4.fontSize,
-                        fontWeight:
-                            theme
-                                .mobileTexts
-                                .h4
-                                .fontWeightBold,
+                        color: theme.lightModeColor.shadesColorBlack,
+                        fontSize: theme.mobileTexts.h4.fontSize,
+                        fontWeight: theme.mobileTexts.h4.fontWeightBold,
                       ),
                       'Units',
                     ),
                     Text(
-                      style:
-                          theme
-                              .mobileTexts
-                              .b3
-                              .textStyleNormal,
+                      style: theme.mobileTexts.b3.textStyleNormal,
                       "Manage Your Items Units",
                     ),
                   ],
@@ -120,8 +99,7 @@ class _ProductUnitsPageDesktopState
                 productUuid: widget.productUuid,
                 isDimensional: widget.isDimensional,
                 nameController: widget.nameController,
-                quantityController:
-                    widget.quantityController,
+                quantityController: widget.quantityController,
                 setStateAction: () {
                   setState(() {});
                 },
@@ -137,20 +115,16 @@ class _ProductUnitsPageDesktopState
                     color: Colors.transparent,
                     child: EmptyWidgetDisplayOnly(
                       title: 'No Units Added',
-                      subText:
-                          'You have not added any Product Unit.',
+                      subText: 'You have not added any Product Unit.',
                       theme: theme,
                       height: 25,
                       altAction: () {
                         addProductUnitAction(
                           context: context,
-                          nameController:
-                              widget.nameController,
+                          nameController: widget.nameController,
                           productUuid: widget.productUuid,
-                          isDimensional:
-                              widget.isDimensional,
-                          quantityController:
-                              widget.quantityController,
+                          isDimensional: widget.isDimensional,
+                          quantityController: widget.quantityController,
                           setStateAction: () {
                             setState(() {});
                           },
@@ -168,13 +142,10 @@ class _ProductUnitsPageDesktopState
                         returnData(context: context)
                             .tempUnitsListSorted()
                             .map(
-                              (productUnit) =>
-                                  ProductUnitListTileWidget(
-                                    unitUuid:
-                                        productUnit.uuid,
-                                    isDimensional:
-                                        widget.isDimensional,
-                                  ),
+                              (productUnit) => ProductUnitListTileWidget(
+                                unitUuid: productUnit.uuid,
+                                isDimensional: widget.isDimensional,
+                              ),
                             )
                             .toList(),
                   );

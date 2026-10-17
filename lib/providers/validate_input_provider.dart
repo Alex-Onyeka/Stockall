@@ -6,9 +6,7 @@ class ValidateInputProvider extends ChangeNotifier {
   ThemeProvider themeProvider = ThemeProvider();
 
   bool isValidEmail(String email) {
-    final emailRegex = RegExp(
-      r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
-    );
+    final emailRegex = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
     return emailRegex.hasMatch(email);
   }
 
@@ -50,8 +48,7 @@ class ValidateInputProvider extends ChangeNotifier {
         builder: (context) {
           return InfoAlert(
             theme: themeProvider,
-            message:
-                'The two Password fields does not match',
+            message: 'The two Password fields does not match',
             title: 'Password Mismatch',
           );
         },

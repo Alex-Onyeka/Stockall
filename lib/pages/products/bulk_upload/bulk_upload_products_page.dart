@@ -1,7 +1,7 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/bulk_upload/bulk_product_template.dart';
 import 'package:stockall/bulk_upload/bulk_product_validator.dart';
+import 'package:stockall/bulk_upload/spreadsheet_picker.dart';
 import 'package:stockall/bulk_upload/spreadsheet_reader.dart';
 import 'package:stockall/classes/temp_product_class/prices_class/product_prices_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
@@ -21,12 +21,10 @@ class BulkUploadProductsPage extends StatefulWidget {
   const BulkUploadProductsPage({super.key});
 
   @override
-  State<BulkUploadProductsPage> createState() =>
-      _BulkUploadProductsPageState();
+  State<BulkUploadProductsPage> createState() => _BulkUploadProductsPageState();
 }
 
-class _BulkUploadProductsPageState
-    extends State<BulkUploadProductsPage> {
+class _BulkUploadProductsPageState extends State<BulkUploadProductsPage> {
   String? fileName;
   BulkValidationResult? result;
   bool isBusy = false;
@@ -34,13 +32,9 @@ class _BulkUploadProductsPageState
 
   static const _previewLimit = 200;
 
-  Future<void> _downloadTemplate({
-    required bool csv,
-  }) async {
+  Future<void> _downloadTemplate({required bool csv}) async {
     final bytes =
-        csv
-            ? BulkProductTemplate.buildCsv()
-            : BulkProductTemplate.buildXlsx();
+        csv ? BulkProductTemplate.buildCsv() : BulkProductTemplate.buildXlsx();
     final saved = await ExcelProvider().save(
       bytes: bytes,
       name: 'Stockall Products Template',
@@ -63,13 +57,21 @@ class _BulkUploadProductsPageState
   }
 
   Future<void> _pickFile() async {
-    final picked = await FilePicker.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: const ['xlsx', 'csv'],
-      withData: true,
-    );
-    if (picked == null || picked.files.isEmpty) return;
-    final file = picked.files.first;
+    // Must be called synchronously from the tap (no awaits before it),
+    // otherwise browsers block the file chooser on web.
+    final PickedSpreadsheet? file;
+    try {
+      file = await pickSpreadsheetFile();
+    } catch (_) {
+      if (!mounted) return;
+      _showInfo(
+        title: 'Error',
+        message: 'Could not open the file chooser on this device.',
+        isSuccess: false,
+      );
+      return;
+    }
+    if (file == null) return;
     final bytes = file.bytes;
     if (bytes == null) {
       _showInfo(
@@ -85,10 +87,7 @@ class _BulkUploadProductsPageState
       importedCount = null;
     });
     try {
-      final table = SpreadsheetReader.read(
-        bytes: bytes,
-        fileName: file.name,
-      );
+      final table = SpreadsheetReader.read(bytes: bytes, fileName: file.name);
       final products = returnData().productList();
       final validation = BulkProductValidator.validate(
         table: table,
@@ -102,17 +101,14 @@ class _BulkUploadProductsPageState
       );
       if (!mounted) return;
       setState(() {
-        fileName = file.name;
+        fileName = file?.name ?? 'Not Set';
         result = validation;
       });
     } on SpreadsheetFormatException catch (e) {
       if (!mounted) return;
       setState(() {
-        fileName = file.name;
-        result = BulkValidationResult(
-          fileErrors: [e.message],
-          rows: [],
-        );
+        fileName = file?.name ?? 'Not Set';
+        result = BulkValidationResult(fileErrors: [e.message], rows: []);
       });
     } finally {
       if (mounted) setState(() => isBusy = false);
@@ -145,17 +141,12 @@ class _BulkUploadProductsPageState
 
   void _startImport() {
     final validation = result;
-    if (validation == null ||
-        validation.hasErrors ||
-        validation.isEmpty) {
+    if (validation == null || validation.hasErrors || validation.isEmpty) {
       return;
     }
 
-    final allowed = ItemsAuthAction().itemsAllowedToAdd(
-      context,
-    );
-    if (allowed == null ||
-        validation.rows.length > allowed) {
+    final allowed = ItemsAuthAction().itemsAllowedToAdd(context);
+    if (allowed == null || validation.rows.length > allowed) {
       showDialog(
         context: context,
         builder:
@@ -199,13 +190,10 @@ class _BulkUploadProductsPageState
     });
   }
 
-  Future<void> _import(
-    BulkValidationResult validation,
-  ) async {
+  Future<void> _import(BulkValidationResult validation) async {
     setState(() => isBusy = true);
     try {
-      final products =
-          validation.rows.map(_buildProduct).toList();
+      final products = validation.rows.map(_buildProduct).toList();
       await returnData().bulkCreateProducts(products);
       if (!mounted) return;
       setState(() {
@@ -275,10 +263,7 @@ class _BulkUploadProductsPageState
     final validation = result;
 
     return Scaffold(
-      appBar: appBar(
-        context: context,
-        title: 'Bulk Upload Products',
-      ),
+      appBar: appBar(context: context, title: 'Bulk Upload Products'),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 700),
@@ -297,9 +282,7 @@ class _BulkUploadProductsPageState
                 'Fill in one product per row. Only the name is required. '
                 'Blank quantity and prices count as 0, and a blank low_qtty is 10. '
                 'This only supports simple (1-D) items.',
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.b1.fontSize,
-                ),
+                style: TextStyle(fontSize: theme.mobileTexts.b1.fontSize),
               ),
               const SizedBox(height: 10),
               Wrap(
@@ -307,14 +290,12 @@ class _BulkUploadProductsPageState
                 runSpacing: 10,
                 children: [
                   OutlinedButton.icon(
-                    onPressed:
-                        () => _downloadTemplate(csv: false),
+                    onPressed: () => _downloadTemplate(csv: false),
                     icon: const Icon(Icons.download),
                     label: const Text('Excel (.xlsx)'),
                   ),
                   OutlinedButton.icon(
-                    onPressed:
-                        () => _downloadTemplate(csv: true),
+                    onPressed: () => _downloadTemplate(csv: true),
                     icon: const Icon(Icons.download),
                     label: const Text('CSV (.csv)'),
                   ),
@@ -340,9 +321,7 @@ class _BulkUploadProductsPageState
               if (isBusy)
                 const Padding(
                   padding: EdgeInsets.only(top: 15),
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                  child: Center(child: CircularProgressIndicator()),
                 ),
               if (importedCount != null)
                 Padding(
@@ -352,13 +331,11 @@ class _BulkUploadProductsPageState
                     style: TextStyle(
                       color: Colors.green.shade700,
                       fontWeight: FontWeight.bold,
-                      fontSize:
-                          theme.mobileTexts.b1.fontSize,
+                      fontSize: theme.mobileTexts.b1.fontSize,
                     ),
                   ),
                 ),
-              if (validation != null)
-                ..._buildPreview(theme, validation),
+              if (validation != null) ..._buildPreview(theme, validation),
             ],
           ),
         ),
@@ -371,9 +348,7 @@ class _BulkUploadProductsPageState
     BulkValidationResult validation,
   ) {
     final problems =
-        validation.rows
-            .where((r) => r.hasErrors || r.hasWarnings)
-            .toList();
+        validation.rows.where((r) => r.hasErrors || r.hasWarnings).toList();
     final shown = problems.take(_previewLimit).toList();
 
     return [
@@ -383,9 +358,7 @@ class _BulkUploadProductsPageState
           Expanded(
             child: Text(
               fileName ?? '',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
           TextButton.icon(
@@ -397,10 +370,7 @@ class _BulkUploadProductsPageState
       ),
       const SizedBox(height: 5),
       for (final e in validation.fileErrors)
-        Text(
-          e,
-          style: TextStyle(color: Colors.red.shade700),
-        ),
+        Text(e, style: TextStyle(color: Colors.red.shade700)),
       if (validation.fileErrors.isEmpty) ...[
         if (validation.hasErrors)
           Text(
@@ -411,8 +381,7 @@ class _BulkUploadProductsPageState
           MainButtonP(
             themeProvider: theme,
             action: isBusy ? () {} : _startImport,
-            text:
-                'Upload ${validation.rows.length} Products',
+            text: 'Upload ${validation.rows.length} Products',
           ),
         Text(
           '${validation.rows.length} products found  •  '
@@ -425,10 +394,7 @@ class _BulkUploadProductsPageState
             margin: const EdgeInsets.only(bottom: 6),
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color:
-                  row.hasErrors
-                      ? Colors.red.shade50
-                      : Colors.orange.shade50,
+              color: row.hasErrors ? Colors.red.shade50 : Colors.orange.shade50,
               borderRadius: BorderRadius.circular(6),
             ),
             child: Column(
@@ -437,31 +403,17 @@ class _BulkUploadProductsPageState
                 Text(
                   'Row ${row.rowNumber}'
                   '${row.name.isEmpty ? '' : ' – ${row.name}'}',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 for (final e in row.errors)
-                  Text(
-                    e,
-                    style: TextStyle(
-                      color: Colors.red.shade700,
-                    ),
-                  ),
+                  Text(e, style: TextStyle(color: Colors.red.shade700)),
                 for (final w in row.warnings)
-                  Text(
-                    w,
-                    style: TextStyle(
-                      color: Colors.orange.shade900,
-                    ),
-                  ),
+                  Text(w, style: TextStyle(color: Colors.orange.shade900)),
               ],
             ),
           ),
         if (problems.length > shown.length)
-          Text(
-            '…and ${problems.length - shown.length} more rows with issues.',
-          ),
+          Text('…and ${problems.length - shown.length} more rows with issues.'),
         const SizedBox(height: 15),
       ],
     ];

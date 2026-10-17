@@ -16,16 +16,12 @@ class ToggleManageProductionItems extends StatelessWidget {
     return Visibility(
       visible:
           authorization(
-            authorized:
-                Authorizations()
-                    .toggleManageProductionItems,
+            authorized: Authorizations().toggleManageProductionItems,
           ) &&
           !isStoreKeeper(),
       child: SubWrapper(
         isVisible:
-            !GeneralSettingsAuthAction().manageProductions(
-              context: context,
-            ),
+            !GeneralSettingsAuthAction().manageProductions(context: context),
         mainWidget: NavListTileDesktopAlt(
           height: 18,
           action: () {
@@ -39,23 +35,16 @@ class ToggleManageProductionItems extends StatelessWidget {
                     return ConfirmationAlert(
                       theme: theme,
                       message:
-                          shopProvider
-                                      .userShop()!
-                                      .manageProductionItems ??
-                                  true
+                          shopProvider.userShop()!.manageProductionItems ?? true
                               ? 'You can no longer manage your Production Items, are you sure you want to proceed?'
                               : 'You can now manage your Production Items, are you sure you want to proceed?',
                       title:
-                          shopProvider
-                                      .userShop()!
-                                      .manageProductionItems ??
-                                  true
+                          shopProvider.userShop()!.manageProductionItems ?? true
                               ? 'Turn Off Production Items'
                               : 'Turn On Production Items',
                       action: () async {
                         Navigator.of(context).pop();
-                        shopProvider
-                            .toggleManageProductionItems();
+                        shopProvider.toggleManageProductionItems();
                       },
                     );
                   },
@@ -65,9 +54,7 @@ class ToggleManageProductionItems extends StatelessWidget {
           },
           endWidget: Builder(
             builder: (context) {
-              if (returnShopProvider(
-                context: context,
-              ).manageProductionItems) {
+              if (returnShopProvider(context: context).manageProductionItems) {
                 return SizedBox(
                   height: 16,
                   width: 16,
@@ -88,8 +75,7 @@ class ToggleManageProductionItems extends StatelessWidget {
                     GeneralSettingsAuthAction().manageProductions(
                       context: context,
                       action: () {
-                        var shopProvider =
-                            returnShopProvider();
+                        var shopProvider = returnShopProvider();
                         showDialog(
                           context: context,
                           builder: (context) {
@@ -111,8 +97,7 @@ class ToggleManageProductionItems extends StatelessWidget {
                                       : 'Turn On Production Items',
                               action: () async {
                                 Navigator.of(context).pop();
-                                shopProvider
-                                    .toggleManageProductionItems();
+                                shopProvider.toggleManageProductionItems();
                               },
                             );
                           },

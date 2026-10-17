@@ -209,7 +209,8 @@ class _StorageDetailsDesktopState
                                           ),
                                           'Date Created:  ${formatDateTime(product.createdAt ?? DateTime.now())}',
                                         ),
-                                        if (product.quantityType ==
+                                        if (product
+                                                .quantityType ==
                                             2)
                                           Text(
                                             style: TextStyle(
@@ -345,8 +346,7 @@ class _StorageDetailsDesktopState
                                                         pro,
                                                       ) => Column(
                                                         crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
+                                                            CrossAxisAlignment.start,
                                                         children: [
                                                           ProductTileMain(
                                                             product:
@@ -443,7 +443,10 @@ class _StorageDetailsDesktopState
                                                           .itemDeleted,
                                                   source:
                                                       StorageItemHistoryEventClass
-                                                          .unKnownSource,
+                                                          .storageSource,
+                                                  destination:
+                                                      StorageItemHistoryEventClass
+                                                          .deletedDestination,
                                                   shopId:
                                                       shopId,
                                                   title:

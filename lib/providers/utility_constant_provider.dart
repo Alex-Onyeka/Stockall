@@ -20,23 +20,17 @@ class UtilityConstantProvider extends ChangeNotifier {
   UtilityConstants? utilityConstants;
 
   Future<UtilityConstants?> getUtilityConstants() async {
-    utilityConstants =
-        UtilityConstantsFunc().getUtilityConstants();
+    utilityConstants = UtilityConstantsFunc().getUtilityConstants();
     notifyListeners();
     bool isOnline = await ConnectivityProvider().isOnline();
     if (isOnline) {
       try {
-        var res =
-            await _client.from(tableName).select().single();
+        var res = await _client.from(tableName).select().single();
 
         utilityConstants = UtilityConstants.fromJson(res);
 
-        await mainLocalLog(
-          "💕💕👏${utilityConstants?.basicPlan}",
-        );
-        await mainLocalLog(
-          "💕💕👏${utilityConstants?.vat}",
-        );
+        await mainLocalLog("💕💕👏${utilityConstants?.basicPlan}");
+        await mainLocalLog("💕💕👏${utilityConstants?.vat}");
 
         UtilityConstantsFunc().insertUtilityConstant(
           UtilityConstants.fromJson(res),
@@ -44,32 +38,23 @@ class UtilityConstantProvider extends ChangeNotifier {
 
         notifyListeners();
 
-        await mainLocalLog(
-          'Utility Constants gotten Successfully',
-        );
+        await mainLocalLog('Utility Constants gotten Successfully');
 
         return utilityConstants;
       } catch (e) {
-        await mainLocalLog(
-          '❌Error Getting Utility Constants: ${e.toString()}',
-        );
+        await mainLocalLog('❌Error Getting Utility Constants: ${e.toString()}');
         return null;
       }
     } else {
-      utilityConstants =
-          UtilityConstantsFunc().getUtilityConstants();
+      utilityConstants = UtilityConstantsFunc().getUtilityConstants();
       notifyListeners();
-      await mainLocalLog(
-        'Utility Constants gotten Offline',
-      );
+      await mainLocalLog('Utility Constants gotten Offline');
       return utilityConstants;
     }
   }
 
-  Future<UtilityConstants?>
-  getUtilityConstantsOffline() async {
-    utilityConstants =
-        UtilityConstantsFunc().getUtilityConstants();
+  Future<UtilityConstants?> getUtilityConstantsOffline() async {
+    utilityConstants = UtilityConstantsFunc().getUtilityConstants();
     notifyListeners();
     await mainLocalLog('Utility Constants gotten Offline');
     return utilityConstants;
@@ -91,8 +76,7 @@ class UpdateInformationWidget extends StatefulWidget {
       _UpdateInformationWidgetState();
 }
 
-class _UpdateInformationWidgetState
-    extends State<UpdateInformationWidget> {
+class _UpdateInformationWidgetState extends State<UpdateInformationWidget> {
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);

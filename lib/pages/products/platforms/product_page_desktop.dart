@@ -27,20 +27,15 @@ import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class ProductPageDesktop extends StatefulWidget {
-  const ProductPageDesktop({
-    super.key,
-    required this.theme,
-  });
+  const ProductPageDesktop({super.key, required this.theme});
 
   final ThemeProvider theme;
 
   @override
-  State<ProductPageDesktop> createState() =>
-      _ProductPageDesktopState();
+  State<ProductPageDesktop> createState() => _ProductPageDesktopState();
 }
 
-class _ProductPageDesktopState
-    extends State<ProductPageDesktop> {
+class _ProductPageDesktopState extends State<ProductPageDesktop> {
   void clearState() {
     setState(() {
       // searchResult = null;
@@ -53,8 +48,7 @@ class _ProductPageDesktopState
 
   // List<TempProductClass> productsResult = [];
   // String? searchResult;
-  TextEditingController searchController =
-      TextEditingController();
+  TextEditingController searchController = TextEditingController();
 
   bool isLoading = false;
 
@@ -66,22 +60,17 @@ class _ProductPageDesktopState
 
   late Future<List<TempNotification>> notificationsFuture;
 
-  Future<List<TempNotification>>
-  fetchNotifications() async {
+  Future<List<TempNotification>> fetchNotifications() async {
     var tempGet = await returnNotificationProvider(
       context,
       listen: false,
-    ).fetchRecentNotifications(
-      returnShopProvider().userShop()!.shopId!,
-    );
+    ).fetchRecentNotifications(returnShopProvider().userShop()!.shopId!);
 
     return tempGet;
   }
 
   Future<void> getProductList() async {
-    await RefreshFunctions(
-      context,
-    ).refreshProducts(context);
+    await RefreshFunctions(context).refreshProducts(context);
     setState(() {});
   }
 
@@ -90,8 +79,7 @@ class _ProductPageDesktopState
     super.didChangeDependencies();
   }
 
-  final GlobalKey<ScaffoldState> _scaffoldKey =
-      GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -144,13 +132,9 @@ class _ProductPageDesktopState
         },
         theme: theme,
         notifications:
-            returnNotificationProvider(
-                  context,
-                ).notifications().isEmpty
+            returnNotificationProvider(context).notifications().isEmpty
                 ? []
-                : returnNotificationProvider(
-                  context,
-                ).notifications(),
+                : returnNotificationProvider(context).notifications(),
         globalKey: _scaffoldKey,
       ),
       body: Stack(
@@ -175,13 +159,11 @@ class _ProductPageDesktopState
                             isLoading = true;
                           });
                           if (safeContext.mounted) {
-                            var res = await AuthService()
-                                .signOut(
-                                  context: safeContext,
-                                  allowLogout: false,
-                                );
-                            if (res == 0 &&
-                                safeContext.mounted) {
+                            var res = await AuthService().signOut(
+                              context: safeContext,
+                              allowLogout: false,
+                            );
+                            if (res == 0 && safeContext.mounted) {
                               setState(() {
                                 isLoading = false;
                               });
@@ -194,13 +176,9 @@ class _ProductPageDesktopState
                 },
                 theme: theme,
                 notifications:
-                    returnNotificationProvider(
-                          context,
-                        ).notifications().isEmpty
+                    returnNotificationProvider(context).notifications().isEmpty
                         ? []
-                        : returnNotificationProvider(
-                          context,
-                        ).notifications(),
+                        : returnNotificationProvider(context).notifications(),
               ),
               Expanded(
                 child: DesktopPageContainer(
@@ -210,21 +188,17 @@ class _ProductPageDesktopState
                         children: [
                           SizedBox(
                             height:
-                                screenWidth(context) >
-                                        mobileScreen
+                                screenWidth(context) > mobileScreen
                                     ? 250
                                     : authorization(
-                                      authorized:
-                                          Authorizations()
-                                              .addProduct,
+                                      authorized: Authorizations().addProduct,
                                     )
                                     ? 280
                                     : 260,
                             child: Stack(
                               children: [
                                 TopBanner(
-                                  subTitle:
-                                      'Data of All Item Records',
+                                  subTitle: 'Data of All Item Records',
                                   title: 'Items',
                                   theme: widget.theme,
                                   bottomSpace: 100,
@@ -232,20 +206,14 @@ class _ProductPageDesktopState
                                   iconSvg: productIconSvg,
                                 ),
                                 Align(
-                                  alignment: Alignment(
-                                    0,
-                                    1,
-                                  ),
+                                  alignment: Alignment(0, 1),
                                   child: ItemsSummary(
                                     refreshAction: () async {
                                       await getProductList();
                                     },
                                     show00: true,
                                     show0:
-                                        screenWidth(
-                                                  context,
-                                                ) <
-                                                tabletScreenSmall
+                                        screenWidth(context) < tabletScreenSmall
                                             ? null
                                             : true,
                                     color00: Colors.amber,
@@ -254,23 +222,18 @@ class _ProductPageDesktopState
                                         products
                                             .where(
                                               (product) =>
-                                                  product
-                                                      .isManaged ==
-                                                  false,
+                                                  product.isManaged == false,
                                             )
                                             .length
                                             .toDouble(),
                                     color0: Colors.green,
                                     title0: 'Total Stock',
                                     // isMoney0: false,
-                                    value0:
-                                        products.length
-                                            .toDouble(),
+                                    value0: products.length.toDouble(),
                                     clearTextField: () {
                                       setState(() {});
                                     },
-                                    searchController:
-                                        searchController,
+                                    searchController: searchController,
                                     searchAction: (value) {
                                       // setState(() {
                                       //   if (products
@@ -305,32 +268,24 @@ class _ProductPageDesktopState
                                       //   }
                                       // });
                                       setState(() {
-                                        searchController
-                                                .text ==
-                                            value;
+                                        searchController.text == value;
                                       });
                                     },
-                                    hintText:
-                                        'Search Item Name',
-                                    mainTitle:
-                                        'Items Summary',
+                                    hintText: 'Search Item Name',
+                                    mainTitle: 'Items Summary',
                                     firsRow: true,
                                     scanAction: () {
                                       ItemsAuthAction().useOfBArcodeAction(
                                         context: context,
                                         action: () async {
-                                          String? result =
-                                              await scanCode(
-                                                context,
-                                                'Scan Failed',
-                                              );
+                                          String? result = await scanCode(
+                                            context,
+                                            'Scan Failed',
+                                          );
                                           setState(() {
-                                            if (result !=
-                                                null) {
+                                            if (result != null) {
                                               setState(() {
-                                                searchController
-                                                        .text =
-                                                    result;
+                                                searchController.text = result;
                                               });
                                             } else {
                                               return;
@@ -361,13 +316,11 @@ class _ProductPageDesktopState
                                         products
                                             .where(
                                               (product) =>
-                                                  product
-                                                          .getActualQuantity() !=
+                                                  product.getActualQuantity() !=
                                                       null &&
                                                   product.getActualQuantity()! >
                                                       0 &&
-                                                  product
-                                                      .isManaged,
+                                                  product.isManaged,
                                             )
                                             .length
                                             .toDouble(),
@@ -377,11 +330,9 @@ class _ProductPageDesktopState
                                         products
                                             .where(
                                               (product) =>
-                                                  product
-                                                          .getActualQuantity() ==
+                                                  product.getActualQuantity() ==
                                                       0 &&
-                                                  product
-                                                      .isManaged,
+                                                  product.isManaged,
                                             )
                                             .length
                                             .toDouble(),
@@ -399,48 +350,31 @@ class _ProductPageDesktopState
                                 builder: (context) {
                                   if (products.isEmpty) {
                                     if (!authorization(
-                                      authorized:
-                                          Authorizations()
-                                              .addProduct,
+                                      authorized: Authorizations().addProduct,
                                     )) {
                                       return Center(
                                         child: SingleChildScrollView(
                                           child: RefreshIndicator(
-                                            onRefresh:
-                                                getProductList,
+                                            onRefresh: getProductList,
                                             color:
-                                                theme
-                                                    .lightModeColor
-                                                    .prColor300,
-                                            backgroundColor:
-                                                Colors
-                                                    .white,
-                                            displacement:
-                                                10,
+                                                theme.lightModeColor.prColor300,
+                                            backgroundColor: Colors.white,
+                                            displacement: 10,
                                             child: EmptyWidgetDisplayOnly(
                                               subText:
                                                   'No Item has been added to this store yet.',
-                                              title:
-                                                  'You have no Items Yet',
+                                              title: 'You have no Items Yet',
                                               height: 35,
-                                              icon:
-                                                  Icons
-                                                      .clear,
+                                              icon: Icons.clear,
 
-                                              theme:
-                                                  widget
-                                                      .theme,
+                                              theme: widget.theme,
                                               altAction: () async {
-                                                await returnData()
-                                                    .getProducts(
-                                                      shopId(),
-                                                    );
+                                                await returnData().getProducts(
+                                                  shopId(),
+                                                );
                                               },
-                                              altActionText:
-                                                  'Refresh',
-                                              altIcon:
-                                                  Icons
-                                                      .refresh,
+                                              altActionText: 'Refresh',
+                                              altIcon: Icons.refresh,
                                             ),
                                           ),
                                         ),
@@ -449,26 +383,17 @@ class _ProductPageDesktopState
                                       return Center(
                                         child: SingleChildScrollView(
                                           child: RefreshIndicator(
-                                            onRefresh:
-                                                getProductList,
+                                            onRefresh: getProductList,
                                             color:
-                                                theme
-                                                    .lightModeColor
-                                                    .prColor300,
-                                            backgroundColor:
-                                                Colors
-                                                    .white,
-                                            displacement:
-                                                10,
+                                                theme.lightModeColor.prColor300,
+                                            backgroundColor: Colors.white,
+                                            displacement: 10,
                                             child: EmptyWidgetDisplay(
-                                              buttonText:
-                                                  'Add Item',
+                                              buttonText: 'Add Item',
                                               subText:
                                                   'Click on the button below to start adding Items to your store.',
-                                              title:
-                                                  'You have no Items Yet',
-                                              svg:
-                                                  productIconSvg,
+                                              title: 'You have no Items Yet',
+                                              svg: productIconSvg,
                                               height: 35,
                                               action: () {
                                                 if (authorization(
@@ -479,34 +404,23 @@ class _ProductPageDesktopState
                                                   Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
-                                                      builder: (
-                                                        context,
-                                                      ) {
+                                                      builder: (context) {
                                                         return AddProduct();
                                                       },
                                                     ),
-                                                  ).then((
-                                                    _,
-                                                  ) {
-                                                    if (context
-                                                        .mounted) {}
+                                                  ).then((_) {
+                                                    if (context.mounted) {}
                                                   });
                                                 }
                                               },
-                                              theme:
-                                                  widget
-                                                      .theme,
+                                              theme: widget.theme,
                                               altAction: () async {
-                                                await returnData()
-                                                    .getProducts(
-                                                      shopId(),
-                                                    );
+                                                await returnData().getProducts(
+                                                  shopId(),
+                                                );
                                               },
-                                              altActionText:
-                                                  'Refresh',
-                                              altIcon:
-                                                  Icons
-                                                      .refresh,
+                                              altActionText: 'Refresh',
+                                              altIcon: Icons.refresh,
                                             ),
                                           ),
                                         ),
@@ -514,25 +428,21 @@ class _ProductPageDesktopState
                                     }
                                   } else {
                                     return Padding(
-                                      padding:
-                                          const EdgeInsets.fromLTRB(
-                                            10.0,
-                                            15,
-                                            10,
-                                            15,
-                                          ),
+                                      padding: const EdgeInsets.fromLTRB(
+                                        10.0,
+                                        15,
+                                        10,
+                                        15,
+                                      ),
                                       child: Column(
                                         children: [
                                           Visibility(
                                             visible:
-                                                searchController
-                                                    .text
-                                                    .isEmpty,
+                                                searchController.text.isEmpty,
                                             child: Padding(
                                               padding:
                                                   const EdgeInsets.symmetric(
-                                                    horizontal:
-                                                        20.0,
+                                                    horizontal: 20.0,
                                                   ),
                                               child: Row(
                                                 mainAxisAlignment:
@@ -544,13 +454,17 @@ class _ProductPageDesktopState
                                                       fontWeight:
                                                           FontWeight.bold,
                                                       fontSize:
-                                                          theme.mobileTexts.b1.fontSize,
+                                                          theme
+                                                              .mobileTexts
+                                                              .b1
+                                                              .fontSize,
                                                     ),
                                                     'Items',
                                                   ),
                                                   MaterialButton(
                                                     mouseCursor:
-                                                        SystemMouseCursors.click,
+                                                        SystemMouseCursors
+                                                            .click,
                                                     onPressed: () {
                                                       // var safeContext =
                                                       //     context;
@@ -558,21 +472,14 @@ class _ProductPageDesktopState
                                                       Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
-                                                          builder: (
-                                                            context,
-                                                          ) {
+                                                          builder: (context) {
                                                             return TotalProductsPage(
-                                                              theme:
-                                                                  theme,
+                                                              theme: theme,
                                                             );
                                                           },
                                                         ),
-                                                      ).then((
-                                                        _,
-                                                      ) {
-                                                        setState(
-                                                          () {},
-                                                        );
+                                                      ).then((_) {
+                                                        setState(() {});
                                                       });
                                                       // returnNavProvider(
                                                       //   safeContext,
@@ -583,24 +490,30 @@ class _ProductPageDesktopState
                                                       // );
                                                     },
                                                     child: Row(
-                                                      spacing:
-                                                          5,
+                                                      spacing: 5,
                                                       children: [
                                                         Text(
                                                           style: TextStyle(
                                                             color:
-                                                                theme.lightModeColor.secColor100,
+                                                                theme
+                                                                    .lightModeColor
+                                                                    .secColor100,
                                                             fontSize:
-                                                                theme.mobileTexts.b1.fontSize,
+                                                                theme
+                                                                    .mobileTexts
+                                                                    .b1
+                                                                    .fontSize,
                                                           ),
                                                           'See All',
                                                         ),
                                                         Icon(
-                                                          size:
-                                                              16,
+                                                          size: 16,
                                                           color:
-                                                              theme.lightModeColor.secColor100,
-                                                          Icons.arrow_forward_ios_rounded,
+                                                              theme
+                                                                  .lightModeColor
+                                                                  .secColor100,
+                                                          Icons
+                                                              .arrow_forward_ios_rounded,
                                                         ),
                                                       ],
                                                     ),
@@ -611,27 +524,17 @@ class _ProductPageDesktopState
                                           ),
                                           Expanded(
                                             child: RefreshIndicator(
-                                              onRefresh:
-                                                  getProductList,
+                                              onRefresh: getProductList,
                                               color:
                                                   theme
                                                       .lightModeColor
                                                       .prColor300,
-                                              backgroundColor:
-                                                  Colors
-                                                      .white,
-                                              displacement:
-                                                  10,
+                                              backgroundColor: Colors.white,
+                                              displacement: 10,
                                               child: ListView.builder(
-                                                itemCount:
-                                                    products
-                                                        .length,
-                                                itemBuilder: (
-                                                  context,
-                                                  index,
-                                                ) {
-                                                  TempProductClass
-                                                  product =
+                                                itemCount: products.length,
+                                                itemBuilder: (context, index) {
+                                                  TempProductClass product =
                                                       products[index];
 
                                                   return ProductTileMain(
@@ -639,33 +542,25 @@ class _ProductPageDesktopState
                                                       Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
-                                                          builder: (
-                                                            context,
-                                                          ) {
+                                                          builder: (context) {
                                                             return ProductDetailsPage(
                                                               productUuid:
                                                                   product.uuid!,
                                                             );
                                                           },
                                                         ),
-                                                      ).then((
-                                                        _,
-                                                      ) {
+                                                      ).then((_) {
                                                         if (context.mounted) {
-                                                          setState(
-                                                            () {
-                                                              // getProductList(
-                                                              //   context,
-                                                              // );
-                                                            },
-                                                          );
+                                                          setState(() {
+                                                            // getProductList(
+                                                            //   context,
+                                                            // );
+                                                          });
                                                         }
                                                       });
                                                     },
-                                                    theme:
-                                                        theme,
-                                                    product:
-                                                        product,
+                                                    theme: theme,
+                                                    product: product,
                                                   );
                                                 },
                                               ),

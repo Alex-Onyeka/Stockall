@@ -197,8 +197,17 @@ class ProductionRecordsProvider extends ChangeNotifier {
                       : ProductionItemHistoryEventClass
                           .productionDeleted,
               source:
-                  ProductionItemHistoryEventClass
-                      .productionSource,
+                  increment
+                      ? ProductionItemHistoryEventClass
+                          .productionSource
+                      : ProductionItemHistoryEventClass
+                          .productionItemSource,
+              destination:
+                  increment
+                      ? ProductionItemHistoryEventClass
+                          .productionItemDestination
+                      : ProductionItemHistoryEventClass
+                          .productionDestination,
               isManaged: oldItem.isManaged,
               shopId: shopId(),
               title: historyTitle,
@@ -255,8 +264,16 @@ class ProductionRecordsProvider extends ChangeNotifier {
             increment
                 ? ItemHistoryEventClass.produced
                 : ItemHistoryEventClass.productionDeleted,
+        source:
+            increment
+                ? ItemHistoryEventClass.productionSource
+                : ItemHistoryEventClass.productSource,
+        destination:
+            increment
+                ? ItemHistoryEventClass.productDestination
+                : ItemHistoryEventClass
+                    .productionDestination,
         isManaged: oldItem.isManaged,
-        source: ItemHistoryEventClass.productionSource,
         shopId: shopId(),
         title: historyTitle,
         oldValue:
@@ -336,8 +353,17 @@ class ProductionRecordsProvider extends ChangeNotifier {
                   : MaterialItemHistoryEventClass
                       .productionCreated,
           source:
-              MaterialItemHistoryEventClass
-                  .productionSource,
+              increment
+                  ? MaterialItemHistoryEventClass
+                      .productionSource
+                  : MaterialItemHistoryEventClass
+                      .materialSource,
+          destination:
+              increment
+                  ? MaterialItemHistoryEventClass
+                      .materialDestination
+                  : MaterialItemHistoryEventClass
+                      .productionDestination,
           isManaged: oldMaterial.isManaged,
           shopId: oldMaterial.shopId,
           title:

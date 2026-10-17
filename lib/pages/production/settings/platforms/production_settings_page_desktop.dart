@@ -25,8 +25,7 @@ class _ProductionSettingsPageDesktopState
         children: [
           SizedBox(height: 10),
           Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               InkWell(
                 mouseCursor: SystemMouseCursors.click,
@@ -34,10 +33,7 @@ class _ProductionSettingsPageDesktopState
                   Navigator.of(context).pop();
                 },
                 child: Container(
-                  padding: EdgeInsets.symmetric(
-                    vertical: 6,
-                    horizontal: 15,
-                  ),
+                  padding: EdgeInsets.symmetric(vertical: 6, horizontal: 15),
                   child: Icon(
                     color: Colors.grey,
                     size: 20,
@@ -51,26 +47,14 @@ class _ProductionSettingsPageDesktopState
                   children: [
                     Text(
                       style: TextStyle(
-                        color:
-                            theme
-                                .lightModeColor
-                                .shadesColorBlack,
-                        fontSize:
-                            theme.mobileTexts.h4.fontSize,
-                        fontWeight:
-                            theme
-                                .mobileTexts
-                                .h3
-                                .fontWeightBold,
+                        color: theme.lightModeColor.shadesColorBlack,
+                        fontSize: theme.mobileTexts.h4.fontSize,
+                        fontWeight: theme.mobileTexts.h3.fontWeightBold,
                       ),
                       'Production Settings',
                     ),
                     Text(
-                      style:
-                          theme
-                              .mobileTexts
-                              .b3
-                              .textStyleNormal,
+                      style: theme.mobileTexts.b3.textStyleNormal,
                       "Manage Your Production Settings.",
                     ),
                   ],
@@ -79,10 +63,7 @@ class _ProductionSettingsPageDesktopState
               Opacity(
                 opacity: 0,
                 child: Container(
-                  padding: EdgeInsets.symmetric(
-                    vertical: 6,
-                    horizontal: 15,
-                  ),
+                  padding: EdgeInsets.symmetric(vertical: 6, horizontal: 15),
                   child: Icon(
                     color: Colors.grey,
                     size: 20,
@@ -98,9 +79,7 @@ class _ProductionSettingsPageDesktopState
               child: Material(
                 color: Colors.transparent,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 5.0,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     children: [
@@ -111,9 +90,7 @@ class _ProductionSettingsPageDesktopState
                           ToggleManageProductionItems(),
                           Visibility(
                             visible: authorization(
-                              authorized:
-                                  Authorizations()
-                                      .contactStockall,
+                              authorized: Authorizations().contactStockall,
                             ),
                             child: NavListTileDesktopAlt(
                               height: 18,
@@ -127,9 +104,7 @@ class _ProductionSettingsPageDesktopState
                           ),
                           Visibility(
                             visible: authorization(
-                              authorized:
-                                  Authorizations()
-                                      .contactStockall,
+                              authorized: Authorizations().contactStockall,
                             ),
                             child: NavListTileDesktopAlt(
                               height: 14,
@@ -172,9 +147,7 @@ class _ProductionSettingsPageDesktopState
                           ),
                         ],
                       ),
-                      SizedBox(
-                        height: screenHeight(context) * 0.2,
-                      ),
+                      SizedBox(height: screenHeight(context) * 0.2),
                     ],
                   ),
                 ),
@@ -186,17 +159,14 @@ class _ProductionSettingsPageDesktopState
             color: Colors.transparent,
             height: 20,
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10.0,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: Row(
                 spacing: 10,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Row(
                     spacing: 10,
-                    mainAxisAlignment:
-                        MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       // SizedBox(
                       //   width: 20,
@@ -205,8 +175,7 @@ class _ProductionSettingsPageDesktopState
                       Text(
                         style: TextStyle(
                           color: Colors.grey.shade900,
-                          fontSize:
-                              theme.mobileTexts.b4.fontSize,
+                          fontSize: theme.mobileTexts.b4.fontSize,
                           fontStyle: FontStyle.italic,
                         ),
                         'Current Version:',
@@ -215,8 +184,7 @@ class _ProductionSettingsPageDesktopState
                   ),
                   Text(
                     style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b4.fontSize,
+                      fontSize: theme.mobileTexts.b4.fontSize,
                       fontStyle: FontStyle.italic,
                       color: Colors.grey.shade500,
                       fontWeight: FontWeight.bold,

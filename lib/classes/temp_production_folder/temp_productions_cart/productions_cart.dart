@@ -82,8 +82,7 @@ class ProductionsCart extends HiveObject {
     // required this.useGroupQuantity,
   });
 
-  List<ProductionMaterialCartItem>
-  getMaterialsCartItemsAll() {
+  List<ProductionMaterialCartItem> getMaterialsCartItemsAll() {
     return materialsCartItems.toList();
   }
 
@@ -101,21 +100,11 @@ class ProductionsCart extends HiveObject {
 
   DateTime returnDate() {
     var newDate = DateTime(
-      (customDate?.year ??
-          createdDate?.year ??
-          DateTime.now().year),
-      (customDate?.month ??
-          createdDate?.month ??
-          DateTime.now().month),
-      (customDate?.day ??
-          createdDate?.day ??
-          DateTime.now().day),
-      (timeOfDay?.hour ??
-          createdDate?.hour ??
-          DateTime.now().hour),
-      (timeOfDay?.minute ??
-          createdDate?.minute ??
-          DateTime.now().minute),
+      (customDate?.year ?? createdDate?.year ?? DateTime.now().year),
+      (customDate?.month ?? createdDate?.month ?? DateTime.now().month),
+      (customDate?.day ?? createdDate?.day ?? DateTime.now().day),
+      (timeOfDay?.hour ?? createdDate?.hour ?? DateTime.now().hour),
+      (timeOfDay?.minute ?? createdDate?.minute ?? DateTime.now().minute),
     );
     return newDate;
   }

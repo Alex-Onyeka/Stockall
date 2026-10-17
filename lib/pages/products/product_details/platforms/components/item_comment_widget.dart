@@ -6,8 +6,7 @@ class ItemCommentWidget extends StatefulWidget {
   final TextEditingController commentController;
   // final String? comment;
   // final Function()? action;
-  final Function(PointerDownEvent pointerDownEvent)?
-  onTapOutside;
+  final Function(PointerDownEvent pointerDownEvent)? onTapOutside;
   const ItemCommentWidget({
     super.key,
     required this.commentController,
@@ -17,12 +16,10 @@ class ItemCommentWidget extends StatefulWidget {
   });
 
   @override
-  State<ItemCommentWidget> createState() =>
-      _ItemCommentWidgetState();
+  State<ItemCommentWidget> createState() => _ItemCommentWidgetState();
 }
 
-class _ItemCommentWidgetState
-    extends State<ItemCommentWidget> {
+class _ItemCommentWidgetState extends State<ItemCommentWidget> {
   @override
   void dispose() {
     super.dispose();
@@ -39,8 +36,7 @@ class _ItemCommentWidgetState
           // SizedBox(height: 10),
           Divider(),
           Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 style: TextStyle(
@@ -58,8 +54,7 @@ class _ItemCommentWidgetState
                   SizedBox(height: 5),
                   GeneralTextfieldOnly(
                     onTapOutside: widget.onTapOutside,
-                    textInputAction:
-                        TextInputAction.newline,
+                    textInputAction: TextInputAction.newline,
                     minLines: 3,
                     hint: 'Enter Comment',
                     controller: widget.commentController,

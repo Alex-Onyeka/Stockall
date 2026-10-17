@@ -14,36 +14,28 @@ import 'package:stockall/pages/production/materials_page/materials_usage/create_
 
 class MaterialsUsageDesktop extends StatefulWidget {
   final String? materialUuid;
-  const MaterialsUsageDesktop({
-    super.key,
-    this.materialUuid,
-  });
+  const MaterialsUsageDesktop({super.key, this.materialUuid});
 
   @override
-  State<MaterialsUsageDesktop> createState() =>
-      _MaterialsUsageDesktopState();
+  State<MaterialsUsageDesktop> createState() => _MaterialsUsageDesktopState();
 }
 
-class _MaterialsUsageDesktopState
-    extends State<MaterialsUsageDesktop> {
-  final GlobalKey<ScaffoldState> _scaffoldKey =
-      GlobalKey<ScaffoldState>();
+class _MaterialsUsageDesktopState extends State<MaterialsUsageDesktop> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     var materialUsageProv = returnMaterialsUsageProvider();
     var records =
-        returnMaterialsUsageProvider(context: context)
-            .returnOwnProductionMaterialsUsageByDayOrWeek()
-            .where((item) {
-              if (widget.materialUuid != null) {
-                return item.materialUuid ==
-                    widget.materialUuid;
-              } else {
-                return true;
-              }
-            })
-            .toList();
+        returnMaterialsUsageProvider(
+          context: context,
+        ).returnOwnProductionMaterialsUsageByDayOrWeek().where((item) {
+          if (widget.materialUuid != null) {
+            return item.materialUuid == widget.materialUuid;
+          } else {
+            return true;
+          }
+        }).toList();
     var theme = returnTheme(context);
     return Scaffold(
       key: _scaffoldKey,
@@ -54,10 +46,8 @@ class _MaterialsUsageDesktopState
             width:
                 screenWidth(context) < tabletScreenSmall
                     ? 50
-                    : (screenWidth(context) >
-                            tabletScreenSmall &&
-                        screenWidth(context) <
-                            tabletScreen + 100)
+                    : (screenWidth(context) > tabletScreenSmall &&
+                        screenWidth(context) < tabletScreen + 100)
                     ? 100
                     : 230,
           ),
@@ -70,46 +60,31 @@ class _MaterialsUsageDesktopState
                   widget: Row(
                     spacing: 15,
                     mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment:
-                        MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Visibility(
-                        visible:
-                            screenWidth(context) >
-                            mobileScreen,
+                        visible: screenWidth(context) > mobileScreen,
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            mouseCursor:
-                                SystemMouseCursors.click,
-                            borderRadius:
-                                BorderRadius.circular(10),
+                            mouseCursor: SystemMouseCursors.click,
+                            borderRadius: BorderRadius.circular(10),
                             onTap: () async {
                               getMaterialUsage();
                             },
                             child: Padding(
-                              padding: const EdgeInsets.all(
-                                10,
-                              ),
+                              padding: const EdgeInsets.all(10),
                               child: Row(
                                 spacing: 5,
                                 children: [
                                   Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
+                                      fontSize: theme.mobileTexts.b3.fontSize,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                     'Refresh',
                                   ),
-                                  Icon(
-                                    size: 18,
-                                    Icons.refresh_rounded,
-                                  ),
+                                  Icon(size: 18, Icons.refresh_rounded),
                                 ],
                               ),
                             ),
@@ -117,52 +92,35 @@ class _MaterialsUsageDesktopState
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(
-                          right: 15.0,
-                        ),
+                        padding: const EdgeInsets.only(right: 15.0),
                         child: Visibility(
                           visible: authorization(
-                            authorized:
-                                Authorizations().viewDate,
+                            authorized: Authorizations().viewDate,
                           ),
                           child: InkWell(
-                            mouseCursor:
-                                SystemMouseCursors.click,
+                            mouseCursor: SystemMouseCursors.click,
                             onTap: () {
-                              if (materialUsageProv
-                                          .dateSet !=
-                                      null ||
-                                  materialUsageProv
-                                          .rangeStartDate !=
-                                      null) {
-                                materialUsageProv
-                                    .clearDate();
+                              if (materialUsageProv.dateSet != null ||
+                                  materialUsageProv.rangeStartDate != null) {
+                                materialUsageProv.clearDate();
                               } else {
                                 mainDatePicker(
                                   context: context,
                                   theme: theme,
                                   singleDate: (date) {
-                                    materialUsageProv
-                                        .setDate(date!);
+                                    materialUsageProv.setDate(date!);
                                   },
-                                  rangeDate: (
-                                    firstDate,
-                                    lastDate,
-                                  ) {
-                                    materialUsageProv
-                                        .setRange(
-                                          firstDate!,
-                                          lastDate ??
-                                              DateTime.now(),
-                                        );
+                                  rangeDate: (firstDate, lastDate) {
+                                    materialUsageProv.setRange(
+                                      firstDate!,
+                                      lastDate ?? DateTime.now(),
+                                    );
                                   },
                                 );
                               }
                             },
                             child: Container(
-                              margin: EdgeInsets.only(
-                                right: 5,
-                              ),
+                              margin: EdgeInsets.only(right: 5),
                               padding: EdgeInsets.only(
                                 right: 10,
                                 left: 10,
@@ -175,22 +133,15 @@ class _MaterialsUsageDesktopState
                                 children: [
                                   Text(
                                     style: TextStyle(
-                                      fontWeight:
-                                          FontWeight.bold,
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: theme.mobileTexts.b3.fontSize,
                                     ),
                                     returnMaterialsUsageProvider(
-                                                  context:
-                                                      context,
+                                                  context: context,
                                                 ).dateSet !=
                                                 null ||
                                             returnMaterialsUsageProvider(
-                                                  context:
-                                                      context,
+                                                  context: context,
                                                 ).rangeStartDate !=
                                                 null
                                         ? 'Clear'
@@ -199,18 +150,15 @@ class _MaterialsUsageDesktopState
                                   Icon(
                                     size: 16,
                                     returnMaterialsUsageProvider(
-                                                  context:
-                                                      context,
+                                                  context: context,
                                                 ).dateSet !=
                                                 null ||
                                             returnMaterialsUsageProvider(
-                                                  context:
-                                                      context,
+                                                  context: context,
                                                 ).rangeStartDate !=
                                                 null
                                         ? Icons.clear
-                                        : Icons
-                                            .date_range_outlined,
+                                        : Icons.date_range_outlined,
                                   ),
                                 ],
                               ),
@@ -224,27 +172,24 @@ class _MaterialsUsageDesktopState
                 floatingActionButton: Visibility(
                   visible:
                       authorization(
-                        authorized:
-                            Authorizations()
-                                .addMaterialsUsage,
+                        authorized: Authorizations().addMaterialsUsage,
                       ) &&
                       widget.materialUuid == null,
                   child: FloatingActionButtonMain(
                     action: () {
-                      GeneralSettingsAuthAction()
-                          .manageProductions(
-                            context: context,
-                            action: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return CreateMaterialsUsagePage();
-                                  },
-                                ),
-                              );
-                            },
+                      GeneralSettingsAuthAction().manageProductions(
+                        context: context,
+                        action: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return CreateMaterialsUsagePage();
+                              },
+                            ),
                           );
+                        },
+                      );
                     },
                     color: theme.lightModeColor.secColor100,
                     text: 'Record Usage',
@@ -252,9 +197,7 @@ class _MaterialsUsageDesktopState
                   ),
                 ),
                 body: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Column(
                     children: [
                       Material(
@@ -269,13 +212,10 @@ class _MaterialsUsageDesktopState
                                   isMoney: false,
                                   title: 'Total Used',
                                   value:
-                                      materialUsageProv
-                                          .getTotalMaterialsUsed(),
+                                      materialUsageProv.getTotalMaterialsUsed(),
                                 ),
                                 ValueSummaryTabSmall(
-                                  value:
-                                      records.length
-                                          .toDouble(),
+                                  value: records.length.toDouble(),
                                   title: 'Entries',
                                   color: Colors.green,
                                   isMoney: false,
@@ -305,24 +245,16 @@ class _MaterialsUsageDesktopState
                             } else {
                               return RefreshIndicator(
                                 onRefresh: getMaterialUsage,
-                                backgroundColor:
-                                    Colors.white,
-                                color:
-                                    theme
-                                        .lightModeColor
-                                        .prColor300,
+                                backgroundColor: Colors.white,
+                                color: theme.lightModeColor.prColor300,
                                 displacement: 10,
                                 child: ListView(
                                   children:
                                       records
                                           .map(
-                                            (
-                                              item,
-                                            ) => MaterialsUsageTile(
-                                              materialsUsage:
-                                                  item,
-                                              fromDetails:
-                                                  false,
+                                            (item) => MaterialsUsageTile(
+                                              materialsUsage: item,
+                                              fromDetails: false,
                                             ),
                                           )
                                           .toList(),
@@ -342,10 +274,8 @@ class _MaterialsUsageDesktopState
             width:
                 screenWidth(context) < tabletScreenSmall
                     ? 50
-                    : (screenWidth(context) >
-                            tabletScreenSmall &&
-                        screenWidth(context) <
-                            tabletScreen + 100)
+                    : (screenWidth(context) > tabletScreenSmall &&
+                        screenWidth(context) < tabletScreen + 100)
                     ? 100
                     : 230,
           ),
@@ -356,6 +286,5 @@ class _MaterialsUsageDesktopState
 }
 
 Future<void> getMaterialUsage() async {
-  returnMaterialsUsageProvider()
-      .getProductionMaterialsUsage(shopId());
+  returnMaterialsUsageProvider().getProductionMaterialsUsage(shopId());
 }

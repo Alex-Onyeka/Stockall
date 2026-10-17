@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:stockall/classes/temp_production_folder/temp_materials_item_history/material_item_history_event_class.dart';
 import 'package:stockall/classes/temp_production_folder/temp_materials_item_history/materials_item_history.dart';
 import 'package:stockall/classes/temp_production_folder/temp_materials_item_history/unsynced/created_materials_item_history.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -112,28 +113,15 @@ class MaterialsItemHistoryProvider with ChangeNotifier {
         (a, b) => b.createdAt!.compareTo(a.createdAt!),
       );
       return departmentMaterialsItemHistories();
-    } else if (dateSet != null) {
-      return departmentMaterialsItemHistories()
-          .where(
-            (itemHistory) =>
-                !itemHistory.createdAt!.isBefore(
-                  fourAm(dateSet!),
-                ) &&
-                !itemHistory.createdAt!.isAfter(
-                  fourAmNextDay(dateSet!),
-                ),
-          )
-          .toList();
     } else {
       return departmentMaterialsItemHistories()
           .where(
-            (update) =>
-                ((!update.createdAt!.isBefore(
-                      fourAm(rangeStartDate!),
-                    )) &&
-                    (!update.createdAt!.isAfter(
-                      fourAmNextDay(rangeEndDate!),
-                    ))),
+            (itemHistory) => isDateTimeInBusinessWindow(
+              dateTime: itemHistory.createdAt,
+              dateSet: dateSet,
+              rangeStartDate: rangeStartDate,
+              rangeEndDate: rangeEndDate,
+            ),
           )
           .toList();
     }
@@ -228,6 +216,10 @@ class MaterialsItemHistoryProvider with ChangeNotifier {
       materialsItemHistory.createdAt ??= DateTime.now();
       materialsItemHistory.staffId = currentUser().userId;
       materialsItemHistory.staffName = currentUser().name;
+      materialsItemHistory.destination ??=
+          MaterialItemHistoryEventClass.unKnownDestination;
+      materialsItemHistory.source ??=
+          MaterialItemHistoryEventClass.unKnownSource;
       materialsItemHistory.departmentName ??=
           returnDepartmentProvider()
               .currentDepartment()

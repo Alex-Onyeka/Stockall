@@ -7,7 +7,5 @@ class CreatedProductionRecord extends HiveObject {
   @HiveField(0)
   final ProductionRecord createdProductionRecord;
 
-  CreatedProductionRecord({
-    required this.createdProductionRecord,
-  });
+  CreatedProductionRecord({required this.createdProductionRecord});
 }

@@ -731,6 +731,9 @@ void selectItemInADepartmentsProduction({
                               source:
                                   ItemHistoryEventClass
                                       .productionSource,
+                              destination:
+                                  ItemHistoryEventClass
+                                      .productDestination,
                               isManaged:
                                   newProduct.isManaged,
                               shopId: shopId(),
@@ -824,7 +827,10 @@ void selectItemInADepartmentsProduction({
                                       .transferedOut,
                               source:
                                   ProductionItemHistoryEventClass
-                                      .departmentSource,
+                                      .productionItemSource,
+                              destination:
+                                  ProductionItemHistoryEventClass
+                                      .productDestination,
                               isManaged:
                                   mainProductionItem
                                       .isManaged,
@@ -1411,6 +1417,9 @@ void selectItemInAShopProduction({
                           source:
                               ItemHistoryEventClass
                                   .branchStoreSource,
+                          destination:
+                              ItemHistoryEventClass
+                                  .productDestination,
                           isManaged: newProduct.isManaged,
                           desc:
                               'Item Quantity Received From Transfer - From Production Item Name: ${mainProductionItem.name}. Shop Name: ${returnShopProvider().userShop()?.name}.',
@@ -1489,7 +1498,10 @@ void selectItemInAShopProduction({
                                   .transferedOut,
                           source:
                               ProductionItemHistoryEventClass
-                                  .branchStoreSource,
+                                  .productionItemSource,
+                          destination:
+                              ProductionItemHistoryEventClass
+                                  .branchStoreDestination,
                           isManaged:
                               mainProductionItem.isManaged,
                           shopId: shopId(),

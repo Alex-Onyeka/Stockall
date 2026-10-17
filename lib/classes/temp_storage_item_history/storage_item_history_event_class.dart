@@ -9,7 +9,22 @@ class StorageItemHistoryEventClass {
 
   static String purchaseSource = 'purchase';
   static String productSource = 'product';
+  static String storageSource = 'storage';
   static String branchStoreSource = 'branch_store';
+  static String manualSource = 'manual';
+  static String departmentSource = 'department';
+  static String productionSource = 'production';
+
+  // Destinations
+  static String purchaseDestination = 'purchase';
+  static String productDestination = 'product';
+  static String storageDestination = 'storage';
+  static String branchStoreDestination = 'branch_store';
+  static String departmentDestination = 'department';
+  static String productionDestination = 'production';
+  static String deletedDestination = 'deleted';
+  static String adjustmentDestination = 'adjustment';
+  static String manualDestination = 'manual';
 
   static String itemCreated = 'created';
   static String itemDeleted = 'deleted';
@@ -24,4 +39,5 @@ class StorageItemHistoryEventClass {
       'quantity_decrease';
 
   static String unKnownSource = 'not_set';
+  static String unKnownDestination = 'not_set';
 }

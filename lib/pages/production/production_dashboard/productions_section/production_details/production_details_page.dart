@@ -6,24 +6,18 @@ import 'package:stockall/pages/production/production_dashboard/productions_secti
 
 class ProductionDetailsPage extends StatefulWidget {
   final String productionRecordUuid;
-  const ProductionDetailsPage({
-    super.key,
-    required this.productionRecordUuid,
-  });
+  const ProductionDetailsPage({super.key, required this.productionRecordUuid});
 
   @override
-  State<ProductionDetailsPage> createState() =>
-      _ProductionDetailsPageState();
+  State<ProductionDetailsPage> createState() => _ProductionDetailsPageState();
 }
 
-class _ProductionDetailsPageState
-    extends State<ProductionDetailsPage> {
+class _ProductionDetailsPageState extends State<ProductionDetailsPage> {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      returnProductionRecordsProvider()
-          .getProductionRecords(shopId());
+      returnProductionRecordsProvider().getProductionRecords(shopId());
     });
   }
 
@@ -33,13 +27,11 @@ class _ProductionDetailsPageState
       builder: (context, constraints) {
         if (constraints.maxWidth < mobileScreen) {
           return ProductionDetailsMobile(
-            productionRecordUuid:
-                widget.productionRecordUuid,
+            productionRecordUuid: widget.productionRecordUuid,
           );
         } else {
           return ProductionDetailsDesktop(
-            productionRecordUuid:
-                widget.productionRecordUuid,
+            productionRecordUuid: widget.productionRecordUuid,
           );
         }
       },

@@ -17,8 +17,7 @@ class SubscriptionProvider extends ChangeNotifier {
   factory SubscriptionProvider() => _instance;
   SubscriptionProvider._internal();
 
-  final ConnectivityProvider connectivity =
-      ConnectivityProvider();
+  final ConnectivityProvider connectivity = ConnectivityProvider();
   final SupabaseClient supabase = Supabase.instance.client;
   final NavProvider navProvider = NavProvider();
 
@@ -59,9 +58,7 @@ class SubscriptionProvider extends ChangeNotifier {
     }
   }
 
-  Future<TempShopClass?> userShop(
-    BuildContext context,
-  ) async {
+  Future<TempShopClass?> userShop(BuildContext context) async {
     var shopP = returnShopProvider();
     if (shopP.userShop() == null) {
       await shopP.getUserShops();
@@ -71,9 +68,7 @@ class SubscriptionProvider extends ChangeNotifier {
     }
   }
 
-  Future<SubscriptionClass?> createSubscription(
-    BuildContext context,
-  ) async {
+  Future<SubscriptionClass?> createSubscription(BuildContext context) async {
     try {
       var newSub = SubscriptionClass(
         createdAt: DateTime.now().toUtc(),
@@ -103,16 +98,12 @@ class SubscriptionProvider extends ChangeNotifier {
       }
       return null;
     } catch (e) {
-      await mainLocalLog(
-        'Error Creating Online: ${e.toString()}',
-      );
+      await mainLocalLog('Error Creating Online: ${e.toString()}');
       return null;
     }
   }
 
-  Future<SubscriptionClass?> getSubscription(
-    BuildContext context,
-  ) async {
+  Future<SubscriptionClass?> getSubscription(BuildContext context) async {
     subscription = SubscriptionFunc().getSubscription();
     notifyListeners();
     var isOnline = await connectivity.isOnline();
@@ -125,11 +116,7 @@ class SubscriptionProvider extends ChangeNotifier {
             await supabase
                 .from('subscription')
                 .select()
-                .eq(
-                  'user_id',
-                  shop?.userId ??
-                      AuthService().currentUser!,
-                )
+                .eq('user_id', shop?.userId ?? AuthService().currentUser!)
                 .maybeSingle();
         if (response == null) {
           await mainLocalLog('No Subscription Found');
@@ -144,9 +131,7 @@ class SubscriptionProvider extends ChangeNotifier {
         notifyListeners();
         return SubscriptionClass.fromJson(response);
       } catch (e) {
-        await mainLocalLog(
-          '❌❌ Get Subscription Error: ${e.toString()}',
-        );
+        await mainLocalLog('❌❌ Get Subscription Error: ${e.toString()}');
         return null;
       }
     } else {
@@ -164,17 +149,14 @@ class SubscriptionProvider extends ChangeNotifier {
     }
   }
 
-  Future<SubscriptionClass?>
-  getSubscriptionOffline() async {
+  Future<SubscriptionClass?> getSubscriptionOffline() async {
     try {
       await mainLocalLog('Getting Subscription Offline');
       subscription = SubscriptionFunc().getSubscription();
       notifyListeners();
       return subscription;
     } catch (e) {
-      await mainLocalLog(
-        '❌❌ Get Subscription Error Offline: ${e.toString()}',
-      );
+      await mainLocalLog('❌❌ Get Subscription Error Offline: ${e.toString()}');
       return null;
     }
   }
@@ -190,10 +172,7 @@ class SubscriptionProvider extends ChangeNotifier {
               .from('subscription')
               .update({
                 'next_payment': null,
-                'last_payment':
-                    DateTime.now()
-                        .toUtc()
-                        .toIso8601String(),
+                'last_payment': DateTime.now().toUtc().toIso8601String(),
                 'plan': 0,
                 'old_plan': oldPlan,
                 'amount': 0,
@@ -212,25 +191,14 @@ class SubscriptionProvider extends ChangeNotifier {
         );
         if (res.isNotEmpty) {
           var tempSubPayments =
-              res
-                  .map(
-                    (re) =>
-                        TempSubPaymentClass.fromJson(re),
-                  )
-                  .toList();
+              res.map((re) => TempSubPaymentClass.fromJson(re)).toList();
           if (tempSubPayments
-              .where(
-                (subPayment) =>
-                    subPayment.userId == shop.userId,
-              )
+              .where((subPayment) => subPayment.userId == shop.userId)
               .isNotEmpty) {
             await mainLocalLog("Store Subcription Exists");
             var tempP =
                 tempSubPayments
-                    .where(
-                      (subPayment) =>
-                          subPayment.userId == shop.userId,
-                    )
+                    .where((subPayment) => subPayment.userId == shop.userId)
                     .first;
             await supabase
                 .from('subscription_payments')
@@ -238,17 +206,12 @@ class SubscriptionProvider extends ChangeNotifier {
                   'plan': 0,
                   'old_plan': oldPlan,
                   'amount': 0,
-                  'last_payment':
-                      DateTime.now()
-                          .toUtc()
-                          .toIso8601String(),
+                  'last_payment': DateTime.now().toUtc().toIso8601String(),
                   'next_payment': null,
                 })
                 .eq('payments_id', tempP.paymentsId!);
           } else {
-            await mainLocalLog(
-              "Store Subcription Does not Exists",
-            );
+            await mainLocalLog("Store Subcription Does not Exists");
             // var nextPayment =
             //     plan == 0
             //         ? null
@@ -262,9 +225,7 @@ class SubscriptionProvider extends ChangeNotifier {
               plan: 0,
               nextPayment: null,
             );
-            await supabase
-                .from('subscription_payments')
-                .insert(tempP.toJson());
+            await supabase.from('subscription_payments').insert(tempP.toJson());
           }
         } else {
           // var nextPayment =
@@ -278,9 +239,7 @@ class SubscriptionProvider extends ChangeNotifier {
             plan: 0,
             nextPayment: null,
           );
-          await supabase
-              .from('subscription_payments')
-              .insert(tempP.toJson());
+          await supabase.from('subscription_payments').insert(tempP.toJson());
         }
         await getSubscription(context);
       } catch (e) {
@@ -289,16 +248,12 @@ class SubscriptionProvider extends ChangeNotifier {
         );
       }
       subscription = SubscriptionClass.fromJson(res);
-      SubscriptionFunc().createSubscription(
-        SubscriptionClass.fromJson(res),
-      );
+      SubscriptionFunc().createSubscription(SubscriptionClass.fromJson(res));
       notifyListeners();
       await mainLocalLog('Subscription Success');
       return 1;
     } catch (e) {
-      await mainLocalLog(
-        '❌❌ SubScribe Error: ${e.toString()}',
-      );
+      await mainLocalLog('❌❌ SubScribe Error: ${e.toString()}');
       return 0;
     }
   }

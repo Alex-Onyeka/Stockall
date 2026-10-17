@@ -31,8 +31,7 @@ class _ProductionItemHistoryDesktopState
   bool showSuccess = false;
   bool setDate = false;
 
-  TextEditingController searchController =
-      TextEditingController();
+  TextEditingController searchController = TextEditingController();
 
   @override
   void dispose() {
@@ -40,74 +39,48 @@ class _ProductionItemHistoryDesktopState
     searchController.dispose();
   }
 
-  final GlobalKey<ScaffoldState> _scaffoldKey =
-      GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context, listen: false);
     List<ProductionItemHistory>? productionItemHistory =
-        returnProductionItemHistoryProvider(
-              context: context,
-            )
+        returnProductionItemHistoryProvider(context: context)
             .returnProductionItemHistories()
             .where((history) {
               if (widget.productionItemUuid != null) {
-                return history.itemUuid ==
-                        widget.productionItemUuid &&
-                    (history.itemName
-                                ?.toLowerCase()
-                                .contains(
-                                  searchController.text
-                                      .toLowerCase(),
-                                ) ==
+                return history.itemUuid == widget.productionItemUuid &&
+                    (history.itemName?.toLowerCase().contains(
+                              searchController.text.toLowerCase(),
+                            ) ==
                             true ||
-                        history.departmentName
-                                ?.toLowerCase()
-                                .contains(
-                                  searchController.text
-                                      .toLowerCase(),
-                                ) ==
+                        history.departmentName?.toLowerCase().contains(
+                              searchController.text.toLowerCase(),
+                            ) ==
                             true ||
-                        history.staffName
-                                ?.toLowerCase()
-                                .contains(
-                                  searchController.text
-                                      .toLowerCase(),
-                                ) ==
+                        history.staffName?.toLowerCase().contains(
+                              searchController.text.toLowerCase(),
+                            ) ==
                             true ||
-                        history.title
-                                .toLowerCase()
-                                .contains(
-                                  searchController.text
-                                      .toLowerCase(),
-                                ) ==
+                        history.title.toLowerCase().contains(
+                              searchController.text.toLowerCase(),
+                            ) ==
                             true);
               } else {
-                return (history.itemName
-                            ?.toLowerCase()
-                            .contains(
-                              searchController.text
-                                  .toLowerCase(),
-                            ) ==
+                return (history.itemName?.toLowerCase().contains(
+                          searchController.text.toLowerCase(),
+                        ) ==
                         true ||
-                    history.departmentName
-                            ?.toLowerCase()
-                            .contains(
-                              searchController.text
-                                  .toLowerCase(),
-                            ) ==
+                    history.departmentName?.toLowerCase().contains(
+                          searchController.text.toLowerCase(),
+                        ) ==
                         true ||
-                    history.staffName
-                            ?.toLowerCase()
-                            .contains(
-                              searchController.text
-                                  .toLowerCase(),
-                            ) ==
+                    history.staffName?.toLowerCase().contains(
+                          searchController.text.toLowerCase(),
+                        ) ==
                         true ||
                     history.title.toLowerCase().contains(
-                          searchController.text
-                              .toLowerCase(),
+                          searchController.text.toLowerCase(),
                         ) ==
                         true);
               }
@@ -128,10 +101,8 @@ class _ProductionItemHistoryDesktopState
             width:
                 screenWidth(context) < tabletScreenSmall
                     ? 50
-                    : (screenWidth(context) >
-                            tabletScreenSmall &&
-                        screenWidth(context) <
-                            tabletScreen + 100)
+                    : (screenWidth(context) > tabletScreenSmall &&
+                        screenWidth(context) < tabletScreen + 100)
                     ? 100
                     : 230,
           ),
@@ -144,12 +115,7 @@ class _ProductionItemHistoryDesktopState
                 borderRadius: BorderRadius.circular(15),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color.fromARGB(
-                      39,
-                      4,
-                      1,
-                      41,
-                    ),
+                    color: const Color.fromARGB(39, 4, 1, 41),
                     blurRadius: 10,
                   ),
                 ],
@@ -162,8 +128,7 @@ class _ProductionItemHistoryDesktopState
                     spacing: 3,
                     children: [
                       InkWell(
-                        mouseCursor:
-                            SystemMouseCursors.click,
+                        mouseCursor: SystemMouseCursors.click,
                         onTap: () {
                           returnProductionItemHistoryProvider()
                               .getProductionItemHistories();
@@ -181,13 +146,8 @@ class _ProductionItemHistoryDesktopState
                             children: [
                               Text(
                                 style: TextStyle(
-                                  fontWeight:
-                                      FontWeight.bold,
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: theme.mobileTexts.b3.fontSize,
                                 ),
                                 'Refresh',
                               ),
@@ -198,47 +158,38 @@ class _ProductionItemHistoryDesktopState
                       ),
                       Visibility(
                         visible: authorization(
-                          authorized:
-                              Authorizations().viewDate,
+                          authorized: Authorizations().viewDate,
                         ),
                         child: InkWell(
-                          mouseCursor:
-                              SystemMouseCursors.click,
+                          mouseCursor: SystemMouseCursors.click,
                           onTap: () {
-                            if (returnProductionItemHistoryProvider()
-                                        .dateSet !=
+                            if (returnProductionItemHistoryProvider().dateSet !=
                                     null ||
                                 returnProductionItemHistoryProvider()
                                         .rangeStartDate !=
                                     null) {
-                              returnProductionItemHistoryProvider()
-                                  .clearDate();
+                              returnProductionItemHistoryProvider().clearDate();
                             } else {
                               mainDatePicker(
                                 context: context,
                                 theme: theme,
                                 singleDate: (date) {
-                                  returnProductionItemHistoryProvider()
-                                      .setDate(date!);
+                                  returnProductionItemHistoryProvider().setDate(
+                                    date!,
+                                  );
                                 },
-                                rangeDate: (
-                                  firstDate,
-                                  lastDate,
-                                ) {
+                                rangeDate: (firstDate, lastDate) {
                                   returnProductionItemHistoryProvider()
                                       .setRange(
                                         firstDate!,
-                                        lastDate ??
-                                            DateTime.now(),
+                                        lastDate ?? DateTime.now(),
                                       );
                                 },
                               );
                             }
                           },
                           child: Container(
-                            margin: EdgeInsets.only(
-                              right: 5,
-                            ),
+                            margin: EdgeInsets.only(right: 5),
                             padding: EdgeInsets.only(
                               right: 10,
                               left: 10,
@@ -251,22 +202,15 @@ class _ProductionItemHistoryDesktopState
                               children: [
                                 Text(
                                   style: TextStyle(
-                                    fontWeight:
-                                        FontWeight.bold,
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: theme.mobileTexts.b3.fontSize,
                                   ),
                                   returnProductionItemHistoryProvider(
-                                                context:
-                                                    context,
+                                                context: context,
                                               ).dateSet !=
                                               null ||
                                           returnProductionItemHistoryProvider(
-                                                context:
-                                                    context,
+                                                context: context,
                                               ).rangeStartDate !=
                                               null
                                       ? 'Clear'
@@ -275,18 +219,15 @@ class _ProductionItemHistoryDesktopState
                                 Icon(
                                   size: 16,
                                   returnProductionItemHistoryProvider(
-                                                context:
-                                                    context,
+                                                context: context,
                                               ).dateSet !=
                                               null ||
                                           returnProductionItemHistoryProvider(
-                                                context:
-                                                    context,
+                                                context: context,
                                               ).rangeStartDate !=
                                               null
                                       ? Icons.clear
-                                      : Icons
-                                          .date_range_outlined,
+                                      : Icons.date_range_outlined,
                                 ),
                               ],
                             ),
@@ -297,16 +238,13 @@ class _ProductionItemHistoryDesktopState
                   ),
                 ),
                 body: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15.0,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
                   child: Column(
                     children: [
                       Expanded(
                         child: Builder(
                           builder: (context) {
-                            if (productionItemHistory
-                                .isEmpty) {
+                            if (productionItemHistory.isEmpty) {
                               return Center(
                                 child: EmptyWidgetDisplayOnly(
                                   title: 'No Events Found',
@@ -327,11 +265,8 @@ class _ProductionItemHistoryDesktopState
                                 children:
                                     productionItemHistory
                                         .map(
-                                          (
-                                            item,
-                                          ) => ItemHistoryTile(
-                                            productionItemHistory:
-                                                item,
+                                          (item) => ItemHistoryTile(
+                                            productionItemHistory: item,
                                             fromDetails:
                                                 widget
                                                     .fromProductionItemDetails,
@@ -359,10 +294,8 @@ class _ProductionItemHistoryDesktopState
             width:
                 screenWidth(context) < tabletScreenSmall
                     ? 50
-                    : (screenWidth(context) >
-                            tabletScreenSmall &&
-                        screenWidth(context) <
-                            tabletScreen + 100)
+                    : (screenWidth(context) > tabletScreenSmall &&
+                        screenWidth(context) < tabletScreen + 100)
                     ? 100
                     : 230,
           ),

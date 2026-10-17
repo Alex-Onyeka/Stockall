@@ -351,7 +351,8 @@ class DraftsProvider extends ChangeNotifier {
       snapshotUnits: record.unitsList,
       priceUuid: record.priceUuid,
       snapshotPrices: record.pricesList,
-      onMissing: onMissing ?? (message) => mainLocalLog(message),
+      onMissing:
+          onMissing ?? (message) => mainLocalLog(message),
     );
   }
 

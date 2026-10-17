@@ -56,27 +56,17 @@ class ProductsFilterButton extends StatelessWidget {
                       color:
                           currentSelected == number
                               ? Colors.white
-                              : theme
-                                  .lightModeColor
-                                  .prColor300,
+                              : theme.lightModeColor.prColor300,
                       fontWeight: FontWeight.normal,
                       fontSize:
                           currentSelected == number
-                              ? theme
-                                  .mobileTexts
-                                  .b4
-                                  .fontSize
-                              : theme
-                                  .mobileTexts
-                                  .b4
-                                  .fontSize,
+                              ? theme.mobileTexts.b4.fontSize
+                              : theme.mobileTexts.b4.fontSize,
                     ),
                     title,
                   ),
                   Visibility(
-                    visible:
-                        length != null &&
-                        currentSelected == number,
+                    visible: length != null && currentSelected == number,
                     child: Row(
                       children: [
                         SizedBox(width: 5),
@@ -85,20 +75,12 @@ class ProductsFilterButton extends StatelessWidget {
                             color:
                                 currentSelected == number
                                     ? Colors.white
-                                    : theme
-                                        .lightModeColor
-                                        .prColor300,
+                                    : theme.lightModeColor.prColor300,
                             fontWeight: FontWeight.bold,
                             fontSize:
                                 currentSelected == number
-                                    ? theme
-                                        .mobileTexts
-                                        .b4
-                                        .fontSize
-                                    : theme
-                                        .mobileTexts
-                                        .b4
-                                        .fontSize,
+                                    ? theme.mobileTexts.b4.fontSize
+                                    : theme.mobileTexts.b4.fontSize,
                           ),
                           "(${length.toString()})",
                         ),

@@ -18,14 +18,12 @@ class MaterialsItemHistoryPage extends StatefulWidget {
       _MaterialsItemHistoryPageState();
 }
 
-class _MaterialsItemHistoryPageState
-    extends State<MaterialsItemHistoryPage> {
+class _MaterialsItemHistoryPageState extends State<MaterialsItemHistoryPage> {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      returnMaterialsItemHistoryProvider()
-          .getMaterialsItemHistories();
+      returnMaterialsItemHistoryProvider().getMaterialsItemHistories();
     });
   }
 
@@ -44,14 +42,12 @@ class _MaterialsItemHistoryPageState
         if (constraints.maxWidth < tabletScreenSmall) {
           return MaterialsItemHistoryMobile(
             materialsItemUuid: widget.materialsItemUuid,
-            fromMaterialsItemDetails:
-                widget.fromMaterialsItemDetails,
+            fromMaterialsItemDetails: widget.fromMaterialsItemDetails,
           );
         } else {
           return MaterialsItemHistoryDesktop(
             materialsItemUuid: widget.materialsItemUuid,
-            fromMaterialsItemDetails:
-                widget.fromMaterialsItemDetails,
+            fromMaterialsItemDetails: widget.fromMaterialsItemDetails,
           );
         }
       },

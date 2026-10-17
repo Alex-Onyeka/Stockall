@@ -28,14 +28,12 @@ class ItemHistoryTile extends StatefulWidget {
   final bool fromDetails;
 
   @override
-  State<ItemHistoryTile> createState() =>
-      ItemHistoryTileState();
+  State<ItemHistoryTile> createState() => ItemHistoryTileState();
 }
 
 class ItemHistoryTileState extends State<ItemHistoryTile> {
   String cutLongText(String text) {
-    if (text.length >
-        (screenWidth(context) > mobileScreen ? 25 : 15)) {
+    if (text.length > (screenWidth(context) > mobileScreen ? 25 : 15)) {
       return '${text.substring(0, (screenWidth(context) > mobileScreen ? 25 : 15))}...';
     } else {
       return text;
@@ -69,10 +67,8 @@ class ItemHistoryTileState extends State<ItemHistoryTile> {
                     height: screenHeight(context) - 200,
                     child: ItemHistoryDetailsWidget(
                       itemHistory: widget.itemHistory,
-                      productionItemHistory:
-                          widget.productionItemHistory,
-                      materialsItemHistory:
-                          widget.materialsItemHistory,
+                      productionItemHistory: widget.productionItemHistory,
+                      materialsItemHistory: widget.materialsItemHistory,
                       fromDetails: widget.fromDetails,
                     ),
                   ),
@@ -88,9 +84,7 @@ class ItemHistoryTileState extends State<ItemHistoryTile> {
               spacing: 10,
               children: [
                 Visibility(
-                  visible:
-                      screenWidth(context) >
-                      mobileScreenSmall,
+                  visible: screenWidth(context) > mobileScreenSmall,
                   child: Container(
                     padding: EdgeInsets.all(5),
                     decoration: BoxDecoration(
@@ -101,12 +95,8 @@ class ItemHistoryTileState extends State<ItemHistoryTile> {
                       color: mainColor(),
                       size: 20,
                       (widget.itemHistory?.isIncreased ??
-                                  widget
-                                      .productionItemHistory
-                                      ?.isIncreased ??
-                                  widget
-                                      .materialsItemHistory
-                                      ?.isIncreased) ==
+                                  widget.productionItemHistory?.isIncreased ??
+                                  widget.materialsItemHistory?.isIncreased) ==
                               true
                           ? Icons.add
                           : Icons.clear,
@@ -118,38 +108,26 @@ class ItemHistoryTileState extends State<ItemHistoryTile> {
                     children: [
                       Row(
                         spacing: 10,
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
                             child: Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               spacing: 5,
                               children: [
                                 Row(
                                   spacing: 5,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment
-                                          .start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Expanded(
                                       child: Text(
                                         style: TextStyle(
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                          fontWeight: FontWeight.bold,
                                           fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b2
-                                                  .fontSize,
+                                              theme.mobileTexts.b2.fontSize,
                                         ),
-                                        (widget
-                                                .itemHistory
-                                                ?.title ??
+                                        (widget.itemHistory?.title ??
                                             widget
                                                 .productionItemHistory
                                                 ?.title ??
@@ -161,14 +139,9 @@ class ItemHistoryTileState extends State<ItemHistoryTile> {
                                     ),
                                     Text(
                                       style: TextStyle(
-                                        fontWeight:
-                                            FontWeight.bold,
+                                        fontWeight: FontWeight.bold,
                                         fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b2
-                                                .fontSize -
-                                            1,
+                                            theme.mobileTexts.b2.fontSize - 1,
                                         color: mainColor(),
                                       ),
                                       returnHistoryQuantity(
@@ -183,9 +156,7 @@ class ItemHistoryTileState extends State<ItemHistoryTile> {
                                                     .materialsItemHistory
                                                     ?.quantityChange),
                                         isIncreased:
-                                            (widget
-                                                    .itemHistory
-                                                    ?.isIncreased ??
+                                            (widget.itemHistory?.isIncreased ??
                                                 widget
                                                     .productionItemHistory
                                                     ?.isIncreased ??
@@ -193,15 +164,11 @@ class ItemHistoryTileState extends State<ItemHistoryTile> {
                                                     .materialsItemHistory
                                                     ?.isIncreased),
                                         unit:
-                                            widget
-                                                .itemHistory
-                                                ?.unit ??
+                                            widget.itemHistory?.unit ??
                                             widget
                                                 .productionItemHistory
                                                 ?.unit ??
-                                            widget
-                                                .materialsItemHistory
-                                                ?.unit ??
+                                            widget.materialsItemHistory?.unit ??
                                             '',
                                       ),
                                     ),
@@ -209,27 +176,13 @@ class ItemHistoryTileState extends State<ItemHistoryTile> {
                                 ),
                                 Text(
                                   style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.normal,
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade700,
+                                    fontSize: theme.mobileTexts.b3.fontSize,
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.grey.shade700,
                                   ),
-                                  widget
-                                          .itemHistory
-                                          ?.desc ??
-                                      widget
-                                          .productionItemHistory
-                                          ?.desc ??
-                                      widget
-                                          .materialsItemHistory
-                                          ?.desc ??
+                                  widget.itemHistory?.desc ??
+                                      widget.productionItemHistory?.desc ??
+                                      widget.materialsItemHistory?.desc ??
                                       'Description Not Set',
                                 ),
                               ],
@@ -239,26 +192,14 @@ class ItemHistoryTileState extends State<ItemHistoryTile> {
                             children: [
                               Visibility(
                                 visible:
-                                    screenWidth(context) >
-                                    mobileScreenSmall,
+                                    screenWidth(context) > mobileScreenSmall,
                                 child: Padding(
-                                  padding:
-                                      const EdgeInsets.only(
-                                        right: 4.0,
-                                      ),
+                                  padding: const EdgeInsets.only(right: 4.0),
                                   child: Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b4
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.normal,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade700,
+                                      fontSize: theme.mobileTexts.b4.fontSize,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.grey.shade700,
                                     ),
                                     'View More',
                                   ),
@@ -267,18 +208,14 @@ class ItemHistoryTileState extends State<ItemHistoryTile> {
                               Icon(
                                 size: 15,
                                 color: Colors.grey.shade400,
-                                Icons
-                                    .arrow_forward_ios_rounded,
+                                Icons.arrow_forward_ios_rounded,
                               ),
                             ],
                           ),
                         ],
                       ),
                       SizedBox(height: 5),
-                      Divider(
-                        color: Colors.grey.shade400,
-                        thickness: 0.5,
-                      ),
+                      Divider(color: Colors.grey.shade400, thickness: 0.5),
                       Padding(
                         padding: const EdgeInsets.only(
                           // top: 5.0,
@@ -286,50 +223,29 @@ class ItemHistoryTileState extends State<ItemHistoryTile> {
                           right: 15,
                         ),
                         child: Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Expanded(
                               child: Row(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment
-                                        .start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 spacing: 5,
                                 children: [
                                   Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b4
-                                              .fontSize,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade600,
+                                      fontSize: theme.mobileTexts.b4.fontSize,
+                                      color: Colors.grey.shade600,
                                     ),
                                     'Item:',
                                   ),
                                   Flexible(
                                     child: Text(
                                       style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b4
-                                                .fontSize,
-                                        color:
-                                            theme
-                                                .lightModeColor
-                                                .prColor300,
-                                        fontWeight:
-                                            FontWeight.bold,
+                                        fontSize: theme.mobileTexts.b4.fontSize,
+                                        color: theme.lightModeColor.prColor300,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                       cutLongText(
-                                        widget
-                                                .itemHistory
-                                                ?.itemName ??
+                                        widget.itemHistory?.itemName ??
                                             widget
                                                 .productionItemHistory
                                                 ?.itemName ??
@@ -348,41 +264,23 @@ class ItemHistoryTileState extends State<ItemHistoryTile> {
                               children: [
                                 Visibility(
                                   visible:
-                                      screenWidth(context) >
-                                      mobileScreenSmall,
+                                      screenWidth(context) > mobileScreenSmall,
                                   child: Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b4
-                                              .fontSize,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade600,
+                                      fontSize: theme.mobileTexts.b4.fontSize,
+                                      color: Colors.grey.shade600,
                                     ),
                                     'Date:',
                                   ),
                                 ),
                                 Text(
                                   style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b4
-                                            .fontSize,
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .prColor300,
-                                    fontWeight:
-                                        FontWeight.bold,
+                                    fontSize: theme.mobileTexts.b4.fontSize,
+                                    color: theme.lightModeColor.prColor300,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                   formatDateTimeTime(
-                                    widget
-                                            .itemHistory
-                                            ?.createdAt ??
+                                    widget.itemHistory?.createdAt ??
                                         widget
                                             .productionItemHistory
                                             ?.createdAt ??
@@ -464,8 +362,7 @@ class ItemHistoryDetailsWidget extends StatefulWidget {
       _ItemHistoryDetailsWidgetState();
 }
 
-class _ItemHistoryDetailsWidgetState
-    extends State<ItemHistoryDetailsWidget> {
+class _ItemHistoryDetailsWidgetState extends State<ItemHistoryDetailsWidget> {
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -481,12 +378,8 @@ class _ItemHistoryDetailsWidgetState
                   title: 'Item Name',
                   message:
                       widget.itemHistory?.itemName ??
-                      widget
-                          .productionItemHistory
-                          ?.itemName ??
-                      widget
-                          .materialsItemHistory
-                          ?.itemName ??
+                      widget.productionItemHistory?.itemName ??
+                      widget.materialsItemHistory?.itemName ??
                       'Not Set',
                 ),
                 ItemHistorySectionWidget(
@@ -509,12 +402,8 @@ class _ItemHistoryDetailsWidgetState
                   title: 'Created Date',
                   message: formatDateWithTime(
                     widget.itemHistory?.createdAt ??
-                        widget
-                            .productionItemHistory
-                            ?.createdAt ??
-                        widget
-                            .materialsItemHistory
-                            ?.createdAt ??
+                        widget.productionItemHistory?.createdAt ??
+                        widget.materialsItemHistory?.createdAt ??
                         DateTime.now(),
                   ),
                 ),
@@ -523,29 +412,17 @@ class _ItemHistoryDetailsWidgetState
                   message: returnHistoryQuantity(
                     unit:
                         widget.itemHistory?.unit ??
-                        widget
-                            .productionItemHistory
-                            ?.unit ??
+                        widget.productionItemHistory?.unit ??
                         widget.materialsItemHistory?.unit ??
                         '',
                     isIncreased:
                         (widget.itemHistory?.isIncreased ??
-                            widget
-                                .productionItemHistory
-                                ?.isIncreased ??
-                            widget
-                                .materialsItemHistory
-                                ?.isIncreased),
+                            widget.productionItemHistory?.isIncreased ??
+                            widget.materialsItemHistory?.isIncreased),
                     quantityChange:
-                        widget
-                            .itemHistory
-                            ?.quantityChange ??
-                        widget
-                            .productionItemHistory
-                            ?.quantityChange ??
-                        widget
-                            .materialsItemHistory
-                            ?.quantityChange,
+                        widget.itemHistory?.quantityChange ??
+                        widget.productionItemHistory?.quantityChange ??
+                        widget.materialsItemHistory?.quantityChange,
                   ),
                 ),
                 ItemHistorySectionWidget(
@@ -562,38 +439,40 @@ class _ItemHistoryDetailsWidgetState
                   title: 'Creator',
                   message:
                       widget.itemHistory?.staffName ??
-                      widget
-                          .productionItemHistory
-                          ?.staffName ??
-                      widget
-                          .materialsItemHistory
-                          ?.staffName ??
+                      widget.productionItemHistory?.staffName ??
+                      widget.materialsItemHistory?.staffName ??
                       'Not Set',
                 ),
                 Visibility(
                   visible:
                       (widget.itemHistory?.departmentName ??
-                          widget
-                              .productionItemHistory
-                              ?.departmentName ??
-                          widget
-                              .materialsItemHistory
-                              ?.departmentName) !=
+                          widget.productionItemHistory?.departmentName ??
+                          widget.materialsItemHistory?.departmentName) !=
                       null,
                   child: ItemHistorySectionWidget(
                     title: 'Department Name',
                     message:
-                        widget
-                            .itemHistory
-                            ?.departmentName ??
-                        widget
-                            .productionItemHistory
-                            ?.departmentName ??
-                        widget
-                            .materialsItemHistory
-                            ?.departmentName ??
+                        widget.itemHistory?.departmentName ??
+                        widget.productionItemHistory?.departmentName ??
+                        widget.materialsItemHistory?.departmentName ??
                         'Not Set',
                   ),
+                ),
+                ItemHistorySectionWidget(
+                  title: 'Source',
+                  message:
+                      widget.itemHistory?.source ??
+                      widget.productionItemHistory?.source ??
+                      widget.materialsItemHistory?.source ??
+                      'Not Set',
+                ),
+                ItemHistorySectionWidget(
+                  title: 'Destination',
+                  message:
+                      widget.itemHistory?.destination ??
+                      widget.productionItemHistory?.destination ??
+                      widget.materialsItemHistory?.destination ??
+                      'Not Set',
                 ),
               ],
             ),
@@ -602,12 +481,8 @@ class _ItemHistoryDetailsWidgetState
             visible:
                 !widget.fromDetails &&
                 (widget.itemHistory?.itemUuid ??
-                        widget
-                            .productionItemHistory
-                            ?.itemUuid ??
-                        widget
-                            .materialsItemHistory
-                            ?.itemUuid) !=
+                        widget.productionItemHistory?.itemUuid ??
+                        widget.materialsItemHistory?.itemUuid) !=
                     null,
             child: MainButtonP(
               themeProvider: theme,
@@ -617,32 +492,19 @@ class _ItemHistoryDetailsWidgetState
                   context,
                   MaterialPageRoute(
                     builder: (context) {
-                      if (widget.materialsItemHistory !=
-                          null) {
+                      if (widget.materialsItemHistory != null) {
                         return MaterialsDetailsPage(
                           materialUuid:
-                              widget
-                                  .materialsItemHistory
-                                  ?.itemUuid ??
-                              '',
+                              widget.materialsItemHistory?.itemUuid ?? '',
                         );
-                      } else if (widget
-                              .productionItemHistory !=
-                          null) {
+                      } else if (widget.productionItemHistory != null) {
                         return ProductionItemsDetailsPage(
                           productionItemUuid:
-                              widget
-                                  .productionItemHistory
-                                  ?.itemUuid ??
-                              '',
+                              widget.productionItemHistory?.itemUuid ?? '',
                         );
                       } else {
                         return ProductDetailsPage(
-                          productUuid:
-                              widget
-                                  .itemHistory
-                                  ?.itemUuid ??
-                              '',
+                          productUuid: widget.itemHistory?.itemUuid ?? '',
                         );
                       }
                     },
@@ -681,12 +543,7 @@ class ItemHistorySectionWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: EdgeInsetsGeometry.fromLTRB(
-              10,
-              7,
-              10,
-              5,
-            ),
+            padding: EdgeInsetsGeometry.fromLTRB(10, 7, 10, 5),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(5),
@@ -699,8 +556,7 @@ class ItemHistorySectionWidget extends StatelessWidget {
                 Expanded(
                   child: Text(
                     style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b4.fontSize,
+                      fontSize: theme.mobileTexts.b4.fontSize,
                       fontWeight: FontWeight.bold,
                       color: Colors.grey.shade900,
                     ),
@@ -711,12 +567,7 @@ class ItemHistorySectionWidget extends StatelessWidget {
             ),
           ),
           Container(
-            padding: EdgeInsetsGeometry.fromLTRB(
-              10,
-              5,
-              10,
-              10,
-            ),
+            padding: EdgeInsetsGeometry.fromLTRB(10, 5, 10, 10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(2),
               color: Colors.grey.shade100,
@@ -726,8 +577,7 @@ class ItemHistorySectionWidget extends StatelessWidget {
                 Expanded(
                   child: Text(
                     style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b3.fontSize,
+                      fontSize: theme.mobileTexts.b3.fontSize,
                       fontWeight: FontWeight.normal,
                       color: Colors.grey.shade700,
                     ),
@@ -755,8 +605,8 @@ String returnHistoryQuantity({
   }
 
   if (isIncreased == false) {
-    return '-${quantity.abs()} $unit';
+    return '-${formatLargeNumberDouble(quantity.abs())} $unit';
   }
 
-  return '+${quantity.abs()} $unit';
+  return '+${formatLargeNumberDouble(quantity.abs())} $unit';
 }

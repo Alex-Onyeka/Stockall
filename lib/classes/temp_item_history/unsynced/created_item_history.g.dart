@@ -16,9 +16,7 @@ class CreatedItemHistoryAdapter extends TypeAdapter<CreatedItemHistory> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return CreatedItemHistory(
-      itemHistory: fields[0] as ItemHistory,
-    );
+    return CreatedItemHistory(itemHistory: fields[0] as ItemHistory);
   }
 
   @override

@@ -21,38 +21,25 @@ class AppVersionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<AppVersion?> getAppVersion(
-    BuildContext context,
-  ) async {
+  Future<AppVersion?> getAppVersion(BuildContext context) async {
     bool isOnline = await ConnectivityProvider().isOnline();
     await returnPermissionProvider().getPermissions();
     if (isOnline) {
       try {
-        var res =
-            await _client
-                .from(tableName)
-                .select()
-                .eq('id', 1)
-                .single();
+        var res = await _client.from(tableName).select().eq('id', 1).single();
 
         appVersion = AppVersion.fromJson(res);
-        AppVersionFunc().insertVersion(
-          AppVersion.fromJson(res),
-        );
+        AppVersionFunc().insertVersion(AppVersion.fromJson(res));
         notifyListeners();
-        await mainLocalLog(
-          'App Version gotten Successfully',
-        );
+        await mainLocalLog('App Version gotten Successfully');
         if (screenWidth(context) <= mobileScreen) {
-          if (appVersion?.mobileVersion !=
-              appVersionMobile) {
+          if (appVersion?.mobileVersion != appVersionMobile) {
             toggleUpdated(false);
           } else {
             toggleUpdated(true);
           }
         } else {
-          if (appVersion?.desktopVersion !=
-              appVersionDesktop) {
+          if (appVersion?.desktopVersion != appVersionDesktop) {
             toggleUpdated(false);
           } else {
             toggleUpdated(true);
@@ -60,9 +47,7 @@ class AppVersionProvider extends ChangeNotifier {
         }
         return appVersion;
       } catch (e) {
-        await mainLocalLog(
-          '❌Error Getting App Version: ${e.toString()}',
-        );
+        await mainLocalLog('❌Error Getting App Version: ${e.toString()}');
         return null;
       }
     } else {
@@ -74,8 +59,7 @@ class AppVersionProvider extends ChangeNotifier {
           toggleUpdated(true);
         }
       } else {
-        if (appVersion?.desktopVersion !=
-            appVersionDesktop) {
+        if (appVersion?.desktopVersion != appVersionDesktop) {
           toggleUpdated(false);
         } else {
           toggleUpdated(true);

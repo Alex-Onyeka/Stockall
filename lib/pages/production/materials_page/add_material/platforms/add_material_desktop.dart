@@ -38,12 +38,10 @@ class AddMaterialDesktop extends StatefulWidget {
   });
 
   @override
-  State<AddMaterialDesktop> createState() =>
-      _AddMaterialDesktopState();
+  State<AddMaterialDesktop> createState() => _AddMaterialDesktopState();
 }
 
-class _AddMaterialDesktopState
-    extends State<AddMaterialDesktop> {
+class _AddMaterialDesktopState extends State<AddMaterialDesktop> {
   bool isLoading = false;
   bool showSuccess = false;
   bool expand = false;
@@ -55,8 +53,7 @@ class _AddMaterialDesktopState
 
   bool isSizedTypeOpen = false;
 
-  TextEditingController expiryDateC =
-      TextEditingController();
+  TextEditingController expiryDateC = TextEditingController();
 
   //
   //
@@ -71,20 +68,16 @@ class _AddMaterialDesktopState
           var theme = returnTheme(context);
           return InfoAlert(
             theme: theme,
-            message:
-                'Material Name Must be set before item can be created',
+            message: 'Material Name Must be set before item can be created',
             title: 'Empty Input',
           );
         },
       );
     } else {
-      var samePro = returnMaterialsProvider()
-          .materialList()
-          .where(
-            (pr) =>
-                pr.name.toLowerCase() ==
-                widget.nameController.text.toLowerCase(),
-          );
+      var samePro = returnMaterialsProvider().materialList().where(
+        (pr) =>
+            pr.name.toLowerCase() == widget.nameController.text.toLowerCase(),
+      );
       showDialog(
         context: context,
         builder: (confirmDialog) {
@@ -105,26 +98,20 @@ class _AddMaterialDesktopState
                 isLoading = true;
               });
 
-              final materialProvider =
-                  returnMaterialsProvider();
+              final materialProvider = returnMaterialsProvider();
               final dataProvider = returnData();
-              MaterialsItemHistory materialsItemHistory =
-                  MaterialsItemHistory(
-                    event:
-                        MaterialItemHistoryEventClass
-                            .itemCreated,
-                    isManaged: false,
-                    source:
-                        MaterialItemHistoryEventClass
-                            .unKnownSource,
-                    shopId: shopId(),
-                    title: 'Item Created',
-                    quantityChange: 0,
-                    newValue: '0',
-                    desc: 'Item Created Now',
-                    isIncreased: true,
-                    oldValue: '0',
-                  );
+              MaterialsItemHistory materialsItemHistory = MaterialsItemHistory(
+                event: MaterialItemHistoryEventClass.itemCreated,
+                isManaged: false,
+                source: MaterialItemHistoryEventClass.unKnownSource,
+                shopId: shopId(),
+                title: 'Item Created',
+                quantityChange: 0,
+                newValue: '0',
+                desc: 'Item Created Now',
+                isIncreased: true,
+                oldValue: '0',
+              );
 
               await materialProvider.createMaterial(
                 isMultiple: false,
@@ -132,35 +119,25 @@ class _AddMaterialDesktopState
                 material: MaterialClass(
                   unitsList: dataProvider.getTempUnitList(),
                   useGroupUnit: dataProvider.useGroupUnit,
-                  categories:
-                      dataProvider.selectedCategories
-                          .toList(),
+                  categories: dataProvider.selectedCategories.toList(),
                   isManaged: dataProvider.isManaged,
                   name: widget.nameController.text.trim(),
-                  unit:
-                      dataProvider.selectedUnit ??
-                      'Unit(s)',
-                  groupUnit:
-                      dataProvider.selectedGroupUnit ??
-                      'Group(s)',
+                  unit: dataProvider.selectedUnit ?? 'Unit(s)',
+                  groupUnit: dataProvider.selectedGroupUnit ?? 'Group(s)',
                   qttyPerGroup:
-                      widget
-                              .qttyPerGroupController
-                              .text
-                              .isNotEmpty
+                      widget.qttyPerGroupController.text.isNotEmpty
                           ? double.parse(
-                            widget
-                                .qttyPerGroupController
-                                .text
-                                .replaceAll(',', ''),
+                            widget.qttyPerGroupController.text.replaceAll(
+                              ',',
+                              '',
+                            ),
                           )
                           : null,
                   sizeType: dataProvider.selectedSize,
                   costPrice:
                       widget.costController.text.isNotEmpty
                           ? double.parse(
-                            widget.costController.text
-                                .replaceAll(',', ''),
+                            widget.costController.text.replaceAll(',', ''),
                           )
                           : 0,
                   shopId: shopId(),
@@ -169,8 +146,7 @@ class _AddMaterialDesktopState
                       widget.lowQttyController.text.isEmpty
                           ? 10
                           : double.tryParse(
-                            widget.lowQttyController.text
-                                .replaceAll(',', ''),
+                            widget.lowQttyController.text.replaceAll(',', ''),
                           ),
                   expiryDate: dataProvider.expiryDate,
                   // categoryUuid:
@@ -178,18 +154,14 @@ class _AddMaterialDesktopState
                   uuid: createdMaterialUuid,
                   departmentName:
                       dataProvider.departmentUuid != null
-                          ? returnDepartmentProvider()
-                              .departments
+                          ? returnDepartmentProvider().departments
                               .firstWhere(
                                 (dept) =>
-                                    dept.uuid ==
-                                    dataProvider
-                                        .departmentUuid,
+                                    dept.uuid == dataProvider.departmentUuid,
                               )
                               .name
                           : null,
-                  departmentUuid:
-                      dataProvider.departmentUuid,
+                  departmentUuid: dataProvider.departmentUuid,
                 ),
               );
 
@@ -201,9 +173,7 @@ class _AddMaterialDesktopState
               Future.delayed(Duration(seconds: 2), () {
                 // Pop current screen
                 if (context.mounted) {
-                  Navigator.of(
-                    context,
-                  ).pop(); // pop current page
+                  Navigator.of(context).pop(); // pop current page
                 }
               });
             },
@@ -220,8 +190,7 @@ class _AddMaterialDesktopState
         var theme = returnTheme(context);
         return ConfirmationAlert(
           theme: theme,
-          message:
-              'Are you sure you want to proceed with update?',
+          message: 'Are you sure you want to proceed with update?',
           title: 'Proceed?',
           action: () async {
             final provider = returnMaterialsProvider();
@@ -242,18 +211,13 @@ class _AddMaterialDesktopState
               material: MaterialClass(
                 unitsList: dataProvider.getTempUnitList(),
                 useGroupUnit: dataProvider.useGroupUnit,
-                categories:
-                    dataProvider.selectedCategories
-                        .toList(),
+                categories: dataProvider.selectedCategories.toList(),
                 departmentName:
                     dataProvider.departmentUuid != null
-                        ? returnDepartmentProvider()
-                            .departments
+                        ? returnDepartmentProvider().departments
                             .firstWhere(
                               (dept) =>
-                                  dept.uuid ==
-                                  dataProvider
-                                      .departmentUuid,
+                                  dept.uuid == dataProvider.departmentUuid,
                             )
                             .name
                         : null,
@@ -261,24 +225,21 @@ class _AddMaterialDesktopState
                 isManaged: dataProvider.isManaged,
                 uuid: widget.material?.uuid,
                 name: widget.nameController.text,
-                unit:
-                    dataProvider.selectedUnit ?? 'Unit(s)',
+                unit: dataProvider.selectedUnit ?? 'Unit(s)',
                 groupUnit: dataProvider.selectedGroupUnit,
                 qttyPerGroup:
-                    widget
-                            .qttyPerGroupController
-                            .text
-                            .isNotEmpty
+                    widget.qttyPerGroupController.text.isNotEmpty
                         ? double.parse(
-                          widget.qttyPerGroupController.text
-                              .replaceAll(',', ''),
+                          widget.qttyPerGroupController.text.replaceAll(
+                            ',',
+                            '',
+                          ),
                         )
                         : null,
                 costPrice:
                     widget.costController.text.isNotEmpty
                         ? double.parse(
-                          widget.costController.text
-                              .replaceAll(',', ''),
+                          widget.costController.text.replaceAll(',', ''),
                         )
                         : 0,
                 quantity: widget.material?.quantity,
@@ -292,8 +253,7 @@ class _AddMaterialDesktopState
                     widget.lowQttyController.text.isEmpty
                         ? 10
                         : double.tryParse(
-                          widget.lowQttyController.text
-                              .replaceAll(',', ''),
+                          widget.lowQttyController.text.replaceAll(',', ''),
                         ),
                 sizeType: dataProvider.selectedSize,
               ),
@@ -350,10 +310,9 @@ class _AddMaterialDesktopState
       if (context.mounted) {
         returnData().clearFields(setIsManaged: false);
       }
-      var res = ItemsAuthAction()
-          .allowStockallToManageItemAction(
-            context: context,
-          );
+      var res = ItemsAuthAction().allowStockallToManageItemAction(
+        context: context,
+      );
       if (res) {
         returnData().toggleIsManagedTemp(true);
       } else {
@@ -361,36 +320,28 @@ class _AddMaterialDesktopState
       }
     });
     if (widget.material != null && context.mounted) {
-      returnData().departmentUuid =
-          widget.material?.departmentUuid;
+      returnData().departmentUuid = widget.material?.departmentUuid;
       returnData().expiryDate = widget.material?.expiryDate;
       widget.nameController.text = widget.material!.name;
-      widget.lowQttyController.text = widget
-          .material!
-          .lowQtty!
-          .toStringAsFixed(0);
-      widget.costController.text =
-          widget.material!.costPrice.toString();
+      widget.lowQttyController.text = widget.material!.lowQtty!.toStringAsFixed(
+        0,
+      );
+      widget.costController.text = widget.material!.costPrice.toString();
 
       returnData().isManaged = widget.material!.isManaged;
-      returnData().useGroupUnit =
-          widget.material!.useGroupUnit ?? false;
+      returnData().useGroupUnit = widget.material!.useGroupUnit ?? false;
       returnData().selectUnit(widget.material!.unit);
       returnData().initUnitsList(
         productUuid: createdMaterialUuid,
         unitsListNew: widget.material!.getUnitsList(),
       );
-      returnData().selectGroupUnit(
-        unit: widget.material!.groupUnit,
-      );
+      returnData().selectGroupUnit(unit: widget.material!.groupUnit);
       widget.qttyPerGroupController.text =
           widget.material!.qttyPerGroup != null
               ? widget.material!.qttyPerGroup!.toString()
               : '';
       widget.material!.sizeType != null
-          ? returnData().selectSize(
-            widget.material!.sizeType!,
-          )
+          ? returnData().selectSize(widget.material!.sizeType!)
           : null;
       returnData().initCategories(
         categories: widget.material?.categories ?? [],
@@ -430,14 +381,12 @@ class _AddMaterialDesktopState
                 scrolledUnderElevation: 0,
                 centerTitle: true,
                 title: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.h4.fontSize,
+                        fontSize: theme.mobileTexts.h4.fontSize,
                         fontWeight: FontWeight.bold,
                       ),
                       widget.material != null
@@ -446,10 +395,7 @@ class _AddMaterialDesktopState
                     ),
                     SizedBox(height: 5),
                     Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b2.fontSize,
-                      ),
+                      style: TextStyle(fontSize: theme.mobileTexts.b2.fontSize),
                       widget.material != null
                           ? 'Edit item details'
                           : 'Add a new item to your store.',
@@ -463,43 +409,30 @@ class _AddMaterialDesktopState
                     children: [
                       Expanded(
                         child: Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 10.0,
-                              ),
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
                           child: SingleChildScrollView(
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.only(
-                                    top: 10.0,
-                                  ),
+                              padding: const EdgeInsets.only(top: 10.0),
                               child: Column(
                                 children: [
                                   GeneralTextField(
-                                    focusNode:
-                                        nameFieldNode,
+                                    focusNode: nameFieldNode,
                                     onSubmitted: (value) {
                                       FocusScope.of(
                                         context,
-                                      ).requestFocus(
-                                        costFieldNode,
-                                      );
+                                      ).requestFocus(costFieldNode);
                                     },
                                     theme: theme,
-                                    hint:
-                                        'Enter Material Name',
+                                    hint: 'Enter Material Name',
                                     lines: 1,
                                     title: 'Material Name',
-                                    controller:
-                                        widget
-                                            .nameController,
+                                    controller: widget.nameController,
                                   ),
                                   SizedBox(height: 10),
                                   Visibility(
                                     visible: authorization(
                                       authorized:
-                                          Authorizations()
-                                              .manageCostPrice,
+                                          Authorizations().manageCostPrice,
                                     ),
                                     child: Column(
                                       children: [
@@ -507,28 +440,19 @@ class _AddMaterialDesktopState
                                           children: [
                                             Expanded(
                                               child: MoneyTextfield(
-                                                focusNode:
-                                                    costFieldNode,
-                                                onChanged:
-                                                    (
-                                                      value,
-                                                    ) {},
-                                                theme:
-                                                    theme,
-                                                hint:
-                                                    'Enter Real Cost',
+                                                focusNode: costFieldNode,
+                                                onChanged: (value) {},
+                                                theme: theme,
+                                                hint: 'Enter Real Cost',
                                                 title:
                                                     'Cost - Price (Optional)',
                                                 controller:
-                                                    widget
-                                                        .costController,
+                                                    widget.costController,
                                               ),
                                             ),
                                           ],
                                         ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
+                                        SizedBox(height: 10),
                                       ],
                                     ),
                                   ),
@@ -536,48 +460,41 @@ class _AddMaterialDesktopState
                                     children: [
                                       SizedBox(height: 10),
                                       InkWell(
-                                        mouseCursor:
-                                            SystemMouseCursors
-                                                .click,
+                                        mouseCursor: SystemMouseCursors.click,
                                         onTap: () {
-                                          returnData()
-                                              .toggleIsManaged(
-                                                context:
-                                                    context,
-                                              );
-                                          FocusManager
-                                              .instance
-                                              .primaryFocus
+                                          returnData().toggleIsManaged(
+                                            context: context,
+                                          );
+                                          FocusManager.instance.primaryFocus
                                               ?.unfocus();
                                         },
                                         child: Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .spaceBetween,
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             Flexible(
                                               child: Column(
                                                 crossAxisAlignment:
-                                                    CrossAxisAlignment
-                                                        .start,
+                                                    CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
                                                     style: TextStyle(
                                                       fontSize:
-                                                          theme.mobileTexts.b1.fontSize,
+                                                          theme
+                                                              .mobileTexts
+                                                              .b1
+                                                              .fontSize,
                                                       fontWeight:
                                                           FontWeight.bold,
                                                     ),
                                                     'Allow Stockall to Manage Material Quantity?',
                                                   ),
                                                   Column(
-                                                    spacing:
-                                                        5,
+                                                    spacing: 5,
                                                     children: [
                                                       Text(
                                                         style: TextStyle(
-                                                          fontSize:
-                                                              10,
+                                                          fontSize: 10,
                                                         ),
                                                         'This controls whether Material quantity is automatically deducted after sales, and notifications are sent when item quantity is low or out of stock.',
                                                       ),
@@ -593,17 +510,12 @@ class _AddMaterialDesktopState
                                                       .secColor100,
                                               value:
                                                   returnData(
-                                                    context:
-                                                        context,
+                                                    context: context,
                                                   ).isManaged,
-                                              onChanged: (
-                                                value,
-                                              ) {
-                                                returnData()
-                                                    .toggleIsManaged(
-                                                      context:
-                                                          context,
-                                                    );
+                                              onChanged: (value) {
+                                                returnData().toggleIsManaged(
+                                                  context: context,
+                                                );
                                                 FocusManager
                                                     .instance
                                                     .primaryFocus
@@ -621,29 +533,23 @@ class _AddMaterialDesktopState
                                   Divider(height: 0),
                                   // SizedBox(height: 5),
                                   InkWell(
-                                    mouseCursor:
-                                        SystemMouseCursors
-                                            .click,
+                                    mouseCursor: SystemMouseCursors.click,
                                     onTap: () {
                                       setState(() {
                                         expand = !expand;
                                       });
                                     },
                                     child: Container(
-                                      padding:
-                                          EdgeInsets.symmetric(
-                                            vertical: 5,
-                                          ),
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 5,
+                                      ),
                                       child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .spaceBetween,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
                                             style: TextStyle(
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                             expand
                                                 ? 'Hide Details'
@@ -651,23 +557,18 @@ class _AddMaterialDesktopState
                                           ),
                                           InkWell(
                                             mouseCursor:
-                                                SystemMouseCursors
-                                                    .click,
+                                                SystemMouseCursors.click,
                                             onTap: () {
                                               setState(() {
-                                                expand =
-                                                    !expand;
+                                                expand = !expand;
                                               });
                                             },
                                             child: Padding(
-                                              padding:
-                                                  const EdgeInsets.only(
-                                                    left:
-                                                        35.0,
-                                                    top: 5,
-                                                    bottom:
-                                                        5,
-                                                  ),
+                                              padding: const EdgeInsets.only(
+                                                left: 35.0,
+                                                top: 5,
+                                                bottom: 5,
+                                              ),
                                               child: Row(
                                                 children: [
                                                   Text(
@@ -677,8 +578,10 @@ class _AddMaterialDesktopState
                                                   ),
                                                   Icon(
                                                     expand
-                                                        ? Icons.keyboard_arrow_up_outlined
-                                                        : Icons.keyboard_arrow_down,
+                                                        ? Icons
+                                                            .keyboard_arrow_up_outlined
+                                                        : Icons
+                                                            .keyboard_arrow_down,
                                                   ),
                                                 ],
                                               ),
@@ -699,13 +602,10 @@ class _AddMaterialDesktopState
                                           children: [
                                             EditCartTextField(
                                               theme: theme,
-                                              hint:
-                                                  'Enter Limit',
-                                              title:
-                                                  'Low Quantity Limit',
+                                              hint: 'Enter Limit',
+                                              title: 'Low Quantity Limit',
                                               controller:
-                                                  widget
-                                                      .lowQttyController,
+                                                  widget.lowQttyController,
                                             ),
                                             Visibility(
                                               visible:
@@ -715,13 +615,10 @@ class _AddMaterialDesktopState
                                                       true &&
                                                   authorization(
                                                     authorized:
-                                                        Authorizations().viewAllDepartments,
+                                                        Authorizations()
+                                                            .viewAllDepartments,
                                                   ),
-                                              child:
-                                                  SizedBox(
-                                                    height:
-                                                        10,
-                                                  ),
+                                              child: SizedBox(height: 10),
                                             ),
                                             Visibility(
                                               visible:
@@ -731,26 +628,24 @@ class _AddMaterialDesktopState
                                                       true &&
                                                   authorization(
                                                     authorized:
-                                                        Authorizations().viewAllDepartments,
+                                                        Authorizations()
+                                                            .viewAllDepartments,
                                                   ),
                                               child: InkWell(
                                                 mouseCursor:
-                                                    SystemMouseCursors
-                                                        .click,
+                                                    SystemMouseCursors.click,
                                                 onTap: () {
                                                   GeneralSettingsAuthAction().manageDeparmtmentsAction(
-                                                    context:
-                                                        context,
+                                                    context: context,
                                                     action: () {
-                                                      String?
-                                                      selectedDept;
+                                                      String? selectedDept;
                                                       setState(() {
                                                         selectedDept =
-                                                            returnData().departmentUuid;
+                                                            returnData()
+                                                                .departmentUuid;
                                                       });
                                                       showDialog(
-                                                        context:
-                                                            context,
+                                                        context: context,
                                                         builder: (
                                                           firstContext,
                                                         ) {
@@ -760,16 +655,16 @@ class _AddMaterialDesktopState
                                                               setState,
                                                             ) {
                                                               return DialogTemplate(
-                                                                theme:
-                                                                    theme,
+                                                                theme: theme,
                                                                 message:
                                                                     'Select Department for this Staff',
                                                                 title:
                                                                     'Select Department(s)',
                                                                 action: () {
-                                                                  returnData().setDepartment(
-                                                                    selectedDept,
-                                                                  );
+                                                                  returnData()
+                                                                      .setDepartment(
+                                                                        selectedDept,
+                                                                      );
                                                                   Navigator.of(
                                                                     context,
                                                                   ).pop();
@@ -884,13 +779,10 @@ class _AddMaterialDesktopState
                                                 },
                                                 child: Column(
                                                   mainAxisSize:
-                                                      MainAxisSize
-                                                          .min,
+                                                      MainAxisSize.min,
                                                   mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .start,
-                                                  spacing:
-                                                      5,
+                                                      MainAxisAlignment.start,
+                                                  spacing: 5,
                                                   children: [
                                                     Row(
                                                       children: [
@@ -898,50 +790,57 @@ class _AddMaterialDesktopState
                                                           textAlign:
                                                               TextAlign.start,
                                                           style:
-                                                              theme.mobileTexts.b3.textStyleBold,
+                                                              theme
+                                                                  .mobileTexts
+                                                                  .b3
+                                                                  .textStyleBold,
                                                           'Set Department',
                                                         ),
                                                       ],
                                                     ),
                                                     SubWrapper(
                                                       isVisible:
-                                                          !GeneralSettingsAuthAction().manageDeparmtmentsAction(
-                                                            context:
-                                                                context,
-                                                          ),
+                                                          !GeneralSettingsAuthAction()
+                                                              .manageDeparmtmentsAction(
+                                                                context:
+                                                                    context,
+                                                              ),
                                                       mainWidget: Container(
-                                                        padding: EdgeInsets.symmetric(
-                                                          vertical:
-                                                              0,
-                                                          horizontal:
-                                                              5,
-                                                        ),
+                                                        padding:
+                                                            EdgeInsets.symmetric(
+                                                              vertical: 0,
+                                                              horizontal: 5,
+                                                            ),
                                                         decoration: BoxDecoration(
                                                           border: Border.all(
                                                             color:
                                                                 returnData().departmentUuid !=
                                                                         null
-                                                                    ? theme.lightModeColor.prColor300
-                                                                    : Colors.grey,
+                                                                    ? theme
+                                                                        .lightModeColor
+                                                                        .prColor300
+                                                                    : Colors
+                                                                        .grey,
                                                             width:
                                                                 returnData().departmentUuid !=
                                                                         null
                                                                     ? 1.3
                                                                     : 1,
                                                           ),
-                                                          borderRadius: BorderRadius.circular(
-                                                            5,
-                                                          ),
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                5,
+                                                              ),
                                                         ),
                                                         child: Row(
                                                           mainAxisAlignment:
-                                                              MainAxisAlignment.spaceBetween,
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
                                                           children: [
                                                             Row(
                                                               children: [
                                                                 SizedBox(
-                                                                  width:
-                                                                      10,
+                                                                  width: 10,
                                                                 ),
                                                                 Text(
                                                                   style: TextStyle(
@@ -964,7 +863,8 @@ class _AddMaterialDesktopState
                                                                   returnData().departmentUuid ==
                                                                           null
                                                                       ? 'Select Department'
-                                                                      : returnDepartmentProvider().departments
+                                                                      : returnDepartmentProvider()
+                                                                          .departments
                                                                           .firstWhere(
                                                                             (
                                                                               dept,
@@ -979,20 +879,25 @@ class _AddMaterialDesktopState
                                                             Ink(
                                                               child: InkWell(
                                                                 mouseCursor:
-                                                                    SystemMouseCursors.click,
-                                                                borderRadius: BorderRadius.circular(
-                                                                  20,
-                                                                ),
+                                                                    SystemMouseCursors
+                                                                        .click,
+                                                                borderRadius:
+                                                                    BorderRadius.circular(
+                                                                      20,
+                                                                    ),
                                                                 onTap: () {
-                                                                  returnData().clearDepartment();
+                                                                  returnData()
+                                                                      .clearDepartment();
                                                                 },
                                                                 child: Container(
-                                                                  padding: EdgeInsets.all(
-                                                                    7,
-                                                                  ),
+                                                                  padding:
+                                                                      EdgeInsets.all(
+                                                                        7,
+                                                                      ),
                                                                   decoration: BoxDecoration(
                                                                     shape:
-                                                                        BoxShape.circle,
+                                                                        BoxShape
+                                                                            .circle,
                                                                   ),
                                                                   child: Icon(
                                                                     Icons.clear,
@@ -1008,41 +913,33 @@ class _AddMaterialDesktopState
                                                 ),
                                               ),
                                             ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
+                                            SizedBox(height: 10),
                                             InkWell(
                                               mouseCursor:
-                                                  SystemMouseCursors
-                                                      .click,
+                                                  SystemMouseCursors.click,
                                               onTap: () {
-                                                ItemsAuthAction().setExpiryDateAction(
-                                                  context:
-                                                      context,
-                                                  action: () {
-                                                    myDatePickerAction(
-                                                      theme,
-                                                      context,
-                                                    ).then((
-                                                      value,
-                                                    ) {
-                                                      value !=
-                                                              null
-                                                          ? returnData().setExpDate(
-                                                            value,
-                                                          )
-                                                          : {};
-                                                    });
-                                                  },
-                                                );
+                                                ItemsAuthAction()
+                                                    .setExpiryDateAction(
+                                                      context: context,
+                                                      action: () {
+                                                        myDatePickerAction(
+                                                          theme,
+                                                          context,
+                                                        ).then((value) {
+                                                          value != null
+                                                              ? returnData()
+                                                                  .setExpDate(
+                                                                    value,
+                                                                  )
+                                                              : {};
+                                                        });
+                                                      },
+                                                    );
                                               },
                                               child: Column(
-                                                mainAxisSize:
-                                                    MainAxisSize
-                                                        .min,
+                                                mainAxisSize: MainAxisSize.min,
                                                 mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .start,
+                                                    MainAxisAlignment.start,
                                                 spacing: 5,
                                                 children: [
                                                   Row(
@@ -1051,30 +948,34 @@ class _AddMaterialDesktopState
                                                         textAlign:
                                                             TextAlign.start,
                                                         style:
-                                                            theme.mobileTexts.b3.textStyleBold,
+                                                            theme
+                                                                .mobileTexts
+                                                                .b3
+                                                                .textStyleBold,
                                                         'Expiry Date (Optional)',
                                                       ),
                                                     ],
                                                   ),
                                                   SubWrapper(
                                                     isVisible:
-                                                        !ItemsAuthAction().setExpiryDateAction(
-                                                          context:
-                                                              context,
-                                                        ),
+                                                        !ItemsAuthAction()
+                                                            .setExpiryDateAction(
+                                                              context: context,
+                                                            ),
                                                     mainWidget: Container(
-                                                      padding: EdgeInsets.symmetric(
-                                                        vertical:
-                                                            0,
-                                                        horizontal:
-                                                            5,
-                                                      ),
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                            vertical: 0,
+                                                            horizontal: 5,
+                                                          ),
                                                       decoration: BoxDecoration(
                                                         border: Border.all(
                                                           color:
                                                               returnData().expiryDate !=
                                                                       null
-                                                                  ? theme.lightModeColor.prColor300
+                                                                  ? theme
+                                                                      .lightModeColor
+                                                                      .prColor300
                                                                   : Colors.grey,
                                                           width:
                                                               returnData().expiryDate !=
@@ -1082,43 +983,54 @@ class _AddMaterialDesktopState
                                                                   ? 1.3
                                                                   : 1,
                                                         ),
-                                                        borderRadius: BorderRadius.circular(
-                                                          5,
-                                                        ),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              5,
+                                                            ),
                                                       ),
                                                       child: Row(
                                                         mainAxisAlignment:
-                                                            MainAxisAlignment.spaceBetween,
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
                                                         children: [
                                                           Row(
                                                             children: [
                                                               SizedBox(
-                                                                width:
-                                                                    10,
+                                                                width: 10,
                                                               ),
                                                               Text(
                                                                 style: TextStyle(
                                                                   fontSize:
                                                                       returnData().expiryDate !=
                                                                               null
-                                                                          ? theme.mobileTexts.b2.fontSize
-                                                                          : theme.mobileTexts.b2.fontSize,
+                                                                          ? theme
+                                                                              .mobileTexts
+                                                                              .b2
+                                                                              .fontSize
+                                                                          : theme
+                                                                              .mobileTexts
+                                                                              .b2
+                                                                              .fontSize,
                                                                   fontWeight:
                                                                       returnData().expiryDate !=
                                                                               null
-                                                                          ? FontWeight.bold
+                                                                          ? FontWeight
+                                                                              .bold
                                                                           : null,
                                                                   color:
                                                                       returnData().expiryDate !=
                                                                               null
                                                                           ? null
-                                                                          : Colors.grey.shade500,
+                                                                          : Colors
+                                                                              .grey
+                                                                              .shade500,
                                                                 ),
                                                                 returnData().expiryDate ==
                                                                         null
                                                                     ? 'Set Expiry Date'
                                                                     : formatDateWithDay(
-                                                                      returnData().expiryDate ??
+                                                                      returnData()
+                                                                              .expiryDate ??
                                                                           DateTime.now(),
                                                                     ),
                                                               ),
@@ -1127,21 +1039,27 @@ class _AddMaterialDesktopState
                                                           Ink(
                                                             child: InkWell(
                                                               mouseCursor:
-                                                                  SystemMouseCursors.click,
-                                                              borderRadius: BorderRadius.circular(
-                                                                20,
-                                                              ),
+                                                                  SystemMouseCursors
+                                                                      .click,
+                                                              borderRadius:
+                                                                  BorderRadius.circular(
+                                                                    20,
+                                                                  ),
                                                               onTap: () {
-                                                                returnData().clearExpDate();
+                                                                returnData()
+                                                                    .clearExpDate();
                                                               },
                                                               child: Container(
-                                                                padding: EdgeInsets.all(
-                                                                  7,
-                                                                ),
-                                                                decoration: BoxDecoration(
-                                                                  shape:
-                                                                      BoxShape.circle,
-                                                                ),
+                                                                padding:
+                                                                    EdgeInsets.all(
+                                                                      7,
+                                                                    ),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                      shape:
+                                                                          BoxShape
+                                                                              .circle,
+                                                                    ),
                                                                 child: Icon(
                                                                   Icons.clear,
                                                                 ),
@@ -1155,9 +1073,7 @@ class _AddMaterialDesktopState
                                                 ],
                                               ),
                                             ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
+                                            SizedBox(height: 10),
                                           ],
                                         ),
                                         Visibility(
@@ -1167,43 +1083,41 @@ class _AddMaterialDesktopState
                                                     .manageMultipleUnits,
                                           ),
                                           child: Padding(
-                                            padding:
-                                                const EdgeInsets.only(
-                                                  bottom:
-                                                      10.0,
-                                                ),
+                                            padding: const EdgeInsets.only(
+                                              bottom: 10.0,
+                                            ),
                                             child: SubWrapper(
                                               isVisible:
-                                                  !ItemsAuthAction().applyVariationsAction(
-                                                    context:
-                                                        context,
-                                                  ),
+                                                  !ItemsAuthAction()
+                                                      .applyVariationsAction(
+                                                        context: context,
+                                                      ),
                                               mainWidget: MainDropdown(
                                                 valueSet:
                                                     returnData()
                                                         .tempUnitsList
                                                         .isNotEmpty,
                                                 onTap: () {
-                                                  ItemsAuthAction().applyVariationsAction(
-                                                    context:
-                                                        context,
-                                                    action: () {
-                                                      Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (
+                                                  ItemsAuthAction()
+                                                      .applyVariationsAction(
+                                                        context: context,
+                                                        action: () {
+                                                          Navigator.push(
                                                             context,
-                                                          ) {
-                                                            return ProductUnitsPage(
-                                                              productUuid:
-                                                                  createdMaterialUuid ??
-                                                                  '',
-                                                            );
-                                                          },
-                                                        ),
+                                                            MaterialPageRoute(
+                                                              builder: (
+                                                                context,
+                                                              ) {
+                                                                return ProductUnitsPage(
+                                                                  productUuid:
+                                                                      createdMaterialUuid ??
+                                                                      '',
+                                                                );
+                                                              },
+                                                            ),
+                                                          );
+                                                        },
                                                       );
-                                                    },
-                                                  );
                                                 },
                                                 isOpen:
                                                     returnData()
@@ -1213,13 +1127,11 @@ class _AddMaterialDesktopState
                                                     'Item Unit(s) (Optional)',
                                                 hint:
                                                     returnData(
-                                                          context:
-                                                              context,
+                                                          context: context,
                                                         ).tempUnitsList.isEmpty
                                                         ? 'Unit Not Set'
                                                         : "${returnData(context: context).tempUnitsList.firstWhere((item) => item.isPrimary).name} and (${returnData(context: context).tempUnitsList.length - 1}) More",
-                                                theme:
-                                                    theme,
+                                                theme: theme,
                                               ),
                                             ),
                                           ),
@@ -1228,110 +1140,90 @@ class _AddMaterialDesktopState
                                           children: [
                                             SubWrapper(
                                               isVisible:
-                                                  !ItemsAuthAction().applyVariationsAction(
-                                                    context:
-                                                        context,
-                                                  ),
+                                                  !ItemsAuthAction()
+                                                      .applyVariationsAction(
+                                                        context: context,
+                                                      ),
                                               mainWidget: MainDropdown(
                                                 valueSet:
                                                     returnData(
-                                                      context:
-                                                          context,
+                                                      context: context,
                                                     ).sizeValueSet,
                                                 onTap: () {
-                                                  ItemsAuthAction().applyVariationsAction(
-                                                    context:
-                                                        context,
-                                                    action: () {
-                                                      sizeTypeBottomSheet(
-                                                        context,
-                                                        () {
-                                                          setState(
+                                                  ItemsAuthAction()
+                                                      .applyVariationsAction(
+                                                        context: context,
+                                                        action: () {
+                                                          sizeTypeBottomSheet(
+                                                            context,
                                                             () {
-                                                              isSizedTypeOpen =
-                                                                  !isSizedTypeOpen;
+                                                              setState(() {
+                                                                isSizedTypeOpen =
+                                                                    !isSizedTypeOpen;
+                                                              });
                                                             },
                                                           );
+                                                          setState(() {
+                                                            isSizedTypeOpen =
+                                                                !isSizedTypeOpen;
+                                                          });
                                                         },
                                                       );
-                                                      setState(() {
-                                                        isSizedTypeOpen =
-                                                            !isSizedTypeOpen;
-                                                      });
-                                                    },
-                                                  );
                                                 },
-                                                isOpen:
-                                                    isSizedTypeOpen,
-                                                title:
-                                                    'Size Type (Optional)',
+                                                isOpen: isSizedTypeOpen,
+                                                title: 'Size Type (Optional)',
                                                 hint:
-                                                    returnData()
-                                                        .selectedSize ??
+                                                    returnData().selectedSize ??
                                                     'Select Material Size Type',
-                                                theme:
-                                                    theme,
+                                                theme: theme,
                                               ),
                                             ),
 
-                                            SizedBox(
-                                              height: 10,
-                                            ),
+                                            SizedBox(height: 10),
                                             SubWrapper(
                                               isVisible:
-                                                  !ItemsAuthAction().applyVariationsAction(
-                                                    context:
-                                                        context,
-                                                  ),
+                                                  !ItemsAuthAction()
+                                                      .applyVariationsAction(
+                                                        context: context,
+                                                      ),
                                               mainWidget: MainDropdown(
                                                 valueSet:
                                                     returnData(
-                                                      context:
-                                                          context,
+                                                      context: context,
                                                     ).catValueSet,
                                                 onTap: () {
-                                                  ItemsAuthAction().applyVariationsAction(
-                                                    context:
-                                                        context,
-                                                    action: () {
-                                                      categoriesBottomSheet(
-                                                        context,
-                                                        () {
-                                                          setState(
+                                                  ItemsAuthAction()
+                                                      .applyVariationsAction(
+                                                        context: context,
+                                                        action: () {
+                                                          categoriesBottomSheet(
+                                                            context,
                                                             () {
-                                                              isOpen =
-                                                                  false;
+                                                              setState(() {
+                                                                isOpen = false;
+                                                              });
                                                             },
                                                           );
+                                                          setState(() {
+                                                            isOpen = !isOpen;
+                                                          });
                                                         },
                                                       );
-                                                      setState(() {
-                                                        isOpen =
-                                                            !isOpen;
-                                                      });
-                                                    },
-                                                  );
                                                 },
-                                                isOpen:
-                                                    isOpen,
-                                                title:
-                                                    'Categories (Optional)',
+                                                isOpen: isOpen,
+                                                title: 'Categories (Optional)',
                                                 hint:
-                                                    returnData(
-                                                          context:
-                                                              context,
-                                                        ).selectedCategories.isNotEmpty
+                                                    returnData(context: context)
+                                                            .selectedCategories
+                                                            .isNotEmpty
                                                         ? "(${returnData(context: context).selectedCategories.length}) Categories Selected"
                                                         : 'Select Item Categories',
-                                                theme:
-                                                    theme,
+                                                theme: theme,
                                               ),
                                             ),
                                           ],
                                         ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
+                                        SizedBox(height: 10),
                                       ],
                                     ),
                                   ),
@@ -1372,10 +1264,7 @@ class _AddMaterialDesktopState
           ),
           Visibility(
             visible: isLoading,
-            child: returnCompProvider(
-              context,
-              listen: false,
-            ).showLoader(
+            child: returnCompProvider(context, listen: false).showLoader(
               message:
                   widget.material != null
                       ? 'Updating Material'
@@ -1384,10 +1273,7 @@ class _AddMaterialDesktopState
           ),
           Visibility(
             visible: showSuccess,
-            child: returnCompProvider(
-              context,
-              listen: false,
-            ).showSuccess(
+            child: returnCompProvider(context, listen: false).showSuccess(
               widget.material != null
                   ? 'Material Updated Successfully'
                   : 'Material Created Successfully',

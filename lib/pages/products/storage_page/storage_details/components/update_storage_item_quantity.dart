@@ -91,7 +91,9 @@ class _StorageQuantityUpdateWidgetState
   // Entered quantity in getActualQuantity units (area for 2D).
   double storageActualFromEntered(double quantity) {
     return widget.storageProduct.actualFromUnit(
-      widget.storageProduct.getProductUnit(unitUuid: unitUuid),
+      widget.storageProduct.getProductUnit(
+        unitUuid: unitUuid,
+      ),
       quantity,
     );
   }
@@ -218,7 +220,10 @@ class _StorageQuantityUpdateWidgetState
           onChanged: (value) {
             final entered =
                 double.tryParse(
-                  quantityController.text.replaceAll(',', ''),
+                  quantityController.text.replaceAll(
+                    ',',
+                    '',
+                  ),
                 ) ??
                 0;
             if (currentIndex == 0 && productUuid != null) {
@@ -234,7 +239,8 @@ class _StorageQuantityUpdateWidgetState
               }
             } else if (currentIndex == 1) {
               if (storageActualFromEntered(entered) >
-                  (widget.storageProduct.getActualQuantity() ??
+                  (widget.storageProduct
+                          .getActualQuantity() ??
                       0)) {
                 quantityController.text = '0';
               }
@@ -852,7 +858,8 @@ class _StorageQuantityUpdateWidgetState
                                       currentIndex == 0
                                           ? StorageTransferMode
                                               .stockIn
-                                          : currentIndex == 1
+                                          : currentIndex ==
+                                              1
                                           ? StorageTransferMode
                                               .stockOut
                                           : StorageTransferMode
@@ -863,7 +870,8 @@ class _StorageQuantityUpdateWidgetState
                                       currentIndex == 2
                                           ? null
                                           : originalProduct,
-                                  actualAmount: actualAmount,
+                                  actualAmount:
+                                      actualAmount,
                                 );
                               } on StorageTypeMismatch {
                                 showDimensionMismatchAlert(
@@ -889,7 +897,8 @@ class _StorageQuantityUpdateWidgetState
                                   widget.storageProduct
                                       .getActualQuantity() ??
                                   0;
-                              final double storageNewQuantity =
+                              final double
+                              storageNewQuantity =
                                   newProduct
                                       .getActualQuantity() ??
                                   0;
@@ -922,8 +931,17 @@ class _StorageQuantityUpdateWidgetState
                                   isManaged:
                                       newPr.isManaged,
                                   source:
-                                      ItemHistoryEventClass
-                                          .storageSource,
+                                      (currentIndex == 1)
+                                          ? ItemHistoryEventClass
+                                              .storageSource
+                                          : ItemHistoryEventClass
+                                              .productSource,
+                                  destination:
+                                      (currentIndex == 1)
+                                          ? ItemHistoryEventClass
+                                              .productDestination
+                                          : ItemHistoryEventClass
+                                              .storageDestination,
                                   shopId: shopId(),
                                   isIncreased:
                                       salesNewQuantity >
@@ -995,23 +1013,20 @@ class _StorageQuantityUpdateWidgetState
                                               )
                                               .name,
                                 );
-                                await returnData()
-                                    .updateProduct(
-                                      itemHistory:
-                                          itemHistory,
-                                      includeQuantity:
-                                          false,
-                                      isIncrement:
-                                          salesNewQuantity >
-                                          salesOldQuantity,
-                                      isQuantityUpdate:
-                                          true,
-                                      // Stored units (sheets for 2D).
-                                      quantityChange:
-                                          transfer.salesChange ??
-                                          0,
-                                      product: newPr,
-                                    );
+                                await returnData().updateProduct(
+                                  itemHistory: itemHistory,
+                                  includeQuantity: false,
+                                  isIncrement:
+                                      salesNewQuantity >
+                                      salesOldQuantity,
+                                  isQuantityUpdate: true,
+                                  // Stored units (sheets for 2D).
+                                  quantityChange:
+                                      transfer
+                                          .salesChange ??
+                                      0,
+                                  product: newPr,
+                                );
                               }
                               var depts =
                                   returnDepartmentProvider()
@@ -1112,20 +1127,41 @@ class _StorageQuantityUpdateWidgetState
                                         0 &&
                                     productUuid == null) {
                                   return StorageItemHistoryEventClass
-                                      .quantityUpdatedIncrease;
+                                      .manualSource;
                                 } else if (currentIndex ==
                                     1) {
                                   return StorageItemHistoryEventClass
-                                      .productSource;
+                                      .storageSource;
                                 } else {
                                   return StorageItemHistoryEventClass
-                                      .unKnownSource;
+                                      .storageSource;
+                                }
+                              }
+
+                              String destination() {
+                                if (currentIndex == 0 &&
+                                    productUuid != null) {
+                                  return StorageItemHistoryEventClass
+                                      .storageDestination;
+                                } else if (currentIndex ==
+                                        0 &&
+                                    productUuid == null) {
+                                  return StorageItemHistoryEventClass
+                                      .storageDestination;
+                                } else if (currentIndex ==
+                                    1) {
+                                  return StorageItemHistoryEventClass
+                                      .productDestination;
+                                } else {
+                                  return StorageItemHistoryEventClass
+                                      .adjustmentDestination;
                                 }
                               }
 
                               var storageItemHistory = StorageItemHistory(
                                 event: event(),
                                 source: source(),
+                                destination: destination(),
                                 shopId: shopId(),
                                 title: title(),
                                 createdAt: DateTime.now(),
@@ -1808,12 +1844,15 @@ class _ManageProductsStorageState
 // blocked (see storage_transfer.dart).
 
 TempStorageProducts? storageItemByUuid(String? uuid) {
-  return returnStorageProductProvider().storageProductListMain
+  return returnStorageProductProvider()
+      .storageProductListMain
       .where((item) => item.uuid == uuid)
       .firstOrNull;
 }
 
-List<TempProductClass> manageableProductsFor(String storageUuid) {
+List<TempProductClass> manageableProductsFor(
+  String storageUuid,
+) {
   final storage = storageItemByUuid(storageUuid);
   if (storage == null) {
     return returnData().productListMain

@@ -26,8 +26,7 @@ class ProductionMaterialUsageTile extends StatefulWidget {
 class ProductionMaterialUsageTileState
     extends State<ProductionMaterialUsageTile> {
   String cutLongText(String text) {
-    if (text.length >
-        (screenWidth(context) > mobileScreen ? 25 : 15)) {
+    if (text.length > (screenWidth(context) > mobileScreen ? 25 : 15)) {
       return '${text.substring(0, (screenWidth(context) > mobileScreen ? 25 : 15))}...';
     } else {
       return text;
@@ -77,19 +76,15 @@ class ProductionMaterialUsageTileState
               spacing: 10,
               children: [
                 Visibility(
-                  visible:
-                      screenWidth(context) >
-                      mobileScreenSmall,
+                  visible: screenWidth(context) > mobileScreenSmall,
                   child: Container(
                     padding: EdgeInsets.all(5),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color:
-                          theme.lightModeColor.tertColor50,
+                      color: theme.lightModeColor.tertColor50,
                     ),
                     child: Icon(
-                      color:
-                          theme.lightModeColor.tertColor200,
+                      color: theme.lightModeColor.tertColor200,
                       size: 20,
                       Icons.border_horizontal_rounded,
                     ),
@@ -100,27 +95,19 @@ class ProductionMaterialUsageTileState
                     children: [
                       Row(
                         spacing: 15,
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
                             child: Row(
                               spacing: 5,
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Expanded(
                                   child: Text(
                                     style: TextStyle(
-                                      fontWeight:
-                                          FontWeight.bold,
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: theme.mobileTexts.b2.fontSize,
                                     ),
                                     (widget
                                         .productionRecordMaterials
@@ -129,22 +116,12 @@ class ProductionMaterialUsageTileState
                                 ),
                                 Text(
                                   style: TextStyle(
-                                    fontWeight:
-                                        FontWeight.bold,
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b2
-                                            .fontSize,
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .secColor200,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: theme.mobileTexts.b2.fontSize,
+                                    color: theme.lightModeColor.secColor200,
                                   ),
                                   formatLargeNumberDouble(
-                                    widget
-                                        .productionRecordMaterials
-                                        .quantity,
+                                    widget.productionRecordMaterials.quantity,
                                   ),
                                 ),
                               ],
@@ -158,10 +135,7 @@ class ProductionMaterialUsageTileState
                         ],
                       ),
                       SizedBox(height: 5),
-                      Divider(
-                        color: Colors.grey.shade400,
-                        thickness: 0.5,
-                      ),
+                      Divider(color: Colors.grey.shade400, thickness: 0.5),
                       Padding(
                         padding: const EdgeInsets.only(
                           // top: 5.0,
@@ -169,45 +143,26 @@ class ProductionMaterialUsageTileState
                           right: 15,
                         ),
                         child: Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Expanded(
                               child: Row(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment
-                                        .start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 spacing: 5,
                                 children: [
                                   Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b4
-                                              .fontSize,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade600,
+                                      fontSize: theme.mobileTexts.b4.fontSize,
+                                      color: Colors.grey.shade600,
                                     ),
                                     'Produced:',
                                   ),
                                   Flexible(
                                     child: Text(
                                       style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b4
-                                                .fontSize,
-                                        color:
-                                            theme
-                                                .lightModeColor
-                                                .prColor300,
-                                        fontWeight:
-                                            FontWeight.bold,
+                                        fontSize: theme.mobileTexts.b4.fontSize,
+                                        color: theme.lightModeColor.prColor300,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                       cutLongText(
                                         widget
@@ -225,36 +180,20 @@ class ProductionMaterialUsageTileState
                               children: [
                                 Visibility(
                                   visible:
-                                      screenWidth(context) >
-                                      mobileScreenSmall,
+                                      screenWidth(context) > mobileScreenSmall,
                                   child: Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b4
-                                              .fontSize,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade600,
+                                      fontSize: theme.mobileTexts.b4.fontSize,
+                                      color: Colors.grey.shade600,
                                     ),
                                     'Date:',
                                   ),
                                 ),
                                 Text(
                                   style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b4
-                                            .fontSize,
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .prColor300,
-                                    fontWeight:
-                                        FontWeight.bold,
+                                    fontSize: theme.mobileTexts.b4.fontSize,
+                                    color: theme.lightModeColor.prColor300,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                   formatDateTimeTime(
                                     widget
@@ -281,8 +220,7 @@ class ProductionMaterialUsageTileState
 }
 
 class MaterialUsageDetailsWidget extends StatefulWidget {
-  final ProductionRecordMaterials?
-  productionRecordMaterials;
+  final ProductionRecordMaterials? productionRecordMaterials;
   final bool fromDetails;
 
   const MaterialUsageDetailsWidget({
@@ -312,9 +250,7 @@ class _MaterialUsageDetailsWidgetState
                 ItemHistorySectionWidget(
                   title: 'Material Name',
                   message:
-                      widget
-                          .productionRecordMaterials
-                          ?.materialName ??
+                      widget.productionRecordMaterials?.materialName ??
                       'Not Set',
                 ),
                 ItemHistorySectionWidget(
@@ -327,9 +263,7 @@ class _MaterialUsageDetailsWidgetState
                   message: formatMoneyBig(
                     context: context,
                     amount:
-                        widget
-                            .productionRecordMaterials
-                            ?.originalCostPerItem ??
+                        widget.productionRecordMaterials?.originalCostPerItem ??
                         0,
                   ),
                 ),
@@ -338,48 +272,35 @@ class _MaterialUsageDetailsWidgetState
                   message: formatMoneyBig(
                     context: context,
                     amount:
-                        widget.productionRecordMaterials
-                            ?.getTotalCost() ??
-                        0,
+                        widget.productionRecordMaterials?.getTotalCost() ?? 0,
                   ),
                 ),
                 ItemHistorySectionWidget(
                   title: 'Produced Item',
                   message:
-                      widget
-                          .productionRecordMaterials
-                          ?.productionRecordName ??
+                      widget.productionRecordMaterials?.productionRecordName ??
                       'Not Set',
                 ),
                 ItemHistorySectionWidget(
                   title: 'Created Date',
                   message: formatDateWithTime(
-                    widget
-                            .productionRecordMaterials
-                            ?.createdAt ??
+                    widget.productionRecordMaterials?.createdAt ??
                         DateTime.now(),
                   ),
                 ),
                 ItemHistorySectionWidget(
                   title: 'Creator',
                   message:
-                      widget
-                          .productionRecordMaterials
-                          ?.staffName ??
-                      'Not Set',
+                      widget.productionRecordMaterials?.staffName ?? 'Not Set',
                 ),
                 Visibility(
                   visible:
-                      (widget
-                          .productionRecordMaterials
-                          ?.departmentName) !=
+                      (widget.productionRecordMaterials?.departmentName) !=
                       null,
                   child: ItemHistorySectionWidget(
                     title: 'Department Name',
                     message:
-                        widget
-                            .productionRecordMaterials
-                            ?.departmentName ??
+                        widget.productionRecordMaterials?.departmentName ??
                         'Not Set',
                   ),
                 ),
@@ -389,10 +310,7 @@ class _MaterialUsageDetailsWidgetState
           Visibility(
             visible:
                 !widget.fromDetails &&
-                (widget
-                        .productionRecordMaterials
-                        ?.productionRecordId) !=
-                    null,
+                (widget.productionRecordMaterials?.productionRecordId) != null,
             child: MainButtonP(
               themeProvider: theme,
               action: () {
@@ -444,12 +362,7 @@ class ItemHistorySectionWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: EdgeInsetsGeometry.fromLTRB(
-              10,
-              7,
-              10,
-              5,
-            ),
+            padding: EdgeInsetsGeometry.fromLTRB(10, 7, 10, 5),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(5),
@@ -462,8 +375,7 @@ class ItemHistorySectionWidget extends StatelessWidget {
                 Expanded(
                   child: Text(
                     style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b4.fontSize,
+                      fontSize: theme.mobileTexts.b4.fontSize,
                       fontWeight: FontWeight.bold,
                       color: Colors.grey.shade900,
                     ),
@@ -474,12 +386,7 @@ class ItemHistorySectionWidget extends StatelessWidget {
             ),
           ),
           Container(
-            padding: EdgeInsetsGeometry.fromLTRB(
-              10,
-              5,
-              10,
-              10,
-            ),
+            padding: EdgeInsetsGeometry.fromLTRB(10, 5, 10, 10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(2),
               color: Colors.grey.shade100,
@@ -489,8 +396,7 @@ class ItemHistorySectionWidget extends StatelessWidget {
                 Expanded(
                   child: Text(
                     style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b3.fontSize,
+                      fontSize: theme.mobileTexts.b3.fontSize,
                       fontWeight: FontWeight.normal,
                       color: Colors.grey.shade700,
                     ),

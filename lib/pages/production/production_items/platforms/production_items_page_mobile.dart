@@ -21,18 +21,14 @@ import 'package:stockall/pages/products/compnents/product_filter_button_category
 
 class ProductionItemsPageMobile extends StatefulWidget {
   final bool? seeRemainingItems;
-  const ProductionItemsPageMobile({
-    super.key,
-    this.seeRemainingItems,
-  });
+  const ProductionItemsPageMobile({super.key, this.seeRemainingItems});
 
   @override
   State<ProductionItemsPageMobile> createState() =>
       _ProductionItemsPageMobileState();
 }
 
-class _ProductionItemsPageMobileState
-    extends State<ProductionItemsPageMobile> {
+class _ProductionItemsPageMobileState extends State<ProductionItemsPageMobile> {
   int currentSelect = 0;
   void changeSelected(int number) {
     currentSelect = number;
@@ -45,8 +41,7 @@ class _ProductionItemsPageMobileState
   }
 
   bool isFocus = false;
-  TextEditingController searchController =
-      TextEditingController();
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -66,8 +61,7 @@ class _ProductionItemsPageMobileState
   bool isDeleteLoading = false;
 
   Future<void> getProductionItemList() async {
-    await returnProductionItemsProvider()
-        .getProductionItems();
+    await returnProductionItemsProvider().getProductionItems();
     setState(() {});
   }
 
@@ -76,8 +70,7 @@ class _ProductionItemsPageMobileState
     super.dispose();
     searchController.dispose();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      returnProductionItemsProvider()
-          .toggleIsSelectProductionItem(false);
+      returnProductionItemsProvider().toggleIsSelectProductionItem(false);
     });
   }
 
@@ -86,9 +79,7 @@ class _ProductionItemsPageMobileState
     var theme = returnTheme(context);
     var productionItems =
         searchController.text.isNotEmpty
-            ? returnProductionItemsProvider(
-                  context: context,
-                )
+            ? returnProductionItemsProvider(context: context)
                 .productionItemList()
                 .where(
                   (pr) =>
@@ -96,8 +87,7 @@ class _ProductionItemsPageMobileState
                         searchController.text.toLowerCase(),
                       ) ||
                       pr.barcode?.toLowerCase() ==
-                          searchController.text
-                              .toLowerCase(),
+                          searchController.text.toLowerCase(),
                 )
                 .toList()
             : returnProductionItemsProvider(
@@ -106,24 +96,15 @@ class _ProductionItemsPageMobileState
     List<ProductionItem> filterProductionItems() {
       switch (currentSelect) {
         case 1:
-          return productionItems
-              .where((p) => p.quantity != 0)
-              .toList();
+          return productionItems.where((p) => p.quantity != 0).toList();
         case 2:
           return productionItems
-              .where(
-                (p) =>
-                    p.quantity != null && p.quantity != 0,
-              )
+              .where((p) => p.quantity != null && p.quantity != 0)
               .toList();
         case 3:
-          return productionItems
-              .where((p) => p.quantity == 0)
-              .toList();
+          return productionItems.where((p) => p.quantity == 0).toList();
         case 4:
-          return productionItems
-              .where((p) => p.quantity == null)
-              .toList();
+          return productionItems.where((p) => p.quantity == null).toList();
         case 5:
           return productionItems
               .where((p) => p.departmentUuid == null)
@@ -137,11 +118,7 @@ class _ProductionItemsPageMobileState
     List<ProductionItem> categoryFilterProductionItems() {
       if (categoryUuid != null) {
         return productionItems
-            .where(
-              (pr) =>
-                  pr.categories?.contains(categoryUuid) ==
-                  true,
-            )
+            .where((pr) => pr.categories?.contains(categoryUuid) == true)
             .toList();
       }
       return productionItems;
@@ -164,29 +141,18 @@ class _ProductionItemsPageMobileState
                         filterIndex = 0;
                       });
                       returnProductionItemsProvider()
-                          .toggleIsSelectProductionItem(
-                            false,
-                          );
+                          .toggleIsSelectProductionItem(false);
                     },
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10.0,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
+                              fontSize: theme.mobileTexts.b3.fontSize,
                               fontWeight:
-                                  filterIndex == 0
-                                      ? FontWeight.bold
-                                      : null,
+                                  filterIndex == 0 ? FontWeight.bold : null,
                             ),
                             'Inventory Record',
                           ),
@@ -211,29 +177,18 @@ class _ProductionItemsPageMobileState
                         filterIndex = 1;
                       });
                       returnProductionItemsProvider()
-                          .toggleIsSelectProductionItem(
-                            false,
-                          );
+                          .toggleIsSelectProductionItem(false);
                     },
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10.0,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
+                              fontSize: theme.mobileTexts.b3.fontSize,
                               fontWeight:
-                                  filterIndex == 1
-                                      ? FontWeight.bold
-                                      : null,
+                                  filterIndex == 1 ? FontWeight.bold : null,
                             ),
                             'Categories',
                           ),
@@ -256,21 +211,17 @@ class _ProductionItemsPageMobileState
                         MaterialPageRoute(
                           builder: (context) {
                             return ProductionItemHistoryPage(
-                              fromProductionItemDetails:
-                                  false,
+                              fromProductionItemDetails: false,
                             );
                           },
                         ),
                       );
                     },
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10.0,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: Text(
                         style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b3.fontSize,
+                          fontSize: theme.mobileTexts.b3.fontSize,
                         ),
                         'View History',
                       ),
@@ -281,37 +232,25 @@ class _ProductionItemsPageMobileState
                       if (returnProductionItemsProvider()
                           .isSelectProductionItems) {
                         returnProductionItemsProvider()
-                            .toggleIsSelectProductionItem(
-                              false,
-                            );
+                            .toggleIsSelectProductionItem(false);
                       } else {
                         returnProductionItemsProvider()
-                            .toggleIsSelectProductionItem(
-                              true,
-                            );
+                            .toggleIsSelectProductionItem(true);
                       }
                       setState(() {
                         filterIndex = 0;
                       });
                     },
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10.0,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: Row(
                         spacing: 5,
                         children: [
                           Text(
                             style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
+                              fontSize: theme.mobileTexts.b3.fontSize,
                               fontWeight:
-                                  filterIndex == 2
-                                      ? FontWeight.bold
-                                      : null,
+                                  filterIndex == 2 ? FontWeight.bold : null,
                             ),
                             returnProductionItemsProvider()
                                     .isSelectProductionItems
@@ -343,13 +282,10 @@ class _ProductionItemsPageMobileState
                     children: [
                       Text(
                         style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b3.fontSize,
+                          fontSize: theme.mobileTexts.b3.fontSize,
                           fontWeight: FontWeight.bold,
                         ),
-                        filterIndex == 0
-                            ? 'Inventory'
-                            : 'Categories',
+                        filterIndex == 0 ? 'Inventory' : 'Categories',
                       ),
                       Icon(Icons.more_vert_rounded),
                     ],
@@ -360,8 +296,7 @@ class _ProductionItemsPageMobileState
           ),
           floatingActionButton: Visibility(
             visible: authorization(
-              authorized:
-                  Authorizations().addProductionItems,
+              authorized: Authorizations().addProductionItems,
             ),
             child: FloatingActionButtonMain(
               action: () {
@@ -383,17 +318,14 @@ class _ProductionItemsPageMobileState
               theme: theme,
             ),
           ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.endFloat,
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
           body: Stack(
             children: [
               Column(
                 children: [
                   SizedBox(height: 10),
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 30.0,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
                     child: TextFieldBarcode(
                       clearTextField: () {
                         setState(() {});
@@ -404,25 +336,21 @@ class _ProductionItemsPageMobileState
                           if (productionItems
                               .where(
                                 (pr) =>
-                                    pr.barcode
-                                        ?.toLowerCase() ==
-                                    searchController.text
-                                        .toLowerCase(),
+                                    pr.barcode?.toLowerCase() ==
+                                    searchController.text.toLowerCase(),
                               )
                               .isNotEmpty) {
-                            ItemsAuthAction()
-                                .useOfBArcodeAction(
-                                  context: context,
-                                  action: () {
-                                    setState(() {});
-                                  },
-                                  failAction: () {
-                                    setState(() {
-                                      searchController
-                                          .clear();
-                                    });
-                                  },
-                                );
+                            ItemsAuthAction().useOfBArcodeAction(
+                              context: context,
+                              action: () {
+                                setState(() {});
+                              },
+                              failAction: () {
+                                setState(() {
+                                  searchController.clear();
+                                });
+                              },
+                            );
                           } else {
                             setState(() {});
                           }
@@ -430,25 +358,22 @@ class _ProductionItemsPageMobileState
                       },
 
                       onPressedScan: () async {
-                        ItemsAuthAction()
-                            .useOfBArcodeAction(
-                              context: context,
-                              action: () async {
-                                String? result =
-                                    await scanCode(
-                                      context,
-                                      'Scan Failed',
-                                    );
-                                setState(() {
-                                  if (result != null) {
-                                    searchController.text =
-                                        result;
-                                  } else {
-                                    return;
-                                  }
-                                });
-                              },
+                        ItemsAuthAction().useOfBArcodeAction(
+                          context: context,
+                          action: () async {
+                            String? result = await scanCode(
+                              context,
+                              'Scan Failed',
                             );
+                            setState(() {
+                              if (result != null) {
+                                searchController.text = result;
+                              } else {
+                                return;
+                              }
+                            });
+                          },
+                        );
                       },
                     ),
                   ),
@@ -460,14 +385,9 @@ class _ProductionItemsPageMobileState
                             return Center(
                               child: SingleChildScrollView(
                                 child: RefreshIndicator(
-                                  onRefresh:
-                                      getProductionItemList,
-                                  color:
-                                      theme
-                                          .lightModeColor
-                                          .prColor300,
-                                  backgroundColor:
-                                      Colors.white,
+                                  onRefresh: getProductionItemList,
+                                  color: theme.lightModeColor.prColor300,
+                                  backgroundColor: Colors.white,
                                   displacement: 10,
                                   child: EmptyWidgetDisplay(
                                     buttonText: 'Add Item',
@@ -480,21 +400,17 @@ class _ProductionItemsPageMobileState
                                     action: () {
                                       if (authorization(
                                         authorized:
-                                            Authorizations()
-                                                .addProductionItems,
+                                            Authorizations().addProductionItems,
                                       )) {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (
-                                              context,
-                                            ) {
+                                            builder: (context) {
                                               return AddProductionItem();
                                             },
                                           ),
                                         ).then((_) {
-                                          if (context
-                                              .mounted) {}
+                                          if (context.mounted) {}
                                         });
                                       }
                                     },
@@ -503,8 +419,7 @@ class _ProductionItemsPageMobileState
                                       await returnProductionItemsProvider()
                                           .getProductionItems();
                                     },
-                                    altActionText:
-                                        'Refresh',
+                                    altActionText: 'Refresh',
                                     altIcon: Icons.refresh,
                                   ),
                                 ),
@@ -512,56 +427,50 @@ class _ProductionItemsPageMobileState
                             );
                           } else {
                             return Padding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(
-                                    10.0,
-                                    15,
-                                    10,
-                                    15,
-                                  ),
+                              padding: const EdgeInsets.fromLTRB(
+                                10.0,
+                                15,
+                                10,
+                                15,
+                              ),
                               child: Column(
                                 children: [
                                   Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(
-                                          horizontal: 10.0,
-                                        ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10.0,
+                                    ),
                                     child: SizedBox(
-                                      width:
-                                          double.infinity,
+                                      width: double.infinity,
                                       // height: 40,
                                       child: Builder(
                                         builder: (context) {
                                           if (returnProductionItemsProvider(
-                                            context:
-                                                context,
+                                            context: context,
                                           ).isSelectProductionItems) {
                                             return SizedBox(
-                                              width:
-                                                  double
-                                                      .infinity,
+                                              width: double.infinity,
                                               child: Center(
                                                 child: SingleChildScrollView(
                                                   scrollDirection:
                                                       Axis.horizontal,
                                                   child: Row(
                                                     mainAxisAlignment:
-                                                        MainAxisAlignment.center,
+                                                        MainAxisAlignment
+                                                            .center,
                                                     children: [
                                                       ProductionItemSelectionActionButton(
-                                                        title:
-                                                            'Delete',
+                                                        title: 'Delete',
                                                         action: () {
-                                                          if (returnProductionItemsProvider().selectedProductionItems.isNotEmpty) {
+                                                          if (returnProductionItemsProvider()
+                                                              .selectedProductionItems
+                                                              .isNotEmpty) {
                                                             showDialog(
-                                                              context:
-                                                                  context,
+                                                              context: context,
                                                               builder: (
                                                                 confirmContext,
                                                               ) {
                                                                 return ConfirmationAlert(
-                                                                  theme:
-                                                                      theme,
+                                                                  theme: theme,
                                                                   message:
                                                                       'You are about to delete all the selected Production Items. Please not that this action can not be reversed. Are you sure you want to proceed?',
                                                                   title:
@@ -570,22 +479,19 @@ class _ProductionItemsPageMobileState
                                                                     Navigator.of(
                                                                       confirmContext,
                                                                     ).pop();
-                                                                    setState(
-                                                                      () {
-                                                                        isDeleteLoading =
-                                                                            true;
-                                                                      },
-                                                                    );
+                                                                    setState(() {
+                                                                      isDeleteLoading =
+                                                                          true;
+                                                                    });
                                                                     var res =
-                                                                        await returnProductionItemsProvider().deleteSelectedProductionItems();
+                                                                        await returnProductionItemsProvider()
+                                                                            .deleteSelectedProductionItems();
                                                                     if (res ==
                                                                         0) {
-                                                                      setState(
-                                                                        () {
-                                                                          isDeleteLoading =
-                                                                              false;
-                                                                        },
-                                                                      );
+                                                                      setState(() {
+                                                                        isDeleteLoading =
+                                                                            false;
+                                                                      });
                                                                       showDialog(
                                                                         // ignore: use_build_context_synchronously
                                                                         context:
@@ -604,12 +510,10 @@ class _ProductionItemsPageMobileState
                                                                         },
                                                                       );
                                                                     } else {
-                                                                      setState(
-                                                                        () {
-                                                                          isDeleteLoading =
-                                                                              false;
-                                                                        },
-                                                                      );
+                                                                      setState(() {
+                                                                        isDeleteLoading =
+                                                                            false;
+                                                                      });
                                                                       // returnProductionItemsProvider().toggleIsSelectProductionItem(
                                                                       //   false,
                                                                       // );
@@ -621,52 +525,44 @@ class _ProductionItemsPageMobileState
                                                           }
                                                         },
                                                         icon:
-                                                            Icons.delete_outline_rounded,
+                                                            Icons
+                                                                .delete_outline_rounded,
                                                         color:
                                                             Colors.red.shade600,
                                                       ),
                                                       ProductionItemSelectionActionButton(
-                                                        title:
-                                                            'Duplicate',
+                                                        title: 'Duplicate',
                                                         action: () {
                                                           duplicateProductionItemsAction(
-                                                            context:
-                                                                context,
+                                                            context: context,
                                                             loadingAction: (
                                                               value,
                                                             ) {
-                                                              setState(
-                                                                () {
-                                                                  isDeleteLoading =
-                                                                      value;
-                                                                },
-                                                              );
+                                                              setState(() {
+                                                                isDeleteLoading =
+                                                                    value;
+                                                              });
                                                             },
                                                           );
                                                         },
                                                         icon:
-                                                            Icons.control_point_duplicate_rounded,
-                                                        color:
-                                                            Colors.grey,
+                                                            Icons
+                                                                .control_point_duplicate_rounded,
+                                                        color: Colors.grey,
                                                       ),
                                                       ProductionItemSelectionActionButton(
-                                                        title:
-                                                            'Cancel',
+                                                        title: 'Cancel',
                                                         action: () {
-                                                          returnProductionItemsProvider().toggleIsSelectProductionItem(
-                                                            false,
-                                                          );
-                                                          setState(
-                                                            () {
-                                                              filterIndex =
-                                                                  0;
-                                                            },
-                                                          );
+                                                          returnProductionItemsProvider()
+                                                              .toggleIsSelectProductionItem(
+                                                                false,
+                                                              );
+                                                          setState(() {
+                                                            filterIndex = 0;
+                                                          });
                                                         },
-                                                        icon:
-                                                            Icons.clear,
-                                                        color:
-                                                            Colors.grey,
+                                                        icon: Icons.clear,
+                                                        color: Colors.grey,
                                                       ),
                                                     ],
                                                   ),
@@ -674,57 +570,45 @@ class _ProductionItemsPageMobileState
                                               ),
                                             );
                                           } else {
-                                            if (filterIndex ==
-                                                0) {
+                                            if (filterIndex == 0) {
                                               return SingleChildScrollView(
-                                                clipBehavior:
-                                                    Clip.hardEdge,
+                                                clipBehavior: Clip.hardEdge,
                                                 scrollDirection:
                                                     Axis.horizontal,
                                                 child: Row(
-                                                  spacing:
-                                                      5,
+                                                  spacing: 5,
                                                   mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .center,
+                                                      MainAxisAlignment.center,
                                                   children: [
                                                     ProductsFilterButton(
                                                       length:
-                                                          filterProductionItems().length,
+                                                          filterProductionItems()
+                                                              .length,
                                                       action: () {
                                                         setState(() {
-                                                          changeSelected(
-                                                            0,
-                                                          );
+                                                          changeSelected(0);
                                                         });
                                                       },
                                                       currentSelected:
                                                           currentSelect,
-                                                      number:
-                                                          0,
-                                                      title:
-                                                          'All Items',
-                                                      theme:
-                                                          theme,
+                                                      number: 0,
+                                                      title: 'All Items',
+                                                      theme: theme,
                                                     ),
                                                     ProductsFilterButton(
                                                       length:
-                                                          filterProductionItems().length,
+                                                          filterProductionItems()
+                                                              .length,
                                                       action: () {
                                                         setState(() {
-                                                          changeSelected(
-                                                            1,
-                                                          );
+                                                          changeSelected(1);
                                                         });
                                                       },
                                                       currentSelected:
                                                           currentSelect,
-                                                      number:
-                                                          1,
-                                                      title:
-                                                          'In Stock',
-                                                      theme:
-                                                          theme,
+                                                      number: 1,
+                                                      title: 'In Stock',
+                                                      theme: theme,
                                                     ),
                                                     // ProductsFilterButton(
                                                     //   length:
@@ -747,66 +631,54 @@ class _ProductionItemsPageMobileState
                                                     // ),
                                                     ProductsFilterButton(
                                                       length:
-                                                          filterProductionItems().length,
+                                                          filterProductionItems()
+                                                              .length,
                                                       currentSelected:
                                                           currentSelect,
                                                       action: () {
                                                         setState(() {
-                                                          changeSelected(
-                                                            3,
-                                                          );
+                                                          changeSelected(3);
                                                         });
                                                       },
-                                                      number:
-                                                          3,
-                                                      title:
-                                                          'Out of Stock',
-                                                      theme:
-                                                          theme,
+                                                      number: 3,
+                                                      title: 'Out of Stock',
+                                                      theme: theme,
                                                     ),
                                                     ProductsFilterButton(
                                                       length:
-                                                          filterProductionItems().length,
+                                                          filterProductionItems()
+                                                              .length,
                                                       currentSelected:
                                                           currentSelect,
                                                       action: () {
                                                         setState(() {
-                                                          changeSelected(
-                                                            4,
-                                                          );
+                                                          changeSelected(4);
                                                         });
                                                       },
-                                                      number:
-                                                          4,
-                                                      title:
-                                                          'UnManaged',
-                                                      theme:
-                                                          theme,
+                                                      number: 4,
+                                                      title: 'UnManaged',
+                                                      theme: theme,
                                                     ),
                                                     Visibility(
                                                       visible:
-                                                          returnShopProvider().userShop()?.manageDepartments ==
+                                                          returnShopProvider()
+                                                              .userShop()
+                                                              ?.manageDepartments ==
                                                           true,
                                                       child: ProductsFilterButton(
                                                         length:
-                                                            filterProductionItems().length,
+                                                            filterProductionItems()
+                                                                .length,
                                                         currentSelected:
                                                             currentSelect,
                                                         action: () {
-                                                          setState(
-                                                            () {
-                                                              changeSelected(
-                                                                5,
-                                                              );
-                                                            },
-                                                          );
+                                                          setState(() {
+                                                            changeSelected(5);
+                                                          });
                                                         },
-                                                        number:
-                                                            5,
-                                                        title:
-                                                            'No Department',
-                                                        theme:
-                                                            theme,
+                                                        number: 5,
+                                                        title: 'No Department',
+                                                        theme: theme,
                                                       ),
                                                     ),
                                                   ],
@@ -818,10 +690,10 @@ class _ProductionItemsPageMobileState
                                                   scrollDirection:
                                                       Axis.horizontal,
                                                   child: Row(
-                                                    spacing:
-                                                        6,
+                                                    spacing: 6,
                                                     mainAxisAlignment:
-                                                        MainAxisAlignment.center,
+                                                        MainAxisAlignment
+                                                            .center,
                                                     children:
                                                         returnCategoriesProvider()
                                                             .categories()
@@ -829,23 +701,18 @@ class _ProductionItemsPageMobileState
                                                               (
                                                                 cat,
                                                               ) => ProductFilterButtonCategory(
-                                                                theme:
-                                                                    theme,
+                                                                theme: theme,
                                                                 action: () {
-                                                                  setState(
-                                                                    () {
-                                                                      categoryUuid =
-                                                                          cat.uuid;
-                                                                    },
-                                                                  );
+                                                                  setState(() {
+                                                                    categoryUuid =
+                                                                        cat.uuid;
+                                                                  });
                                                                 },
                                                                 currentSelected:
                                                                     categoryUuid ??
                                                                     '',
-                                                                title:
-                                                                    cat.name,
-                                                                uuid:
-                                                                    cat.uuid,
+                                                                title: cat.name,
+                                                                uuid: cat.uuid,
                                                               ),
                                                             )
                                                             .toList(),
@@ -862,33 +729,23 @@ class _ProductionItemsPageMobileState
                                   Expanded(
                                     child: Builder(
                                       builder: (context) {
-                                        if (filterIndex ==
-                                            0) {
+                                        if (filterIndex == 0) {
                                           if (filterProductionItems()
                                               .isNotEmpty) {
                                             return RefreshIndicator(
-                                              onRefresh:
-                                                  getProductionItemList,
+                                              onRefresh: getProductionItemList,
                                               color:
                                                   theme
                                                       .lightModeColor
                                                       .prColor300,
-                                              backgroundColor:
-                                                  Colors
-                                                      .white,
-                                              displacement:
-                                                  10,
+                                              backgroundColor: Colors.white,
+                                              displacement: 10,
                                               child: ListView.builder(
                                                 itemCount:
                                                     filterProductionItems()
                                                         .length,
-                                                itemBuilder: (
-                                                  context,
-                                                  index,
-                                                ) {
-                                                  List<
-                                                    ProductionItem
-                                                  >
+                                                itemBuilder: (context, index) {
+                                                  List<ProductionItem>
                                                   productionItems =
                                                       filterProductionItems();
 
@@ -899,65 +756,57 @@ class _ProductionItemsPageMobileState
                                                   return ProductionItemsTileMain(
                                                     isSelectProductionItem:
                                                         returnProductionItemsProvider(
-                                                          context:
-                                                              context,
+                                                          context: context,
                                                         ).isSelectProductionItems,
                                                     uuidList:
                                                         returnProductionItemsProvider(
-                                                              context:
-                                                                  context,
-                                                            ).selectedProductionItems
+                                                              context: context,
+                                                            )
+                                                            .selectedProductionItems
                                                             .map(
-                                                              (
-                                                                pr,
-                                                              ) =>
-                                                                  pr.uuid!,
+                                                              (pr) => pr.uuid!,
                                                             )
                                                             .toList(),
                                                     action: () {
                                                       if (returnProductionItemsProvider()
                                                           .isSelectProductionItems) {
-                                                        returnProductionItemsProvider().selectProductionItem(
-                                                          productionItem,
-                                                        );
+                                                        returnProductionItemsProvider()
+                                                            .selectProductionItem(
+                                                              productionItem,
+                                                            );
                                                       } else {
                                                         Navigator.push(
                                                           context,
                                                           MaterialPageRoute(
-                                                            builder: (
-                                                              context,
-                                                            ) {
+                                                            builder: (context) {
                                                               return ProductionItemsDetailsPage(
                                                                 productionItemUuid:
-                                                                    productionItem.uuid!,
+                                                                    productionItem
+                                                                        .uuid!,
                                                               );
                                                             },
                                                           ),
-                                                        ).then((
-                                                          _,
-                                                        ) {
+                                                        ).then((_) {
                                                           if (context.mounted) {
-                                                            setState(
-                                                              () {},
-                                                            );
+                                                            setState(() {});
                                                           }
                                                         });
                                                       }
                                                     },
                                                     longPress: () {
-                                                      returnProductionItemsProvider().toggleIsSelectProductionItem(
-                                                        true,
-                                                      );
+                                                      returnProductionItemsProvider()
+                                                          .toggleIsSelectProductionItem(
+                                                            true,
+                                                          );
                                                       setState(() {
-                                                        filterIndex =
-                                                            0;
+                                                        filterIndex = 0;
                                                       });
-                                                      returnProductionItemsProvider().selectProductionItem(
-                                                        productionItem,
-                                                      );
+                                                      returnProductionItemsProvider()
+                                                          .selectProductionItem(
+                                                            productionItem,
+                                                          );
                                                     },
-                                                    theme:
-                                                        theme,
+                                                    theme: theme,
                                                     productionItem:
                                                         productionItem,
                                                   );
@@ -966,22 +815,16 @@ class _ProductionItemsPageMobileState
                                             );
                                           } else {
                                             return Padding(
-                                              padding:
-                                                  const EdgeInsets.only(
-                                                    bottom:
-                                                        30.0,
-                                                  ),
+                                              padding: const EdgeInsets.only(
+                                                bottom: 30.0,
+                                              ),
                                               child: EmptyWidgetDisplayOnly(
-                                                title:
-                                                    'Empty List',
+                                                title: 'Empty List',
                                                 subText:
                                                     'You Don\'t have any Production Item under this category',
 
-                                                icon:
-                                                    Icons
-                                                        .dangerous_outlined,
-                                                theme:
-                                                    theme,
+                                                icon: Icons.dangerous_outlined,
+                                                theme: theme,
                                                 height: 40,
                                               ),
                                             );
@@ -990,28 +833,19 @@ class _ProductionItemsPageMobileState
                                           if (categoryFilterProductionItems()
                                               .isNotEmpty) {
                                             return RefreshIndicator(
-                                              onRefresh:
-                                                  getProductionItemList,
+                                              onRefresh: getProductionItemList,
                                               color:
                                                   theme
                                                       .lightModeColor
                                                       .prColor300,
-                                              backgroundColor:
-                                                  Colors
-                                                      .white,
-                                              displacement:
-                                                  10,
+                                              backgroundColor: Colors.white,
+                                              displacement: 10,
                                               child: ListView.builder(
                                                 itemCount:
                                                     categoryFilterProductionItems()
                                                         .length,
-                                                itemBuilder: (
-                                                  context,
-                                                  index,
-                                                ) {
-                                                  List<
-                                                    ProductionItem
-                                                  >
+                                                itemBuilder: (context, index) {
+                                                  List<ProductionItem>
                                                   productionItems =
                                                       categoryFilterProductionItems();
 
@@ -1022,65 +856,57 @@ class _ProductionItemsPageMobileState
                                                   return ProductionItemsTileMain(
                                                     isSelectProductionItem:
                                                         returnProductionItemsProvider(
-                                                          context:
-                                                              context,
+                                                          context: context,
                                                         ).isSelectProductionItems,
                                                     uuidList:
                                                         returnProductionItemsProvider(
-                                                              context:
-                                                                  context,
-                                                            ).selectedProductionItems
+                                                              context: context,
+                                                            )
+                                                            .selectedProductionItems
                                                             .map(
-                                                              (
-                                                                pr,
-                                                              ) =>
-                                                                  pr.uuid!,
+                                                              (pr) => pr.uuid!,
                                                             )
                                                             .toList(),
                                                     action: () {
                                                       if (returnProductionItemsProvider()
                                                           .isSelectProductionItems) {
-                                                        returnProductionItemsProvider().selectProductionItem(
-                                                          productionItem,
-                                                        );
+                                                        returnProductionItemsProvider()
+                                                            .selectProductionItem(
+                                                              productionItem,
+                                                            );
                                                       } else {
                                                         Navigator.push(
                                                           context,
                                                           MaterialPageRoute(
-                                                            builder: (
-                                                              context,
-                                                            ) {
+                                                            builder: (context) {
                                                               return ProductionItemsDetailsPage(
                                                                 productionItemUuid:
-                                                                    productionItem.uuid!,
+                                                                    productionItem
+                                                                        .uuid!,
                                                               );
                                                             },
                                                           ),
-                                                        ).then((
-                                                          _,
-                                                        ) {
+                                                        ).then((_) {
                                                           if (context.mounted) {
-                                                            setState(
-                                                              () {},
-                                                            );
+                                                            setState(() {});
                                                           }
                                                         });
                                                       }
                                                     },
                                                     longPress: () {
-                                                      returnProductionItemsProvider().toggleIsSelectProductionItem(
-                                                        true,
-                                                      );
+                                                      returnProductionItemsProvider()
+                                                          .toggleIsSelectProductionItem(
+                                                            true,
+                                                          );
                                                       setState(() {
-                                                        filterIndex =
-                                                            0;
+                                                        filterIndex = 0;
                                                       });
-                                                      returnProductionItemsProvider().selectProductionItem(
-                                                        productionItem,
-                                                      );
+                                                      returnProductionItemsProvider()
+                                                          .selectProductionItem(
+                                                            productionItem,
+                                                          );
                                                     },
-                                                    theme:
-                                                        theme,
+                                                    theme: theme,
                                                     productionItem:
                                                         productionItem,
                                                   );
@@ -1089,22 +915,16 @@ class _ProductionItemsPageMobileState
                                             );
                                           } else {
                                             return Padding(
-                                              padding:
-                                                  const EdgeInsets.only(
-                                                    bottom:
-                                                        30.0,
-                                                  ),
+                                              padding: const EdgeInsets.only(
+                                                bottom: 30.0,
+                                              ),
                                               child: EmptyWidgetDisplayOnly(
-                                                title:
-                                                    'Empty List',
+                                                title: 'Empty List',
                                                 subText:
                                                     'You Don\'t have any Item under this category',
 
-                                                icon:
-                                                    Icons
-                                                        .dangerous_outlined,
-                                                theme:
-                                                    theme,
+                                                icon: Icons.dangerous_outlined,
+                                                theme: theme,
                                                 height: 40,
                                               ),
                                             );
@@ -1128,9 +948,7 @@ class _ProductionItemsPageMobileState
         ),
         Visibility(
           visible: isDeleteLoading,
-          child: returnCompProvider(
-            context,
-          ).showLoader(message: 'Loading'),
+          child: returnCompProvider(context).showLoader(message: 'Loading'),
         ),
       ],
     );

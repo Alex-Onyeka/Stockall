@@ -26,15 +26,12 @@ Future<Object?> transferMaterialsQuantity(
   return showGeneralDialog(
     context: context,
     pageBuilder: (context, animation, secondaryAnimation) {
-      return TransferMaterialsQuantityWidget(
-        materialsItem: materialsItem,
-      );
+      return TransferMaterialsQuantityWidget(materialsItem: materialsItem);
     },
   );
 }
 
-class TransferMaterialsQuantityWidget
-    extends StatefulWidget {
+class TransferMaterialsQuantityWidget extends StatefulWidget {
   final MaterialClass materialsItem;
   const TransferMaterialsQuantityWidget({
     super.key,
@@ -58,18 +55,11 @@ class _TransferMaterialsQuantityWidgetState
     return Scaffold(
       body: Center(
         child: GestureDetector(
-          onTap:
-              () =>
-                  FocusManager.instance.primaryFocus
-                      ?.unfocus(),
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: Container(
             decoration: BoxDecoration(color: Colors.white),
             child: Padding(
-              padding: const EdgeInsets.only(
-                left: 20.0,
-                top: 40,
-                right: 20,
-              ),
+              padding: const EdgeInsets.only(left: 20.0, top: 40, right: 20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -78,17 +68,10 @@ class _TransferMaterialsQuantityWidgetState
                     margin: EdgeInsets.only(bottom: 100),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(
-                        15,
-                      ),
+                      borderRadius: BorderRadius.circular(15),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color.fromARGB(
-                            39,
-                            4,
-                            1,
-                            41,
-                          ),
+                          color: const Color.fromARGB(39, 4, 1, 41),
                           blurRadius: 10,
                         ),
                       ],
@@ -97,60 +80,41 @@ class _TransferMaterialsQuantityWidgetState
                     child: Column(
                       children: [
                         Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Opacity(
                               opacity: 0,
                               child: IconButton(
-                                mouseCursor:
-                                    SystemMouseCursors
-                                        .click,
+                                mouseCursor: SystemMouseCursors.click,
                                 onPressed: () {},
                                 icon: Icon(Icons.clear),
                               ),
                             ),
                             Text(
                               style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b2
-                                        .fontSize,
+                                fontSize: theme.mobileTexts.b2.fontSize,
                                 fontWeight: FontWeight.bold,
                               ),
                               'Transfer ${widget.materialsItem.getProductUnit(unitUuid: unitUuid).name} Quantity',
                             ),
                             Builder(
                               builder: (context) {
-                                if (isEditQuantityLoading ==
-                                    true) {
+                                if (isEditQuantityLoading == true) {
                                   return SizedBox(
                                     height: 20,
                                     width: 20,
                                     child: CircularProgressIndicator(
-                                      color:
-                                          theme
-                                              .lightModeColor
-                                              .secColor200,
+                                      color: theme.lightModeColor.secColor200,
                                       strokeWidth: 3,
                                     ),
                                   );
                                 } else {
                                   return IconButton(
-                                    mouseCursor:
-                                        SystemMouseCursors
-                                            .click,
+                                    mouseCursor: SystemMouseCursors.click,
                                     onPressed: () {
-                                      Navigator.of(
-                                        context,
-                                      ).pop();
+                                      Navigator.of(context).pop();
                                     },
-                                    icon: Icon(
-                                      size: 20,
-                                      Icons.clear,
-                                    ),
+                                    icon: Icon(size: 20, Icons.clear),
                                   );
                                 }
                               },
@@ -164,16 +128,9 @@ class _TransferMaterialsQuantityWidgetState
                             Text(
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
+                                fontSize: theme.mobileTexts.b3.fontSize,
                               ),
-                              widget
-                                          .materialsItem
-                                          .quantity ==
-                                      null
+                              widget.materialsItem.quantity == null
                                   ? 'Quantity Not Set'
                                   : 'Current Quantity in ${widget.materialsItem.getProductUnit(unitUuid: unitUuid).name}: ${formatLargeNumberDouble(widget.materialsItem.getProductUnit(unitUuid: unitUuid).getQuantityEquivDivided(index: 3, context: context))}',
                             ),
@@ -181,30 +138,21 @@ class _TransferMaterialsQuantityWidgetState
                               onChanged: (value) {
                                 if (value.isEmpty) {
                                   setState(() {
-                                    quantityController
-                                        .text = '0';
+                                    quantityController.text = '0';
                                   });
                                 } else {
                                   var eValue = double.parse(
                                     quantityController.text,
                                   );
                                   if (widget.materialsItem
-                                          .getProductUnit(
-                                            unitUuid:
-                                                unitUuid,
-                                          )
+                                          .getProductUnit(unitUuid: unitUuid)
                                           .getQuantityEquivMultiplied(
                                             index: 3,
-                                            newQuantity:
-                                                eValue,
+                                            newQuantity: eValue,
                                           ) >
-                                      (widget
-                                              .materialsItem
-                                              .quantity ??
-                                          0)) {
+                                      (widget.materialsItem.quantity ?? 0)) {
                                     setState(() {
-                                      quantityController
-                                          .text = '0';
+                                      quantityController.text = '0';
                                     });
                                   }
                                 }
@@ -212,8 +160,7 @@ class _TransferMaterialsQuantityWidgetState
                               title:
                                   '${widget.materialsItem.getProductUnit(unitUuid: unitUuid).name} Quantity',
                               hint: 'Enter Quantity Amount',
-                              controller:
-                                  quantityController,
+                              controller: quantityController,
                               theme: theme,
                             ),
                           ],
@@ -229,26 +176,19 @@ class _TransferMaterialsQuantityWidgetState
                               unitUuid = uuid;
                             });
                             if (widget.materialsItem
-                                    .getProductUnit(
-                                      unitUuid: unitUuid,
-                                    )
+                                    .getProductUnit(unitUuid: unitUuid)
                                     .getQuantityEquivMultiplied(
                                       index: 3,
                                       newQuantity:
                                           double.tryParse(
-                                            quantityController
-                                                .text
-                                                .replaceAll(
-                                                  ',',
-                                                  '',
-                                                ),
+                                            quantityController.text.replaceAll(
+                                              ',',
+                                              '',
+                                            ),
                                           ) ??
                                           0,
                                     ) >
-                                (widget
-                                        .materialsItem
-                                        .quantity ??
-                                    0)) {
+                                (widget.materialsItem.quantity ?? 0)) {
                               quantityController.text = '0';
                             }
                           },
@@ -262,57 +202,36 @@ class _TransferMaterialsQuantityWidgetState
                           action: () {
                             var firstContext = context;
                             if (widget.materialsItem
-                                        .getProductUnit(
-                                          unitUuid:
-                                              unitUuid,
-                                        )
+                                        .getProductUnit(unitUuid: unitUuid)
                                         .getQuantityEquivMultiplied(
                                           index: 3,
                                           newQuantity:
                                               double.tryParse(
-                                                quantityController
-                                                    .text
-                                                    .replaceAll(
-                                                      ',',
-                                                      '',
-                                                    ),
+                                                quantityController.text
+                                                    .replaceAll(',', ''),
                                               ) ??
                                               0,
                                         ) <=
-                                    (widget
-                                            .materialsItem
-                                            .quantity ??
-                                        0) &&
-                                quantityController
-                                    .text
-                                    .isNotEmpty &&
-                                quantityController.text !=
-                                    '0') {
+                                    (widget.materialsItem.quantity ?? 0) &&
+                                quantityController.text.isNotEmpty &&
+                                quantityController.text != '0') {
                               if (returnShopProvider()
                                       .userShop()
                                       ?.manageDepartments ==
                                   true) {
-                                if (returnShopProvider()
-                                        .userShops
-                                        .length >
-                                    1) {
+                                if (returnShopProvider().userShops.length > 1) {
                                   transferMaterialsAction(
                                     unitUuid: unitUuid,
-                                    mainMaterials:
-                                        widget
-                                            .materialsItem,
+                                    mainMaterials: widget.materialsItem,
                                     enteredValue:
                                         (double.tryParse(
-                                              quantityController
-                                                  .text,
+                                              quantityController.text,
                                             ) ??
                                             0),
-                                    firstContext:
-                                        firstContext,
+                                    firstContext: firstContext,
                                     loadingAction: (value) {
                                       setState(() {
-                                        isEditQuantityLoading =
-                                            value;
+                                        isEditQuantityLoading = value;
                                       });
                                     },
                                   );
@@ -321,41 +240,32 @@ class _TransferMaterialsQuantityWidgetState
                                     unitUuid: unitUuid,
                                     thirdContext: null,
                                     secondContext: null,
-                                    firstContext:
-                                        firstContext,
-                                    mainMaterials:
-                                        widget
-                                            .materialsItem,
+                                    firstContext: firstContext,
+                                    mainMaterials: widget.materialsItem,
                                     enteredValue:
                                         (double.tryParse(
-                                              quantityController
-                                                  .text,
+                                              quantityController.text,
                                             ) ??
                                             0),
                                     loadingAction: (value) {
                                       setState(() {
-                                        isEditQuantityLoading =
-                                            value;
+                                        isEditQuantityLoading = value;
                                       });
                                     },
                                   );
                                 }
                               } else {
                                 bool isOnline =
-                                    returnConnectivityProvider()
-                                        .isConnected;
+                                    returnConnectivityProvider().isConnected;
                                 if (!isOnline) {
                                   showDialog(
                                     context: context,
-                                    builder: (
-                                      errorContext,
-                                    ) {
+                                    builder: (errorContext) {
                                       return InfoAlert(
                                         theme: theme,
                                         message:
                                             'You Can Only Transfer Items Into Other Stores When you have Internet Connection. Please turn on your internet connection and try again.',
-                                        title:
-                                            'No Internet Connection',
+                                        title: 'No Internet Connection',
                                       );
                                     },
                                   );
@@ -363,21 +273,16 @@ class _TransferMaterialsQuantityWidgetState
                                   selectShopsMaterials(
                                     unitUuid: unitUuid,
                                     secondContext: null,
-                                    firstContext:
-                                        firstContext,
+                                    firstContext: firstContext,
                                     enteredValue:
                                         (double.tryParse(
-                                              quantityController
-                                                  .text,
+                                              quantityController.text,
                                             ) ??
                                             0),
-                                    mainMaterials:
-                                        widget
-                                            .materialsItem,
+                                    mainMaterials: widget.materialsItem,
                                     loadingAction: (value) {
                                       setState(() {
-                                        isEditQuantityLoading =
-                                            value;
+                                        isEditQuantityLoading = value;
                                       });
                                     },
                                   );
@@ -433,10 +338,7 @@ void transferMaterialsAction({
           children: [
             Visibility(
               visible:
-                  returnShopProvider()
-                      .userShop()
-                      ?.manageDepartments ==
-                  true,
+                  returnShopProvider().userShop()?.manageDepartments == true,
               child: MainButtonTransparent(
                 themeProvider: theme,
                 constraints: BoxConstraints(),
@@ -456,16 +358,13 @@ void transferMaterialsAction({
               ),
             ),
             Visibility(
-              visible:
-                  returnShopProvider().userShops.length > 1,
+              visible: returnShopProvider().userShops.length > 1,
               child: MainButtonTransparent(
                 themeProvider: theme,
                 constraints: BoxConstraints(),
                 text: 'Transfer To Branch (Materials)',
                 action: () {
-                  bool isOnline =
-                      returnConnectivityProvider()
-                          .isConnected;
+                  bool isOnline = returnConnectivityProvider().isConnected;
                   if (!isOnline) {
                     showDialog(
                       context: firstContext,
@@ -508,10 +407,7 @@ void selectDepartmentMaterialss({
   required Function(bool value) loadingAction,
   required double enteredValue,
 }) {
-  var theme = returnTheme(
-    secondContext ?? firstContext,
-    listen: false,
-  );
+  var theme = returnTheme(secondContext ?? firstContext, listen: false);
   GeneralSettingsAuthAction().manageDeparmtmentsAction(
     context: secondContext ?? firstContext,
     action: () {
@@ -523,8 +419,7 @@ void selectDepartmentMaterialss({
             builder: (statefulContext, setState) {
               return DialogTemplate(
                 theme: theme,
-                message:
-                    'Select a Department From the List Below',
+                message: 'Select a Department From the List Below',
                 title: 'Select Department',
                 action: () {
                   if (selectedDept != null) {
@@ -541,8 +436,7 @@ void selectDepartmentMaterialss({
                   }
                 },
                 widget: SizedBox(
-                  height:
-                      screenHeight(statefulContext) - 270,
+                  height: screenHeight(statefulContext) - 270,
                   child: SingleChildScrollView(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -551,10 +445,8 @@ void selectDepartmentMaterialss({
                       ),
                       child: Builder(
                         builder: (context) {
-                          List<DepartmentClass>
-                          departments =
-                              returnDepartmentProvider()
-                                  .departments
+                          List<DepartmentClass> departments =
+                              returnDepartmentProvider().departments
                                   .where(
                                     (dept) =>
                                         dept.uuid !=
@@ -567,8 +459,7 @@ void selectDepartmentMaterialss({
                             return SizedBox(
                               height: 400,
                               child: EmptyWidgetDisplayOnly(
-                                title:
-                                    'No Department Found',
+                                title: 'No Department Found',
                                 subText:
                                     'You have not been added to any departments.',
                                 theme: theme,
@@ -589,33 +480,25 @@ void selectDepartmentMaterialss({
                                   departments
                                       .map(
                                         (dept) => Material(
-                                          color:
-                                              Colors
-                                                  .transparent,
+                                          color: Colors.transparent,
                                           child: InkWell(
                                             mouseCursor:
-                                                SystemMouseCursors
-                                                    .click,
+                                                SystemMouseCursors.click,
                                             onTap: () {
                                               setState(() {
-                                                if (selectedDept
-                                                        ?.uuid ==
+                                                if (selectedDept?.uuid ==
                                                     dept.uuid) {
-                                                  selectedDept =
-                                                      null;
+                                                  selectedDept = null;
                                                 } else {
-                                                  selectedDept =
-                                                      dept;
+                                                  selectedDept = dept;
                                                 }
                                               });
                                             },
                                             child: Padding(
                                               padding:
                                                   const EdgeInsets.symmetric(
-                                                    vertical:
-                                                        9.0,
-                                                    horizontal:
-                                                        12,
+                                                    vertical: 9.0,
+                                                    horizontal: 12,
                                                   ),
                                               child: Row(
                                                 mainAxisAlignment:
@@ -625,38 +508,37 @@ void selectDepartmentMaterialss({
                                                   Text(
                                                     style: TextStyle(
                                                       fontSize:
-                                                          theme.mobileTexts.b3.fontSize,
+                                                          theme
+                                                              .mobileTexts
+                                                              .b3
+                                                              .fontSize,
                                                       fontWeight:
                                                           FontWeight.bold,
                                                     ),
                                                     dept.name,
                                                   ),
                                                   Container(
-                                                    padding:
-                                                        EdgeInsets.all(
-                                                          2,
-                                                        ),
+                                                    padding: EdgeInsets.all(2),
                                                     decoration: BoxDecoration(
-                                                      shape:
-                                                          BoxShape.circle,
+                                                      shape: BoxShape.circle,
                                                       border: Border.all(
-                                                        color:
-                                                            Colors.grey,
+                                                        color: Colors.grey,
                                                       ),
                                                     ),
                                                     child: Container(
-                                                      padding:
-                                                          EdgeInsets.all(
-                                                            5,
-                                                          ),
+                                                      padding: EdgeInsets.all(
+                                                        5,
+                                                      ),
                                                       decoration: BoxDecoration(
-                                                        shape:
-                                                            BoxShape.circle,
+                                                        shape: BoxShape.circle,
                                                         color:
                                                             selectedDept?.uuid ==
                                                                     dept.uuid
-                                                                ? theme.lightModeColor.prColor250
-                                                                : Colors.transparent,
+                                                                ? theme
+                                                                    .lightModeColor
+                                                                    .prColor250
+                                                                : Colors
+                                                                    .transparent,
                                                       ),
                                                     ),
                                                   ),
@@ -703,15 +585,13 @@ void selectItemInADepartmentsMaterial({
       final searchController = TextEditingController();
       MaterialClass? selectedMaterial;
       showDialog(
-        context:
-            thirdContext ?? secondContext ?? firstContext,
+        context: thirdContext ?? secondContext ?? firstContext,
         builder: (fourthContext) {
           return StatefulBuilder(
             builder: (statefulContext, setState) {
               return DialogTemplate(
                 theme: theme,
-                message:
-                    'Select an Item From the List Below',
+                message: 'Select an Item From the List Below',
                 title: 'Select Item',
                 action: () {
                   if (selectedMaterial != null) {
@@ -725,40 +605,27 @@ void selectItemInADepartmentsMaterial({
                           title: 'Transfer Item Quantity',
                           action: () async {
                             loadingAction(true);
-                            MaterialClass oldMaterial =
-                                selectedMaterial!;
-                            MaterialClass newMaterial =
-                                oldMaterial.copyWith();
+                            MaterialClass oldMaterial = selectedMaterial!;
+                            MaterialClass newMaterial = oldMaterial.copyWith();
                             newMaterial.quantity =
-                                (newMaterial.quantity ??
-                                    0) +
+                                (newMaterial.quantity ?? 0) +
                                 mainMaterials
-                                    .getProductUnit(
-                                      unitUuid: unitUuid,
-                                    )
+                                    .getProductUnit(unitUuid: unitUuid)
                                     .getQuantityEquivMultiplied(
                                       index: 3,
-                                      newQuantity:
-                                          enteredValue,
+                                      newQuantity: enteredValue,
                                     );
                             MaterialsItemHistory
                             materialsItemHistory = MaterialsItemHistory(
-                              event:
-                                  MaterialItemHistoryEventClass
-                                      .transferedIn,
-                              isManaged:
-                                  newMaterial.isManaged,
+                              event: MaterialItemHistoryEventClass.transferedIn,
+                              isManaged: newMaterial.isManaged,
                               source:
                                   MaterialItemHistoryEventClass
                                       .departmentSource,
                               shopId: shopId(),
                               isIncreased: true,
-                              departmentName:
-                                  newMaterial
-                                      .departmentName,
-                              departmentUuid:
-                                  newMaterial
-                                      .departmentUuid,
+                              departmentName: newMaterial.departmentName,
+                              departmentUuid: newMaterial.departmentUuid,
                               desc:
                                   'Item Quantity Received From Transfer - From Material Item Name: ${mainMaterials.name}. Department Name: ${returnDepartmentProvider().currentDepartment()?.name ?? 'Department Not Set'}.',
                               title: 'Transfered In',
@@ -770,10 +637,7 @@ void selectItemInADepartmentsMaterial({
                                     .getProductUnit()
                                     .getQuantityEquivDivided(
                                       index: 3,
-                                      newQuantity:
-                                          (newMaterial
-                                                  .quantity ??
-                                              0),
+                                      newQuantity: (newMaterial.quantity ?? 0),
                                     ),
                               ),
                               oldValue: formatLargeNumberDouble(
@@ -781,10 +645,7 @@ void selectItemInADepartmentsMaterial({
                                     .getProductUnit()
                                     .getQuantityEquivDivided(
                                       index: 3,
-                                      newQuantity:
-                                          (oldMaterial
-                                                  .quantity ??
-                                              0),
+                                      newQuantity: (oldMaterial.quantity ?? 0),
                                     ),
                               ),
                               quantityChange: enteredValue,
@@ -792,14 +653,9 @@ void selectItemInADepartmentsMaterial({
                               staffName: currentUser().name,
                               unit:
                                   mainMaterials
-                                      .getProductUnit(
-                                        unitUuid: unitUuid,
-                                      )
+                                      .getProductUnit(unitUuid: unitUuid)
                                       .name,
-                              primaryUnit:
-                                  newMaterial
-                                      .getProductUnit()
-                                      .name,
+                              primaryUnit: newMaterial.getProductUnit().name,
                             );
                             var res = await returnMaterialsProvider()
                                 .updateMaterial(
@@ -808,41 +664,30 @@ void selectItemInADepartmentsMaterial({
                                   isQuantityUpdate: true,
                                   includeQuantity: true,
                                   quantityChange: mainMaterials
-                                      .getProductUnit(
-                                        unitUuid: unitUuid,
-                                      )
+                                      .getProductUnit(unitUuid: unitUuid)
                                       .getQuantityEquivMultiplied(
                                         index: 3,
-                                        newQuantity:
-                                            enteredValue,
+                                        newQuantity: enteredValue,
                                       ),
                                   isIncrement: true,
-                                  materialsItemHistory:
-                                      materialsItemHistory,
+                                  materialsItemHistory: materialsItemHistory,
                                 );
 
                             MaterialClass newMaterial2 =
                                 mainMaterials.copyWith();
                             newMaterial2.quantity =
-                                ((newMaterial2.quantity ??
-                                        0) -
+                                ((newMaterial2.quantity ?? 0) -
                                     mainMaterials
-                                        .getProductUnit(
-                                          unitUuid:
-                                              unitUuid,
-                                        )
+                                        .getProductUnit(unitUuid: unitUuid)
                                         .getQuantityEquivMultiplied(
                                           index: 3,
-                                          newQuantity:
-                                              enteredValue,
+                                          newQuantity: enteredValue,
                                         ));
                             MaterialsItemHistory
                             materialsItemHistory2 = MaterialsItemHistory(
                               event:
-                                  MaterialItemHistoryEventClass
-                                      .transferedOut,
-                              isManaged:
-                                  oldMaterial.isManaged,
+                                  MaterialItemHistoryEventClass.transferedOut,
+                              isManaged: oldMaterial.isManaged,
                               source:
                                   MaterialItemHistoryEventClass
                                       .departmentSource,
@@ -859,10 +704,7 @@ void selectItemInADepartmentsMaterial({
                                     .getProductUnit()
                                     .getQuantityEquivDivided(
                                       index: 3,
-                                      newQuantity:
-                                          (newMaterial2
-                                                  .quantity ??
-                                              0),
+                                      newQuantity: (newMaterial2.quantity ?? 0),
                                     ),
                               ),
                               oldValue: formatLargeNumberDouble(
@@ -871,9 +713,7 @@ void selectItemInADepartmentsMaterial({
                                     .getQuantityEquivDivided(
                                       index: 3,
                                       newQuantity:
-                                          (mainMaterials
-                                                  .quantity ??
-                                              0),
+                                          (mainMaterials.quantity ?? 0),
                                     ),
                               ),
                               quantityChange: -enteredValue,
@@ -881,14 +721,9 @@ void selectItemInADepartmentsMaterial({
                               staffName: currentUser().name,
                               unit:
                                   mainMaterials
-                                      .getProductUnit(
-                                        unitUuid: unitUuid,
-                                      )
+                                      .getProductUnit(unitUuid: unitUuid)
                                       .name,
-                              primaryUnit:
-                                  mainMaterials
-                                      .getProductUnit()
-                                      .name,
+                              primaryUnit: mainMaterials.getProductUnit().name,
                             );
                             var res2 = await returnMaterialsProvider()
                                 .updateMaterial(
@@ -897,20 +732,15 @@ void selectItemInADepartmentsMaterial({
                                   isQuantityUpdate: true,
                                   includeQuantity: true,
                                   quantityChange: newMaterial2
-                                      .getProductUnit(
-                                        unitUuid: unitUuid,
-                                      )
+                                      .getProductUnit(unitUuid: unitUuid)
                                       .getQuantityEquivMultiplied(
                                         index: 3,
-                                        newQuantity:
-                                            enteredValue,
+                                        newQuantity: enteredValue,
                                       ),
                                   isIncrement: false,
-                                  materialsItemHistory:
-                                      materialsItemHistory2,
+                                  materialsItemHistory: materialsItemHistory2,
                                 );
-                            if (res == null ||
-                                res2 == null) {
+                            if (res == null || res2 == null) {
                               loadingAction(false);
                               showDialog(
                                 // ignore: use_build_context_synchronously
@@ -920,8 +750,7 @@ void selectItemInADepartmentsMaterial({
                                     theme: theme,
                                     message:
                                         'An error occoured while Transferring MaterialClass Quantity. Please try again.',
-                                    title:
-                                        'An Error Occured',
+                                    title: 'An Error Occured',
                                   );
                                 },
                               );
@@ -960,13 +789,11 @@ void selectItemInADepartmentsMaterial({
                   }
                 },
                 widget: SizedBox(
-                  height:
-                      screenHeight(statefulContext) - 270,
+                  height: screenHeight(statefulContext) - 270,
                   child: Column(
                     children: [
                       Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Expanded(
                             child: ConstrainedBox(
@@ -979,8 +806,7 @@ void selectItemInADepartmentsMaterial({
                                   setState(() {});
                                 },
                                 hint: 'Search Name',
-                                controller:
-                                    searchController,
+                                controller: searchController,
                                 lines: 1,
                                 theme: theme,
                               ),
@@ -992,40 +818,29 @@ void selectItemInADepartmentsMaterial({
                       Expanded(
                         child: SingleChildScrollView(
                           child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(
-                                  horizontal: 5.0,
-                                  vertical: 10,
-                                ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 5.0,
+                              vertical: 10,
+                            ),
                             child: Builder(
                               builder: (context) {
-                                if (returnMaterialsProvider()
-                                    .materialListMain
+                                if (returnMaterialsProvider().materialListMain
                                     .where(
                                       (item) =>
-                                          (department !=
-                                                  null
+                                          (department != null
                                               ? item.departmentUuid ==
-                                                  department
-                                                      .uuid
+                                                  department.uuid
                                               : true) &&
-                                          item.name
-                                              .toLowerCase()
-                                              .contains(
-                                                searchController
-                                                    .text
-                                                    .toLowerCase(),
-                                              ) &&
-                                          item.uuid !=
-                                              mainMaterials
-                                                  .uuid,
+                                          item.name.toLowerCase().contains(
+                                            searchController.text.toLowerCase(),
+                                          ) &&
+                                          item.uuid != mainMaterials.uuid,
                                     )
                                     .isEmpty) {
                                   return SizedBox(
                                     height: 400,
                                     child: EmptyWidgetDisplayOnly(
-                                      title:
-                                          'No MaterialClass Found',
+                                      title: 'No MaterialClass Found',
                                       subText:
                                           'You have not added to any item under this department.',
                                       theme: theme,
@@ -1035,8 +850,7 @@ void selectItemInADepartmentsMaterial({
                                             .getMaterials();
                                         setState(() {});
                                       },
-                                      altActionText:
-                                          'Refresh',
+                                      altActionText: 'Refresh',
                                       icon: Icons.clear,
                                     ),
                                   );
@@ -1048,100 +862,107 @@ void selectItemInADepartmentsMaterial({
                                             .materialListMain
                                             .where(
                                               (item) =>
-                                                  (department !=
-                                                          null
+                                                  (department != null
                                                       ? item.departmentUuid ==
                                                           department.uuid
                                                       : true) &&
-                                                  item.name.toLowerCase().contains(
-                                                    searchController
-                                                        .text
-                                                        .toLowerCase(),
-                                                  ) &&
+                                                  item.name
+                                                      .toLowerCase()
+                                                      .contains(
+                                                        searchController.text
+                                                            .toLowerCase(),
+                                                      ) &&
                                                   item.uuid !=
-                                                      mainMaterials
-                                                          .uuid,
+                                                      mainMaterials.uuid,
                                             )
                                             .map(
-                                              (
-                                                item,
-                                              ) => Material(
-                                                color:
-                                                    Colors
-                                                        .transparent,
+                                              (item) => Material(
+                                                color: Colors.transparent,
                                                 child: InkWell(
                                                   mouseCursor:
-                                                      SystemMouseCursors
-                                                          .click,
+                                                      SystemMouseCursors.click,
                                                   onTap: () {
                                                     setState(() {
-                                                      if (selectedMaterial?.uuid ==
+                                                      if (selectedMaterial
+                                                              ?.uuid ==
                                                           item.uuid) {
-                                                        selectedMaterial =
-                                                            null;
+                                                        selectedMaterial = null;
                                                       } else {
-                                                        selectedMaterial =
-                                                            item;
+                                                        selectedMaterial = item;
                                                       }
                                                     });
                                                   },
                                                   child: Padding(
-                                                    padding: const EdgeInsets.symmetric(
-                                                      vertical:
-                                                          9.0,
-                                                      horizontal:
-                                                          10,
-                                                    ),
+                                                    padding:
+                                                        const EdgeInsets.symmetric(
+                                                          vertical: 9.0,
+                                                          horizontal: 10,
+                                                        ),
                                                     child: Row(
                                                       mainAxisAlignment:
-                                                          MainAxisAlignment.spaceBetween,
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
                                                       children: [
                                                         Text(
                                                           style: TextStyle(
                                                             fontSize:
-                                                                theme.mobileTexts.b3.fontSize,
+                                                                theme
+                                                                    .mobileTexts
+                                                                    .b3
+                                                                    .fontSize,
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                           ),
                                                           item.name,
                                                         ),
                                                         Row(
-                                                          spacing:
-                                                              15,
+                                                          spacing: 15,
                                                           children: [
                                                             Text(
                                                               style: TextStyle(
                                                                 fontSize:
-                                                                    theme.mobileTexts.b3.fontSize,
+                                                                    theme
+                                                                        .mobileTexts
+                                                                        .b3
+                                                                        .fontSize,
                                                                 fontWeight:
-                                                                    FontWeight.bold,
+                                                                    FontWeight
+                                                                        .bold,
                                                               ),
                                                               '${item.getProductUnit().getQuantityEquivDivided(index: 3)} ${item.getProductUnit().name}',
                                                             ),
                                                             Container(
-                                                              padding: EdgeInsets.all(
-                                                                2,
-                                                              ),
+                                                              padding:
+                                                                  EdgeInsets.all(
+                                                                    2,
+                                                                  ),
                                                               decoration: BoxDecoration(
                                                                 shape:
-                                                                    BoxShape.circle,
+                                                                    BoxShape
+                                                                        .circle,
                                                                 border: Border.all(
                                                                   color:
-                                                                      Colors.grey,
+                                                                      Colors
+                                                                          .grey,
                                                                 ),
                                                               ),
                                                               child: Container(
-                                                                padding: EdgeInsets.all(
-                                                                  5,
-                                                                ),
+                                                                padding:
+                                                                    EdgeInsets.all(
+                                                                      5,
+                                                                    ),
                                                                 decoration: BoxDecoration(
                                                                   shape:
-                                                                      BoxShape.circle,
+                                                                      BoxShape
+                                                                          .circle,
                                                                   color:
                                                                       selectedMaterial?.uuid ==
                                                                               item.uuid
-                                                                          ? theme.lightModeColor.prColor250
-                                                                          : Colors.transparent,
+                                                                          ? theme
+                                                                              .lightModeColor
+                                                                              .prColor250
+                                                                          : Colors
+                                                                              .transparent,
                                                                 ),
                                                               ),
                                                             ),
@@ -1181,10 +1002,7 @@ void selectShopsMaterials({
   required Function(bool value) loadingAction,
   required double enteredValue,
 }) {
-  var theme = returnTheme(
-    secondContext ?? firstContext,
-    listen: false,
-  );
+  var theme = returnTheme(secondContext ?? firstContext, listen: false);
   TempShopClass? selectedShop;
   showDialog(
     context: secondContext ?? firstContext,
@@ -1193,13 +1011,10 @@ void selectShopsMaterials({
         builder: (statefulContext, setState) {
           return DialogTemplate(
             theme: theme,
-            message:
-                'Select a Shop Branch From the List Below',
+            message: 'Select a Shop Branch From the List Below',
             title: 'Select Shop Branch',
             cancelAction: () {
-              Navigator.of(
-                secondContext ?? firstContext,
-              ).pop();
+              Navigator.of(secondContext ?? firstContext).pop();
             },
             action: () {
               if (selectedShop != null) {
@@ -1229,22 +1044,18 @@ void selectShopsMaterials({
                           .where(
                             (shop) =>
                                 shop.shopId !=
-                                returnShopProvider()
-                                    .userShop()
-                                    ?.shopId,
+                                returnShopProvider().userShop()?.shopId,
                           )
                           .isEmpty) {
                         return SizedBox(
                           height: 400,
                           child: EmptyWidgetDisplayOnly(
                             title: 'No Shop Found',
-                            subText:
-                                'No Shop Branches Was Found.',
+                            subText: 'No Shop Branches Was Found.',
                             theme: theme,
                             height: 30,
                             altAction: () async {
-                              await returnShopProvider()
-                                  .getUserShops();
+                              await returnShopProvider().getUserShops();
                               setState(() {});
                             },
                             altActionText: 'Refresh',
@@ -1255,50 +1066,35 @@ void selectShopsMaterials({
                         return Column(
                           spacing: 5,
                           children:
-                              returnShopProvider(
-                                    context: context,
-                                  ).userShops
+                              returnShopProvider(context: context).userShops
                                   .where(
                                     (shop) =>
                                         shop.shopId !=
-                                        returnShopProvider()
-                                            .userShop()
-                                            ?.shopId,
+                                        returnShopProvider().userShop()?.shopId,
                                   )
                                   .map(
                                     (shop) => Material(
-                                      color:
-                                          Colors
-                                              .transparent,
+                                      color: Colors.transparent,
                                       child: InkWell(
-                                        mouseCursor:
-                                            SystemMouseCursors
-                                                .click,
+                                        mouseCursor: SystemMouseCursors.click,
                                         onTap: () {
                                           setState(() {
-                                            if (selectedShop
-                                                    ?.shopId ==
+                                            if (selectedShop?.shopId ==
                                                 shop.shopId) {
-                                              selectedShop =
-                                                  null;
+                                              selectedShop = null;
                                             } else {
-                                              selectedShop =
-                                                  shop;
+                                              selectedShop = shop;
                                             }
                                           });
                                         },
                                         child: Padding(
-                                          padding:
-                                              const EdgeInsets.symmetric(
-                                                vertical:
-                                                    9.0,
-                                                horizontal:
-                                                    12,
-                                              ),
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 9.0,
+                                            horizontal: 12,
+                                          ),
                                           child: Row(
                                             mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .spaceBetween,
+                                                MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
                                                 style: TextStyle(
@@ -1307,39 +1103,30 @@ void selectShopsMaterials({
                                                           .mobileTexts
                                                           .b3
                                                           .fontSize,
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
                                                 shop.name,
                                               ),
                                               Container(
-                                                padding:
-                                                    EdgeInsets.all(
-                                                      2,
-                                                    ),
+                                                padding: EdgeInsets.all(2),
                                                 decoration: BoxDecoration(
-                                                  shape:
-                                                      BoxShape
-                                                          .circle,
+                                                  shape: BoxShape.circle,
                                                   border: Border.all(
-                                                    color:
-                                                        Colors.grey,
+                                                    color: Colors.grey,
                                                   ),
                                                 ),
                                                 child: Container(
-                                                  padding:
-                                                      EdgeInsets.all(
-                                                        5,
-                                                      ),
+                                                  padding: EdgeInsets.all(5),
                                                   decoration: BoxDecoration(
-                                                    shape:
-                                                        BoxShape.circle,
+                                                    shape: BoxShape.circle,
                                                     color:
                                                         selectedShop?.shopId ==
                                                                 shop.shopId
-                                                            ? theme.lightModeColor.prColor250
-                                                            : Colors.transparent,
+                                                            ? theme
+                                                                .lightModeColor
+                                                                .prColor250
+                                                            : Colors
+                                                                .transparent,
                                                   ),
                                                 ),
                                               ),
@@ -1381,8 +1168,9 @@ void selectItemInAShopMaterial({
   showDialog(
     context: thirdContext,
     builder: (fourthContext) {
-      productFuture = returnMaterialsProvider()
-          .getMaterialsForOtherShops(shop.shopId!);
+      productFuture = returnMaterialsProvider().getMaterialsForOtherShops(
+        shop.shopId!,
+      );
       return StatefulBuilder(
         builder: (statefulContext, setState) {
           return DialogTemplate(
@@ -1398,42 +1186,32 @@ void selectItemInAShopMaterial({
                       theme: theme,
                       message:
                           'You are about to perform an materialsItem quantity Transfer. Please note that this action can not be reversed. Are you sure you want to proceed?',
-                      title:
-                          'Transfer materialsItem Quantity',
+                      title: 'Transfer materialsItem Quantity',
                       action: () async {
                         loadingAction(true);
-                        MaterialClass oldProduct =
-                            selectedMaterial!;
-                        MaterialClass newMaterial =
-                            oldProduct.copyWith();
+                        MaterialClass oldProduct = selectedMaterial!;
+                        MaterialClass newMaterial = oldProduct.copyWith();
                         newMaterial.quantity =
                             (newMaterial.quantity ?? 0) +
                             mainMaterials
-                                .getProductUnit(
-                                  unitUuid: unitUuid,
-                                )
+                                .getProductUnit(unitUuid: unitUuid)
                                 .getQuantityEquivMultiplied(
                                   index: 3,
                                   newQuantity: enteredValue,
                                 );
                         MaterialsItemHistory
                         materialsItemHistory = MaterialsItemHistory(
-                          event:
-                              MaterialItemHistoryEventClass
-                                  .transferedIn,
+                          event: MaterialItemHistoryEventClass.transferedIn,
                           isManaged: newMaterial.isManaged,
                           source:
-                              MaterialItemHistoryEventClass
-                                  .branchStoreSource,
+                              MaterialItemHistoryEventClass.branchStoreSource,
                           desc:
                               'Item Quantity Received From Transfer - From Material Item Name: ${mainMaterials.name}. Shop Name: ${returnShopProvider().userShop()?.name}.',
                           shopId: shop.shopId!,
                           title: 'Transfered In',
                           isIncreased: true,
-                          departmentName:
-                              newMaterial.departmentName,
-                          departmentUuid:
-                              newMaterial.departmentUuid,
+                          departmentName: newMaterial.departmentName,
+                          departmentUuid: newMaterial.departmentUuid,
                           createdAt: DateTime.now(),
                           itemUuid: newMaterial.uuid,
                           itemName: newMaterial.name,
@@ -1443,68 +1221,46 @@ void selectItemInAShopMaterial({
                                 .getQuantityEquivDivided(
                                   index: 3,
                                   material: newMaterial,
-                                  newQuantity:
-                                      (newMaterial
-                                              .quantity ??
-                                          0),
+                                  newQuantity: (newMaterial.quantity ?? 0),
                                 ),
                           ),
                           oldValue: formatLargeNumberDouble(
-                            oldProduct
-                                .getProductUnit()
-                                .getQuantityEquivDivided(
-                                  index: 3,
-                                  material: oldProduct,
-                                  newQuantity:
-                                      (oldProduct
-                                              .quantity ??
-                                          0),
-                                ),
+                            oldProduct.getProductUnit().getQuantityEquivDivided(
+                              index: 3,
+                              material: oldProduct,
+                              newQuantity: (oldProduct.quantity ?? 0),
+                            ),
                           ),
                           quantityChange: enteredValue,
                           staffId: currentUser().userId,
                           staffName: currentUser().name,
                           unit:
                               mainMaterials
-                                  .getProductUnit(
-                                    unitUuid: unitUuid,
-                                  )
+                                  .getProductUnit(unitUuid: unitUuid)
                                   .name,
-                          primaryUnit:
-                              newMaterial
-                                  .getProductUnit()
-                                  .name,
+                          primaryUnit: newMaterial.getProductUnit().name,
                         );
-                        var res =
-                            await returnMaterialsProvider()
-                                .updateMaterialForOtherShops(
-                                  material: newMaterial,
-                                  materialsItemHistory:
-                                      materialsItemHistory,
-                                );
+                        var res = await returnMaterialsProvider()
+                            .updateMaterialForOtherShops(
+                              material: newMaterial,
+                              materialsItemHistory: materialsItemHistory,
+                            );
 
-                        MaterialClass newMaterial2 =
-                            mainMaterials.copyWith();
+                        MaterialClass newMaterial2 = mainMaterials.copyWith();
                         newMaterial2.quantity =
                             ((newMaterial2.quantity ?? 0) -
                                 newMaterial2
-                                    .getProductUnit(
-                                      unitUuid: unitUuid,
-                                    )
+                                    .getProductUnit(unitUuid: unitUuid)
                                     .getQuantityEquivMultiplied(
                                       index: 3,
-                                      newQuantity:
-                                          enteredValue,
+                                      newQuantity: enteredValue,
                                     ));
                         MaterialsItemHistory
                         materialsItemHistory2 = MaterialsItemHistory(
-                          event:
-                              MaterialItemHistoryEventClass
-                                  .transferedOut,
+                          event: MaterialItemHistoryEventClass.transferedOut,
                           isManaged: newMaterial2.isManaged,
                           source:
-                              MaterialItemHistoryEventClass
-                                  .branchStoreSource,
+                              MaterialItemHistoryEventClass.branchStoreSource,
                           shopId: shopId(),
                           isIncreased: false,
                           desc:
@@ -1518,10 +1274,7 @@ void selectItemInAShopMaterial({
                                 .getProductUnit()
                                 .getQuantityEquivDivided(
                                   index: 3,
-                                  newQuantity:
-                                      (newMaterial2
-                                              .quantity ??
-                                          0),
+                                  newQuantity: (newMaterial2.quantity ?? 0),
                                 ),
                           ),
                           oldValue: formatLargeNumberDouble(
@@ -1529,10 +1282,7 @@ void selectItemInAShopMaterial({
                                 .getProductUnit()
                                 .getQuantityEquivDivided(
                                   index: 3,
-                                  newQuantity:
-                                      (mainMaterials
-                                              .quantity ??
-                                          0),
+                                  newQuantity: (mainMaterials.quantity ?? 0),
                                 ),
                           ),
                           quantityChange: -enteredValue,
@@ -1540,14 +1290,9 @@ void selectItemInAShopMaterial({
                           staffName: currentUser().name,
                           unit:
                               newMaterial2
-                                  .getProductUnit(
-                                    unitUuid: unitUuid,
-                                  )
+                                  .getProductUnit(unitUuid: unitUuid)
                                   .name,
-                          primaryUnit:
-                              mainMaterials
-                                  .getProductUnit()
-                                  .name,
+                          primaryUnit: mainMaterials.getProductUnit().name,
                         );
                         var res2 = await returnMaterialsProvider()
                             .updateMaterial(
@@ -1556,17 +1301,13 @@ void selectItemInAShopMaterial({
                               isQuantityUpdate: true,
                               includeQuantity: true,
                               quantityChange: newMaterial2
-                                  .getProductUnit(
-                                    unitUuid: unitUuid,
-                                  )
+                                  .getProductUnit(unitUuid: unitUuid)
                                   .getQuantityEquivMultiplied(
                                     index: 3,
-                                    newQuantity:
-                                        enteredValue,
+                                    newQuantity: enteredValue,
                                   ),
                               isIncrement: false,
-                              materialsItemHistory:
-                                  materialsItemHistory2,
+                              materialsItemHistory: materialsItemHistory2,
                             );
                         if (res == null || res2 == null) {
                           loadingAction(false);
@@ -1619,8 +1360,7 @@ void selectItemInAShopMaterial({
               child: Column(
                 children: [
                   Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Expanded(
                         child: ConstrainedBox(
@@ -1651,9 +1391,7 @@ void selectItemInAShopMaterial({
                           return Center(
                             child: returnCompProvider(
                               context,
-                            ).showLoader(
-                              message: 'Loading',
-                            ),
+                            ).showLoader(message: 'Loading'),
                           );
                         } else if (snapshot.hasError) {
                           return Center(
@@ -1674,33 +1412,25 @@ void selectItemInAShopMaterial({
                               (snapshot.data ?? [])
                                   .where(
                                     (item) =>
-                                        item.name
-                                            .toLowerCase()
-                                            .contains(
-                                              searchController
-                                                  .text
-                                                  .toLowerCase(),
-                                            ) &&
-                                        item.uuid !=
-                                            mainMaterials
-                                                .uuid,
+                                        item.name.toLowerCase().contains(
+                                          searchController.text.toLowerCase(),
+                                        ) &&
+                                        item.uuid != mainMaterials.uuid,
                                   )
                                   .toList();
                           return SingleChildScrollView(
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                    horizontal: 5.0,
-                                    vertical: 10,
-                                  ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 5.0,
+                                vertical: 10,
+                              ),
                               child: Builder(
                                 builder: (context) {
                                   if (products.isEmpty) {
                                     return SizedBox(
                                       height: 400,
                                       child: EmptyWidgetDisplayOnly(
-                                        title:
-                                            'No Item Found',
+                                        title: 'No Item Found',
                                         subText:
                                             'You have not added to any Item under this Shop.',
                                         theme: theme,
@@ -1714,18 +1444,16 @@ void selectItemInAShopMaterial({
                                       children:
                                           products
                                               .map(
-                                                (
-                                                  item,
-                                                ) => Material(
-                                                  color:
-                                                      Colors
-                                                          .transparent,
+                                                (item) => Material(
+                                                  color: Colors.transparent,
                                                   child: InkWell(
                                                     mouseCursor:
-                                                        SystemMouseCursors.click,
+                                                        SystemMouseCursors
+                                                            .click,
                                                     onTap: () {
                                                       setState(() {
-                                                        if (selectedMaterial?.uuid ==
+                                                        if (selectedMaterial
+                                                                ?.uuid ==
                                                             item.uuid) {
                                                           selectedMaterial =
                                                               null;
@@ -1736,57 +1464,69 @@ void selectItemInAShopMaterial({
                                                       });
                                                     },
                                                     child: Padding(
-                                                      padding: const EdgeInsets.symmetric(
-                                                        vertical:
-                                                            9.0,
-                                                        horizontal:
-                                                            10,
-                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            vertical: 9.0,
+                                                            horizontal: 10,
+                                                          ),
                                                       child: Row(
                                                         mainAxisAlignment:
-                                                            MainAxisAlignment.spaceBetween,
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
                                                         children: [
                                                           Text(
                                                             style: TextStyle(
                                                               fontSize:
-                                                                  theme.mobileTexts.b3.fontSize,
+                                                                  theme
+                                                                      .mobileTexts
+                                                                      .b3
+                                                                      .fontSize,
                                                               fontWeight:
-                                                                  FontWeight.bold,
+                                                                  FontWeight
+                                                                      .bold,
                                                             ),
                                                             item.name,
                                                           ),
                                                           Row(
-                                                            spacing:
-                                                                15,
+                                                            spacing: 15,
                                                             children: [
                                                               Text(
                                                                 style: TextStyle(
                                                                   fontSize:
-                                                                      theme.mobileTexts.b3.fontSize,
+                                                                      theme
+                                                                          .mobileTexts
+                                                                          .b3
+                                                                          .fontSize,
                                                                   fontWeight:
-                                                                      FontWeight.bold,
+                                                                      FontWeight
+                                                                          .bold,
                                                                 ),
                                                                 '${item.quantity ?? 0}',
                                                               ),
                                                               Container(
-                                                                padding: EdgeInsets.all(
-                                                                  2,
-                                                                ),
+                                                                padding:
+                                                                    EdgeInsets.all(
+                                                                      2,
+                                                                    ),
                                                                 decoration: BoxDecoration(
                                                                   shape:
-                                                                      BoxShape.circle,
+                                                                      BoxShape
+                                                                          .circle,
                                                                   border: Border.all(
                                                                     color:
-                                                                        Colors.grey,
+                                                                        Colors
+                                                                            .grey,
                                                                   ),
                                                                 ),
                                                                 child: Container(
-                                                                  padding: EdgeInsets.all(
-                                                                    5,
-                                                                  ),
+                                                                  padding:
+                                                                      EdgeInsets.all(
+                                                                        5,
+                                                                      ),
                                                                   decoration: BoxDecoration(
                                                                     shape:
-                                                                        BoxShape.circle,
+                                                                        BoxShape
+                                                                            .circle,
                                                                     color:
                                                                         selectedMaterial?.uuid ==
                                                                                 item.uuid

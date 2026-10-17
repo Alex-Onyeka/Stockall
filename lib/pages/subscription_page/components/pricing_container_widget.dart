@@ -83,7 +83,10 @@ class _PricingContainerWidgetState
         }
         if (kIsWeb) {
           await mainLocalLog('Platform is Web');
-          launchUrlMain(authorizationUrl.authorizationUrl);
+          await launchUrlMain(
+            authorizationUrl.authorizationUrl,
+            sameTab: true,
+          );
         } else {
           Navigator.push<bool>(
             context,

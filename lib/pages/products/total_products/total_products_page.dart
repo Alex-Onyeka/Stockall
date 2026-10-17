@@ -7,18 +7,12 @@ import 'package:stockall/providers/theme_provider.dart';
 class TotalProductsPage extends StatelessWidget {
   final ThemeProvider theme;
   final String? categoryUuid;
-  const TotalProductsPage({
-    super.key,
-    required this.theme,
-    this.categoryUuid,
-  });
+  const TotalProductsPage({super.key, required this.theme, this.categoryUuid});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap:
-          () =>
-              FocusManager.instance.primaryFocus?.unfocus(),
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth < mobileScreen) {

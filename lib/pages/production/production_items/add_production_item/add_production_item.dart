@@ -11,18 +11,13 @@ class AddProductionItem extends StatefulWidget {
   const AddProductionItem({super.key, this.productionItem});
 
   @override
-  State<AddProductionItem> createState() =>
-      _AddProductionItemState();
+  State<AddProductionItem> createState() => _AddProductionItemState();
 }
 
-class _AddProductionItemState
-    extends State<AddProductionItem> {
-  TextEditingController nameController =
-      TextEditingController();
-  TextEditingController costController =
-      TextEditingController();
-  TextEditingController qttyPerGroupController =
-      TextEditingController();
+class _AddProductionItemState extends State<AddProductionItem> {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController costController = TextEditingController();
+  TextEditingController qttyPerGroupController = TextEditingController();
 
   @override
   void dispose() {
@@ -35,9 +30,7 @@ class _AddProductionItemState
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap:
-          () =>
-              FocusManager.instance.primaryFocus?.unfocus(),
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: PopScope(
         canPop: false,
         onPopInvokedWithResult: (didPop, result) {
@@ -56,16 +49,14 @@ class _AddProductionItemState
                 productionItem: widget.productionItem,
                 costController: costController,
                 nameController: nameController,
-                qttyPerGroupController:
-                    qttyPerGroupController,
+                qttyPerGroupController: qttyPerGroupController,
               );
             } else {
               return AddProductionItemDesktop(
                 productionItem: widget.productionItem,
                 costController: costController,
                 nameController: nameController,
-                qttyPerGroupController:
-                    qttyPerGroupController,
+                qttyPerGroupController: qttyPerGroupController,
               );
             }
           },
@@ -75,16 +66,11 @@ class _AddProductionItemState
   }
 }
 
-void checkPop({
-  required BuildContext context,
-  bool? conditionX,
-  bool? didPop,
-}) {
+void checkPop({required BuildContext context, bool? conditionX, bool? didPop}) {
   if (didPop != null && didPop) {
     return;
   }
-  if ((conditionX != null && conditionX == true) ||
-      conditionX == null) {
+  if ((conditionX != null && conditionX == true) || conditionX == null) {
     showDialog(
       context: context,
       builder: (confirmDialog) {

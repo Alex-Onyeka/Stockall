@@ -10,8 +10,5 @@ class CreatedMaterial extends HiveObject {
   @HiveField(1)
   final bool? includeQuantity;
 
-  CreatedMaterial({
-    required this.material,
-    this.includeQuantity = false,
-  });
+  CreatedMaterial({required this.material, this.includeQuantity = false});
 }

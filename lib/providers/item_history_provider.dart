@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_item_history/unsynced/created_item_history.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
@@ -102,28 +103,15 @@ class ItemHistoryProvider with ChangeNotifier {
         (a, b) => b.createdAt!.compareTo(a.createdAt!),
       );
       return departmentItemHistories();
-    } else if (dateSet != null) {
-      return departmentItemHistories()
-          .where(
-            (itemHistory) =>
-                !itemHistory.createdAt!.isBefore(
-                  fourAm(dateSet!),
-                ) &&
-                !itemHistory.createdAt!.isAfter(
-                  fourAmNextDay(dateSet!),
-                ),
-          )
-          .toList();
     } else {
       return departmentItemHistories()
           .where(
-            (update) =>
-                ((!update.createdAt!.isBefore(
-                      fourAm(rangeStartDate!),
-                    )) &&
-                    (!update.createdAt!.isAfter(
-                      fourAmNextDay(rangeEndDate!),
-                    ))),
+            (itemHistory) => isDateTimeInBusinessWindow(
+              dateTime: itemHistory.createdAt,
+              dateSet: dateSet,
+              rangeStartDate: rangeStartDate,
+              rangeEndDate: rangeEndDate,
+            ),
           )
           .toList();
     }
@@ -205,6 +193,14 @@ class ItemHistoryProvider with ChangeNotifier {
       itemHistory.createdAt ??= DateTime.now();
       itemHistory.staffId = currentUser().userId;
       itemHistory.staffName = currentUser().name;
+      itemHistory.destination ??=
+          ItemHistoryEventClass.unKnownDestination;
+      itemHistory.source ??=
+          ItemHistoryEventClass.unKnownSource;
+      itemHistory.destination ??=
+          ItemHistoryEventClass.unKnownDestination;
+      itemHistory.source ??=
+          ItemHistoryEventClass.unKnownSource;
       itemHistory.departmentName ??=
           returnDepartmentProvider()
               .currentDepartment()

@@ -37,23 +37,17 @@ class CreateProductionFunctions {
           builder:
               (context, setState) => DialogTemplate(
                 theme: theme,
-                message:
-                    'Select The Cost for this Production',
+                message: 'Select The Cost for this Production',
                 title: 'Set Total Cost',
                 action: () {
-                  if (currentSelection == 3 &&
-                      totalController.text.isEmpty) {
+                  if (currentSelection == 3 && totalController.text.isEmpty) {
                   } else {
-                    returnProductionsActionProvider()
-                        .setTotalCost(
-                          customCost: double.tryParse(
-                            totalController.text.replaceAll(
-                              ',',
-                              '',
-                            ),
-                          ),
-                          selection: currentSelection,
-                        );
+                    returnProductionsActionProvider().setTotalCost(
+                      customCost: double.tryParse(
+                        totalController.text.replaceAll(',', ''),
+                      ),
+                      selection: currentSelection,
+                    );
                     Navigator.of(context).pop();
                   }
                 },
@@ -115,24 +109,14 @@ class CreateProductionFunctions {
                             showTitle: false,
                             onSubmitted: (p0) {
                               if (currentSelection == 3 &&
-                                  totalController
-                                      .text
-                                      .isEmpty) {
+                                  totalController.text.isEmpty) {
                               } else {
-                                returnProductionsActionProvider()
-                                    .setTotalCost(
-                                      customCost:
-                                          double.tryParse(
-                                            totalController
-                                                .text
-                                                .replaceAll(
-                                                  ',',
-                                                  '',
-                                                ),
-                                          ),
-                                      selection:
-                                          currentSelection,
-                                    );
+                                returnProductionsActionProvider().setTotalCost(
+                                  customCost: double.tryParse(
+                                    totalController.text.replaceAll(',', ''),
+                                  ),
+                                  selection: currentSelection,
+                                );
                                 Navigator.of(context).pop();
                               }
                             },
@@ -148,18 +132,13 @@ class CreateProductionFunctions {
     );
   }
 
-  void selectItemForProduction({
-    required BuildContext firstContext,
-  }) {
+  void selectItemForProduction({required BuildContext firstContext}) {
     var theme = returnTheme(firstContext, listen: false);
     final searchController = TextEditingController();
     ProductionItem? selectedItem;
     TempProductClass? selectedSalesItem;
     bool useProductionItems =
-        returnShopProvider()
-            .userShop()
-            ?.manageProductionItems ??
-        false;
+        returnShopProvider().userShop()?.manageProductionItems ?? false;
     showDialog(
       context: firstContext,
       builder: (secondContext) {
@@ -189,8 +168,7 @@ class CreateProductionFunctions {
                 child: Column(
                   children: [
                     Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Expanded(
                           child: ConstrainedBox(
@@ -216,38 +194,31 @@ class CreateProductionFunctions {
                     Expanded(
                       child: SingleChildScrollView(
                         child: Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 5.0,
-                                vertical: 10,
-                              ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5.0,
+                            vertical: 10,
+                          ),
                           child: Builder(
                             builder: (context) {
-                              List<TempProductClass>
-                              salesProducts =
+                              List<TempProductClass> salesProducts =
                                   returnData()
                                       .productList()
                                       .where(
-                                        (item) => item.name
-                                            .toLowerCase()
-                                            .contains(
-                                              searchController
-                                                  .text
+                                        (item) =>
+                                            item.name.toLowerCase().contains(
+                                              searchController.text
                                                   .toLowerCase(),
                                             ),
                                       )
                                       .toList();
 
-                              List<ProductionItem>
-                              productionItems =
+                              List<ProductionItem> productionItems =
                                   returnProductionItemsProvider()
                                       .productionItemList()
                                       .where(
-                                        (item) => item.name
-                                            .toLowerCase()
-                                            .contains(
-                                              searchController
-                                                  .text
+                                        (item) =>
+                                            item.name.toLowerCase().contains(
+                                              searchController.text
                                                   .toLowerCase(),
                                             ),
                                       )
@@ -260,22 +231,19 @@ class CreateProductionFunctions {
                                   height: 400,
                                   child: EmptyWidgetDisplayOnly(
                                     title: 'No Item Found',
-                                    subText:
-                                        'No item was found.',
+                                    subText: 'No item was found.',
                                     theme: theme,
                                     height: 30,
                                     altAction: () async {
                                       useProductionItems
                                           ? await returnProductionItemsProvider()
                                               .getProductionItems()
-                                          : await returnData()
-                                              .getProducts(
-                                                shopId(),
-                                              );
+                                          : await returnData().getProducts(
+                                            shopId(),
+                                          );
                                       setState(() {});
                                     },
-                                    altActionText:
-                                        'Refresh',
+                                    altActionText: 'Refresh',
                                     icon: Icons.clear,
                                   ),
                                 );
@@ -286,79 +254,87 @@ class CreateProductionFunctions {
                                       useProductionItems
                                           ? productionItems
                                               .map(
-                                                (
-                                                  item,
-                                                ) => Material(
-                                                  color:
-                                                      Colors
-                                                          .transparent,
+                                                (item) => Material(
+                                                  color: Colors.transparent,
                                                   child: InkWell(
                                                     mouseCursor:
-                                                        SystemMouseCursors.click,
+                                                        SystemMouseCursors
+                                                            .click,
                                                     onTap: () {
                                                       setState(() {
-                                                        if (selectedItem?.uuid ==
+                                                        if (selectedItem
+                                                                ?.uuid ==
                                                             item.uuid) {
-                                                          selectedItem =
-                                                              null;
+                                                          selectedItem = null;
                                                         } else {
-                                                          selectedItem =
-                                                              item;
+                                                          selectedItem = item;
                                                         }
                                                       });
                                                     },
                                                     child: Padding(
-                                                      padding: const EdgeInsets.symmetric(
-                                                        vertical:
-                                                            9.0,
-                                                        horizontal:
-                                                            10,
-                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            vertical: 9.0,
+                                                            horizontal: 10,
+                                                          ),
                                                       child: Row(
                                                         mainAxisAlignment:
-                                                            MainAxisAlignment.spaceBetween,
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
                                                         children: [
                                                           Text(
                                                             style: TextStyle(
                                                               fontSize:
-                                                                  theme.mobileTexts.b3.fontSize,
+                                                                  theme
+                                                                      .mobileTexts
+                                                                      .b3
+                                                                      .fontSize,
                                                               fontWeight:
-                                                                  FontWeight.bold,
+                                                                  FontWeight
+                                                                      .bold,
                                                             ),
                                                             item.name,
                                                           ),
                                                           Row(
-                                                            spacing:
-                                                                15,
+                                                            spacing: 15,
                                                             children: [
                                                               Text(
                                                                 style: TextStyle(
                                                                   fontSize:
-                                                                      theme.mobileTexts.b3.fontSize,
+                                                                      theme
+                                                                          .mobileTexts
+                                                                          .b3
+                                                                          .fontSize,
                                                                   fontWeight:
-                                                                      FontWeight.bold,
+                                                                      FontWeight
+                                                                          .bold,
                                                                 ),
                                                                 '${formatLargeNumberDouble(item.getPrimaryUnit().getQuantityEquivDivided(index: 2, quantityTwo: item.quantity ?? 0))} ${cutLongText(item.getPrimaryUnit().name, 8)}',
                                                               ),
                                                               Container(
-                                                                padding: EdgeInsets.all(
-                                                                  2,
-                                                                ),
+                                                                padding:
+                                                                    EdgeInsets.all(
+                                                                      2,
+                                                                    ),
                                                                 decoration: BoxDecoration(
                                                                   shape:
-                                                                      BoxShape.circle,
+                                                                      BoxShape
+                                                                          .circle,
                                                                   border: Border.all(
                                                                     color:
-                                                                        Colors.grey,
+                                                                        Colors
+                                                                            .grey,
                                                                   ),
                                                                 ),
                                                                 child: Container(
-                                                                  padding: EdgeInsets.all(
-                                                                    5,
-                                                                  ),
+                                                                  padding:
+                                                                      EdgeInsets.all(
+                                                                        5,
+                                                                      ),
                                                                   decoration: BoxDecoration(
                                                                     shape:
-                                                                        BoxShape.circle,
+                                                                        BoxShape
+                                                                            .circle,
                                                                     color:
                                                                         selectedItem?.uuid ==
                                                                                 item.uuid
@@ -378,18 +354,16 @@ class CreateProductionFunctions {
                                               .toList()
                                           : salesProducts
                                               .map(
-                                                (
-                                                  item,
-                                                ) => Material(
-                                                  color:
-                                                      Colors
-                                                          .transparent,
+                                                (item) => Material(
+                                                  color: Colors.transparent,
                                                   child: InkWell(
                                                     mouseCursor:
-                                                        SystemMouseCursors.click,
+                                                        SystemMouseCursors
+                                                            .click,
                                                     onTap: () {
                                                       setState(() {
-                                                        if (selectedSalesItem?.uuid ==
+                                                        if (selectedSalesItem
+                                                                ?.uuid ==
                                                             item.uuid) {
                                                           selectedSalesItem =
                                                               null;
@@ -400,57 +374,69 @@ class CreateProductionFunctions {
                                                       });
                                                     },
                                                     child: Padding(
-                                                      padding: const EdgeInsets.symmetric(
-                                                        vertical:
-                                                            9.0,
-                                                        horizontal:
-                                                            10,
-                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            vertical: 9.0,
+                                                            horizontal: 10,
+                                                          ),
                                                       child: Row(
                                                         mainAxisAlignment:
-                                                            MainAxisAlignment.spaceBetween,
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
                                                         children: [
                                                           Text(
                                                             style: TextStyle(
                                                               fontSize:
-                                                                  theme.mobileTexts.b3.fontSize,
+                                                                  theme
+                                                                      .mobileTexts
+                                                                      .b3
+                                                                      .fontSize,
                                                               fontWeight:
-                                                                  FontWeight.bold,
+                                                                  FontWeight
+                                                                      .bold,
                                                             ),
                                                             item.name,
                                                           ),
                                                           Row(
-                                                            spacing:
-                                                                15,
+                                                            spacing: 15,
                                                             children: [
                                                               Text(
                                                                 style: TextStyle(
                                                                   fontSize:
-                                                                      theme.mobileTexts.b3.fontSize,
+                                                                      theme
+                                                                          .mobileTexts
+                                                                          .b3
+                                                                          .fontSize,
                                                                   fontWeight:
-                                                                      FontWeight.bold,
+                                                                      FontWeight
+                                                                          .bold,
                                                                 ),
                                                                 '${formatLargeNumberDouble(item.getPrimaryUnit().getQuantityEquivDivided(index: 1, quantityTwo: item.getActualQuantity() ?? 0))} ${cutLongText(item.getPrimaryUnit().name, 8)}',
                                                               ),
                                                               Container(
-                                                                padding: EdgeInsets.all(
-                                                                  2,
-                                                                ),
+                                                                padding:
+                                                                    EdgeInsets.all(
+                                                                      2,
+                                                                    ),
                                                                 decoration: BoxDecoration(
                                                                   shape:
-                                                                      BoxShape.circle,
+                                                                      BoxShape
+                                                                          .circle,
                                                                   border: Border.all(
                                                                     color:
-                                                                        Colors.grey,
+                                                                        Colors
+                                                                            .grey,
                                                                   ),
                                                                 ),
                                                                 child: Container(
-                                                                  padding: EdgeInsets.all(
-                                                                    5,
-                                                                  ),
+                                                                  padding:
+                                                                      EdgeInsets.all(
+                                                                        5,
+                                                                      ),
                                                                   decoration: BoxDecoration(
                                                                     shape:
-                                                                        BoxShape.circle,
+                                                                        BoxShape
+                                                                            .circle,
                                                                     color:
                                                                         selectedSalesItem?.uuid ==
                                                                                 item.uuid
@@ -493,27 +479,18 @@ class CreateProductionFunctions {
   }) {
     var theme = returnTheme(secondContext, listen: false);
     bool useProductionitems =
-        returnShopProvider()
-            .userShop()
-            ?.manageProductionItems ??
-        false;
+        returnShopProvider().userShop()?.manageProductionItems ?? false;
 
     showDialog(
       context: secondContext,
       builder: (thirdContext) {
         final productionItemUnits =
-            returnProductionItemsProvider()
-                .productionItemListMain
-                .where(
-                  (item) => item.uuid == editItem?.itemUuid,
-                )
+            returnProductionItemsProvider().productionItemListMain
+                .where((item) => item.uuid == editItem?.itemUuid)
                 .toList();
         final salesItemUnits =
             returnData().productListMain
-                .where(
-                  (item) =>
-                      item.uuid == editItem?.salesItemUuid,
-                )
+                .where((item) => item.uuid == editItem?.salesItemUuid)
                 .toList();
         final sourceUnits =
             (editItem?.unitsList?.isNotEmpty == true
@@ -523,18 +500,13 @@ class CreateProductionFunctions {
                 ? selectedItem?.getUnitsList() ??
                     (productionItemUnits.isEmpty
                         ? null
-                        : productionItemUnits.first
-                            .getUnitsList())
+                        : productionItemUnits.first.getUnitsList())
                 : selectedSalesItem?.getUnitsList() ??
                     (salesItemUnits.isEmpty
                         ? null
-                        : salesItemUnits.first
-                            .getUnitsList())) ??
+                        : salesItemUnits.first.getUnitsList())) ??
             [];
-        final units =
-            sourceUnits
-                .map((unit) => unit.copyWith())
-                .toList();
+        final units = sourceUnits.map((unit) => unit.copyWith()).toList();
         String? selectedUnitUuid =
             editItem?.unitUuid ??
             legacyProductionUnitUuid(
@@ -543,9 +515,7 @@ class CreateProductionFunctions {
               groupUnit: editItem?.groupUnit,
             );
         if (selectedUnitUuid == null) {
-          final primaryUnits = units.where(
-            (unit) => unit.isPrimary,
-          );
+          final primaryUnits = units.where((unit) => unit.isPrimary);
           if (primaryUnits.isNotEmpty) {
             selectedUnitUuid = primaryUnits.first.uuid;
           }
@@ -559,8 +529,7 @@ class CreateProductionFunctions {
 
         final quantityController = TextEditingController();
         if (editItem != null) {
-          quantityController.text =
-              editItem.quantity.toString();
+          quantityController.text = editItem.quantity.toString();
         }
 
         Future<void> onSubmit() async {
@@ -570,21 +539,11 @@ class CreateProductionFunctions {
             final selectedUnit = units.firstWhere(
               (unit) => unit.uuid == selectedUnitUuid,
             );
-            final primaryUnits =
-                units
-                    .where((unit) => unit.isPrimary)
-                    .toList();
+            final primaryUnits = units.where((unit) => unit.isPrimary).toList();
             final primaryUnitName =
-                primaryUnits.isEmpty
-                    ? 'Unit(s)'
-                    : primaryUnits.first.name;
+                primaryUnits.isEmpty ? 'Unit(s)' : primaryUnits.first.name;
             final quantity =
-                double.tryParse(
-                  quantityController.text.replaceAll(
-                    ',',
-                    '',
-                  ),
-                ) ??
+                double.tryParse(quantityController.text.replaceAll(',', '')) ??
                 0;
             if (!selectedUnit.conversion.isFinite ||
                 selectedUnit.conversion <= 0 ||
@@ -614,14 +573,12 @@ class CreateProductionFunctions {
               uuid: editItem?.uuid ?? uuidGen(),
               itemUuid:
                   useProductionitems
-                      ? (editItem?.itemUuid ??
-                          selectedItem?.uuid)
+                      ? (editItem?.itemUuid ?? selectedItem?.uuid)
                       : null,
               salesItemUuid:
                   useProductionitems
                       ? null
-                      : editItem?.salesItemUuid ??
-                          selectedSalesItem?.uuid,
+                      : editItem?.salesItemUuid ?? selectedSalesItem?.uuid,
               name:
                   editItem?.name ??
                   (useProductionitems
@@ -631,21 +588,16 @@ class CreateProductionFunctions {
               quantity: quantity,
               addToStock: false,
               useGroupQuantity: !selectedUnit.isPrimary,
-              costPrice:
-                  originalCost *
-                  quantity *
-                  selectedUnit.conversion,
-              groupUnit:
-                  selectedUnit.isPrimary
-                      ? null
-                      : selectedUnit.name,
+              costPrice: originalCost * quantity * selectedUnit.conversion,
+              groupUnit: selectedUnit.isPrimary ? null : selectedUnit.name,
               qttyPerGroup: selectedUnit.conversion,
               unit: primaryUnitName,
               unitUuid: selectedUnit.uuid,
               unitsList: units,
             );
-            await returnProductionsActionProvider()
-                .addItemToCart(item: tempCartItem);
+            await returnProductionsActionProvider().addItemToCart(
+              item: tempCartItem,
+            );
             if (editItem == null) {
               Navigator.of(thirdContext).pop();
             }
@@ -702,49 +654,33 @@ class CreateProductionFunctions {
                       ),
                       decoration: BoxDecoration(
                         color: Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(
-                          2,
-                        ),
+                        borderRadius: BorderRadius.circular(2),
                       ),
                       child: Column(
                         spacing: 10,
                         children: [
                           Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             spacing: 10,
                             children: [
                               Text(
                                 style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.normal,
+                                  fontSize: theme.mobileTexts.b3.fontSize,
+                                  fontWeight: FontWeight.normal,
                                 ),
                                 'Total Quantity:',
                               ),
                               Text(
                                 style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
+                                  fontSize: theme.mobileTexts.b3.fontSize,
+                                  fontWeight: FontWeight.bold,
                                 ),
                                 formatLargeNumberDouble(
                                   double.tryParse(
-                                        quantityController
-                                            .text
-                                            .replaceAll(
-                                              ',',
-                                              '',
-                                            ),
+                                        quantityController.text.replaceAll(
+                                          ',',
+                                          '',
+                                        ),
                                       ) ??
                                       0,
                                 ),
@@ -752,90 +688,58 @@ class CreateProductionFunctions {
                             ],
                           ),
                           Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             spacing: 10,
                             children: [
                               Text(
                                 style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.normal,
+                                  fontSize: theme.mobileTexts.b3.fontSize,
+                                  fontWeight: FontWeight.normal,
                                 ),
                                 'Total Cost Price:',
                               ),
                               Text(
                                 style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
+                                  fontSize: theme.mobileTexts.b3.fontSize,
+                                  fontWeight: FontWeight.bold,
                                 ),
                                 formatMoneyBig(
                                   amount:
-                                      (editItem
-                                              ?.originalCostPerItem ??
+                                      (editItem?.originalCostPerItem ??
                                           (useProductionitems
-                                              ? selectedItem
-                                                  ?.costPrice
-                                              : selectedSalesItem
-                                                  ?.costPrice) ??
+                                              ? selectedItem?.costPrice
+                                              : selectedSalesItem?.costPrice) ??
                                           0) *
                                       (double.tryParse(
-                                            quantityController
-                                                .text
-                                                .replaceAll(
-                                                  ',',
-                                                  '',
-                                                ),
+                                            quantityController.text.replaceAll(
+                                              ',',
+                                              '',
+                                            ),
                                           ) ??
                                           0) *
-                                      (currentUnit()
-                                              ?.conversion ??
-                                          1),
+                                      (currentUnit()?.conversion ?? 1),
                                   context: context,
                                 ),
                               ),
                             ],
                           ),
                           Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             spacing: 10,
                             children: [
                               Text(
                                 style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.normal,
+                                  fontSize: theme.mobileTexts.b3.fontSize,
+                                  fontWeight: FontWeight.normal,
                                 ),
                                 'Unit:',
                               ),
                               Text(
                                 style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
+                                  fontSize: theme.mobileTexts.b3.fontSize,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                currentUnit()?.name ??
-                                    'Unit(s)',
+                                currentUnit()?.name ?? 'Unit(s)',
                               ),
                             ],
                           ),
@@ -873,9 +777,7 @@ class CreateProductionFunctions {
   //
   //
 
-  void selectItemForProductionMaterials({
-    required BuildContext firstContext,
-  }) {
+  void selectItemForProductionMaterials({required BuildContext firstContext}) {
     var theme = returnTheme(firstContext, listen: false);
     final searchController = TextEditingController();
     MaterialClass? selectedMaterial;
@@ -886,8 +788,7 @@ class CreateProductionFunctions {
           builder: (statefulContext, setState) {
             return DialogTemplate(
               theme: theme,
-              message:
-                  'Select a Material From the List Below',
+              message: 'Select a Material From the List Below',
               title: 'Select Material',
               action: () {
                 if (selectedMaterial != null) {
@@ -902,8 +803,7 @@ class CreateProductionFunctions {
                 child: Column(
                   children: [
                     Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Expanded(
                           child: ConstrainedBox(
@@ -929,31 +829,25 @@ class CreateProductionFunctions {
                     Expanded(
                       child: SingleChildScrollView(
                         child: Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 5.0,
-                                vertical: 10,
-                              ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5.0,
+                            vertical: 10,
+                          ),
                           child: Builder(
                             builder: (context) {
                               if (returnMaterialsProvider()
                                   .materialList()
                                   .where(
-                                    (item) => item.name
-                                        .toLowerCase()
-                                        .contains(
-                                          searchController
-                                              .text
-                                              .toLowerCase(),
-                                        ),
+                                    (item) => item.name.toLowerCase().contains(
+                                      searchController.text.toLowerCase(),
+                                    ),
                                   )
                                   .isEmpty) {
                                 return SizedBox(
                                   height: 400,
                                   child: EmptyWidgetDisplayOnly(
                                     title: 'No Item Found',
-                                    subText:
-                                        'No item was found.',
+                                    subText: 'No item was found.',
                                     theme: theme,
                                     height: 30,
                                     altAction: () async {
@@ -961,8 +855,7 @@ class CreateProductionFunctions {
                                           .getMaterials();
                                       setState(() {});
                                     },
-                                    altActionText:
-                                        'Refresh',
+                                    altActionText: 'Refresh',
                                     icon: Icons.clear,
                                   ),
                                 );
@@ -973,29 +866,22 @@ class CreateProductionFunctions {
                                       returnMaterialsProvider()
                                           .materialList()
                                           .where(
-                                            (item) => item
-                                                .name
+                                            (item) => item.name
                                                 .toLowerCase()
                                                 .contains(
-                                                  searchController
-                                                      .text
+                                                  searchController.text
                                                       .toLowerCase(),
                                                 ),
                                           )
                                           .map(
-                                            (
-                                              item,
-                                            ) => SelectMaterialItemTile(
+                                            (item) => SelectMaterialItemTile(
                                               action: () {
                                                 setState(() {
-                                                  if (selectedMaterial
-                                                          ?.uuid ==
+                                                  if (selectedMaterial?.uuid ==
                                                       item.uuid) {
-                                                    selectedMaterial =
-                                                        null;
+                                                    selectedMaterial = null;
                                                   } else {
-                                                    selectedMaterial =
-                                                        item;
+                                                    selectedMaterial = item;
                                                   }
                                                 });
                                               },
@@ -1042,15 +928,13 @@ class CreateProductionFunctions {
                 )
                 .toList();
         final units =
-            ((editMaterialItem?.unitsList?.isNotEmpty ==
-                            true
+            ((editMaterialItem?.unitsList?.isNotEmpty == true
                         ? editMaterialItem!.unitsList
                         : null) ??
                     selectedMaterial?.getUnitsList() ??
                     (existingMaterial.isEmpty
                         ? null
-                        : existingMaterial.first
-                            .getUnitsList()) ??
+                        : existingMaterial.first.getUnitsList()) ??
                     [])
                 .map((unit) => unit.copyWith())
                 .toList();
@@ -1058,19 +942,13 @@ class CreateProductionFunctions {
             editMaterialItem?.unitUuid ??
             legacyProductionUnitUuid(
               unitsList: units,
-              useGroupQuantity:
-                  editMaterialItem?.useGroupQuantity,
+              useGroupQuantity: editMaterialItem?.useGroupQuantity,
               groupUnit: editMaterialItem?.groupUnit,
             );
         if (selectedUnitUuid == null && units.isNotEmpty) {
-          final primaryUnits =
-              units
-                  .where((unit) => unit.isPrimary)
-                  .toList();
+          final primaryUnits = units.where((unit) => unit.isPrimary).toList();
           selectedUnitUuid =
-              primaryUnits.isEmpty
-                  ? units.first.uuid
-                  : primaryUnits.first.uuid;
+              primaryUnits.isEmpty ? units.first.uuid : primaryUnits.first.uuid;
         }
         ProductUnitsClass? currentUnit() {
           for (final unit in units) {
@@ -1080,18 +958,15 @@ class CreateProductionFunctions {
         }
 
         // ignore: unused_local_variable
-        bool useGroupUnit =
-            currentUnit()?.isPrimary == false;
+        bool useGroupUnit = currentUnit()?.isPrimary == false;
         final quantityController = TextEditingController();
         if (editMaterialItem != null) {
-          quantityController.text =
-              editMaterialItem.quantity.toString();
+          quantityController.text = editMaterialItem.quantity.toString();
         }
 
         bool hasEnoughManagedStock(double enteredQuantity) {
           final materialUuid =
-              editMaterialItem?.materialItemUuid ??
-              selectedMaterial?.uuid;
+              editMaterialItem?.materialItemUuid ?? selectedMaterial?.uuid;
           final isManaged =
               editMaterialItem?.isManaged ??
               selectedMaterial?.isManaged ??
@@ -1100,9 +975,9 @@ class CreateProductionFunctions {
             return true;
           }
 
-          final materials = returnMaterialsProvider()
-              .materialListMain
-              .where((item) => item.uuid == materialUuid);
+          final materials = returnMaterialsProvider().materialListMain.where(
+            (item) => item.uuid == materialUuid,
+          );
           if (materials.isEmpty) return false;
 
           final cartItems =
@@ -1117,28 +992,19 @@ class CreateProductionFunctions {
                     item.uuid != editMaterialItem?.uuid &&
                     item.isManaged != false,
               )
-              .fold<double>(
-                0,
-                (total, item) =>
-                    total + item.getRealQuantity(),
-              );
+              .fold<double>(0, (total, item) => total + item.getRealQuantity());
           final available =
               (materials.first.quantity ?? 0) -
               otherCartDemand +
               (editMaterialItem?.getRealQuantity() ?? 0);
-          return enteredQuantity *
-                  (currentUnit()?.conversion ?? 0) <=
+          return enteredQuantity * (currentUnit()?.conversion ?? 0) <=
               available;
         }
 
         void validateEnteredStock() {
           final enteredQuantity =
-              double.tryParse(
-                quantityController.text.replaceAll(',', ''),
-              ) ??
-              0;
-          if (enteredQuantity > 0 &&
-              !hasEnoughManagedStock(enteredQuantity)) {
+              double.tryParse(quantityController.text.replaceAll(',', '')) ?? 0;
+          if (enteredQuantity > 0 && !hasEnoughManagedStock(enteredQuantity)) {
             quantityController.text = '0';
           }
         }
@@ -1149,20 +1015,14 @@ class CreateProductionFunctions {
               currentUnit() != null) {
             final unit = currentUnit()!;
             final quantity =
-                double.tryParse(
-                  quantityController.text.replaceAll(
-                    ',',
-                    '',
-                  ),
-                ) ??
+                double.tryParse(quantityController.text.replaceAll(',', '')) ??
                 0;
             if (!unit.conversion.isFinite ||
                 unit.conversion <= 0 ||
                 !quantity.isFinite ||
                 quantity <= 0 ||
                 !hasEnoughManagedStock(quantity)) {
-              if (quantity > 0 &&
-                  !hasEnoughManagedStock(quantity)) {
+              if (quantity > 0 && !hasEnoughManagedStock(quantity)) {
                 quantityController.text = '0';
               }
               return;
@@ -1171,10 +1031,7 @@ class CreateProductionFunctions {
                 editMaterialItem?.originalCostPerItem ??
                 selectedMaterial?.costPrice ??
                 0;
-            final primaryUnits =
-                units
-                    .where((item) => item.isPrimary)
-                    .toList();
+            final primaryUnits = units.where((item) => item.isPrimary).toList();
             var tempCartItem = ProductionMaterialCartItem(
               isManaged:
                   editMaterialItem?.isManaged ??
@@ -1191,8 +1048,7 @@ class CreateProductionFunctions {
                       ?.productionsCartItem
                       ?.uuid,
               originalUseGroupQuantity:
-                  editMaterialItem
-                      ?.originalUseGroupQuantity ??
+                  editMaterialItem?.originalUseGroupQuantity ??
                   selectedMaterial?.useGroupUnit,
               customUnit: null,
               originalCostPerItem:
@@ -1207,25 +1063,20 @@ class CreateProductionFunctions {
                   selectedMaterial?.uuid ??
                   'Not Set',
               name:
-                  editMaterialItem?.name ??
-                  selectedMaterial?.name ??
-                  'Not Set',
+                  editMaterialItem?.name ?? selectedMaterial?.name ?? 'Not Set',
               quantity: quantity,
               addToStock: false,
               useGroupQuantity: !unit.isPrimary,
-              costPrice:
-                  originalCost * quantity * unit.conversion,
+              costPrice: originalCost * quantity * unit.conversion,
               groupUnit: unit.isPrimary ? null : unit.name,
               qttyPerGroup: unit.conversion,
-              unit:
-                  primaryUnits.isEmpty
-                      ? 'Unit(s)'
-                      : primaryUnits.first.name,
+              unit: primaryUnits.isEmpty ? 'Unit(s)' : primaryUnits.first.name,
               unitUuid: unit.uuid,
               unitsList: units,
             );
-            await returnProductionsActionProvider()
-                .addMaterialItemToCart(item: tempCartItem);
+            await returnProductionsActionProvider().addMaterialItemToCart(
+              item: tempCartItem,
+            );
             if (editMaterialItem == null) {
               Navigator.of(thirdContext).pop();
             }
@@ -1273,9 +1124,7 @@ class CreateProductionFunctions {
                       setUnitUuid: (value) {
                         setState2(() {
                           selectedUnitUuid = value;
-                          useGroupUnit =
-                              currentUnit()?.isPrimary ==
-                              false;
+                          useGroupUnit = currentUnit()?.isPrimary == false;
                         });
                         validateEnteredStock();
                       },
@@ -1287,54 +1136,35 @@ class CreateProductionFunctions {
                       ),
                       decoration: BoxDecoration(
                         color: Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(
-                          2,
-                        ),
+                        borderRadius: BorderRadius.circular(2),
                       ),
                       child: Column(
                         // spacing: 5,
                         children: [
                           Padding(
-                            padding:
-                                const EdgeInsets.symmetric(
-                                  vertical: 5.0,
-                                ),
+                            padding: const EdgeInsets.symmetric(vertical: 5.0),
                             child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               spacing: 10,
                               children: [
                                 Text(
                                   style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.normal,
+                                    fontSize: theme.mobileTexts.b3.fontSize,
+                                    fontWeight: FontWeight.normal,
                                   ),
                                   'Total Quantity:',
                                 ),
                                 Text(
                                   style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
+                                    fontSize: theme.mobileTexts.b3.fontSize,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                   formatLargeNumberDouble(
                                     double.tryParse(
-                                          quantityController
-                                              .text
-                                              .replaceAll(
-                                                ',',
-                                                '',
-                                              ),
+                                          quantityController.text.replaceAll(
+                                            ',',
+                                            '',
+                                          ),
                                         ) ??
                                         0,
                                   ),
@@ -1343,57 +1173,35 @@ class CreateProductionFunctions {
                             ),
                           ),
                           Padding(
-                            padding:
-                                const EdgeInsets.symmetric(
-                                  vertical: 5.0,
-                                ),
+                            padding: const EdgeInsets.symmetric(vertical: 5.0),
                             child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               spacing: 10,
                               children: [
                                 Text(
                                   style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.normal,
+                                    fontSize: theme.mobileTexts.b3.fontSize,
+                                    fontWeight: FontWeight.normal,
                                   ),
                                   'Total Cost Price:',
                                 ),
                                 Text(
                                   style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
+                                    fontSize: theme.mobileTexts.b3.fontSize,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                   formatMoneyBig(
                                     amount:
                                         (editMaterialItem
                                                 ?.originalCostPerItem ??
-                                            selectedMaterial
-                                                ?.costPrice ??
+                                            selectedMaterial?.costPrice ??
                                             0) *
                                         (double.tryParse(
-                                              quantityController
-                                                  .text
-                                                  .replaceAll(
-                                                    ',',
-                                                    '',
-                                                  ),
+                                              quantityController.text
+                                                  .replaceAll(',', ''),
                                             ) ??
                                             0) *
-                                        (currentUnit()
-                                                ?.conversion ??
-                                            1),
+                                        (currentUnit()?.conversion ?? 1),
                                     context: context,
                                   ),
                                 ),
@@ -1428,8 +1236,7 @@ class CreateProductionFunctions {
           builder:
               (context, setState) => DialogTemplate(
                 theme: theme,
-                message:
-                    'Select A unit from the List To set Custom Unit',
+                message: 'Select A unit from the List To set Custom Unit',
                 title: 'Select Custom Unit',
                 action: () {},
                 topLeftWidget: InkWell(
@@ -1454,15 +1261,13 @@ class CreateProductionFunctions {
                       builder: (secondContext) {
                         return DialogTemplate(
                           theme: theme,
-                          message:
-                              'Enter Any Custom unit of your Choice.',
+                          message: 'Enter Any Custom unit of your Choice.',
                           title: 'Enter Custom Unit',
                           action: setUnitCustom,
                           widget: Padding(
-                            padding:
-                                EdgeInsetsGeometry.symmetric(
-                                  horizontal: 15,
-                                ),
+                            padding: EdgeInsetsGeometry.symmetric(
+                              horizontal: 15,
+                            ),
                             child: GeneralTextfieldOnly(
                               autoFocus: true,
                               hint: 'Enter Unit',
@@ -1486,11 +1291,7 @@ class CreateProductionFunctions {
                       children: [
                         Text(
                           style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
+                            fontSize: theme.mobileTexts.b3.fontSize,
                             fontWeight: FontWeight.bold,
                           ),
                           'Add',
@@ -1532,43 +1333,28 @@ class CreateProductionFunctions {
                               children:
                                   returnData().units
                                       .where(
-                                        (item) => item
-                                            .toLowerCase()
-                                            .contains(
-                                              searchController
-                                                  .text
-                                                  .toLowerCase(),
-                                            ),
+                                        (item) => item.toLowerCase().contains(
+                                          searchController.text.toLowerCase(),
+                                        ),
                                       )
                                       .map(
                                         (item) => Material(
-                                          type:
-                                              MaterialType
-                                                  .transparency,
+                                          type: MaterialType.transparency,
                                           child: InkWell(
                                             onTap: () {
-                                              selectUnit(
-                                                item,
-                                              );
+                                              selectUnit(item);
                                             },
                                             mouseCursor:
-                                                SystemMouseCursors
-                                                    .click,
+                                                SystemMouseCursors.click,
                                             child: Container(
-                                              margin:
-                                                  EdgeInsets.symmetric(
-                                                    vertical:
-                                                        4,
-                                                  ),
-                                              padding:
-                                                  EdgeInsets.symmetric(
-                                                    vertical:
-                                                        10,
-                                                    horizontal:
-                                                        15,
-                                                  ),
-                                              decoration:
-                                                  BoxDecoration(),
+                                              margin: EdgeInsets.symmetric(
+                                                vertical: 4,
+                                              ),
+                                              padding: EdgeInsets.symmetric(
+                                                vertical: 10,
+                                                horizontal: 15,
+                                              ),
+                                              decoration: BoxDecoration(),
                                               child: Row(
                                                 spacing: 5,
                                                 mainAxisAlignment:
@@ -1579,7 +1365,10 @@ class CreateProductionFunctions {
                                                     child: Text(
                                                       style: TextStyle(
                                                         fontSize:
-                                                            theme.mobileTexts.b3.fontSize,
+                                                            theme
+                                                                .mobileTexts
+                                                                .b3
+                                                                .fontSize,
                                                         fontWeight: FontWeight(
                                                           600,
                                                         ),

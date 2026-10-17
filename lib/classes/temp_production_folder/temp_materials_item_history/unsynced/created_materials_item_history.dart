@@ -7,7 +7,5 @@ part 'created_materials_item_history.g.dart';
 class CreatedMaterialsItemHistory {
   @HiveField(0)
   final MaterialsItemHistory createdMaterialsItemHistory;
-  CreatedMaterialsItemHistory({
-    required this.createdMaterialsItemHistory,
-  });
+  CreatedMaterialsItemHistory({required this.createdMaterialsItemHistory});
 }

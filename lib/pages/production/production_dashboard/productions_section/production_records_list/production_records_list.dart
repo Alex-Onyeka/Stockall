@@ -14,12 +14,10 @@ class ProductionRecordsList extends StatefulWidget {
   });
 
   @override
-  State<ProductionRecordsList> createState() =>
-      _ProductionRecordsListState();
+  State<ProductionRecordsList> createState() => _ProductionRecordsListState();
 }
 
-class _ProductionRecordsListState
-    extends State<ProductionRecordsList> {
+class _ProductionRecordsListState extends State<ProductionRecordsList> {
   @override
   void initState() {
     super.initState();

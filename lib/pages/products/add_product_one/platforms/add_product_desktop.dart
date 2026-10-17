@@ -160,7 +160,10 @@ class _AddProductDesktopState
               final dataProvider = returnData();
               ItemHistory itemHistory = ItemHistory(
                 event: ItemHistoryEventClass.itemCreated,
-                source: 'Not Set',
+                source: ItemHistoryEventClass.manualSource,
+                destination:
+                    ItemHistoryEventClass
+                        .productDestination,
                 unit: 'Not Set',
                 shopId: shopId(),
                 title: 'Item Created',

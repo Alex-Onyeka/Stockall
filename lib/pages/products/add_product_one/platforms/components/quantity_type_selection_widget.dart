@@ -23,10 +23,7 @@ class _QuantityTypeSelectionWidgetState
     extends State<QuantityTypeSelectionWidget> {
   List<QuantityTypeClass> quantityTypeList = [
     QuantityTypeClass(index: 1, name: 'Simple Quantity'),
-    QuantityTypeClass(
-      index: 2,
-      name: 'Dimensional Quantity (2-D)',
-    ),
+    QuantityTypeClass(index: 2, name: 'Dimensional Quantity (2-D)'),
   ];
   @override
   Widget build(BuildContext context) {
@@ -37,8 +34,7 @@ class _QuantityTypeSelectionWidgetState
           visible: widget.showSelectPriceText != false,
           child: Text(
             style: TextStyle(
-              fontSize:
-                  widget.theme.mobileTexts.b4.fontSize,
+              fontSize: widget.theme.mobileTexts.b4.fontSize,
               fontWeight: FontWeight.bold,
             ),
             'Select Quantity Type:',
@@ -51,48 +47,32 @@ class _QuantityTypeSelectionWidgetState
               (context) =>
                   quantityTypeList
                       .map(
-                        (item) =>
-                            myPopUpMenuItemQuantityTypeSelection(
-                              quantityTypeList:
-                                  quantityTypeList,
-                              item: item,
-                              setQuantityIndex:
-                                  widget.setQuantityIndex,
-                              theme: widget.theme,
-                              selectedIndex:
-                                  widget.selectedIndex,
-                              context: context,
-                            ),
+                        (item) => myPopUpMenuItemQuantityTypeSelection(
+                          quantityTypeList: quantityTypeList,
+                          item: item,
+                          setQuantityIndex: widget.setQuantityIndex,
+                          theme: widget.theme,
+                          selectedIndex: widget.selectedIndex,
+                          context: context,
+                        ),
                       )
                       .toList(),
           child: Container(
             padding: EdgeInsets.fromLTRB(10, 5, 5, 5),
             decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.grey.shade200,
-              ),
+              border: Border.all(color: Colors.grey.shade200),
               borderRadius: BorderRadius.circular(3),
             ),
             child: Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   style: TextStyle(
-                    fontSize:
-                        widget
-                            .theme
-                            .mobileTexts
-                            .b3
-                            .fontSize,
+                    fontSize: widget.theme.mobileTexts.b3.fontSize,
                     fontWeight: FontWeight.bold,
                   ),
                   quantityTypeList
-                      .firstWhere(
-                        (item) =>
-                            item.index ==
-                            widget.selectedIndex,
-                      )
+                      .firstWhere((item) => item.index == widget.selectedIndex)
                       .name,
                 ),
                 Icon(Icons.keyboard_arrow_down),
@@ -132,19 +112,12 @@ PopupMenuItem myPopUpMenuItemQuantityTypeSelection({
 
   return PopupMenuItem(
     onTap: () {
-      setQuantityIndex != null
-          ? setQuantityIndex(item.index)
-          : {};
+      setQuantityIndex != null ? setQuantityIndex(item.index) : {};
     },
     child: ConstrainedBox(
-      constraints: BoxConstraints(
-        maxWidth: 700,
-        minWidth: 400,
-      ),
+      constraints: BoxConstraints(maxWidth: 700, minWidth: 400),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 10.0,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -152,19 +125,14 @@ PopupMenuItem myPopUpMenuItemQuantityTypeSelection({
               child: Text(
                 style: TextStyle(
                   fontSize: theme.mobileTexts.b3.fontSize,
-                  fontWeight:
-                      getBold() ? FontWeight.bold : null,
+                  fontWeight: getBold() ? FontWeight.bold : null,
                 ),
                 item.name,
               ),
             ),
             Visibility(
               visible: getVisibility(),
-              child: Icon(
-                size: 17,
-                color: Colors.grey.shade700,
-                Icons.check,
-              ),
+              child: Icon(size: 17, color: Colors.grey.shade700, Icons.check),
             ),
           ],
         ),
@@ -177,8 +145,5 @@ class QuantityTypeClass {
   final int index;
   final String name;
 
-  QuantityTypeClass({
-    required this.index,
-    required this.name,
-  });
+  QuantityTypeClass({required this.index, required this.name});
 }

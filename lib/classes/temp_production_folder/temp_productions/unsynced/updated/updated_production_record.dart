@@ -7,7 +7,5 @@ class UpdatedProductionRecord extends HiveObject {
   @HiveField(0)
   final ProductionRecord updatedProductionRecord;
 
-  UpdatedProductionRecord({
-    required this.updatedProductionRecord,
-  });
+  UpdatedProductionRecord({required this.updatedProductionRecord});
 }

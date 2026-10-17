@@ -9,18 +9,15 @@ class MaterialsUsagePage extends StatefulWidget {
   const MaterialsUsagePage({super.key, this.materialUuid});
 
   @override
-  State<MaterialsUsagePage> createState() =>
-      _MaterialsUsagePageState();
+  State<MaterialsUsagePage> createState() => _MaterialsUsagePageState();
 }
 
-class _MaterialsUsagePageState
-    extends State<MaterialsUsagePage> {
+class _MaterialsUsagePageState extends State<MaterialsUsagePage> {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      returnMaterialsUsageProvider()
-          .getProductionMaterialsUsage(shopId());
+      returnMaterialsUsageProvider().getProductionMaterialsUsage(shopId());
     });
   }
 
@@ -37,13 +34,9 @@ class _MaterialsUsagePageState
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth < tabletScreenSmall) {
-          return MaterialsUsageMobile(
-            materialUuid: widget.materialUuid,
-          );
+          return MaterialsUsageMobile(materialUuid: widget.materialUuid);
         } else {
-          return MaterialsUsageDesktop(
-            materialUuid: widget.materialUuid,
-          );
+          return MaterialsUsageDesktop(materialUuid: widget.materialUuid);
         }
       },
     );

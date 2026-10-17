@@ -23,8 +23,7 @@ class ProductionDetailsMobile extends StatefulWidget {
       _ProductionDetailsMobileState();
 }
 
-class _ProductionDetailsMobileState
-    extends State<ProductionDetailsMobile> {
+class _ProductionDetailsMobileState extends State<ProductionDetailsMobile> {
   bool isLoading = false;
   bool isDeleteLoading = false;
   bool isPrintLoading = false;
@@ -34,12 +33,10 @@ class _ProductionDetailsMobileState
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     var productions =
-        returnProductionRecordsProvider(context: context)
-            .productionRecords
+        returnProductionRecordsProvider(context: context).productionRecords
             .where(
               (productionRecord) =>
-                  productionRecord.uuid ==
-                  widget.productionRecordUuid,
+                  productionRecord.uuid == widget.productionRecordUuid,
             )
             .toList();
 
@@ -54,37 +51,26 @@ class _ProductionDetailsMobileState
                 spacing: 15,
                 children: [
                   Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 15,
-                      vertical: 15,
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                     decoration: BoxDecoration(
                       border: Border(
-                        bottom: BorderSide(
-                          color: Colors.grey.shade200,
-                        ),
+                        bottom: BorderSide(color: Colors.grey.shade200),
                       ),
                       color: Colors.white,
                     ),
                     child: Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       // spacing: 10,
                       children: [
                         Row(
                           spacing: 6,
                           children: [
                             Material(
-                              type:
-                                  MaterialType.transparency,
+                              type: MaterialType.transparency,
                               child: InkWell(
-                                mouseCursor:
-                                    SystemMouseCursors
-                                        .click,
+                                mouseCursor: SystemMouseCursors.click,
                                 onTap: () {
-                                  if (Navigator.canPop(
-                                    context,
-                                  )) {
+                                  if (Navigator.canPop(context)) {
                                     Navigator.pop(context);
                                   } else {
                                     Navigator.pushReplacement(
@@ -97,60 +83,38 @@ class _ProductionDetailsMobileState
                                     );
                                   }
                                 },
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      30,
-                                    ),
+                                borderRadius: BorderRadius.circular(30),
                                 child: Container(
-                                  padding: EdgeInsets.all(
-                                    10,
-                                  ),
+                                  padding: EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade200,
+                                      color: Colors.grey.shade200,
                                       width: 1,
                                     ),
                                   ),
                                   child: Icon(
                                     size: 16,
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade700,
-                                    Icons
-                                        .arrow_back_ios_new_outlined,
+                                    color: Colors.grey.shade700,
+                                    Icons.arrow_back_ios_new_outlined,
                                   ),
                                 ),
                               ),
                             ),
                             Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               spacing: 2,
                               children: [
                                 Text(
                                   style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
+                                    fontSize: theme.mobileTexts.b3.fontSize,
                                   ),
                                   'Production Record',
                                 ),
                                 Text(
                                   style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
+                                    fontSize: theme.mobileTexts.b3.fontSize,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                   'Production Item Name',
                                 ),
@@ -159,9 +123,7 @@ class _ProductionDetailsMobileState
                           ],
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(
-                            right: 15.0,
-                          ),
+                          padding: const EdgeInsets.only(right: 15.0),
                           child: PopupMenuButton(
                             offset: Offset(-20, 30),
                             color: Colors.white,
@@ -188,13 +150,8 @@ class _ProductionDetailsMobileState
                                   onTap: () {},
                                   child: Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
+                                      fontSize: theme.mobileTexts.b3.fontSize,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                     'Edit',
                                   ),
@@ -220,13 +177,8 @@ class _ProductionDetailsMobileState
                                   onTap: () {},
                                   child: Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
+                                      fontSize: theme.mobileTexts.b3.fontSize,
+                                      fontWeight: FontWeight.bold,
                                       color: Colors.red,
                                     ),
                                     'Delete',
@@ -234,9 +186,7 @@ class _ProductionDetailsMobileState
                                 ),
                               ];
                             },
-                            child: Icon(
-                              Icons.more_vert_rounded,
-                            ),
+                            child: Icon(Icons.more_vert_rounded),
                           ),
                         ),
                       ],
@@ -256,47 +206,31 @@ class _ProductionDetailsMobileState
         } else {
           return SafeArea(
             child: Scaffold(
-              backgroundColor: const Color.fromARGB(
-                255,
-                253,
-                254,
-                255,
-              ),
+              backgroundColor: const Color.fromARGB(255, 253, 254, 255),
               body: Column(
                 spacing: 10,
                 children: [
                   Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 15,
-                      vertical: 15,
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                     decoration: BoxDecoration(
                       border: Border(
-                        bottom: BorderSide(
-                          color: Colors.grey.shade200,
-                        ),
+                        bottom: BorderSide(color: Colors.grey.shade200),
                       ),
                       color: Colors.white,
                     ),
                     child: Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       // spacing: 10,
                       children: [
                         Row(
                           spacing: 6,
                           children: [
                             Material(
-                              type:
-                                  MaterialType.transparency,
+                              type: MaterialType.transparency,
                               child: InkWell(
-                                mouseCursor:
-                                    SystemMouseCursors
-                                        .click,
+                                mouseCursor: SystemMouseCursors.click,
                                 onTap: () {
-                                  if (Navigator.canPop(
-                                    context,
-                                  )) {
+                                  if (Navigator.canPop(context)) {
                                     Navigator.pop(context);
                                   } else {
                                     Navigator.pushReplacement(
@@ -309,63 +243,40 @@ class _ProductionDetailsMobileState
                                     );
                                   }
                                 },
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      30,
-                                    ),
+                                borderRadius: BorderRadius.circular(30),
                                 child: Container(
-                                  padding: EdgeInsets.all(
-                                    10,
-                                  ),
+                                  padding: EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade200,
+                                      color: Colors.grey.shade200,
                                       width: 1,
                                     ),
                                   ),
                                   child: Icon(
                                     size: 16,
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade700,
-                                    Icons
-                                        .arrow_back_ios_new_outlined,
+                                    color: Colors.grey.shade700,
+                                    Icons.arrow_back_ios_new_outlined,
                                   ),
                                 ),
                               ),
                             ),
                             Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               spacing: 2,
                               children: [
                                 Text(
                                   style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
+                                    fontSize: theme.mobileTexts.b3.fontSize,
                                   ),
                                   'Production Record',
                                 ),
                                 Text(
                                   style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
+                                    fontSize: theme.mobileTexts.b3.fontSize,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  productionRecord
-                                          .itemName ??
+                                  productionRecord.itemName ??
                                       'Production Item Name',
                                 ),
                               ],
@@ -373,9 +284,7 @@ class _ProductionDetailsMobileState
                           ],
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(
-                            right: 15.0,
-                          ),
+                          padding: const EdgeInsets.only(right: 15.0),
                           child: PopupMenuButton(
                             offset: Offset(-20, 30),
                             color: Colors.white,
@@ -387,33 +296,27 @@ class _ProductionDetailsMobileState
                                   onTap: () {
                                     showDialog(
                                       context: context,
-                                      builder: (
-                                        confirmDialog,
-                                      ) {
+                                      builder: (confirmDialog) {
                                         if (returnProductionsActionProvider()
                                             .isCartEmpty()) {
                                           return ConfirmationAlert(
                                             theme: theme,
                                             message:
                                                 'You are about to edit this Production Record. Are you sure you want to proceed?',
-                                            title:
-                                                'Edit Production',
+                                            title: 'Edit Production',
                                             action: () async {
-                                              Navigator.of(
-                                                confirmDialog,
-                                              ).pop();
+                                              Navigator.of(confirmDialog).pop();
                                               await returnProductionsActionProvider()
                                                   .createProductionsCart(
                                                     cartItem:
-                                                        productionRecord.toCart(),
+                                                        productionRecord
+                                                            .toCart(),
                                                   );
                                               Navigator.push(
                                                 // ignore: use_build_context_synchronously
                                                 context,
                                                 MaterialPageRoute(
-                                                  builder: (
-                                                    context,
-                                                  ) {
+                                                  builder: (context) {
                                                     return CreateProduction();
                                                   },
                                                 ),
@@ -425,8 +328,7 @@ class _ProductionDetailsMobileState
                                             theme: theme,
                                             message:
                                                 'A Production Creating Process is Currently On. Please Finish Creating the current Production in the Cart before proceeding to edit.',
-                                            title:
-                                                'Production Cart Not Empty',
+                                            title: 'Production Cart Not Empty',
                                           );
                                         }
                                       },
@@ -434,13 +336,8 @@ class _ProductionDetailsMobileState
                                   },
                                   child: Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
+                                      fontSize: theme.mobileTexts.b3.fontSize,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                     'Edit',
                                   ),
@@ -468,20 +365,15 @@ class _ProductionDetailsMobileState
                                   onTap: () {
                                     showDialog(
                                       context: context,
-                                      builder: (
-                                        confirmDialog,
-                                      ) {
-                                        bool
-                                        updateInventory =
-                                            false;
+                                      builder: (confirmDialog) {
+                                        bool updateInventory = false;
                                         return StatefulBuilder(
                                           builder:
                                               (
                                                 newContext,
                                                 setStatee,
                                               ) => DialogTemplate(
-                                                theme:
-                                                    theme,
+                                                theme: theme,
                                                 message:
                                                     'You are about to delete this Production Record, are you sure you want to proceed?',
                                                 title:
@@ -491,41 +383,36 @@ class _ProductionDetailsMobileState
                                                     confirmDialog,
                                                   ).pop();
                                                   setState(() {
-                                                    isDeleteLoading =
-                                                        true;
+                                                    isDeleteLoading = true;
                                                   });
-                                                  var res = await returnProductionRecordsProvider().deleteProductionRecords(
-                                                    productionRecord,
-                                                    updateInventory,
-                                                    true,
-                                                  );
-                                                  if (res ==
-                                                      1) {
-                                                    await returnProductionRecordsProvider().getProductionRecords(
-                                                      shopId(),
-                                                    );
+                                                  var res =
+                                                      await returnProductionRecordsProvider()
+                                                          .deleteProductionRecords(
+                                                            productionRecord,
+                                                            updateInventory,
+                                                            true,
+                                                          );
+                                                  if (res == 1) {
+                                                    await returnProductionRecordsProvider()
+                                                        .getProductionRecords(
+                                                          shopId(),
+                                                        );
                                                   }
                                                   await actionResultDialog(
                                                     // ignore: use_build_context_synchronously
-                                                    context:
-                                                        context,
+                                                    context: context,
                                                     message:
                                                         res == 1
                                                             ? 'Deleted Successfully'
                                                             : 'Failed',
                                                     isSuccess:
-                                                        res == 1
-                                                            ? true
-                                                            : false,
+                                                        res == 1 ? true : false,
                                                   );
                                                   setState(() {
-                                                    isDeleteLoading =
-                                                        false;
+                                                    isDeleteLoading = false;
                                                   });
-                                                  if (res ==
-                                                          1 &&
-                                                      context
-                                                          .mounted) {
+                                                  if (res == 1 &&
+                                                      context.mounted) {
                                                     if (Navigator.of(
                                                       context,
                                                     ).canPop()) {
@@ -536,9 +423,7 @@ class _ProductionDetailsMobileState
                                                       Navigator.pushReplacement(
                                                         context,
                                                         MaterialPageRoute(
-                                                          builder: (
-                                                            context,
-                                                          ) {
+                                                          builder: (context) {
                                                             return ProductionRecordsList();
                                                           },
                                                         ),
@@ -547,13 +432,14 @@ class _ProductionDetailsMobileState
                                                   }
                                                 },
                                                 widget: Padding(
-                                                  padding: const EdgeInsets.symmetric(
-                                                    horizontal:
-                                                        20.0,
-                                                  ),
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 20.0,
+                                                      ),
                                                   child: Row(
                                                     mainAxisAlignment:
-                                                        MainAxisAlignment.spaceBetween,
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
                                                     children: [
                                                       Text(
                                                         style: TextStyle(
@@ -566,15 +452,12 @@ class _ProductionDetailsMobileState
                                                         boolValue:
                                                             updateInventory,
                                                         toggle: () {
-                                                          setStatee(
-                                                            () {
-                                                              updateInventory =
-                                                                  !updateInventory;
-                                                            },
-                                                          );
+                                                          setStatee(() {
+                                                            updateInventory =
+                                                                !updateInventory;
+                                                          });
                                                         },
-                                                        theme:
-                                                            theme,
+                                                        theme: theme,
                                                       ),
                                                     ],
                                                   ),
@@ -586,13 +469,8 @@ class _ProductionDetailsMobileState
                                   },
                                   child: Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
+                                      fontSize: theme.mobileTexts.b3.fontSize,
+                                      fontWeight: FontWeight.bold,
                                       color: Colors.red,
                                     ),
                                     'Delete',
@@ -600,9 +478,7 @@ class _ProductionDetailsMobileState
                                 ),
                               ];
                             },
-                            child: Icon(
-                              Icons.more_vert_rounded,
-                            ),
+                            child: Icon(Icons.more_vert_rounded),
                           ),
                         ),
                       ],
@@ -618,9 +494,7 @@ class _ProductionDetailsMobileState
                           child: Center(
                             child: returnCompProvider(
                               context,
-                            ).showLoader(
-                              message: 'Loading',
-                            ),
+                            ).showLoader(message: 'Loading'),
                           ),
                         );
                       } else {
@@ -628,39 +502,30 @@ class _ProductionDetailsMobileState
                           child: ListView(
                             children: [
                               Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(
-                                      horizontal: 15.0,
-                                    ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 15.0,
+                                ),
                                 child: Column(
                                   spacing: 15,
                                   children: [
                                     Container(
-                                      padding:
-                                          EdgeInsets.symmetric(
-                                            horizontal: 18,
-                                            vertical: 30,
-                                          ),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 18,
+                                        vertical: 30,
+                                      ),
                                       decoration: BoxDecoration(
                                         border: Border.all(
-                                          color:
-                                              Colors
-                                                  .grey
-                                                  .shade100,
+                                          color: Colors.grey.shade100,
                                         ),
-                                        borderRadius:
-                                            BorderRadius.circular(
-                                              3,
-                                            ),
+                                        borderRadius: BorderRadius.circular(3),
                                         boxShadow: [
                                           BoxShadow(
-                                            color:
-                                                const Color.fromARGB(
-                                                  20,
-                                                  0,
-                                                  0,
-                                                  0,
-                                                ),
+                                            color: const Color.fromARGB(
+                                              20,
+                                              0,
+                                              0,
+                                              0,
+                                            ),
                                             blurRadius: 20,
                                             spreadRadius: 5,
                                           ),
@@ -672,25 +537,24 @@ class _ProductionDetailsMobileState
                                         children: [
                                           Row(
                                             crossAxisAlignment:
-                                                CrossAxisAlignment
-                                                    .start,
+                                                CrossAxisAlignment.start,
                                             mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .spaceBetween,
+                                                MainAxisAlignment.spaceBetween,
                                             spacing: 5,
                                             children: [
                                               Expanded(
                                                 child: Column(
                                                   crossAxisAlignment:
-                                                      CrossAxisAlignment
-                                                          .start,
-                                                  spacing:
-                                                      5,
+                                                      CrossAxisAlignment.start,
+                                                  spacing: 5,
                                                   children: [
                                                     Text(
                                                       style: TextStyle(
                                                         fontSize:
-                                                            theme.mobileTexts.b3.fontSize,
+                                                            theme
+                                                                .mobileTexts
+                                                                .b3
+                                                                .fontSize,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
@@ -699,11 +563,15 @@ class _ProductionDetailsMobileState
                                                     Text(
                                                       style: TextStyle(
                                                         fontSize:
-                                                            theme.mobileTexts.b3.fontSize,
+                                                            theme
+                                                                .mobileTexts
+                                                                .b3
+                                                                .fontSize,
                                                         fontWeight:
                                                             FontWeight.normal,
                                                       ),
-                                                      productionRecord.staffName ??
+                                                      productionRecord
+                                                              .staffName ??
                                                           'Staff Name',
                                                     ),
                                                   ],
@@ -712,31 +580,35 @@ class _ProductionDetailsMobileState
                                               Expanded(
                                                 child: Column(
                                                   crossAxisAlignment:
-                                                      CrossAxisAlignment
-                                                          .start,
-                                                  spacing:
-                                                      5,
+                                                      CrossAxisAlignment.start,
+                                                  spacing: 5,
                                                   children: [
                                                     Text(
                                                       style: TextStyle(
                                                         fontSize:
-                                                            theme.mobileTexts.b3.fontSize,
+                                                            theme
+                                                                .mobileTexts
+                                                                .b3
+                                                                .fontSize,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
                                                       'Date:',
                                                     ),
                                                     Row(
-                                                      spacing:
-                                                          5,
+                                                      spacing: 5,
                                                       children: [
                                                         Flexible(
                                                           child: Text(
                                                             style: TextStyle(
                                                               fontSize:
-                                                                  theme.mobileTexts.b3.fontSize,
+                                                                  theme
+                                                                      .mobileTexts
+                                                                      .b3
+                                                                      .fontSize,
                                                               fontWeight:
-                                                                  FontWeight.normal,
+                                                                  FontWeight
+                                                                      .normal,
                                                             ),
                                                             "${formatDateTime(productionRecord.createdAt ?? DateTime.now())}  |  ${formatTime(productionRecord.createdAt ?? DateTime.now())}",
                                                           ),
@@ -749,16 +621,12 @@ class _ProductionDetailsMobileState
                                             ],
                                           ),
                                           Divider(
-                                            color:
-                                                Colors
-                                                    .grey
-                                                    .shade200,
+                                            color: Colors.grey.shade200,
                                             height: 50,
                                           ),
                                           Row(
                                             mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .spaceBetween,
+                                                MainAxisAlignment.spaceBetween,
                                             spacing: 10,
                                             children: [
                                               Expanded(
@@ -766,9 +634,11 @@ class _ProductionDetailsMobileState
                                                 child: Text(
                                                   style: TextStyle(
                                                     fontSize:
-                                                        theme.mobileTexts.b3.fontSize,
-                                                    fontWeight:
-                                                        FontWeight.bold,
+                                                        theme
+                                                            .mobileTexts
+                                                            .b3
+                                                            .fontSize,
+                                                    fontWeight: FontWeight.bold,
                                                   ),
                                                   'Item',
                                                 ),
@@ -778,9 +648,11 @@ class _ProductionDetailsMobileState
                                                 child: Text(
                                                   style: TextStyle(
                                                     fontSize:
-                                                        theme.mobileTexts.b3.fontSize,
-                                                    fontWeight:
-                                                        FontWeight.bold,
+                                                        theme
+                                                            .mobileTexts
+                                                            .b3
+                                                            .fontSize,
+                                                    fontWeight: FontWeight.bold,
                                                   ),
                                                   'Quantity',
                                                 ),
@@ -788,21 +660,16 @@ class _ProductionDetailsMobileState
                                             ],
                                           ),
                                           Divider(
-                                            color:
-                                                Colors
-                                                    .grey
-                                                    .shade400,
+                                            color: Colors.grey.shade400,
                                             height: 5,
                                           ),
                                           Padding(
-                                            padding:
-                                                const EdgeInsets.only(
-                                                  top: 15.0,
-                                                ),
+                                            padding: const EdgeInsets.only(
+                                              top: 15.0,
+                                            ),
                                             child: Row(
                                               crossAxisAlignment:
-                                                  CrossAxisAlignment
-                                                      .start,
+                                                  CrossAxisAlignment.start,
                                               mainAxisAlignment:
                                                   MainAxisAlignment
                                                       .spaceBetween,
@@ -813,7 +680,10 @@ class _ProductionDetailsMobileState
                                                   child: Text(
                                                     style: TextStyle(
                                                       fontSize:
-                                                          theme.mobileTexts.b3.fontSize,
+                                                          theme
+                                                              .mobileTexts
+                                                              .b3
+                                                              .fontSize,
                                                       fontWeight:
                                                           FontWeight.bold,
                                                     ),
@@ -825,12 +695,16 @@ class _ProductionDetailsMobileState
                                                   flex: 5,
                                                   child: Column(
                                                     crossAxisAlignment:
-                                                        CrossAxisAlignment.start,
+                                                        CrossAxisAlignment
+                                                            .start,
                                                     children: [
                                                       Text(
                                                         style: TextStyle(
                                                           fontSize:
-                                                              theme.mobileTexts.b3.fontSize,
+                                                              theme
+                                                                  .mobileTexts
+                                                                  .b3
+                                                                  .fontSize,
                                                           fontWeight:
                                                               FontWeight.bold,
                                                         ),
@@ -842,29 +716,20 @@ class _ProductionDetailsMobileState
                                               ],
                                             ),
                                           ),
-                                          SizedBox(
-                                            height: 15,
-                                          ),
+                                          SizedBox(height: 15),
                                           Divider(
-                                            color:
-                                                Colors
-                                                    .grey
-                                                    .shade400,
+                                            color: Colors.grey.shade400,
                                             height: 5,
                                           ),
-                                          SizedBox(
-                                            height: 15,
-                                          ),
+                                          SizedBox(height: 15),
                                           Column(
                                             crossAxisAlignment:
-                                                CrossAxisAlignment
-                                                    .start,
+                                                CrossAxisAlignment.start,
                                             spacing: 3,
                                             children: [
                                               Row(
                                                 mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .end,
+                                                    MainAxisAlignment.end,
                                                 spacing: 20,
                                                 children: [
                                                   Expanded(
@@ -872,7 +737,10 @@ class _ProductionDetailsMobileState
                                                     child: Text(
                                                       style: TextStyle(
                                                         fontSize:
-                                                            theme.mobileTexts.b3.fontSize,
+                                                            theme
+                                                                .mobileTexts
+                                                                .b3
+                                                                .fontSize,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
@@ -884,18 +752,21 @@ class _ProductionDetailsMobileState
                                                     child: Text(
                                                       style: TextStyle(
                                                         fontSize:
-                                                            theme.mobileTexts.b2.fontSize,
+                                                            theme
+                                                                .mobileTexts
+                                                                .b2
+                                                                .fontSize,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
                                                       formatMoneyBig(
-                                                        amount: returnProductionRecordsProvider().getTotalCostForProduction(
-                                                          productionRecords: [
-                                                            productionRecord,
-                                                          ],
-                                                        ),
-                                                        context:
-                                                            context,
+                                                        amount: returnProductionRecordsProvider()
+                                                            .getTotalCostForProduction(
+                                                              productionRecords: [
+                                                                productionRecord,
+                                                              ],
+                                                            ),
+                                                        context: context,
                                                       ),
                                                     ),
                                                   ),
@@ -909,11 +780,10 @@ class _ProductionDetailsMobileState
                                     ),
                                     Container(
                                       // width: 300,
-                                      padding:
-                                          EdgeInsets.symmetric(
-                                            // horizontal: 20,
-                                            vertical: 10,
-                                          ),
+                                      padding: EdgeInsets.symmetric(
+                                        // horizontal: 20,
+                                        vertical: 10,
+                                      ),
                                       child: Column(
                                         spacing: 5,
                                         children: [
@@ -921,31 +791,24 @@ class _ProductionDetailsMobileState
                                             // width:
                                             //     double
                                             //         .infinity,
-                                            padding:
-                                                EdgeInsets.all(
-                                                  15,
-                                                ),
+                                            padding: EdgeInsets.all(15),
                                             decoration: BoxDecoration(
                                               borderRadius:
-                                                  BorderRadius.circular(
-                                                    5,
-                                                  ),
+                                                  BorderRadius.circular(5),
                                               border: Border.all(
-                                                color:
-                                                    const Color.fromARGB(
-                                                      118,
-                                                      134,
-                                                      155,
-                                                      173,
-                                                    ),
+                                                color: const Color.fromARGB(
+                                                  118,
+                                                  134,
+                                                  155,
+                                                  173,
+                                                ),
                                               ),
-                                              color:
-                                                  const Color.fromARGB(
-                                                    31,
-                                                    173,
-                                                    182,
-                                                    209,
-                                                  ),
+                                              color: const Color.fromARGB(
+                                                31,
+                                                173,
+                                                182,
+                                                209,
+                                              ),
                                             ),
                                             child: Column(
                                               children: [
@@ -956,27 +819,32 @@ class _ProductionDetailsMobileState
                                                   children: [
                                                     Expanded(
                                                       child: Column(
-                                                        spacing:
-                                                            5,
+                                                        spacing: 5,
                                                         crossAxisAlignment:
-                                                            CrossAxisAlignment.start,
+                                                            CrossAxisAlignment
+                                                                .start,
                                                         children: [
                                                           Visibility(
                                                             visible:
-                                                                productionRecord.departmentId !=
+                                                                productionRecord
+                                                                    .departmentId !=
                                                                 null,
                                                             child: Row(
                                                               crossAxisAlignment:
-                                                                  CrossAxisAlignment.start,
-                                                              spacing:
-                                                                  5,
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              spacing: 5,
                                                               children: [
                                                                 Text(
                                                                   style: TextStyle(
                                                                     fontSize:
-                                                                        theme.mobileTexts.b4.fontSize,
+                                                                        theme
+                                                                            .mobileTexts
+                                                                            .b4
+                                                                            .fontSize,
                                                                     fontWeight:
-                                                                        FontWeight.normal,
+                                                                        FontWeight
+                                                                            .normal,
                                                                   ),
                                                                   'Department:',
                                                                 ),
@@ -984,11 +852,16 @@ class _ProductionDetailsMobileState
                                                                   child: Text(
                                                                     style: TextStyle(
                                                                       fontSize:
-                                                                          theme.mobileTexts.b4.fontSize,
+                                                                          theme
+                                                                              .mobileTexts
+                                                                              .b4
+                                                                              .fontSize,
                                                                       fontWeight:
-                                                                          FontWeight.bold,
+                                                                          FontWeight
+                                                                              .bold,
                                                                     ),
-                                                                    productionRecord.departmentName ??
+                                                                    productionRecord
+                                                                            .departmentName ??
                                                                         'Not Set',
                                                                   ),
                                                                 ),
@@ -997,16 +870,20 @@ class _ProductionDetailsMobileState
                                                           ),
                                                           Row(
                                                             crossAxisAlignment:
-                                                                CrossAxisAlignment.start,
-                                                            spacing:
-                                                                5,
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            spacing: 5,
                                                             children: [
                                                               Text(
                                                                 style: TextStyle(
                                                                   fontSize:
-                                                                      theme.mobileTexts.b4.fontSize,
+                                                                      theme
+                                                                          .mobileTexts
+                                                                          .b4
+                                                                          .fontSize,
                                                                   fontWeight:
-                                                                      FontWeight.normal,
+                                                                      FontWeight
+                                                                          .normal,
                                                                   // color:
                                                                   //     Colors
                                                                   //         .green,
@@ -1017,30 +894,39 @@ class _ProductionDetailsMobileState
                                                                 child: Text(
                                                                   style: TextStyle(
                                                                     fontSize:
-                                                                        theme.mobileTexts.b4.fontSize,
+                                                                        theme
+                                                                            .mobileTexts
+                                                                            .b4
+                                                                            .fontSize,
                                                                     fontWeight:
-                                                                        FontWeight.bold,
+                                                                        FontWeight
+                                                                            .bold,
                                                                     // color:
                                                                     //     Colors
                                                                     //         .green,
                                                                   ),
-                                                                  productionRecord.getUnit(),
+                                                                  productionRecord
+                                                                      .getUnit(),
                                                                 ),
                                                               ),
                                                             ],
                                                           ),
                                                           Row(
                                                             crossAxisAlignment:
-                                                                CrossAxisAlignment.start,
-                                                            spacing:
-                                                                5,
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            spacing: 5,
                                                             children: [
                                                               Text(
                                                                 style: TextStyle(
                                                                   fontSize:
-                                                                      theme.mobileTexts.b4.fontSize,
+                                                                      theme
+                                                                          .mobileTexts
+                                                                          .b4
+                                                                          .fontSize,
                                                                   fontWeight:
-                                                                      FontWeight.normal,
+                                                                      FontWeight
+                                                                          .normal,
                                                                 ),
                                                                 'Materials Qtty:',
                                                               ),
@@ -1048,15 +934,21 @@ class _ProductionDetailsMobileState
                                                                 child: Text(
                                                                   style: TextStyle(
                                                                     fontSize:
-                                                                        theme.mobileTexts.b4.fontSize,
+                                                                        theme
+                                                                            .mobileTexts
+                                                                            .b4
+                                                                            .fontSize,
                                                                     fontWeight:
-                                                                        FontWeight.bold,
+                                                                        FontWeight
+                                                                            .bold,
                                                                     // color:
                                                                     //     Colors
                                                                     //         .green,
                                                                   ),
                                                                   formatLargeNumberDouble(
-                                                                    productionRecord.materials.length,
+                                                                    productionRecord
+                                                                        .materials
+                                                                        .length,
                                                                   ),
                                                                 ),
                                                               ),
@@ -1064,16 +956,20 @@ class _ProductionDetailsMobileState
                                                           ),
                                                           Row(
                                                             crossAxisAlignment:
-                                                                CrossAxisAlignment.start,
-                                                            spacing:
-                                                                5,
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            spacing: 5,
                                                             children: [
                                                               Text(
                                                                 style: TextStyle(
                                                                   fontSize:
-                                                                      theme.mobileTexts.b4.fontSize,
+                                                                      theme
+                                                                          .mobileTexts
+                                                                          .b4
+                                                                          .fontSize,
                                                                   fontWeight:
-                                                                      FontWeight.normal,
+                                                                      FontWeight
+                                                                          .normal,
                                                                   // color:
                                                                   //     Colors
                                                                   //         .green,
@@ -1084,14 +980,19 @@ class _ProductionDetailsMobileState
                                                                 child: Text(
                                                                   style: TextStyle(
                                                                     fontSize:
-                                                                        theme.mobileTexts.b4.fontSize,
+                                                                        theme
+                                                                            .mobileTexts
+                                                                            .b4
+                                                                            .fontSize,
                                                                     fontWeight:
-                                                                        FontWeight.bold,
+                                                                        FontWeight
+                                                                            .bold,
                                                                     // color:
                                                                     //     Colors
                                                                     //         .green,
                                                                   ),
-                                                                  productionRecord.comment ??
+                                                                  productionRecord
+                                                                          .comment ??
                                                                       'Not Set',
                                                                 ),
                                                               ),
@@ -1105,19 +1006,12 @@ class _ProductionDetailsMobileState
                                               ],
                                             ),
                                           ),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
+                                          SizedBox(height: 5),
                                           Divider(
-                                            color:
-                                                Colors
-                                                    .grey
-                                                    .shade200,
+                                            color: Colors.grey.shade200,
                                             height: 10,
                                           ),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
+                                          SizedBox(height: 5),
                                           Row(
                                             children: [
                                               Text(
@@ -1127,67 +1021,55 @@ class _ProductionDetailsMobileState
                                                           .mobileTexts
                                                           .b3
                                                           .fontSize,
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
                                                 'Materials Used',
                                               ),
                                             ],
                                           ),
                                           Divider(
-                                            color:
-                                                Colors
-                                                    .grey
-                                                    .shade200,
+                                            color: Colors.grey.shade200,
                                             height: 10,
                                           ),
                                           Container(
-                                            padding:
-                                                EdgeInsets.symmetric(
-                                                  horizontal:
-                                                      10,
-                                                  vertical:
-                                                      10,
-                                                ),
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                              vertical: 10,
+                                            ),
                                             decoration: BoxDecoration(
                                               borderRadius:
-                                                  BorderRadius.circular(
-                                                    5,
-                                                  ),
+                                                  BorderRadius.circular(5),
                                               border: Border.all(
-                                                color:
-                                                    Colors
-                                                        .grey
-                                                        .shade200,
+                                                color: Colors.grey.shade200,
                                               ),
                                             ),
                                             child: Builder(
-                                              builder: (
-                                                context,
-                                              ) {
+                                              builder: (context) {
                                                 if (productionRecord
                                                     .materials
                                                     .isEmpty) {
                                                   return SizedBox(
-                                                    height:
-                                                        100,
+                                                    height: 100,
                                                     child: Center(
                                                       child: Column(
-                                                        spacing:
-                                                            5,
+                                                        spacing: 5,
                                                         mainAxisAlignment:
-                                                            MainAxisAlignment.center,
+                                                            MainAxisAlignment
+                                                                .center,
                                                         children: [
                                                           Container(
-                                                            padding: EdgeInsets.all(
-                                                              15,
-                                                            ),
+                                                            padding:
+                                                                EdgeInsets.all(
+                                                                  15,
+                                                                ),
                                                             decoration: BoxDecoration(
                                                               shape:
-                                                                  BoxShape.circle,
+                                                                  BoxShape
+                                                                      .circle,
                                                               color:
-                                                                  Colors.grey.shade100,
+                                                                  Colors
+                                                                      .grey
+                                                                      .shade100,
                                                             ),
                                                             child: Icon(
                                                               Icons.clear,
@@ -1197,12 +1079,14 @@ class _ProductionDetailsMobileState
                                                           ),
                                                           Text(
                                                             style: TextStyle(
-                                                              fontSize:
-                                                                  10,
+                                                              fontSize: 10,
                                                               fontWeight:
-                                                                  FontWeight.bold,
+                                                                  FontWeight
+                                                                      .bold,
                                                               color:
-                                                                  Colors.grey.shade600,
+                                                                  Colors
+                                                                      .grey
+                                                                      .shade600,
                                                             ),
                                                             'No Records Found',
                                                           ),
@@ -1212,11 +1096,9 @@ class _ProductionDetailsMobileState
                                                   );
                                                 }
                                                 return Column(
-                                                  spacing:
-                                                      4,
+                                                  spacing: 4,
                                                   children:
-                                                      productionRecord
-                                                          .materials
+                                                      productionRecord.materials
                                                           .map(
                                                             (
                                                               productionMaterial,
@@ -1271,10 +1153,7 @@ class _ProductionDetailsMobileState
         });
 
         return AlertDialog(
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 10,
-          ),
+          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           backgroundColor: Colors.white,
           content: Container(
             height: 400,

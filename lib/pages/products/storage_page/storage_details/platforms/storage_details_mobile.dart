@@ -264,15 +264,14 @@ class _StorageDetailsMobileState
                                           )
                                           .toList()
                                           .map(
-                                            (
-                                              pro,
-                                            ) => Column(
+                                            (pro) => Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment
                                                       .start,
                                               children: [
                                                 ProductTileMain(
-                                                  product: pro,
+                                                  product:
+                                                      pro,
                                                   theme:
                                                       widget
                                                           .theme,
@@ -295,7 +294,8 @@ class _StorageDetailsMobileState
                                                 DimensionMismatchLabel(
                                                   storageProduct:
                                                       product,
-                                                  product: pro,
+                                                  product:
+                                                      pro,
                                                   theme:
                                                       widget
                                                           .theme,
@@ -353,7 +353,10 @@ class _StorageDetailsMobileState
                                               .itemDeleted,
                                       source:
                                           StorageItemHistoryEventClass
-                                              .unKnownSource,
+                                              .storageSource,
+                                      destination:
+                                          StorageItemHistoryEventClass
+                                              .deletedDestination,
                                       shopId: shopId,
                                       title: 'Item Deleted',
                                       quantityChange: 0,

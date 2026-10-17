@@ -17,10 +17,7 @@ class SearchProductTile extends StatelessWidget {
     var theme = returnTheme(context);
     return ListTile(
       minVerticalPadding: 0,
-      contentPadding: EdgeInsets.symmetric(
-        vertical: 0,
-        horizontal: 10,
-      ),
+      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
       title: Row(
         spacing: 10,
         children: [

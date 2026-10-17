@@ -225,7 +225,9 @@ class DataProvider extends ChangeNotifier {
       final quantity = product.quantity ?? 0;
       await returnItemHistoryProvider().createItemHistory(
         ItemHistory(
-          source: 'Not Set',
+          source: ItemHistoryEventClass.manualSource,
+          destination:
+              ItemHistoryEventClass.productDestination,
           event: ItemHistoryEventClass.itemCreated,
           isManaged: true,
           unit: 'Not Set',
@@ -3991,7 +3993,9 @@ class DataProvider extends ChangeNotifier {
         ItemHistory itemHistory = ItemHistory(
           event: ItemHistoryEventClass.itemDeleted,
           isManaged: pr.isManaged,
-          source: ItemHistoryEventClass.unKnownSource,
+          source: ItemHistoryEventClass.productSource,
+          destination:
+              ItemHistoryEventClass.deletedDestination,
           shopId: shopId(),
           title: 'Item Deleted',
           quantityChange: 0,
@@ -4053,7 +4057,9 @@ class DataProvider extends ChangeNotifier {
         ItemHistory itemHistory = ItemHistory(
           event: ItemHistoryEventClass.itemDuplicated,
           isManaged: pr.isManaged,
-          source: ItemHistoryEventClass.unKnownSource,
+          source: ItemHistoryEventClass.productSource,
+          destination:
+              ItemHistoryEventClass.productDestination,
           shopId: shopId(),
           title: 'Item Created',
           quantityChange: 0,
@@ -4174,7 +4180,9 @@ class DataProvider extends ChangeNotifier {
           ItemHistory itemHistory = ItemHistory(
             event: ItemHistoryEventClass.itemDuplicated,
             isManaged: pr.isManaged,
-            source: ItemHistoryEventClass.departmentSource,
+            source: ItemHistoryEventClass.productSource,
+            destination:
+                ItemHistoryEventClass.departmentDestination,
             shopId: shopId(),
             title: 'Item Created',
             quantityChange: 0,
@@ -4258,6 +4266,9 @@ class DataProvider extends ChangeNotifier {
               StorageItemHistoryEventClass.itemDuplicated,
           source:
               StorageItemHistoryEventClass.productSource,
+          destination:
+              StorageItemHistoryEventClass
+                  .storageDestination,
           shopId: shopId(),
           title: 'Item Created',
           quantityChange: 0,

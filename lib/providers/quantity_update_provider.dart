@@ -23,14 +23,11 @@ class QuantityUpdateProvider with ChangeNotifier {
     try {
       quantityUpdate.createdAt = DateTime.now();
       quantityUpdate.uuid = uuidGen();
-      var res = await QuantityUpdateFunc()
-          .createQuantityUpdate(quantityUpdate);
+      var res = await QuantityUpdateFunc().createQuantityUpdate(quantityUpdate);
       notifyListeners();
       return res;
     } catch (e) {
-      await mainLocalLog(
-        'Error Creating Quantity Update: ${e.toString()}',
-      );
+      await mainLocalLog('Error Creating Quantity Update: ${e.toString()}');
       notifyListeners();
       return 0;
     }
@@ -47,26 +44,18 @@ class QuantityUpdateProvider with ChangeNotifier {
 
   Future<void> quantityUpdateSync() async {
     try {
-      bool isOnline =
-          await ConnectivityProvider().isOnline();
-      if (QuantityUpdateFunc()
-              .getQuantitiesUpdate()
-              .isNotEmpty &&
-          isOnline) {
+      bool isOnline = await ConnectivityProvider().isOnline();
+      if (QuantityUpdateFunc().getQuantitiesUpdate().isNotEmpty && isOnline) {
         final tempQuantityUpdates =
-            QuantityUpdateFunc()
-                .getQuantitiesUpdate()
-                .toList()
-                .map((item) {
-                  return {
-                    'hiveUuid': item.uuid,
-                    "itemUuid": item.productUuid,
-                    "quantity": item.quantity,
-                    "isIncrement": item.isIncrement,
-                    'isStorage': item.isStorage,
-                  };
-                })
-                .toList();
+            QuantityUpdateFunc().getQuantitiesUpdate().toList().map((item) {
+              return {
+                'hiveUuid': item.uuid,
+                "itemUuid": item.productUuid,
+                "quantity": item.quantity,
+                "isIncrement": item.isIncrement,
+                'isStorage': item.isStorage,
+              };
+            }).toList();
 
         List<Map<String, dynamic>> res = await client.rpc(
           'update_product_quantities',
@@ -81,9 +70,7 @@ class QuantityUpdateProvider with ChangeNotifier {
         }
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Quantity Updates insert failed ❌: $e',
-      );
+      await mainLocalLog('Batch Quantity Updates insert failed ❌: $e');
     }
   }
 }

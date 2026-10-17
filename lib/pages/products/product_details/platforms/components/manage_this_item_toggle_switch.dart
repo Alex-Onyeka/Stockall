@@ -32,9 +32,7 @@ class _ManageThisItemToggleSwitchState
         ItemsAuthAction().allowStockallToManageItemAction(
           context: context,
           action: () async {
-            if (authorization(
-              authorized: Authorizations().updateProduct,
-            )) {
+            if (authorization(authorized: Authorizations().updateProduct)) {
               var dataProvider = returnData();
               showDialog(
                 context: context,
@@ -58,81 +56,48 @@ class _ManageThisItemToggleSwitchState
                         isQuantityUpdate: false,
                         quantityChange: null,
                         product: TempProductClass(
-                          manageSalesWastage:
-                              widget
-                                  .product
-                                  .manageSalesWastage,
-                          heightDimension:
-                              widget
-                                  .product
-                                  .heightDimension,
-                          widthDimension:
-                              widget.product.widthDimension,
-                          quantityType:
-                              widget.product.quantityType,
-                          pricesList:
-                              widget.product.pricesList,
-                          unitsList:
-                              widget.product.unitsList,
-                          categories:
-                              widget.product.categories,
-                          useGroupUnit:
-                              widget.product.useGroupUnit,
-                          storageUuid:
-                              widget.product.storageUuid,
-                          departmentName:
-                              widget.product.departmentName,
-                          departmentUuid:
-                              widget.product.departmentUuid,
-                          groupUnit:
-                              widget.product.groupUnit,
-                          qttyPerGroup:
-                              widget.product.qttyPerGroup,
+                          manageSalesWastage: widget.product.manageSalesWastage,
+                          heightDimension: widget.product.heightDimension,
+                          widthDimension: widget.product.widthDimension,
+                          quantityType: widget.product.quantityType,
+                          pricesList: widget.product.pricesList,
+                          unitsList: widget.product.unitsList,
+                          categories: widget.product.categories,
+                          useGroupUnit: widget.product.useGroupUnit,
+                          storageUuid: widget.product.storageUuid,
+                          departmentName: widget.product.departmentName,
+                          departmentUuid: widget.product.departmentUuid,
+                          groupUnit: widget.product.groupUnit,
+                          qttyPerGroup: widget.product.qttyPerGroup,
                           updatedAt: DateTime.now(),
                           totalQttyInStorageDouble:
-                              widget
-                                  .product
-                                  .totalQttyInStorageDouble,
-                          setCustomPrice:
-                              widget.product.setCustomPrice,
-                          isManaged:
-                              widget.product.isManaged
-                                  ? false
-                                  : true,
+                              widget.product.totalQttyInStorageDouble,
+                          setCustomPrice: widget.product.setCustomPrice,
+                          isManaged: widget.product.isManaged ? false : true,
                           // id:
                           //     product.id,
                           name: widget.product.name,
                           unit: widget.product.unit,
-                          isRefundable:
-                              widget.product.isRefundable,
-                          costPrice:
-                              widget.product.costPrice,
-                          sellingPrice:
-                              widget.product.sellingPrice,
-                          wholeSalePrice:
-                              widget.product.wholeSalePrice,
+                          isRefundable: widget.product.isRefundable,
+                          costPrice: widget.product.costPrice,
+                          sellingPrice: widget.product.sellingPrice,
+                          wholeSalePrice: widget.product.wholeSalePrice,
                           quantity:
                               !widget.product.isManaged &&
-                                      widget.product
-                                              .getActualQuantity() ==
-                                          null
+                                      widget.product.getActualQuantity() == null
                                   ? 0
-                                  : widget.product
-                                      .getActualQuantity(),
+                                  : widget.product.getActualQuantity(),
                           shopId: widget.product.shopId,
                           barcode: widget.product.barcode,
                           // categoryUuid:
                           //     product.categoryUuid,
-                          createdAt:
-                              widget.product.createdAt,
+                          createdAt: widget.product.createdAt,
                           discount: widget.product.discount,
                           endDate: widget.product.endDate,
-                          expiryDate:
-                              widget.product.expiryDate,
+                          expiryDate: widget.product.expiryDate,
                           lowQtty: widget.product.lowQtty,
                           sizeType: widget.product.sizeType,
-                          startDate:
-                              widget.product.startDate,
+                          startDate: widget.product.startDate,
                           uuid: widget.product.uuid,
                         ),
                         oldProduct: widget.product,
@@ -151,16 +116,12 @@ class _ManageThisItemToggleSwitchState
       },
       child: SubWrapper(
         isVisible:
-            !ItemsAuthAction()
-                .allowStockallToManageItemAction(
-                  context: context,
-                ),
+            !ItemsAuthAction().allowStockallToManageItemAction(
+              context: context,
+            ),
         mainWidget: Container(
           width: 50,
-          padding: EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 5,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             border: Border.all(

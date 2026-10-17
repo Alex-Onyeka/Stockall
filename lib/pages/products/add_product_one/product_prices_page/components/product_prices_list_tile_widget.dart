@@ -7,10 +7,7 @@ import 'package:stockall/pages/products/add_product_one/product_prices_page/comp
 
 class ProductPriceListTileWidget extends StatefulWidget {
   final String priceUuid;
-  const ProductPriceListTileWidget({
-    super.key,
-    required this.priceUuid,
-  });
+  const ProductPriceListTileWidget({super.key, required this.priceUuid});
 
   @override
   State<ProductPriceListTileWidget> createState() =>
@@ -21,25 +18,19 @@ class _ProductPriceListTileWidgetState
     extends State<ProductPriceListTileWidget> {
   // bool isLoading = false;
   // bool isDeleteLoading = false;
-  TextEditingController nameController =
-      TextEditingController();
+  TextEditingController nameController = TextEditingController();
 
-  TextEditingController quantityController =
-      TextEditingController();
+  TextEditingController quantityController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     ProductPricesClass price =
         returnData(context: context).tempPricesList
-                .where(
-                  (price) => price.uuid == widget.priceUuid,
-                )
+                .where((price) => price.uuid == widget.priceUuid)
                 .isNotEmpty
             ? returnData(context: context).tempPricesList
-                .where(
-                  (price) => price.uuid == widget.priceUuid,
-                )
+                .where((price) => price.uuid == widget.priceUuid)
                 .first
             : ProductPricesClass(
               name: 'Not Set',
@@ -73,14 +64,10 @@ class _ProductPriceListTileWidgetState
             color: Colors.white,
           ),
           child: Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: 15,
-              vertical: 10,
-            ),
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
 
             child: Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   child: Row(
@@ -88,32 +75,20 @@ class _ProductPriceListTileWidgetState
                     children: [
                       Icon(
                         size: 18,
-                        color:
-                            theme
-                                .lightModeColor
-                                .secColor200,
+                        color: theme.lightModeColor.secColor200,
                         Icons.workspaces_outline,
                       ),
                       Flexible(
                         child: Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           spacing: 2,
                           children: [
                             Padding(
-                              padding:
-                                  const EdgeInsets.only(
-                                    top: 2.0,
-                                  ),
+                              padding: const EdgeInsets.only(top: 2.0),
                               child: Text(
                                 style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
+                                  fontSize: theme.mobileTexts.b3.fontSize,
+                                  fontWeight: FontWeight.bold,
                                 ),
                                 price.getPricesName(),
                               ),
@@ -123,29 +98,17 @@ class _ProductPriceListTileWidgetState
                               children: [
                                 Text(
                                   style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b4
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.normal,
+                                    fontSize: theme.mobileTexts.b4.fontSize,
+                                    fontWeight: FontWeight.normal,
                                   ),
                                   "Price-Value:",
                                 ),
                                 Text(
                                   style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b4
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
+                                    fontSize: theme.mobileTexts.b4.fontSize,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  formatLargeNumberDouble(
-                                    price.priceValue,
-                                  ),
+                                  formatLargeNumberDouble(price.priceValue),
                                 ),
                               ],
                             ),
@@ -156,8 +119,7 @@ class _ProductPriceListTileWidgetState
                   ),
                 ),
                 Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   spacing: 8,
                   children: [
                     InkWell(
@@ -172,14 +134,10 @@ class _ProductPriceListTileWidgetState
                                     'You are about to make this Price your Business Primary Price. This means, all your items quantities are represented in this price, unless manually Changed.',
                                 title: 'Make Primary Price',
                                 action: () {
-                                  Navigator.of(
-                                    confirmContext,
-                                  ).pop();
-                                  returnData()
-                                      .selectPrimaryPrice(
-                                        priceListSingle:
-                                            price,
-                                      );
+                                  Navigator.of(confirmContext).pop();
+                                  returnData().selectPrimaryPrice(
+                                    priceListSingle: price,
+                                  );
                                 },
                               );
                             },
@@ -188,54 +146,33 @@ class _ProductPriceListTileWidgetState
                       },
                       mouseCursor: SystemMouseCursors.click,
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(
-                          8.0,
-                          10,
-                          8,
-                          5,
-                        ),
+                        padding: const EdgeInsets.fromLTRB(8.0, 10, 8, 5),
                         child: Row(
                           spacing: 3,
                           children: [
                             Text(
                               style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b4
-                                        .fontSize,
-                                fontWeight:
-                                    FontWeight.normal,
+                                fontSize: theme.mobileTexts.b4.fontSize,
+                                fontWeight: FontWeight.normal,
                               ),
                               "${price.isPrimary ? '' : 'Make '}Primary Price:",
                             ),
                             Container(
                               padding: EdgeInsets.all(2),
                               decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      4,
-                                    ),
+                                borderRadius: BorderRadius.circular(4),
                                 color:
                                     price.isPrimary
-                                        ? theme
-                                            .lightModeColor
-                                            .prColor250
-                                        : Colors
-                                            .transparent,
-                                border: Border.all(
-                                  color:
-                                      Colors.grey.shade100,
-                                ),
+                                        ? theme.lightModeColor.prColor250
+                                        : Colors.transparent,
+                                border: Border.all(color: Colors.grey.shade100),
                               ),
                               child: Icon(
                                 size: 13,
                                 color:
                                     price.isPrimary
                                         ? Colors.white
-                                        : Colors
-                                            .grey
-                                            .shade100,
+                                        : Colors.grey.shade100,
                                 Icons.check,
                               ),
                             ),
@@ -249,10 +186,8 @@ class _ProductPriceListTileWidgetState
                         Material(
                           type: MaterialType.transparency,
                           child: InkWell(
-                            mouseCursor:
-                                SystemMouseCursors.click,
-                            borderRadius:
-                                BorderRadius.circular(5),
+                            mouseCursor: SystemMouseCursors.click,
+                            borderRadius: BorderRadius.circular(5),
                             onTap: () {
                               showDialog(
                                 context: context,
@@ -261,33 +196,26 @@ class _ProductPriceListTileWidgetState
                                     theme: theme,
                                     message:
                                         'You are about to delete this Product Price, Are you sure you want to proceed?',
-                                    title:
-                                        'Delete Product Price',
+                                    title: 'Delete Product Price',
                                     action: () async {
-                                      Navigator.of(
-                                        mainDialog,
-                                      ).pop();
-                                      returnData()
-                                          .deleteProductPrice(
-                                            priceListSingle:
-                                                price,
-                                          );
+                                      Navigator.of(mainDialog).pop();
+                                      returnData().deleteProductPrice(
+                                        priceListSingle: price,
+                                      );
                                     },
                                   );
                                 },
                               );
                             },
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                    horizontal: 18,
-                                    vertical: 3,
-                                  ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                                vertical: 3,
+                              ),
                               child: Icon(
                                 size: 18,
                                 color: Colors.red.shade400,
-                                Icons
-                                    .delete_outline_rounded,
+                                Icons.delete_outline_rounded,
                               ),
                             ),
                           ),
@@ -295,17 +223,13 @@ class _ProductPriceListTileWidgetState
                         Material(
                           type: MaterialType.transparency,
                           child: InkWell(
-                            mouseCursor:
-                                SystemMouseCursors.click,
-                            borderRadius:
-                                BorderRadius.circular(5),
+                            mouseCursor: SystemMouseCursors.click,
+                            borderRadius: BorderRadius.circular(5),
                             onTap: () {
                               addProductPriceAction(
                                 context: context,
-                                priceController:
-                                    quantityController,
-                                nameController:
-                                    nameController,
+                                priceController: quantityController,
+                                nameController: nameController,
                                 productUuid: price.itemUuid,
                                 price: price,
                                 setStateAction: () {
@@ -314,11 +238,10 @@ class _ProductPriceListTileWidgetState
                               );
                             },
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                    horizontal: 18,
-                                    vertical: 3,
-                                  ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                                vertical: 3,
+                              ),
                               child: Icon(
                                 size: 16,
                                 color: Colors.grey,

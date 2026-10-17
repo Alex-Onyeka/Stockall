@@ -43,8 +43,7 @@ class _ProductionMaterialTileWidgetState
         child: Column(
           children: [
             Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               spacing: 5,
               children: [
                 Expanded(
@@ -59,13 +58,10 @@ class _ProductionMaterialTileWidgetState
                       ),
                       Text(
                         style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b3.fontSize,
+                          fontSize: theme.mobileTexts.b3.fontSize,
                           fontWeight: FontWeight.bold,
                         ),
-                        widget
-                            .productionMaterial
-                            .materialName,
+                        widget.productionMaterial.materialName,
                       ),
                     ],
                   ),
@@ -75,9 +71,7 @@ class _ProductionMaterialTileWidgetState
                     fontSize: theme.mobileTexts.b4.fontSize,
                     fontWeight: FontWeight.bold,
                   ),
-                  formatLargeNumberDouble(
-                    widget.productionMaterial.quantity,
-                  ),
+                  formatLargeNumberDouble(widget.productionMaterial.quantity),
                 ),
               ],
             ),
@@ -88,8 +82,7 @@ class _ProductionMaterialTileWidgetState
                   Divider(thickness: 1),
                   SizedBox(height: 10),
                   Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     spacing: 5,
                     children: [
                       Expanded(
@@ -97,25 +90,15 @@ class _ProductionMaterialTileWidgetState
                           spacing: 5,
                           children: [
                             SizedBox(width: 5),
-                            Icon(
-                              size: 14,
-                              color: Colors.grey,
-                              Icons.person,
-                            ),
+                            Icon(size: 14, color: Colors.grey, Icons.person),
                             Text(
                               style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b4
-                                        .fontSize,
+                                fontSize: theme.mobileTexts.b4.fontSize,
                                 fontWeight: FontWeight.bold,
                               ),
                               formatMoneyBig(
                                 amount:
-                                    widget
-                                        .productionMaterial
-                                        .getTotalCost(),
+                                    widget.productionMaterial.getTotalCost(),
                                 context: context,
                               ),
                             ),
@@ -124,8 +107,7 @@ class _ProductionMaterialTileWidgetState
                       ),
                       Text(
                         style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b4.fontSize,
+                          fontSize: theme.mobileTexts.b4.fontSize,
                           // fontWeight: FontWeight.bold,
                         ),
                         widget.productionMaterial.getUnit(),
@@ -136,8 +118,7 @@ class _ProductionMaterialTileWidgetState
                   Divider(thickness: 0.5),
                   SizedBox(height: 3),
                   Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     // spacing: 5,
                     children: [
                       ProductionPaymentButtonWidget(
@@ -147,22 +128,15 @@ class _ProductionMaterialTileWidgetState
                             builder: (firstContext) {
                               return DialogTemplate(
                                 theme: theme,
-                                message:
-                                    'View Item History Details',
+                                message: 'View Item History Details',
                                 title: 'Usage Details',
                                 action: () {},
-                                showBottomActionButtons:
-                                    false,
+                                showBottomActionButtons: false,
                                 widget: SizedBox(
-                                  height:
-                                      screenHeight(
-                                        context,
-                                      ) -
-                                      250,
+                                  height: screenHeight(context) - 250,
                                   child: MaterialUsageDetailsWidget(
                                     productionRecordMaterials:
-                                        widget
-                                            .productionMaterial,
+                                        widget.productionMaterial,
                                     fromDetails: true,
                                   ),
                                 ),
@@ -186,8 +160,7 @@ class _ProductionMaterialTileWidgetState
   }
 }
 
-class ProductionPaymentButtonWidget
-    extends StatelessWidget {
+class ProductionPaymentButtonWidget extends StatelessWidget {
   const ProductionPaymentButtonWidget({
     super.key,
     required this.action,
@@ -206,17 +179,12 @@ class ProductionPaymentButtonWidget
     var theme = returnTheme(context);
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 3.0,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 3.0),
         child: InkWell(
           mouseCursor: SystemMouseCursors.click,
           onTap: action,
           child: Padding(
-            padding: EdgeInsetsGeometry.symmetric(
-              vertical: 8,
-              horizontal: 12,
-            ),
+            padding: EdgeInsetsGeometry.symmetric(vertical: 8, horizontal: 12),
             child: Center(
               child: Builder(
                 builder: (context) {
@@ -225,10 +193,7 @@ class ProductionPaymentButtonWidget
                       height: 17,
                       width: 17,
                       child: CircularProgressIndicator(
-                        color:
-                            theme
-                                .lightModeColor
-                                .secColor200,
+                        color: theme.lightModeColor.secColor200,
                         strokeWidth: 2.5,
                       ),
                     );
@@ -237,11 +202,7 @@ class ProductionPaymentButtonWidget
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
-                        color:
-                            color ??
-                            theme
-                                .lightModeColor
-                                .secColor100,
+                        color: color ?? theme.lightModeColor.secColor100,
                       ),
                       title,
                     );

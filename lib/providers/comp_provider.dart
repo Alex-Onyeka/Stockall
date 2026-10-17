@@ -44,10 +44,7 @@ class CompProvider extends ChangeNotifier {
     });
   }
 
-  Widget showLoader({
-    required String message,
-    Function()? action,
-  }) {
+  Widget showLoader({required String message, Function()? action}) {
     return Material(
       child: Container(
         color: const Color.fromARGB(245, 255, 255, 255),
@@ -72,26 +69,14 @@ class CompProvider extends ChangeNotifier {
                     Align(
                       alignment: Alignment(0, 0.15),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 60.0,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 60.0),
                         child: Text(
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            color:
-                                themeProvider
-                                    .lightModeColor
-                                    .prColor300,
-                            fontSize:
-                                themeProvider
-                                    .mobileTexts
-                                    .b1
-                                    .fontSize,
+                            color: themeProvider.lightModeColor.prColor300,
+                            fontSize: themeProvider.mobileTexts.b1.fontSize,
                             fontWeight:
-                                themeProvider
-                                    .mobileTexts
-                                    .h2
-                                    .fontWeightBold,
+                                themeProvider.mobileTexts.h2.fontWeightBold,
                           ),
                           message,
                         ),
@@ -131,27 +116,15 @@ class CompProvider extends ChangeNotifier {
                     Align(
                       alignment: Alignment(0, 0.2),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 60.0,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 60.0),
                         child: Text(
                           message ?? 'Success',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            color:
-                                themeProvider
-                                    .lightModeColor
-                                    .prColor300,
-                            fontSize:
-                                themeProvider
-                                    .mobileTexts
-                                    .h2
-                                    .fontSize,
+                            color: themeProvider.lightModeColor.prColor300,
+                            fontSize: themeProvider.mobileTexts.h2.fontSize,
                             fontWeight:
-                                themeProvider
-                                    .mobileTexts
-                                    .h2
-                                    .fontWeightBold,
+                                themeProvider.mobileTexts.h2.fontWeightBold,
                           ),
                         ),
                       ),
@@ -183,28 +156,13 @@ class CompProvider extends ChangeNotifier {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: const Color.fromARGB(
-                              60,
-                              255,
-                              0,
-                              0,
-                            ),
+                            color: const Color.fromARGB(60, 255, 0, 0),
                           ),
-                          color: const Color.fromARGB(
-                            35,
-                            255,
-                            0,
-                            25,
-                          ),
+                          color: const Color.fromARGB(35, 255, 0, 25),
                         ),
                         child: Icon(
                           size: 50,
-                          color: const Color.fromARGB(
-                            255,
-                            255,
-                            54,
-                            40,
-                          ),
+                          color: const Color.fromARGB(255, 255, 54, 40),
                           Icons.clear,
                         ),
                       ),
@@ -212,27 +170,15 @@ class CompProvider extends ChangeNotifier {
                     Align(
                       alignment: Alignment(0, 0.25),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 60.0,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 60.0),
                         child: Text(
                           message ?? 'Error',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            color:
-                                themeProvider
-                                    .lightModeColor
-                                    .prColor300,
-                            fontSize:
-                                themeProvider
-                                    .mobileTexts
-                                    .h2
-                                    .fontSize,
+                            color: themeProvider.lightModeColor.prColor300,
+                            fontSize: themeProvider.mobileTexts.h2.fontSize,
                             fontWeight:
-                                themeProvider
-                                    .mobileTexts
-                                    .h2
-                                    .fontWeightBold,
+                                themeProvider.mobileTexts.h2.fontWeightBold,
                           ),
                         ),
                       ),
@@ -268,8 +214,7 @@ class CompProvider extends ChangeNotifier {
   //  Money Visibility
   bool isVisible = false;
   void setVisible() async {
-    final visible =
-        await VisibilityBox().getDataVisibility();
+    final visible = await VisibilityBox().getDataVisibility();
     if (visible) {
       isVisible = true;
     } else {
@@ -294,15 +239,12 @@ class CompProvider extends ChangeNotifier {
   }
 
   Future<void> toggleContinuousPrintDocket() async {
-    await ContinuousPrintDocketFunc()
-        .toggleContinuousPrintDocket();
+    await ContinuousPrintDocketFunc().toggleContinuousPrintDocket();
     notifyListeners();
   }
 
   bool getContinuousPrintDocket() {
-    return ContinuousPrintDocketFunc()
-            .getContinuousPrintDocket()
-            ?.isOn ??
+    return ContinuousPrintDocketFunc().getContinuousPrintDocket()?.isOn ??
         false;
   }
 }

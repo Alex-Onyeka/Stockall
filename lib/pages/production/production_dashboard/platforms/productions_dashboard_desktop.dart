@@ -26,16 +26,11 @@ class _ProductionsDashboardDesktopState
     extends State<ProductionsDashboardDesktop> {
   @override
   Widget build(BuildContext context) {
-    var recordsProv = returnProductionRecordsProvider(
+    var recordsProv = returnProductionRecordsProvider(context: context);
+    var itemsHistoryProv = returnProductionItemHistoryProvider(
       context: context,
     );
-    var itemsHistoryProv =
-        returnProductionItemHistoryProvider(
-          context: context,
-        );
-    var productionItemsProv = returnProductionItemsProvider(
-      context: context,
-    );
+    var productionItemsProv = returnProductionItemsProvider(context: context);
     var theme = returnTheme(context);
     return DesktopCenterContainer(
       width: 900,
@@ -44,8 +39,7 @@ class _ProductionsDashboardDesktopState
         children: [
           SizedBox(height: 15),
           Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Material(
                 color: Colors.transparent,
@@ -55,10 +49,7 @@ class _ProductionsDashboardDesktopState
                     Navigator.of(context).pop();
                   },
                   child: Container(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 6,
-                      horizontal: 20,
-                    ),
+                    padding: EdgeInsets.symmetric(vertical: 6, horizontal: 20),
                     child: Icon(
                       color: Colors.grey,
                       size: 20,
@@ -72,26 +63,14 @@ class _ProductionsDashboardDesktopState
                 children: [
                   Text(
                     style: TextStyle(
-                      color:
-                          theme
-                              .lightModeColor
-                              .shadesColorBlack,
-                      fontSize:
-                          theme.mobileTexts.h4.fontSize,
-                      fontWeight:
-                          theme
-                              .mobileTexts
-                              .h4
-                              .fontWeightBold,
+                      color: theme.lightModeColor.shadesColorBlack,
+                      fontSize: theme.mobileTexts.h4.fontSize,
+                      fontWeight: theme.mobileTexts.h4.fontWeightBold,
                     ),
                     'Manage Productions',
                   ),
                   Text(
-                    style:
-                        theme
-                            .mobileTexts
-                            .b3
-                            .textStyleNormal,
+                    style: theme.mobileTexts.b3.textStyleNormal,
                     "Create, Manage and Track Your Productions",
                   ),
                 ],
@@ -118,11 +97,7 @@ class _ProductionsDashboardDesktopState
                         Text(
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
+                            fontSize: theme.mobileTexts.b3.fontSize,
                           ),
                           'Refresh',
                         ),
@@ -137,26 +112,17 @@ class _ProductionsDashboardDesktopState
           SizedBox(height: 25),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20.0,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: ListView(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      10,
-                      10,
-                      10,
-                      0,
-                    ),
+                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                     child: Column(
                       spacing: 10,
                       children: [
                         Row(
                           spacing: 10,
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Expanded(
                               child: ProductionTotalTab(
@@ -179,13 +145,8 @@ class _ProductionsDashboardDesktopState
                                     .getTotalProducedInProduction(
                                       records: null,
                                     ),
-                                icon:
-                                    Icons
-                                        .view_in_ar_rounded,
-                                color:
-                                    theme
-                                        .lightModeColor
-                                        .prColor250,
+                                icon: Icons.view_in_ar_rounded,
+                                color: theme.lightModeColor.prColor250,
                                 theme: theme,
                               ),
                             ),
@@ -196,23 +157,18 @@ class _ProductionsDashboardDesktopState
                                         .returnTransferedTodayHistories()
                                         .length,
                                 title: 'Transfered Out',
-                                number: itemsHistoryProv
-                                    .getTotalTransferedOut(
-                                      itemHistories: null,
-                                    ),
-                                icon:
-                                    Icons
-                                        .rotate_left_rounded,
+                                number: itemsHistoryProv.getTotalTransferedOut(
+                                  itemHistories: null,
+                                ),
+                                icon: Icons.rotate_left_rounded,
                                 action: () {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) {
                                         return ProductionItemHistoryPage(
-                                          fromProductionItemDetails:
-                                              false,
-                                          viewTransferedOut:
-                                              true,
+                                          fromProductionItemDetails: false,
+                                          viewTransferedOut: true,
                                         );
                                       },
                                     ),
@@ -225,34 +181,26 @@ class _ProductionsDashboardDesktopState
                         ),
                         Row(
                           spacing: 10,
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Expanded(
                               child: Builder(
                                 builder: (context) {
-                                  if (shop(
-                                        context,
-                                      )?.manageProductionItems ==
+                                  if (shop(context)?.manageProductionItems ==
                                       true) {
                                     return ProductionTotalTab(
                                       entries:
                                           productionItemsProv
                                               .returnRemainingProductionItems()
                                               .length,
-                                      title:
-                                          'Remaining Items',
+                                      title: 'Remaining Items',
                                       action: () {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (
-                                              context,
-                                            ) {
+                                            builder: (context) {
                                               return ProductionItemsPage(
-                                                seeRemainingItems:
-                                                    true,
+                                                seeRemainingItems: true,
                                               );
                                             },
                                           ),
@@ -261,12 +209,8 @@ class _ProductionsDashboardDesktopState
                                       number:
                                           productionItemsProv
                                               .getTotalRemainingItems(),
-                                      icon:
-                                          Icons.api_rounded,
-                                      color:
-                                          theme
-                                              .lightModeColor
-                                              .prColor250,
+                                      icon: Icons.api_rounded,
+                                      color: theme.lightModeColor.prColor250,
                                       theme: theme,
                                     );
                                   } else {
@@ -275,15 +219,12 @@ class _ProductionsDashboardDesktopState
                                           returnMaterialsProvider()
                                               .materialList()
                                               .length,
-                                      title:
-                                          'Production Materials',
+                                      title: 'Production Materials',
                                       action: () {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (
-                                              context,
-                                            ) {
+                                            builder: (context) {
                                               return MaterialsPage();
                                             },
                                           ),
@@ -291,22 +232,10 @@ class _ProductionsDashboardDesktopState
                                       },
                                       number: returnMaterialsProvider()
                                           .materialList()
-                                          .map(
-                                            (item) =>
-                                                (item.quantity ??
-                                                    0),
-                                          )
-                                          .fold(
-                                            0,
-                                            (a, b) => a + b,
-                                          ),
-                                      icon:
-                                          Icons
-                                              .app_registration_rounded,
-                                      color:
-                                          theme
-                                              .lightModeColor
-                                              .tertColor200,
+                                          .map((item) => (item.quantity ?? 0))
+                                          .fold(0, (a, b) => a + b),
+                                      icon: Icons.app_registration_rounded,
+                                      color: theme.lightModeColor.tertColor200,
 
                                       theme: theme,
                                     );
@@ -316,10 +245,7 @@ class _ProductionsDashboardDesktopState
                             ),
                             Expanded(
                               child: ProductionTotalTab(
-                                color:
-                                    theme
-                                        .lightModeColor
-                                        .prColor250,
+                                color: theme.lightModeColor.prColor250,
                                 entries:
                                     returnMaterialsUsageProvider(
                                           context: context,
@@ -331,9 +257,7 @@ class _ProductionsDashboardDesktopState
                                     returnMaterialsUsageProvider(
                                       context: context,
                                     ).getTotalMaterialsUsed(),
-                                icon:
-                                    Icons
-                                        .border_horizontal_rounded,
+                                icon: Icons.border_horizontal_rounded,
                                 action: () {
                                   Navigator.push(
                                     context,
@@ -355,17 +279,13 @@ class _ProductionsDashboardDesktopState
                   SizedBox(height: 25),
                   Visibility(
                     visible: authorization(
-                      authorized:
-                          Authorizations()
-                              .addProductionRecords,
+                      authorized: Authorizations().addProductionRecords,
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: 500,
-                          ),
+                          constraints: BoxConstraints(maxWidth: 500),
                           child: MainButtonP(
                             themeProvider: theme,
                             action: () {
@@ -385,29 +305,16 @@ class _ProductionsDashboardDesktopState
                       ],
                     ),
                   ),
-                  Divider(
-                    color: Colors.grey.shade400,
-                    thickness: 0.3,
-                  ),
+                  Divider(color: Colors.grey.shade400, thickness: 0.3),
                   Padding(
-                    padding: EdgeInsetsGeometry.fromLTRB(
-                      10,
-                      5,
-                      10,
-                      10,
-                    ),
+                    padding: EdgeInsetsGeometry.fromLTRB(10, 5, 10, 10),
                     child: Row(
                       spacing: 10,
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b2
-                                    .fontSize,
+                            fontSize: theme.mobileTexts.b2.fontSize,
                             fontWeight: FontWeight.bold,
                           ),
                           'Recent Productions',
@@ -425,43 +332,28 @@ class _ProductionsDashboardDesktopState
                                 ),
                               );
                             },
-                            mouseCursor:
-                                SystemMouseCursors.click,
+                            mouseCursor: SystemMouseCursors.click,
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                    vertical: 10.0,
-                                    horizontal: 12,
-                                  ),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 10.0,
+                                horizontal: 12,
+                              ),
                               child: Row(
-                                mainAxisSize:
-                                    MainAxisSize.min,
+                                mainAxisSize: MainAxisSize.min,
                                 spacing: 5,
                                 children: [
                                   Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.normal,
-                                      color:
-                                          theme
-                                              .lightModeColor
-                                              .secColor200,
+                                      fontSize: theme.mobileTexts.b3.fontSize,
+                                      fontWeight: FontWeight.normal,
+                                      color: theme.lightModeColor.secColor200,
                                     ),
                                     'View All',
                                   ),
                                   Icon(
                                     size: 16,
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .secColor200,
-                                    Icons
-                                        .arrow_forward_ios_rounded,
+                                    color: theme.lightModeColor.secColor200,
+                                    Icons.arrow_forward_ios_rounded,
                                   ),
                                 ],
                               ),
@@ -480,11 +372,9 @@ class _ProductionsDashboardDesktopState
                           height: 200,
                           child: Center(
                             child: Material(
-                              type:
-                                  MaterialType.transparency,
+                              type: MaterialType.transparency,
                               child: EmptyWidgetDisplayOnly(
-                                title:
-                                    'No Production Recorded',
+                                title: 'No Production Recorded',
                                 subText:
                                     'No Production has been recorded for today.',
                                 theme: theme,
@@ -512,11 +402,9 @@ class _ProductionsDashboardDesktopState
                                       : recordsProv
                                           .returnProductionRecordsByDayOrWeek())
                                   .map(
-                                    (item) =>
-                                        ProductionsRecordTile(
-                                          productionRecord:
-                                              item,
-                                        ),
+                                    (item) => ProductionsRecordTile(
+                                      productionRecord: item,
+                                    ),
                                   )
                                   .toList(),
                         );

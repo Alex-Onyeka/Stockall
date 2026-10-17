@@ -16,12 +16,10 @@ class CreateProductionMobile extends StatefulWidget {
   const CreateProductionMobile({super.key});
 
   @override
-  State<CreateProductionMobile> createState() =>
-      _CreateProductionMobileState();
+  State<CreateProductionMobile> createState() => _CreateProductionMobileState();
 }
 
-class _CreateProductionMobileState
-    extends State<CreateProductionMobile> {
+class _CreateProductionMobileState extends State<CreateProductionMobile> {
   bool isLoading = false;
   bool showSuccess = false;
   void createProductionRecord() {
@@ -54,11 +52,8 @@ class _CreateProductionMobileState
                 setState(() {
                   showSuccess = true;
                 });
-                returnProductionsActionProvider()
-                    .resetProductionCart();
-                await Future.delayed(
-                  (Duration(seconds: 2)),
-                );
+                returnProductionsActionProvider().resetProductionCart();
+                await Future.delayed((Duration(seconds: 2)));
                 if (returnProductionsActionProvider()
                         .getProductionsCart()
                         ?.isEdit ==
@@ -81,16 +76,11 @@ class _CreateProductionMobileState
   Widget build(BuildContext context) {
     var cartActionProv = returnProductionsActionProvider();
     ProductionsCart? cartItem =
-        returnProductionsActionProvider(
-          context: context,
-        ).getProductionsCart();
+        returnProductionsActionProvider(context: context).getProductionsCart();
     var theme = returnTheme(context);
     return PopScope(
       canPop:
-          returnProductionsActionProvider()
-                      .getProductionsCart()
-                      ?.isEdit ==
-                  true
+          returnProductionsActionProvider().getProductionsCart()?.isEdit == true
               ? false
               : true,
       child: Scaffold(
@@ -110,10 +100,8 @@ class _CreateProductionMobileState
           },
           widget: Opacity(
             opacity:
-                (cartItem?.materialsCartItems.isNotEmpty ==
-                            true ||
-                        cartItem?.productionsCartItem !=
-                            null)
+                (cartItem?.materialsCartItems.isNotEmpty == true ||
+                        cartItem?.productionsCartItem != null)
                     ? 1
                     : 0,
             child: Padding(
@@ -145,11 +133,7 @@ class _CreateProductionMobileState
                         Text(
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
+                            fontSize: theme.mobileTexts.b3.fontSize,
                           ),
                           returnProductionsActionProvider()
                                       .getProductionsCart()
@@ -171,23 +155,17 @@ class _CreateProductionMobileState
           child: Builder(
             builder: (context) {
               if (isLoading) {
-                return returnCompProvider(
-                  context,
-                ).showLoader(
+                return returnCompProvider(context).showLoader(
                   message:
                       '${returnProductionsActionProvider().getProductionsCart()?.isEdit == true ? 'Updating' : 'Creating'} Production',
                 );
               } else if (showSuccess) {
-                return returnCompProvider(
-                  context,
-                ).showSuccess(
+                return returnCompProvider(context).showSuccess(
                   'Production ${returnProductionsActionProvider().getProductionsCart()?.isEdit == true ? 'Updated' : 'Created'} Successfully',
                 );
               } else {
                 return Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 5.0,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
                   child: Column(
                     children: [
                       Expanded(
@@ -195,43 +173,28 @@ class _CreateProductionMobileState
                           builder: (context) {
                             if (cartItem == null) {
                               return Container(
-                                margin:
-                                    EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                    ),
-                                padding:
-                                    const EdgeInsets.fromLTRB(
-                                      10,
-                                      10,
-                                      10,
-                                      10,
-                                    ),
+                                margin: EdgeInsets.symmetric(horizontal: 10),
+                                padding: const EdgeInsets.fromLTRB(
+                                  10,
+                                  10,
+                                  10,
+                                  10,
+                                ),
                                 decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        5,
-                                      ),
-                                  color:
-                                      theme
-                                          .lightModeColor
-                                          .prColor50,
+                                  borderRadius: BorderRadius.circular(5),
+                                  color: theme.lightModeColor.prColor50,
                                   border: Border.all(
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .prColor300,
+                                    color: theme.lightModeColor.prColor300,
                                   ),
                                 ),
                                 child: EmptyWidgetDisplay(
                                   title: 'Cart Not Set',
-                                  buttonText:
-                                      'Initialize Cart',
+                                  buttonText: 'Initialize Cart',
                                   subText:
                                       'Click on the Button Below To Initialize Cart',
                                   theme: theme,
                                   action: () {
-                                    cartActionProv
-                                        .initProductionsCart();
+                                    cartActionProv.initProductionsCart();
                                   },
                                   altAction: () {},
                                   altIcon: null,
@@ -242,71 +205,54 @@ class _CreateProductionMobileState
                                 children: [
                                   Container(
                                     height: 180,
-                                    margin:
-                                        EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                        ),
-                                    padding:
-                                        const EdgeInsets.fromLTRB(
-                                          10,
-                                          10,
-                                          10,
-                                          10,
-                                        ),
+                                    margin: EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                    ),
+                                    padding: const EdgeInsets.fromLTRB(
+                                      10,
+                                      10,
+                                      10,
+                                      10,
+                                    ),
                                     decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            5,
-                                          ),
-                                      color:
-                                          theme
-                                              .lightModeColor
-                                              .prColor50,
+                                      borderRadius: BorderRadius.circular(5),
+                                      color: theme.lightModeColor.prColor50,
                                       border: Border.all(
-                                        color:
-                                            theme
-                                                .lightModeColor
-                                                .prColor200,
+                                        color: theme.lightModeColor.prColor200,
                                       ),
                                     ),
                                     child: Builder(
                                       builder: (context) {
-                                        if (cartItem
-                                                .productionsCartItem ==
+                                        if (cartItem.productionsCartItem ==
                                             null) {
                                           return EmptyWidgetDisplay(
-                                            title:
-                                                'Item Not Set',
-                                            buttonText:
-                                                'Select Item',
+                                            title: 'Item Not Set',
+                                            buttonText: 'Select Item',
                                             subText:
                                                 'Click on the Button Below to select an Item to Produce',
                                             theme: theme,
                                             action: () {
                                               CreateProductionFunctions()
                                                   .selectItemForProduction(
-                                                    firstContext:
-                                                        context,
+                                                    firstContext: context,
                                                   );
                                             },
-                                            altAction:
-                                                () {},
+                                            altAction: () {},
                                             altIcon: null,
                                           );
                                         } else {
                                           return ProductionItemCartItem(
                                             productionsCartItem:
-                                                cartItem
-                                                    .productionsCartItem,
+                                                cartItem.productionsCartItem,
                                             theme: theme,
                                             editAction: () {
-                                              CreateProductionFunctions().addSelectedItemToCart(
-                                                secondContext:
-                                                    context,
-                                                editItem:
-                                                    cartItem
-                                                        .productionsCartItem,
-                                              );
+                                              CreateProductionFunctions()
+                                                  .addSelectedItemToCart(
+                                                    secondContext: context,
+                                                    editItem:
+                                                        cartItem
+                                                            .productionsCartItem,
+                                                  );
                                             },
                                           );
                                         }
@@ -315,36 +261,26 @@ class _CreateProductionMobileState
                                   ),
                                   SizedBox(height: 10),
                                   Divider(
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade400,
+                                    color: Colors.grey.shade400,
                                     thickness: 0.3,
                                   ),
                                   Padding(
-                                    padding:
-                                        EdgeInsetsGeometry.fromLTRB(
-                                          10,
-                                          5,
-                                          10,
-                                          10,
-                                        ),
+                                    padding: EdgeInsetsGeometry.fromLTRB(
+                                      10,
+                                      5,
+                                      10,
+                                      10,
+                                    ),
                                     child: Row(
                                       spacing: 10,
                                       mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .spaceBetween,
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
                                           style: TextStyle(
                                             fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b2
-                                                    .fontSize,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
+                                                theme.mobileTexts.b2.fontSize,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                           'Materials',
                                         ),
@@ -352,48 +288,49 @@ class _CreateProductionMobileState
                                           spacing: 2,
                                           children: [
                                             Material(
-                                              type:
-                                                  MaterialType
-                                                      .transparency,
+                                              type: MaterialType.transparency,
                                               child: InkWell(
                                                 onTap: () {
-                                                  CreateProductionFunctions().selectItemForProductionMaterials(
-                                                    firstContext:
-                                                        context,
-                                                  );
+                                                  CreateProductionFunctions()
+                                                      .selectItemForProductionMaterials(
+                                                        firstContext: context,
+                                                      );
                                                 },
                                                 mouseCursor:
-                                                    SystemMouseCursors
-                                                        .click,
+                                                    SystemMouseCursors.click,
                                                 child: Padding(
-                                                  padding: const EdgeInsets.symmetric(
-                                                    vertical:
-                                                        10.0,
-                                                    horizontal:
-                                                        5,
-                                                  ),
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        vertical: 10.0,
+                                                        horizontal: 5,
+                                                      ),
                                                   child: Row(
                                                     mainAxisSize:
                                                         MainAxisSize.min,
-                                                    spacing:
-                                                        2,
+                                                    spacing: 2,
                                                     children: [
                                                       Text(
                                                         style: TextStyle(
                                                           fontSize:
-                                                              theme.mobileTexts.b3.fontSize,
+                                                              theme
+                                                                  .mobileTexts
+                                                                  .b3
+                                                                  .fontSize,
                                                           fontWeight:
                                                               FontWeight.normal,
                                                           color:
-                                                              theme.lightModeColor.secColor200,
+                                                              theme
+                                                                  .lightModeColor
+                                                                  .secColor200,
                                                         ),
                                                         'Add Material',
                                                       ),
                                                       Icon(
-                                                        size:
-                                                            16,
+                                                        size: 16,
                                                         color:
-                                                            theme.lightModeColor.secColor200,
+                                                            theme
+                                                                .lightModeColor
+                                                                .secColor200,
                                                         Icons.add,
                                                       ),
                                                     ],
@@ -407,26 +344,23 @@ class _CreateProductionMobileState
                                                       .materialsCartItems
                                                       .isNotEmpty,
                                               child: Material(
-                                                type:
-                                                    MaterialType
-                                                        .transparency,
+                                                type: MaterialType.transparency,
                                                 child: InkWell(
                                                   onTap: () {
                                                     showDialog(
-                                                      context:
-                                                          context,
+                                                      context: context,
                                                       builder: (
                                                         confirmContext,
                                                       ) {
                                                         return ConfirmationAlert(
-                                                          theme:
-                                                              theme,
+                                                          theme: theme,
                                                           message:
                                                               'You are about to Clear Every Materials from the cart. Are you sure you want to proceed?',
                                                           title:
                                                               'Clear Materials',
                                                           action: () {
-                                                            cartActionProv.clearProductionMaterials();
+                                                            cartActionProv
+                                                                .clearProductionMaterials();
                                                             Navigator.of(
                                                               confirmContext,
                                                             ).pop();
@@ -436,37 +370,35 @@ class _CreateProductionMobileState
                                                     );
                                                   },
                                                   mouseCursor:
-                                                      SystemMouseCursors
-                                                          .click,
+                                                      SystemMouseCursors.click,
                                                   child: Padding(
-                                                    padding: const EdgeInsets.symmetric(
-                                                      vertical:
-                                                          10.0,
-                                                      horizontal:
-                                                          10,
-                                                    ),
+                                                    padding:
+                                                        const EdgeInsets.symmetric(
+                                                          vertical: 10.0,
+                                                          horizontal: 10,
+                                                        ),
                                                     child: Row(
                                                       mainAxisSize:
                                                           MainAxisSize.min,
-                                                      spacing:
-                                                          3,
+                                                      spacing: 3,
                                                       children: [
                                                         Text(
                                                           style: TextStyle(
                                                             fontSize:
-                                                                theme.mobileTexts.b3.fontSize,
+                                                                theme
+                                                                    .mobileTexts
+                                                                    .b3
+                                                                    .fontSize,
                                                             fontWeight:
-                                                                FontWeight.normal,
-                                                            color:
-                                                                Colors.grey,
+                                                                FontWeight
+                                                                    .normal,
+                                                            color: Colors.grey,
                                                           ),
                                                           'Clear',
                                                         ),
                                                         Icon(
-                                                          size:
-                                                              16,
-                                                          color:
-                                                              Colors.grey,
+                                                          size: 16,
+                                                          color: Colors.grey,
                                                           Icons.clear,
                                                         ),
                                                       ],
@@ -482,35 +414,27 @@ class _CreateProductionMobileState
                                   ),
                                   Builder(
                                     builder: (context) {
-                                      if (cartItem
-                                          .materialsCartItems
-                                          .isEmpty) {
+                                      if (cartItem.materialsCartItems.isEmpty) {
                                         return SizedBox(
                                           height: 200,
                                           child: Center(
                                             child: Material(
-                                              type:
-                                                  MaterialType
-                                                      .transparency,
+                                              type: MaterialType.transparency,
                                               child: EmptyWidgetDisplay(
-                                                title:
-                                                    'No Material Added',
+                                                title: 'No Material Added',
                                                 subText:
                                                     'Click on the Button Below to add Production Materials',
-                                                theme:
-                                                    theme,
+                                                theme: theme,
                                                 height: 0,
                                                 // icon: Icons.clear,
                                                 action: () {
-                                                  CreateProductionFunctions().selectItemForProductionMaterials(
-                                                    firstContext:
-                                                        context,
-                                                  );
+                                                  CreateProductionFunctions()
+                                                      .selectItemForProductionMaterials(
+                                                        firstContext: context,
+                                                      );
                                                 },
-                                                buttonText:
-                                                    'Add New Material',
-                                                altAction:
-                                                    () {},
+                                                buttonText: 'Add New Material',
+                                                altAction: () {},
                                               ),
                                             ),
                                           ),
@@ -529,14 +453,15 @@ class _CreateProductionMobileState
                                                       productionMaterialCartItem:
                                                           item,
                                                       editAction: () {
-                                                        CreateProductionFunctions().addSelectedMaterialToCart(
-                                                          secondContext:
-                                                              context,
-                                                          selectedMaterial:
-                                                              null,
-                                                          editMaterialItem:
-                                                              item,
-                                                        );
+                                                        CreateProductionFunctions()
+                                                            .addSelectedMaterialToCart(
+                                                              secondContext:
+                                                                  context,
+                                                              selectedMaterial:
+                                                                  null,
+                                                              editMaterialItem:
+                                                                  item,
+                                                            );
                                                       },
                                                     ),
                                                   )
@@ -552,27 +477,18 @@ class _CreateProductionMobileState
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10.0,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
                         child: Column(
                           spacing: 5,
                           children: [
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Expanded(
                                   child: Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
+                                      fontSize: theme.mobileTexts.b3.fontSize,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                     'Total Cost (${cartItem?.selectCostPriceToUse == 1
                                         ? 'Item'
@@ -582,56 +498,35 @@ class _CreateProductionMobileState
                                   ),
                                 ),
                                 Material(
-                                  type:
-                                      MaterialType
-                                          .transparency,
+                                  type: MaterialType.transparency,
                                   child: InkWell(
                                     onTap: () {
                                       CreateProductionFunctions()
-                                          .setTotalCostValue(
-                                            context:
-                                                context,
-                                          );
+                                          .setTotalCostValue(context: context);
                                     },
-                                    mouseCursor:
-                                        SystemMouseCursors
-                                            .click,
+                                    mouseCursor: SystemMouseCursors.click,
                                     child: Padding(
-                                      padding:
-                                          EdgeInsetsGeometry.symmetric(
-                                            vertical: 10,
-                                            horizontal: 10,
-                                          ),
+                                      padding: EdgeInsetsGeometry.symmetric(
+                                        vertical: 10,
+                                        horizontal: 10,
+                                      ),
                                       child: Row(
-                                        mainAxisSize:
-                                            MainAxisSize
-                                                .min,
+                                        mainAxisSize: MainAxisSize.min,
                                         spacing: 10,
                                         children: [
                                           Text(
                                             style: TextStyle(
                                               fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b3
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
+                                                  theme.mobileTexts.b3.fontSize,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                             formatMoneyBig(
                                               amount:
-                                                  cartItem
-                                                      ?.getCostPrice() ??
-                                                  0,
-                                              context:
-                                                  context,
+                                                  cartItem?.getCostPrice() ?? 0,
+                                              context: context,
                                             ),
                                           ),
-                                          Icon(
-                                            size: 18,
-                                            Icons.edit,
-                                          ),
+                                          Icon(size: 18, Icons.edit),
                                         ],
                                       ),
                                     ),

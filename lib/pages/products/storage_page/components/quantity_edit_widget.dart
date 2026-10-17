@@ -21,12 +21,10 @@ class QuantityEditWidget extends StatefulWidget {
   });
 
   @override
-  State<QuantityEditWidget> createState() =>
-      _QuantityEditWidgetState();
+  State<QuantityEditWidget> createState() => _QuantityEditWidgetState();
 }
 
-class _QuantityEditWidgetState
-    extends State<QuantityEditWidget> {
+class _QuantityEditWidgetState extends State<QuantityEditWidget> {
   // bool isActive = false;
   bool isAddToQuantity = true;
   final node = FocusNode();
@@ -58,32 +56,21 @@ class _QuantityEditWidgetState
                     borderRadius: BorderRadius.circular(15),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color.fromARGB(
-                          39,
-                          4,
-                          1,
-                          41,
-                        ),
+                        color: const Color.fromARGB(39, 4, 1, 41),
                         blurRadius: 10,
                       ),
                     ],
                   ),
                   width: 500,
                   child: Column(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
                             style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b1
-                                      .fontSize,
+                              fontSize: theme.mobileTexts.b1.fontSize,
                               fontWeight: FontWeight.bold,
                             ),
                             'Edit ${widget.isTotal
@@ -211,15 +198,13 @@ class _QuantityEditWidgetState
                       ),
                       SizedBox(height: 20),
                       Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         spacing: 3,
                         children: [
                           Material(
                             color: Colors.transparent,
                             child: InkWell(
-                              mouseCursor:
-                                  SystemMouseCursors.click,
+                              mouseCursor: SystemMouseCursors.click,
                               onTap: () {
                                 node.requestFocus();
                                 setState(() {
@@ -227,11 +212,10 @@ class _QuantityEditWidgetState
                                 });
                               },
                               child: Container(
-                                padding:
-                                    EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 10,
-                                    ),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 10,
+                                ),
                                 child: Row(
                                   spacing: 5,
                                   children: [
@@ -240,20 +224,16 @@ class _QuantityEditWidgetState
                                         border: Border.all(
                                           color:
                                               !isAddToQuantity
-                                                  ? Colors
-                                                      .grey
-                                                  : Colors
-                                                      .transparent,
+                                                  ? Colors.grey
+                                                  : Colors.transparent,
                                         ),
                                         color:
                                             isAddToQuantity
                                                 ? theme
                                                     .lightModeColor
                                                     .prColor250
-                                                : Colors
-                                                    .transparent,
-                                        shape:
-                                            BoxShape.circle,
+                                                : Colors.transparent,
+                                        shape: BoxShape.circle,
                                       ),
                                       child: Icon(
                                         size: 14,
@@ -263,15 +243,10 @@ class _QuantityEditWidgetState
                                     ),
                                     Text(
                                       style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b4
-                                                .fontSize,
+                                        fontSize: theme.mobileTexts.b4.fontSize,
                                         fontWeight:
                                             isAddToQuantity
-                                                ? FontWeight
-                                                    .bold
+                                                ? FontWeight.bold
                                                 : null,
                                       ),
                                       'Add to Quantity',
@@ -284,8 +259,7 @@ class _QuantityEditWidgetState
                           Material(
                             color: Colors.transparent,
                             child: InkWell(
-                              mouseCursor:
-                                  SystemMouseCursors.click,
+                              mouseCursor: SystemMouseCursors.click,
                               onTap: () {
                                 node.requestFocus();
                                 setState(() {
@@ -293,11 +267,10 @@ class _QuantityEditWidgetState
                                 });
                               },
                               child: Container(
-                                padding:
-                                    EdgeInsets.symmetric(
-                                      vertical: 10,
-                                      horizontal: 10,
-                                    ),
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 10,
+                                  horizontal: 10,
+                                ),
                                 child: Row(
                                   spacing: 5,
                                   children: [
@@ -306,20 +279,16 @@ class _QuantityEditWidgetState
                                         border: Border.all(
                                           color:
                                               isAddToQuantity
-                                                  ? Colors
-                                                      .grey
-                                                  : Colors
-                                                      .transparent,
+                                                  ? Colors.grey
+                                                  : Colors.transparent,
                                         ),
                                         color:
                                             !isAddToQuantity
                                                 ? theme
                                                     .lightModeColor
                                                     .prColor250
-                                                : Colors
-                                                    .transparent,
-                                        shape:
-                                            BoxShape.circle,
+                                                : Colors.transparent,
+                                        shape: BoxShape.circle,
                                       ),
                                       child: Icon(
                                         size: 14,
@@ -329,15 +298,10 @@ class _QuantityEditWidgetState
                                     ),
                                     Text(
                                       style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b4
-                                                .fontSize,
+                                        fontSize: theme.mobileTexts.b4.fontSize,
                                         fontWeight:
                                             !isAddToQuantity
-                                                ? FontWeight
-                                                    .bold
+                                                ? FontWeight.bold
                                                 : null,
                                       ),
                                       'Replace Quantity',
@@ -708,9 +672,7 @@ class _QuantityEditWidgetState
     var theme = returnTheme(context);
     return Container(
       decoration: BoxDecoration(
-        border: Border(
-          right: BorderSide(color: Colors.grey.shade500),
-        ),
+        border: Border(right: BorderSide(color: Colors.grey.shade500)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -741,8 +703,7 @@ class _QuantityEditWidgetState
                       mouseCursor: SystemMouseCursors.click,
                       onTap: () {
                         returnData().unFocusSearchNode();
-                        returnData()
-                            .removeSearchNodeListener();
+                        returnData().removeSearchNodeListener();
                         updateQuantity();
                       },
                       child: Padding(
@@ -762,8 +723,7 @@ class _QuantityEditWidgetState
                     width: 15,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      color:
-                          theme.lightModeColor.secColor200,
+                      color: theme.lightModeColor.secColor200,
                     ),
                   ),
                 ),

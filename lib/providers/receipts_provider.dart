@@ -472,12 +472,10 @@ class ReceiptsProvider extends ChangeNotifier {
           isOnline) {
         List<CreatedReceipts> tempReceipts =
             CreatedReceiptsFunc().getReceipts().toList();
-        List<CreatedReceipts> newReceipts =
-            tempReceipts.map((rec) {
-              rec.receipt.createdAt =
-                  rec.receipt.createdAt.toUtc();
-              return rec;
-            }).toList();
+        // createdAt is serialized to UTC inside toJson(), so the
+        // shared in-memory receipt must not be mutated here (doing so
+        // made the receipt page show UTC time until it was reloaded).
+        List<CreatedReceipts> newReceipts = tempReceipts;
         int count = 0;
         for (var item in newReceipts) {
           try {
@@ -2090,7 +2088,6 @@ class ReceiptsProvider extends ChangeNotifier {
       DataColumn2(label: HeadingTextWidget(title: '#Id')),
       DataColumn2(
         size: ColumnSize.L,
-
         label: HeadingTextWidget(title: 'Staff'),
       ),
       DataColumn2(
@@ -2128,7 +2125,6 @@ class ReceiptsProvider extends ChangeNotifier {
     return [
       DataColumn2(
         size: ColumnSize.L,
-
         label: HeadingTextWidget(title: 'Staff'),
       ),
       DataColumn2(

@@ -54,9 +54,7 @@ class _CreateMaterialsUsageDesktopState
                 });
                 // returnMaterialsUsageActionProvider()
                 //     .resetMaterialsUsageCart();
-                await Future.delayed(
-                  (Duration(seconds: 2)),
-                );
+                await Future.delayed((Duration(seconds: 2)));
                 if (returnMaterialsUsageActionProvider()
                         .getMaterialsUsageCart()
                         ?.isEdit ==
@@ -77,16 +75,13 @@ class _CreateMaterialsUsageDesktopState
 
   @override
   Widget build(BuildContext context) {
-    var actionProvider =
-        returnMaterialsUsageActionProvider();
+    var actionProvider = returnMaterialsUsageActionProvider();
     MaterialsUsageCart? cartItem =
         returnMaterialsUsageActionProvider(
           context: context,
         ).getMaterialsUsageCart();
     List<MaterialsUsageCartItem> items =
-        returnMaterialsUsageActionProvider(
-          context: context,
-        ).getMaterials();
+        returnMaterialsUsageActionProvider(context: context).getMaterials();
     var theme = returnTheme(context);
     return DesktopCenterContainer(
       width: 900,
@@ -95,8 +90,7 @@ class _CreateMaterialsUsageDesktopState
         children: [
           SizedBox(height: 15),
           Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Material(
                 color: Colors.transparent,
@@ -110,10 +104,7 @@ class _CreateMaterialsUsageDesktopState
                     }
                   },
                   child: Container(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 6,
-                      horizontal: 20,
-                    ),
+                    padding: EdgeInsets.symmetric(vertical: 6, horizontal: 20),
                     child: Icon(
                       color: Colors.grey,
                       size: 20,
@@ -127,35 +118,20 @@ class _CreateMaterialsUsageDesktopState
                 children: [
                   Text(
                     style: TextStyle(
-                      color:
-                          theme
-                              .lightModeColor
-                              .shadesColorBlack,
-                      fontSize:
-                          theme.mobileTexts.h4.fontSize,
-                      fontWeight:
-                          theme
-                              .mobileTexts
-                              .h4
-                              .fontWeightBold,
+                      color: theme.lightModeColor.shadesColorBlack,
+                      fontSize: theme.mobileTexts.h4.fontSize,
+                      fontWeight: theme.mobileTexts.h4.fontWeightBold,
                     ),
                     '${returnMaterialsUsageActionProvider().getMaterialsUsageCart()?.isEdit == true ? 'Update' : 'Create'} Material Usage Record',
                   ),
                   Text(
-                    style:
-                        theme
-                            .mobileTexts
-                            .b3
-                            .textStyleNormal,
+                    style: theme.mobileTexts.b3.textStyleNormal,
                     "${returnMaterialsUsageActionProvider().getMaterialsUsageCart()?.isEdit == true ? 'Update' : 'Create New'} Material Usage Record",
                   ),
                 ],
               ),
               Opacity(
-                opacity:
-                    (cartItem?.cartItems.isNotEmpty == true)
-                        ? 1
-                        : 0,
+                opacity: (cartItem?.cartItems.isNotEmpty == true) ? 1 : 0,
                 child: Material(
                   type: MaterialType.transparency,
                   child: InkWell(
@@ -181,11 +157,7 @@ class _CreateMaterialsUsageDesktopState
                           Text(
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
+                              fontSize: theme.mobileTexts.b3.fontSize,
                             ),
                             returnMaterialsUsageActionProvider()
                                         .getMaterialsUsageCart()
@@ -206,45 +178,27 @@ class _CreateMaterialsUsageDesktopState
           SizedBox(height: 25),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20.0,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Builder(
                 builder: (context) {
                   if (isLoading) {
-                    return returnCompProvider(
-                      context,
-                    ).showLoader(
+                    return returnCompProvider(context).showLoader(
                       message:
                           '${returnMaterialsUsageActionProvider().getMaterialsUsageCart()?.isEdit == true ? 'Updating' : 'Creating'} Material Usage Record',
                     );
                   } else if (showSuccess) {
-                    return returnCompProvider(
-                      context,
-                    ).showSuccess(
+                    return returnCompProvider(context).showSuccess(
                       'Material Usage Record ${returnMaterialsUsageActionProvider().getMaterialsUsageCart()?.isEdit == true ? 'Updated' : 'Created'} Successfully',
                     );
                   } else {
                     if (cartItem == null) {
                       return Container(
-                        padding: const EdgeInsets.fromLTRB(
-                          10,
-                          10,
-                          10,
-                          10,
-                        ),
+                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                         decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(5),
-                          color:
-                              theme
-                                  .lightModeColor
-                                  .prColor50,
+                          borderRadius: BorderRadius.circular(5),
+                          color: theme.lightModeColor.prColor50,
                           border: Border.all(
-                            color:
-                                theme
-                                    .lightModeColor
-                                    .prColor300,
+                            color: theme.lightModeColor.prColor300,
                           ),
                         ),
                         child: Center(
@@ -255,8 +209,7 @@ class _CreateMaterialsUsageDesktopState
                                 'Click on the Button Below To Initialize Cart',
                             theme: theme,
                             action: () {
-                              actionProvider
-                                  .initMaterialsUsageCart();
+                              actionProvider.initMaterialsUsageCart();
                             },
                             altAction: () {},
                             altIcon: null,
@@ -267,60 +220,37 @@ class _CreateMaterialsUsageDesktopState
                       return ListView(
                         children: [
                           Padding(
-                            padding:
-                                EdgeInsetsGeometry.fromLTRB(
-                                  10,
-                                  0,
-                                  10,
-                                  10,
-                                ),
+                            padding: EdgeInsetsGeometry.fromLTRB(10, 0, 10, 10),
                             child: Row(
                               spacing: 10,
-                              mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
                                   style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b2
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
+                                    fontSize: theme.mobileTexts.b2.fontSize,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                   'Materials',
                                 ),
                                 Visibility(
                                   visible: !cartItem.isEdit,
                                   child: Material(
-                                    type:
-                                        MaterialType
-                                            .transparency,
+                                    type: MaterialType.transparency,
                                     child: InkWell(
                                       onTap: () {
                                         CreateMaterialsUsageFunctions()
                                             .selectItemForMaterialsUsageCart(
-                                              firstContext:
-                                                  context,
+                                              firstContext: context,
                                             );
                                       },
-                                      mouseCursor:
-                                          SystemMouseCursors
-                                              .click,
+                                      mouseCursor: SystemMouseCursors.click,
                                       child: Padding(
-                                        padding:
-                                            const EdgeInsets.symmetric(
-                                              vertical:
-                                                  10.0,
-                                              horizontal:
-                                                  12,
-                                            ),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 10.0,
+                                          horizontal: 12,
+                                        ),
                                         child: Row(
-                                          mainAxisSize:
-                                              MainAxisSize
-                                                  .min,
+                                          mainAxisSize: MainAxisSize.min,
                                           spacing: 5,
                                           children: [
                                             Text(
@@ -330,9 +260,7 @@ class _CreateMaterialsUsageDesktopState
                                                         .mobileTexts
                                                         .b3
                                                         .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .normal,
+                                                fontWeight: FontWeight.normal,
                                                 color:
                                                     theme
                                                         .lightModeColor
@@ -364,12 +292,9 @@ class _CreateMaterialsUsageDesktopState
                                   height: 400,
                                   child: Center(
                                     child: Material(
-                                      type:
-                                          MaterialType
-                                              .transparency,
+                                      type: MaterialType.transparency,
                                       child: EmptyWidgetDisplay(
-                                        title:
-                                            'No Material Added',
+                                        title: 'No Material Added',
                                         subText:
                                             'Click on the Button Below to add Material Usage Record',
                                         theme: theme,
@@ -378,12 +303,10 @@ class _CreateMaterialsUsageDesktopState
                                         action: () {
                                           CreateMaterialsUsageFunctions()
                                               .selectItemForMaterialsUsageCart(
-                                                firstContext:
-                                                    context,
+                                                firstContext: context,
                                               );
                                         },
-                                        buttonText:
-                                            'Add New Material',
+                                        buttonText: 'Add New Material',
                                         altAction: () {},
                                       ),
                                     ),
@@ -395,20 +318,15 @@ class _CreateMaterialsUsageDesktopState
                                   children:
                                       items.reversed
                                           .map(
-                                            (
-                                              item,
-                                            ) => MaterialUsageCartItemTile(
-                                              materialsUsageCartItem:
-                                                  item,
+                                            (item) => MaterialUsageCartItemTile(
+                                              materialsUsageCartItem: item,
                                               editAction: () {
-                                                CreateMaterialsUsageFunctions().addSelectedMaterialToCart(
-                                                  secondContext:
-                                                      context,
-                                                  selectedMaterial:
-                                                      null,
-                                                  editMaterialItem:
-                                                      item,
-                                                );
+                                                CreateMaterialsUsageFunctions()
+                                                    .addSelectedMaterialToCart(
+                                                      secondContext: context,
+                                                      selectedMaterial: null,
+                                                      editMaterialItem: item,
+                                                    );
                                               },
                                             ),
                                           )
@@ -426,9 +344,7 @@ class _CreateMaterialsUsageDesktopState
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20.0,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Column(
               spacing: 5,
               children: [
@@ -465,8 +381,7 @@ void clearMaterialsUsageCartOrCancelUpdateFunction({
               'You are about to Clear Every Items from the cart. Are you sure you want to proceed?',
           title: 'Clear Cart',
           action: () {
-            returnMaterialsUsageActionProvider()
-                .resetMaterialsUsageCart();
+            returnMaterialsUsageActionProvider().resetMaterialsUsageCart();
             Navigator.of(confirmContext).pop();
           },
         );
@@ -488,8 +403,7 @@ void cancelUpdate({required BuildContext context}) {
             'You are about to Cancel This update. Are you sure you want to proceed?',
         title: 'Cancel Update',
         action: () {
-          returnMaterialsUsageActionProvider()
-              .resetMaterialsUsageCart();
+          returnMaterialsUsageActionProvider().resetMaterialsUsageCart();
           Navigator.of(confirmContext).pop();
           Navigator.of(context).pop();
         },
