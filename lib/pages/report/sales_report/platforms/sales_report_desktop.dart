@@ -6,7 +6,7 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/components/report_list_tile.dart';
 import 'package:stockall/pages/report/item_sales/item_sales_report.dart';
-import 'package:stockall/pages/report/receipt_sales_report/receipt_sales_report.dart';
+import 'package:stockall/pages/report/receipts_report_main/receipts_report_main_page.dart';
 
 class SalesReportDesktop extends StatelessWidget {
   const SalesReportDesktop({super.key});
@@ -64,13 +64,13 @@ class SalesReportDesktop extends StatelessWidget {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        ReceiptSalesReport(),
+                                        const ReceiptsReportMainPage(),
                                   ),
                                 );
                               },
                               subText:
                                   'View a breakdown of your Receipt Sales, revenue and Profit',
-                              title: 'Receipt Sales Report',
+                              title: 'Receipts Report',
                             ),
                           ),
                           Visibility(
