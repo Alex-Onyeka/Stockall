@@ -3,14 +3,15 @@ import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
-import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/components/report_pager.dart';
 import 'package:stockall/pages/report/components/report_range_fields.dart';
-import 'package:stockall/pages/report/components/report_searchable_dropdown.dart';
+import 'package:stockall/pages/report/components/report_pill.dart';
 import 'package:stockall/pages/report/receipts_report_main/class/receipts_report_main_logic.dart';
+import 'package:stockall/pages/report/receipts_report_main/components/receipts_report_filter_widgets.dart';
+import 'package:stockall/pages/report/receipts_report_summary/receipts_report_summary_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -39,11 +40,16 @@ class ReceiptsReportMainView extends StatefulWidget {
   final ReceiptsReportFilters? initialFilters;
   final ReceiptsReportPeriod? initialPeriod;
 
+  /// Opened from the summary: its Summary button goes back
+  /// instead of opening another summary.
+  final bool openedFromSummary;
+
   const ReceiptsReportMainView({
     super.key,
     required this.isDesktop,
     this.initialFilters,
     this.initialPeriod,
+    this.openedFromSummary = false,
   });
 
   @override
@@ -78,10 +84,8 @@ class _ReceiptsReportMainViewState
   int _profitExcluded = 0;
   String _signature = '';
 
-  List<ReceiptsFilterOption> _staffOptions = [];
-  List<ReceiptsFilterOption> _customerOptions = [];
-  List<ReceiptsFilterOption> _subStaffOptions = [];
-  List<ReceiptsFilterOption> _departmentOptions = [];
+  ReceiptsFilterChoices _choices =
+      ReceiptsFilterChoices.empty;
 
   @override
   void initState() {
@@ -210,16 +214,7 @@ class _ReceiptsReportMainViewState
       receipts: scoped,
       legacySales: provider.mainSales,
     );
-    _staffOptions = ReceiptsReportOptions.staff(_baseRows);
-    _customerOptions = ReceiptsReportOptions.customers(
-      _baseRows,
-    );
-    _subStaffOptions = ReceiptsReportOptions.subStaff(
-      _baseRows,
-    );
-    _departmentOptions = ReceiptsReportOptions.departments(
-      _baseRows,
-    );
+    _choices = ReceiptsFilterChoices.fromRows(_baseRows);
     _signature = _sourceSignature();
   }
 
@@ -336,70 +331,41 @@ class _ReceiptsReportMainViewState
     });
   }
 
-  // ---------------------------------------------------------------
-  // period
-  // ---------------------------------------------------------------
+  void _setPeriod(ReceiptsReportPeriod p) =>
+      _apply(() => _period = p);
 
-  bool get _isToday {
-    final today = ReceiptsReportPeriod.today();
-    return _period.isSingleDay &&
-        _period.start == today.start;
+  /// Clears a range's fields once its filter was removed (chip).
+  void _applyAndSyncFields(VoidCallback change) {
+    _apply(change);
+    if (_filters.revenueMin == null &&
+        _filters.revenueMax == null) {
+      _revMinCtrl.clear();
+      _revMaxCtrl.clear();
+    }
+    if (_filters.profitMin == null &&
+        _filters.profitMax == null) {
+      _profitMinCtrl.clear();
+      _profitMaxCtrl.clear();
+    }
+    if (_filters.search.isEmpty) _searchCtrl.clear();
   }
 
-  void _pickDate() {
-    final theme = returnTheme(context, listen: false);
-    mainDatePicker(
-      context: context,
-      theme: theme,
-      singleDate: (date) {
-        if (date == null) return;
-        _apply(
-          () => _period = ReceiptsReportPeriod.day(date),
-        );
-      },
-      rangeDate: (firstDate, lastDate) {
-        if (firstDate == null) return;
-        _apply(
-          () =>
-              _period = ReceiptsReportPeriod.range(
-                firstDate,
-                lastDate ?? firstDate,
-              ),
-        );
-      },
+  /// The summary takes over the table's period and filters.
+  void _openSummary() {
+    if (widget.openedFromSummary) {
+      Navigator.pop(context);
+      return;
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => ReceiptsReportSummaryPage(
+              initialFilters: _filters.copy(),
+              initialPeriod: _period,
+            ),
+      ),
     );
-  }
-
-  void _onPeriodMenu(int choice) {
-    switch (choice) {
-      case 0:
-        _apply(
-          () => _period = ReceiptsReportPeriod.today(),
-        );
-        break;
-      case 1:
-        _pickDate();
-        break;
-      case 2:
-        _apply(
-          () =>
-              _period =
-                  const ReceiptsReportPeriod.allTime(),
-        );
-        break;
-    }
-  }
-
-  String get _periodLabel {
-    if (_period.isAllTime) return 'All time (loaded data)';
-    final s = _period.start!;
-    final e = _period.end!;
-    if (_period.isSingleDay) {
-      return _isToday
-          ? 'Today, ${formatDateTime(s)}'
-          : formatDateTime(s);
-    }
-    return '${formatDateTime(s)} - ${formatDateTime(e)}';
   }
 
   // ---------------------------------------------------------------
@@ -418,17 +384,6 @@ class _ReceiptsReportMainViewState
 
   String _percent(double v) =>
       '${formatLargeNumberDouble(double.parse(v.toStringAsFixed(2)))}%';
-
-  String _optionLabel(
-    List<ReceiptsFilterOption> options,
-    String key,
-    String fallback,
-  ) {
-    for (final o in options) {
-      if (o.key == key) return o.label;
-    }
-    return fallback;
-  }
 
   // ---------------------------------------------------------------
   // build
@@ -457,40 +412,78 @@ class _ReceiptsReportMainViewState
       appBar: appBar(
         context: context,
         title: 'Receipts Report',
-        widget: Padding(
-          padding: const EdgeInsets.only(right: 10),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              mouseCursor: SystemMouseCursors.click,
-              borderRadius: BorderRadius.circular(10),
-              onTap:
-                  _loading
-                      ? null
-                      : () => _load(refreshFromStore: true),
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  spacing: 5,
-                  children: [
-                    Text(
-                      'Refresh',
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Icon(
-                      Icons.refresh_rounded,
-                      size: 18,
-                    ),
-                  ],
+        widget: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextButton.icon(
+              style: TextButton.styleFrom(
+                backgroundColor: theme
+                    .lightModeColor
+                    .prColor300
+                    .withAlpha(20),
+                foregroundColor:
+                    theme.lightModeColor.prColor300,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ),
+              onPressed: _loading ? null : _openSummary,
+              icon: const Icon(
+                Icons.insights_rounded,
+                size: 15,
+              ),
+              label: Text(
+                'Summary',
+                style: TextStyle(
+                  fontSize: theme.mobileTexts.b3.fontSize,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  mouseCursor: SystemMouseCursors.click,
+                  borderRadius: BorderRadius.circular(10),
+                  onTap:
+                      _loading
+                          ? null
+                          : () =>
+                              _load(refreshFromStore: true),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: 5,
+                      children: [
+                        Text(
+                          'Refresh',
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Icon(
+                          Icons.refresh_rounded,
+                          size: 18,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
       body: Padding(
@@ -645,57 +638,18 @@ class _ReceiptsReportMainViewState
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(right: 5.0),
-          child: PopupMenuButton<int>(
-            enabled: _canPickDate,
-            tooltip:
-                _canPickDate
-                    ? 'Change period'
-                    : 'You can only view today',
-            offset: const Offset(0, 42),
-            color: Colors.white,
-            onSelected: _onPeriodMenu,
-            itemBuilder:
-                (context) => [
-                  _periodItem(theme, 0, 'Today', _isToday),
-                  _periodItem(
-                    theme,
-                    1,
-                    'Pick a date or range',
-                    !_isToday && !_period.isAllTime,
-                  ),
-                  _periodItem(
-                    theme,
-                    2,
-                    'All time (loaded data)',
-                    _period.isAllTime,
-                  ),
-                ],
-            child: _pill(
-              theme: theme,
-              icon: Icons.event_rounded,
-              label: 'Date: $_periodLabel',
-              highlighted: !_isToday,
-            ),
-          ),
+        ReceiptsReportPeriodButton(
+          theme: theme,
+          period: _period,
+          enabled: _canPickDate,
+          onChanged: _setPeriod,
         ),
-        if (!_isToday && _canPickDate)
-          Padding(
-            padding: const EdgeInsets.only(right: 5.0),
-            child: _pill(
-              theme: theme,
-              icon: Icons.close,
-              label: 'Today',
-              onTap: () => _onPeriodMenu(0),
-            ),
-          ),
         Padding(
           padding: const EdgeInsets.only(
             left: 6.0,
             right: 5,
           ),
-          child: _pill(
+          child: ReportPill(
             theme: theme,
             icon: Icons.tune_rounded,
             label:
@@ -710,7 +664,7 @@ class _ReceiptsReportMainViewState
           ),
         ),
         if (_filters.hasAnything)
-          _pill(
+          ReportPill(
             theme: theme,
             icon: Icons.filter_alt_off,
             label: 'Reset All Filters',
@@ -718,105 +672,6 @@ class _ReceiptsReportMainViewState
             color: accent,
           ),
       ],
-    );
-  }
-
-  PopupMenuItem<int> _periodItem(
-    ThemeProvider theme,
-    int value,
-    String text,
-    bool selected,
-  ) {
-    return PopupMenuItem<int>(
-      value: value,
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: theme.mobileTexts.b3.fontSize,
-          fontWeight: selected ? FontWeight.bold : null,
-        ),
-      ),
-    );
-  }
-
-  /// With a null [onTap] the pill only shows (a parent such as a
-  /// PopupMenuButton handles the tap).
-  Widget _pill({
-    required ThemeProvider theme,
-    required IconData icon,
-    required String label,
-    VoidCallback? onTap,
-    bool highlighted = false,
-    Color? color,
-  }) {
-    final accent = theme.lightModeColor.prColor300;
-    final fg =
-        color ?? (highlighted ? accent : Colors.black87);
-    return Material(
-      color:
-          highlighted
-              ? accent.withAlpha(30)
-              : Colors.grey.shade100,
-      borderRadius: BorderRadius.circular(5),
-      child: InkWell(
-        mouseCursor: SystemMouseCursors.click,
-        borderRadius: BorderRadius.circular(5),
-        onTap: onTap,
-        child: Container(
-          height: 38,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 12,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            spacing: 6,
-            children: [
-              Icon(icon, size: 16, color: fg),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.b3.fontSize,
-                  fontWeight: FontWeight.bold,
-                  color: fg,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _keyDropdown({
-    required ThemeProvider theme,
-    required String title,
-    required String allLabel,
-    required String? value,
-    required List<ReceiptsFilterOption> options,
-    required ValueChanged<String?> onChanged,
-  }) {
-    return ReportLabeledField(
-      label: title,
-      width: 220,
-      child: ReportSearchableDropdown<String?>(
-        title: title,
-        value: value,
-        options: [
-          ReportSearchableOption(
-            value: null,
-            label: allLabel,
-          ),
-          ...options.map(
-            (o) => ReportSearchableOption<String?>(
-              value: o.key,
-              label: o.label,
-            ),
-          ),
-        ],
-        onChanged: (v) => _apply(() => onChanged(v)),
-        theme: theme,
-        searchHint: 'Search ${title.toLowerCase()}...',
-      ),
     );
   }
 
@@ -839,89 +694,13 @@ class _ReceiptsReportMainViewState
         spacing: 8,
         runSpacing: 12,
         children: [
-          _keyDropdown(
+          ...receiptsKeyFilterFields(
             theme: theme,
-            title: 'Staff',
-            allLabel: 'All staff',
-            value: _filters.staffKey,
-            options: _staffOptions,
-            onChanged: (v) => _filters.staffKey = v,
-          ),
-          _keyDropdown(
-            theme: theme,
-            title: 'Customer',
-            allLabel: 'All customers',
-            value: _filters.customerKey,
-            options: _customerOptions,
-            onChanged: (v) => _filters.customerKey = v,
-          ),
-          if (_subStaffEnabled)
-            _keyDropdown(
-              theme: theme,
-              title: 'Sub-Staff',
-              allLabel: 'All sub-staff',
-              value: _filters.subStaffKey,
-              options: _subStaffOptions,
-              onChanged: (v) => _filters.subStaffKey = v,
-            ),
-          if (_departmentsEnabled)
-            _keyDropdown(
-              theme: theme,
-              title: 'Department',
-              allLabel: 'All departments',
-              value: _filters.departmentKey,
-              options: _departmentOptions,
-              onChanged: (v) => _filters.departmentKey = v,
-            ),
-          ReportLabeledField(
-            label: 'Channel',
-            width: 180,
-            child: ReportSearchableDropdown<
-              ReceiptChannel?
-            >(
-              title: 'Channel',
-              value: _filters.channel,
-              showSearch: false,
-              options: [
-                const ReportSearchableOption(
-                  value: null,
-                  label: 'All channels',
-                ),
-                ...ReceiptChannel.values.map(
-                  (c) => ReportSearchableOption<
-                    ReceiptChannel?
-                  >(value: c, label: c.label),
-                ),
-              ],
-              onChanged:
-                  (v) => _apply(() => _filters.channel = v),
-              theme: theme,
-            ),
-          ),
-          ReportLabeledField(
-            label: 'Type',
-            width: 180,
-            child: ReportSearchableDropdown<ReceiptType?>(
-              title: 'Type',
-              value: _filters.type,
-              showSearch: false,
-              options: [
-                const ReportSearchableOption(
-                  value: null,
-                  label: 'All types',
-                ),
-                ...ReceiptType.values.map(
-                  (t) =>
-                      ReportSearchableOption<ReceiptType?>(
-                        value: t,
-                        label: t.label,
-                      ),
-                ),
-              ],
-              onChanged:
-                  (v) => _apply(() => _filters.type = v),
-              theme: theme,
-            ),
+            filters: _filters,
+            choices: _choices,
+            departmentsEnabled: _departmentsEnabled,
+            subStaffEnabled: _subStaffEnabled,
+            onApply: _apply,
           ),
           ReportRangeFields(
             label: 'Total revenue range',
@@ -953,126 +732,15 @@ class _ReceiptsReportMainViewState
   }
 
   Widget _activeChips(ThemeProvider theme) {
-    final chips = <Widget>[];
-    Widget chip(String text, VoidCallback onRemove) =>
-        InputChip(
-          label: Text(
-            text,
-            style: const TextStyle(fontSize: 10),
-          ),
-          onDeleted: onRemove,
-          deleteIcon: const Icon(Icons.close, size: 12),
-          visualDensity: VisualDensity.compact,
-          backgroundColor: theme.lightModeColor.prColor300
-              .withAlpha(25),
-          side: BorderSide.none,
-        );
-
-    void keyChip(
-      String title,
-      String? key,
-      List<ReceiptsFilterOption> options,
-      VoidCallback clear,
-    ) {
-      if (key == null) return;
-      chips.add(
-        chip(
-          '$title: ${_optionLabel(options, key, title)}',
-          () => _apply(clear),
-        ),
-      );
-    }
-
-    keyChip(
-      'Staff',
-      _filters.staffKey,
-      _staffOptions,
-      () => _filters.staffKey = null,
-    );
-    keyChip(
-      'Customer',
-      _filters.customerKey,
-      _customerOptions,
-      () => _filters.customerKey = null,
-    );
-    if (_subStaffEnabled) {
-      keyChip(
-        'Sub-Staff',
-        _filters.subStaffKey,
-        _subStaffOptions,
-        () => _filters.subStaffKey = null,
-      );
-    }
-    if (_departmentsEnabled) {
-      keyChip(
-        'Department',
-        _filters.departmentKey,
-        _departmentOptions,
-        () => _filters.departmentKey = null,
-      );
-    }
-    if (_filters.channel != null) {
-      chips.add(
-        chip(
-          'Channel: ${_filters.channel!.label}',
-          () => _apply(() => _filters.channel = null),
-        ),
-      );
-    }
-    if (_filters.type != null) {
-      chips.add(
-        chip(
-          'Type: ${_filters.type!.label}',
-          () => _apply(() => _filters.type = null),
-        ),
-      );
-    }
-    if (_filters.revenueMin != null ||
-        _filters.revenueMax != null) {
-      chips.add(
-        chip(
-          'Revenue: ${_filters.revenueMin != null ? _money(_filters.revenueMin!) : 'Any'}'
-          ' - ${_filters.revenueMax != null ? _money(_filters.revenueMax!) : 'Any'}',
-          () {
-            _revMinCtrl.clear();
-            _revMaxCtrl.clear();
-            _apply(() {
-              _filters.revenueMin = null;
-              _filters.revenueMax = null;
-            });
-          },
-        ),
-      );
-    }
-    if (_canSeeCost &&
-        (_filters.profitMin != null ||
-            _filters.profitMax != null)) {
-      chips.add(
-        chip(
-          'Profit/Loss: ${_filters.profitMin != null ? _money(_filters.profitMin!) : 'Any'}'
-          ' - ${_filters.profitMax != null ? _money(_filters.profitMax!) : 'Any'}',
-          () {
-            _profitMinCtrl.clear();
-            _profitMaxCtrl.clear();
-            _apply(() {
-              _filters.profitMin = null;
-              _filters.profitMax = null;
-            });
-          },
-        ),
-      );
-    }
-    if (chips.isEmpty) return const SizedBox.shrink();
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Wrap(
-          spacing: 6,
-          runSpacing: 4,
-          children: chips,
-        ),
-      ),
+    return ReceiptsReportFilterChips(
+      theme: theme,
+      filters: _filters,
+      choices: _choices,
+      departmentsEnabled: _departmentsEnabled,
+      subStaffEnabled: _subStaffEnabled,
+      profitVisible: _canSeeCost,
+      money: _money,
+      onApply: _applyAndSyncFields,
     );
   }
 
