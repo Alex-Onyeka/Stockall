@@ -9,6 +9,7 @@ import 'package:stockall/pages/report/components/report_list_tile.dart';
 import 'package:stockall/pages/report/customer_report/customer_report_page.dart';
 import 'package:stockall/pages/report/error_log/error_log.dart';
 import 'package:stockall/pages/report/events_log/events_log.dart';
+import 'package:stockall/pages/report/invoice_credit_report/invoice_credit_report_page.dart';
 import 'package:stockall/pages/report/invoice_sales_report/invoice_sales_report.dart';
 import 'package:stockall/pages/report/items_report/items_report_page.dart';
 import 'package:stockall/pages/report/sales_report/sales_report_page.dart';
@@ -60,7 +61,9 @@ class ReportMobile extends StatelessWidget {
                       children: [
                         Visibility(
                           visible: authorization(
-                            authorized: Authorizations().viewItemsReport,
+                            authorized:
+                                Authorizations()
+                                    .viewItemsReport,
                           ),
                           child: ReportListTile(
                             isActive: true,
@@ -69,8 +72,9 @@ class ReportMobile extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ItemsReportPage(),
+                                  builder:
+                                      (context) =>
+                                          const ItemsReportPage(),
                                 ),
                               );
                             },
@@ -80,14 +84,17 @@ class ReportMobile extends StatelessWidget {
                           ),
                         ),
                         Visibility(
-                          visible: !isStoreKeeper() &&
+                          visible:
+                              !isStoreKeeper() &&
                               (authorization(
-                                    authorized: Authorizations()
-                                        .viewReceiptSalesReport,
+                                    authorized:
+                                        Authorizations()
+                                            .viewReceiptSalesReport,
                                   ) ||
                                   authorization(
-                                    authorized: Authorizations()
-                                        .viewItemSalesReport,
+                                    authorized:
+                                        Authorizations()
+                                            .viewItemSalesReport,
                                   )),
                           child: ReportListTile(
                             isActive: true,
@@ -96,8 +103,9 @@ class ReportMobile extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      const SalesReportPage(),
+                                  builder:
+                                      (context) =>
+                                          const SalesReportPage(),
                                 ),
                               );
                             },
@@ -107,10 +115,12 @@ class ReportMobile extends StatelessWidget {
                           ),
                         ),
                         Visibility(
-                          visible: !isStoreKeeper() &&
+                          visible:
+                              !isStoreKeeper() &&
                               authorization(
-                                authorized: Authorizations()
-                                    .viewInvoiceSalesReport,
+                                authorized:
+                                    Authorizations()
+                                        .viewInvoiceSalesReport,
                               ),
                           child: ReportListTile(
                             isActive: true,
@@ -119,14 +129,15 @@ class ReportMobile extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      InvoiceSalesReport(),
+                                  builder:
+                                      (context) =>
+                                          const InvoiceCreditReportPage(),
                                 ),
                               );
                             },
                             subText:
-                                'View a breakdown of your Invoice Sales, revenue and Profit',
-                            title: 'Invoice Sales Report',
+                                'View a breakdown of your invoice and credit reports',
+                            title: 'Invoice/Credit Report',
                           ),
                         ),
                         Visibility(
