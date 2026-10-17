@@ -95,28 +95,29 @@ class _InvoicePageDesktopState
               inv.uuid ==
               widget.checkoutResponse.invoice?.uuid,
           orElse: () {
-            return TempInvoice(
-              tempItems: null,
-              comment: null,
-              subStaffName: null,
-              departmentName:
-                  returnDepartmentProvider()
-                      .currentDepartment()
-                      ?.name,
-              departmentUuidNew:
-                  returnDepartmentProvider()
-                      .currentDepartment()
-                      ?.uuid,
-              createdAt: DateTime.now(),
-              uuid: '1',
-              shopId: shopId(),
-              staffId: AuthService().currentUser!,
-              staffName: 'Staff Name',
-              paymentMethod: 'Cash',
-              bank: 0,
-              cashAlt: 0,
-              cartName: 'Cart 1',
-            );
+            return widget.checkoutResponse.invoice ??
+                TempInvoice(
+                  tempItems: null,
+                  comment: null,
+                  subStaffName: null,
+                  departmentName:
+                      returnDepartmentProvider()
+                          .currentDepartment()
+                          ?.name,
+                  departmentUuidNew:
+                      returnDepartmentProvider()
+                          .currentDepartment()
+                          ?.uuid,
+                  createdAt: DateTime.now(),
+                  uuid: '1',
+                  shopId: shopId(),
+                  staffId: AuthService().currentUser!,
+                  staffName: 'Staff Name',
+                  paymentMethod: 'Cash',
+                  bank: 0,
+                  cashAlt: 0,
+                  cartName: 'Cart 1',
+                );
           },
         );
 

@@ -29,6 +29,8 @@ import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/local_database/cart_func/cart_func.dart';
+import 'package:stockall/local_database/invoices/invoices_func.dart';
+import 'package:stockall/local_database/product_record_func.dart/product_record_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/alt_display/alt_display.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
@@ -1546,14 +1548,21 @@ class SalesProvider extends ChangeNotifier {
       }
     } else if (currentCart().cartItemTypeIndex == 2) {
       await mainLocalLog('Current Sale is Invoice');
+      TempInvoice? existingInvoice;
+      if (currentCart().invoiceUuidEdit != null) {
+        existingInvoice = returnInvoicesProvider().invoicesMain.where((inv) => inv.uuid == currentCart().invoiceUuidEdit).firstOrNull ??
+            InvoicesFunc().getInvoices().where((inv) => inv.uuid == currentCart().invoiceUuidEdit).firstOrNull;
+      }
       TempInvoice invoice = TempInvoice(
+        id: existingInvoice?.id,
+        barcode: existingInvoice?.barcode,
         tempItems: null,
         comment: currentCart().comment,
         subStaffName:
             currentCart().subStaffName ?? currentMainCart().subStaff?.staffName,
         departmentName: departmentName(),
         departmentUuidNew: departmentUuid(),
-        createdAt: createdAt,
+        createdAt: existingInvoice?.createdAt ?? createdAt,
         shopId: shopId,
         staffId: staffUuid(),
         staffName: staffName(),
@@ -1579,8 +1588,8 @@ class SalesProvider extends ChangeNotifier {
         // Built before the invoice is saved so the same lines are
         // stored in invoice.items and in product_sales.
         invoiceSaleRecords = buildSaleRecords(
-          cartItems: salesCartItem.getCartItemsAll(),
-          createdAt: createdAt,
+          cartItems: salesCartItem.getCartItems(),
+          createdAt: invoice.createdAt,
           shopId: shopId,
           staffId: staffUuid(), // staffId,
           staffName: staffName(), // staffName,
@@ -1596,7 +1605,7 @@ class SalesProvider extends ChangeNotifier {
         if (currentCart().invoiceUuidEdit != null) {
           final tempProductSaleRecords = buildSaleRecords(
             cartItems: salesCartItem.tempCartItems?.toList() ?? [],
-            createdAt: createdAt,
+            createdAt: invoice.createdAt,
             shopId: shopId,
             staffId: staffUuid(), // staffId,
             staffName: staffName(), // staffName,
@@ -1611,7 +1620,7 @@ class SalesProvider extends ChangeNotifier {
             'Invoice UUid is not null: ${currentCart().invoiceUuidEdit}',
           );
           try {
-            await returnInvoicesProvider().deleteInvoice(invoice, []);
+            await ProductRecordFunc().deleteRecordsInInvoice(invoice: invoice);
             await returnEventsLogProvider().createLog(
               returnEventsLogProvider().invoiceAdapter(
                 invoice,
@@ -1623,9 +1632,20 @@ class SalesProvider extends ChangeNotifier {
               ),
             );
           } catch (e) {
-            await mainLocalLog('Error Deleting Invoice: ${e.toString()}');
+            await mainLocalLog('Error Reverting Invoice Records: ${e.toString()}');
             return null;
           }
+          invoice.tempItems = null;
+
+          final updateStatus = await returnInvoicesProvider().updateInvoice(
+            invoice: invoice,
+          );
+          if (updateStatus == 0) {
+            await mainLocalLog('Error Updating Invoice');
+            return null;
+          }
+          invoiceRes = invoice;
+          await mainLocalLog('Invoice Updated Success');
         } else {
           await returnEventsLogProvider().createLog(
             returnEventsLogProvider().invoiceAdapter(
@@ -1638,13 +1658,13 @@ class SalesProvider extends ChangeNotifier {
             ),
           );
           await mainLocalLog('Invoice Uuid is null');
-        }
-        invoice.tempItems = null;
+          invoice.tempItems = null;
 
-        invoiceRes = await returnInvoicesProvider().createInvoices(invoice);
-        await mainLocalLog('Invoice Created Success');
+          invoiceRes = await returnInvoicesProvider().createInvoices(invoice);
+          await mainLocalLog('Invoice Created Success');
+        }
       } catch (e) {
-        await mainLocalLog('Error Creating Invoice: ${e.toString()}');
+        await mainLocalLog('Error Creating/Updating Invoice: ${e.toString()}');
         return null;
       }
 
@@ -1653,7 +1673,7 @@ class SalesProvider extends ChangeNotifier {
 
         if (partPayment != null && partPayment != 0) {
           final productSaleRecords =
-              salesCartItem.getCartItemsAll().map((cartItem) {
+              salesCartItem.getCartItems().map((cartItem) {
                 final product = cartItem.getItem();
                 return TempProductSaleRecord(
                   isPercentageWastage: cartItem.isPercentageWastage,

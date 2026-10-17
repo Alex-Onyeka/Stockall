@@ -599,13 +599,13 @@ class InvoicesProvider extends ChangeNotifier {
         // Convert them back to cart items
         final cartItems = convertInvoiceToCartItems(
           invoice: invoice,
-          saleRecords: invoice.getItems(),
+          saleRecords: invoice.getItemsNoVoid() ?? [],
           context: context,
         );
 
         final tempCartItems = convertInvoiceToCartItems(
           invoice: invoice,
-          saleRecords: invoice.getItems(),
+          saleRecords: invoice.getItemsNoVoid() ?? [],
           context: context,
         );
 
@@ -700,9 +700,9 @@ class InvoicesProvider extends ChangeNotifier {
         if (record.manageSalesWastage == true)
           record.wastageUnitUuid,
       ],
-      snapshotUnits: record.unitsList,
+      snapshotUnits: record.getUnitListFinal(),
       priceUuid: record.priceUuid,
-      snapshotPrices: record.pricesList,
+      snapshotPrices: record.getPriceListFinal(),
       onMissing: onMissing ?? (message) => mainLocalLog(message),
     );
   }
@@ -742,6 +742,7 @@ class InvoicesProvider extends ChangeNotifier {
       item: product,
       quantity: record.quantity,
       discount: record.discount,
+      fixedDiscount: record.fixedDiscount,
       customPrice: record.customPriceSet ? tempRev : null,
       addToStock: record.addToStock ?? false,
       setCustomPrice: record.customPriceSet,
@@ -771,11 +772,28 @@ class InvoicesProvider extends ChangeNotifier {
           newRecord.revenue = newRecord.originalCost!;
           // record.discount = 0;
         }
+        var newProduct = product.first.copyWith();
+        newProduct.unitsList = record.getUnitListFinal();
+        newProduct.pricesList = record.getPriceListFinal();
+
+        if (newRecord.unitUuid == null ||
+            !newProduct.getUnitsList().any((u) => u.uuid == newRecord.unitUuid)) {
+          final matchedUnit = newProduct.getUnitsList().where((u) {
+            final recUnit = newRecord.unit?.trim().toLowerCase() ?? '';
+            final uName = u.name.trim().toLowerCase();
+            return uName == recUnit ||
+                (recUnit.isNotEmpty && recUnit.startsWith(uName));
+          }).firstOrNull;
+          if (matchedUnit != null) {
+            newRecord.unitUuid = matchedUnit.uuid;
+          }
+        }
+
         final cartItem = saleRecordToCartItem(
           record: newRecord,
           product: editLineProduct(
             record: newRecord,
-            product: product.first,
+            product: newProduct,
           ),
         );
         cartItems.add(cartItem);
@@ -806,8 +824,8 @@ class InvoicesProvider extends ChangeNotifier {
           heightDimension: record.heightDimension,
           quantityType: record.quantityType,
           widthDimension: record.widthDimension,
-          pricesList: record.pricesList ?? [],
-          unitsList: record.unitsList ?? [],
+          pricesList: record.getPriceListFinal(),
+          unitsList: record.getUnitListFinal(),
           useGroupUnit: false,
           categories: [],
           groupUnit: 'Group(s)',
@@ -838,6 +856,20 @@ class InvoicesProvider extends ChangeNotifier {
           updatedAt: DateTime.now(),
           uuid: uuidGen(),
         );
+
+        if (newRecord.unitUuid == null ||
+            !productNew.getUnitsList().any((u) => u.uuid == newRecord.unitUuid)) {
+          final matchedUnit = productNew.getUnitsList().where((u) {
+            final recUnit = newRecord.unit?.trim().toLowerCase() ?? '';
+            final uName = u.name.trim().toLowerCase();
+            return uName == recUnit ||
+                (recUnit.isNotEmpty && recUnit.startsWith(uName));
+          }).firstOrNull;
+          if (matchedUnit != null) {
+            newRecord.unitUuid = matchedUnit.uuid;
+          }
+        }
+
         final cartItem = saleRecordToCartItem(
           record: newRecord,
           product: productNew,
