@@ -60,7 +60,7 @@ class DeletedInvoicesFunc {
   ) async {
     try {
       for (var invoice in deletedInvoices) {
-        await deletedInvoicesBox.add(invoice);
+        await deletedInvoicesBox.put(invoice.invoiceUuid, invoice);
       }
       await mainLocalLog(
         "Offline Deleted Invoices inserted ✅",
@@ -78,7 +78,10 @@ class DeletedInvoicesFunc {
     DeletedInvoices deletedInvoice,
   ) async {
     try {
-      await deletedInvoicesBox.add(deletedInvoice);
+      await deletedInvoicesBox.put(
+        deletedInvoice.invoiceUuid,
+        deletedInvoice,
+      );
       await mainLocalLog(
         'Offline Deleted Invoice inserted successfully ✅',
       );
@@ -94,6 +97,16 @@ class DeletedInvoicesFunc {
   Future<int> deletedDeletedInvoices(String uuid) async {
     try {
       await deletedInvoicesBox.delete(uuid);
+      final keysToDelete = <dynamic>[];
+      for (var key in deletedInvoicesBox.keys) {
+        final val = deletedInvoicesBox.get(key);
+        if (val != null && val.invoiceUuid == uuid) {
+          keysToDelete.add(key);
+        }
+      }
+      for (var key in keysToDelete) {
+        await deletedInvoicesBox.delete(key);
+      }
       await mainLocalLog('Delete Invoice cleared ✅');
       return 1;
     } catch (e) {

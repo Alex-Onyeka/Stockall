@@ -134,8 +134,15 @@ class InvoicesProvider extends ChangeNotifier {
           await mainLocalLog('Invoices Gotten ${data.length}');
         }
 
-        _invoices =
-            (data as List).map((json) => TempInvoice.fromJson(json)).toList();
+        final deletedUuids = DeletedInvoicesFunc()
+            .getInvoiceIds()
+            .map((e) => e.invoiceUuid)
+            .toSet();
+
+        _invoices = (data as List)
+            .map((json) => TempInvoice.fromJson(json))
+            .where((inv) => inv.uuid != null && !deletedUuids.contains(inv.uuid))
+            .toList();
         notifyListeners();
         await InvoicesFunc().insertAllInvoices(_invoices);
         notifyListeners();
@@ -1172,26 +1179,52 @@ class InvoicesProvider extends ChangeNotifier {
 
         for (var inv in tempInvoice) {
           try {
-            await supabase.rpc(
-              'delete_invoice_without_updating_inventory',
-              params: {'target_invoice_uuid': inv.invoiceUuid},
-            );
-            await DeletedInvoicesFunc().deletedDeletedInvoices(inv.invoiceUuid);
-          } catch (e) {
+            bool rpcSucceeded = false;
+            try {
+              await supabase.rpc(
+                'delete_invoice_without_updating_inventory',
+                params: {'target_invoice_uuid': inv.invoiceUuid},
+              );
+              rpcSucceeded = true;
+            } catch (rpcErr) {
+              await mainLocalLog(
+                'RPC delete_invoice failed for ${inv.invoiceUuid}, falling back to table delete: $rpcErr',
+              );
+            }
+
+            if (!rpcSucceeded) {
+              try {
+                await supabase
+                    .from('product_sales')
+                    .delete()
+                    .eq('invoice_uuid', inv.invoiceUuid);
+              } catch (_) {}
+
+              await supabase
+                  .from('invoices')
+                  .delete()
+                  .eq('invoice_uuid', inv.invoiceUuid);
+            }
+
             await DeletedInvoicesFunc().deletedDeletedInvoices(inv.invoiceUuid);
             await mainLocalLog(
-              'Error Syncing Deleted Invoice: ${e.toString()}',
+              'Invoice ${inv.invoiceUuid} remote deletion succeeded ✅',
+            );
+          } catch (e) {
+            await mainLocalLog(
+              'Error Syncing Deleted Invoice ${inv.invoiceUuid}: ${e.toString()}',
             );
           }
         }
 
-        await mainLocalLog(
-          '${tempInvoice.length} Invoices Created successfully ✅',
-        );
-        await DeletedInvoicesFunc().clearDeletedInvoices();
-        await mainLocalLog('Unsynced Deleted Invoices Cleared');
-        await mainLocalLog('Mounted, refreshing Invoices ✅');
-        await loadInvoices(returnShopProvider().userShop()!.shopId!);
+        if (DeletedInvoicesFunc().getInvoiceIds().isEmpty) {
+          await mainLocalLog('All Unsynced Deleted Invoices Cleared ✅');
+          await loadInvoices(returnShopProvider().userShop()!.shopId!);
+        } else {
+          await mainLocalLog(
+            'Some deleted invoices could not be synced and remain in queue.',
+          );
+        }
       }
     } catch (e) {
       await mainLocalLog('Batch Invoices Deleted failed ❌: $e');

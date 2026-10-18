@@ -347,7 +347,7 @@ class ProductRecordFunc {
         'Records Gotten: ${records.length}',
       );
       for (var record in records) {
-        if (record.isProductManaged! && !record.isVoid!) {
+        if ((record.isProductManaged ?? false) && record.isVoid != true) {
           List<TempProductClass> products =
               returnData().productListMain
                   .where(
